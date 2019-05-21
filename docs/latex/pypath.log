@@ -1,349 +1,35 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.10.12)  15 JAN 2019 12:22
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2019/dev/Debian) (preloaded format=pdflatex 2019.4.25)  21 MAY 2019 13:47
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **pypath.tex
 (./pypath.tex
-LaTeX2e <2017-04-15>
-Babel <3.18> and hyphenation patterns for 3 language(s) loaded.
+LaTeX2e <2018-12-01>
 (./sphinxmanual.cls
-Document Class: sphinxmanual 2017/03/26 v1.6 Document class (Sphinx manual)
+Document Class: sphinxmanual 2018/12/23 v2.0 Document class (Sphinx manual)
 (/usr/share/texlive/texmf-dist/tex/latex/base/report.cls
-Document Class: report 2014/09/29 v1.4h Standard LaTeX document class
+Document Class: report 2018/09/03 v1.4i Standard LaTeX document class
 (/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo
-File: size10.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
+File: size10.clo 2018/09/03 v1.4i Standard LaTeX file (size option)
 )
-\c@part=\count79
-\c@chapter=\count80
-\c@section=\count81
-\c@subsection=\count82
-\c@subsubsection=\count83
-\c@paragraph=\count84
-\c@subparagraph=\count85
-\c@figure=\count86
-\c@table=\count87
+\c@part=\count80
+\c@chapter=\count81
+\c@section=\count82
+\c@subsection=\count83
+\c@subsubsection=\count84
+\c@paragraph=\count85
+\c@subparagraph=\count86
+\c@figure=\count87
+\c@table=\count88
 \abovecaptionskip=\skip41
 \belowcaptionskip=\skip42
 \bibindent=\dimen102
 ))
 (/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty
-Package: inputenc 2015/03/17 v1.2c Input encoding file
+Package: inputenc 2018/08/11 v1.3c Input encoding file
 \inpenc@prehook=\toks14
 \inpenc@posthook=\toks15
-
-(/usr/share/texlive/texmf-dist/tex/latex/base/utf8.def
-File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
-Now handling font encoding OML ...
-... no UTF-8 mapping file for font encoding OML
-Now handling font encoding T1 ...
-... processing UTF-8 mapping file for font encoding T1
-
-(/usr/share/texlive/texmf-dist/tex/latex/base/t1enc.dfu
-File: t1enc.dfu 2017/01/28 v1.1t UTF-8 support for inputenc
-   defining Unicode char U+00A0 (decimal 160)
-   defining Unicode char U+00A1 (decimal 161)
-   defining Unicode char U+00A3 (decimal 163)
-   defining Unicode char U+00AB (decimal 171)
-   defining Unicode char U+00AD (decimal 173)
-   defining Unicode char U+00BB (decimal 187)
-   defining Unicode char U+00BF (decimal 191)
-   defining Unicode char U+00C0 (decimal 192)
-   defining Unicode char U+00C1 (decimal 193)
-   defining Unicode char U+00C2 (decimal 194)
-   defining Unicode char U+00C3 (decimal 195)
-   defining Unicode char U+00C4 (decimal 196)
-   defining Unicode char U+00C5 (decimal 197)
-   defining Unicode char U+00C6 (decimal 198)
-   defining Unicode char U+00C7 (decimal 199)
-   defining Unicode char U+00C8 (decimal 200)
-   defining Unicode char U+00C9 (decimal 201)
-   defining Unicode char U+00CA (decimal 202)
-   defining Unicode char U+00CB (decimal 203)
-   defining Unicode char U+00CC (decimal 204)
-   defining Unicode char U+00CD (decimal 205)
-   defining Unicode char U+00CE (decimal 206)
-   defining Unicode char U+00CF (decimal 207)
-   defining Unicode char U+00D0 (decimal 208)
-   defining Unicode char U+00D1 (decimal 209)
-   defining Unicode char U+00D2 (decimal 210)
-   defining Unicode char U+00D3 (decimal 211)
-   defining Unicode char U+00D4 (decimal 212)
-   defining Unicode char U+00D5 (decimal 213)
-   defining Unicode char U+00D6 (decimal 214)
-   defining Unicode char U+00D8 (decimal 216)
-   defining Unicode char U+00D9 (decimal 217)
-   defining Unicode char U+00DA (decimal 218)
-   defining Unicode char U+00DB (decimal 219)
-   defining Unicode char U+00DC (decimal 220)
-   defining Unicode char U+00DD (decimal 221)
-   defining Unicode char U+00DE (decimal 222)
-   defining Unicode char U+00DF (decimal 223)
-   defining Unicode char U+00E0 (decimal 224)
-   defining Unicode char U+00E1 (decimal 225)
-   defining Unicode char U+00E2 (decimal 226)
-   defining Unicode char U+00E3 (decimal 227)
-   defining Unicode char U+00E4 (decimal 228)
-   defining Unicode char U+00E5 (decimal 229)
-   defining Unicode char U+00E6 (decimal 230)
-   defining Unicode char U+00E7 (decimal 231)
-   defining Unicode char U+00E8 (decimal 232)
-   defining Unicode char U+00E9 (decimal 233)
-   defining Unicode char U+00EA (decimal 234)
-   defining Unicode char U+00EB (decimal 235)
-   defining Unicode char U+00EC (decimal 236)
-   defining Unicode char U+00ED (decimal 237)
-   defining Unicode char U+00EE (decimal 238)
-   defining Unicode char U+00EF (decimal 239)
-   defining Unicode char U+00F0 (decimal 240)
-   defining Unicode char U+00F1 (decimal 241)
-   defining Unicode char U+00F2 (decimal 242)
-   defining Unicode char U+00F3 (decimal 243)
-   defining Unicode char U+00F4 (decimal 244)
-   defining Unicode char U+00F5 (decimal 245)
-   defining Unicode char U+00F6 (decimal 246)
-   defining Unicode char U+00F8 (decimal 248)
-   defining Unicode char U+00F9 (decimal 249)
-   defining Unicode char U+00FA (decimal 250)
-   defining Unicode char U+00FB (decimal 251)
-   defining Unicode char U+00FC (decimal 252)
-   defining Unicode char U+00FD (decimal 253)
-   defining Unicode char U+00FE (decimal 254)
-   defining Unicode char U+00FF (decimal 255)
-   defining Unicode char U+0100 (decimal 256)
-   defining Unicode char U+0101 (decimal 257)
-   defining Unicode char U+0102 (decimal 258)
-   defining Unicode char U+0103 (decimal 259)
-   defining Unicode char U+0104 (decimal 260)
-   defining Unicode char U+0105 (decimal 261)
-   defining Unicode char U+0106 (decimal 262)
-   defining Unicode char U+0107 (decimal 263)
-   defining Unicode char U+0108 (decimal 264)
-   defining Unicode char U+0109 (decimal 265)
-   defining Unicode char U+010A (decimal 266)
-   defining Unicode char U+010B (decimal 267)
-   defining Unicode char U+010C (decimal 268)
-   defining Unicode char U+010D (decimal 269)
-   defining Unicode char U+010E (decimal 270)
-   defining Unicode char U+010F (decimal 271)
-   defining Unicode char U+0110 (decimal 272)
-   defining Unicode char U+0111 (decimal 273)
-   defining Unicode char U+0112 (decimal 274)
-   defining Unicode char U+0113 (decimal 275)
-   defining Unicode char U+0114 (decimal 276)
-   defining Unicode char U+0115 (decimal 277)
-   defining Unicode char U+0116 (decimal 278)
-   defining Unicode char U+0117 (decimal 279)
-   defining Unicode char U+0118 (decimal 280)
-   defining Unicode char U+0119 (decimal 281)
-   defining Unicode char U+011A (decimal 282)
-   defining Unicode char U+011B (decimal 283)
-   defining Unicode char U+011C (decimal 284)
-   defining Unicode char U+011D (decimal 285)
-   defining Unicode char U+011E (decimal 286)
-   defining Unicode char U+011F (decimal 287)
-   defining Unicode char U+0120 (decimal 288)
-   defining Unicode char U+0121 (decimal 289)
-   defining Unicode char U+0122 (decimal 290)
-   defining Unicode char U+0123 (decimal 291)
-   defining Unicode char U+0124 (decimal 292)
-   defining Unicode char U+0125 (decimal 293)
-   defining Unicode char U+0128 (decimal 296)
-   defining Unicode char U+0129 (decimal 297)
-   defining Unicode char U+012A (decimal 298)
-   defining Unicode char U+012B (decimal 299)
-   defining Unicode char U+012C (decimal 300)
-   defining Unicode char U+012D (decimal 301)
-   defining Unicode char U+012E (decimal 302)
-   defining Unicode char U+012F (decimal 303)
-   defining Unicode char U+0130 (decimal 304)
-   defining Unicode char U+0131 (decimal 305)
-   defining Unicode char U+0132 (decimal 306)
-   defining Unicode char U+0133 (decimal 307)
-   defining Unicode char U+0134 (decimal 308)
-   defining Unicode char U+0135 (decimal 309)
-   defining Unicode char U+0136 (decimal 310)
-   defining Unicode char U+0137 (decimal 311)
-   defining Unicode char U+0139 (decimal 313)
-   defining Unicode char U+013A (decimal 314)
-   defining Unicode char U+013B (decimal 315)
-   defining Unicode char U+013C (decimal 316)
-   defining Unicode char U+013D (decimal 317)
-   defining Unicode char U+013E (decimal 318)
-   defining Unicode char U+0141 (decimal 321)
-   defining Unicode char U+0142 (decimal 322)
-   defining Unicode char U+0143 (decimal 323)
-   defining Unicode char U+0144 (decimal 324)
-   defining Unicode char U+0145 (decimal 325)
-   defining Unicode char U+0146 (decimal 326)
-   defining Unicode char U+0147 (decimal 327)
-   defining Unicode char U+0148 (decimal 328)
-   defining Unicode char U+014A (decimal 330)
-   defining Unicode char U+014B (decimal 331)
-   defining Unicode char U+014C (decimal 332)
-   defining Unicode char U+014D (decimal 333)
-   defining Unicode char U+014E (decimal 334)
-   defining Unicode char U+014F (decimal 335)
-   defining Unicode char U+0150 (decimal 336)
-   defining Unicode char U+0151 (decimal 337)
-   defining Unicode char U+0152 (decimal 338)
-   defining Unicode char U+0153 (decimal 339)
-   defining Unicode char U+0154 (decimal 340)
-   defining Unicode char U+0155 (decimal 341)
-   defining Unicode char U+0156 (decimal 342)
-   defining Unicode char U+0157 (decimal 343)
-   defining Unicode char U+0158 (decimal 344)
-   defining Unicode char U+0159 (decimal 345)
-   defining Unicode char U+015A (decimal 346)
-   defining Unicode char U+015B (decimal 347)
-   defining Unicode char U+015C (decimal 348)
-   defining Unicode char U+015D (decimal 349)
-   defining Unicode char U+015E (decimal 350)
-   defining Unicode char U+015F (decimal 351)
-   defining Unicode char U+0160 (decimal 352)
-   defining Unicode char U+0161 (decimal 353)
-   defining Unicode char U+0162 (decimal 354)
-   defining Unicode char U+0163 (decimal 355)
-   defining Unicode char U+0164 (decimal 356)
-   defining Unicode char U+0165 (decimal 357)
-   defining Unicode char U+0168 (decimal 360)
-   defining Unicode char U+0169 (decimal 361)
-   defining Unicode char U+016A (decimal 362)
-   defining Unicode char U+016B (decimal 363)
-   defining Unicode char U+016C (decimal 364)
-   defining Unicode char U+016D (decimal 365)
-   defining Unicode char U+016E (decimal 366)
-   defining Unicode char U+016F (decimal 367)
-   defining Unicode char U+0170 (decimal 368)
-   defining Unicode char U+0171 (decimal 369)
-   defining Unicode char U+0172 (decimal 370)
-   defining Unicode char U+0173 (decimal 371)
-   defining Unicode char U+0174 (decimal 372)
-   defining Unicode char U+0175 (decimal 373)
-   defining Unicode char U+0176 (decimal 374)
-   defining Unicode char U+0177 (decimal 375)
-   defining Unicode char U+0178 (decimal 376)
-   defining Unicode char U+0179 (decimal 377)
-   defining Unicode char U+017A (decimal 378)
-   defining Unicode char U+017B (decimal 379)
-   defining Unicode char U+017C (decimal 380)
-   defining Unicode char U+017D (decimal 381)
-   defining Unicode char U+017E (decimal 382)
-   defining Unicode char U+01CD (decimal 461)
-   defining Unicode char U+01CE (decimal 462)
-   defining Unicode char U+01CF (decimal 463)
-   defining Unicode char U+01D0 (decimal 464)
-   defining Unicode char U+01D1 (decimal 465)
-   defining Unicode char U+01D2 (decimal 466)
-   defining Unicode char U+01D3 (decimal 467)
-   defining Unicode char U+01D4 (decimal 468)
-   defining Unicode char U+01E2 (decimal 482)
-   defining Unicode char U+01E3 (decimal 483)
-   defining Unicode char U+01E6 (decimal 486)
-   defining Unicode char U+01E7 (decimal 487)
-   defining Unicode char U+01E8 (decimal 488)
-   defining Unicode char U+01E9 (decimal 489)
-   defining Unicode char U+01EA (decimal 490)
-   defining Unicode char U+01EB (decimal 491)
-   defining Unicode char U+01F0 (decimal 496)
-   defining Unicode char U+01F4 (decimal 500)
-   defining Unicode char U+01F5 (decimal 501)
-   defining Unicode char U+0218 (decimal 536)
-   defining Unicode char U+0219 (decimal 537)
-   defining Unicode char U+021A (decimal 538)
-   defining Unicode char U+021B (decimal 539)
-   defining Unicode char U+0232 (decimal 562)
-   defining Unicode char U+0233 (decimal 563)
-   defining Unicode char U+1E02 (decimal 7682)
-   defining Unicode char U+1E03 (decimal 7683)
-   defining Unicode char U+200C (decimal 8204)
-   defining Unicode char U+2010 (decimal 8208)
-   defining Unicode char U+2011 (decimal 8209)
-   defining Unicode char U+2012 (decimal 8210)
-   defining Unicode char U+2013 (decimal 8211)
-   defining Unicode char U+2014 (decimal 8212)
-   defining Unicode char U+2015 (decimal 8213)
-   defining Unicode char U+2018 (decimal 8216)
-   defining Unicode char U+2019 (decimal 8217)
-   defining Unicode char U+201A (decimal 8218)
-   defining Unicode char U+201C (decimal 8220)
-   defining Unicode char U+201D (decimal 8221)
-   defining Unicode char U+201E (decimal 8222)
-   defining Unicode char U+2030 (decimal 8240)
-   defining Unicode char U+2031 (decimal 8241)
-   defining Unicode char U+2039 (decimal 8249)
-   defining Unicode char U+203A (decimal 8250)
-   defining Unicode char U+2423 (decimal 9251)
-   defining Unicode char U+1E20 (decimal 7712)
-   defining Unicode char U+1E21 (decimal 7713)
 )
-Now handling font encoding OT1 ...
-... processing UTF-8 mapping file for font encoding OT1
-
-(/usr/share/texlive/texmf-dist/tex/latex/base/ot1enc.dfu
-File: ot1enc.dfu 2017/01/28 v1.1t UTF-8 support for inputenc
-   defining Unicode char U+00A0 (decimal 160)
-   defining Unicode char U+00A1 (decimal 161)
-   defining Unicode char U+00A3 (decimal 163)
-   defining Unicode char U+00AD (decimal 173)
-   defining Unicode char U+00B8 (decimal 184)
-   defining Unicode char U+00BF (decimal 191)
-   defining Unicode char U+00C5 (decimal 197)
-   defining Unicode char U+00C6 (decimal 198)
-   defining Unicode char U+00D8 (decimal 216)
-   defining Unicode char U+00DF (decimal 223)
-   defining Unicode char U+00E6 (decimal 230)
-   defining Unicode char U+00EC (decimal 236)
-   defining Unicode char U+00ED (decimal 237)
-   defining Unicode char U+00EE (decimal 238)
-   defining Unicode char U+00EF (decimal 239)
-   defining Unicode char U+00F8 (decimal 248)
-   defining Unicode char U+0131 (decimal 305)
-   defining Unicode char U+0141 (decimal 321)
-   defining Unicode char U+0142 (decimal 322)
-   defining Unicode char U+0152 (decimal 338)
-   defining Unicode char U+0153 (decimal 339)
-   defining Unicode char U+0174 (decimal 372)
-   defining Unicode char U+0175 (decimal 373)
-   defining Unicode char U+0176 (decimal 374)
-   defining Unicode char U+0177 (decimal 375)
-   defining Unicode char U+0218 (decimal 536)
-   defining Unicode char U+0219 (decimal 537)
-   defining Unicode char U+021A (decimal 538)
-   defining Unicode char U+021B (decimal 539)
-   defining Unicode char U+2013 (decimal 8211)
-   defining Unicode char U+2014 (decimal 8212)
-   defining Unicode char U+2018 (decimal 8216)
-   defining Unicode char U+2019 (decimal 8217)
-   defining Unicode char U+201C (decimal 8220)
-   defining Unicode char U+201D (decimal 8221)
-)
-Now handling font encoding OMS ...
-... processing UTF-8 mapping file for font encoding OMS
-
-(/usr/share/texlive/texmf-dist/tex/latex/base/omsenc.dfu
-File: omsenc.dfu 2017/01/28 v1.1t UTF-8 support for inputenc
-   defining Unicode char U+00A7 (decimal 167)
-   defining Unicode char U+00B6 (decimal 182)
-   defining Unicode char U+00B7 (decimal 183)
-   defining Unicode char U+2020 (decimal 8224)
-   defining Unicode char U+2021 (decimal 8225)
-   defining Unicode char U+2022 (decimal 8226)
-)
-Now handling font encoding OMX ...
-... no UTF-8 mapping file for font encoding OMX
-Now handling font encoding U ...
-... no UTF-8 mapping file for font encoding U
-   defining Unicode char U+00A9 (decimal 169)
-   defining Unicode char U+00AA (decimal 170)
-   defining Unicode char U+00AE (decimal 174)
-   defining Unicode char U+00BA (decimal 186)
-   defining Unicode char U+02C6 (decimal 710)
-   defining Unicode char U+02DC (decimal 732)
-   defining Unicode char U+200C (decimal 8204)
-   defining Unicode char U+2026 (decimal 8230)
-   defining Unicode char U+2122 (decimal 8482)
-   defining Unicode char U+2423 (decimal 9251)
-))
    defining Unicode char U+00A0 (decimal 160)
    defining Unicode char U+2500 (decimal 9472)
    defining Unicode char U+2502 (decimal 9474)
@@ -355,14 +41,14 @@ Now handling font encoding U ...
 Package: cmap 2008/03/06 v1.0h CMap support: searchable PDF
 )
 (/usr/share/texlive/texmf-dist/tex/latex/base/fontenc.sty
-Package: fontenc 2017/04/05 v2.0i Standard LaTeX package
+Package: fontenc 2018/08/11 v2.0j Standard LaTeX package
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1enc.def
-File: t1enc.def 2017/04/05 v2.0i Standard LaTeX file
+File: t1enc.def 2018/08/11 v2.0j Standard LaTeX file
 LaTeX Font Info:    Redeclaring font encoding T1 on input line 48.
 )<<t1.cmap>>)
 (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
-Package: amsmath 2017/09/02 v2.17a AMS math features
+Package: amsmath 2018/12/01 v2.17b AMS math features
 \@mathmargin=\skip43
 
 For additional information on amsmath, use the `?' option.
@@ -381,30 +67,30 @@ Package: amsbsy 1999/11/29 v1.2d Bold Symbols
 (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsopn.sty
 Package: amsopn 2016/03/08 v2.02 operator names
 )
-\inf@bad=\count88
-LaTeX Info: Redefining \frac on input line 213.
-\uproot@=\count89
-\leftroot@=\count90
-LaTeX Info: Redefining \overline on input line 375.
-\classnum@=\count91
-\DOTSCASE@=\count92
-LaTeX Info: Redefining \ldots on input line 472.
-LaTeX Info: Redefining \dots on input line 475.
-LaTeX Info: Redefining \cdots on input line 596.
-\Mathstrutbox@=\box26
-\strutbox@=\box27
+\inf@bad=\count89
+LaTeX Info: Redefining \frac on input line 223.
+\uproot@=\count90
+\leftroot@=\count91
+LaTeX Info: Redefining \overline on input line 385.
+\classnum@=\count92
+\DOTSCASE@=\count93
+LaTeX Info: Redefining \ldots on input line 482.
+LaTeX Info: Redefining \dots on input line 485.
+LaTeX Info: Redefining \cdots on input line 606.
+\Mathstrutbox@=\box27
+\strutbox@=\box28
 \big@size=\dimen105
-LaTeX Font Info:    Redeclaring font encoding OML on input line 712.
-LaTeX Font Info:    Redeclaring font encoding OMS on input line 713.
-\macc@depth=\count93
-\c@MaxMatrixCols=\count94
+LaTeX Font Info:    Redeclaring font encoding OML on input line 729.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 730.
+\macc@depth=\count94
+\c@MaxMatrixCols=\count95
 \dotsspace@=\muskip10
-\c@parentequation=\count95
-\dspbrk@lvl=\count96
+\c@parentequation=\count96
+\dspbrk@lvl=\count97
 \tag@help=\toks17
-\row@=\count97
-\column@=\count98
-\maxfields@=\count99
+\row@=\count98
+\column@=\count99
+\maxfields@=\count100
 \andhelp@=\toks18
 \eqnshift@=\dimen106
 \alignsep@=\dimen107
@@ -416,8 +102,8 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 713.
 \multlinegap=\skip44
 \multlinetaggap=\skip45
 \mathdisplay@stack=\toks20
-LaTeX Info: Redefining \[ on input line 2817.
-LaTeX Info: Redefining \] on input line 2818.
+LaTeX Info: Redefining \[ on input line 2844.
+LaTeX Info: Redefining \] on input line 2845.
 )
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amssymb.sty
 Package: amssymb 2013/01/14 v3.01 AMS font symbols
@@ -430,21 +116,21 @@ LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
 ))
 (/usr/share/texlive/texmf-dist/tex/generic/babel/babel.sty
-Package: babel 2018/02/14 3.18 The Babel package
+Package: babel 2018/11/13 3.27 The Babel package
 
 (/usr/share/texlive/texmf-dist/tex/generic/babel/switch.def
-File: switch.def 2018/02/14 3.18 Babel switching mechanism
+File: switch.def 2018/11/13 3.27 Babel switching mechanism
 )
 (/usr/share/texlive/texmf-dist/tex/generic/babel-english/english.ldf
 Language: english 2017/06/06 v3.3r English support from the babel system
 
 (/usr/share/texlive/texmf-dist/tex/generic/babel/babel.def
-File: babel.def 2018/02/14 3.18 Babel common definitions
-\babel@savecnt=\count100
+File: babel.def 2018/11/13 3.27 Babel common definitions
+\babel@savecnt=\count101
 \U@D=\dimen112
 
 (/usr/share/texlive/texmf-dist/tex/generic/babel/txtbabel.def)
-\bbl@dirlevel=\count101
+\bbl@dirlevel=\count102
 )
 \l@british = a dialect from \language\l@english 
 \l@UKenglish = a dialect from \language\l@english 
@@ -464,10 +150,10 @@ Package: fncychap 2007/07/30 v1.34 LaTeX package (Revised chapters)
 \py=\skip50
 \pyy=\skip51
 \pxx=\skip52
-\c@AlphaCnt=\count102
-\c@AlphaDecCnt=\count103
+\c@AlphaCnt=\count103
+\c@AlphaDecCnt=\count104
 ) (./sphinx.sty
-Package: sphinx 2018/03/11 v1.7.2 LaTeX package (Sphinx markup)
+Package: sphinx 2019/01/12 v1.8.4 LaTeX package (Sphinx markup)
 
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
 Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
@@ -497,7 +183,7 @@ File: pdftex.def 2018/01/08 v1.0l Graphics/color driver for pdftex
 \Gin@req@width=\dimen114
 )
 (/usr/share/texlive/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
-Package: fancyhdr 2017/06/30 v3.9a Extensive control of page headers and footer
+Package: fancyhdr 2019/01/31 v3.10 Extensive control of page headers and footer
 s
 \f@nch@headwidth=\skip53
 \f@nch@O@elh=\skip54
@@ -510,7 +196,7 @@ s
 \f@nch@O@orf=\skip61
 )
 (/usr/share/texlive/texmf-dist/tex/latex/base/textcomp.sty
-Package: textcomp 2017/04/05 v2.0i Standard LaTeX package
+Package: textcomp 2018/08/11 v2.0j Standard LaTeX package
 Package textcomp Info: Sub-encoding information:
 (textcomp)               5 = only ISO-Adobe without \textcurrency
 (textcomp)               4 = 5 + \texteuro
@@ -530,7 +216,7 @@ Now handling font encoding TS1 ...
 ... processing UTF-8 mapping file for font encoding TS1
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1enc.dfu
-File: ts1enc.dfu 2017/01/28 v1.1t UTF-8 support for inputenc
+File: ts1enc.dfu 2018/10/05 v1.2f UTF-8 support for inputenc
    defining Unicode char U+00A2 (decimal 162)
    defining Unicode char U+00A3 (decimal 163)
    defining Unicode char U+00A4 (decimal 164)
@@ -600,6 +286,7 @@ File: ts1enc.dfu 2017/01/28 v1.1t UTF-8 support for inputenc
    defining Unicode char U+25E6 (decimal 9702)
    defining Unicode char U+25EF (decimal 9711)
    defining Unicode char U+266A (decimal 9834)
+   defining Unicode char U+FEFF (decimal 65279)
 ))
 LaTeX Info: Redefining \oldstylenums on input line 334.
 Package textcomp Info: Setting cmr sub-encoding to TS1/0 on input line 349.
@@ -667,7 +354,7 @@ Package textcomp Info: Setting ptmj sub-encoding to TS1/4 on input line 409.
 )
 (/usr/share/texlive/texmf-dist/tex/latex/titlesec/titlesec.sty
 Package: titlesec 2016/03/21 v2.10.2 Sectioning titles
-\ttl@box=\box28
+\ttl@box=\box29
 \beforetitleunit=\skip62
 \aftertitleunit=\skip63
 \ttl@plus=\dimen115
@@ -681,41 +368,43 @@ Package: titlesec 2016/03/21 v2.10.2 Sectioning titles
 Package: tabulary 2014/06/11 v0.10 tabulary package (DPC)
 
 (/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
-Package: array 2016/10/06 v2.4d Tabular extension package (FMi)
+Package: array 2018/12/30 v2.4k Tabular extension package (FMi)
 \col@sep=\dimen120
+\ar@mcellbox=\box30
 \extrarowheight=\dimen121
 \NC@list=\toks23
 \extratabsurround=\skip64
 \backup@length=\skip65
+\ar@cellbox=\box31
 )
-\TY@count=\count104
+\TY@count=\count105
 \TY@linewidth=\dimen122
 \tymin=\dimen123
 \tymax=\dimen124
 \TY@tablewidth=\dimen125
 )
 (/usr/share/texlive/texmf-dist/tex/latex/tools/longtable.sty
-Package: longtable 2014/10/28 v4.11 Multi-page Table package (DPC)
+Package: longtable 2014/10/28 v4.11 Multi-page Table package (DPC)+ FMi change
 \LTleft=\skip66
 \LTright=\skip67
 \LTpre=\skip68
 \LTpost=\skip69
-\LTchunksize=\count105
+\LTchunksize=\count106
 \LTcapwidth=\dimen126
-\LT@head=\box29
-\LT@firsthead=\box30
-\LT@foot=\box31
-\LT@lastfoot=\box32
-\LT@cols=\count106
-\LT@rows=\count107
-\c@LT@tables=\count108
-\c@LT@chunks=\count109
+\LT@head=\box32
+\LT@firsthead=\box33
+\LT@foot=\box34
+\LT@lastfoot=\box35
+\LT@cols=\count107
+\LT@rows=\count108
+\c@LT@tables=\count109
+\c@LT@chunks=\count110
 \LT@p@ftn=\toks24
 )
 (/usr/share/texlive/texmf-dist/tex/latex/varwidth/varwidth.sty
 Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
-\@vwid@box=\box33
-\sift@deathcycles=\count110
+\@vwid@box=\box36
+\sift@deathcycles=\count111
 \@vwid@loff=\dimen127
 \@vwid@roff=\dimen128
 )
@@ -753,41 +442,43 @@ Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
 Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
 )
 (/usr/share/texlive/texmf-dist/tex/latex/fancyvrb/fancyvrb.sty
-Package: fancyvrb 2008/02/07
+Package: fancyvrb 2019/01/15
 
-Style option: `fancyvrb' v2.7a, with DG/SPQR fixes, and firstline=lastline fix 
-<2008/02/07> (tvz)
-\FV@CodeLineNo=\count111
+Style option: `fancyvrb' v3.2a <2019/01/15> (tvz)
+\FV@CodeLineNo=\count112
 \FV@InFile=\read1
-\FV@TabBox=\box34
-\c@FancyVerbLine=\count112
-\FV@StepNumber=\count113
+\FV@TabBox=\box37
+\c@FancyVerbLine=\count113
+\FV@StepNumber=\count114
 \FV@OutFile=\write3
 ) (./footnotehyper-sphinx.sty
 Package: footnotehyper-sphinx 2017/10/27 v1.7 hyperref aware footnote.sty for s
 phinx (JFB)
-\FNH@notes=\box35
+\FNH@notes=\box38
 \FNH@width=\dimen134
-)
-(/usr/share/texlive/texmf-dist/tex/latex/float/float.sty
+) (/usr/share/texlive/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count114
+\c@float@type=\count115
 \float@exts=\toks25
-\float@box=\box36
+\float@box=\box39
 \@float@everytoks=\toks26
-\@floatcapt=\box37
+\@floatcapt=\box40
 )
 (/usr/share/texlive/texmf-dist/tex/latex/wrapfig/wrapfig.sty
 \wrapoverhang=\dimen135
 \WF@size=\dimen136
-\c@WF@wrappedlines=\count115
-\WF@box=\box38
+\c@WF@wrappedlines=\count116
+\WF@box=\box41
 \WF@everypar=\toks27
 Package: wrapfig 2003/01/31  v 3.6
 )
 (/usr/share/texlive/texmf-dist/tex/latex/parskip/parskip.sty
+Rollback for package 'parskip' requested -> version 'v1'.
+         This corresponds to the release introduced on 2001-04-09.
+
+(/usr/share/texlive/texmf-dist/tex/latex/parskip/parskip-2001-04-09.sty
 Package: parskip 2001/04/09 non-zero parskip adjustments
-)
+))
 (/usr/share/texlive/texmf-dist/tex/latex/base/alltt.sty
 Package: alltt 1997/06/16 v2.0g defines alltt environment
 )
@@ -801,7 +492,6 @@ Package: capt-of 2009/12/29 v0.2 standard captions outside of floats
 (/usr/share/texlive/texmf-dist/tex/latex/needspace/needspace.sty
 Package: needspace 2010/09/12 v1.3d reserve vertical space
 )
-(/usr/share/texlive/texmf-dist/tex/latex/carlisle/remreset.sty)
 (./sphinxhighlight.sty
 Package: sphinxhighlight 2016/05/29 stylesheet for highlighting with pygments
 )
@@ -820,32 +510,28 @@ Package: etexcmds 2016/05/16 v1.6 Avoid name clashes with e-TeX commands (HO)
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifluatex.sty
 Package: ifluatex 2016/05/16 v1.4 Provides the ifluatex switch (HO)
 Package ifluatex Info: LuaTeX not detected.
-)
-Package etexcmds Info: Could not find \expanded.
-(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
-(etexcmds)             that some package has redefined \expanded.
-(etexcmds)             In the latter case, load this package earlier.
-)))
+))))
 \sphinxverbatimsep=\dimen137
 \sphinxverbatimborder=\dimen138
 \sphinxshadowsep=\dimen139
 \sphinxshadowsize=\dimen140
 \sphinxshadowrule=\dimen141
 \spx@notice@border=\dimen142
-\spx@image@box=\box39
-\c@literalblock=\count116
-\sphinxcontinuationbox=\box40
-\sphinxvisiblespacebox=\box41
-\sphinxVerbatim@TitleBox=\box42
+\spx@image@maxheight=\dimen143
+\spx@image@box=\dimen144
+\c@literalblock=\count117
+\sphinxcontinuationbox=\box42
+\sphinxvisiblespacebox=\box43
+\sphinxVerbatim@TitleBox=\box44
 \py@argswidth=\skip71
 \lineblockindentation=\skip72
 \DUlineblockindent=\skip73
 )
 (/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
-Package: geometry 2010/09/12 v5.6 Page Geometry
+Package: geometry 2018/04/16 v5.8 Page Geometry
 
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifpdf.sty
-Package: ifpdf 2017/03/15 v3.2 Provides the ifpdf switch
+Package: ifpdf 2018/09/07 v3.3 Provides the ifpdf switch
 )
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifvtex.sty
 Package: ifvtex 2016/05/16 v1.6 Detect VTeX and its facilities (HO)
@@ -854,21 +540,21 @@ Package ifvtex Info: VTeX not detected.
 (/usr/share/texlive/texmf-dist/tex/generic/ifxetex/ifxetex.sty
 Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
 )
-\Gm@cnth=\count117
-\Gm@cntv=\count118
-\c@Gm@tempcnt=\count119
-\Gm@bindingoffset=\dimen143
-\Gm@wd@mp=\dimen144
-\Gm@odd@mp=\dimen145
-\Gm@even@mp=\dimen146
-\Gm@layoutwidth=\dimen147
-\Gm@layoutheight=\dimen148
-\Gm@layouthoffset=\dimen149
-\Gm@layoutvoffset=\dimen150
+\Gm@cnth=\count118
+\Gm@cntv=\count119
+\c@Gm@tempcnt=\count120
+\Gm@bindingoffset=\dimen145
+\Gm@wd@mp=\dimen146
+\Gm@odd@mp=\dimen147
+\Gm@even@mp=\dimen148
+\Gm@layoutwidth=\dimen149
+\Gm@layoutheight=\dimen150
+\Gm@layouthoffset=\dimen151
+\Gm@layoutvoffset=\dimen152
 \Gm@dimlist=\toks28
 )
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
-Package: hyperref 2018/02/06 v6.86b Hypertext links for LaTeX
+Package: hyperref 2018/11/30 v6.88e Hypertext links for LaTeX
 
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/hobsub-hyperref.sty
 Package: hobsub-hyperref 2016/05/16 v1.14 Bundle oberdiek, subset hyperref (HO)
@@ -886,7 +572,7 @@ Package hobsub Info: Skipping package `ifpdf' (already loaded).
 Package hobsub Info: Skipping package `etexcmds' (already loaded).
 Package hobsub Info: Skipping package `kvsetkeys' (already loaded).
 Package: kvdefinekeys 2016/05/16 v1.4 Define keys (HO)
-Package: pdftexcmds 2018/01/21 v0.26 Utility functions of pdfTeX for LuaTeX (HO
+Package: pdftexcmds 2018/09/10 v0.29 Utility functions of pdfTeX for LuaTeX (HO
 )
 Package pdftexcmds Info: LuaTeX not detected.
 Package pdftexcmds Info: \pdf@primitive is available.
@@ -911,66 +597,66 @@ Package: hycolor 2016/05/16 v1.8 Color options for hyperref/bookmark (HO)
 (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/auxhook.sty
 Package: auxhook 2016/05/16 v1.4 Hooks for auxiliary files (HO)
 )
-\@linkdim=\dimen151
-\Hy@linkcounter=\count120
-\Hy@pagecounter=\count121
+\@linkdim=\dimen153
+\Hy@linkcounter=\count121
+\Hy@pagecounter=\count122
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def
-File: pd1enc.def 2018/02/06 v6.86b Hyperref: PDFDocEncoding definition (HO)
+File: pd1enc.def 2018/11/30 v6.88e Hyperref: PDFDocEncoding definition (HO)
 Now handling font encoding PD1 ...
 ... no UTF-8 mapping file for font encoding PD1
 )
-\Hy@SavedSpaceFactor=\count122
+\Hy@SavedSpaceFactor=\count123
 
 (/usr/share/texlive/texmf-dist/tex/latex/latexconfig/hyperref.cfg
 File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
 )
-Package hyperref Info: Option `unicode' set `true' on input line 4383.
+Package hyperref Info: Option `unicode' set `true' on input line 4393.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/puenc.def
-File: puenc.def 2018/02/06 v6.86b Hyperref: PDF Unicode definition (HO)
+File: puenc.def 2018/11/30 v6.88e Hyperref: PDF Unicode definition (HO)
 Now handling font encoding PU ...
 ... no UTF-8 mapping file for font encoding PU
 )
-Package hyperref Info: Option `colorlinks' set `true' on input line 4383.
-Package hyperref Info: Option `breaklinks' set `true' on input line 4383.
-Package hyperref Info: Hyper figures OFF on input line 4509.
-Package hyperref Info: Link nesting OFF on input line 4514.
-Package hyperref Info: Hyper index ON on input line 4517.
-Package hyperref Info: Plain pages OFF on input line 4524.
-Package hyperref Info: Backreferencing OFF on input line 4529.
+Package hyperref Info: Option `colorlinks' set `true' on input line 4393.
+Package hyperref Info: Option `breaklinks' set `true' on input line 4393.
+Package hyperref Info: Hyper figures OFF on input line 4519.
+Package hyperref Info: Link nesting OFF on input line 4524.
+Package hyperref Info: Hyper index ON on input line 4527.
+Package hyperref Info: Plain pages OFF on input line 4534.
+Package hyperref Info: Backreferencing OFF on input line 4539.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
-Package hyperref Info: Bookmarks ON on input line 4762.
-\c@Hy@tempcnt=\count123
+Package hyperref Info: Bookmarks ON on input line 4772.
+\c@Hy@tempcnt=\count124
 
 (/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
 \Urlmuskip=\muskip11
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
-LaTeX Info: Redefining \url on input line 5115.
-\XeTeXLinkMargin=\dimen152
-\Fld@menulength=\count124
-\Field@Width=\dimen153
-\Fld@charsize=\dimen154
-Package hyperref Info: Hyper figures OFF on input line 6369.
-Package hyperref Info: Link nesting OFF on input line 6374.
-Package hyperref Info: Hyper index ON on input line 6377.
-Package hyperref Info: backreferencing OFF on input line 6384.
-Package hyperref Info: Link coloring ON on input line 6387.
-Package hyperref Info: Link coloring with OCG OFF on input line 6394.
-Package hyperref Info: PDF/A mode OFF on input line 6399.
-LaTeX Info: Redefining \ref on input line 6439.
-LaTeX Info: Redefining \pageref on input line 6443.
-\Hy@abspage=\count125
-\c@Item=\count126
-\c@Hfootnote=\count127
+LaTeX Info: Redefining \url on input line 5125.
+\XeTeXLinkMargin=\dimen154
+\Fld@menulength=\count125
+\Field@Width=\dimen155
+\Fld@charsize=\dimen156
+Package hyperref Info: Hyper figures OFF on input line 6380.
+Package hyperref Info: Link nesting OFF on input line 6385.
+Package hyperref Info: Hyper index ON on input line 6388.
+Package hyperref Info: backreferencing OFF on input line 6395.
+Package hyperref Info: Link coloring ON on input line 6398.
+Package hyperref Info: Link coloring with OCG OFF on input line 6405.
+Package hyperref Info: PDF/A mode OFF on input line 6410.
+LaTeX Info: Redefining \ref on input line 6450.
+LaTeX Info: Redefining \pageref on input line 6454.
+\Hy@abspage=\count126
+\c@Item=\count127
+\c@Hfootnote=\count128
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/hpdftex.def
-File: hpdftex.def 2018/02/06 v6.86b Hyperref driver for pdfTeX
-\Fld@listcount=\count128
-\c@bookmark@seq@number=\count129
+File: hpdftex.def 2018/11/30 v6.88e Hyperref driver for pdfTeX
+\Fld@listcount=\count129
+\c@bookmark@seq@number=\count130
 
 (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty
 Package: rerunfilecheck 2016/05/16 v1.8 Rerun checks for auxiliary files (HO)
@@ -982,6 +668,9 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/hypcap.sty
 Package: hypcap 2016/05/16 v1.12 Adjusting the anchors of captions (HO)
 )
+(./sphinxmessages.sty
+Package: sphinxmessages 2019/01/04 v2.0 Localized LaTeX macros (Sphinx team)
+)
 \@indexfile=\write4
 \openout4 = `pypath.idx'.
 
@@ -990,45 +679,45 @@ Writing index file pypath.idx
 (./pypath.aux)
 \openout1 = `pypath.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 66.
-LaTeX Font Info:    ... okay on input line 66.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 66.
-LaTeX Font Info:    ... okay on input line 66.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 66.
-LaTeX Font Info:    ... okay on input line 66.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 66.
-LaTeX Font Info:    ... okay on input line 66.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 66.
-LaTeX Font Info:    ... okay on input line 66.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 66.
-LaTeX Font Info:    ... okay on input line 66.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 66.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 66.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 81.
+LaTeX Font Info:    ... okay on input line 81.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 81.
+LaTeX Font Info:    ... okay on input line 81.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 81.
+LaTeX Font Info:    ... okay on input line 81.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 81.
+LaTeX Font Info:    ... okay on input line 81.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 81.
+LaTeX Font Info:    ... okay on input line 81.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 81.
+LaTeX Font Info:    ... okay on input line 81.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 81.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 81.
  (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 66.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 66.
-LaTeX Font Info:    ... okay on input line 66.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 66.
-LaTeX Font Info:    ... okay on input line 66.
-LaTeX Font Info:    Try loading font information for T1+ptm on input line 66.
+LaTeX Font Info:    ... okay on input line 81.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 81.
+LaTeX Font Info:    ... okay on input line 81.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 81.
+LaTeX Font Info:    ... okay on input line 81.
+LaTeX Font Info:    Try loading font information for T1+ptm on input line 81.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1ptm.fd
 File: t1ptm.fd 2001/06/04 font definitions for T1/ptm.
 )
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count130
-\scratchdimen=\dimen155
-\scratchbox=\box43
-\nofMPsegments=\count131
-\nofMParguments=\count132
+\scratchcounter=\count131
+\scratchdimen=\dimen157
+\scratchbox=\box45
+\nofMPsegments=\count132
+\nofMParguments=\count133
 \everyMPshowfont=\toks29
-\MPscratchCnt=\count133
-\MPscratchDim=\dimen156
-\MPnumerator=\count134
-\makeMPintoPDFobject=\count135
+\MPscratchCnt=\count134
+\MPscratchDim=\dimen158
+\MPnumerator=\count135
+\makeMPintoPDFobject=\count136
 \everyMPtoPDFconversion=\toks30
 ) (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
@@ -1081,86 +770,87 @@ e
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-\AtBeginShipoutBox=\box44
-Package hyperref Info: Link coloring ON on input line 66.
+\AtBeginShipoutBox=\box46
+Package hyperref Info: Link coloring ON on input line 81.
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
 
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
-\c@section@level=\count136
+\c@section@level=\count137
 )
-LaTeX Info: Redefining \ref on input line 66.
-LaTeX Info: Redefining \pageref on input line 66.
-LaTeX Info: Redefining \nameref on input line 66.
+LaTeX Info: Redefining \ref on input line 81.
+LaTeX Info: Redefining \pageref on input line 81.
+LaTeX Info: Redefining \nameref on input line 81.
 
 (./pypath.out) (./pypath.out)
 \@outlinefile=\write5
 \openout5 = `pypath.out'.
 
-Package hyperref Info: Option `pageanchor' set `false' on input line 69.
-LaTeX Font Info:    Try loading font information for T1+phv on input line 69.
+Package hyperref Info: Option `pageanchor' set `false' on input line 84.
+LaTeX Font Info:    Try loading font information for T1+phv on input line 84.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1phv.fd
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <10> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 69.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 84.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <24.88> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 69.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 84.
 LaTeX Font Info:    Font shape `T1/phv/bx/it' in size <10> not available
-(Font)              Font shape `T1/phv/b/it' tried instead on input line 69.
+(Font)              Font shape `T1/phv/b/it' tried instead on input line 84.
 LaTeX Font Info:    Font shape `T1/phv/b/it' in size <10> not available
-(Font)              Font shape `T1/phv/b/sl' tried instead on input line 69.
+(Font)              Font shape `T1/phv/b/sl' tried instead on input line 84.
 LaTeX Font Info:    Font shape `T1/phv/bx/it' in size <17.28> not available
-(Font)              Font shape `T1/phv/b/it' tried instead on input line 69.
+(Font)              Font shape `T1/phv/b/it' tried instead on input line 84.
 LaTeX Font Info:    Font shape `T1/phv/b/it' in size <17.28> not available
-(Font)              Font shape `T1/phv/b/sl' tried instead on input line 69.
+(Font)              Font shape `T1/phv/b/sl' tried instead on input line 84.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <17.28> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 69.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 84.
 <<ot1.cmap>><<oml.cmap>><<oms.cmap>><<omx.cmap>>
-LaTeX Font Info:    Try loading font information for U+msa on input line 69.
+LaTeX Font Info:    Try loading font information for U+msa on input line 84.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 69.
+LaTeX Font Info:    Try loading font information for U+msb on input line 84.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <12> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 69.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 84.
  [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2
 
+
 ]
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <14.4> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 69.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 86.
  (./pypath.toc
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <10> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 2.
-)
+ [1
+
+])
 \tf@toc=\write6
 \openout6 = `pypath.toc'.
 
- [1
+ [2]
+LaTeX Font Info:    Try loading font information for T1+pcr on input line 96.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1pcr.fd
+File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
+) [1
 
 ] [2
 
 ]
-LaTeX Font Info:    Try loading font information for T1+pcr on input line 78.
-
-(/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1pcr.fd
-File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
-) [1] [2
-
-]
 Chapter 1.
 [3]
-LaTeX Font Info:    Try loading font information for TS1+ptm on input line 158.
+LaTeX Font Info:    Try loading font information for TS1+ptm on input line 173.
 
  (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
@@ -1169,21 +859,58 @@ File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 ]
 Chapter 2.
 LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <10> not available
-(Font)              Font shape `T1/pcr/b/n' tried instead on input line 267.
+(Font)              Font shape `T1/pcr/b/n' tried instead on input line 284.
 
-Underfull \hbox (badness 7981) in paragraph at lines 267--267
-\T1/ptm/m/it/10 'lncrna-genesymbol'\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'mirna': 'm
-ir-base'\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'pro-tein': 'uniprot'}\T1/ptm/m/n/10 ,
+Underfull \hbox (badness 10000) in paragraph at lines 290--290
+[]\T1/ptm/m/it/10 name\T1/ptm/m/n/10 , \T1/ptm/m/it/10 ncbi_tax_id=9606\T1/ptm/
+m/n/10 , \T1/ptm/m/it/10 in-put_method=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 in-
 
  []
 
+
+Underfull \hbox (badness 10000) in paragraph at lines 417--417
+[]\T1/ptm/m/it/10 name\T1/ptm/m/n/10 , \T1/ptm/m/it/10 lig-and_col=None\T1/ptm/
+m/n/10 , \T1/ptm/m/it/10 re-cep-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 417--417
+\T1/ptm/m/it/10 tor_col=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 lig-and_id_type=No
+ne\T1/ptm/m/n/10 , \T1/ptm/m/it/10 re-cep-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 417--417
+\T1/ptm/m/it/10 tor_id_type=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 record_process
+or_method=None\T1/ptm/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 417--417
+\T1/ptm/m/it/10 record_extra_fields=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 record
+_defaults=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 ex-
+ []
+
+[7]
+Underfull \hbox (badness 10000) in paragraph at lines 507--507
+[]\T1/ptm/m/it/10 name\T1/ptm/m/n/10 , \T1/ptm/m/it/10 ncbi_tax_id=9606\T1/ptm/
+m/n/10 , \T1/ptm/m/it/10 in-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 507--507
+\T1/ptm/m/it/10 put_method=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 in-put_args=Non
+e\T1/ptm/m/n/10 ,
+ []
+
+[8]
 LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <10> not available
-(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 272.
+(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 641.
 LaTeX Font Info:    Try loading font information for TS1+pcr on input line 1.
-(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1pcr.fd
+ (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1pcr.fd
 File: ts1pcr.fd 2001/06/04 font definitions for TS1/pcr.
 )
-Underfull \hbox (badness 10000) in paragraph at lines 277--282
+Underfull \hbox (badness 10000) in paragraph at lines 646--651
 []\T1/pcr/b/n/10 default_name_type \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 dict\T1/ptm/
 m/n/10 ) ^^U Op-tional, \T1/pcr/m/n/10 {\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 protein
 \TS1/pcr/m/n/10 '\T1/pcr/m/n/10 : \TS1/pcr/m/n/10 '\T1/pcr/m/n/10 uniprot\TS1/p
@@ -1191,7 +918,7 @@ cr/m/n/10 '\T1/pcr/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 277--282
+Underfull \hbox (badness 10000) in paragraph at lines 646--651
 \TS1/pcr/m/n/10 '\T1/pcr/m/n/10 mirna\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 : \TS1/pcr
 /m/n/10 '\T1/pcr/m/n/10 mirbase\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 , \TS1/pcr/m/n/1
 0 '\T1/pcr/m/n/10 drug\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 : \TS1/pcr/m/n/10 '\T1/pc
@@ -1199,22 +926,22 @@ r/m/n/10 chembl\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 , \TS1/pcr/m/n/10 '\T1/pcr/m/n/1
 0 lncrna\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 :
  []
 
-[7] [8]
-Underfull \hbox (badness 10000) in paragraph at lines 424--436
+[9] [10]
+Underfull \hbox (badness 10000) in paragraph at lines 792--804
 \T1/ptm/m/n/10 in-clude \T1/pcr/m/n/10 pypath.main.PyPath.receptor_list() \T1/p
 tm/m/n/10 (\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 rec\TS1/pcr/m/n/10 '\T1/ptm/m/n/10 )
 , [][]\T1/pcr/m/sl/10 pypath.
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 424--436
+Underfull \hbox (badness 10000) in paragraph at lines 792--804
 \T1/pcr/m/sl/10 main.PyPath.druggability_list()[][] \T1/ptm/m/n/10 (\TS1/pcr/m/
 n/10 '\T1/pcr/m/n/10 dgb\TS1/pcr/m/n/10 '\T1/ptm/m/n/10 ), [][]\T1/pcr/m/sl/10 
 pypath.main.PyPath.
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 424--436
+Underfull \hbox (badness 10000) in paragraph at lines 792--804
 \T1/pcr/m/sl/10 kinases_list()[][] \T1/ptm/m/n/10 (\TS1/pcr/m/n/10 '\T1/pcr/m/n
 /10 kin\TS1/pcr/m/n/10 '\T1/ptm/m/n/10 ), [][]\T1/pcr/m/sl/10 pypath.main.PyPat
 h.tfs_list()[][] \T1/ptm/m/n/10 (\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 tf\TS1/pcr/m/n
@@ -1222,422 +949,958 @@ h.tfs_list()[][] \T1/ptm/m/n/10 (\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 tf\TS1/pcr/m/n
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 424--436
+Underfull \hbox (badness 10000) in paragraph at lines 792--804
 [][]\T1/pcr/m/sl/10 pypath.main.PyPath.disease_genes_list()[][] \T1/ptm/m/n/10 
 (\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 dis\TS1/pcr/m/n/10 '\T1/ptm/m/n/10 ), [][]\T1/
 pcr/m/sl/10 pypath.
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 424--436
+Underfull \hbox (badness 10000) in paragraph at lines 792--804
 \T1/pcr/m/sl/10 main.PyPath.signaling_proteins_list()[][] \T1/ptm/m/n/10 (\TS1/
 pcr/m/n/10 '\T1/pcr/m/n/10 sig\TS1/pcr/m/n/10 '\T1/ptm/m/n/10 ), [][]\T1/pcr/m/
 sl/10 pypath.main.
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 424--436
+Underfull \hbox (badness 10000) in paragraph at lines 792--804
 \T1/pcr/m/sl/10 PyPath.proteome_list()[][] \T1/ptm/m/n/10 (\TS1/pcr/m/n/10 '\T1
 /pcr/m/n/10 proteome\TS1/pcr/m/n/10 '\T1/ptm/m/n/10 ) and [][]\T1/pcr/m/sl/10 p
 ypath.main.PyPath.
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 505--507
+[11]
+Underfull \hbox (badness 10000) in paragraph at lines 869--871
 []\T1/pcr/b/n/10 proteomicsdb \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 pypath.proteomics
 db.ProteomicsDB\T1/ptm/m/n/10 ) ^^U Con-tains a
  []
 
-[9] [10] [11]
-Underfull \hbox (badness 10000) in paragraph at lines 857--862
+[12]
+Underfull \hbox (badness 10000) in paragraph at lines 1099--1099
+[]\T1/ptm/m/it/10 default_attrs\T1/ptm/m/n/10 , \T1/ptm/m/it/10 orig-i-nal_name
+\T1/ptm/m/n/10 , \T1/ptm/m/it/10 orig-i-nal_name_type\T1/ptm/m/n/10 , \T1/ptm/m
+/it/10 ex-tra_attrs={}\T1/ptm/m/n/10 ,
+ []
+
+[13]
+Underfull \hbox (badness 10000) in paragraph at lines 1213--1218
 []\T1/pcr/b/n/10 settings \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 pypath.input_formats.
 ReadSettings\T1/ptm/m/n/10 ) ^^U \T1/pcr/m/n/10 pypath.
  []
 
-[12] [13]
-Underfull \hbox (badness 10000) in paragraph at lines 1046--1046
+[14] [15]
+Underfull \hbox (badness 10000) in paragraph at lines 1408--1408
 []\T1/ptm/m/it/10 chembl_mysql=None, nodes=None, crit=None, an-dor='or',
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1046--1046
+Underfull \hbox (badness 10000) in paragraph at lines 1408--1408
 \T1/ptm/m/it/10 as-say_types=['B', 'F'], re-la-tion-ship_types=['D', 'H'],
  []
 
 
-Underfull \hbox (badness 5288) in paragraph at lines 1098--1100
+Underfull \hbox (badness 5288) in paragraph at lines 1460--1462
 []\T1/pcr/b/n/10 **kwargs \T1/ptm/m/n/10 ^^U Ad-di-tional key-word ar-gu-ments 
 for \T1/pcr/m/n/10 pypath.chembl.Chembl.
  []
 
-[14]
-Underfull \hbox (badness 7814) in paragraph at lines 1219--1219
+[16]
+Underfull \hbox (badness 7814) in paragraph at lines 1581--1581
 []\T1/ptm/m/it/10 fname='curation_stats.tex', by_category=True, use_cats=['p', 
 'm', 'i', 'r'],
  []
 
-[15] [16]
-Underfull \hbox (badness 10000) in paragraph at lines 1480--1484
+[17] [18]
+Underfull \hbox (badness 10000) in paragraph at lines 1842--1846
 \T1/ptm/m/n/10 Same as \T1/pcr/m/n/10 PyPath.uniprot(), just for directed graph
 . Returns \TS1/pcr/m/n/10 ``\T1/pcr/m/n/10 igraph.
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1507--1511
+Underfull \hbox (badness 10000) in paragraph at lines 1869--1873
 \T1/ptm/m/n/10 Same as \T1/pcr/m/n/10 PyPath.uniprot(), just for directed graph
 . Returns \TS1/pcr/m/n/10 ``\T1/pcr/m/n/10 igraph.
  []
 
-[17]
-Underfull \hbox (badness 10000) in paragraph at lines 1696--1696
-\T1/ptm/m/it/10 <lambda>>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 nodes_filter=<functio
-n <lambda>>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 edge_sources=None\T1/ptm/m/n/10 ,
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1696--1696
+[19]
+Underfull \hbox (badness 10000) in paragraph at lines 2058--2058
 \T1/ptm/m/it/10 dir_sources=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 graph=None\T1/
 ptm/m/n/10 , \T1/ptm/m/it/10 re-turn_object=False\T1/ptm/m/n/10 , \T1/ptm/m/it/
 10 save_dot=None\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1696--1696
+Underfull \hbox (badness 10000) in paragraph at lines 2058--2058
 \T1/ptm/m/it/10 save_graphics=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 prog='neato'
 \T1/ptm/m/n/10 , \T1/ptm/m/it/10 for-mat=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 h
 ide=False\T1/ptm/m/n/10 , \T1/ptm/m/it/10 font=None\T1/ptm/m/n/10 ,
  []
 
-[18] [19]
-Underfull \hbox (badness 10000) in paragraph at lines 1893--1893
+[20] [21]
+Underfull \hbox (badness 10000) in paragraph at lines 2255--2255
 []\T1/ptm/m/it/10 outfile=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 ex-tra_node_attr
 s={}\T1/ptm/m/n/10 , \T1/ptm/m/it/10 ex-tra_edge_attrs={}\T1/ptm/m/n/10 , \T1/p
 tm/m/it/10 unique_pairs=True\T1/ptm/m/n/10 ,
  []
 
-[20]
-Underfull \hbox (badness 6493) in paragraph at lines 2070--2070
+[22]
+Underfull \hbox (badness 6493) in paragraph at lines 2437--2437
 []\T1/ptm/m/it/10 proteins\T1/ptm/m/n/10 , \T1/ptm/m/it/10 all_proteins=None\T1
 /ptm/m/n/10 , \T1/ptm/m/it/10 gene-set_ids=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10
  al-pha=0.05\T1/ptm/m/n/10 , \T1/ptm/m/it/10 cor-rec-
  []
 
-[21] [22]
-Underfull \hbox (badness 10000) in paragraph at lines 2302--2306
+[23] [24]
+Underfull \hbox (badness 10000) in paragraph at lines 2669--2673
 [][]\T1/pcr/m/sl/10 pypath.main.PyPath.search_attr_or()[][] \T1/ptm/m/n/10 and 
 [][]\T1/pcr/m/sl/10 pypath.main.PyPath.
  []
 
-[23]
-Underfull \hbox (badness 10000) in paragraph at lines 2425--2429
+[25]
+Underfull \hbox (badness 10000) in paragraph at lines 2792--2796
 [][]\T1/pcr/m/sl/10 pypath.main.PyPath.search_attr_or()[][] \T1/ptm/m/n/10 and 
 [][]\T1/pcr/m/sl/10 pypath.main.PyPath.
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2467--2467
+Underfull \hbox (badness 10000) in paragraph at lines 2834--2834
 []\T1/ptm/m/it/10 proteins=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 as-pect='P'\T1/
 ptm/m/n/10 , \T1/ptm/m/it/10 al-pha=0.05\T1/ptm/m/n/10 , \T1/ptm/m/it/10 cor-re
 c-tion_method='hommel'\T1/ptm/m/n/10 ,
  []
 
-[24] [25] [26] [27]
-Underfull \hbox (badness 10000) in paragraph at lines 3077--3080
+[26] [27] [28] [29] [30]
+Underfull \hbox (badness 10000) in paragraph at lines 3453--3456
 \T1/ptm/m/n/10 Loads com-plexes from Com-plex-Por-tal. Loads data into ver-tex 
 at-tribute
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 3093--3096
+Underfull \hbox (badness 10000) in paragraph at lines 3469--3472
 \T1/ptm/m/n/10 Loads com-plexes from CO-RUM database. Loads data into ver-tex a
 t-tribute
  []
 
-[28]
-Underfull \hbox (badness 10000) in paragraph at lines 3167--3167
+
+Underfull \hbox (badness 10000) in paragraph at lines 3543--3543
 []\T1/ptm/m/it/10 methods=['self.pfam_regions', 'self.load_depod_dmi', 'self.lo
 ad_dbptm',
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 3167--3167
+Underfull \hbox (badness 10000) in paragraph at lines 3543--3543
 \T1/ptm/m/it/10 'self.load_mimp_dmi', 'self.load_pnetworks_dmi', 'self.load_dom
 ino_dmi',
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 3167--3167
+Underfull \hbox (badness 10000) in paragraph at lines 3543--3543
 \T1/ptm/m/it/10 'self.load_pepcyber', 'self.load_psite_reg', 'self.load_psite_p
 hos', 'self.load_ielm',
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 3222--3225
+[31]
+Underfull \hbox (badness 10000) in paragraph at lines 3598--3601
 \T1/ptm/m/n/10 Loads com-plexes from Havugi-mana 2012. Loads data into ver-tex 
 at-tribute
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 3263--3263
+Underfull \hbox (badness 10000) in paragraph at lines 3639--3639
 []\T1/ptm/m/it/10 lig_rec_resources=True\T1/ptm/m/n/10 , \T1/ptm/m/it/10 in-fer
 -ence_from_go=True\T1/ptm/m/n/10 ,
  []
 
-[29]
-Underfull \hbox (badness 10000) in paragraph at lines 3306--3308
+
+Underfull \hbox (badness 10000) in paragraph at lines 3676--3678
 \T1/ptm/m/n/10 Loads ver-tex at-tributes from Ma-tri-someDB 2.0. At-tributes ar
 e \T1/pcr/m/n/10 matrisome_class\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 3346--3346
+Underfull \hbox (badness 10000) in paragraph at lines 3716--3716
 []\T1/ptm/m/it/10 kinase_substrate_extra=False\T1/ptm/m/n/10 , \T1/ptm/m/it/10 
 re-move_htp=False\T1/ptm/m/n/10 , \T1/ptm/m/it/10 htp_threshold=1\T1/ptm/m/n/10
  ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 3355--3355
+Underfull \hbox (badness 10000) in paragraph at lines 3725--3725
 []\T1/ptm/m/it/10 kinase_substrate_extra=False\T1/ptm/m/n/10 , \T1/ptm/m/it/10 
 re-move_htp=True\T1/ptm/m/n/10 , \T1/ptm/m/it/10 htp_threshold=1\T1/ptm/m/n/10 
 ,
  []
 
-[30]
-Underfull \hbox (badness 10000) in paragraph at lines 3506--3506
+[32]
+Underfull \hbox (badness 10000) in paragraph at lines 3876--3876
 []\T1/ptm/m/it/10 input_methods=None, map_by_homology_from=[9606], ho-mol-
  []
 
-[31]
-Underfull \hbox (badness 10000) in paragraph at lines 3602--3605
+[33]
+Underfull \hbox (badness 10000) in paragraph at lines 3931--3931
+[]\T1/ptm/m/it/10 settings\T1/ptm/m/n/10 , \T1/ptm/m/it/10 clean=True\T1/ptm/m/
+n/10 , \T1/ptm/m/it/10 cache_files={}\T1/ptm/m/n/10 , \T1/ptm/m/it/10 reread=No
+ne\T1/ptm/m/n/10 , \T1/ptm/m/it/10 re-down-load=False\T1/ptm/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3937--3940
 []\T1/pcr/b/n/10 settings \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 pypath.input_formats.
 ReadSettings\T1/ptm/m/n/10 ) ^^U \T1/pcr/m/n/10 pypath.
  []
 
-[32]
-Underfull \hbox (badness 10000) in paragraph at lines 3723--3729
+
+Underfull \hbox (badness 10000) in paragraph at lines 3971--3971
+[]\T1/ptm/m/it/10 lst=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 ex-clude=[]\T1/ptm/m
+/n/10 , \T1/ptm/m/it/10 cache_files={}\T1/ptm/m/n/10 , \T1/ptm/m/it/10 reread=F
+alse\T1/ptm/m/n/10 , \T1/ptm/m/it/10 re-down-load=False\T1/ptm/m/n/10 ,
+ []
+
+[34]
+Underfull \hbox (badness 10000) in paragraph at lines 4058--4064
 \T1/ptm/m/n/10 Creates ver-tex at-tributes from Vesi-cle-pe-dia data. Cre-ates 
 a boolean at-tribute
  []
 
-[33] [34]
-Underfull \hbox (badness 7186) in paragraph at lines 4030--4030
+[35] [36] [37]
+Underfull \hbox (badness 7186) in paragraph at lines 4391--4391
 []\T1/ptm/m/it/10 node_categories\T1/ptm/m/n/10 , \T1/ptm/m/it/10 net-work_sour
 ces=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 in-clude=None\T1/ptm/m/n/10 , \T1/ptm/
 m/it/10 ex-clude=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 di-
  []
 
-[35] [36] [37]
-Underfull \hbox (badness 10000) in paragraph at lines 4372--4372
+[38] [39]
+Underfull \hbox (badness 10000) in paragraph at lines 4732--4732
 []\T1/ptm/m/it/10 dirs\T1/ptm/m/n/10 , \T1/ptm/m/it/10 name\T1/ptm/m/n/10 , \T1
 /ptm/m/it/10 di-rected=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 stim-u-la-tion=None
 \T1/ptm/m/n/10 , \T1/ptm/m/it/10 in-hi-bi-tion=None\T1/ptm/m/n/10 ,
  []
 
-[38]
+[40]
 LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <9> not available
-(Font)              Font shape `T1/pcr/b/n' tried instead on input line 4520.
+(Font)              Font shape `T1/pcr/b/n' tried instead on input line 4879.
 
-Underfull \hbox (badness 10000) in paragraph at lines 4560--4566
-[]\T1/pcr/b/n/10 settings \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 pypath.input_formats.
-ReadSettings\T1/ptm/m/n/10 ) ^^U \T1/pcr/m/n/10 pypath.
+Underfull \hbox (badness 10000) in paragraph at lines 4919--4925
+[]\T1/pcr/b/n/10 param \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 pypath.input_formats.Rea
+dSettings\T1/ptm/m/n/10 ) ^^U \T1/pcr/m/n/10 pypath.
  []
 
-[39]
-Underfull \hbox (badness 10000) in paragraph at lines 4621--4624
+[41]
+Underfull \hbox (badness 10000) in paragraph at lines 4980--4983
 []\T1/pcr/b/n/10 settings \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 pypath.input_formats.
 ReadList\T1/ptm/m/n/10 ) ^^U \T1/pcr/m/n/10 python.
  []
 
-[40] [41] [42]
-Underfull \hbox (badness 10000) in paragraph at lines 5131--5133
+[42] [43] [44] [45]
+Underfull \hbox (badness 10000) in paragraph at lines 5490--5492
 []\T1/pcr/b/n/10 **kwargs \T1/ptm/m/n/10 ^^U Ad-di-tional key-word ar-gu-ments 
 passed to \T1/pcr/m/n/10 igraph.Graph.
  []
 
-[43] [44] [45] [46] [47]
+[46] [47] [48] [49] [50]
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <10> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 5891.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 6238.
 LaTeX Font Info:    Font shape `TS1/pcr/bx/n' in size <10> not available
 (Font)              Font shape `TS1/pcr/b/n' tried instead on input line 1.
- [48] [49] [50] [51] [52] [53] [54
+ [51] [52] [53] [54] [55] [56]
+Chapter 3.
+[57
 
 ]
-Chapter 3.
-[55]
-Underfull \hbox (badness 10000) in paragraph at lines 1--6691
+Underfull \hbox (badness 10000) in paragraph at lines 1--7041
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / interactions / ?genesymbols
  = 1 & ^^\elds = type ,[] ncbi _ tax _ id ,[] tfregulons _ level &
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--6698
+Underfull \hbox (badness 10000) in paragraph at lines 1--7048
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / interactions / ?genesymbols
  = 1 & ^^\elds = sources & databases = PhosphoNetworks &
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--6704
+Underfull \hbox (badness 10000) in paragraph at lines 1--7054
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / interactions / ?genesymbols
  = 1 & ^^\elds = sources ,[] references & databases = Signor ,[]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--6718
+Underfull \hbox (badness 10000) in paragraph at lines 1--7068
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / interactions / ?genesymbols
  = 1 & ^^\elds = sources ,[] references & sources = ATG3 ,[]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--6718
+Underfull \hbox (badness 10000) in paragraph at lines 1--7068
 \T1/ptm/m/n/10 ATG7 ,[] ATG4B ,[] SQSTM1 & targets = MAP1LC3B ,[] MAP1LC3A ,[] 
 MAP1LC3C ,[] Q9H0R8 ,[] GABARAP ,[]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--6725
+Underfull \hbox (badness 10000) in paragraph at lines 1--7075
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / interactions / ?genesymbols
  = 1 & ^^\elds = sources ,[] references & datasets = mirnatarget &
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--6747
+Underfull \hbox (badness 10000) in paragraph at lines 1--7097
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / ptms ? genesymbols = 1 & ^^
 \elds = sources ,[] references & types = acetylation & organisms =
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--6754
+Underfull \hbox (badness 10000) in paragraph at lines 1--7104
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / ptms ? genesymbols = 1 & ^^
 \elds = sources ,[] references & organisms = 10116 & databases =
  []
 
-[56]
+[58]
 Chapter 4.
-[57
-
-] [58]
-Chapter 5.
 [59
 
 ] [60]
-Chapter 6.
+Chapter 5.
 [61
 
-] [62
+] [62]
+Chapter 6.
+[63
 
-] [63
+] [64
+
+] [65
 
 
-] (./pypath.ind [64
+] (./pypath.ind [66
 
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 39--40
-[]\T1/ptm/m/n/10 compounds_from_chembl() (py-path.main.PyPath
+Underfull \hbox (badness 10000) in paragraph at lines 8--9
+[]\T1/pcr/m/n/10 AbstractComplexResource \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class 
+in py-
  []
 
-[65
+
+Underfull \hbox (badness 10000) in paragraph at lines 11--12
+[]\T1/pcr/m/n/10 add_grouped_eattr() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 16--17
+[]\T1/pcr/m/n/10 add_update_vertex() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 21--22
+[]\T1/pcr/m/n/10 all_uniprots() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.annot.A
+nnotationBase
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 31--32
+[]\T1/pcr/m/n/10 basic_stats_intergroup() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 35--36
+[]\T1/pcr/m/n/10 cancer_drivers_list() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.
+main.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 36--37
+[]\T1/pcr/m/n/10 cancer_gene_census_list() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 40--41
+[]\T1/pcr/m/n/10 CellSurfaceProteinAtlas \T1/ptm/m/n/10 (\T1/ptm/m/it/10 class 
+in py-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 44--45
+[]\T1/pcr/m/n/10 collapse_by_name() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 48--50
+[]\T1/pcr/m/n/10 complex_comembership_network() \T1/ptm/m/n/10 (\T1/ptm/m/it/10
+ py-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 52--53
+[]\T1/pcr/m/n/10 complexes_in_network() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path
+.main.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 55--56
+[]\T1/pcr/m/n/10 consensus_edges() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.main
+.Direction
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 73--74
+[]\T1/pcr/m/n/10 databases_similarity() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path
+.main.PyPath
+ []
+
+[67
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 173--174
-[]\T1/ptm/m/n/10 intergroup_shortest_paths() (py-path.main.PyPath
+Underfull \hbox (badness 10000) in paragraph at lines 76--77
+[]\T1/pcr/m/n/10 delete_by_organism() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.m
+ain.PyPath
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 174--175
-[]\T1/ptm/m/n/10 intogen_cancer_drivers_list() (py-path.main.PyPath
- []
-
-[66]
-Underfull \hbox (badness 10000) in paragraph at lines 229--230
-[]\T1/ptm/m/n/10 load_ligand_receptor_network() (py-path.main.PyPath
+Underfull \hbox (badness 10000) in paragraph at lines 77--78
+[]\T1/pcr/m/n/10 delete_by_source() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 272--273
-[]\T1/ptm/m/n/10 mean_reference_per_interaction() (py-path.main.PyPath
+Underfull \hbox (badness 10000) in paragraph at lines 85--86
+[]\T1/pcr/m/n/10 disease_genes_list() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.m
+ain.PyPath
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 284--285
-[]\T1/ptm/m/n/10 negative_sources_reverse() (py-path.main.Direction
+Underfull \hbox (badness 10000) in paragraph at lines 90--91
+[]\T1/pcr/m/n/10 druggability_list() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 285--286
-[]\T1/ptm/m/n/10 negative_sources_straight() (py-path.main.Direction
+Underfull \hbox (badness 10000) in paragraph at lines 105--106
+[]\T1/pcr/m/n/10 edges_expression() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 106--107
+[]\T1/pcr/m/n/10 edges_in_comlexes() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 115--116
+[]\T1/pcr/m/n/10 export_struct_tab() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 124--125
+[]\T1/pcr/m/n/10 first_neighbours() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 125--126
+[]\T1/pcr/m/n/10 fisher_enrichment() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 129--130
+[]\T1/pcr/m/n/10 geneset_enrichment() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.m
+ain.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 131--132
+[]\T1/pcr/m/n/10 genesymbol_labels() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 153--154
+[]\T1/pcr/m/n/10 get_proteomicsdb() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 156--157
+[]\T1/pcr/m/n/10 get_subset() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.annot.Ann
+otationBase
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 158--159
+[]\T1/pcr/m/n/10 go_annotate_graph() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+[68]
+Underfull \hbox (badness 10000) in paragraph at lines 166--167
+[]\T1/pcr/m/n/10 gs_in_undirected() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 171--172
+[]\T1/pcr/m/n/10 gs_stimulated_by() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 187--188
+[]\T1/pcr/m/n/10 homology_translation() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path
+.main.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 200--201
+[]\T1/pcr/m/n/10 init_complex_attr() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 206--207
+[]\T1/pcr/m/n/10 init_vertex_attr() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 209--211
+[]\T1/pcr/m/n/10 intergroup_shortest_paths() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py
+-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 211--213
+[]\T1/pcr/m/n/10 intogen_cancer_drivers_list() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 
+py-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 216--217
+[]\T1/pcr/m/n/10 iter_interactions() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 237--238
+[]\T1/pcr/m/n/10 laudanna_directions() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.
+main.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 238--239
+[]\T1/pcr/m/n/10 laudanna_effects() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 241--242
+[]\T1/pcr/m/n/10 list_resources() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.main.
+PyPath static
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 242--243
+[]\T1/pcr/m/n/10 load_3dcomplexes() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 246--247
+[]\T1/pcr/m/n/10 load_3did_interfaces() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path
+.main.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 247--248
+[]\T1/pcr/m/n/10 load_all_pathways() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 249--250
+[]\T1/pcr/m/n/10 load_complexportal() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.m
+ain.PyPath
+ []
+
+[69]
+Underfull \hbox (badness 10000) in paragraph at lines 261--262
+[]\T1/pcr/m/n/10 load_exocarta_attrs() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.
+main.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 269--270
+[]\T1/pcr/m/n/10 load_li2012_ptms() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 270--272
+[]\T1/pcr/m/n/10 load_ligand_receptor_network() \T1/ptm/m/n/10 (\T1/ptm/m/it/10
+ py-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 274--275
+[]\T1/pcr/m/n/10 load_matrisome_attrs() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path
+.main.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 279--280
+[]\T1/pcr/m/n/10 load_old_omnipath() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 287--288
+[]\T1/pcr/m/n/10 load_phospho_dmi() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 290--291
+[]\T1/pcr/m/n/10 load_pnetworks_dmi() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.m
+ain.PyPath
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 297--298
-[]\T1/ptm/m/n/10 numof_reference_interaction_pairs() (py-
- []
-
-[67]
-Underfull \hbox (badness 10000) in paragraph at lines 299--300
-[]\T1/ptm/m/n/10 numof_undirected_edges() (py-path.main.PyPath
+[]\T1/pcr/m/n/10 load_signor_ptms() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 314--315
-[]\T1/ptm/m/n/10 phosphonetworks_directions() (py-path.main.PyPath
+Underfull \hbox (badness 10000) in paragraph at lines 300--301
+[]\T1/pcr/m/n/10 load_uniprots() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.annot.
+AnnotationBase
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 316--317
-[]\T1/ptm/m/n/10 phosphorylation_directions() (py-path.main.PyPath
+Underfull \hbox (badness 10000) in paragraph at lines 301--302
+[]\T1/pcr/m/n/10 load_vesiclepedia_attrs() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 320--321
-[]\T1/ptm/m/n/10 positive_sources_reverse() (py-path.main.Direction
+Underfull \hbox (badness 10000) in paragraph at lines 315--317
+[]\T1/pcr/m/n/10 mean_reference_per_interaction() \T1/ptm/m/n/10 (\T1/ptm/m/it/
+10 py-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 321--322
-[]\T1/ptm/m/n/10 positive_sources_straight() (py-path.main.Direction
+Underfull \hbox (badness 10000) in paragraph at lines 329--330
+[]\T1/pcr/m/n/10 negative_reverse() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.Direction
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 338--339
-[]\T1/ptm/m/n/10 random_walk_with_return() (py-path.main.PyPath
+Underfull \hbox (badness 10000) in paragraph at lines 330--332
+[]\T1/pcr/m/n/10 negative_sources_reverse() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-
+
+ []
+
+[70]
+Underfull \hbox (badness 10000) in paragraph at lines 332--334
+[]\T1/pcr/m/n/10 negative_sources_straight() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py
+-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 339--340
-[]\T1/ptm/m/n/10 random_walk_with_return2() (py-path.main.PyPath
+Underfull \hbox (badness 10000) in paragraph at lines 334--335
+[]\T1/pcr/m/n/10 negative_straight() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.Direction
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 344--345
+[]\T1/pcr/m/n/10 numof_directed_edges() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path
+.main.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 347--348
+[]\T1/pcr/m/n/10 numof_references() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 348--349
+[]\T1/pcr/m/n/10 numof_undirected_edges() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 358--359
+[]\T1/pcr/m/n/10 pathway_attributes() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.m
+ain.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 361--362
+[]\T1/pcr/m/n/10 pathway_similarity() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.m
+ain.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 365--367
+[]\T1/pcr/m/n/10 phosphonetworks_directions() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 p
+y-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 367--368
+[]\T1/pcr/m/n/10 phosphopoint_directions() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 368--370
+[]\T1/pcr/m/n/10 phosphorylation_directions() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 p
+y-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 371--372
+[]\T1/pcr/m/n/10 phosphosite_directions() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 372--373
-[]\T1/ptm/m/n/10 set_plasma_membrane_proteins_cspa() (py-
+[]\T1/pcr/m/n/10 positive_reverse() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.Direction
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 375--376
-[]\T1/ptm/m/n/10 set_plasma_membrane_proteins_surfaceome() (py-
+Underfull \hbox (badness 10000) in paragraph at lines 373--375
+[]\T1/pcr/m/n/10 positive_sources_reverse() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-
+
  []
 
-[68] [69])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 6993.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 6993.
+
+Underfull \hbox (badness 10000) in paragraph at lines 375--377
+[]\T1/pcr/m/n/10 positive_sources_straight() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py
+-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 377--378
+[]\T1/pcr/m/n/10 positive_straight() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.Direction
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 378--379
+[]\T1/pcr/m/n/10 prdb_tissue_expr() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 379--380
+[]\T1/pcr/m/n/10 process_direction() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 380--381
+[]\T1/pcr/m/n/10 process_directions() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.m
+ain.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 399--400
+[]\T1/pcr/m/n/10 random_walk_with_return() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 400--402
+[]\T1/pcr/m/n/10 random_walk_with_return2() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 406--407
+[]\T1/pcr/m/n/10 reference_edge_ratio() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path
+.main.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 411--412
+[]\T1/pcr/m/n/10 remove_undirected() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+[71]
+Underfull \hbox (badness 10000) in paragraph at lines 421--422
+[]\T1/pcr/m/n/10 second_neighbours() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 423--424
+[]\T1/pcr/m/n/10 select_by_go_all() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 424--425
+[]\T1/pcr/m/n/10 select_by_go_expr() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 426--427
+[]\T1/pcr/m/n/10 separate_by_category() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path
+.main.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 428--429
+[]\T1/pcr/m/n/10 set_boolean_vattr() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 430--431
+[]\T1/pcr/m/n/10 set_chembl_mysql() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 432--433
+[]\T1/pcr/m/n/10 set_disease_genes() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 433--434
+[]\T1/pcr/m/n/10 set_druggability() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Overfull \hbox (46.1225pt too wide) in paragraph at lines 438--440
+[]\T1/pcr/m/n/10 set_plasma_membrane_proteins_cspa_surfaceome()
+ []
+
+
+Overfull \hbox (16.1225pt too wide) in paragraph at lines 440--442
+[]\T1/pcr/m/n/10 set_plasma_membrane_proteins_surfaceome()
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 444--445
+[]\T1/pcr/m/n/10 set_signaling_proteins() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 446--448
+[]\T1/pcr/m/n/10 set_transcription_factors() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py
+-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 448--449
+[]\T1/pcr/m/n/10 shortest_path_dist() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.m
+ain.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 449--450
+[]\T1/pcr/m/n/10 signaling_proteins_list() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 452--453
+[]\T1/pcr/m/n/10 similarity_groups() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 454--455
+[]\T1/pcr/m/n/10 sorensen_pathways() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 458--459
+[]\T1/pcr/m/n/10 source_similarity() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 462--463
+[]\T1/pcr/m/n/10 sources_reverse() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.main
+.Direction
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 463--464
+[]\T1/pcr/m/n/10 sources_straight() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.Direction
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 464--465
+[]\T1/pcr/m/n/10 sources_undirected() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.m
+ain.Direction
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 465--466
+[]\T1/pcr/m/n/10 sources_venn_data() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.ma
+in.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 468--469
+[]\T1/pcr/m/n/10 straight_between() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 480--481
+[]\T1/pcr/m/n/10 third_source_directions() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-
+ []
+
+[72]
+Underfull \hbox (badness 10000) in paragraph at lines 500--501
+[]\T1/pcr/m/n/10 up_in_undirected() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 505--506
+[]\T1/pcr/m/n/10 up_stimulated_by() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path.mai
+n.PyPath
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 511--512
+[]\T1/pcr/m/n/10 update_pathway_types() \T1/ptm/m/n/10 (\T1/ptm/m/it/10 py-path
+.main.PyPath
+ []
+
+[73])
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 7348.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 7348.
  (./pypath.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 6993.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 6993.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 7348.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 7348.
 
 Package rerunfilecheck Info: File `pypath.out' has not changed.
-(rerunfilecheck)             Checksum: 835956B796166B1EC2CC2BB368383B0D;820.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 6993.
+(rerunfilecheck)             Checksum: 3796E5E82F254C9CBD02F0FF72AB4566;5111.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 7348.
  ) 
 Here is how much of TeX's memory you used:
- 14537 strings out of 494923
- 209929 string characters out of 6180741
- 305864 words of memory out of 5000000
- 17033 multiletter control sequences out of 15000+600000
+ 14456 strings out of 494561
+ 213856 string characters out of 6177454
+ 319232 words of memory out of 5000000
+ 17250 multiletter control sequences out of 15000+600000
  54566 words of font info for 78 fonts, out of 8000000 for 9000
  15 hyphenation exceptions out of 8191
- 37i,16n,45p,767b,639s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 37i,16n,51p,786b,665s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/
@@ -1650,10 +1913,10 @@ exmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texlive/texmf-dist/fo
 nts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/t
 imes/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pf
 b></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on pypath.pdf (73 pages, 345214 bytes).
+Output written on pypath.pdf (77 pages, 362809 bytes).
 PDF statistics:
- 1436 PDF objects out of 1440 (max. 8388607)
- 1329 compressed objects within 14 object streams
- 502 named destinations out of 1000 (max. 500000)
- 85 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1718 PDF objects out of 1728 (max. 8388607)
+ 1604 compressed objects within 17 object streams
+ 560 named destinations out of 1000 (max. 500000)
+ 365 words of extra memory for PDF output out of 10000 (max. 10000000)
 

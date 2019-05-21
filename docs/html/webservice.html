@@ -1,19 +1,20 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Webservice &#8212; pypath 0.7.120 documentation</title>
+    <meta charset="utf-8" />
+    <title>Webservice &#8212; pypath 0.8.7 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Release history" href="changelog.html" />
@@ -34,7 +35,7 @@
         <li class="right" >
           <a href="main.html" title="Reference"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.120 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.8.7 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -71,64 +72,79 @@ interaction data.</p>
 <p>A request without any parameter, gives some basic numbers about the actual
 loaded dataset:</p>
 <blockquote>
-<div><a class="reference external" href="http://omnipathdb.org">http://omnipathdb.org</a></div></blockquote>
+<div><p><a class="reference external" href="http://omnipathdb.org">http://omnipathdb.org</a></p>
+</div></blockquote>
 <p>The <code class="docutils literal notranslate"><span class="pre">info</span></code> returns a HTML page with comprehensive information about the
 resources:</p>
 <blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/info">http://omnipathdb.org/info</a></div></blockquote>
+<div><p><a class="reference external" href="http://omnipathdb.org/info">http://omnipathdb.org/info</a></p>
+</div></blockquote>
 <p>The <code class="docutils literal notranslate"><span class="pre">interactions</span></code> query accepts some parameters and returns interactions in
 tabular format. This example returns all interactions of EGFR (P00533), with
 sources and references listed.</p>
 <blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?partners=P00533&amp;fields=sources,references">http://omnipathdb.org/interactions/?partners=P00533&amp;fields=sources,references</a></div></blockquote>
+<div><p><a class="reference external" href="http://omnipathdb.org/interactions/?partners=P00533&amp;fields=sources,references">http://omnipathdb.org/interactions/?partners=P00533&amp;fields=sources,references</a></p>
+</div></blockquote>
 <p>By default only the OmniPath dataset used, to query the TF Regulons or add the
 extra enzyme-substrate interactions you need to set additional parameters. For
 example to query the transcriptional regulators of EGFR:</p>
 <blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?targets=EGFR&amp;types=TF">http://omnipathdb.org/interactions/?targets=EGFR&amp;types=TF</a></div></blockquote>
+<div><p><a class="reference external" href="http://omnipathdb.org/interactions/?targets=EGFR&amp;types=TF">http://omnipathdb.org/interactions/?targets=EGFR&amp;types=TF</a></p>
+</div></blockquote>
 <p>The TF Regulons database assigns confidence levels to the interactions. You
 might want to select only the highest confidence, <em>A</em> category:</p>
 <blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?targets=EGFR&amp;types=TF&amp;tfregulons_levels=A">http://omnipathdb.org/interactions/?targets=EGFR&amp;types=TF&amp;tfregulons_levels=A</a></div></blockquote>
+<div><p><a class="reference external" href="http://omnipathdb.org/interactions/?targets=EGFR&amp;types=TF&amp;tfregulons_levels=A">http://omnipathdb.org/interactions/?targets=EGFR&amp;types=TF&amp;tfregulons_levels=A</a></p>
+</div></blockquote>
 <p>Show the transcriptional targets of Smad2 homology translated to rat including
 the confidence levels from TF Regulons:</p>
 <blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=type,ncbi_tax_id,tfregulons_level&amp;organisms=10116&amp;sources=Smad2&amp;types=TF">http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=type,ncbi_tax_id,tfregulons_level&amp;organisms=10116&amp;sources=Smad2&amp;types=TF</a></div></blockquote>
+<div><p><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=type,ncbi_tax_id,tfregulons_level&amp;organisms=10116&amp;sources=Smad2&amp;types=TF">http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=type,ncbi_tax_id,tfregulons_level&amp;organisms=10116&amp;sources=Smad2&amp;types=TF</a></p>
+</div></blockquote>
 <p>Query interactions from PhosphoNetworks which is part of the <em>kinaseextra</em>
 dataset:</p>
 <blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources&amp;databases=PhosphoNetworks&amp;datasets=kinaseextra">http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources&amp;databases=PhosphoNetworks&amp;datasets=kinaseextra</a></div></blockquote>
+<div><p><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources&amp;databases=PhosphoNetworks&amp;datasets=kinaseextra">http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources&amp;databases=PhosphoNetworks&amp;datasets=kinaseextra</a></p>
+</div></blockquote>
 <p>Get the interactions from Signor, SPIKE and SignaLink3:</p>
 <blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;databases=Signor,SPIKE,SignaLink3">http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;databases=Signor,SPIKE,SignaLink3</a></div></blockquote>
+<div><p><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;databases=Signor,SPIKE,SignaLink3">http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;databases=Signor,SPIKE,SignaLink3</a></p>
+</div></blockquote>
 <p>All interactions of MAP1LC3B:</p>
 <blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;partners=MAP1LC3B">http://omnipathdb.org/interactions/?genesymbols=1&amp;partners=MAP1LC3B</a></div></blockquote>
+<div><p><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;partners=MAP1LC3B">http://omnipathdb.org/interactions/?genesymbols=1&amp;partners=MAP1LC3B</a></p>
+</div></blockquote>
 <p>By default <code class="docutils literal notranslate"><span class="pre">partners</span></code> queries the interaction where either the source or the
 arget is among the partners. If you set the <code class="docutils literal notranslate"><span class="pre">source_target</span></code> parameter to
 <code class="docutils literal notranslate"><span class="pre">AND</span></code> both the source and the target must be in the queried set:</p>
 <blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;sources=ATG3,ATG7,ATG4B,SQSTM1&amp;targets=MAP1LC3B,MAP1LC3A,MAP1LC3C,Q9H0R8,GABARAP,GABARAPL2&amp;source_target=AND">http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;sources=ATG3,ATG7,ATG4B,SQSTM1&amp;targets=MAP1LC3B,MAP1LC3A,MAP1LC3C,Q9H0R8,GABARAP,GABARAPL2&amp;source_target=AND</a></div></blockquote>
+<div><p><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;sources=ATG3,ATG7,ATG4B,SQSTM1&amp;targets=MAP1LC3B,MAP1LC3A,MAP1LC3C,Q9H0R8,GABARAP,GABARAPL2&amp;source_target=AND">http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;sources=ATG3,ATG7,ATG4B,SQSTM1&amp;targets=MAP1LC3B,MAP1LC3A,MAP1LC3C,Q9H0R8,GABARAP,GABARAPL2&amp;source_target=AND</a></p>
+</div></blockquote>
 <p>As you see above you can use UniProt IDs and Gene Symbols in the queries and
 also mix them. Get the miRNA regulating NOTCH1:</p>
 <blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;datasets=mirnatarget&amp;targets=NOTCH1">http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;datasets=mirnatarget&amp;targets=NOTCH1</a></div></blockquote>
+<div><p><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;datasets=mirnatarget&amp;targets=NOTCH1">http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;datasets=mirnatarget&amp;targets=NOTCH1</a></p>
+</div></blockquote>
 <p>Note: with the exception of mandatory fields and genesymbols, the columns
 appear exactly in the order you provided in your query.</p>
 <p>Another query type available is <code class="docutils literal notranslate"><span class="pre">ptms</span></code> which provides enzyme-substrate
 interactions. It is very similar to the <code class="docutils literal notranslate"><span class="pre">interactions</span></code>:</p>
 <blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references,isoforms&amp;enzymes=FYN">http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references,isoforms&amp;enzymes=FYN</a></div></blockquote>
+<div><p><a class="reference external" href="http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references,isoforms&amp;enzymes=FYN">http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references,isoforms&amp;enzymes=FYN</a></p>
+</div></blockquote>
 <p>Is there any ubiquitination reaction?</p>
 <blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;types=ubiquitination">http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;types=ubiquitination</a></div></blockquote>
+<div><p><a class="reference external" href="http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;types=ubiquitination">http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;types=ubiquitination</a></p>
+</div></blockquote>
 <p>And acetylation in mouse?</p>
 <blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;types=acetylation&amp;organisms=10090">http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;types=acetylation&amp;organisms=10090</a></div></blockquote>
+<div><p><a class="reference external" href="http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;types=acetylation&amp;organisms=10090">http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;types=acetylation&amp;organisms=10090</a></p>
+</div></blockquote>
 <p>Rat interactions, both directly from rat and homology translated from human,
 from the PhosphoSite database:</p>
 <blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;organisms=10116&amp;databases=PhosphoSite,PhosphoSite_noref">http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;organisms=10116&amp;databases=PhosphoSite,PhosphoSite_noref</a></div></blockquote>
+<div><p><a class="reference external" href="http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;organisms=10116&amp;databases=PhosphoSite,PhosphoSite_noref">http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;organisms=10116&amp;databases=PhosphoSite,PhosphoSite_noref</a></p>
+</div></blockquote>
 </div>
 </div>
 
@@ -138,7 +154,7 @@ from the PhosphoSite database:</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Webservice</a><ul>
 <li><a class="reference internal" href="#mouse-and-rat">Mouse and rat</a></li>
@@ -166,8 +182,6 @@ from the PhosphoSite database:</p>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -191,12 +205,12 @@ from the PhosphoSite database:</p>
         <li class="right" >
           <a href="main.html" title="Reference"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.120 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.8.7 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019, Dénes Türei.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
     </div>
   </body>
 </html>

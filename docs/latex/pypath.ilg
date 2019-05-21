@@ -1,7 +1,7 @@
-This is makeindex, version 2.15 [TeX Live 2017] (kpathsea + Thai support).
+This is makeindex, version 2.15 [TeX Live 2019/dev] (kpathsea + Thai support).
 Scanning style file ./python.ist.......done (7 attributes redefined, 0 ignored).
-Scanning input file pypath.idx....done (393 entries accepted, 0 rejected).
-Sorting entries......done (3490 comparisons).
-Generating output file pypath.ind....done (463 lines written, 0 warnings).
+Scanning input file pypath.idx....done (445 entries accepted, 0 rejected).
+Sorting entries......done (4154 comparisons).
+Generating output file pypath.ind....done (537 lines written, 0 warnings).
 Output written in pypath.ind.
 Transcript written in pypath.ilg.

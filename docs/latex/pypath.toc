@@ -1,37 +1,44 @@
 \babel@toc {english}{}
-\contentsline {chapter}{\numberline {1}Installation}{3}{chapter.1}
-\contentsline {section}{\numberline {1.1}Linux}{3}{section.1.1}
-\contentsline {subsection}{\numberline {1.1.1}igraph C library, cairo and pycairo}{3}{subsection.1.1.1}
-\contentsline {subsection}{\numberline {1.1.2}Directly from git}{3}{subsection.1.1.2}
-\contentsline {subsection}{\numberline {1.1.3}With pip}{3}{subsection.1.1.3}
-\contentsline {subsection}{\numberline {1.1.4}Build source distribution}{3}{subsection.1.1.4}
-\contentsline {section}{\numberline {1.2}Mac OS X}{3}{section.1.2}
-\contentsline {subsection}{\numberline {1.2.1}Troubleshooting}{4}{subsection.1.2.1}
-\contentsline {section}{\numberline {1.3}Microsoft Windows}{4}{section.1.3}
-\contentsline {subsection}{\numberline {1.3.1}With Anaconda}{4}{subsection.1.3.1}
-\contentsline {subsection}{\numberline {1.3.2}With other Python distributions}{5}{subsection.1.3.2}
-\contentsline {subsection}{\numberline {1.3.3}Known issues}{5}{subsection.1.3.3}
-\contentsline {chapter}{\numberline {2}Reference}{7}{chapter.2}
-\contentsline {chapter}{\numberline {3}Webservice}{55}{chapter.3}
-\contentsline {section}{\numberline {3.1}Mouse and rat}{55}{section.3.1}
-\contentsline {section}{\numberline {3.2}Examples}{55}{section.3.2}
-\contentsline {chapter}{\numberline {4}Release history}{57}{chapter.4}
-\contentsline {section}{\numberline {4.1}0.1.0}{57}{section.4.1}
-\contentsline {section}{\numberline {4.2}0.2.0}{57}{section.4.2}
-\contentsline {section}{\numberline {4.3}0.3.0}{57}{section.4.3}
-\contentsline {section}{\numberline {4.4}0.4.0}{57}{section.4.4}
-\contentsline {section}{\numberline {4.5}0.5.0}{57}{section.4.5}
-\contentsline {section}{\numberline {4.6}0.7.74}{58}{section.4.6}
-\contentsline {section}{\numberline {4.7}Upcoming}{58}{section.4.7}
-\contentsline {chapter}{\numberline {5}Features}{59}{chapter.5}
-\contentsline {section}{\numberline {5.1}ID conversion}{59}{section.5.1}
-\contentsline {section}{\numberline {5.2}Pathways}{59}{section.5.2}
-\contentsline {section}{\numberline {5.3}Structural features}{59}{section.5.3}
-\contentsline {section}{\numberline {5.4}Sequences}{59}{section.5.4}
-\contentsline {section}{\numberline {5.5}Tissue expression}{60}{section.5.5}
-\contentsline {section}{\numberline {5.6}Functional annotations}{60}{section.5.6}
-\contentsline {section}{\numberline {5.7}Drug compounds}{60}{section.5.7}
-\contentsline {section}{\numberline {5.8}Technical}{60}{section.5.8}
-\contentsline {chapter}{\numberline {6}OmniPath in R}{61}{chapter.6}
-\contentsline {chapter}{Python Module Index}{63}{section*.395}
-\contentsline {chapter}{Index}{65}{section*.396}
+\contentsline {chapter}{\numberline {1}Installation}{3}{chapter.1}% 
+\contentsline {section}{\numberline {1.1}Linux}{3}{section.1.1}% 
+\contentsline {subsection}{\numberline {1.1.1}igraph C library, cairo and pycairo}{3}{subsection.1.1.1}% 
+\contentsline {subsection}{\numberline {1.1.2}Directly from git}{3}{subsection.1.1.2}% 
+\contentsline {subsection}{\numberline {1.1.3}With pip}{3}{subsection.1.1.3}% 
+\contentsline {subsection}{\numberline {1.1.4}Build source distribution}{3}{subsection.1.1.4}% 
+\contentsline {section}{\numberline {1.2}Mac OS X}{3}{section.1.2}% 
+\contentsline {subsection}{\numberline {1.2.1}Troubleshooting}{4}{subsection.1.2.1}% 
+\contentsline {section}{\numberline {1.3}Microsoft Windows}{4}{section.1.3}% 
+\contentsline {subsection}{\numberline {1.3.1}With Anaconda}{4}{subsection.1.3.1}% 
+\contentsline {subsection}{\numberline {1.3.2}With other Python distributions}{5}{subsection.1.3.2}% 
+\contentsline {subsection}{\numberline {1.3.3}Known issues}{5}{subsection.1.3.3}% 
+\contentsline {chapter}{\numberline {2}Reference}{7}{chapter.2}% 
+\contentsline {section}{\numberline {2.1}annot module}{7}{section.2.1}% 
+\contentsline {section}{\numberline {2.2}bel module}{8}{section.2.2}% 
+\contentsline {section}{\numberline {2.3}complex module}{8}{section.2.3}% 
+\contentsline {section}{\numberline {2.4}intera module}{9}{section.2.4}% 
+\contentsline {section}{\numberline {2.5}intercell module}{9}{section.2.5}% 
+\contentsline {section}{\numberline {2.6}main module}{9}{section.2.6}% 
+\contentsline {section}{\numberline {2.7}ptm module}{56}{section.2.7}% 
+\contentsline {chapter}{\numberline {3}Webservice}{57}{chapter.3}% 
+\contentsline {section}{\numberline {3.1}Mouse and rat}{57}{section.3.1}% 
+\contentsline {section}{\numberline {3.2}Examples}{57}{section.3.2}% 
+\contentsline {chapter}{\numberline {4}Release history}{59}{chapter.4}% 
+\contentsline {section}{\numberline {4.1}0.1.0}{59}{section.4.1}% 
+\contentsline {section}{\numberline {4.2}0.2.0}{59}{section.4.2}% 
+\contentsline {section}{\numberline {4.3}0.3.0}{59}{section.4.3}% 
+\contentsline {section}{\numberline {4.4}0.4.0}{59}{section.4.4}% 
+\contentsline {section}{\numberline {4.5}0.5.0}{59}{section.4.5}% 
+\contentsline {section}{\numberline {4.6}0.7.74}{60}{section.4.6}% 
+\contentsline {section}{\numberline {4.7}Upcoming}{60}{section.4.7}% 
+\contentsline {chapter}{\numberline {5}Features}{61}{chapter.5}% 
+\contentsline {section}{\numberline {5.1}ID conversion}{61}{section.5.1}% 
+\contentsline {section}{\numberline {5.2}Pathways}{61}{section.5.2}% 
+\contentsline {section}{\numberline {5.3}Structural features}{61}{section.5.3}% 
+\contentsline {section}{\numberline {5.4}Sequences}{61}{section.5.4}% 
+\contentsline {section}{\numberline {5.5}Tissue expression}{62}{section.5.5}% 
+\contentsline {section}{\numberline {5.6}Functional annotations}{62}{section.5.6}% 
+\contentsline {section}{\numberline {5.7}Drug compounds}{62}{section.5.7}% 
+\contentsline {section}{\numberline {5.8}Technical}{62}{section.5.8}% 
+\contentsline {chapter}{\numberline {6}OmniPath in R}{63}{chapter.6}% 
+\contentsline {chapter}{Python Module Index}{65}{section*.442}% 
+\contentsline {chapter}{Index}{67}{section*.443}% 

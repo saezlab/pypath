@@ -23,11 +23,11 @@ networks.
 :issues: https://github.com/saezlab/pypath/issues
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 5
     :caption: Contents:
 
     installation
-    main
+    reference
     webservice
     changelog
 

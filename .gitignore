@@ -6,3 +6,4 @@ cache/
 log/
 .idea
 pip-wheel-metadata/*
+pypath_log/
