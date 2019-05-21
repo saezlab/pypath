@@ -2151,14 +2151,40 @@ class ResidueMapper(object):
         self.mappers = {}
 
 
-def get_comppi():
+def comppi_interaction_locations(organism = 9606):
     """
     Downloads and preprocesses protein interaction and cellular compartment
     association data from the ComPPI database.
     This data provides scores for occurrence of protein-protein interactions
     in various compartments.
     """
-
+    
+    ComppiLocation = collections.namedtuple(
+        'ComppiLocation',
+        [
+            'location',
+            'score',
+        ],
+    )
+    
+    ComppiInteraction = collections.namedtuple(
+        'ComppiInteraction',
+        [
+            'id_a',
+            'id_b',
+            'loc_a',
+            'loc_b',
+        ],
+    )
+    
+    def process_locations(loc):
+        
+        return tuple(
+            ComppiLocation(location = llloc[0], score = float(llloc[1]))
+            for llloc in
+            (lloc.split(':') for lloc in loc.split('|'))
+        )
+    
     url = urls.urls['comppi']['url']
     post = {
         'fDlSet': 'comp',
@@ -2166,19 +2192,52 @@ def get_comppi():
         'fDlMLoc': 'all',
         'fDlSubmit': 'Download'
     }
-    c = curl.Curl(url, post = post, silent = False, compr = 'gz')
-    data = c.result
-    cols = {
-        'uniprot1': 0,
-        'uniprot2': 8,
-        'loc1': 2,
-        'loc2': 10,
-        'loc_score': 16
-    }
-    buff = StringIO()
-    buff.write(data)
-    data = read_table(cols = cols, fileObject = buff, hdr = 1, sep = '\t')
-    return data
+    c = curl.Curl(
+        url,
+        post = post,
+        large = True,
+        silent = False,
+        compr = 'gz',
+    )
+    
+    _ = next(c.result)
+    
+    for l in c.result:
+        
+        l = l.decode().strip('\r\n').split('\t')
+        
+        organism_a = int(l[7])
+        organism_b = int(l[15])
+        
+        if organism and (organism_a != organism or organism_b != organism):
+            
+            continue
+        
+        yield ComppiInteraction(
+            id_a = l[0],
+            id_b = l[8],
+            loc_a = process_locations(l[2]),
+            loc_b = process_locations(l[10]),
+        )
+
+
+def comppi_locations(organism = 9606, score_threshold = .7):
+    
+    result = collections.defaultdict(set)
+    
+    for iloc in comppi_interaction_locations(organism = organism):
+        
+        for label in ('a', 'b'):
+            
+            for loc in getattr(iloc, 'loc_%s' % label):
+                
+                if loc.location == 'N/A' or loc.score < score_threshold:
+                    
+                    continue
+                
+                result[getattr(iloc, 'id_%s' % label)].add(loc)
+    
+    return result
 
 
 def get_psite_phos(raw = True, organism = 'human', strict = True):
@@ -10929,16 +10988,18 @@ def get_locate_localizations(
 
                                     if loc.tag[:4] == 'tier':
 
-                                        this_loc = loc.text.lower()
+                                        this_loc = loc.text.lower().split(',')
 
                                         for uniprot in this_uniprots:
-
-                                            result[uniprot].add(record(
-                                                source = sources,
-                                                location = this_loc,
-                                                cls = this_class,
-                                                score = None,
-                                            ))
+                                            
+                                            for _loc in this_loc:
+                                                
+                                                result[uniprot].add(record(
+                                                    source = sources,
+                                                    location = _loc,
+                                                    cls = this_class,
+                                                    score = None,
+                                                ))
 
             if predictions:
 

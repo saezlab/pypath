@@ -166,7 +166,14 @@ class Intercell(IntercellAnnotation):
                 self.network_param['lst'] = data_formats.pathway
             
             self.network = main_mod.PyPath()
-            self.network.init_network(**self.network_param)
+            
+            if self.omnipath:
+                
+                self.network.load_omnipath(**self.network_param)
+                
+            else:
+                
+                self.network.init_network(**self.network_param)
         
         if isinstance(self.network, main_mod.PyPath):
             
