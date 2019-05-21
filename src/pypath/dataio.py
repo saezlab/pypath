@@ -10075,12 +10075,15 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
             'n_low',
             'n_medium',
             'n_high',
-            'effect',
+            'prognostic',
+            'favourable',
             'score',
             'pathology',
         ],
     )
-    ProteinatlasAnnotation.__new__.__defaults__ = (None,) * 6 + (False,)
+    ProteinatlasAnnotation.__new__.__defaults__ = (
+        (None,) * 4 + (False, False, None, False)
+    )
     
     
     def n_or_none(ex, key):
@@ -10120,8 +10123,12 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
                     effect, score = next(
                         i for i in iteritems(ex) if i[0] not in LEVELS
                     )
+                    prognostic = not effect.startswith('unprognostic')
+                    favourable = not effect.endswith('unfavourable')
+                    
                 except StopIteration:
-                    effect, score = None, None
+                    
+                    prognostic, favourable, score = None, None, None
                 
                 result[uniprot].add(
                     ProteinatlasAnnotation(
@@ -10136,7 +10143,8 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
                         n_low = n_or_none(ex, 'Low'),
                         n_medium = n_or_none(ex, 'Medium'),
                         n_high = n_or_none(ex, 'High'),
-                        effect = effect,
+                        prognostic = prognostic,
+                        favourable = favourable,
                         score = score,
                         pathology = True,
                     )
