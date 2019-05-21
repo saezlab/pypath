@@ -70,7 +70,7 @@ complex_annotation_sources = {
     'CorumFuncat',
     'CorumGO',
     'HpmrComplex',
-    'PypathInferred',
+    #'PypathInferred',
 }
 
 default_fields = {
@@ -325,7 +325,9 @@ class AnnotationBase(resource.AbstractResource):
         :arg dict input_args:
             Arguments for the ``input_method``.
         """
-
+        
+        session_mod.Logger.__init__(self, name = 'annot')
+        
         resource.AbstractResource.__init__(
             self,
             name = name,
@@ -347,6 +349,13 @@ class AnnotationBase(resource.AbstractResource):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+
+
+    def load(self):
+        
+        self._log('Loading annotations from `%s`.' % self.name)
+        
+        resource.AbstractResource.load()
 
 
     def load_uniprots(self):
@@ -1482,7 +1491,8 @@ class AnnotationTable(session_mod.Logger):
             ncbi_tax_id = 9606,
             swissprot_only = True,
             complexes = True,
-            keep_annotators = False,
+            keep_annotators = True,
+            create_dataframe = False,
             load = True,
         ):
         """
@@ -1503,6 +1513,7 @@ class AnnotationTable(session_mod.Logger):
         self.use_fields = use_fields or default_fields
         self.ncbi_tax_id = ncbi_tax_id
         self.keep_annotators = keep_annotators
+        self.create_dataframe = create_dataframe
         self.uniprots = (
             uniprots or
             sorted(
@@ -1541,31 +1552,35 @@ class AnnotationTable(session_mod.Logger):
         arrays = []
 
         for cls in self.use_sources:
-
+            
             annot = getattr(self._module, cls)(
                 ncbi_tax_id = self.ncbi_tax_id
             )
-
-            use_fields = (
-                self.use_fields[cls] if cls in self.use_fields else None
-            )
-
-            this_names, this_array = annot.to_array(
-                uniprots = self.uniprots,
-                use_fields = use_fields
-            )
-
-            names.extend(this_names)
-            arrays.append(this_array)
-
+            
+            if self.create_dataframe:
+                use_fields = (
+                    self.use_fields[cls] if cls in self.use_fields else None
+                )
+                
+                this_names, this_array = annot.to_array(
+                    uniprots = self.uniprots,
+                    use_fields = use_fields
+                )
+                
+                names.extend(this_names)
+                arrays.append(this_array)
+            
             if self.keep_annotators:
-
+                
                 annots[annot.name] = annot
-
+        
         self.annots = annots
-        self.names = np.array(list(itertools.chain(names)))
-        self.data = np.hstack(arrays)
-        self.set_cols()
+        
+        if self.create_dataframe:
+            self.names = np.array(list(itertools.chain(names)))
+            self.data = np.hstack(arrays)
+            self.set_cols()
+        
         self.uniprots = np.array(self.uniprots)
     
     
@@ -1734,16 +1749,19 @@ class AnnotationTable(session_mod.Logger):
         )
 
 
-def init_db(keep_annotators = True):
+def init_db(keep_annotators = True, create_dataframe = False):
     """
     Initializes or reloads the annotation database.
     The database will be assigned to the ``db`` attribute of this module.
     """
 
-    globals()['db'] = AnnotationTable(keep_annotators = keep_annotators)
+    globals()['db'] = AnnotationTable(
+        keep_annotators = keep_annotators,
+        create_dataframe = create_dataframe,
+    )
 
 
-def get_db(keep_annotators = True):
+def get_db(keep_annotators = True, create_dataframe = False):
     """
     Retrieves the current database instance and initializes it if does
     not exist yet.
@@ -1751,6 +1769,9 @@ def get_db(keep_annotators = True):
 
     if 'db' not in globals():
 
-        init_db(keep_annotators = keep_annotators)
+        init_db(
+            keep_annotators = keep_annotators,
+            create_dataframe = create_dataframe,
+        )
 
     return globals()['db']
