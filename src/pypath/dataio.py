@@ -2240,6 +2240,91 @@ def comppi_locations(organism = 9606, score_threshold = .7):
     return result
 
 
+def ramilowski_locations():
+    
+    reloc = re.compile(
+        r'([^\(]+[^\s^\(])'
+        r'\s?\('
+        r'?(?:(.*[^\)])?)'
+        r'\)?'
+    )
+    resep = re.compile(r'[\.;,]')
+    renote = re.compile(r'Note=([- \w\(\),\s\+\.]*)')
+    
+    sources = (
+        (4, 'UniProt'),
+        (5, 'HPRD'),
+        (7, 'LocTree3'),
+        (10, 'Consensus'),
+        (11, 'Consensus6'),
+    )
+    
+    RamilowskiLocation = collections.namedtuple(
+        'RamilowskiLocation',
+        [
+            'location',
+            'type',
+            'tmh',
+            'note',
+            'long_note',
+        ],
+    )
+    
+    url = urls.urls['rami']['loc']
+    c = curl.Curl(url, silent = False, large = True)
+    
+    _ = next(c.result)
+    
+    result = collections.defaultdict(set)
+    
+    for l in c.result:
+        
+        l = l.strip('\n\r').split('\t')
+        
+        for idx, source in sources:
+            
+            locs = l[idx]
+            
+            long_note = None
+            mnote = renote.search(locs)
+            
+            if mnote:
+                
+                long_note = mnote.groups()[0]
+                locs = renote.sub('', locs)
+            
+            for loc in resep.split(locs):
+                
+                loc = loc.strip()
+                
+                if not loc:
+                    
+                    continue
+                
+                m = reloc.match(loc)
+                
+                if not m:
+                    
+                    print(locs)
+                    print(loc)
+                    continue
+                
+                location, note = m.groups()
+                tmh = l[9].strip()
+                
+                result[l[3]].add(
+                    RamilowskiLocation(
+                        location = location.lower(),
+                        type = source,
+                        tmh = int(tmh) if tmh.isdigit() else None,
+                        note = note,
+                        long_note = long_note,
+                    )
+                )
+    
+    return result
+
+
 def get_psite_phos(raw = True, organism = 'human', strict = True):
     """
     Downloads and preprocesses phosphorylation site data from PhosphoSitePlus.
