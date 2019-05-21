@@ -471,7 +471,7 @@ class MapReader(session_mod.Logger):
 
             self.set_uniprot_space()
 
-        if self.param.target_id_type != 'uniprot':
+        if self.param.uniprot_id_type_b != 'uniprot':
 
             u_target = self._read_mapping_uniprot_list('ACC')
 
@@ -514,7 +514,7 @@ class MapReader(session_mod.Logger):
 
         self.uniprots = uniprot_input.all_uniprots(
             self.ncbi_tax_id,
-            swissprot = param.swissprot,
+            swissprot = self.param.swissprot,
         )
 
 
@@ -522,9 +522,9 @@ class MapReader(session_mod.Logger):
         """
         Reads a mapping table from UniProt "upload lists" service.
         """
-
-        id_type_a = self.param.target_ac_name
-        id_type_b = self.param.ac_name
+        # XXX: NOT REALLY SURE ABOUT THIS
+        id_type_a = self.param.uniprot_id_type_b#target_ac_name
+        id_type_b = self.param.uniprot_id_type_a#ac_name
         ac_list = ac_list or self.uniprots
 
         url = urls.urls['uniprot_basic']['lists']
@@ -936,14 +936,14 @@ class Mapper(session_mod.Logger):
                     # for uniprot/uploadlists
                     # we create here the mapping params
                     this_param = input_formats.UniprotListMapping(
-                        id_type = id_type,
-                        target_id_type = target_id_type,
+                        id_type,
+                        target_id_type,
                         ncbi_tax_id = ncbi_tax_id,
                     )
 
                     reader = MapReader(
                         param = this_param,
-                        source_type = 'uniprot_list',
+                        entity_type = 'uniprot_list',
                         ncbi_tax_id = ncbi_tax_id,
                         uniprots = None,
                         lifetime = 300,

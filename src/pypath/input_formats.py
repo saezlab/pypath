@@ -28,8 +28,8 @@ __all__ = [
 
 
 class MappingInput(object):
-    
-    
+
+
     def __init__(
             self,
             type_,
@@ -37,7 +37,7 @@ class MappingInput(object):
             id_type_b,
             ncbi_tax_id = None,
         ):
-        
+
         self.type = type_
         self.id_type_a = id_type_a
         self.id_type_b = id_type_b
@@ -45,7 +45,7 @@ class MappingInput(object):
 
 
 class FileMapping(MappingInput):
-    
+
     def __init__(
             self,
             id_type_a,
@@ -58,7 +58,7 @@ class FileMapping(MappingInput):
             ncbi_tax_id = None,
             entity_type = 'protein',
         ):
-        
+
         MappingInput.__init__(
             self,
             type_ = 'file',
@@ -66,7 +66,7 @@ class FileMapping(MappingInput):
             id_type_b = id_type_b,
             ncbi_tax_id = ncbi_tax_id,
         )
-        
+
         self.input = input_
         self.col_a = col_a
         self.col_b = col_b
@@ -74,17 +74,17 @@ class FileMapping(MappingInput):
         self.header = header
         self.entity_type = entity_type
         self.input_args = {'organism': self.ncbi_tax_id}
-    
-    
+
+
     def set_organism(self, ncbi_tax_id):
-        
+
         other_organism = copy.deepcopy(self)
         other_organism.ncbi_tax_id = ncbi_tax_id
-        
+
         if 'organism' in other_organism.input_args:
-            
+
             other_organism.input_args['organism'] = ncbi_tax_id
-        
+
         return other_organism
 
 
@@ -117,9 +117,9 @@ class UniprotMapping(MappingInput):
             capabilities. Some IDs can be obtained from the former, some
             from the latter.
         """
-        
+
         self.type = 'uniprot'
-        
+
         MappingInput.__init__(
             self,
             type_ = 'uniprot',
@@ -127,7 +127,7 @@ class UniprotMapping(MappingInput):
             id_type_b = id_type_b,
             ncbi_tax_id = ncbi_tax_id,
         )
-        
+
         self.ncbi_tax_id = int(ncbi_tax_id)
         self.typ = 'protein'
         self.swissprot = swissprot
@@ -135,10 +135,10 @@ class UniprotMapping(MappingInput):
             else ac_query[self.id_type_a][0]
         self.subfield = None if id_type_a not in ac_query \
             else ac_query[self.id_type_a][1]
-    
-    
+
+
     def set_organism(self, ncbi_tax_id):
-        
+
         other_organism = copy.deepcopy(self)
         other_organism.ncbi_tax_id = ncbi_tax_id
         return other_organism
@@ -158,7 +158,7 @@ class UniprotListMapping(MappingInput):
         """
         Provides parameters for downloading mapping table from UniProt
         `Upload Lists` webservice.
-        
+
         :arg str id_type_a:
             Custom name for one of the ID types.
         :arg str id_type_a:
@@ -172,7 +172,7 @@ class UniprotListMapping(MappingInput):
         :arg bool swissprot:
             DOwnload data only for SwissProt IDs.
         """
-        
+
         MappingInput.__init__(
             self,
             type_ = 'uniprot_list',
@@ -180,30 +180,30 @@ class UniprotListMapping(MappingInput):
             id_type_b = id_type_b,
             ncbi_tax_id = ncbi_tax_id,
         )
-        
+
         self.swissprot = swissprot
         self.ac_mapping = ac_mapping
-        
+
         self.uniprot_id_type_a = (
-            self.uniprot_id_type_a or self.ac_mapping[self.id_type_a]
+            uniprot_id_type_a or self.ac_mapping[self.id_type_a]
         )
         self.uniprot_id_type_b = (
-            self.uniprot_id_type_b or self.ac_mapping[self.id_type_b]
+            uniprot_id_type_b or self.ac_mapping[self.id_type_b]
         )
-        
+
         self.entity_type = 'protein'
-    
-    
+
+
     def set_organism(self, ncbi_tax_id):
-        
+
         other_organism = copy.deepcopy(self)
         other_organism.ncbi_tax_id = ncbi_tax_id
         return other_organism
 
 
 class PickleMapping(MappingInput):
-    
-    
+
+
     def __init__(
             self,
             id_type_a,
@@ -211,7 +211,7 @@ class PickleMapping(MappingInput):
             fname,
             ncbi_tax_id = None,
         ):
-        
+
         MappingInput.__init__(
             self,
             type_ = 'pickle',
@@ -219,13 +219,13 @@ class PickleMapping(MappingInput):
             id_type_b = id_type_b,
             ncbi_tax_id = ncbi_tax_id,
         )
-        
+
         self.fname = fname
 
 
 class ReadSettings:
-    
-    
+
+
     def __init__(
             self,
             name = "unknown",
@@ -268,7 +268,7 @@ class ReadSettings:
         :param str mark_target:
             Same as ``mark_source`` but for target vertices.
         """
-        
+
         self.entity_type_a = entity_type_a
         self.entity_type_b = entity_type_b
         self.id_col_a = id_col_a
@@ -303,8 +303,8 @@ class ReadSettings:
 
 
 class ReadList:
-    
-    
+
+
     def __init__(
             self,
             name = 'unknown',
@@ -316,7 +316,7 @@ class ReadList:
             extra_attrs = None,
             header = False,
         ):
-        
+
         self.enity_type = entity_type
         self.id_col = id_col
         self.id_type = id_type
