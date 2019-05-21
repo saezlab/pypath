@@ -10060,6 +10060,91 @@ def get_proteinatlas(normal = True, pathology = True, cancer = True):
 
     return result
 
+
+def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
+    
+    LEVELS = ('Not detected', 'Low', 'Medium', 'High')
+    
+    ProteinatlasAnnotation = collections.namedtuple(
+        'ProtainatlasAnnotation',
+        [
+            'tissue',
+            'level',
+            'status',
+            'n_not_detected',
+            'n_low',
+            'n_medium',
+            'n_high',
+            'effect',
+            'score',
+            'pathology',
+        ],
+    )
+    ProteinatlasAnnotation.__new__.__defaults__ = (None,) * 6 + (False,)
+    
+    
+    def n_or_none(ex, key):
+        
+        return ex[key] if key in ex else None
+    
+    
+    data = get_proteinatlas(
+        normal = normal,
+        pathology = pathology,
+        cancer = cancer,
+    )
+    
+    result = collections.defaultdict(set)
+    
+    if normal:
+        
+        for tissue, gex in iteritems(data['normal']):
+            
+            for uniprot, ex in iteritems(gex):
+                
+                result[uniprot].add(
+                    ProteinatlasAnnotation(
+                        tissue = tissue,
+                        level = ex[0],
+                        status = ex[1],
+                    )
+                )
+        
+    if pathology or cancer:
+        
+        for condition, gex in iteritems(data['pathology']):
+            
+            for uniprot, ex in iteritems(gex):
+                
+                try:
+                    effect, score = next(
+                        i for i in iteritems(ex) if i[0] not in LEVELS
+                    )
+                except StopIteration:
+                    effect, score = None, None
+                
+                result[uniprot].add(
+                    ProteinatlasAnnotation(
+                        tissue = condition,
+                        level = max(
+                            (i for i in iteritems(ex) if i[0] in LEVELS),
+                            key = lambda i: i[1],
+                            default = (None,),
+                        )[0],
+                        status = None,
+                        n_not_detected = n_or_none(ex, 'Not detected'),
+                        n_low = n_or_none(ex, 'Low'),
+                        n_medium = n_or_none(ex, 'Medium'),
+                        n_high = n_or_none(ex, 'High'),
+                        effect = effect,
+                        score = score,
+                        pathology = True,
+                    )
+                )
+    
+    return result
+
+
 def get_tfregulons_old(
         levels = {'A', 'B'},
         only_curated = False

@@ -61,6 +61,7 @@ annotation_sources = {
     'Topdb',
     'Hgnc',
     'Zhong2015',
+    'HumanProteinAtlas',
 }
 
 complex_annotation_sources = {
@@ -68,6 +69,7 @@ complex_annotation_sources = {
     'CorumFuncat',
     'CorumGO',
     'HpmrComplex',
+    'PypathInferred',
 }
 
 default_fields = {
@@ -967,6 +969,24 @@ class Integrins(AnnotationBase):
         )
 
 
+class HumanProteinAtlas(AnnotationBase):
+    
+    
+    def __init__(self, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'HPA',
+            input_method = 'proteinatlas_annotations',
+        )
+        
+        
+    def _process_method(self):
+        
+        self.annot = self.data
+        delattr(self, 'data')
+
+
 class CellSurfaceProteinAtlas(AnnotationBase):
 
 
@@ -1528,24 +1548,24 @@ class AnnotationTable(session_mod.Logger):
         self.data = np.hstack(arrays)
         self.set_cols()
         self.uniprots = np.array(self.uniprots)
-
-
+    
+    
     def set_cols(self):
-
+        
         self.cols = dict((name, i) for i, name in enumerate(self.names))
-
-
+    
+    
     def keep(self, keep):
-
+        
         ikeep = np.array([
             i for i, name in enumerate(self.names) if name in keep
         ])
-
+        
         self.names = self.names[ikeep]
         self.data  = self.data[:,ikeep]
         self.set_cols()
-
-
+    
+    
     def make_sets(self):
 
         self.sets = dict(

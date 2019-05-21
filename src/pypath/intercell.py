@@ -182,3 +182,8 @@ class Intercell(IntercellAnnotation):
         if isinstance(self.network, network_mod.Network):
             
             pass
+    
+    
+    def setup_complex(self):
+        
+        
