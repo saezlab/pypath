@@ -40,7 +40,7 @@ import pypath.session_mod as session_mod
 import pypath.annot_formats as annot_formats
 
 
-annotation_sources = {
+protein_sources_default = {
     'Membranome',
     'Exocarta',
     'Vesiclepedia',
@@ -66,7 +66,7 @@ annotation_sources = {
     'Comppi',
 }
 
-complex_annotation_sources = {
+complex_sources_default = {
     'CellPhoneDBComplex',
     'CorumFuncat',
     'CorumGO',
@@ -695,7 +695,9 @@ class AnnotationBase(resource.AbstractResource):
 
 
 class Membranome(AnnotationBase):
-
+    
+    _complex_fields = ('membrane', 'side')
+    
 
     def __init__(self, **kwargs):
 
@@ -724,6 +726,8 @@ class Membranome(AnnotationBase):
 
 
 class Exocarta(AnnotationBase):
+    
+    _complex_fields = ('tissue', 'vesicle')
 
 
     def __init__(self, ncbi_tax_id = 9606, **kwargs):
@@ -790,6 +794,8 @@ class Exocarta(AnnotationBase):
 
 class Vesiclepedia(Exocarta):
 
+    _complex_fields = ('tissue', 'vesicle')
+    
 
     def __init__(self, ncbi_tax_id = 9606, **kwargs):
 
@@ -802,7 +808,8 @@ class Vesiclepedia(Exocarta):
 
 
 class Matrisome(AnnotationBase):
-
+    
+    _complex_fields = ('mainclass', 'subclass')
 
     def __init__(self, ncbi_tax_id = 9606, **kwargs):
 
@@ -836,7 +843,9 @@ class Matrisome(AnnotationBase):
 
 
 class Surfaceome(AnnotationBase):
-
+    
+    _complex_fields = ('mainclass',)
+    
 
     def __init__(self, **kwargs):
 
@@ -873,6 +882,8 @@ class Surfaceome(AnnotationBase):
 
 class Adhesome(AnnotationBase):
     
+    _complex_fields = ('mainclass',)
+    
     
     def __init__(self, **kwargs):
         
@@ -890,6 +901,8 @@ class Adhesome(AnnotationBase):
 
 
 class Hgnc(AnnotationBase):
+    
+    _complex_fields = ('mainclass',)
     
     
     def __init__(self, **kwargs):
@@ -910,6 +923,8 @@ class Hgnc(AnnotationBase):
 
 class Zhong2015(AnnotationBase):
     
+    _complex_fields = ('type',)
+    
     
     def __init__(self, **kwargs):
         
@@ -927,6 +942,8 @@ class Zhong2015(AnnotationBase):
 
 
 class Opm(AnnotationBase):
+    
+    _complex_fields = ('membrane',)
     
     
     def __init__(self, ncbi_tax_id = 9606, **kwargs):
@@ -949,6 +966,8 @@ class Opm(AnnotationBase):
 
 class Topdb(AnnotationBase):
     
+    _complex_fields = ('membrane',)
+    
     
     def __init__(self, ncbi_tax_id = 9606, **kwargs):
         
@@ -970,6 +989,8 @@ class Topdb(AnnotationBase):
 
 class Integrins(AnnotationBase):
     
+    _complex_fields = ()
+    
     
     def __init__(self, **kwargs):
         
@@ -981,6 +1002,8 @@ class Integrins(AnnotationBase):
 
 
 class HumanProteinAtlas(AnnotationBase):
+    
+    _complex_fields = None
     
     
     def __init__(self, **kwargs):
@@ -1000,6 +1023,8 @@ class HumanProteinAtlas(AnnotationBase):
 
 class Comppi(AnnotationBase):
     
+    _complex_fields = ('location',)
+    
     
     def __init__(self, **kwargs):
         
@@ -1018,6 +1043,8 @@ class Comppi(AnnotationBase):
 
 class Ramilowski2015Location(AnnotationBase):
     
+    _complex_fields = ('location',)
+    
     
     def __init__(self, **kwargs):
         
@@ -1035,8 +1062,10 @@ class Ramilowski2015Location(AnnotationBase):
 
 
 class CellSurfaceProteinAtlas(AnnotationBase):
-
-
+    
+    _complex_fields = ()
+    
+    
     def __init__(self, ncbi_tax_id = 9606, **kwargs):
         """
         The name of this resource abbreviated as `CSPA`.
@@ -1056,8 +1085,10 @@ class CellSurfaceProteinAtlas(AnnotationBase):
 
 
 class HumanPlasmaMembraneReceptome(AnnotationBase):
-
-
+    
+    _complex_fields = ('role',)
+    
+    
     def __init__(self, **kwargs):
         """
         The name of this resource abbreviated as `HPMR`.
@@ -1078,8 +1109,10 @@ class HumanPlasmaMembraneReceptome(AnnotationBase):
 
 
 class Matrixdb(AnnotationBase):
-
-
+    
+    _complex_fields = ('mainclass',)
+    
+    
     def __init__(self, ncbi_tax_id = 9606):
         """
         Protein annotations from MatrixDB.
@@ -1102,8 +1135,10 @@ class Matrixdb(AnnotationBase):
 
 
 class Locate(AnnotationBase):
-
-
+    
+    _complex_fields = ('location',)
+    
+    
     def __init__(
             self,
             ncbi_tax_id = 9606,
@@ -1162,8 +1197,10 @@ class GOCustomIntercell(go.GOCustomAnnotation):
 
 
 class GOIntercell(AnnotationBase):
-
-
+    
+    _complex_fields = ('mainclass',)
+    
+    
     def __init__(
             self,
             categories = None,
@@ -1217,7 +1254,24 @@ class GOIntercell(AnnotationBase):
 
 
 class CellPhoneDB(AnnotationBase):
-
+    
+    
+    record = collections.namedtuple(
+        'CellPhoneDBAnnotation',
+        (
+            'receptor',
+            'adhesion',
+            'cytoplasm',
+            'peripheral',
+            'secretion',
+            'secreted',
+            'transporter',
+            'transmembrane',
+            'extracellular',
+            'integrin',
+        )
+    )
+    
 
     def __init__(self, **kwargs):
 
@@ -1236,6 +1290,11 @@ class CellPhoneDB(AnnotationBase):
             for uniprot, annot in
             iteritems(self.data)
         )
+    
+    
+    def _complex_fields(self, *args):
+        
+        return self.record(*tuple(all(a) for a in zip(*args)))
 
 
 class CellPhoneDBComplex(CellPhoneDB):
@@ -1325,7 +1384,9 @@ class CorumGO(Corum):
 
 
 class LigandReceptor(AnnotationBase):
-
+    
+    _complex_fields = ('mainclass',)
+    
 
     def __init__(
             self,
@@ -1505,7 +1566,7 @@ class AnnotationTable(session_mod.Logger):
     def __init__(
             self,
             uniprots = None,
-            use_sources = None,
+            protein_sources = None,
             use_fields = None,
             ncbi_tax_id = 9606,
             swissprot_only = True,
@@ -1522,13 +1583,7 @@ class AnnotationTable(session_mod.Logger):
 
         self._module = sys.modules[self.__module__]
         self.complexes = complexes
-        self.use_sources = (
-            use_sources or (
-                annotation_sources | complex_annotation_sources
-                    if self.complexes else
-                annotation_sources
-            )
-        )
+        self.protein_sources = protein_sources or protein_sources_default
         self.use_fields = use_fields or default_fields
         self.ncbi_tax_id = ncbi_tax_id
         self.keep_annotators = keep_annotators
@@ -1570,7 +1625,7 @@ class AnnotationTable(session_mod.Logger):
         names  = []
         arrays = []
 
-        for cls in self.use_sources:
+        for cls in self.protein_sources:
             
             annot = getattr(self._module, cls)(
                 ncbi_tax_id = self.ncbi_tax_id
@@ -1768,7 +1823,12 @@ class AnnotationTable(session_mod.Logger):
         )
 
 
-def init_db(keep_annotators = True, create_dataframe = False):
+def init_db(
+        keep_annotators = True,
+        create_dataframe = False,
+        complexes = True,
+        **kwargs
+    ):
     """
     Initializes or reloads the annotation database.
     The database will be assigned to the ``db`` attribute of this module.
@@ -1777,10 +1837,17 @@ def init_db(keep_annotators = True, create_dataframe = False):
     globals()['db'] = AnnotationTable(
         keep_annotators = keep_annotators,
         create_dataframe = create_dataframe,
+        complexes = complexes,
+        **kwargs
     )
 
 
-def get_db(keep_annotators = True, create_dataframe = False):
+def get_db(
+        keep_annotators = True,
+        create_dataframe = False,
+        complexes = True,
+        **kwargs
+    ):
     """
     Retrieves the current database instance and initializes it if does
     not exist yet.
@@ -1791,6 +1858,8 @@ def get_db(keep_annotators = True, create_dataframe = False):
         init_db(
             keep_annotators = keep_annotators,
             create_dataframe = create_dataframe,
+            complexes = complexes,
+            **kwargs
         )
 
     return globals()['db']
