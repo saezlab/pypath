@@ -2249,7 +2249,7 @@ def ramilowski_locations():
         r'\)?'
     )
     resep = re.compile(r'[\.;,]')
-    renote = re.compile(r'Note=([- \w\(\),\s\+\.]*)')
+    renote = re.compile(r'Note=([- \w\(\),\s\+\./%\'":;]*)')
     
     sources = (
         (4, 'UniProt'),
@@ -2263,7 +2263,7 @@ def ramilowski_locations():
         'RamilowskiLocation',
         [
             'location',
-            'type',
+            'source',
             'tmh',
             'note',
             'long_note',
@@ -2295,9 +2295,22 @@ def ramilowski_locations():
             
             for loc in resep.split(locs):
                 
-                loc = loc.strip()
+                if ':' in loc and 'GO:' not in loc:
+                    
+                    loc = loc.split(':')[-1]
                 
-                if not loc:
+                loc = loc.strip().replace('- ', '-').lower()
+                
+                if (
+                    not loc or
+                    len(loc.split()) > 3 or
+                    re.search(r'\d', loc) or
+                    loc == 'n/a' or
+                    any(
+                        w in loc for w in
+                        ('tumor',)
+                    )
+                ):
                     
                     continue
                 
@@ -2305,8 +2318,6 @@ def ramilowski_locations():
                 
                 if not m:
                     
-                    print(locs)
-                    print(loc)
                     continue
                 
                 location, note = m.groups()
@@ -2315,7 +2326,7 @@ def ramilowski_locations():
                 result[l[3]].add(
                     RamilowskiLocation(
                         location = location.lower(),
-                        type = source,
+                        source = source,
                         tmh = int(tmh) if tmh.isdigit() else None,
                         note = note,
                         long_note = long_note,

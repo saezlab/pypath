@@ -53,6 +53,7 @@ annotation_sources = {
     'GOIntercell',
     'CellPhoneDB',
     'Ramilowski2015',
+    'Ramilowski2015Location',
     'Kirouac2010',
     'GuideToPharmacology',
     'Adhesome',
@@ -355,7 +356,7 @@ class AnnotationBase(resource.AbstractResource):
         
         self._log('Loading annotations from `%s`.' % self.name)
         
-        resource.AbstractResource.load()
+        resource.AbstractResource.load(self)
 
 
     def load_uniprots(self):
@@ -1006,6 +1007,24 @@ class Comppi(AnnotationBase):
             self,
             name = 'ComPPI',
             input_method = 'comppi_locations',
+        )
+        
+        
+    def _process_method(self):
+        
+        self.annot = self.data
+        delattr(self, 'data')
+
+
+class Ramilowski2015Location(AnnotationBase):
+    
+    
+    def __init__(self, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'Ramilowski_location',
+            input_method = 'ramilowski_locations',
         )
         
         
