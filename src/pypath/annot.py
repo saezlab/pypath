@@ -359,6 +359,17 @@ class AnnotationBase(resource.AbstractResource):
         resource.AbstractResource.load(self)
     
     
+    def add_complexes_by_inference(self, complexes = None):
+        """
+        Creates complex annotations by in silico inference and adds them
+        to this annotation set.
+        """
+        
+        complex_annotation = self.complex_inference(complexes = complexes)
+        
+        self.annot.update(complex_annotation)
+    
+    
     def complex_inference(self, complexes = None):
         """
         Annotates all complexes in `complexes`, by default in the default
@@ -1733,6 +1744,7 @@ class AnnotationTable(session_mod.Logger):
 
 
     def load(self):
+        pass
         
     def load_protein_resources(self):
 
@@ -1740,7 +1752,7 @@ class AnnotationTable(session_mod.Logger):
         
         for cls in self.protein_sources:
             
-            
+            pass
         
         names  = []
         arrays = []
