@@ -1744,8 +1744,10 @@ class AnnotationTable(session_mod.Logger):
 
 
     def load(self):
-        pass
         
+        self.load_protein_resources()
+    
+    
     def load_protein_resources(self):
 
         annots = {}
