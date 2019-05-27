@@ -29,6 +29,7 @@ import pypath.dataio as dataio
 import pypath.intera as intera
 import pypath.resource as resource
 import pypath.settings as settings
+import pypath.session_mod as session_mod
 
 
 complex_resources = (
@@ -68,7 +69,9 @@ class AbstractComplexResource(resource.AbstractResource):
             Method processing the data and yielding ``intera.Complex``
             instances.
         """
-
+        
+        session_mod.Logger.__init__(self, name = 'complex')
+        
         self.complexes = {}
 
         resource.AbstractResource.__init__(

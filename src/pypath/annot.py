@@ -391,7 +391,7 @@ class AnnotationBase(resource.AbstractResource):
         self._log('Inferring complex annotations from `%s`.' % self.name)
         
         if not complexes:
-                
+            
             import pypath.complex as complex
             
             complexdb = complex.get_db()
@@ -466,21 +466,24 @@ class AnnotationBase(resource.AbstractResource):
                         )
                     
                     groups[
-                        tuple(comp_annot[f] for f in self._eq_fields)
+                        tuple(
+                            getattr(comp_annot, f)
+                            for f in self._eq_fields
+                        )
                     ].add(comp)
             
             return set(
                 # the characteristic attributes of the group
                 # and the remaining left empty
                 cls(
-                    **dict(*zip(self._eq_fields, key)),
+                    **dict(zip(self._eq_fields, key)),
                     **empty_args
                 )
                 # checking all groups
                 for key, group in iteritems(groups)
                 # and accepting the ones covering all members of the complex
                 if group == components
-            )
+            ) or None
 
 
     def load_uniprots(self):
