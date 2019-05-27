@@ -917,7 +917,7 @@ annot_combined_classes = (
         name = 'intracellular_cellphonedb',
         source = 'CellPhoneDB',
         args = {
-            'mainclass': 'intracellular',
+            'cytoplasm': bool,
         },
     ),
     af.AnnotDef(
@@ -935,7 +935,7 @@ annot_combined_classes = (
         name = 'intracellular_go',
         source = 'GO_Intercell',
         args = {
-            'cytoplasm': bool,
+            'mainclass': 'intracellular',
         },
     ),
     # extracellular
