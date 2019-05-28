@@ -1850,8 +1850,8 @@ class AnnotationTable(session_mod.Logger):
     
     def __init__(
             self,
-            proteins = None,
-            complexes = None,
+            proteins = (),
+            complexes = (),
             protein_sources = None,
             complex_sources = None,
             use_fields = None,
@@ -2167,7 +2167,7 @@ class AnnotationTable(session_mod.Logger):
 def init_db(
         keep_annotators = True,
         create_dataframe = False,
-        complexes = True,
+        use_complexes = True,
         **kwargs
     ):
     """
@@ -2178,7 +2178,7 @@ def init_db(
     globals()['db'] = AnnotationTable(
         keep_annotators = keep_annotators,
         create_dataframe = create_dataframe,
-        complexes = complexes,
+        use_complexes = use_complexes,
         **kwargs
     )
 
@@ -2186,7 +2186,7 @@ def init_db(
 def get_db(
         keep_annotators = True,
         create_dataframe = False,
-        complexes = True,
+        use_complexes = True,
         **kwargs
     ):
     """
@@ -2199,7 +2199,7 @@ def get_db(
         init_db(
             keep_annotators = keep_annotators,
             create_dataframe = create_dataframe,
-            complexes = complexes,
+            use_complexes = use_complexes,
             **kwargs
         )
 
