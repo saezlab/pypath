@@ -1214,6 +1214,7 @@ class Topdb(AnnotationBase):
             input_args = {
                 'ncbi_tax_id': ncbi_tax_id,
             },
+            ncbi_tax_id = ncbi_tax_id,
             **kwargs
         )
     
@@ -1358,7 +1359,7 @@ class Matrixdb(AnnotationBase):
     _eq_fields = ('mainclass',)
     
     
-    def __init__(self, ncbi_tax_id = 9606):
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
         """
         Protein annotations from MatrixDB.
         """
@@ -1525,7 +1526,9 @@ class CellPhoneDB(AnnotationBase):
     
 
     def __init__(self, **kwargs):
-
+        
+        _ = kwargs.pop('ncbi_tax_id', None)
+        
         AnnotationBase.__init__(
             self,
             name = 'CellPhoneDB',
@@ -1554,6 +1557,8 @@ class CellPhoneDBComplex(CellPhoneDB):
     
     def __init__(self, **kwargs):
         
+        _ = kwargs.pop('ncbi_tax_id', None)
+        
         AnnotationBase.__init__(
             self,
             name = 'CellPhoneDB',
@@ -1568,6 +1573,8 @@ class HpmrComplex(AnnotationBase):
     
     
     def __init__(self, **kwargs):
+        
+        _ = kwargs.pop('ncbi_tax_id', None)
         
         AnnotationBase.__init__(
             self,
