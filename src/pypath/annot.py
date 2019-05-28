@@ -90,6 +90,17 @@ default_fields = {
         'transmembrane',
         'extracellular',
     ),
+    'CellPhoneDB_Complex': (
+        'receptor',
+        'adhesion',
+        'cytoplasm',
+        'peripheral',
+        'secretion',
+        'secreted',
+        'transporter',
+        'transmembrane',
+        'extracellular',
+    ),
 }
 
 
@@ -1561,7 +1572,7 @@ class CellPhoneDBComplex(CellPhoneDB):
         
         AnnotationBase.__init__(
             self,
-            name = 'CellPhoneDB',
+            name = 'CellPhoneDB_complex',
             input_method = 'cellphonedb_complex_annotations',
             ncbi_tax_id = 9606,
             entity_type = 'complex',
@@ -1578,7 +1589,7 @@ class HpmrComplex(AnnotationBase):
         
         AnnotationBase.__init__(
             self,
-            name = 'HPMR',
+            name = 'HPMR_complex',
             input_method = 'hpmr_complexes',
             ncbi_tax_id = 9606,
             entity_type = 'complex',
@@ -1598,13 +1609,13 @@ class HpmrComplex(AnnotationBase):
 class Corum(AnnotationBase):
     
     
-    def __init__(self, annot_attr, **kwargs):
+    def __init__(self, name, annot_attr, **kwargs):
         
         self._annot_attr = annot_attr
         
         AnnotationBase.__init__(
             self,
-            name = 'CORUM',
+            name = name,
             input_method = 'corum_complexes',
             entity_type = 'complex',
             **kwargs
@@ -1637,7 +1648,12 @@ class CorumFuncat(Corum):
     
     def __init__(self, **kwargs):
         
-        Corum.__init__(self, annot_attr = 'funcat', **kwargs)
+        Corum.__init__(
+            self,
+            name = 'CORUM_Funcat',
+            annot_attr = 'funcat',
+            **kwargs
+        )
 
 
 class CorumGO(Corum):
@@ -1645,7 +1661,12 @@ class CorumGO(Corum):
     
     def __init__(self, **kwargs):
         
-        Corum.__init__(self, annot_attr = 'go', **kwargs)
+        Corum.__init__(
+            self,
+            name = 'CORUM_GO', 
+            annot_attr = 'go',
+            **kwargs
+        )
 
 
 class LigandReceptor(AnnotationBase):
@@ -1941,8 +1962,6 @@ class AnnotationTable(session_mod.Logger):
     
     def _load_resources(self, definitions, reference_set):
         
-        annots = {}
-        
         for cls in definitions:
             
             cls = cls if callable(cls) else getattr(self._module, cls)
@@ -1952,9 +1971,7 @@ class AnnotationTable(session_mod.Logger):
                 reference_set = reference_set,
             )
             
-            annots[annot.name] = annot
-        
-        self.annots = annots
+            self.annots[annot.name] = annot
     
     
     def to_array(self):
