@@ -883,7 +883,7 @@ class Complex(object):
     
     def __str__(self):
         
-        return '-'.join(sorted(self.components.keys()))
+        return 'COMPLEX:%s' % '-'.join(sorted(self.components.keys()))
     
     
     def __repr__(self):

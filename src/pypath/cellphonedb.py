@@ -20,6 +20,7 @@
 
 from future.utils import iteritems
 
+import os
 import imp
 import collections
 
@@ -121,6 +122,7 @@ class CellphoneDB(session_mod.Logger):
     
     def __init__(
             self,
+            output_dir = None,
             network = None,
             annotation = None,
             network_param = None,
@@ -130,6 +132,7 @@ class CellphoneDB(session_mod.Logger):
         
         session_mod.Logger.__init__(self, name = 'cellphonedb')
         
+        self.output_dir = output_dir
         self.network = network
         self.annotation = annotation
         self.network_param = network_param or {}
@@ -149,9 +152,35 @@ class CellphoneDB(session_mod.Logger):
     
     def main(self):
         
+        self.setup()
+        self.build()
+        self.export()
+    
+    
+    def setup(self):
+        
+        self.setup_paths()
         self.setup_network()
         self.setup_annotation()
         self.setup_complex()
+    
+    
+    def setup_paths(self):
+        
+        self.output_dir = self.output_dir or '.'
+        self.set_path('gene')
+        self.set_path('protein')
+        self.set_path('complex')
+        self.set_path('interaction')
+    
+    
+    def set_path(self, name):
+        
+        setattr(
+            self,
+            '%s_path' % name,
+            os.path.join(self.output_dir, '%s.csv' % name),
+        )
     
     
     def setup_network(self):
@@ -181,3 +210,47 @@ class CellphoneDB(session_mod.Logger):
             self.annotation = intercell.IntercellAnnotation(
                 **self.annot_param
             )
+    
+    
+    def build(self):
+        
+        pass
+    
+    
+    def export(self):
+        
+        self.export_gene()
+        self.export_protein()
+        self.export_complex()
+        self.export_interaction()
+    
+    
+    def _export(self, name):
+        
+        path = getattr(self, '%s_path' % name)
+        getattr(self, '%s_dataframe' % name).to_csv(
+            path,
+            sep = ',',
+            index = False,
+        )
+        self._log('Data frame `%s` exported to `%s`.' % (name, path))
+    
+    
+    def export_gene(self):
+        
+        self._export('gene')
+    
+    
+    def export_protein(self):
+        
+        self._export('protein')
+    
+    
+    def export_complex(self):
+        
+        self._export('complex')
+    
+    
+    def export_interaction(self):
+        
+        self._export('interaction')

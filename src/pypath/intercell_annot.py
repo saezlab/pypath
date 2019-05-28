@@ -842,7 +842,7 @@ annot_combined_classes = (
     ),
     # intracellular
     af.AnnotDef(
-        name = 'extracellular',
+        name = 'intracellular',
         source = af.AnnotOp(
             annots = (
                 'intracellular_locate',
@@ -935,7 +935,7 @@ annot_combined_classes = (
         name = 'intracellular_go',
         source = 'GO_Intercell',
         args = {
-            'cytoplasm': bool,
+            'mainclass': 'intracellular',
         },
     ),
     # extracellular
