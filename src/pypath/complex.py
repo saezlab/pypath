@@ -422,3 +422,15 @@ def get_db():
         init_db()
 
     return globals()['db']
+
+
+def all_complexes():
+    """
+    Returns a set of all complexes in the database which serves as a
+    reference set for many methods, just like ``uniprot_input.all_uniprots``
+    represents the proteome.
+    """
+    
+    db = get_db()
+    
+    return set(db.complexes.values())
