@@ -129,7 +129,7 @@ categories_transmitter = {
 }
 
 
-categories_reciever = {
+categories_receiver = {
     'receptor',
     'transporter',
     'gap_junction',
@@ -138,7 +138,7 @@ categories_reciever = {
 }
 
 
-categories = categories_transmitter | categories_reciever
+categories = categories_transmitter | categories_receiver
 
 
 class CellPhoneDB(session_mod.Logger):
@@ -257,7 +257,7 @@ class CellPhoneDB(session_mod.Logger):
             if (
                 # either the interaction is directed and the source is an
                 # intercellular communication transmitter while the target
-                # is a reciever
+                # is a receiver
                 iaction.directed and
                 (
                     self.annotation.classes_by_entity(iaction.id_a) &
@@ -276,7 +276,7 @@ class CellPhoneDB(session_mod.Logger):
             ) or (
                 self.annotation.classes_by_entity(iaction.id_a) &
                 self.annotation.classes_by_entity(iaction.id_b) &
-                categories_reciever
+                categories_receiver
             ):
                 
                 self.interaction.add(
