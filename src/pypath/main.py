@@ -12778,30 +12778,45 @@ class PyPath(session_mod.Logger):
 
         self.load_omnipath(**locals())
 
-    def load_omnipath(self, kinase_substrate_extra = False, remove_htp = True,
-                      htp_threshold = 1, keep_directed = True,
-                      min_refs_undirected = 2, old_omnipath_resources=False):
+    def load_omnipath(
+            self,
+            omnipath = None,
+            kinase_substrate_extra = False,
+            ligand_receptor_extra = False,
+            remove_htp = True,
+            htp_threshold = 1,
+            keep_directed = True,
+            min_refs_undirected = 2,
+            old_omnipath_resources=False,
+            exclude = None
+        ):
         """
         Loads the OmniPath network.
         """
 
         # XXX: According to the alias above omnipath = data_formats.omnipath already
+        
+        exclude = exclude or []
+        
+        if omnipath is None:
+            
+            if old_omnipath_resources:
+                omnipath = modcopy.deepcopy(data_formats.omnipath)
+                omnipath['biogrid'] = data_formats.interaction['biogrid']
+                omnipath['alz'] = data_formats.interaction['alz']
+                omnipath['netpath'] = data_formats.interaction['netpath']
+                exclude.extend(['intact', 'hprd'])
 
-        if old_omnipath_resources:
-            omnipath = modcopy.deepcopy(data_formats.omnipath)
-            omnipath['biogrid'] = data_formats.interaction['biogrid']
-            omnipath['alz'] = data_formats.interaction['alz']
-            omnipath['netpath'] = data_formats.interaction['netpath']
-            exclude = ['intact', 'hprd']
-
-        else:
-            omnipath = data_formats.omnipath
-            exclude = []
+            else:
+                omnipath = data_formats.omnipath
 
         self.load_resources(omnipath, exclude=exclude)
 
         if kinase_substrate_extra:
             self.load_resources(data_formats.ptm_misc)
+        
+        if ligand_receptor_extra:
+            self.load_resources(data_formats.ligand_receptor)
 
         self.third_source_directions()
 
