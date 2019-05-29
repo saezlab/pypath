@@ -31,6 +31,7 @@ from past.builtins import xrange, range, reduce
 
 import re
 import sys
+import imp
 import collections
 from collections import Counter
 
@@ -881,6 +882,16 @@ class Complex(object):
         self.interactions = interactions
     
     
+    def reload(self):
+        
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        import imp
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    
     def __str__(self):
         
         return 'COMPLEX:%s' % '-'.join(sorted(self.components.keys()))
@@ -1022,6 +1033,19 @@ class Complex(object):
         """
         
         self.attrs[source] = attr
+    
+    
+    @property
+    def stoichiometry(self):
+        
+        return ':'.join(
+            '%u' % cnt
+            for _id, cnt in
+            sorted(
+                iteritems(self.components),
+                key = lambda id_cnt: id_cnt[0],
+            )
+        )
 
 
 class Interface(object):

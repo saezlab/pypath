@@ -185,10 +185,10 @@ class UniprotListMapping(MappingInput):
         self.ac_mapping = ac_mapping
         
         self.uniprot_id_type_a = (
-            self.uniprot_id_type_a or self.ac_mapping[self.id_type_a]
+            uniprot_id_type_a or self.ac_mapping[self.id_type_a]
         )
         self.uniprot_id_type_b = (
-            self.uniprot_id_type_b or self.ac_mapping[self.id_type_b]
+            uniprot_id_type_b or self.ac_mapping[self.id_type_b]
         )
         
         self.entity_type = 'protein'

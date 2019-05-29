@@ -154,7 +154,6 @@ class Intercell(IntercellAnnotation):
     def main(self):
         
         self.setup_network()
-        self.setup_complex()
     
     
     def setup_network(self):
@@ -177,13 +176,8 @@ class Intercell(IntercellAnnotation):
         
         if isinstance(self.network, main_mod.PyPath):
             
-            self.network = network_mod.Network(records = self.network)
+            self.network = network_mod.Network.from_igraph(self.network)
             
         if isinstance(self.network, network_mod.Network):
             
             pass
-    
-    
-    def setup_complex(self):
-        
-        pass

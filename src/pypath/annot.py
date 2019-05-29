@@ -301,7 +301,7 @@ class CustomAnnotation(session_mod.Logger):
         )
 
 
-    def classes_by_element(self, element):
+    def classes_by_entity(self, element):
 
         return set(
             cls
