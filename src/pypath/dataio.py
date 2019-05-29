@@ -2151,14 +2151,40 @@ class ResidueMapper(object):
         self.mappers = {}
 
 
-def get_comppi():
+def comppi_interaction_locations(organism = 9606):
     """
     Downloads and preprocesses protein interaction and cellular compartment
     association data from the ComPPI database.
     This data provides scores for occurrence of protein-protein interactions
     in various compartments.
     """
-
+    
+    ComppiLocation = collections.namedtuple(
+        'ComppiLocation',
+        [
+            'location',
+            'score',
+        ],
+    )
+    
+    ComppiInteraction = collections.namedtuple(
+        'ComppiInteraction',
+        [
+            'id_a',
+            'id_b',
+            'loc_a',
+            'loc_b',
+        ],
+    )
+    
+    def process_locations(loc):
+        
+        return tuple(
+            ComppiLocation(location = llloc[0], score = float(llloc[1]))
+            for llloc in
+            (lloc.split(':') for lloc in loc.split('|'))
+        )
+    
     url = urls.urls['comppi']['url']
     post = {
         'fDlSet': 'comp',
@@ -2166,19 +2192,148 @@ def get_comppi():
         'fDlMLoc': 'all',
         'fDlSubmit': 'Download'
     }
-    c = curl.Curl(url, post = post, silent = False, compr = 'gz')
-    data = c.result
-    cols = {
-        'uniprot1': 0,
-        'uniprot2': 8,
-        'loc1': 2,
-        'loc2': 10,
-        'loc_score': 16
-    }
-    buff = StringIO()
-    buff.write(data)
-    data = read_table(cols = cols, fileObject = buff, hdr = 1, sep = '\t')
-    return data
+    c = curl.Curl(
+        url,
+        post = post,
+        large = True,
+        silent = False,
+        compr = 'gz',
+    )
+    
+    _ = next(c.result)
+    
+    for l in c.result:
+        
+        l = l.decode().strip('\r\n').split('\t')
+        
+        organism_a = int(l[7])
+        organism_b = int(l[15])
+        
+        if organism and (organism_a != organism or organism_b != organism):
+            
+            continue
+        
+        yield ComppiInteraction(
+            id_a = l[0],
+            id_b = l[8],
+            loc_a = process_locations(l[2]),
+            loc_b = process_locations(l[10]),
+        )
+
+
+def comppi_locations(organism = 9606, score_threshold = .7):
+    
+    result = collections.defaultdict(set)
+    
+    for iloc in comppi_interaction_locations(organism = organism):
+        
+        for label in ('a', 'b'):
+            
+            for loc in getattr(iloc, 'loc_%s' % label):
+                
+                if loc.location == 'N/A' or loc.score < score_threshold:
+                    
+                    continue
+                
+                result[getattr(iloc, 'id_%s' % label)].add(loc)
+    
+    return result
+
+
+def ramilowski_locations():
+    
+    reloc = re.compile(
+        r'([^\(]+[^\s^\(])'
+        r'\s?\('
+        r'?(?:(.*[^\)])?)'
+        r'\)?'
+    )
+    resep = re.compile(r'[\.;,]')
+    renote = re.compile(r'Note=([- \w\(\),\s\+\./%\'":;]*)')
+    
+    sources = (
+        (4, 'UniProt'),
+        (5, 'HPRD'),
+        (7, 'LocTree3'),
+        (10, 'Consensus'),
+        (11, 'Consensus6'),
+    )
+    
+    RamilowskiLocation = collections.namedtuple(
+        'RamilowskiLocation',
+        [
+            'location',
+            'source',
+            'tmh',
+            'note',
+            'long_note',
+        ],
+    )
+    
+    url = urls.urls['rami']['loc']
+    c = curl.Curl(url, silent = False, large = True)
+    
+    _ = next(c.result)
+    
+    result = collections.defaultdict(set)
+    
+    for l in c.result:
+        
+        l = l.strip('\n\r').split('\t')
+        
+        for idx, source in sources:
+            
+            locs = l[idx]
+            
+            long_note = None
+            mnote = renote.search(locs)
+            
+            if mnote:
+                
+                long_note = mnote.groups()[0]
+                locs = renote.sub('', locs)
+            
+            for loc in resep.split(locs):
+                
+                if ':' in loc and 'GO:' not in loc:
+                    
+                    loc = loc.split(':')[-1]
+                
+                loc = loc.strip().replace('- ', '-').lower()
+                
+                if (
+                    not loc or
+                    len(loc.split()) > 3 or
+                    re.search(r'\d', loc) or
+                    loc == 'n/a' or
+                    any(
+                        w in loc for w in
+                        ('tumor',)
+                    )
+                ):
+                    
+                    continue
+                
+                m = reloc.match(loc)
+                
+                if not m:
+                    
+                    continue
+                
+                location, note = m.groups()
+                tmh = l[9].strip()
+                
+                result[l[3]].add(
+                    RamilowskiLocation(
+                        location = location.lower(),
+                        source = source,
+                        tmh = int(tmh) if tmh.isdigit() else None,
+                        note = note,
+                        long_note = long_note,
+                    )
+                )
+    
+    return result
 
 
 def get_psite_phos(raw = True, organism = 'human', strict = True):
@@ -9958,7 +10113,7 @@ def get_proteinatlas(normal = True, pathology = True, cancer = True):
 
     def line(l):
 
-        return l.split('\t')
+        return l.strip('\n\r').split('\t')
 
     if normal:
 
@@ -9971,14 +10126,14 @@ def get_proteinatlas(normal = True, pathology = True, cancer = True):
 
             l = line(l)
 
-            uniprots = mapping.map_name(l[0], 'ensembl', 'uniprot')
+            uniprots = mapping.map_name(l[1], 'genesymbol', 'uniprot')
             tissue = '%s:%s' % (l[2], l[3])
 
             for u in uniprots:
                 result['normal'][tissue][u] = (l[4], l[5].strip())
 
     if cancer or pathology:
-
+        
         c = curl.Curl(urls.urls['proteinatlas']['pathology'],
                     silent = False, large = True)
         fp = list(c.result.values())[0]
@@ -9987,7 +10142,7 @@ def get_proteinatlas(normal = True, pathology = True, cancer = True):
         for l in fp:
 
             l = line(l)
-            uniprots = mapping.map_name(l[0], 'ensembl', 'uniprot')
+            uniprots = mapping.map_name(l[1], 'genesymbol', 'uniprot')
             tissue   = l[2]
 
             values = dict(
@@ -10000,6 +10155,99 @@ def get_proteinatlas(normal = True, pathology = True, cancer = True):
                 result['pathology'][tissue][u] = values
 
     return result
+
+
+def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
+    
+    LEVELS = ('Not detected', 'Low', 'Medium', 'High')
+    
+    ProteinatlasAnnotation = collections.namedtuple(
+        'ProtainatlasAnnotation',
+        [
+            'tissue',
+            'level',
+            'status',
+            'n_not_detected',
+            'n_low',
+            'n_medium',
+            'n_high',
+            'prognostic',
+            'favourable',
+            'score',
+            'pathology',
+        ],
+    )
+    ProteinatlasAnnotation.__new__.__defaults__ = (
+        (None,) * 4 + (False, False, None, False)
+    )
+    
+    
+    def n_or_none(ex, key):
+        
+        return ex[key] if key in ex else None
+    
+    
+    data = get_proteinatlas(
+        normal = normal,
+        pathology = pathology,
+        cancer = cancer,
+    )
+    
+    result = collections.defaultdict(set)
+    
+    if normal:
+        
+        for tissue, gex in iteritems(data['normal']):
+            
+            for uniprot, ex in iteritems(gex):
+                
+                result[uniprot].add(
+                    ProteinatlasAnnotation(
+                        tissue = tissue,
+                        level = ex[0],
+                        status = ex[1],
+                    )
+                )
+        
+    if pathology or cancer:
+        
+        for condition, gex in iteritems(data['pathology']):
+            
+            for uniprot, ex in iteritems(gex):
+                
+                try:
+                    effect, score = next(
+                        i for i in iteritems(ex) if i[0] not in LEVELS
+                    )
+                    prognostic = not effect.startswith('unprognostic')
+                    favourable = not effect.endswith('unfavourable')
+                    
+                except StopIteration:
+                    
+                    prognostic, favourable, score = None, None, None
+                
+                result[uniprot].add(
+                    ProteinatlasAnnotation(
+                        tissue = condition,
+                        level = max(
+                            (i for i in iteritems(ex) if i[0] in LEVELS),
+                            key = lambda i: i[1],
+                            default = (None,),
+                        )[0],
+                        status = None,
+                        n_not_detected = n_or_none(ex, 'Not detected'),
+                        n_low = n_or_none(ex, 'Low'),
+                        n_medium = n_or_none(ex, 'Medium'),
+                        n_high = n_or_none(ex, 'High'),
+                        prognostic = prognostic,
+                        favourable = favourable,
+                        score = score,
+                        pathology = True,
+                    )
+                )
+    
+    return result
+
 
 def get_tfregulons_old(
         levels = {'A', 'B'},
@@ -10929,16 +11177,18 @@ def get_locate_localizations(
 
                                     if loc.tag[:4] == 'tier':
 
-                                        this_loc = loc.text.lower()
+                                        this_loc = loc.text.lower().split(',')
 
                                         for uniprot in this_uniprots:
-
-                                            result[uniprot].add(record(
-                                                source = sources,
-                                                location = this_loc,
-                                                cls = this_class,
-                                                score = None,
-                                            ))
+                                            
+                                            for _loc in this_loc:
+                                                
+                                                result[uniprot].add(record(
+                                                    source = sources,
+                                                    location = _loc,
+                                                    cls = this_class,
+                                                    score = None,
+                                                ))
 
             if predictions:
 

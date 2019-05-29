@@ -20,9 +20,10 @@
 
 import pypath.dataio as dataio
 import pypath.common as common
+import pypath.session_mod as session_mod
 
 
-class AbstractResource(object):
+class AbstractResource(session_mod.Logger):
     """
     Generic class for downloading, processing and serving
     data from a resource.
@@ -43,7 +44,11 @@ class AbstractResource(object):
         input_method : callable
             Method providing the input data.
         """
-
+        
+        if not hasattr(self, '_log_name'):
+            
+            session_mod.Logger.__init__(self, name = 'resource')
+        
         self.name = name
         self._input_method = input_method
         self.input_args = input_args or {}
@@ -83,7 +88,9 @@ class AbstractResource(object):
         """
         Loads the data by calling ``input_method``.
         """
-
+        
+        self._log('Loading data from `%s`.' % self.name)
+        
         self.set_method()
 
         if hasattr(self, 'input_method'):
@@ -95,7 +102,8 @@ class AbstractResource(object):
         """
         Calls the ``_process_method``.
         """
-
+        
+        self._log('Processing data from `%s`.' % self.name)
         self._process_method()
 
 

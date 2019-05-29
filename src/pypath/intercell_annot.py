@@ -60,6 +60,12 @@ go_combined_classes = {
         extracellular region OR
         extracellular region part
         """,
+    'intracellular':
+        """
+        intracellular organelle OR
+        intracellular organelle lumen OR
+        intracellular
+        """,
     'cell_surface':
         """
         cell surface OR
@@ -834,6 +840,104 @@ annot_combined_classes = (
             'mainclass': 'ligand',
         },
     ),
+    # intracellular
+    af.AnnotDef(
+        name = 'intracellular',
+        source = af.AnnotOp(
+            annots = (
+                'intracellular_locate',
+                'intracellular_cellphonedb',
+                'intracellular_comppi',
+                'intracellular_go',
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'intracellular_locate',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'locate_intracellular',
+                    source = 'Locate',
+                    args = {
+                        'location': {
+                            'centrosome',
+                            'cytoplasm',
+                            'endosomes',
+                            'lysosomes',
+                            'nucleus',
+                            'plasma membrane',
+                            'cytoplasmic membrane-bound vesicle',
+                            'cytoplasmic vesicles',
+                            'cytoskeleton',
+                            'early endosomes',
+                            'endoplasmic reticulum',
+                            'golgi apparatus',
+                            'er-golgi intermediate compartment',
+                            'ergic',
+                            'golgi cis cisterna',
+                            'golgi medial cisterna',
+                            'golgi trans cisterna',
+                            'golgi trans face',
+                            'inner mitochondrial membrane',
+                            'late endosomes',
+                            'lipid particles',
+                            'medial-golgi',
+                            'melanosome',
+                            'microtubule',
+                            'microtubule organizing center ',
+                            'mitochondria',
+                            'mitochondrial inner membrane',
+                            'mitochondrial outer membrane',
+                            'mitochondrion',
+                            'nuclear envelope',
+                            'nucleolus',
+                            'nuclear speck',
+                            'outer mitochondrial membrane',
+                            'peroxisome',
+                            'peroxisomes',
+                            'sarcolemma',
+                            'transport vesicle',
+                        },
+                    },
+                ),
+                af.AnnotDef(
+                    name = 'locate_cytoplasmic',
+                    source = 'Locate',
+                    args = {
+                        'cls': 'cytoplasmic',
+                    },
+                ),
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'intracellular_cellphonedb',
+        source = 'CellPhoneDB',
+        args = {
+            'cytoplasm': bool,
+        },
+    ),
+    af.AnnotDef(
+        name = 'intracellular_comppi',
+        source = 'ComPPI',
+        args = {
+            'location': {
+                'cytosol',
+                'nucleus',
+                'mitochondrion',
+            },
+        },
+    ),
+    af.AnnotDef(
+        name = 'intracellular_go',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': 'intracellular',
+        },
+    ),
     # extracellular
     af.AnnotDef(
         name = 'extracellular',
@@ -846,6 +950,7 @@ annot_combined_classes = (
                 'extracellular_cspa',
                 'extracellular_hpmr',
                 'extracellular_cellphonedb',
+                'extracellular_comppi',
             ),
             op = set.union,
         ),
@@ -874,6 +979,13 @@ annot_combined_classes = (
             ),
             op = set.union,
         ),
+    ),
+    af.AnnotDef(
+        name = 'extracellular_comppi',
+        source = 'ComPPI',
+        args = {
+            'location': 'extracellular',
+        },
     ),
     af.AnnotDef(
         name = 'extracellular_surfaceome',
@@ -974,6 +1086,8 @@ annot_combined_classes = (
                 'transmembrane_cellphonedb',
                 'transmembrane_go',
                 'transmembrane_opm',
+                'transmembrane_locate',
+                'transmembrane_topdb',
             ),
             op = set.union,
         ),
@@ -1004,6 +1118,17 @@ annot_combined_classes = (
         source = 'TopDB',
         args = {
             'topology': 'Membrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'transmembrane_locate',
+        source = 'Locate',
+        args = {
+            'cls': {
+                'typeI',
+                'typeII',
+                'mtmp',
+            },
         },
     ),
     # adhesion
@@ -1293,6 +1418,7 @@ class_types = {
         'cell_surface',
         'extracellular',
         'secreted',
+        'transmembrane',
     },
     'main': {
         'adhesion',

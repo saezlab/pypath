@@ -28,6 +28,8 @@ import pandas as pd
 import pypath.session_mod as session_mod
 import pypath.annot as annot
 import pypath.intercell_annot as intercell_annot
+import pypath.network as network_mod
+import pypath.main as main_mod
 
 
 IntercellRole = collections.namedtuple(
@@ -116,23 +118,66 @@ class IntercellAnnotation(annot.CustomAnnotation):
         )
 
 
-class Intercell(session_mod.Logger):
+class Intercell(IntercellAnnotation):
     
     
-    def __init__(self, network):
+    def __init__(
+            self,
+            class_definitions = None,
+            network = None,
+            network_param = None,
+            omnipath = False,
+        ):
         
         session_mod.Logger.__init__(self, name = 'intercell')
         
+        IntercellAnnotation.__init__(
+            self,
+            class_definitions = class_definitions,
+        )
+        
         self.network = network
+        self.network_param = network_param or {}
+        self.omnipath = omnipath
     
     
     def reload(self):
-        """
-        Reloads the object from the module level.
-        """
         
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        import imp
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+    
+    
+    def main(self):
+        
+        self.setup_network()
+    
+    
+    def setup_network(self):
+        
+        if self.network is None:
+            
+            if not self.omnipath and 'lst' not in self.network_param:
+                
+                self.network_param['lst'] = data_formats.pathway
+            
+            self.network = main_mod.PyPath()
+            
+            if self.omnipath:
+                
+                self.network.load_omnipath(**self.network_param)
+                
+            else:
+                
+                self.network.init_network(**self.network_param)
+        
+        if isinstance(self.network, main_mod.PyPath):
+            
+            self.network = network_mod.Network.from_igraph(self.network)
+            
+        if isinstance(self.network, network_mod.Network):
+            
+            pass
