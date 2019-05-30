@@ -74,7 +74,7 @@ from UniProt, file, mysql or pickle.
 """
 
 
-_mapper_cleanup_timeloop = timeloop.Timeloop()
+
 
 
 MappingTableKey = collections.namedtuple(
@@ -130,6 +130,18 @@ class MapReader(session_mod.Logger):
         """
 
         session_mod.Logger.__init__(self, name = 'mapping')
+        self._log(
+            'Reader created for ID translation table, parameters: '
+            '`id_a=%s, id_b=%s, load_a_to_b=%u, load_b_to_a=%u, '
+            'input_type=%s (%s)`.' % (
+                param.id_type_a,
+                param.id_type_b,
+                load_a_to_b,
+                load_b_to_a,
+                param.type,
+                param.__class__.__name__,
+            )
+        )
 
         self.cachedir = cache_mod.get_cachedir()
 
@@ -208,13 +220,24 @@ class MapReader(session_mod.Logger):
         return self._get_mapping_table('b', 'a')
 
 
+    def id_type_side(self, id_type):
+        
+        return (
+            'a'
+                if id_type == self.id_type_a else
+            'b'
+                if id_type == self.id_type_b else
+            None
+        )
+
+
     def _get_mapping_table(self, *args):
 
         data = getattr(self, '%s_to_%s' % args)
         id_type = getattr(self, 'id_type_%s' % args[0])
         target_id_type = getattr(self, 'id_type_%s' % args[1])
 
-        if data:
+        if isinstance(data, dict):
 
             return MappingTable(
                 data = data,
@@ -231,8 +254,8 @@ class MapReader(session_mod.Logger):
         """
 
         return (
-            (self.a_to_b or not self.load_a_to_b) and
-            (self.b_to_a or not self.load_b_to_a)
+            (bool(self.a_to_b) or not self.load_a_to_b) and
+            (bool(self.b_to_a) or not self.load_b_to_a)
         )
 
 
@@ -279,6 +302,14 @@ class MapReader(session_mod.Logger):
                     self,
                     '%s_to_%s' % args,
                     pickle.load(open(cachefile, 'rb')),
+                )
+                self._log(
+                    'Loading `%s` to `%s` mapping table '
+                    'from pickle file `%s`.' % (
+                        self.param.id_type_a,
+                        self.param.id_type_b,
+                        cachefile,
+                    )
                 )
 
 
@@ -470,20 +501,29 @@ class MapReader(session_mod.Logger):
         if not self.uniprots:
 
             self.set_uniprot_space()
+        
+        # We need a list to query this service, and we have method only for
+        # getting a proteome wide list of UniProt IDs. If the translated
+        # ID type is not UniProt, then first we need to translate the
+        # proteome wide reference list from UniProt to the target ID type.
+        if self.param.id_type_a != 'uniprot':
 
-        if self.param.id_type_b != 'uniprot':
-
-            u_target = self._read_mapping_uniprot_list('ACC')
+            u_target = self._read_mapping_uniprot_list(
+                uniprot_id_type_a = 'ACC',
+                uniprot_id_type_b = self.param.uniprot_id_type_a,
+            )
 
             _ = next(u_target)
 
-            ac_list = [l.split('\t')[1].strip() for l in u_target]
+            upload_ac_list = [l.split('\t')[1].strip() for l in u_target]
 
         else:
 
-            ac_list = self.uniprots
-
-        uniprot_data = self._read_mapping_uniprot_list(ac_list = ac_list)
+            upload_ac_list = self.uniprots
+        
+        uniprot_data = self._read_mapping_uniprot_list(
+            upload_ac_list = upload_ac_list,
+        )
 
         _ = next(uniprot_data)
 
@@ -497,11 +537,11 @@ class MapReader(session_mod.Logger):
 
             if self.load_a_to_b:
 
-                a_to_b[l[1]].add(l[0])
+                a_to_b[l[0]].add(l[1])
 
             if self.load_b_to_a:
 
-                b_to_a[l[0]].add(l[1])
+                b_to_a[l[1]].add(l[0])
 
         self.a_to_b = a_to_b if self.load_a_to_b else None
         self.b_to_a = b_to_a if self.load_b_to_a else None
@@ -518,23 +558,27 @@ class MapReader(session_mod.Logger):
         )
 
 
-    def _read_mapping_uniprot_list(self, id_type_a = None, ac_list = None):
+    def _read_mapping_uniprot_list(
+            self,
+            uniprot_id_type_a = None,
+            uniprot_id_type_b = None,
+            upload_ac_list = None,
+        ):
         """
         Reads a mapping table from UniProt "upload lists" service.
         """
+        
+        uniprot_id_type_a = uniprot_id_type_a or self.param.uniprot_id_type_a
+        uniprot_id_type_b = uniprot_id_type_b or self.param.uniprot_id_type_b
 
-        # XXX: NOT REALLY SURE ABOUT THIS
-        id_type_a = self.param.uniprot_id_type_b#target_ac_name
-        id_type_b = self.param.uniprot_id_type_a#ac_name
-
-        ac_list = ac_list or self.uniprots
+        upload_ac_list = upload_ac_list or self.uniprots
 
         url = urls.urls['uniprot_basic']['lists']
         post = {
-            'from': id_type_a,
+            'from': uniprot_id_type_a,
             'format': 'tab',
-            'to': id_type_b,
-            'uploadQuery': ' '.join(sorted(ac_list)),
+            'to': uniprot_id_type_b,
+            'uploadQuery': ' '.join(sorted(upload_ac_list)),
         }
 
         c = curl.Curl(url, post = post, large = True, silent = False)
@@ -746,6 +790,11 @@ class MappingTable(session_mod.Logger):
             target_id_type = self.target_id_type,
             ncbi_tax_id = self.ncbi_tax_id,
         )
+    
+    
+    def __repr__(self):
+        
+        return 'MappingTable from=`%s`, to=`%s`, taxon=`%u`' % self.key
 
 
 class Mapper(session_mod.Logger):
@@ -770,20 +819,31 @@ class Mapper(session_mod.Logger):
         cleanup_period = (
             cleanup_period or settings.get('mapper_cleanup_interval')
         )
-
-
-        @_mapper_cleanup_timeloop.job(
+        
+        self._mapper_cleanup_timeloop = timeloop.Timeloop()
+        
+        for job in self._mapper_cleanup_timeloop.jobs:
+            
+            if job.is_alive():
+                
+                job.stop()
+                job.stopped.set()
+        
+        self._mapper_cleanup_timeloop.jobs = []
+        
+        
+        @self._mapper_cleanup_timeloop.job(
             interval = datetime.timedelta(
                 seconds = cleanup_period
             )
         )
         def _cleanup():
-
+            
             self.remove_expired()
-
-
-        _mapper_cleanup_timeloop.start(block = False)
-
+        
+        
+        self._mapper_cleanup_timeloop.start(block = False)
+        
         self.reuniprot = re.compile(
             r'[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]'
             r'([A-Z][A-Z0-9]{2}[0-9]){1,2}'
@@ -932,25 +992,46 @@ class Mapper(session_mod.Logger):
 
                 if (
                     id_type in input_formats.ac_mapping and
-                    target_id_type in input_formats.ac_mapping
+                    target_id_type in input_formats.ac_mapping and
+                    id_type != target_id_type
                 ):
-
+                    
+                    if target_id_type == 'uniprot':
+                        
+                        _id_type, _target_id_type = target_id_type, id_type
+                        load_a_to_b = False
+                        load_b_to_a = True
+                        
+                    else:
+                        
+                        _id_type, _target_id_type = id_type, target_id_type
+                        load_a_to_b = True
+                        load_b_to_a = False
+                    
                     # for uniprot/uploadlists
                     # we create here the mapping params
                     this_param = input_formats.UniprotListMapping(
-                        id_type_a = id_type,
-                        id_type_b = target_id_type,
+                        id_type_a = _id_type,
+                        id_type_b = _target_id_type,
                         ncbi_tax_id = ncbi_tax_id,
                     )
 
                     reader = MapReader(
                         param = this_param,
                         ncbi_tax_id = ncbi_tax_id,
+                        load_a_to_b = load_a_to_b,
+                        load_b_to_a = load_b_to_a,
                         uniprots = None,
                         lifetime = 300,
                     )
-
-                    self.tables[tbl_key] = reader.mapping_table_a_to_b
+                    
+                    self.tables[tbl_key] = getattr(
+                        reader,
+                        'mapping_table_%s_to_%s' % (
+                            reader.id_type_side(tbl_key.id_type),
+                            reader.id_type_side(tbl_key.target_id_type),
+                        )
+                    )
 
                 tbl = check_loaded()
 
@@ -1757,22 +1838,31 @@ class Mapper(session_mod.Logger):
 
 
     def __del__(self):
+        
+        if hasattr(self._mapper_cleanup_timeloop, 'stop'):
+            
+            for job in self._mapper_cleanup_timeloop.jobs:
+                
+                if job.is_alive():
+                    
+                    job.stop()
+                    job.stopped.set()
 
-        if hasattr(_mapper_cleanup_timeloop, 'stop'):
 
-            _mapper_cleanup_timeloop.stop()
+def init(**kwargs):
+    
+    if 'mapper' in globals():
+        
+        globals()['mapper'].__del__()
+    
+    globals()['mapper'] = Mapper(**kwargs)
 
 
-def init():
-
-    globals()['mapper'] = Mapper()
-
-
-def get_mapper():
+def get_mapper(**kwargs):
 
     if 'mapper' not in globals():
 
-        init()
+        init(**kwargs)
 
     return globals()['mapper']
 

@@ -424,15 +424,18 @@ class CellPhoneDB(session_mod.Logger):
             for comp in components:
                 
                 name = mapping.map_name0(comp, 'uniprot', 'genesymbol')
+                ensembl_genes = mapping.map_name(comp, 'uniprot', 'ensembl')
                 
-                self.gene.add(
-                    CellPhoneDBGene(
-                        gene_name = name,
-                        uniprot = comp,
-                        hgnc_symbol = name,
-                        ensembl = '',
+                for ensembl in ensembl_genes:
+                    
+                    self.gene.add(
+                        CellPhoneDBGene(
+                            gene_name = name,
+                            uniprot = comp,
+                            hgnc_symbol = name,
+                            ensembl = ensembl,
+                        )
                     )
-                )
     
     
     def create_dataframes(self):

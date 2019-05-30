@@ -1020,6 +1020,7 @@ class Curl(FileOpener):
             self.postfields = urllib.urlencode(self.post)
             self.curl.setopt(self.curl.POSTFIELDS, self.postfields)
             self.curl.setopt(self.curl.POST, 1)
+            self._log('POST parameters set: %s' % self.postfields[:100])
         else:
             self.postfields = None
     
@@ -1030,13 +1031,22 @@ class Curl(FileOpener):
             
             self.qs = '&'.join(
                 map(lambda param: '%s=%s' % (param[0], param[1]),
-                    map(lambda param: (urllib.quote_plus(param[0]), urllib.quote_plus(param[1])),
-                        iteritems(self.get))))
-            self.url = '%s%s%s' % (self.url, '&'
-                                   if '?' in self.url else '?', self.qs)
+                    map(lambda param: (
+                            urllib.quote_plus(param[0]),
+                            urllib.quote_plus(param[1])
+                        ),
+                        iteritems(self.get)
+                    )
+                )
+            )
+            self.url = '%s%s%s' % (
+                self.url,
+                '&' if '?' in self.url else '?',
+                self.qs
+            )
             
             self._log(
-                'GET parameters added to the URL: `%s`' % self.url[:200]
+                'GET parameters added to the URL: `%s`' % self.qs[:100]
             )
     
     
@@ -1087,6 +1097,7 @@ class Curl(FileOpener):
             self.curl.setopt(pycurl.READFUNCTION, self.binary_data_file.read)
             self.curl.setopt(pycurl.CUSTOMREQUEST, 'POST')
             self.curl.setopt(pycurl.POSTREDIR, 3)
+            self._log('Binary data added to query (not showing).')
     
     
     def curl_init(self, url = False):
@@ -1339,9 +1350,16 @@ class Curl(FileOpener):
     
     def get_hash(self):
         
-        self.post_str = '' if self.post is None else \
-            '?' + '&'.join(sorted([i[0] + ' = ' + i[1]
-                                   for i in iteritems(self.post)]))
+        self.post_str = (
+            ''
+                if self.post is None else
+            (
+                '?' + '&'.join(sorted([
+                    i[0] + ' = ' + i[1]
+                    for i in iteritems(self.post)
+                ]))
+            )
+        )
         
         if self.binary_data:
             bindata = str(self.binary_data)
