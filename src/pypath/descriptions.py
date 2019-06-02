@@ -2840,3 +2840,42 @@ def licenses_emails(outfile='licenses_emails.txt'):
             ', '.join(addresses), subject, textwrap.dedent(this_email)))
     with open(outfile, 'w') as f:
         f.write(''.join(emails))
+
+
+def export_licenses(outfile = 'licenses.tsv'):
+    
+    hdr = [
+        'Name',
+        'License',
+        'License URL',
+        'Contact',
+    ]
+    rows = []
+    
+    for k, v in iteritems(descriptions):
+        
+        name = v['label'] if 'label' in v else k
+        license_name = v['license']['name'] if 'license' in v else ''
+        license_url = (
+            v['license']['url']
+                if 'license' in v and 'url' in v['license'] else
+            ''
+        )
+        emails = (
+            ','.join('%s <%s>' % tuple(reversed(e)) for e in v['emails'])
+            if 'emails' in v else ''
+        )
+        
+        rows.append([
+            name,
+            license_name,
+            license_url,
+            emails,
+        ])
+    
+    with open(outfile, 'w') as fp:
+        
+        _ = fp.write('\t'.join(hdr) + '\n')
+        _ = fp.write('\n'.join(
+            '\t'.join(row) for row in rows
+        ))
