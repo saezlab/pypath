@@ -675,13 +675,15 @@ class AnnotationBase(resource.AbstractResource):
         return result
     
     
-    def get_subset_bool_array(self, uniprots, **kwargs):
+    def get_subset_bool_array(self, reference_set = None, **kwargs):
+        
+        reference_set = reference_set or self.reference_set
         
         subset = self.get_subset(**kwargs)
         
         return np.array([
-            uniprot in subset
-            for uniprot in uniprots
+            entity in subset
+            for entity in reference_set
         ])
     
     
@@ -724,6 +726,10 @@ class AnnotationBase(resource.AbstractResource):
     
     
     def to_array(self, reference_set = None, use_fields = None):
+        
+        self._log(
+            'Creating boolean array from `%s` annotation data.' % self.name
+        )
         
         reference_set = reference_set or self.reference_set
         
@@ -782,7 +788,12 @@ class AnnotationBase(resource.AbstractResource):
                         this_array,
                     )
                 )
-
+        
+        self._log(
+            'Boolean array has been created from '
+            '`%s` annotation data.' % self.name
+        )
+        
         return (
             tuple(r[0] for r in result),
             np.vstack([r[1] for r in result]).T
@@ -1930,6 +1941,7 @@ class AnnotationTable(session_mod.Logger):
         self.set_reference_set()
         self.load_protein_resources()
         self.load_complex_resources()
+        self.make_array()
     
     
     def set_reference_set(self):
@@ -1974,7 +1986,25 @@ class AnnotationTable(session_mod.Logger):
             self.annots[annot.name] = annot
     
     
-    def to_array(self):
+    def make_dataframe(self, reference_set = None):
+        
+        if self.create_dataframe:
+            
+            self.df = self.to_dataframe(reference_set = reference_set)
+    
+    
+    def ensure_array(self, reference_set = None, rebuild = False):
+        
+        if not hasattr(self, 'data') or rebuild:
+            
+            self.names, self.data = (
+                self.to_array(reference_set = reference_set)
+            )
+    
+    
+    def to_array(self, reference_set = None):
+        
+        reference_set = reference_set or self.reference_set
         
         names  = []
         arrays = []
@@ -1982,7 +2012,7 @@ class AnnotationTable(session_mod.Logger):
         for resource in self.annots.values():
             
             this_names, this_array = resource.to_array(
-                    reference_set = self.reference_set,
+                    reference_set = reference_set,
                     use_fields = (
                         self.use_fields[resource.__class__]
                             if resource.__class__ in self.use_fields else
@@ -2016,11 +2046,13 @@ class AnnotationTable(session_mod.Logger):
     
     
     def make_sets(self):
-
+        
+        self.ensure_array()
+        
         self.sets = dict(
             (
                 name,
-                set(self.uniprots[self.data[:,i]])
+                set(self.reference_set[self.data[:,i]])
             )
             for i, name in enumerate(self.names)
         )
@@ -2100,7 +2132,12 @@ class AnnotationTable(session_mod.Logger):
             ))
 
 
-    def to_dataframe(self):
+    def to_dataframe(self, reference_set = None):
+        
+        self.ensure_array(
+            reference_set = reference_set,
+            rebuild = reference_set is not None,
+        )
         
         colnames = ['__'.join(name) for name in self.names]
         
