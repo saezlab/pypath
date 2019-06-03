@@ -110,21 +110,21 @@ _session_mod.get_log().msg(
 )
 
 
-def __getattr__(attr):
+#def __getattr__(attr):
     
-    try:
+    #try:
         
-        return importlib.import_module('pypath.%s' % attr)
+        #return importlib.import_module('pypath.%s' % attr)
         
-    except ImportError:
+    #except ImportError:
         
-        return __import__(__name__).__getattribute__(attr)
+        #return __import__(__name__).__getattribute__(attr)
 
 
-def __dir__():
+#def __dir__():
     
-    return object.__dir__(__import__(__name__)) + [
-        py[:-3]
-        for py in os.listdir(os.path.abspath(os.path.dirname(__file__)))
-        if py.endswith('.py')
-    ]
+    #return object.__dir__(__import__(__name__)) + [
+        #py[:-3]
+        #for py in os.listdir(os.path.abspath(os.path.dirname(__file__)))
+        #if py.endswith('.py')
+    #]
