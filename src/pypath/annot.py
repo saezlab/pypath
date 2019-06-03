@@ -182,15 +182,19 @@ class CustomAnnotation(session_mod.Logger):
     
     def load_from_pickle(self, pickle_file):
         
-        self.classes = pickle.load(pickle_file)
+        with open(pickle_file, 'rb') as fp:
+            
+            self.classes = pickle.load(fp)
     
     
     def save_to_pickle(self, pickle_file):
         
-        pickle.dump(
-            obj = self.classes,
-            file = pickle_file,
-        )
+        with open(pickle_file, 'wb') as fp:
+            
+            pickle.dump(
+                obj = self.classes,
+                file = fp,
+            )
     
 
     def create_class(self, classdef):
@@ -1985,27 +1989,34 @@ class AnnotationTable(session_mod.Logger):
         self.set_reference_set()
         self.load_protein_resources()
         self.load_complex_resources()
-        self.make_array()
+        
+        if self.create_dataframe:
+            
+            self.make_dataframe()
     
     
     def load_from_pickle(self, pickle_file):
         
-        self.proteins, self.complexes, self.reference_set, self.annots = (
-            pickle.load(pickle_file)
-        )
+        with open(pickle_file, 'rb') as fp:
+            
+            self.proteins, self.complexes, self.reference_set, self.annots = (
+                pickle.load(fp)
+            )
     
     
     def save_to_pickle(self, pickle_file):
         
-        pickle.dump(
-            obj = (
-                self.proteins,
-                self.complexes,
-                self.reference_set,
-                self.annots,
-            ),
-            file = pickle_file,
-        )
+        with open(pickle_file, 'wb') as fp:
+            
+            pickle.dump(
+                obj = (
+                    self.proteins,
+                    self.complexes,
+                    self.reference_set,
+                    self.annots,
+                ),
+                file = fp,
+            )
     
     
     def set_reference_set(self):
@@ -2061,9 +2072,7 @@ class AnnotationTable(session_mod.Logger):
         
         if not hasattr(self, 'data') or rebuild:
             
-            self.names, self.data = (
-                self.to_array(reference_set = reference_set)
-            )
+            self.make_array(reference_set = reference_set)
     
     
     def to_array(self, reference_set = None):
@@ -2103,6 +2112,12 @@ class AnnotationTable(session_mod.Logger):
         data = np.hstack(arrays)
         
         return names, data
+    
+    
+    def make_array(self, reference_set = None):
+        
+        self.names, self.data = self.to_array(reference_set = reference_set)
+        self.set_cols()
     
     
     def set_cols(self):
