@@ -2001,10 +2001,38 @@ class AnnotationTable(session_mod.Logger):
                 
                 if record_cls is not None:
                     
+                    print(
+                        'Creating class `%s` in module '
+                        '`%s` with fields `%s`.' % (
+                            record_cls['name'],
+                            record_cls['module'],
+                            str(record_cls['fields']),
+                        )
+                    )
+                    
                     setattr(
-                        sys.modules[record_cls.__module__],
-                        record_cls.__name__,
-                        record_cls,
+                        sys.modules[record_cls['module']],
+                        record_cls['name'],
+                        collections.namedtuple(
+                            record_cls['name'],
+                            record_cls['fields'],
+                        ),
+                    )
+                    
+                    record_cls_new = getattr(
+                        sys.modules[record_cls['module']],
+                        record_cls['name'],
+                    )
+                    
+                    data = dict(
+                        (
+                            key,
+                            set(
+                                record_cls_new(*this_annot)
+                                for this_annot in these_annots
+                            )
+                        )
+                        for key, these_annots in iteritems(data)
                     )
                 
                 cls = globals()[cls_name]
@@ -2034,19 +2062,27 @@ class AnnotationTable(session_mod.Logger):
                 for name, annot in iteritems(self.annots)
             )
             
-            for cls in classes.values():
-                
-                if cls is not None:
-                    
-                    setattr(sys.modules[cls.__module__], cls.__name__, cls)
-            
             annots = dict(
                 (
                     name,
                     (
                         annot.__class__.__name__,
-                        annot.annot,
-                        classes[name],
+                        dict(
+                            (
+                                key,
+                                set(
+                                    tuple(this_annot)
+                                    for this_annot in these_annots
+                                )
+                            )
+                            for key, these_annots in iteritems(annot.annot)
+                        ),
+                        {
+                            'name': classes[name].__name__,
+                            'module': classes[name].__module__,
+                            'fields': classes[name]._fields,
+                        }
+                        if classes[name] else None
                     )
                 )
                 for name, annot in iteritems(self.annots)

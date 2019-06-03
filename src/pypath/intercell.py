@@ -41,7 +41,7 @@ IntercellRole = collections.namedtuple(
 class IntercellAnnotation(annot.CustomAnnotation):
 
 
-    def __init__(self, class_definitions = None):
+    def __init__(self, class_definitions = None, **kwargs):
 
         class_definitions = (
             class_definitions or intercell_annot.annot_combined_classes
@@ -50,6 +50,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
         annot.CustomAnnotation.__init__(
             self,
             class_definitions = class_definitions,
+            **kwargs,
         )
 
         self.make_df()

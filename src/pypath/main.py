@@ -12787,8 +12787,8 @@ class PyPath(session_mod.Logger):
             htp_threshold = 1,
             keep_directed = True,
             min_refs_undirected = 2,
-            old_omnipath_resources=False,
-            exclude = None
+            old_omnipath_resources = False,
+            exclude = None,
         ):
         """
         Loads the OmniPath network.
