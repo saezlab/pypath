@@ -2001,15 +2001,6 @@ class AnnotationTable(session_mod.Logger):
                 
                 if record_cls is not None:
                     
-                    print(
-                        'Creating class `%s` in module '
-                        '`%s` with fields `%s`.' % (
-                            record_cls['name'],
-                            record_cls['module'],
-                            str(record_cls['fields']),
-                        )
-                    )
-                    
                     setattr(
                         sys.modules[record_cls['module']],
                         record_cls['name'],
