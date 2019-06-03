@@ -399,7 +399,7 @@ class CellPhoneDB(session_mod.Logger):
                             if 'PDB' in entity.ids else
                         ''
                     ),
-                    stoichiometry = entity.stoichiometry,
+                    stoichiometry = entity.stoichiometry_str_genesymbols,
                     comments_complex = '',
                 )
             )

@@ -33,10 +33,12 @@ import re
 import sys
 import imp
 import collections
+import itertools
 from collections import Counter
 
 # from pypath:
 import pypath.common as common
+import pypath.mapping as mapping
 
 __all__ = [
     'Residue', 'Ptm', 'Motif', 'Domain', 'DomainDomain', 'DomainMotif',
@@ -1046,7 +1048,36 @@ class Complex(object):
                 key = lambda id_cnt: id_cnt[0],
             )
         )
-
+    
+    
+    @property
+    def stoichiometry_str(self):
+        
+        return ';'.join(
+            itertools.chain(*(
+                (comp,) * cnt
+                for comp, cnt in
+                sorted(
+                    iteritems(self.components),
+                    key = lambda comp_cnt: comp_cnt[0],
+                )
+            ))
+        )
+    
+    
+    @property
+    def stoichiometry_str_genesymbols(self):
+        
+        return ';'.join(
+            itertools.chain(*(
+                (mapping.map_name0(comp, 'uniprot', 'genesymbol'),) * cnt
+                for comp, cnt in
+                sorted(
+                    iteritems(self.components),
+                    key = lambda comp_cnt: comp_cnt[0],
+                )
+            ))
+        )
 
 class Interface(object):
     
