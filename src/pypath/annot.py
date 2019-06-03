@@ -80,6 +80,7 @@ default_fields = {
     'Vesiclepedia': ('vesicle',),
     'Exocarta': ('vesicle',),
     'Ramilowski_location': ('location',),
+    'HPA': ('tissue', 'level'),
     'CellPhoneDB': (
         'receptor',
         'adhesion',
@@ -2020,13 +2021,17 @@ class AnnotationTable(session_mod.Logger):
         
         for resource in self.annots.values():
             
+            # skipping HPA for now because too large number of
+            # annotations, it would take very long:
+            if resource.name == 'HPA':
+                
+                continue
+            
             use_fields = (
                 self.use_fields[resource.name]
                     if resource.name in self.use_fields else
                 None
             )
-            print(resource.name)
-            print(use_fields)
             
             this_names, this_array = resource.to_array(
                     reference_set = reference_set,
