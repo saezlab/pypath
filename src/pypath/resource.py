@@ -18,6 +18,14 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import os
+
+try:
+    import cPickle as pickle
+except:
+    import pickle
+
+
 import pypath.dataio as dataio
 import pypath.common as common
 import pypath.session_mod as session_mod
@@ -36,6 +44,8 @@ class AbstractResource(session_mod.Logger):
             ncbi_tax_id = 9606,
             input_method = None,
             input_args = None,
+            dump = None,
+            data_attr_name = None,
             **kwargs
         ):
         """
@@ -49,7 +59,9 @@ class AbstractResource(session_mod.Logger):
             
             session_mod.Logger.__init__(self, name = 'resource')
         
+        self.dump = dump
         self.name = name
+        self._data_attr_name = data_attr_name or 'data'
         self._input_method = input_method
         self.input_args = input_args or {}
         self.ncbi_tax_id = ncbi_tax_id
@@ -58,8 +70,12 @@ class AbstractResource(session_mod.Logger):
     def load(self):
 
         self.set_method()
-        self.load_data()
-        self.process()
+        from_dump = self.from_dump()
+        
+        if not from_dump:
+            
+            self.load_data()
+            self.process()
 
         if hasattr(self, 'data'):
 
@@ -92,7 +108,7 @@ class AbstractResource(session_mod.Logger):
         self._log('Loading data from `%s`.' % self.name)
         
         self.set_method()
-
+        
         if hasattr(self, 'input_method'):
 
             self.data = self.input_method(**self.input_args)
@@ -110,3 +126,46 @@ class AbstractResource(session_mod.Logger):
     def _process_method(self):
 
         pass
+    
+    
+    def from_dump(self):
+        
+        if self.dump is not None:
+            
+            if (
+                isinstance(self.dump, common.basestring) and
+                os.path.exists(self.dump)
+            ):
+                
+                with open(self.dump, 'rb') as fp:
+                    
+                    self._from_dump = pickle.load(fp)
+                
+            else:
+                
+                self._from_dump = self.dump
+            
+            self._from_dump_callback()
+            
+            return True
+        
+        return False
+    
+    
+    def _from_dump_callback(self):
+        
+        if hasattr(self, '_from_dump'):
+            
+            setattr(self, self._data_attr_name, self._from_dump)
+            delattr(self, '_from_dump')
+            delattr(self, 'dump')
+    
+    
+    def save_to_pickle(self, pickle_file):
+        
+        with open(pickle_file, 'wb') as fp:
+            
+            pickle.dump(
+                obj = getattr(self, self._data_attr_name),
+                file = fp,
+            )

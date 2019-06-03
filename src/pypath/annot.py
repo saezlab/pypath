@@ -358,6 +358,7 @@ class AnnotationBase(resource.AbstractResource):
             complexes = (),
             reference_set = (),
             infer_complexes = True,
+            dump = None,
             **kwargs
         ):
         """
@@ -388,6 +389,8 @@ class AnnotationBase(resource.AbstractResource):
             ncbi_tax_id = ncbi_tax_id,
             input_method = input_method,
             input_args = input_args,
+            dump = dump,
+            data_attr_name = 'annot',
         )
         
         self.entity_type = entity_type
@@ -1571,23 +1574,9 @@ class GOIntercell(AnnotationBase):
 class CellPhoneDB(AnnotationBase):
     
     
-    record = collections.namedtuple(
-        'CellPhoneDBAnnotation',
-        (
-            'receptor',
-            'adhesion',
-            'cytoplasm',
-            'peripheral',
-            'secretion',
-            'secreted',
-            'transporter',
-            'transmembrane',
-            'extracellular',
-            'integrin',
-        )
-    )
+    record = dataio.CellPhoneDBAnnotation
     
-
+    
     def __init__(self, **kwargs):
         
         _ = kwargs.pop('ncbi_tax_id', None)
@@ -1676,15 +1665,18 @@ class Corum(AnnotationBase):
     
     def _process_method(self, *args, **kwargs):
         
-        CorumAnnotation = (
-            collections.namedtuple('CorumAnnotation', (self._annot_attr,))
+        record = CorumAnnotation = (
+            collections.namedtuple(
+                'CorumAnnotation%s' % self._annot_attr.capitalize(),
+                (self._annot_attr,),
+            )
         )
         
         self.annot = dict(
             (
                 cplex.__str__(),
                 set(
-                    CorumAnnotation(annot_val)
+                    record(annot_val)
                     for annot_val in cplex.attrs[self._annot_attr]
                     if annot_val != 'None'
                 )
@@ -1983,7 +1975,7 @@ class AnnotationTable(session_mod.Logger):
         
         if self.pickle_file:
             
-            self.load_from_pickle(fname = self.pickle_file)
+            self.load_from_pickle(pickle_file = self.pickle_file)
             return
         
         self.set_reference_set()
@@ -1999,21 +1991,73 @@ class AnnotationTable(session_mod.Logger):
         
         with open(pickle_file, 'rb') as fp:
             
-            self.proteins, self.complexes, self.reference_set, self.annots = (
+            self.proteins, self.complexes, self.reference_set, annots = (
                 pickle.load(fp)
             )
+            
+            self.annots = {}
+            
+            for name, (cls_name, data, record_cls) in iteritems(annots):
+                
+                if record_cls is not None:
+                    
+                    setattr(
+                        sys.modules[record_cls.__module__],
+                        record_cls.__name__,
+                        record_cls,
+                    )
+                
+                cls = globals()[cls_name]
+                
+                self.annots[name] = cls(dump = data)
     
     
     def save_to_pickle(self, pickle_file):
         
+        
+        def get_record_class(annot):
+            
+            for val in annot.values():
+                
+                for elem in val:
+                    
+                    return elem.__class__
+        
+        
         with open(pickle_file, 'wb') as fp:
+            
+            classes = dict(
+                (
+                    name,
+                    get_record_class(annot.annot)
+                )
+                for name, annot in iteritems(self.annots)
+            )
+            
+            for cls in classes.values():
+                
+                if cls is not None:
+                    
+                    setattr(sys.modules[cls.__module__], cls.__name__, cls)
+            
+            annots = dict(
+                (
+                    name,
+                    (
+                        annot.__class__.__name__,
+                        annot.annot,
+                        classes[name],
+                    )
+                )
+                for name, annot in iteritems(self.annots)
+            )
             
             pickle.dump(
                 obj = (
                     self.proteins,
                     self.complexes,
                     self.reference_set,
-                    self.annots,
+                    annots,
                 ),
                 file = fp,
             )

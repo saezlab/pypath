@@ -128,6 +128,23 @@ ERASE_LINE = '\x1b[2K'
 #
 
 
+CellPhoneDBAnnotation = collections.namedtuple(
+    'CellPhoneDBAnnotation',
+    (
+        'receptor',
+        'adhesion',
+        'cytoplasm',
+        'peripheral',
+        'secretion',
+        'secreted',
+        'transporter',
+        'transmembrane',
+        'extracellular',
+        'integrin',
+    )
+)
+
+
 def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
 
     try:
@@ -5941,21 +5958,7 @@ def _cellphonedb_annotations(url, name_method):
             attr.capitalize()
         )
 
-    record = collections.namedtuple(
-        'CellPhoneDBAnnotation',
-        (
-            'receptor',
-            'adhesion',
-            'cytoplasm',
-            'peripheral',
-            'secretion',
-            'secreted',
-            'transporter',
-            'transmembrane',
-            'extracellular',
-            'integrin',
-        )
-    )
+    record = CellPhoneDBAnnotation
 
     annot = {}
 

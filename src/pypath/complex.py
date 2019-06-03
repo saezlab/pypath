@@ -64,6 +64,7 @@ class AbstractComplexResource(resource.AbstractResource):
             ncbi_tax_id = 9606,
             input_method = None,
             input_args = None,
+            dump = None,
             **kwargs
         ):
         """
@@ -86,6 +87,8 @@ class AbstractComplexResource(resource.AbstractResource):
             ncbi_tax_id = ncbi_tax_id,
             input_method = input_method,
             input_args = input_args,
+            dump = dump,
+            data_attr_name = 'complexes',
         )
 
         self.load()
@@ -205,6 +208,15 @@ class AbstractComplexResource(resource.AbstractResource):
             records,
             columns = colnames,
         )
+    
+    
+    def _from_dump_callback(self):
+        
+        if hasattr(self, '_from_dump'):
+            
+            self.complexes = self._from_dump
+            delattr(self, '_from_dump')
+            delattr(self, 'dump')
 
 
 class CellPhoneDB(AbstractComplexResource):
