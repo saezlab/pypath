@@ -79,6 +79,7 @@ default_fields = {
     'Locate': ('location',),
     'Vesiclepedia': ('vesicle',),
     'Exocarta': ('vesicle',),
+    'Ramilowski_location': ('location',),
     'CellPhoneDB': (
         'receptor',
         'adhesion',
@@ -726,6 +727,14 @@ class AnnotationBase(resource.AbstractResource):
     
     
     def to_array(self, reference_set = None, use_fields = None):
+        
+        use_fields = (
+            use_fields or (
+                default_fields[self.name]
+                    if self.name in default_fields else
+                None
+            )
+        )
         
         self._log(
             'Creating boolean array from `%s` annotation data.' % self.name
@@ -2011,11 +2020,19 @@ class AnnotationTable(session_mod.Logger):
         
         for resource in self.annots.values():
             
+            use_fields = (
+                self.use_fields[resource.name]
+                    if resource.name in self.use_fields else
+                None
+            )
+            print(resource.name)
+            print(use_fields)
+            
             this_names, this_array = resource.to_array(
                     reference_set = reference_set,
                     use_fields = (
-                        self.use_fields[resource.__class__]
-                            if resource.__class__ in self.use_fields else
+                        self.use_fields[resource.name]
+                            if resource.name in self.use_fields else
                         None
                     ),
                 )
