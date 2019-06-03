@@ -27,6 +27,11 @@ import imp
 import collections
 import itertools
 
+try:
+    import cPickle as pickle
+except:
+    import pickle
+
 import numpy as np
 import pandas as pd
 
@@ -112,13 +117,17 @@ class CustomAnnotation(session_mod.Logger):
     def __init__(
             self,
             class_definitions = None,
+            pickle_file = None,
+            annotdb_pickle_file = None,
         ):
         
         if not hasattr(self, '_log_name'):
             
             session_mod.Logger.__init__(self, name = 'annot')
-
-        self.annotdb = get_db()
+        
+        self.pickle_file = pickle_file
+        self.annotdb_pickle_file = annotdb_pickle_file
+        self.annotdb = get_db(pickle_file = self.annotdb_pickle_file)
 
         self._class_definitions = {}
         self.add_class_definitions(class_definitions or {})
@@ -158,13 +167,31 @@ class CustomAnnotation(session_mod.Logger):
         Creates a classification of proteins according to their roles
         in the intercellular communication.
         """
-
+        
+        if self.pickle_file:
+            
+            self.load_from_pickle(fname = self.pickle_file)
+            return
+        
         for classdef in self._class_definitions.values():
 
             if classdef.name not in self.classes or update:
 
                 self.create_class(classdef)
-
+    
+    
+    def load_from_pickle(self, pickle_file):
+        
+        self.classes = pickle.load(pickle_file)
+    
+    
+    def save_to_pickle(self, pickle_file):
+        
+        pickle.dump(
+            obj = self.classes,
+            file = pickle_file,
+        )
+    
 
     def create_class(self, classdef):
         """
@@ -1882,6 +1909,7 @@ class AnnotationTable(session_mod.Logger):
             keep_annotators = True,
             create_dataframe = False,
             load = True,
+            pickle_file = None,
         ):
         """
         Manages a custom set of annotation resources. Loads data and
@@ -1916,6 +1944,7 @@ class AnnotationTable(session_mod.Logger):
         session_mod.Logger.__init__(self, name = 'annot')
 
         self._module = sys.modules[self.__module__]
+        self.pickle_file = pickle_file
         self.complexes = complexes
         self.protein_sources = protein_sources or protein_sources_default
         self.complex_sources = complex_sources or complex_sources_default
@@ -1948,10 +1977,35 @@ class AnnotationTable(session_mod.Logger):
 
     def load(self):
         
+        if self.pickle_file:
+            
+            self.load_from_pickle(fname = self.pickle_file)
+            return
+        
         self.set_reference_set()
         self.load_protein_resources()
         self.load_complex_resources()
         self.make_array()
+    
+    
+    def load_from_pickle(self, pickle_file):
+        
+        self.proteins, self.complexes, self.reference_set, self.annots = (
+            pickle.load(pickle_file)
+        )
+    
+    
+    def save_to_pickle(self, pickle_file):
+        
+        pickle.dump(
+            obj = (
+                self.proteins,
+                self.complexes,
+                self.reference_set,
+                self.annots,
+            ),
+            file = pickle_file,
+        )
     
     
     def set_reference_set(self):

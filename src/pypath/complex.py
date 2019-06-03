@@ -22,6 +22,11 @@ from future.utils import iteritems
 
 import collections
 
+try:
+    import cPickle as pickle
+except:
+    import pickle
+
 import numpy as np
 import pandas as pd
 
@@ -351,6 +356,7 @@ class ComplexAggregator(AbstractComplexResource):
     def __init__(
             self,
             resources = None,
+            pickle_file = None,
         ):
         """
         Combines complexes from multiple resources.
@@ -360,6 +366,7 @@ class ComplexAggregator(AbstractComplexResource):
             module or custom
         """
 
+        self.pickle_file = pickle_file
         self.resources = resources or complex_resources
 
         AbstractComplexResource.__init__(
@@ -369,7 +376,12 @@ class ComplexAggregator(AbstractComplexResource):
 
 
     def load(self):
-
+        
+        if self.pickle_file:
+            
+            self.load_from_pickle(self.pickle_file)
+            return
+        
         self.data = {}
 
         for res in self.resources:
@@ -400,18 +412,31 @@ class ComplexAggregator(AbstractComplexResource):
 
         resource.AbstractResource.load(self)
         self.update_index()
+    
+    
+    def load_from_pickle(self, pickle_file):
+        
+        self.classes = pickle.load(pickle_file)
+    
+    
+    def save_to_pickle(self, pickle_file):
+        
+        pickle.dump(
+            obj = self.data,
+            file = pickle_file,
+        )
 
 
-def init_db():
+def init_db(**kwargs):
     """
     Initializes or reloads the complex database.
     The database will be assigned to the ``db`` attribute of this module.
     """
 
-    globals()['db'] = ComplexAggregator()
+    globals()['db'] = ComplexAggregator(**kwargs)
 
 
-def get_db():
+def get_db(**kwargs):
     """
     Retrieves the current database instance and initializes it if does
     not exist yet.
@@ -419,7 +444,7 @@ def get_db():
 
     if 'db' not in globals():
 
-        init_db()
+        init_db(**kwargs)
 
     return globals()['db']
 
