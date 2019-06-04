@@ -1419,6 +1419,7 @@ class_types = {
         'extracellular',
         'secreted',
         'transmembrane',
+        'intracellular',
     },
     'main': {
         'adhesion',
@@ -1435,5 +1436,14 @@ class_types = {
         'growth_factor_binder',
         'growth_factor_regulator',
         'tight_junction',
-    }
+    },
+    'misc': {
+        'extracellular_peptidase',
+        'interleukin_receptors_hgnc',
+        'interleukins',
+        'chemokine_ligands_hgnc',
+        'endogenous_ligands_hgnc',
+    },
 }
+
+

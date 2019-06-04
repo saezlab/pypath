@@ -18,6 +18,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import imp
 import collections
 
 import pandas as pd
@@ -61,6 +62,18 @@ class Network(session_mod.Logger):
             hdr = hdr or records[0]._fields
             
             self.records = pd.DataFrame(records, columns = hdr)
+    
+    
+    def reload(self):
+        """
+        Reloads the object from the module level.
+        """
+        
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
     
     
     @classmethod
