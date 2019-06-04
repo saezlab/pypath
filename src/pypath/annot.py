@@ -2305,7 +2305,7 @@ class AnnotationTable(session_mod.Logger):
         
         df = pd.DataFrame(
             data = self.data,
-            index = self.uniprots,
+            index = self.reference_set,
             columns = colnames,
         )
         
