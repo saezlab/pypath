@@ -1440,7 +1440,7 @@ class_types = {
     'misc': {
         'extracellular_peptidase',
         'interleukin_receptors_hgnc',
-        'interleukins',
+        'interleukins_hgnc',
         'chemokine_ligands_hgnc',
         'endogenous_ligands_hgnc',
     },
