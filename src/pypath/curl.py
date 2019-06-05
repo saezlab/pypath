@@ -1104,6 +1104,7 @@ class Curl(FileOpener):
         
         self.curl = pycurl.Curl()
         self.set_url(url = url)
+        self.curl.setopt(self.curl.SSL_VERIFYPEER, False)
         self.curl.setopt(self.curl.FOLLOWLOCATION, self.follow_http_redirect)
         self.curl.setopt(self.curl.CONNECTTIMEOUT, self.timeout)
     

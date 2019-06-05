@@ -741,7 +741,7 @@ urls = {
         'label': 'DIP PSI-MI tab',
         'login': 'http://dip.doe-mbi.ucla.edu/dip/Login.cgi',
         'url': 'http://dip.mbi.ucla.edu/dip/file?'
-        'ds=current&fn=Hsapi20160430%s&ff=txt',
+        'ds=current&fn=Hsapi20170205%s&ff=txt',
         'ik': 'http://dip.doe-mbi.ucla.edu/dip/DIPview.cgi?IK=%u'
     },
     'vaquerizas2009': {
