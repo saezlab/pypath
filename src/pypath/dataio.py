@@ -6914,11 +6914,19 @@ def kegg_interactions():
 
         for rel in kgmlsoup.find_all('relation'):
             st = rel.find('subtype')
-            if rel.attrs['entry1'] in uentries and rel.attrs['entry2'] in uentries and \
-                    st and 'name' in st.attrs:
+            if (
+                rel.attrs['entry1'] in uentries and
+                rel.attrs['entry2'] in uentries and
+                st and
+                'name' in st.attrs
+            ):
+                
                 for u1 in uentries[rel.attrs['entry1']]:
+                    
                     for u2 in uentries[rel.attrs['entry2']]:
+                        
                         interactions.append((u1, u2, st.attrs['name'], pw))
+    
     prg.terminate()
     return common.uniqList(interactions)
 
@@ -8363,7 +8371,9 @@ def signalink_interactions():
     Reads and processes SignaLink3 interactions from local file.
     Returns list of interactions.
     """
+    
     repar = re.compile(r'.*\(([a-z\s]+)\)')
+    repref = re.compile(r'(?:.*:)?((?:[\w]+[^\s])?)\s?')
     notNeeded = set(['acsn', 'reactome'])
     edgesFile = os.path.join(common.ROOT, 'data',
                              urls.files['signalink']['edges'])
@@ -8383,27 +8393,39 @@ def signalink_interactions():
             return attr
 
     with open(nodesFile, 'r') as f:
+        
         for l in f:
+            
             if len(l) > 0:
+                
                 l = l.split('\t')
                 _id = int(l[0])
-                uniprot = l[1].replace('uniprot:', '')
+                uniprot = repref.sub('\\1', l[1])
                 pathways = [
                     pw.split(':')[-1] for pw in l[4].split('|')
                     if pw.split(':')[0] not in notNeeded
                 ]
                 nodes[_id] = [uniprot, pathways]
+    
     prg = progress.Progress(os.path.getsize(edgesFile), 'Reading file', 33)
+    
     with open(edgesFile, 'r') as f:
+        
         lPrev = None
+        
         for l in f:
+            
             prg.step(len(l))
             l = l.strip().split('\t')
+            
             if lPrev is not None:
                 l = lPrev + l[1:]
                 lPrev = None
+                
             if len(l) == 13:
+                
                 if l[-1] == '0':
+                    
                     dbs = [
                         _process_attr(db.split(':')[-1])
                         for db in l[9].replace('"', '').split('|')
@@ -8413,8 +8435,14 @@ def signalink_interactions():
                         continue
                     idSrc = int(l[1])
                     idTgt = int(l[2])
-                    uniprotSrc = l[3].replace('uniprot:', '')
-                    uniprotTgt = l[4].replace('uniprot:', '')
+                    
+                    uniprotSrc = repref.sub('\\1', l[3])
+                    uniprotTgt = repref.sub('\\1', l[4])
+                    
+                    if not uniprotSrc or not uniprotTgt:
+                        
+                        continue
+                    
                     refs = [ref.split(':')[-1] for ref in l[7].split('|')]
                     attrs = dict(
                         tuple(attr.strip().split(':', 1))
@@ -8431,6 +8459,34 @@ def signalink_interactions():
                 lPrev = l
     prg.terminate()
     return interactions
+
+
+def signalink_pathway_annotations():
+    
+    SignalinkPathway = collections.namedtuple(
+        'SignalinkPathway', ['pathway'],
+    )
+    
+    
+    result = collections.defaultdict(set)
+    
+    interactions = signalink_interactions()
+    
+    for i in interactions:
+        
+        for pathway in i[8].split(';'):
+            
+            result[i[0]].add(
+                SignalinkPathway(pathway = pathway)
+            )
+        
+        for pathway in i[9].split(';'):
+            
+            result[i[1]].add(
+                SignalinkPathway(pathway = pathway)
+            )
+    
+    return result
 
 
 def get_laudanna_directions():

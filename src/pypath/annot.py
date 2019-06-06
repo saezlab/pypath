@@ -70,6 +70,7 @@ protein_sources_default = {
     'HumanProteinAtlas',
     'Comppi',
     'SignorPathways',
+    'SignalinkPathways',
     'KeggPathways',
 }
 
@@ -1464,6 +1465,33 @@ class SignorPathways(AnnotationBase):
             name = 'Signor',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'signor_pathway_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class SignalinkPathways(AnnotationBase):
+    
+    _eq_fields = ('pathway',)
+    
+    
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Pathway annotations from SignaLink.
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'SignaLink3',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'signalink_pathway_annotations',
             **kwargs
         )
 
