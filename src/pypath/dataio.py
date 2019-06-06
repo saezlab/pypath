@@ -4917,6 +4917,7 @@ def get_goslim(url = None):
 
 
 def netpath_names():
+    
     repwnum = re.compile(r'_([0-9]+)$')
     result = {}
     url = urls.urls['netpath_names']['url']
@@ -4927,7 +4928,72 @@ def netpath_names():
         if a.attrs['href'].startswith('pathways'):
             num = repwnum.findall(a.attrs['href'])[0]
             name = a.text
-            result[num] = name
+            result[num] = name.strip()
+    return result
+
+
+def netpath_pathway_annotations():
+    
+    NetpathPathway = collections.namedtuple(
+        'NetpathPathway', ['pathway'],
+    )
+    
+    
+    result = collections.defaultdict(set)
+    
+    url_template = urls.urls['netpath_pw']['url']
+    
+    url_main = urls.urls['netpath_pw']['mainpage']
+    c = curl.Curl(url_main, cache = False)
+    cookie = [
+        h.decode().split(':')[1].split(';')[0].strip()
+        for h in c.resp_headers
+        if h.startswith(b'Set-Cookie')
+    ]
+    cookie_hdr = ['Cookie: %s' % '; '.join(cookie)]
+    
+    pathway_ids = netpath_names()
+    
+    for _id, pathway in iteritems(pathway_ids):
+        
+        url = url_template % int(_id)
+        c = curl.Curl(
+            url,
+            req_headers = cookie_hdr,
+            silent = False,
+            encoding = 'iso-8859-1',
+        )
+        
+        soup = bs4.BeautifulSoup(c.result, 'html.parser')
+        
+        for tbl in soup.find_all('table'):
+            
+            hdr = tbl.find('td', {'class': 'barhead'})
+            
+            if not hdr or not hdr.text.strip().startswith('Molecules Invol'):
+                
+                continue
+            
+            for td in tbl.find_all('td'):
+                
+                genesymbol = td.text.strip()
+                
+                if not genesymbol:
+                    
+                    continue
+                
+                uniprot = mapping.map_name0(
+                    genesymbol,
+                    'genesymbol',
+                    'uniprot',
+                )
+                
+                result[uniprot].add(
+                    NetpathPathway(
+                        pathway = pathway
+                    )
+                )
+    
     return result
 
 

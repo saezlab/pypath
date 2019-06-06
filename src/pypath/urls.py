@@ -495,6 +495,11 @@ urls = {
         'pathway names only by extracting them from HTML....',
         'url': 'http://www.netpath.org/browse'
     },
+    'netpath_pw': {
+        'label': 'NetPath pathway page',
+        'mainpage': 'http://mirror.netpath.org/index.html',
+        'url': 'http://mirror.netpath.org/pathways?path_id=NetPath_%u'
+    },
     'netpath_psimi': {
         'label': 'Batch download of NetPath pathways in PSI-MI format',
         'url': 'http://www.netpath.org/download/zipped/PSI-MI.zip'

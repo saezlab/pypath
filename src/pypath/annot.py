@@ -72,6 +72,7 @@ protein_sources_default = {
     'SignorPathways',
     'SignalinkPathways',
     'KeggPathways',
+    'NetpathPathways',
 }
 
 complex_sources_default = {
@@ -1519,6 +1520,33 @@ class KeggPathways(AnnotationBase):
             name = 'KEGG',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'kegg_pathway_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class NetpathPathways(AnnotationBase):
+    
+    _eq_fields = ('pathway',)
+    
+    
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Pathway annotations from NetPath.
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'NetPath',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'netpath_pathway_annotations',
             **kwargs
         )
 
