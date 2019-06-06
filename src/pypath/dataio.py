@@ -6951,22 +6951,24 @@ def signor_pathways(**kwargs):
 
     soup = bs4.BeautifulSoup(c.result, 'html.parser')
 
-    prg = progress.Progress(
-        len(soup.find('select', {'name': 'pathway_list'}).findAll('option')),
-        'Downloading data from Signor',
-        1,
-        percent = False
-    )
-
-    for short, full in [
+    pathway_names = [
         (opt['value'], opt.text)
         for opt in soup.find(
             'select', {'name': 'pathway_list'}
         ).findAll('option')
-    ]:
+    ]
+    
+    prg = progress.Progress(
+        len(pathway_names),
+        'Downloading data from Signor',
+        1,
+        percent = False
+    )
+    
+    for short, full in pathway_names:
 
         prg.step()
-
+        
         if not short:
 
             continue
@@ -6982,7 +6984,9 @@ def signor_pathways(**kwargs):
             binary_data = binary_data,
             encoding = 'utf-8',
         )
-
+        
+        #csv.DictReader(c_pw.result)
+        
         sep = '@#@#@'
         lines = csv_sep_change(
             c_pw.result,
@@ -7001,17 +7005,17 @@ def signor_pathways(**kwargs):
                 )
             )
         )
-
+        
         proteins_pathways[full] = set([])
 
         proteins_pathways[full] = (
             proteins_pathways[full] | set(
                 map(
                     lambda l:
-                        l[5],
+                        l[4],
                     filter(
                         lambda l:
-                            l[4].lower() == 'protein',
+                            l[3].lower() == 'protein',
                         data
                     )
                 )
@@ -7022,10 +7026,10 @@ def signor_pathways(**kwargs):
             proteins_pathways[full] | set(
                 map(
                     lambda l:
-                        l[10],
+                        l[8],
                     filter(
                         lambda l:
-                            l[9].lower() == 'protein',
+                            l[7].lower() == 'protein',
                         data
                     )
                 )
@@ -7035,11 +7039,11 @@ def signor_pathways(**kwargs):
         interactions_pathways[full] = set(
             map(
                 lambda l:
-                    (l[5], l[10]),
+                    (l[4], l[8]),
                 filter(
                     lambda l:
-                        l[4].lower() == 'protein' and
-                        l[9].lower() == 'protein',
+                        l[3].lower() == 'protein' and
+                        l[7].lower() == 'protein',
                     data
                 )
             )

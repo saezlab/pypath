@@ -150,7 +150,7 @@ pathwaycommons = {
 
 pathwaycommons1 = {
     'PathwayCommons': input_formats.ReadSettings(
-        name = "PathwayCommons",
+        name = "PathwayCommons"
         separator = None,
         id_col_a = 0,
         id_col_b = 1,
@@ -1001,6 +1001,9 @@ ptm_misc = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {})
 }
+
+# synonym
+ptm_noref = ptm_misc
 
 ptm_all = copy.deepcopy(ptm_misc)
 ptm_all.update(ptm)
