@@ -1746,13 +1746,14 @@ def main_page():
     notebook_dir = ['pypath-docs', 'notebooks']
 
     notebook_names = [
-        ('pypath_build_networks.html', 'Quick start'),
-        ('intro.html', 'Introduction (directions, enzyme-substrate, subnetworks)'),
-        ('pypath_mapping.html', 'ID conversion'),
-        ('pathway_extraction.html', 'Pathway annotations'),
-        ('node_neighbourhood.html', 'Extracting signaling networks'),
-        ('pypath_dorothea_demo.html', 'DoRothEA in pypath'),
-        ('TF_location.html', 'Finding transcription factors')
+        ('pypath_guide.html', 'Comprehensive guide'),
+        #('pypath_build_networks.html', 'Quick start'),
+        #('intro.html', 'Introduction (directions, enzyme-substrate, subnetworks)'),
+        #('pypath_mapping.html', 'ID conversion'),
+        #('pathway_extraction.html', 'Pathway annotations'),
+        #('node_neighbourhood.html', 'Extracting signaling networks'),
+        #('pypath_dorothea_demo.html', 'DoRothEA in pypath'),
+        #('TF_location.html', 'Finding transcription factors')
     ]
 
     if os.path.exists(os.path.join(*notebook_dir)):

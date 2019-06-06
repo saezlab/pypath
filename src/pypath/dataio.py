@@ -8468,7 +8468,7 @@ def signalink_interactions():
                 _id = int(l[0])
                 uniprot = repref.sub('\\1', l[1])
                 pathways = [
-                    pw.split(':')[-1] for pw in l[4].split('|')
+                    pw.split(':')[-1].strip() for pw in l[4].split('|')
                     if pw.split(':')[0] not in notNeeded
                 ]
                 nodes[_id] = [uniprot, pathways]
