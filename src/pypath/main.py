@@ -13035,7 +13035,7 @@ class PyPath(session_mod.Logger):
         """
         """
 
-        wangd = dataio.get_wang_effects()
+        wangd = dataio.wang_interactions()
         self.process_directions(wangd, 'Wang', stimulation='+', inhibition='-',
                                 directed='0', id_type='genesymbol',
                                 graph=graph)

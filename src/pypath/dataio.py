@@ -8449,11 +8449,12 @@ def get_acsn_effects():
     return effects
 
 
-def get_wang_effects():
+def wang_interactions():
     """
     Downloads and processes Wang Lab HumanSignalingNetwork.
-    Returns list of effects.
+    Returns list of interactions.
     """
+    
     url = urls.urls['wang']['url']
     c = curl.Curl(url, silent = False)
     data = c.result
@@ -8462,7 +8463,9 @@ def get_wang_effects():
     nodes = {}
     reading_nodes = False
     reading_edges = False
+    
     for l in data:
+        
         if len(l.strip()) == 0:
             reading_nodes = False
             reading_edges = False
@@ -8476,6 +8479,7 @@ def get_wang_effects():
         if l[0].startswith('From'):
             reading_nodes = False
             reading_edges = True
+    
     return effects
 
 
