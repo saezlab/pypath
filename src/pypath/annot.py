@@ -69,7 +69,8 @@ protein_sources_default = {
     'Zhong2015',
     'HumanProteinAtlas',
     'Comppi',
-    'SignorPathway',
+    'SignorPathways',
+    'KeggPathways',
 }
 
 complex_sources_default = {
@@ -1448,14 +1449,14 @@ class Matrixdb(AnnotationBase):
         delattr(self, 'data')
 
 
-class SignorPathway(AnnotationBase):
+class SignorPathways(AnnotationBase):
     
     _eq_fields = ('pathway',)
     
     
     def __init__(self, ncbi_tax_id = 9606, **kwargs):
         """
-        Protein annotations from MatrixDB.
+        Pathway annotations from Signor.
         """
 
         AnnotationBase.__init__(
@@ -1473,6 +1474,34 @@ class SignorPathway(AnnotationBase):
         self.annot = self.data
 
         delattr(self, 'data')
+
+
+class KeggPathways(AnnotationBase):
+    
+    _eq_fields = ('pathway',)
+    
+    
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Pathway annotations from KEGG.
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'KEGG',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'kegg_pathway_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
 
 
 class Locate(AnnotationBase):

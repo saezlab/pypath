@@ -6925,7 +6925,7 @@ def kegg_interactions():
 
 def kegg_pathways():
 
-    data = get_kegg()
+    data = kegg_interactions()
     pws = common.uniqList(map(lambda i: i[3], data))
     proteins_pws = dict(map(lambda pw: (pw, set([])), pws))
     interactions_pws = dict(map(lambda pw: (pw, set([])), pws))
@@ -6934,6 +6934,28 @@ def kegg_pathways():
         proteins_pws[pw].add(u2)
         interactions_pws[pw].add((u1, u2))
     return proteins_pws, interactions_pws
+
+
+def kegg_pathway_annotations():
+    
+    KeggPathway = collections.namedtuple(
+        'KeggPathway', ['pathway'],
+    )
+    
+    
+    result = collections.defaultdict(set)
+    
+    proteins, interactions = kegg_pathways()
+    
+    for pathway, uniprots in iteritems(proteins):
+        
+        record = KeggPathway(pathway = pathway)
+        
+        for uniprot in uniprots:
+            
+            result[uniprot].add(record)
+    
+    return result
 
 
 def signor_pathways(**kwargs):
