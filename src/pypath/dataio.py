@@ -7054,6 +7054,28 @@ def signor_pathways(**kwargs):
     return proteins_pathways, interactions_pathways
 
 
+def signor_pathway_annotations():
+    
+    SignorPathway = collections.namedtuple(
+        'SignorPathway', ['pathway']
+    )
+    
+    
+    result = collections.defaultdict(set)
+    
+    proteins, interactions = signor_pathways()
+    
+    for pathway, uniprots in iteritems(proteins):
+        
+        record = SignorPathway(pathway = pathway)
+        
+        for uniprot in uniprots:
+            
+            result[uniprot].add(record)
+    
+    return result
+
+
 def csv_sep_change(csv, old, new):
 
     clean_csv = []

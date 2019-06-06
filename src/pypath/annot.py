@@ -69,6 +69,7 @@ protein_sources_default = {
     'Zhong2015',
     'HumanProteinAtlas',
     'Comppi',
+    'SignorPathway',
 }
 
 complex_sources_default = {
@@ -1435,6 +1436,33 @@ class Matrixdb(AnnotationBase):
             name = 'MatrixDB',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'matrixdb_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class SignorPathway(AnnotationBase):
+    
+    _eq_fields = ('pathway',)
+    
+    
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Protein annotations from MatrixDB.
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'Signor',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'signor_pathway_annotations',
             **kwargs
         )
 
