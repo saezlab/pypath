@@ -12959,7 +12959,7 @@ class PyPath(session_mod.Logger):
         """
         """
 
-        keggd = dataio.get_kegg()
+        keggd = dataio.kegg_interactions()
         self.process_directions(keggd, 'KEGG', stimulation='activation',
                                 inhibition='inhibition', graph=graph)
 

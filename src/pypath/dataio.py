@@ -6862,14 +6862,17 @@ def load_macrophage():
     data = data.replace('?', '').replace('->', ',')
 
 
-def get_kegg():
+def kegg_interactions():
     """
     Downloads and processes KEGG Pathways.
     Returns list of interactions.
     """
+    
     rehsa = re.compile(r'.*(hsa[0-9]+).*')
-    req_hdrs = ['Referer: http://www.genome.jp/kegg-bin/show_pathway'
-        '?map=hsa04710&show_description=show']
+    req_hdrs = [
+        'Referer: http://www.genome.jp/kegg-bin/show_pathway'
+        '?map=hsa04710&show_description=show'
+    ]
     hsa_list = []
     interactions = []
 
@@ -6888,7 +6891,7 @@ def get_kegg():
     for hsa, pw in hsa_list:
 
         prg.step()
-        c = curl.Curl(urls.urls['kegg_pws']['kgml_url'] % hsa,
+        c = curl.Curl(urls.urls['kegg_pws']['kgml_url_2'] % hsa,
                       silent = True,
                       req_headers = req_hdrs)
         kgml = c.result

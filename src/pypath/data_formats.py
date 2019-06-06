@@ -497,7 +497,7 @@ pathway = {
         ]),
         input = 'signor_interactions',
         references = (9, ";"),
-        header = True,
+        header = False,
         extra_edge_attrs = {"signor_mechanism": (7, ';')},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
@@ -516,7 +516,7 @@ pathway = {
         sign = (2, '+', '_'),
         input = 'adhesome_interactions',
         references = 4,
-        header = True,
+        header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
@@ -525,6 +525,32 @@ pathway = {
 
 # synonym
 activity_flow = pathway
+
+"""
+Pathway (activity flow) resources without literature references.
+"""
+pathway_noref = {
+    'kegg': input_formats.ReadSettings(
+        name = "KEGG",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        ncbi_tax_id = 9606,
+        is_directed = (2, ('activation', 'inhibition')),
+        sign = (2, '+', '_'),
+        input = 'kegg_interactions',
+        references = False,
+        must_have_references = False,
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
+}
 
 '''
 Interaction databases included in OmniPath.
