@@ -273,12 +273,12 @@ class TableServer(BaseServer):
     list_fields = {
         'sources',
         'references',
-        'isoforms'
+        'isoforms',
     }
     
     int_list_fields = {
         'references',
-        'isoforms'
+        'isoforms',
     }
     
     args_reference = {
@@ -295,12 +295,14 @@ class TableServer(BaseServer):
                 'omnipath',
                 'tfregulons',
                 'kinaseextra',
-                'mirnatarget'
+                'ligrecextra',
+                'pathwayextra',
+                'mirnatarget',
             },
             'types': {
                 'PPI',
                 'TF',
-                'MTI'
+                'MTI',
             },
             'sources':  None,
             'targets':  None,
@@ -407,12 +409,21 @@ class TableServer(BaseServer):
         },
     }
     
-    datasets_ = {'omnipath', 'tfregulons', 'kinaseextra', 'mirnatarget'}
+    datasets_ = {
+        'omnipath',
+        'tfregulons',
+        'kinaseextra',
+        'ligrecextra',
+        'pathwayextra',
+        'mirnatarget',
+    }
     tfregulons_methods = {'curated', 'coexp', 'chipseq', 'tfbs'}
     dataset2type = {
         'omnipath': 'PPI',
         'tfregulons': 'TF',
         'kinaseextra': 'PPI',
+        'ligrecextra': 'PPI',
+        'pathwayextra': 'PPI',
         'mirnatarget': 'MTI'
     }
     interaction_fields = {

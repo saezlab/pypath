@@ -90,7 +90,12 @@ class WebserviceTables(session_mod.Logger):
         }
         
         param = (
-            ('load_omnipath', {'kinase_substrate_extra': True}),
+            ('load_omnipath', {
+                    'kinase_substrate_extra': True,
+                    'ligand_receptor_extra': True,
+                    'pathway_extra': True,
+                }
+            ),
             ('init_network',  {'lst': tfregulons}),
             ('init_network',  {'lst': data_formats.mirna_target})
         )

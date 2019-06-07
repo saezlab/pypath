@@ -12783,6 +12783,7 @@ class PyPath(session_mod.Logger):
             omnipath = None,
             kinase_substrate_extra = False,
             ligand_receptor_extra = False,
+            pathway_extra = False,
             remove_htp = True,
             htp_threshold = 1,
             keep_directed = True,
@@ -12795,6 +12796,7 @@ class PyPath(session_mod.Logger):
         """
 
         # XXX: According to the alias above omnipath = data_formats.omnipath already
+        # YYY: Ok, but here the user has a chance to override it, is it bad?
         
         exclude = exclude or []
         
@@ -12810,23 +12812,29 @@ class PyPath(session_mod.Logger):
             else:
                 omnipath = data_formats.omnipath
 
-        self.load_resources(omnipath, exclude=exclude)
+        self.load_resources(omnipath, exclude = exclude)
 
         if kinase_substrate_extra:
             self.load_resources(data_formats.ptm_misc)
         
         if ligand_receptor_extra:
             self.load_resources(data_formats.ligand_receptor)
+        
+        if pathway_extra:
+            self.load_resources(data_formats.pathway_noref)
 
         self.third_source_directions()
 
         if remove_htp:
-            self.remove_htp(threshold=htp_threshold, keep_directed=keep_directed)
+            self.remove_htp(
+                threshold = htp_threshold,
+                keep_directed = keep_directed,
+            )
 
         if not keep_directed:
-            self.remove_undirected(min_refs=min_refs_undirected)
+            self.remove_undirected(min_refs = min_refs_undirected)
 
-    def remove_htp(self, threshold=50, keep_directed=False):
+    def remove_htp(self, threshold = 50, keep_directed = False):
         """
         """
 

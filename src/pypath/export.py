@@ -479,6 +479,12 @@ class Export(object):
         sources_kinase_extra = set(
             f.name for f in data_formats.ptm_misc.values()
         )
+        sources_ligrec_extra = set(
+            f.name for f in data_formats.ligand_receptor.values()
+        )
+        sources_pathway_extra = set(
+            f.name for f in data_formats.pathway_misc.values()
+        )
         sources_mirna = set(
             f.name for f in data_formats.mirna_target.values()
         )
@@ -507,6 +513,14 @@ class Export(object):
                 ),
                 'kinaseextra': lambda e, d: (
                     bool(e['dirs'].sources[d] & sources_kinase_extra) and
+                    'PPI' in e['type']
+                ),
+                'ligrecextra': lambda e, d: (
+                    bool(e['dirs'].sources[d] & sources_ligrec_extra) and
+                    'PPI' in e['type']
+                ),
+                'pathwayextra': lambda e, d: (
+                    bool(e['dirs'].sources[d] & sources_pathway_extra) and
                     'PPI' in e['type']
                 ),
                 'mirnatarget': lambda e, d: (
