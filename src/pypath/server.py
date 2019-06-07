@@ -521,7 +521,7 @@ class TableServer(BaseServer):
             [set(s.split(';')) for s in tbl.sources]
         )
         tbl['set_proteins'] = pd.Series(
-            [set(c.split('-')) for c in tbl.components]
+            [set(c.split('-')) for c in tbl.all_components]
         )
     
     
