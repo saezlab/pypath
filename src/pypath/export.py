@@ -46,17 +46,24 @@ class Export(object):
                                   'Undirected', 'Direction_A-B',
                                   'Direction_B-A', 'Stimulatory_A-B',
                                   'Inhibitory_A-B', 'Stimulatory_B-A',
-                                  'Inhibitory_B-A', 'Category']
+                                  'Inhibitory_B-A', 'Consensus',
+                                  'Category']
 
     default_header_bydirs = ['source', 'target', 'source_genesymbol',
                              'target_genesymbol', 'is_directed',
                              'is_stimulation', 'is_inhibition', 'sources',
                              'references', 'dip_url']
 
-    def __init__(self, pa, only_sources=None, extra_node_attrs=None,
-                 extra_edge_attrs=None, outfile=None,
-                 default_vertex_attr_processor=None,
-                 default_edge_attr_processor=None):
+    def __init__(
+            self,
+            pa,
+            only_sources = None,
+            extra_node_attrs = None,
+            extra_edge_attrs = None,
+            outfile = None,
+            default_vertex_attr_processor = None,
+            default_edge_attr_processor = None,
+        ):
 
         self.extra_node_attrs = extra_node_attrs or {}
         self.extra_edge_attrs = extra_edge_attrs or {}
@@ -86,8 +93,12 @@ class Export(object):
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
 
-    def make_df(self, unique_pairs=True, extra_node_attrs=None,
-                extra_edge_attrs=None):
+    def make_df(
+            self,
+            unique_pairs = True,
+            extra_node_attrs = None,
+            extra_edge_attrs = None,
+        ):
         """
         Creates a data frame from the network.
 
@@ -157,7 +168,7 @@ class Export(object):
             # adding default fields
             lines = (
                 self.process_edge_uniquepairs(e)
-                if unique_pairs else
+                    if unique_pairs else
                 self.process_edge_bydirection(e)
             )
 
@@ -187,6 +198,8 @@ class Export(object):
 
         name_a = self.graph.vs[e.source]['name']
         name_b = self.graph.vs[e.target]['name']
+        
+        e['dirs']
 
         return [
             list(itertools.chain(

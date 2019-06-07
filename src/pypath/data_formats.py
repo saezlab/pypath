@@ -150,7 +150,7 @@ pathwaycommons = {
 
 pathwaycommons1 = {
     'PathwayCommons': input_formats.ReadSettings(
-        name = "PathwayCommons"
+        name = "PathwayCommons",
         separator = None,
         id_col_a = 0,
         id_col_b = 1,
