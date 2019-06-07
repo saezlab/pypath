@@ -190,7 +190,7 @@ class AbstractComplexResource(resource.AbstractResource):
 
             records.append([
                 cplex.name if cplex.name else None,
-                cplex.__str__(),
+                cplex.__str__()[8:],
                 ':'.join(
                     '%u' % (cplex.components[comp] if has_stoi else 0)
                     for comp in sorted(cplex.components.keys())
