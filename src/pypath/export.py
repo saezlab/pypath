@@ -46,12 +46,15 @@ class Export(object):
                                   'Undirected', 'Direction_A-B',
                                   'Direction_B-A', 'Stimulatory_A-B',
                                   'Inhibitory_A-B', 'Stimulatory_B-A',
-                                  'Inhibitory_B-A', 'Consensus',
-                                  'Category']
+                                  'Inhibitory_B-A', 'Category']
 
     default_header_bydirs = ['source', 'target', 'source_genesymbol',
                              'target_genesymbol', 'is_directed',
-                             'is_stimulation', 'is_inhibition', 'sources',
+                             'is_stimulation', 'is_inhibition',
+                             'consensus_direction',
+                             'consensus_stimulation',
+                             'consensus_inhibition',
+                             'sources',
                              'references', 'dip_url']
 
     def __init__(
@@ -198,8 +201,6 @@ class Export(object):
 
         name_a = self.graph.vs[e.source]['name']
         name_b = self.graph.vs[e.target]['name']
-        
-        e['dirs']
 
         return [
             list(itertools.chain(
@@ -250,12 +251,18 @@ class Export(object):
         """
 
         lines = []
+        
+        consensus_edges = set(map(tuple, e['dirs'].consensus_edges()))
+        consensus_dir = set(c[:3] for c in consensus_edges)
 
         for d in ['straight', 'reverse']:
 
             uniprots = getattr(e['dirs'], d)
 
             if e['dirs'].dirs[uniprots]:
+                
+                is_stimulation = int(e['dirs'].is_stimulation(uniprots))
+                is_inhibition = int(e['dirs'].is_inhibition(uniprots))
 
                 this_edge = [
                     uniprots[0],
@@ -263,8 +270,20 @@ class Export(object):
                     self.pa.nodLab[self.pa.nodDct[uniprots[0]]],
                     self.pa.nodLab[self.pa.nodDct[uniprots[1]]],
                     1, # is_directed
-                    int(e['dirs'].is_stimulation(uniprots)),
-                    int(e['dirs'].is_inhibition(uniprots))
+                    is_stimulation,
+                    is_inhibition,
+                    int(
+                        (uniprots[0], uniprots[1], 'directed')
+                        in consensus_dir
+                    ),
+                    int(
+                        (uniprots[0], uniprots[1], 'directed', 'positive')
+                        in consensus_edges
+                    ),
+                    int(
+                        (uniprots[0], uniprots[1], 'directed', 'negative')
+                        in consensus_edges
+                    ),
                 ]
 
                 dsources = (
@@ -294,12 +313,15 @@ class Export(object):
                 lines.append(this_edge)
 
         if not e['dirs'].is_directed():
-
+            
             this_edge = [
                 e['dirs'].nodes[0],
                 e['dirs'].nodes[1],
                 self.pa.nodLab[self.pa.nodDct[e['dirs'].nodes[0]]],
                 self.pa.nodLab[self.pa.nodDct[e['dirs'].nodes[1]]],
+                0,
+                0,
+                0,
                 0,
                 0,
                 0,
