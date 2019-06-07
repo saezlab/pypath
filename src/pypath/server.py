@@ -394,6 +394,19 @@ class TableServer(BaseServer):
             'fields': None,
             'genesymbols': {'1', '0', 'no', 'yes'},
         },
+        'intercell': {
+            'header': None,
+            'format': {
+                'json',
+                'tab',
+                'text',
+                'tsv',
+                'table'
+            },
+            'categories': None,
+            'proteins': None,
+            'fields': None,
+        },
         'complexes': {
             'header': None,
             'format': {
@@ -443,6 +456,7 @@ class TableServer(BaseServer):
             'ptms': 'omnipath_webservice_ptms.tsv',
             'annotations': 'omnipath_webservice_annotations.tsv',
             'complexes': 'omnipath_webservice_complexes.tsv',
+            'intercell': 'omnipath_webservice_intercell.tsv',
         }):
         
         session_mod.Logger.__init__(self, name = 'server')
@@ -456,6 +470,7 @@ class TableServer(BaseServer):
         self._preprocess_ptms()
         self._preprocess_annotations()
         self._preprocess_complexes()
+        self._preptocess_intercell()
         
         BaseServer.__init__(self)
         self._log('TableServer startup ready.')
@@ -539,6 +554,12 @@ class TableServer(BaseServer):
     def _preprocess_annotations(self):
         
         self._log('Preprocessing annotations.')
+        pass
+    
+    
+    def _preprocess_intercell(self):
+        
+        self._log('Preprocessing intercell data.')
         pass
     
     
@@ -1095,6 +1116,38 @@ class TableServer(BaseServer):
             hdr.insert(1, 'genesymbol')
         else:
             genesymbols = False
+        
+        tbl = tbl.loc[:,hdr]
+        
+        return self._serve_dataframe(tbl, req)
+    
+    
+    def intercell(self, req):
+        
+        bad_req = self._check_args(req)
+        
+        if bad_req:
+            
+            return bad_req
+        
+        # starting from the entire dataset
+        tbl = self.data['intercell']
+        
+        hdr = tbl.columns
+        
+        # filtering for databases
+        if b'categories' in req.args:
+            
+            categories = set(req.args[b'categories'])
+            
+            tbl = tbl.category.isin(categories)
+        
+        # filtering for proteins
+        if b'proteins' in req.args:
+            
+            proteins = set(req.args[b'proteins'])
+            
+            tbl = tbl[tbl.uniprot.isin(proteins)]
         
         tbl = tbl.loc[:,hdr]
         
