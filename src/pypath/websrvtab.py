@@ -31,6 +31,7 @@ import pandas as pd
 import pypath.ptm as ptm
 import pypath.complex as complex
 import pypath.annot as annot
+import pypath.intercell as intercell
 import pypath.export as export
 import pypath.main as main
 import pypath.data_formats as data_formats
@@ -50,6 +51,7 @@ class WebserviceTables(session_mod.Logger):
             outfile_ptms = 'omnipath_webservice_ptms.tsv',
             outfile_complexes = 'omnipath_webservice_complexes.tsv',
             outfile_annotations = 'omnipath_webservice_annotations.tsv',
+            outfile_intercell = 'omnipath_webservice_intercell.tsv',
         ):
         
         session_mod.Logger.__init__(self, name = 'websrvtab')
@@ -60,6 +62,7 @@ class WebserviceTables(session_mod.Logger):
         self.outfile_ptms = outfile_ptms
         self.outfile_complexes = outfile_complexes
         self.outfile_annotations = outfile_annotations
+        self.outfile_intercell = outfile_intercell
     
     
     def reload(self):
@@ -77,6 +80,7 @@ class WebserviceTables(session_mod.Logger):
         self.ptms()
         self.complexes()
         self.annotations()
+        self.intercell()
     
     
     def interactions(self):
@@ -214,7 +218,6 @@ class WebserviceTables(session_mod.Logger):
         self._log('Building `annotations` data frame.')
         
         an = annot.AnnotationTable(keep_annotators = True)
-        an.load()
         
         an.make_narrow_df()
         
@@ -227,4 +230,25 @@ class WebserviceTables(session_mod.Logger):
         
         self._log('Data frame `annotations` has been exported to `%s`.' % (
             self.outfile_annotations,
+        ))
+    
+    
+    def intercell(self):
+        
+        elf._log('Building `intercell` data frame.')
+        
+        i = intercell.IntercellAnnotation()
+        
+        i.make_df()
+        i.add_classes_to_df()
+        
+        self.df_intercell = i.df
+        self.df_intercell.to_csv(
+            self.outfile_intercell,
+            sep = '\t',
+            index = False,
+        )
+        
+        self._log('Data frame `intercell` has been exported to `%s`.' % (
+            self.outfile_intercell,
         ))
