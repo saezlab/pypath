@@ -235,7 +235,7 @@ class WebserviceTables(session_mod.Logger):
     
     def intercell(self):
         
-        elf._log('Building `intercell` data frame.')
+        self._log('Building `intercell` data frame.')
         
         i = intercell.IntercellAnnotation()
         

@@ -796,32 +796,6 @@ class Regulation(object):
             self.add_refs(other.refs)
 
 
-class ComplexOld(object):
-    
-    def __init__(self, proteins, name, long_name, sources = None):
-        
-        self.synonyms = set()
-        sources = sources if type(sources) is list else [sources]
-        sources = set(sources) if sources else set()
-        proteins = proteins if type(proteins) is list else list(proteins)
-        for key, val in iteritems(locals()):
-            setattr(self, key, val)
-        self.members = sorted(uniqList(self.proteins))
-        self.constitution = Counter(proteins)
-
-    def __hash__(self):
-        
-        return hash(tuple(sorted(self.proteins)))
-
-    def __contains__(self, item):
-        
-        return item in self.proteins
-
-    def __eq__(self, other):
-        
-        return self.proteins == other.proteins
-
-
 class Complex(object):
     
     
