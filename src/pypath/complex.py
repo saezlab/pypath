@@ -176,6 +176,7 @@ class AbstractComplexResource(resource.AbstractResource):
         colnames = [
             'name',
             'components',
+            'components_genesymbols',
             'stoichiometry',
             'sources',
             'references',
@@ -191,10 +192,8 @@ class AbstractComplexResource(resource.AbstractResource):
             records.append([
                 cplex.name if cplex.name else None,
                 cplex.__str__()[8:],
-                ':'.join(
-                    '%u' % (cplex.components[comp] if has_stoi else 0)
-                    for comp in sorted(cplex.components.keys())
-                ),
+                cplex.genesymbol_str,
+                cplex.stoichiometry,
                 ';'.join(cplex.sources),
                 ';'.join(cplex.references),
                 ';'.join(
