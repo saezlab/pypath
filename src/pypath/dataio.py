@@ -775,6 +775,7 @@ def compleat_complexes(predicted = True):
     complexes = {}
 
     for rec in tab:
+        
 
         is_predicted = (
             rec['predicted'] and
@@ -790,7 +791,7 @@ def compleat_complexes(predicted = True):
             continue
 
         uniprots = []
-
+        
         for entrez in rec['members'].split():
 
             uniprot = mapping.map_name0(entrez.strip(), 'entrez', 'uniprot')
@@ -5667,6 +5668,140 @@ def adhesome_interactions():
         )
     
     return result
+
+
+
+
+def get_cpad():
+    
+    url = urls.urls['cpad']['url']
+    
+    c = curl.Curl(url, silent = False, large = True, encoding = 'iso-8859-1')
+    
+    reader = csv.DictReader(c.result, delimiter = '\t')
+    
+    return reader
+
+
+def cpad_annotations(include_unknown_type = False):
+    
+    CpadAnnotation = collections.namedtuple(
+        'CpadAnnotation',
+        [
+            'regulator_type',
+            'effect_on_pathway',
+            'pathway',
+            'effect_on_cancer',
+            'cancer',
+            'pathway_category',
+        ]
+    )
+    
+    cpad = get_cpad()
+    
+    result = collections.defaultdict(set)
+    
+    for rec in cpad:
+        
+        if rec['Regulator'] == 'NULL':
+            
+            continue
+        
+        for regulator in rec['Regulator'].split(' and '):
+            
+            uniprot = mapping.map_name0(regulator, 'genesymbol', 'uniprot')
+            
+            if uniprot:
+                
+                regulator_name = uniprot
+                regulator_type = 'protein'
+                
+            else:
+                
+                mirbase = mapping.map_name(
+                    'hsa-%s' % regulator,
+                    'mir-mat-name',
+                    'mirbase',
+                )
+                
+                if not mirbase:
+                    
+                    mirbase = mapping.map_name(
+                        'hsa-%s' % regulator,
+                        'mir-name',
+                        'mirbase',
+                    )
+                
+                if mirbase:
+                    
+                    regulator_name = mirbase
+                    regulator_type = 'mirna'
+                    
+                else:
+                    
+                    if include_unknown_type:
+                        
+                        regulator_name = regulator
+                        regulator_type = 'unknown'
+                        
+                    else:
+                        
+                        continue
+            
+            if isinstance(regulator_name, common.basestring):
+                
+                regulator_name = (regulator_name,)
+            
+            for regulator_name_0 in regulator_name:
+                
+                record = CpadAnnotation(
+                    regulator_type = regulator_type,
+                    effect_on_pathway = rec['Regulator_Type'],
+                    effect_on_cancer = rec['Regulation_Type'],
+                    pathway = rec['Pathway'],
+                    pathway_category = rec['Pathway_Category'],
+                    cancer = rec['Cancer'],
+                )
+                
+                result[regulator_name_0].add(record)
+    
+    return result
+
+
+def cpad_pathway_cancer():
+    """
+    Collects only the pathway-cancer relationships. Returns sets of records
+    grouped in dicts by cancer and by pathway.
+    """
+    
+    CpadPathwayCancer = collections.namedtuple(
+        'CpadPathwayCancer',
+        [
+            'pathway',
+            'cancer',
+            'pathway_category',
+            'effect_on_cancer',
+        ]
+    )
+    
+    cpad = get_cpad()
+    
+    by_cancer = collections.defaultdict(set)
+    by_pathway = collections.defaultdict(set)
+    
+    for rec in cpad:
+        
+        record = CpadPathwayCancer(
+            pathway = rec['Pathway'],
+            cancer = rec['Cancer'],
+            pathway_category = rec['Pathway_Category'],
+            effect_on_cancer = rec['Regulation_Type'],
+        )
+        
+        by_cancer[rec['Cancer']].add(record)
+        by_pathway[rec['Pathway']].add(record)
+    
+    return by_cancer, by_pathway
 
 
 def get_integrins():

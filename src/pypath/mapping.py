@@ -1942,3 +1942,30 @@ def map_names(
         nameType = nameType,
         targetNameType = targetNameType,
     )
+
+
+def label(name):
+    """
+    For any kind of entity, either protein, miRNA or protein complex,
+    returns the preferred human readable label. For proteins this means
+    Gene Symbols, for miRNAs miRNA names, for complexes a series of
+    Gene Symbols.
+    """
+    
+    if hasattr(name, 'genesymbol_str'):
+        
+        return name.genesymbol_str
+        
+    elif isinstance(name, common.basestring):
+        
+        if name.startswith('MIMAT'):
+            
+            return map_name0(name, 'mirbase', 'mir-mat-name')
+            
+        elif name.startswith('MI'):
+            
+            return map_name0(name, 'mir-pre', 'mir-name')
+            
+        else:
+            
+            return map_name0(name, 'uniprot', 'genesymbol')

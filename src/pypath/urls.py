@@ -1008,6 +1008,10 @@ urls = {
             'hippie/hippie_current.txt'
         ),
     },
+    'cpad': {
+        'label': 'Literature curated regulator-pathway-cancer relationships',
+        'url': 'http://bio-bigdata.hrbmu.edu.cn/CPAD/download/CPAD-data.txt',
+    },
 }
 
 files = {

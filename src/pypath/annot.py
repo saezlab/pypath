@@ -75,6 +75,7 @@ protein_sources_default = {
     'SignalinkPathways',
     'KeggPathways',
     'NetpathPathways',
+    'Cpad',
 }
 
 complex_sources_default = {
@@ -113,6 +114,10 @@ default_fields = {
         'transporter',
         'transmembrane',
         'extracellular',
+    ),
+    'Cpad': (
+        'cancer',
+        'effect_on_cancer',
     ),
 }
 
@@ -854,7 +859,9 @@ class AnnotationBase(resource.AbstractResource):
 
 
     def make_df(self):
-
+        
+        self._log('Creating dataframe from `%s` annotations.' % self.name)
+        
         discard = {'n/a', None}
 
         columns = [
@@ -877,6 +884,8 @@ class AnnotationBase(resource.AbstractResource):
                 continue
             
             genesymbol_str = (
+                'COMPLEX:%s' % element.genesymbol_str
+                    if hasattr(element, 'genesymbol_str') else
                 'COMPLEX:%s' % (
                     complex.get_db().complexes[element].genesymbol_str
                 )
@@ -1304,6 +1313,33 @@ class Topdb(AnnotationBase):
             input_args = {
                 'ncbi_tax_id': ncbi_tax_id,
             },
+            ncbi_tax_id = ncbi_tax_id,
+            **kwargs
+        )
+    
+    
+    def _process_method(self):
+        
+        self.annot = self.data
+        delattr(self, 'data')
+
+
+class Cpad(AnnotationBase):
+    
+    _eq_fields = (
+        'effect_on_pathway',
+        'pathway',
+        'effect_on_cancer',
+        'cancer' ,
+    )
+    
+    
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'CPAD',
+            input_method = 'cpad_annotations',
             ncbi_tax_id = ncbi_tax_id,
             **kwargs
         )
