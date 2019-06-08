@@ -43,6 +43,8 @@ import pypath.go as go
 import pypath.intercell_annot as intercell_annot
 import pypath.session_mod as session_mod
 import pypath.annot_formats as annot_formats
+import pypath.complex as complex
+import pypath.intera as intera
 
 
 protein_sources_default = {
@@ -755,13 +757,10 @@ class AnnotationBase(resource.AbstractResource):
     
     def all_complexes(self):
         
-        import pypath.complexes as complexes
-        import pypath.intera as intera
-        
         return sorted((
             k
             for k in self.annot.keys()
-            if isinstance(k, intera.complex)
+            if isinstance(k, intera.Complex)
         ))
     
     
@@ -846,6 +845,12 @@ class AnnotationBase(resource.AbstractResource):
             tuple(r[0] for r in result),
             np.vstack([r[1] for r in result]).T
         )
+    
+    
+    @property
+    def has_fields(self):
+        
+        return any(self.annot.values())
 
 
     def make_df(self):
@@ -860,18 +865,31 @@ class AnnotationBase(resource.AbstractResource):
             'value',
             'record_id',
         ]
-
+        
+        has_fields = self.has_fields
         records = []
-
         irec = 0
 
-        for uniprot, annots in iteritems(self.annot):
-
-            if not annots:
+        for element, annots in iteritems(self.annot):
+            
+            if not element:
+                
+                continue
+            
+            genesymbol_str = (
+                element.genesymbol_str
+                    if hasattr(element, 'genesymbol_str') else
+                (
+                    mapping.map_name0(element, 'uniprot', 'genesymbol') or
+                    ''
+                )
+            )
+            
+            if not has_fields:
 
                 records.append([
-                    uniprot,
-                    mapping.map_name0(uniprot, 'uniprot', 'genesymbol'),
+                    element.__str__(),
+                    genesymbol_str,
                     self.name,
                     'in %s' % self.name,
                     'yes',
@@ -893,8 +911,8 @@ class AnnotationBase(resource.AbstractResource):
                         value = ';'.join(map(str, value))
 
                     records.append([
-                        uniprot,
-                        mapping.map_name0(uniprot, 'uniprot', 'genesymbol'),
+                        element.__str__(),
+                        genesymbol_str,
                         self.name,
                         label,
                         str(value),
