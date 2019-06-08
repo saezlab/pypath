@@ -1044,14 +1044,42 @@ class Complex(object):
         
         return ';'.join(
             itertools.chain(*(
-                (mapping.map_name0(comp, 'uniprot', 'genesymbol'),) * cnt
-                for comp, cnt in
+                (
+                    (
+                        mapping.map_name0(
+                            uniprot,
+                            'uniprot',
+                            'genesymbol',
+                        ) or
+                        uniprot
+                    ),
+                ) * cnt
+                for uniprot, cnt in
                 sorted(
                     iteritems(self.components),
                     key = lambda comp_cnt: comp_cnt[0],
                 )
             ))
         )
+    
+    
+    @property
+    def genesymbols(self):
+        
+        return sorted(
+            (
+                mapping.map_name0(uniprot, 'uniprot', 'genesymbol') or
+                uniprot
+            )
+            for uniprot in self.components.keys()
+        )
+    
+    
+    @property
+    def genesymbol_str(self):
+        
+        return '-'.join(self.genesymbols)
+
 
 class Interface(object):
     
