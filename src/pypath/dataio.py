@@ -5692,6 +5692,7 @@ def cpad_annotations(include_unknown_type = False):
             'effect_on_pathway',
             'pathway',
             'effect_on_cancer',
+            'effect_on_cancer_outcome',
             'cancer',
             'pathway_category',
         ]
@@ -5758,6 +5759,7 @@ def cpad_annotations(include_unknown_type = False):
                     regulator_type = regulator_type,
                     effect_on_pathway = rec['Regulator_Type'],
                     effect_on_cancer = rec['Regulation_Type'],
+                    effect_on_cancer_outcome = rec['Outcome_Description'],
                     pathway = rec['Pathway'],
                     pathway_category = rec['Pathway_Category'],
                     cancer = rec['Cancer'],
@@ -5781,6 +5783,7 @@ def cpad_pathway_cancer():
             'cancer',
             'pathway_category',
             'effect_on_cancer',
+            'effect_on_cancer_outcome',
         ]
     )
     
@@ -5796,6 +5799,7 @@ def cpad_pathway_cancer():
             cancer = rec['Cancer'],
             pathway_category = rec['Pathway_Category'],
             effect_on_cancer = rec['Regulation_Type'],
+            effect_on_cancer_outcome = rec['Outcome_Description'],
         )
         
         by_cancer[rec['Cancer']].add(record)

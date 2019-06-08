@@ -483,7 +483,7 @@ class Export(object):
             f.name for f in data_formats.ligand_receptor.values()
         )
         sources_pathway_extra = set(
-            f.name for f in data_formats.pathway_misc.values()
+            f.name for f in data_formats.pathway_noref.values()
         )
         sources_mirna = set(
             f.name for f in data_formats.mirna_target.values()
