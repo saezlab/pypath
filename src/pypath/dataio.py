@@ -7400,7 +7400,7 @@ def signor_complexes(organism = 9606):
                 else:
 
                     cplex = intera.Complex(
-                        name = name,
+                        name = name.replace('"', '').strip(),
                         components = this_components,
                         sources = 'Signor',
                         ids = id_,
@@ -7447,7 +7447,7 @@ def signor_complexes(organism = 9606):
             else:
 
                 cplex = intera.Complex(
-                    name = rec[1],
+                    name = rec[1].replace('"', '').strip(),
                     components = this_components,
                     sources = 'Signor',
                     ids = rec[0],
