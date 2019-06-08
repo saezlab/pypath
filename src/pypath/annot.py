@@ -877,8 +877,10 @@ class AnnotationBase(resource.AbstractResource):
                 continue
             
             genesymbol_str = (
-                element.genesymbol_str
-                    if hasattr(element, 'genesymbol_str') else
+                'COMPLEX:%s' % (
+                    complex.get_db().complexes[element].genesymbol_str
+                )
+                    if element.startswith('COMPLEX:') else
                 (
                     mapping.map_name0(element, 'uniprot', 'genesymbol') or
                     ''

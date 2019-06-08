@@ -165,14 +165,7 @@ class AbstractComplexResource(resource.AbstractResource):
 
 
     def make_df(self):
-
-        have_stoichiometry = {
-            'PDB',
-            'Compleat',
-            'ComplexPortal',
-            'CellPhoneDB',
-        }
-
+        
         colnames = [
             'name',
             'components',
@@ -182,13 +175,11 @@ class AbstractComplexResource(resource.AbstractResource):
             'references',
             'identifiers',
         ]
-
+        
         records = []
-
+        
         for cplex in self.complexes.values():
-
-            has_stoi = have_stoichiometry & cplex.sources
-
+            
             records.append([
                 cplex.name if cplex.name else None,
                 cplex.__str__()[8:],
@@ -202,7 +193,7 @@ class AbstractComplexResource(resource.AbstractResource):
                     for _id in ids
                 ),
             ])
-
+        
         self.df = pd.DataFrame(
             records,
             columns = colnames,
