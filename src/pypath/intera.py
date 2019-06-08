@@ -798,6 +798,13 @@ class Regulation(object):
 
 class Complex(object):
     
+    have_stoichiometry = {
+        'PDB',
+        'Compleat',
+        'ComplexPortal',
+        'CellPhoneDB',
+    }
+    
     
     def __init__(
             self,
@@ -1015,7 +1022,11 @@ class Complex(object):
     def stoichiometry(self):
         
         return ':'.join(
-            '%u' % cnt
+            '%u' % (
+                cnt
+                    if self.sources & self.have_stoichiometry else
+                0
+            )
             for _id, cnt in
             sorted(
                 iteritems(self.components),
