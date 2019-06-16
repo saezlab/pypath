@@ -1410,7 +1410,13 @@ class Curl(FileOpener):
         if type(CACHE) is bool:
             self.cache = CACHE
         
-        if self.cache and os.path.exists(self.cache_file_name):
+        if (
+            self.cache and
+            os.path.exists(self.cache_file_name) and
+            # if the cache file is empty
+            # try to download again
+            os.stat(self.cache_file_name).st_size > 0
+        ):
             
             self._log('Cache file found, no need for download.')
             
