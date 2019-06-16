@@ -26,6 +26,7 @@ import sys
 import imp
 import collections
 import itertools
+import traceback
 
 try:
     import cPickle as pickle
@@ -2293,12 +2294,26 @@ class AnnotationTable(session_mod.Logger):
             
             cls = cls if callable(cls) else getattr(self._module, cls)
             
-            annot = cls(
-                ncbi_tax_id = self.ncbi_tax_id,
-                reference_set = reference_set,
-            )
-            
-            self.annots[annot.name] = annot
+            try:
+                
+                annot = cls(
+                    ncbi_tax_id = self.ncbi_tax_id,
+                    reference_set = reference_set,
+                )
+                
+                self.annots[annot.name] = annot
+                
+            except Exception:
+                
+                self._log(
+                    'Failed to load annotations from resource `%s`.\n'
+                    '%s\n' % (
+                        cls.__name__
+                            if hasattr(cls, '__name__') else
+                        str(cls),
+                        traceback.format_exc(),
+                    )
+                )
     
     
     def make_dataframe(self, reference_set = None):
