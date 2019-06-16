@@ -7498,7 +7498,6 @@ def signor_protein_families(organism = 9606):
         binary_data = [(b'submit', b'Download protein family data')],
         large = True,
     )
-    return c
     _ = next(c.result)
 
     for rec in c.result:
