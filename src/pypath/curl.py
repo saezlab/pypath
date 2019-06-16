@@ -1181,6 +1181,8 @@ class Curl(FileOpener):
                         % attempt)
                 self.curl.perform()
                 
+                self.target.flush()
+                
                 if os.stat(self.cache_file_name).st_size == 0:
                     
                     self._log(
