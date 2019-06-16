@@ -47,7 +47,7 @@ def get_uniprot_sec(organism=9606):
         proteome = set(proteome)
     sec_pri = []
     url = urls.urls['uniprot_sec']['url']
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True, timeout = 2400)
     
     for line in filter(
         lambda line:
