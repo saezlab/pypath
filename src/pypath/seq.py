@@ -44,7 +44,7 @@ def swissprot_seq(organism=9606, isoforms=False):
         'format': 'tab',
         'columns': 'id,sequence'
     }
-    c = curl.Curl(url, post=post, silent=False)
+    c = curl.Curl(url, post = post, silent = False, timeout = 900)
     data = c.result
     data = data.split('\n')
     del data[0]

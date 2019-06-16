@@ -1107,6 +1107,7 @@ class Curl(FileOpener):
         self.curl.setopt(self.curl.SSL_VERIFYPEER, False)
         self.curl.setopt(self.curl.FOLLOWLOCATION, self.follow_http_redirect)
         self.curl.setopt(self.curl.CONNECTTIMEOUT, self.timeout)
+        self.curl.setopt(self.curl.TCP_KEEPALIVE, self.timeout)
     
     
     def set_url(self, url = False):
@@ -1202,6 +1203,9 @@ class Curl(FileOpener):
                 self.print_debug_info('ERROR',
                                       'PycURL error: %s' % str(e.args))
         if self.status != 200:
+            self.download_failed = True
+        if os.stat(self.cache_file_name).st_size == 0:
+            self.status = 500
             self.download_failed = True
         self.curl.close()
         self.target.close()
