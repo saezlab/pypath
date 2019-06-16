@@ -10044,8 +10044,17 @@ def get_homologene():
     Downloads the recent release of the NCBI HomoloGene database.
     Returns file pointer.
     """
+    
     url = urls.urls['homologene']['url']
-    c = curl.Curl(url = url, silent = False, large = True)
+    
+    c = curl.Curl(
+        url = url,
+        silent = False,
+        large = True,
+        timeout = 1800,
+        ignore_content_length = True,
+    )
+    
     return c.result
 
 def homologene_dict(source, target, id_type):

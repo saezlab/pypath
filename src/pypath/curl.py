@@ -785,6 +785,7 @@ class Curl(FileOpener):
             encoding = None,
             files_needed = None,
             timeout = 300,
+            ignore_content_length = False,
             init_url = None,
             init_fun = 'get_jsessionid',
             init_use_cache  =  False,
@@ -827,6 +828,7 @@ class Curl(FileOpener):
         self.local_file = os.path.exists(self.url)
         self.get = get
         self.force_quote = force_quote
+        self.ignore_content_length = ignore_content_length
         
         self._log(
             'Creating Curl object to retrieve '
@@ -1107,7 +1109,13 @@ class Curl(FileOpener):
         self.curl.setopt(self.curl.SSL_VERIFYPEER, False)
         self.curl.setopt(self.curl.FOLLOWLOCATION, self.follow_http_redirect)
         self.curl.setopt(self.curl.CONNECTTIMEOUT, self.timeout)
-        self.curl.setopt(self.curl.TCP_KEEPALIVE, self.timeout)
+        self.curl.setopt(self.curl.TIMEOUT, self.timeout)
+        self.curl.setopt(self.curl.TCP_KEEPALIVE, 1)
+        self.curl.setopt(self.curl.TCP_KEEPIDLE, 2)
+        
+        if self.ignore_content_length:
+            
+            self.curl.setopt(self.curl.IGNORE_CONTENT_LENGTH, 136)
     
     
     def set_url(self, url = False):
