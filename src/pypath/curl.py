@@ -1170,6 +1170,14 @@ class Curl(FileOpener):
                         % attempt)
                 self.curl.perform()
                 
+                if os.stat(self.cache_file_name).st_size == 0:
+                    
+                    self._log(
+                        'Empty file retrieved, attempting downlad again'
+                    )
+                    
+                    continue
+                
                 if self.url.startswith('http'):
                     self.status = self.curl.getinfo(pycurl.HTTP_CODE)
                     if self.status == 200:
