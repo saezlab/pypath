@@ -5209,7 +5209,18 @@ def kirouac2010_interactions():
         return names
 
     url = urls.urls['kirouac2010']['url']
-    c = curl.Curl(url, silent = False, large = True)
+    req_headers = [
+        (
+            'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) '
+            'Gecko/20100101 Firefox/68.0'
+        ),
+    ]
+    c = curl.Curl(
+        url,
+        silent = False,
+        large = True,
+        req_headers = req_headers,
+    )
     xlsname = c.fname
     del(c)
     tbl = read_xls(xlsname, sheet = 'S12')
