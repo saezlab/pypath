@@ -2112,8 +2112,16 @@ class AnnotationTable(session_mod.Logger):
         self._module = sys.modules[self.__module__]
         self.pickle_file = pickle_file
         self.complexes = complexes
-        self.protein_sources = protein_sources or protein_sources_default
-        self.complex_sources = complex_sources or complex_sources_default
+        self.protein_sources = (
+            protein_sources
+                if protein_sources is None else
+            protein_sources_default
+        )
+        self.complex_sources = (
+            complex_sources
+                if complex_sources is None else
+            complex_sources_default
+        )
         self.use_fields = use_fields or default_fields
         self.ncbi_tax_id = ncbi_tax_id
         self.keep_annotators = keep_annotators
