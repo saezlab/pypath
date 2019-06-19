@@ -11386,7 +11386,7 @@ def get_compartments_localizations(
         predictions = False,
     ):
         
-        
+        pass
 
 
 def get_locate_localizations(
