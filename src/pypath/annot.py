@@ -2114,12 +2114,12 @@ class AnnotationTable(session_mod.Logger):
         self.complexes = complexes
         self.protein_sources = (
             protein_sources
-                if protein_sources is None else
+                if protein_sources is not None else
             protein_sources_default
         )
         self.complex_sources = (
             complex_sources
-                if complex_sources is None else
+                if complex_sources is not None else
             complex_sources_default
         )
         self.use_fields = use_fields or default_fields

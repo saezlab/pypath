@@ -11378,6 +11378,17 @@ def matrixdb_annotations(organism = 9606):
     return dict(annot)
 
 
+def get_compartments_localizations(
+        organism = 9606,
+        literature = True,
+        high_throughput = False,
+        text_mining = False,
+        predictions = False,
+    ):
+        
+        
+
+
 def get_locate_localizations(
         organism = 9606,
         literature = True,

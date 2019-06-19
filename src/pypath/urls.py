@@ -1012,6 +1012,10 @@ urls = {
         'label': 'Literature curated regulator-pathway-cancer relationships',
         'url': 'http://bio-bigdata.hrbmu.edu.cn/CPAD/download/CPAD-data.txt',
     },
+    'compartments': {
+        'label': 'Compartments subcellular localization database',
+        'url': 'http://download.jensenlab.org/%s_compartment_%s_full.tsv',
+    },
 }
 
 files = {
