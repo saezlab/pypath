@@ -47,6 +47,20 @@ class Export(object):
                                   'Direction_B-A', 'Stimulatory_A-B',
                                   'Inhibitory_A-B', 'Stimulatory_B-A',
                                   'Inhibitory_B-A', 'Category']
+    default_dtypes_uniquepairs = {
+        'UniProt_A',
+        'GeneSymbol_A',
+        'UniProt_B',
+        'GeneSymbol_B',
+        'Undirected',
+        'Direction_A-B',
+        'Direction_B-A',
+        'Stimulatory_A-B',
+        'Inhibitory_A-B',
+        'Stimulatory_B-A',
+        'Inhibitory_B-A',
+        'Category',
+    }
 
     default_header_bydirs = ['source', 'target', 'source_genesymbol',
                              'target_genesymbol', 'is_directed',

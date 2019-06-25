@@ -45,7 +45,7 @@ Interaction = collections.namedtuple(
 class Network(session_mod.Logger):
     
     
-    def __init__(self, records, **kwargs):
+    def __init__(self, records, dtypes = None, **kwargs):
         
         session_mod.Logger.__init__(self, name = 'network')
         
@@ -64,6 +64,10 @@ class Network(session_mod.Logger):
                 kwargs['columns'] = records[0]._fields
             
             self.records = pd.DataFrame(records, **kwargs)
+        
+        if dtypes:
+            
+            self.records = self.records.astype(dtypes)
     
     
     def reload(self):
@@ -86,12 +90,11 @@ class Network(session_mod.Logger):
         
         return cls(
             records = list(pa),
-            dtype = {
+            dtypes = {
                 'id_a': 'category',
                 'id_b': 'category',
                 'type_a': 'category',
                 'type_b': 'category',
-                'type': 'category',
                 'effect': 'int8',
             },
         )

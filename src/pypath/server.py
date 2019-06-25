@@ -455,21 +455,37 @@ class TableServer(BaseServer):
         'references', 'sources', 'databases',
         'isoforms', 'organism', 'ncbi_tax_id'
     }
+    default_input_files = {
+        'interactions': 'omnipath_webservice_interactions.tsv',
+        'ptms': 'omnipath_webservice_ptms.tsv',
+        'annotations': 'omnipath_webservice_annotations.tsv',
+        'complexes': 'omnipath_webservice_complexes.tsv',
+        'intercell': 'omnipath_webservice_intercell.tsv',
+    }
+    dtypes = {
+        'interactions': {
+            
+        }
+    }
     
     
-    def __init__(self, a = 'hey', tbls = {
-            'interactions': 'omnipath_webservice_interactions.tsv',
-            'ptms': 'omnipath_webservice_ptms.tsv',
-            'annotations': 'omnipath_webservice_annotations.tsv',
-            'complexes': 'omnipath_webservice_complexes.tsv',
-            'intercell': 'omnipath_webservice_intercell.tsv',
-        }):
+    def __init__(
+            self,
+            input_files = None,
+        ):
+        """
+        Server based on ``pandas`` data frames.
+        
+        :param dict input_files:
+            Paths to tables exported by the ``pypath.websrvtab`` module.
+        """
         
         session_mod.Logger.__init__(self, name = 'server')
         
         self._log('TableServer starting up.')
         
-        self.tbls = tbls
+        self.input_files = copy.deepcopy(self.default_input_files)
+        self.input_files.update(input_files or {})
         self.data = {}
         self._read_tables()
         self._preprocess_interactions()
@@ -486,7 +502,7 @@ class TableServer(BaseServer):
         
         self._log('Loading data tables.')
         
-        for name, fname in iteritems(self.tbls):
+        for name, fname in iteritems(self.input_files):
             
             if not os.path.exists(fname):
                 

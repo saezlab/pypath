@@ -123,20 +123,20 @@ class IntercellAnnotation(annot.CustomAnnotation):
     def add_classes_to_df(self):
 
         self.df['mainclass'] = (
-            pd.Series(np.array([
-                self.main_classes[c] for c in self.df.category
-            ])).values.astype('category')
+            np.array([self.main_classes[c] for c in self.df.category])
         )
+        self.df['mainclass'] = self.df['mainclass'].astype('category')
         self.df['class_type'] = (
-            pd.Series(np.array([
+            np.array([
                 (
                     self.class_types[c]
                         if c in self.class_types else
                     'sub'
                 )
                 for c in self.df.category
-            ])).values.astype('category')
+            ])
         )
+        self.df['class_type'] = self.df['class_type'].astype('category')
     
     
     def collect_classes(self):

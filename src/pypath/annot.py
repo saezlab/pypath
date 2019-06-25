@@ -307,26 +307,42 @@ class CustomAnnotation(session_mod.Logger):
         
         header = ['category', 'uniprot', 'genesymbol']
         dtypes = {
-            'category': 'category',
-            'uniprot': 'category',
+            'category':   'category',
+            'uniprot':    'category',
             'genesymbol': 'category',
         }
         
         if full_name:
             
             header.append('full_name')
-            dtypes['full_name'] = 'category',
+            dtypes['full_name'] = 'category'
         
         self.df = pd.DataFrame(
-            data = [
+            [
                 [
                     cls,
-                    uniprot,
-                    mapping.map_name0(uniprot, 'uniprot', 'genesymbol'),
-                    '; '.join(
-                        mapping.map_name(uniprot, 'uniprot', 'protein-name')
+                    uniprot.__str__(),
+                    (
+                        mapping.map_name0(uniprot, 'uniprot', 'genesymbol')
+                            if isinstance(uniprot, common.basestring) else
+                        uniprot.genesymbol_str
+                            if hasattr(uniprot, 'genesymbol_str') else
+                        uniprot.__str__()
                     ),
-                ] + (
+                ] +
+                (
+                    [
+                        '; '.join(
+                            mapping.map_name(
+                                uniprot,
+                                'uniprot',
+                                'protein-name',
+                            )
+                        ),
+                    ]
+                    if full_name else []
+                ) +
+                (
                     [self.annotdb.all_annotations_str(uniprot)]
                         if all_annotations else
                     []
@@ -337,8 +353,7 @@ class CustomAnnotation(session_mod.Logger):
             columns = header + (
                 ['all_annotations'] if all_annotations else []
             ),
-            dtype = dtypes,
-        )
+        ).astype(dtypes)
 
 
     def export(self, fname, **kwargs):
@@ -949,13 +964,14 @@ class AnnotationBase(resource.AbstractResource):
         self.df = pd.DataFrame(
             records,
             columns = columns,
-            dtype = {
+        ).astype(
+            {
                 'uniprot': 'category',
                 'genesymbol': 'category',
                 'source': 'category',
                 'label': 'category',
                 'record_id': 'int32',
-            },
+            }
         )
 
 
