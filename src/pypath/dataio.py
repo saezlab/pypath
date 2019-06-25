@@ -6158,7 +6158,7 @@ def _cellphonedb_annotations(url, name_method):
 
     def get_bool(rec, attr):
 
-        return rec[attr] == 'True'
+        return None if attr not in rec.keys() else rec[attr] == 'True'
 
 
     def get_desc(rec, attr):
