@@ -6144,11 +6144,11 @@ def cellphonedb_ligands_receptors():
 
         if l[2] == 'True' or l[4] == 'True':
 
-            receptors.add(l[0])
+            receptors.add(_cellphonedb_get_uniprot(l[0]))
 
         if l[3] == 'True':
 
-            ligands.add(l[0])
+            ligands.add(_cellphonedb_get_uniprot(l[0]))
 
     return ligands, receptors
 
@@ -6158,7 +6158,7 @@ def _cellphonedb_annotations(url, name_method):
 
     def get_bool(rec, attr):
 
-        return rec[attr] == 'True'
+        return attr in rec and rec[attr] == 'True'
 
 
     def get_desc(rec, attr):
@@ -6225,6 +6225,19 @@ def cellphonedb_complex_annotations():
     )
 
 
+def _cellphonedb_get_uniprot(uniprot):
+    
+    if ':' in uniprot:
+        
+        uniprot = uniprot.split(':')[1]
+    
+    if '_' in uniprot:
+        
+        uniprot = mapping.map_name0(uniprot, 'uniprot-entry', 'uniprot')
+    
+    return uniprot
+
+
 def cellphonedb_interactions(
         ligand_receptor = True,
         receptor_receptor = True,
@@ -6250,8 +6263,8 @@ def cellphonedb_interactions(
 
             continue
 
-        uniprot1 = l[2].split(':')[1]
-        uniprot2 = l[3].split(':')[1]
+        uniprot1 = _cellphonedb_get_uniprot(l[2])
+        uniprot2 = _cellphonedb_get_uniprot(l[3])
 
         sources = (
             'CellPhoneDB'
@@ -6300,8 +6313,8 @@ def cellphonedb_interactions(
 
         l = l.strip().split(',')
 
-        uniprot1 = l[11]
-        uniprot2 = l[16]
+        uniprot1 = _cellphonedb_get_uniprot(l[11])
+        uniprot2 = _cellphonedb_get_uniprot(l[16])
 
         if receptor_receptor and (l[1] == 'True' or l[3] == 'True'):
 
@@ -6366,10 +6379,10 @@ def cellphonedb_complexes():
         comp = get_stoichiometry(rec)
 
         cplex = intera.Complex(
-            name = rec['name'],
+            name = rec['complex_name'],
             components = comp,
             sources = 'CellPhoneDB',
-            ids = rec['name'],
+            ids = rec['complex_name'],
         )
 
         key = cplex.__str__()

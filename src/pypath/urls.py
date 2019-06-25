@@ -899,11 +899,12 @@ urls = {
     'cellphonedb_git': {
         'label': 'Intercellular communication database from Teichmann lab',
         'proteins': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb/master/cellphonedb/src/core/data/protein.csv',
+            'cellphonedb/master/cellphonedb/src/core/data/protein_input.csv',
         'complexes': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb/master/cellphonedb/src/core/data/complex.csv',
+            'cellphonedb/master/cellphonedb/src/core/data/complex_input.csv',
         'interactions': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb/master/cellphonedb/src/core/data/interaction.csv',
+            'cellphonedb/master/cellphonedb/src/core/data/'\
+            'interaction_input.csv',
         'curated': 'https://raw.githubusercontent.com/Teichlab/'\
             'cellphonedb/master/cellphonedb/tools/data/'\
             'interaction_curated_20180729.csv',

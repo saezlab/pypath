@@ -370,7 +370,7 @@ class GeneOntology(session_mod.Logger):
         are parents of some others in the set.
         """
         
-        return self.flatten(direction = 'lowest', terms = terms, *args)
+        return self.flatten(terms, *args)
     
     
     def highest(self, terms, *args):
@@ -379,10 +379,10 @@ class GeneOntology(session_mod.Logger):
         which are descendants of some others in the set.
         """
         
-        return self.flatten(direction = 'lowest', terms = terms, *args)
+        return self.flatten(terms, *args, lowest = False)
     
     
-    def flatten(self, direction, terms, *args):
+    def flatten(self, terms, *args, lowest = True):
         """
         Returns a set of terms by removing either all redundant ancestors or
         descendants from the provided set terms. By removing the ancestors
@@ -397,8 +397,8 @@ class GeneOntology(session_mod.Logger):
         
         method = getattr(
             self,
-            'get_all_%s' (
-                'ancestors' if direction == 'lowest' else 'descendants'
+            'get_all_%s' % (
+                'ancestors' if lowest else 'descendants'
             )
         )
         
