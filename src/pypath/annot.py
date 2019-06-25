@@ -303,8 +303,20 @@ class CustomAnnotation(session_mod.Logger):
         )
 
 
-    def make_df(self, all_annotations = False):
-
+    def make_df(self, all_annotations = False, full_name = False):
+        
+        header = ['category', 'uniprot', 'genesymbol']
+        dtypes = {
+            'category': 'category',
+            'uniprot': 'category',
+            'genesymbol': 'category',
+        }
+        
+        if full_name:
+            
+            header.append('full_name')
+            dtypes['full_name'] = 'category',
+        
         self.df = pd.DataFrame(
             data = [
                 [
@@ -322,9 +334,10 @@ class CustomAnnotation(session_mod.Logger):
                 for cls, members in iteritems(self.classes)
                 for uniprot in members
             ],
-            columns = ['category', 'uniprot', 'genesymbol', 'full_name'] + (
+            columns = header + (
                 ['all_annotations'] if all_annotations else []
-            )
+            ),
+            dtype = dtypes,
         )
 
 
@@ -936,6 +949,13 @@ class AnnotationBase(resource.AbstractResource):
         self.df = pd.DataFrame(
             records,
             columns = columns,
+            dtype = {
+                'uniprot': 'category',
+                'genesymbol': 'category',
+                'source': 'category',
+                'label': 'category',
+                'record_id': 'int32',
+            },
         )
 
 

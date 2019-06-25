@@ -125,7 +125,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
         self.df['mainclass'] = (
             pd.Series(np.array([
                 self.main_classes[c] for c in self.df.category
-            ])).values
+            ])).values.astype('category')
         )
         self.df['class_type'] = (
             pd.Series(np.array([
@@ -135,7 +135,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
                     'sub'
                 )
                 for c in self.df.category
-            ])).values
+            ])).values.astype('category')
         )
     
     
