@@ -517,6 +517,13 @@ class TableServer(BaseServer):
             'references': 'category',
             'identifiers': 'category',
         },
+        intercell = {
+            'category': 'category',
+            'uniprot': 'category',
+            'genesymbol': 'category',
+            'mainclass': 'category',
+            'class_type': 'category',
+        }
     )
     
     
