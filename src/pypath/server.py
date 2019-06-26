@@ -22,6 +22,8 @@ from future.utils import iteritems
 
 import sys
 import os
+import copy
+import collections
 
 try:
     import twisted.web.resource
@@ -462,11 +464,60 @@ class TableServer(BaseServer):
         'complexes': 'omnipath_webservice_complexes.tsv',
         'intercell': 'omnipath_webservice_intercell.tsv',
     }
-    dtypes = {
-        'interactions': {
-            
-        }
-    }
+    default_dtypes = collections.defaultdict(
+        dict,
+        interactions = {
+            'source': 'category',
+            'target': 'category',
+            'source_genesymbol': 'category',
+            'target_genesymbol': 'category',
+            'is_directed': 'int8',
+            'is_stimulation': 'int8',
+            'is_inhibition': 'int8',
+            'consensus_direction': 'int8',
+            'consensus_stimulation': 'int8',
+            'consensus_inhibition': 'int8',
+            'sources': 'category',
+            'references': 'category',
+            'dip_url': 'category',
+            'tfregulons_curated': 'category',
+            'tfregulons_chipseq': 'category',
+            'tfregulons_tfbs': 'category',
+            'tfregulons_coexp': 'category',
+            'tfregulons_level': 'category',
+            'type': 'category',
+            'ncbi_tax_id_source': 'int16',
+            'ncbi_tax_id_target': 'int16',
+        },
+        annotations = {
+            'uniprot': 'category',
+            'genesymbol': 'category',
+            'source': 'category',
+            'label': 'category',
+            'value': 'category',
+            'record_id': 'uint32',
+        },
+        ptms = {
+            'enzyme': 'category',
+            'substrate': 'category',
+            'enzyme_genesymbol': 'category',
+            'substrate_genesymbol': 'category',
+            'isoforms': 'category',
+            'residue_type': 'category',
+            'residue_offset': 'uint16',
+            'modification': 'category',
+            'sources': 'category',
+            'references': 'category',
+            'ncbi_tax_id': 'int16',
+        },
+        complexes = {
+            'name': 'category',
+            'stoichiometry': 'category',
+            'sources': 'category',
+            'references': 'category',
+            'identifiers': 'category',
+        },
+    )
     
     
     def __init__(
@@ -511,10 +562,13 @@ class TableServer(BaseServer):
                 )
                 continue
             
+            dtype = self.default_dtypes[name]
+            
             self.data[name] = pd.read_csv(
                 fname,
                 sep = '\t',
                 index_col = False,
+                dtype = dtype,
             )
             
             self._log(
