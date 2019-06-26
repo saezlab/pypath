@@ -725,6 +725,15 @@ class PtmAggregator(object):
         self.df = pd.DataFrame(
             [dm.get_line() for dm in self],
             columns = hdr
+        ).astype(
+            {
+                'enzyme': 'category',
+                'substrate': 'category',
+                'isoforms': 'category',
+                'residue_type': 'category',
+                'residue_offset': 'int32',
+                'modification': 'category',
+            }
         )
 
         self.df['enzyme_genesymbol'] = pd.Series([

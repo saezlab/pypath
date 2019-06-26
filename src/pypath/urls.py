@@ -524,7 +524,7 @@ urls = {
         'pathology': 'http://www.proteinatlas.org/download/pathology.tsv.zip',
         'subcell': 'https://www.proteinatlas.org/download/'\
             'subcellular_location.tsv.zip',
-        
+
     },
     'lincs-compounds': {
         'label':
@@ -899,11 +899,12 @@ urls = {
     'cellphonedb_git': {
         'label': 'Intercellular communication database from Teichmann lab',
         'proteins': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb-data/master/data/protein_input.csv',
+            'cellphonedb/master/cellphonedb/src/core/data/protein_input.csv',
         'complexes': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb-data/master/data/complex_input.csv',
+            'cellphonedb/master/cellphonedb/src/core/data/complex_input.csv',
         'interactions': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb-data/data/interaction_input.csv',
+            'cellphonedb/master/cellphonedb/src/core/data/'\
+            'interaction_input.csv',
         'curated': 'https://raw.githubusercontent.com/Teichlab/'\
             'cellphonedb-data/data/sources/interaction_curated.csv',
         'negative': 'https://raw.githubusercontent.com/Teichlab/'\

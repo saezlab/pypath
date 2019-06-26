@@ -47,6 +47,21 @@ class Export(object):
                                   'Direction_B-A', 'Stimulatory_A-B',
                                   'Inhibitory_A-B', 'Stimulatory_B-A',
                                   'Inhibitory_B-A', 'Category']
+    
+    default_dtypes_uniquepairs = {
+        'UniProt_A': 'category',
+        'GeneSymbol_A': 'category',
+        'UniProt_B': 'category',
+        'GeneSymbol_B': 'category',
+        'Undirected': 'category',
+        'Direction_A-B': 'category',
+        'Direction_B-A': 'category',
+        'Stimulatory_A-B': 'category',
+        'Inhibitory_A-B': 'category',
+        'Stimulatory_B-A': 'category',
+        'Inhibitory_B-A': 'category',
+        'Category': 'category',
+    }
 
     default_header_bydirs = ['source', 'target', 'source_genesymbol',
                              'target_genesymbol', 'is_directed',
@@ -56,6 +71,21 @@ class Export(object):
                              'consensus_inhibition',
                              'sources',
                              'references', 'dip_url']
+    
+    default_dtypes_bydirs = {
+        'source': 'category',
+        'target': 'category',
+        'source_genesymbol': 'category',
+        'target_genesymbol': 'category',
+        'is_directed': 'int8',
+        'is_stimulation': 'int8',
+        'is_inhibition': 'int8',
+        'consensus_direction': 'int8',
+        'consensus_stimulation': 'int8',
+        'consensus_inhibition': 'int8',
+        'sources': 'category',
+        'references': 'category',
+    }
 
     def __init__(
             self,
@@ -145,6 +175,11 @@ class Export(object):
         suffix_a = 'A' if unique_pairs else 'source'
         suffix_b = 'B' if unique_pairs else 'target'
 
+        dtypes = (
+            self.default_dtypes_uniquepairs
+                if unique_pairs else
+            self.default_dtypes_bydirs
+        )
         header = copy.copy(
             self.default_header_uniquepairs
             if unique_pairs else
@@ -182,6 +217,7 @@ class Export(object):
         prg.terminate()
 
         self.df = pd.DataFrame(result, columns = header)
+        self.df = self.df.astype(dtypes)
 
     def process_edge_uniquepairs(self, e):
         """

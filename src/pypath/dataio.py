@@ -775,7 +775,7 @@ def compleat_complexes(predicted = True):
     complexes = {}
 
     for rec in tab:
-        
+
 
         is_predicted = (
             rec['predicted'] and
@@ -791,7 +791,7 @@ def compleat_complexes(predicted = True):
             continue
 
         uniprots = []
-        
+
         for entrez in rec['members'].split():
 
             uniprot = mapping.map_name0(entrez.strip(), 'entrez', 'uniprot')
@@ -829,27 +829,27 @@ def compleat_complexes(predicted = True):
 
 
 def humap_complexes():
-    
+
     url = urls.urls['proteincomplexes']['url']
     c = curl.Curl(url, large = True)
-    
+
     complexes = {}
-    
+
     for l in c.result:
-        
+
         l = l.strip().split()
-        
+
         for uniprots in itertools.product(*(
             mapping.map_name(entrez, 'entrez', 'uniprot') for entrez in l
         )):
-            
+
             cplex = intera.Complex(
                 components = uniprots,
                 sources = 'hu.MAP',
             )
-            
+
             complexes[cplex.__str__()] = cplex
-    
+
     return complexes
 
 
@@ -2176,7 +2176,7 @@ def comppi_interaction_locations(organism = 9606):
     This data provides scores for occurrence of protein-protein interactions
     in various compartments.
     """
-    
+
     ComppiLocation = collections.namedtuple(
         'ComppiLocation',
         [
@@ -2184,7 +2184,7 @@ def comppi_interaction_locations(organism = 9606):
             'score',
         ],
     )
-    
+
     ComppiInteraction = collections.namedtuple(
         'ComppiInteraction',
         [
@@ -2194,15 +2194,15 @@ def comppi_interaction_locations(organism = 9606):
             'loc_b',
         ],
     )
-    
+
     def process_locations(loc):
-        
+
         return tuple(
             ComppiLocation(location = llloc[0], score = float(llloc[1]))
             for llloc in
             (lloc.split(':') for lloc in loc.split('|'))
         )
-    
+
     url = urls.urls['comppi']['url']
     post = {
         'fDlSet': 'comp',
@@ -2217,20 +2217,20 @@ def comppi_interaction_locations(organism = 9606):
         silent = False,
         compr = 'gz',
     )
-    
+
     _ = next(c.result)
-    
+
     for l in c.result:
-        
+
         l = l.decode().strip('\r\n').split('\t')
-        
+
         organism_a = int(l[7])
         organism_b = int(l[15])
-        
+
         if organism and (organism_a != organism or organism_b != organism):
-            
+
             continue
-        
+
         yield ComppiInteraction(
             id_a = l[0],
             id_b = l[8],
@@ -2240,26 +2240,26 @@ def comppi_interaction_locations(organism = 9606):
 
 
 def comppi_locations(organism = 9606, score_threshold = .7):
-    
+
     result = collections.defaultdict(set)
-    
+
     for iloc in comppi_interaction_locations(organism = organism):
-        
+
         for label in ('a', 'b'):
-            
+
             for loc in getattr(iloc, 'loc_%s' % label):
-                
+
                 if loc.location == 'N/A' or loc.score < score_threshold:
-                    
+
                     continue
-                
+
                 result[getattr(iloc, 'id_%s' % label)].add(loc)
-    
+
     return result
 
 
 def ramilowski_locations():
-    
+
     reloc = re.compile(
         r'([^\(]+[^\s^\(])'
         r'\s?\('
@@ -2268,7 +2268,7 @@ def ramilowski_locations():
     )
     resep = re.compile(r'[\.;,]')
     renote = re.compile(r'Note=([- \w\(\),\s\+\./%\'":;]*)')
-    
+
     sources = (
         (4, 'UniProt'),
         (5, 'HPRD'),
@@ -2276,7 +2276,7 @@ def ramilowski_locations():
         (10, 'Consensus'),
         (11, 'Consensus6'),
     )
-    
+
     RamilowskiLocation = collections.namedtuple(
         'RamilowskiLocation',
         [
@@ -2287,38 +2287,38 @@ def ramilowski_locations():
             'long_note',
         ],
     )
-    
+
     url = urls.urls['rami']['loc']
     c = curl.Curl(url, silent = False, large = True)
-    
+
     _ = next(c.result)
-    
+
     result = collections.defaultdict(set)
-    
+
     for l in c.result:
-        
+
         l = l.strip('\n\r').split('\t')
-        
+
         for idx, source in sources:
-            
+
             locs = l[idx]
-            
+
             long_note = None
             mnote = renote.search(locs)
-            
+
             if mnote:
-                
+
                 long_note = mnote.groups()[0]
                 locs = renote.sub('', locs)
-            
+
             for loc in resep.split(locs):
-                
+
                 if ':' in loc and 'GO:' not in loc:
-                    
+
                     loc = loc.split(':')[-1]
-                
+
                 loc = loc.strip().replace('- ', '-').lower()
-                
+
                 if (
                     not loc or
                     len(loc.split()) > 3 or
@@ -2329,18 +2329,18 @@ def ramilowski_locations():
                         ('tumor',)
                     )
                 ):
-                    
+
                     continue
-                
+
                 m = reloc.match(loc)
-                
+
                 if not m:
-                    
+
                     continue
-                
+
                 location, note = m.groups()
                 tmh = l[9].strip()
-                
+
                 result[l[3]].add(
                     RamilowskiLocation(
                         location = location.lower(),
@@ -2350,7 +2350,7 @@ def ramilowski_locations():
                         long_note = long_note,
                     )
                 )
-    
+
     return result
 
 
@@ -4253,12 +4253,12 @@ def go_descendants_quickgo(
     :param dict terms:
         Result from ``go_terms_solr``. If ``None`` the method will be called.
     """
-    
-    
+
+
     def download_in_chunks(terms, chunk_size, target = None):
-        
+
         target = target or collections.defaultdict(set)
-        
+
         paginator = common.paginate(terms, chunk_size)
 
         for p, terms_part in enumerate(paginator):
@@ -4274,16 +4274,16 @@ def go_descendants_quickgo(
                 silent = True,
                 large = True,
             )
-            
+
             try:
                 result = json.load(c.fileobj)
             except json.decoder.JSONDecodeError:
                 done = chunk_size * p
                 remaining = terms[done:]
                 new_chunk_size = chunk_size // 2
-                
+
                 if new_chunk_size < 10:
-                    
+
                     _log(
                         'Failed to download QuickGO, tried to decrease the '
                         'number of terms in each query, went below 10 terms '
@@ -4292,17 +4292,17 @@ def go_descendants_quickgo(
                         'You might increase the timeout of CURL. '
                         'But then it will take forever.'
                     )
-                    
+
                     return target
-                
+
                 return download_in_chunks(
                     terms = remaining,
                     chunk_size = new_chunk_size,
                     target = taret,
                 )
-            
+
             for res in result['results']:
-            
+
                 if 'children' not in res:
 
                     continue
@@ -4313,10 +4313,10 @@ def go_descendants_quickgo(
                         for child in res['children']
                     )
                 )
-        
+
         return target
-    
-    
+
+
     desc = {}
 
     terms = terms or go_terms_quickgo(aspects = aspects)
@@ -4918,7 +4918,7 @@ def get_goslim(url = None):
 
 
 def netpath_names():
-    
+
     repwnum = re.compile(r'_([0-9]+)$')
     result = {}
     url = urls.urls['netpath_names']['url']
@@ -4934,16 +4934,16 @@ def netpath_names():
 
 
 def netpath_pathway_annotations():
-    
+
     NetpathPathway = collections.namedtuple(
         'NetpathPathway', ['pathway'],
     )
-    
-    
+
+
     result = collections.defaultdict(set)
-    
+
     url_template = urls.urls['netpath_pw']['url']
-    
+
     url_main = urls.urls['netpath_pw']['mainpage']
     c = curl.Curl(url_main, cache = False)
     cookie = [
@@ -4952,11 +4952,11 @@ def netpath_pathway_annotations():
         if h.startswith(b'Set-Cookie')
     ]
     cookie_hdr = ['Cookie: %s' % '; '.join(cookie)]
-    
+
     pathway_ids = netpath_names()
-    
+
     for _id, pathway in iteritems(pathway_ids):
-        
+
         url = url_template % int(_id)
         c = curl.Curl(
             url,
@@ -4964,37 +4964,37 @@ def netpath_pathway_annotations():
             silent = False,
             encoding = 'iso-8859-1',
         )
-        
+
         soup = bs4.BeautifulSoup(c.result, 'html.parser')
-        
+
         for tbl in soup.find_all('table'):
-            
+
             hdr = tbl.find('td', {'class': 'barhead'})
-            
+
             if not hdr or not hdr.text.strip().startswith('Molecules Invol'):
-                
+
                 continue
-            
+
             for td in tbl.find_all('td'):
-                
+
                 genesymbol = td.text.strip()
-                
+
                 if not genesymbol:
-                    
+
                     continue
-                
+
                 uniprot = mapping.map_name0(
                     genesymbol,
                     'genesymbol',
                     'uniprot',
                 )
-                
+
                 result[uniprot].add(
                     NetpathPathway(
                         pathway = pathway
                     )
                 )
-    
+
     return result
 
 
@@ -5652,22 +5652,22 @@ def hpmr_annotations(use_cache = None):
 
 
 def adhesome_interactions():
-    
+
     AdhesomeInteraction = collections.namedtuple(
         'AdhesomeInteraction',
         ['source', 'target', 'effect', 'type', 'pmid'],
     )
-    
+
     url = urls.urls['adhesome']['interactions']
-    
+
     c = curl.Curl(url, large = True, silent = False)
-    
+
     data = csv.DictReader(c.result, delimiter = ',')
-    
+
     result = []
-    
+
     for rec in data:
-        
+
         result.append(
             AdhesomeInteraction(
                 source = rec['Source'],
@@ -5677,25 +5677,25 @@ def adhesome_interactions():
                 pmid   = rec['PMID'],
             )
         )
-    
+
     return result
 
 
 
 
 def get_cpad():
-    
+
     url = urls.urls['cpad']['url']
-    
+
     c = curl.Curl(url, silent = False, large = True, encoding = 'iso-8859-1')
-    
+
     reader = csv.DictReader(c.result, delimiter = '\t')
-    
+
     return reader
 
 
 def cpad_annotations(include_unknown_type = False):
-    
+
     CpadAnnotation = collections.namedtuple(
         'CpadAnnotation',
         [
@@ -5708,64 +5708,64 @@ def cpad_annotations(include_unknown_type = False):
             'pathway_category',
         ]
     )
-    
+
     cpad = get_cpad()
-    
+
     result = collections.defaultdict(set)
-    
+
     for rec in cpad:
-        
+
         if rec['Regulator'] == 'NULL':
-            
+
             continue
-        
+
         for regulator in rec['Regulator'].split(' and '):
-            
+
             uniprot = mapping.map_name0(regulator, 'genesymbol', 'uniprot')
-            
+
             if uniprot:
-                
+
                 regulator_name = uniprot
                 regulator_type = 'protein'
-                
+
             else:
-                
+
                 mirbase = mapping.map_name(
                     'hsa-%s' % regulator,
                     'mir-mat-name',
                     'mirbase',
                 )
-                
+
                 if not mirbase:
-                    
+
                     mirbase = mapping.map_name(
                         'hsa-%s' % regulator,
                         'mir-name',
                         'mirbase',
                     )
-                
+
                 if mirbase:
-                    
+
                     regulator_name = mirbase
                     regulator_type = 'mirna'
-                    
+
                 else:
-                    
+
                     if include_unknown_type:
-                        
+
                         regulator_name = regulator
                         regulator_type = 'unknown'
-                        
+
                     else:
-                        
+
                         continue
-            
+
             if isinstance(regulator_name, common.basestring):
-                
+
                 regulator_name = (regulator_name,)
-            
+
             for regulator_name_0 in regulator_name:
-                
+
                 record = CpadAnnotation(
                     regulator_type = regulator_type,
                     effect_on_pathway = rec['Regulator_Type'],
@@ -5775,9 +5775,9 @@ def cpad_annotations(include_unknown_type = False):
                     pathway_category = rec['Pathway_Category'],
                     cancer = rec['Cancer'],
                 )
-                
+
                 result[regulator_name_0].add(record)
-    
+
     return result
 
 
@@ -5786,7 +5786,7 @@ def cpad_pathway_cancer():
     Collects only the pathway-cancer relationships. Returns sets of records
     grouped in dicts by cancer and by pathway.
     """
-    
+
     CpadPathwayCancer = collections.namedtuple(
         'CpadPathwayCancer',
         [
@@ -5797,14 +5797,14 @@ def cpad_pathway_cancer():
             'effect_on_cancer_outcome',
         ]
     )
-    
+
     cpad = get_cpad()
-    
+
     by_cancer = collections.defaultdict(set)
     by_pathway = collections.defaultdict(set)
-    
+
     for rec in cpad:
-        
+
         record = CpadPathwayCancer(
             pathway = rec['Pathway'],
             cancer = rec['Cancer'],
@@ -5812,10 +5812,10 @@ def cpad_pathway_cancer():
             effect_on_cancer = rec['Regulation_Type'],
             effect_on_cancer_outcome = rec['Outcome_Description'],
         )
-        
+
         by_cancer[rec['Cancer']].add(record)
         by_pathway[rec['Pathway']].add(record)
-    
+
     return by_cancer, by_pathway
 
 
@@ -5824,9 +5824,9 @@ def get_integrins():
     Returns a set of the UniProt IDs of the human integrins from
     Table 1 of Takada et al 2007 (10.1186/gb-2007-8-5-215).
     """
-    
+
     url = urls.urls['integrins']['url']
-    
+
     req_headers = [
         'Host: www.ncbi.nlm.nih.gov',
         'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:67.0) '\
@@ -5839,21 +5839,21 @@ def get_integrins():
         'Pragma: no-cache',
         'Cache-Control: no-cache',
     ]
-    
+
     c = curl.Curl(
         url, silent = False, req_headers = req_headers, large = True,
     )
     soup = bs4.BeautifulSoup(c.fileobj.read(), 'lxml')
-    
+
     integrins = []
-    
+
     rows = soup.find_all('tr')
-    
+
     for tr in rows[1:]:
-        
+
         cells = [td for td in tr.find_all('td')]
         integrins.append(cells[-1].text.split('}')[-1])
-    
+
     return set(integrins)
 
 
@@ -6144,11 +6144,11 @@ def cellphonedb_ligands_receptors():
 
         if l[2] == 'True' or l[4] == 'True':
 
-            receptors.add(l[0])
+            receptors.add(_cellphonedb_get_uniprot(l[0]))
 
         if l[3] == 'True':
 
-            ligands.add(l[0])
+            ligands.add(_cellphonedb_get_uniprot(l[0]))
 
     return ligands, receptors
 
@@ -6158,7 +6158,7 @@ def _cellphonedb_annotations(url, name_method):
 
     def get_bool(rec, attr):
 
-        return None if attr not in rec.keys() else rec[attr] == 'True'
+        return attr in rec and rec[attr] == 'True'
 
 
     def get_desc(rec, attr):
@@ -6225,6 +6225,19 @@ def cellphonedb_complex_annotations():
     )
 
 
+def _cellphonedb_get_uniprot(uniprot):
+
+    if ':' in uniprot:
+
+        uniprot = uniprot.split(':')[1]
+
+    if '_' in uniprot:
+
+        uniprot = mapping.map_name0(uniprot, 'uniprot-entry', 'uniprot')
+
+    return uniprot
+
+
 def cellphonedb_interactions(
         ligand_receptor = True,
         receptor_receptor = True,
@@ -6250,8 +6263,8 @@ def cellphonedb_interactions(
 
             continue
 
-        uniprot1 = l[2].split(':')[1]
-        uniprot2 = l[3].split(':')[1]
+        uniprot1 = _cellphonedb_get_uniprot(l[2])
+        uniprot2 = _cellphonedb_get_uniprot(l[3])
 
         sources = (
             'CellPhoneDB'
@@ -6300,8 +6313,8 @@ def cellphonedb_interactions(
 
         l = l.strip().split(',')
 
-        uniprot1 = l[11]
-        uniprot2 = l[16]
+        uniprot1 = _cellphonedb_get_uniprot(l[11])
+        uniprot2 = _cellphonedb_get_uniprot(l[16])
 
         if receptor_receptor and (l[1] == 'True' or l[3] == 'True'):
 
@@ -6366,10 +6379,10 @@ def cellphonedb_complexes():
         comp = get_stoichiometry(rec)
 
         cplex = intera.Complex(
-            name = rec['name'],
+            name = rec['complex_name'],
             components = comp,
             sources = 'CellPhoneDB',
-            ids = rec['name'],
+            ids = rec['complex_name'],
         )
 
         key = cplex.__str__()
@@ -7083,7 +7096,7 @@ def kegg_interactions():
     Downloads and processes KEGG Pathways.
     Returns list of interactions.
     """
-    
+
     rehsa = re.compile(r'.*(hsa[0-9]+).*')
     req_hdrs = [
         'Referer: http://www.genome.jp/kegg-bin/show_pathway'
@@ -7136,13 +7149,13 @@ def kegg_interactions():
                 st and
                 'name' in st.attrs
             ):
-                
+
                 for u1 in uentries[rel.attrs['entry1']]:
-                    
+
                     for u2 in uentries[rel.attrs['entry2']]:
-                        
+
                         interactions.append((u1, u2, st.attrs['name'], pw))
-    
+
     prg.terminate()
     return common.uniqList(interactions)
 
@@ -7161,24 +7174,24 @@ def kegg_pathways():
 
 
 def kegg_pathway_annotations():
-    
+
     KeggPathway = collections.namedtuple(
         'KeggPathway', ['pathway'],
     )
-    
-    
+
+
     result = collections.defaultdict(set)
-    
+
     proteins, interactions = kegg_pathways()
-    
+
     for pathway, uniprots in iteritems(proteins):
-        
+
         record = KeggPathway(pathway = pathway)
-        
+
         for uniprot in uniprots:
-            
+
             result[uniprot].add(record)
-    
+
     return result
 
 
@@ -7203,18 +7216,18 @@ def signor_pathways(**kwargs):
             'select', {'name': 'pathway_list'}
         ).findAll('option')
     ]
-    
+
     prg = progress.Progress(
         len(pathway_names),
         'Downloading data from Signor',
         1,
         percent = False
     )
-    
+
     for short, full in pathway_names:
 
         prg.step()
-        
+
         if not short:
 
             continue
@@ -7230,9 +7243,9 @@ def signor_pathways(**kwargs):
             binary_data = binary_data,
             encoding = 'utf-8',
         )
-        
+
         #csv.DictReader(c_pw.result)
-        
+
         sep = '@#@#@'
         lines = csv_sep_change(
             c_pw.result,
@@ -7251,7 +7264,7 @@ def signor_pathways(**kwargs):
                 )
             )
         )
-        
+
         proteins_pathways[full] = set([])
 
         proteins_pathways[full] = (
@@ -7301,24 +7314,24 @@ def signor_pathways(**kwargs):
 
 
 def signor_pathway_annotations():
-    
+
     SignorPathway = collections.namedtuple(
         'SignorPathway', ['pathway']
     )
-    
-    
+
+
     result = collections.defaultdict(set)
-    
+
     proteins, interactions = signor_pathways()
-    
+
     for pathway, uniprots in iteritems(proteins):
-        
+
         record = SignorPathway(pathway = pathway)
-        
+
         for uniprot in uniprots:
-            
+
             result[uniprot].add(record)
-    
+
     return result
 
 
@@ -8587,7 +8600,7 @@ def signalink_interactions():
     Reads and processes SignaLink3 interactions from local file.
     Returns list of interactions.
     """
-    
+
     repar = re.compile(r'.*\(([a-z\s]+)\)')
     repref = re.compile(r'(?:.*:)?((?:[\w]+[^\s])?)\s?')
     notNeeded = set(['acsn', 'reactome'])
@@ -8609,11 +8622,11 @@ def signalink_interactions():
             return attr
 
     with open(nodesFile, 'r') as f:
-        
+
         for l in f:
-            
+
             if len(l) > 0:
-                
+
                 l = l.split('\t')
                 _id = int(l[0])
                 uniprot = repref.sub('\\1', l[1])
@@ -8622,26 +8635,26 @@ def signalink_interactions():
                     if pw.split(':')[0] not in notNeeded
                 ]
                 nodes[_id] = [uniprot, pathways]
-    
+
     prg = progress.Progress(os.path.getsize(edgesFile), 'Reading file', 33)
-    
+
     with open(edgesFile, 'r') as f:
-        
+
         lPrev = None
-        
+
         for l in f:
-            
+
             prg.step(len(l))
             l = l.strip().split('\t')
-            
+
             if lPrev is not None:
                 l = lPrev + l[1:]
                 lPrev = None
-                
+
             if len(l) == 13:
-                
+
                 if l[-1] == '0':
-                    
+
                     dbs = [
                         _process_attr(db.split(':')[-1])
                         for db in l[9].replace('"', '').split('|')
@@ -8651,14 +8664,14 @@ def signalink_interactions():
                         continue
                     idSrc = int(l[1])
                     idTgt = int(l[2])
-                    
+
                     uniprotSrc = repref.sub('\\1', l[3])
                     uniprotTgt = repref.sub('\\1', l[4])
-                    
+
                     if not uniprotSrc or not uniprotTgt:
-                        
+
                         continue
-                    
+
                     refs = [ref.split(':')[-1] for ref in l[7].split('|')]
                     attrs = dict(
                         tuple(attr.strip().split(':', 1))
@@ -8678,30 +8691,30 @@ def signalink_interactions():
 
 
 def signalink_pathway_annotations():
-    
+
     SignalinkPathway = collections.namedtuple(
         'SignalinkPathway', ['pathway'],
     )
-    
-    
+
+
     result = collections.defaultdict(set)
-    
+
     interactions = signalink_interactions()
-    
+
     for i in interactions:
-        
+
         for pathway in i[8].split(';'):
-            
+
             result[i[0]].add(
                 SignalinkPathway(pathway = pathway)
             )
-        
+
         for pathway in i[9].split(';'):
-            
+
             result[i[1]].add(
                 SignalinkPathway(pathway = pathway)
             )
-    
+
     return result
 
 
@@ -8774,7 +8787,7 @@ def wang_interactions():
     Downloads and processes Wang Lab HumanSignalingNetwork.
     Returns list of interactions.
     """
-    
+
     url = urls.urls['wang']['url']
     c = curl.Curl(url, silent = False)
     data = c.result
@@ -8783,9 +8796,9 @@ def wang_interactions():
     nodes = {}
     reading_nodes = False
     reading_edges = False
-    
+
     for l in data:
-        
+
         if len(l.strip()) == 0:
             reading_nodes = False
             reading_edges = False
@@ -8799,7 +8812,7 @@ def wang_interactions():
         if l[0].startswith('From'):
             reading_nodes = False
             reading_edges = True
-    
+
     return effects
 
 
@@ -9297,7 +9310,7 @@ def get_dip(url = None,
             core_only = True,
             direct_only = True,
             small_scale_only = True):
-    
+
     strDipCore = 'dip-quality-status:core'
     strDirect = 'direct interaction'
     strPhysInt = 'physical interaction'
@@ -9822,10 +9835,10 @@ def hippie_interactions(
         references = True,
         organisms = False,
     ):
-    
+
     only_sources = common.to_set(only_sources)
     only_methods = common.to_set(only_methods)
-    
+
     HippieInteraction = collections.namedtuple(
         'HippieInteraction',
         [
@@ -9838,34 +9851,34 @@ def hippie_interactions(
             'organisms',
         ],
     )
-    
+
     tps = lambda i: tuple(sorted(i))
-    
+
     url = urls.urls['hippie']['url']
     c = curl.Curl(url, large = True, silent = False)
-    
+
     result = set()
-    
+
     for i, l in enumerate(c.result):
-        
+
         l = l.strip('\r\n').split('\t')
-        
+
         score = float(l[4])
-        
+
         if score < score_threshold:
-            
+
             continue
-        
+
         ids_a_1 = mapping.map_name(l[0], 'uniprot-entry', 'uniprot')
         ids_a_2 = mapping.map_name(l[1], 'entrez', 'uniprot')
         ids_b_1 = mapping.map_name(l[2], 'uniprot-entry', 'uniprot')
         ids_b_2 = mapping.map_name(l[3], 'entrez', 'uniprot')
-        
+
         for id_a, id_b in itertools.product(
             ids_a_1 | ids_a_2,
             ids_b_1 | ids_b_2
         ):
-            
+
             details = dict(
                 (
                     dd[0],
@@ -9874,23 +9887,23 @@ def hippie_interactions(
                 for dd in
                 (d.split(':') for d in l[5].split(';'))
             )
-            
+
             _sources = details['sources'] if 'sources' in details else set()
             experiments = (
                 details['experiments'] if 'experiments' in details else set()
             )
-            
+
             if not all((
                 not only_methods or experiments & only_methods,
                 not only_methods or _sources & only_sources,
             )):
-                
+
                 continue
-            
+
             _organisms = {9606}
-            
+
             if 'species' in details:
-                
+
                 names = {
                     spec.split('(')[0].strip()
                     for spec in details['species']
@@ -9900,11 +9913,11 @@ def hippie_interactions(
                     for name in names
                 }
                 _organisms.discard(None)
-                
+
                 if only_human and 9606 not in _organisms:
-                    
+
                     continue
-            
+
             result.add(
                 HippieInteraction(
                     id_a = id_a,
@@ -9918,7 +9931,7 @@ def hippie_interactions(
                     organisms = tps(_organisms) if organisms else None,
                 )
             )
-    
+
     return list(result)
 
 
@@ -10055,9 +10068,9 @@ def get_homologene():
     Downloads the recent release of the NCBI HomoloGene database.
     Returns file pointer.
     """
-    
+
     url = urls.urls['homologene']['url']
-    
+
     c = curl.Curl(
         url = url,
         silent = False,
@@ -10065,7 +10078,7 @@ def get_homologene():
         timeout = 1800,
         ignore_content_length = True,
     )
-    
+
     return c.result
 
 def homologene_dict(source, target, id_type):
@@ -10472,7 +10485,7 @@ def get_proteinatlas(normal = True, pathology = True, cancer = True):
                 result['normal'][tissue][u] = (l[4], l[5].strip())
 
     if cancer or pathology:
-        
+
         c = curl.Curl(urls.urls['proteinatlas']['pathology'],
                     silent = False, large = True)
         fp = list(c.result.values())[0]
@@ -10497,9 +10510,9 @@ def get_proteinatlas(normal = True, pathology = True, cancer = True):
 
 
 def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
-    
+
     LEVELS = ('Not detected', 'Low', 'Medium', 'High')
-    
+
     ProteinatlasAnnotation = collections.namedtuple(
         'ProtainatlasAnnotation',
         [
@@ -10519,27 +10532,27 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
     ProteinatlasAnnotation.__new__.__defaults__ = (
         (None,) * 4 + (False, False, None, False)
     )
-    
-    
+
+
     def n_or_none(ex, key):
-        
+
         return ex[key] if key in ex else None
-    
-    
+
+
     data = get_proteinatlas(
         normal = normal,
         pathology = pathology,
         cancer = cancer,
     )
-    
+
     result = collections.defaultdict(set)
-    
+
     if normal:
-        
+
         for tissue, gex in iteritems(data['normal']):
-            
+
             for uniprot, ex in iteritems(gex):
-                
+
                 result[uniprot].add(
                     ProteinatlasAnnotation(
                         tissue = tissue,
@@ -10547,24 +10560,24 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
                         status = ex[1],
                     )
                 )
-        
+
     if pathology or cancer:
-        
+
         for condition, gex in iteritems(data['pathology']):
-            
+
             for uniprot, ex in iteritems(gex):
-                
+
                 try:
                     effect, score = next(
                         i for i in iteritems(ex) if i[0] not in LEVELS
                     )
                     prognostic = not effect.startswith('unprognostic')
                     favourable = not effect.endswith('unfavourable')
-                    
+
                 except StopIteration:
-                    
+
                     prognostic, favourable, score = None, None, None
-                
+
                 result[uniprot].add(
                     ProteinatlasAnnotation(
                         tissue = condition,
@@ -10584,7 +10597,7 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
                         pathology = True,
                     )
                 )
-    
+
     return result
 
 
@@ -10872,89 +10885,89 @@ def get_membranome():
 
 
 def opm_annotations(organism = 9606):
-    
-    
+
+
     reparentheses = re.compile(r'\((.*)\)')
     regenesymbol  = re.compile(r' ([A-Z0-9]{3,}) ')
-    
+
     def get_dict(name):
-        
+
         result = {}
         url = urls.urls['opm'][name]
         c = curl.Curl(url, large = True, silent = False)
         data = csv.DictReader(c.result, delimiter = ',')
-        
+
         for rec in data:
             result[rec['id']] = rec['name']
-        
+
         return result
-    
-    
+
+
     OpmAnnotation = collections.namedtuple(
         'OpmAnnotation',
         ['membrane', 'family', 'transmembrane'],
     )
-    
+
     result = collections.defaultdict(set)
-    
+
     organism_name = (
         common.phosphoelm_taxids[organism]
             if organism in common.phosphoelm_taxids else
         None
     )
-    
+
     types = get_dict('types')
     families = get_dict('families')
-    
+
     url = urls.urls['opm']['proteins']
     c = curl.Curl(url, silent = False, large = True)
-    
+
     data = csv.DictReader(c.result, delimiter = ',')
-    
+
     for rec in data:
-        
+
         if organism_name and rec['species_name_cache'] != organism_name:
-            
+
             continue
-        
+
         name = rec['name']
-        
+
         names = [
             name,
             name.split('(')[0],
             name.split(',')[0],
         ]
-        
+
         m = reparentheses.search(name)
         if m:
             names.append(m.groups()[0])
-        
+
         genesymbols = regenesymbol.findall(name)
-        
+
         for this_name in names:
-            
+
             uniprot = mapping.map_name0(this_name, 'protein-name', 'uniprot')
-            
+
             if uniprot:
-                
+
                 break
-        
+
         if not uniprot:
-            
+
             for gs in genesymbols:
-                
+
                 uniprot = (
                     mapping.map_name0(this_name, 'genesymbol', 'uniprot')
                 )
-                
+
                 if uniprot:
-                    
+
                     break
-        
+
         if not uniprot:
-            
+
             continue
-        
+
         result[uniprot].add(
             OpmAnnotation(
                 membrane = rec['membrane_name_cache'],
@@ -10962,19 +10975,19 @@ def opm_annotations(organism = 9606):
                 transmembrane = types[rec['type_id']] == 'Transmembrane',
             )
         )
-    
+
     return result
 
 
 def topdb_annotations(ncbi_tax_id = 9606):
-    
+
     TopdbAnnotation = collections.namedtuple(
         'TopdbAnnotation',
         ['membrane', 'topology', 'score', 'tmregions'],
     )
-    
+
     result = collections.defaultdict(set)
-    
+
     url = urls.urls['topdb']['url']
     c = curl.Curl(
         url,
@@ -10982,34 +10995,34 @@ def topdb_annotations(ncbi_tax_id = 9606):
         default_mode = 'rb',
         silent = False,
     )
-    
+
     parser = etree.iterparse(c.fileobj, events = ('start', 'end'))
-    
+
     result = collections.defaultdict(set)
     root = next(parser)
     used_elements = []
 
     for ev, elem in parser:
-        
+
         if ev == 'end' and elem.tag == 'TOPDB':
-            
+
             used_elements.append(elem)
-            
+
             organism = elem.find('Organism').text
-            
+
             if (
                 organism not in common.latin_name_to_ncbi_tax_id or
                 common.latin_name_to_ncbi_tax_id[organism] != ncbi_tax_id
             ):
-                
+
                 continue
-            
+
             tag_uniprots = elem.find('./CrossRef/UniProt')
-            
+
             if tag_uniprots is None:
-                
+
                 continue
-            
+
             uniprots = [u.text for u in tag_uniprots.findall('AC')]
             uniprots = set(
                 mapping.map_name0(
@@ -11020,46 +11033,46 @@ def topdb_annotations(ncbi_tax_id = 9606):
                 )
                 for u in uniprots
             )
-            
+
             if not uniprots:
-                
+
                 continue
-            
+
             membranes = set(
                 mem
                 for tag_mem in elem.findall('Membrane')
                 for mem in tag_mem.text.split(';')
             )
-            
+
             ntm = 0
             score = 0
             topologies = ()
             tag_topo = elem.find('Topology')
-            
+
             if tag_topo is not None:
-                
+
                 ntm = int(tag_topo.find('Numtm').attrib['Count'])
                 score = int(tag_topo.find('Reliability').text)
-                
+
                 topologies = set(
                     tag_reg.attrib['Loc']
                     for tag_reg in tag_topo.findall('./Regions/Region')
                 )
-            
+
             if not membranes:
-                
+
                 membranes = (None,)
-            
+
             if not topologies:
-                
+
                 topologies = (None,)
-            
+
             for topology, membrane, uniprot in itertools.product(
                 topologies,
                 membranes,
                 uniprots,
             ):
-                
+
                 result[uniprot].add(
                     TopdbAnnotation(
                         membrane = membrane,
@@ -11068,61 +11081,61 @@ def topdb_annotations(ncbi_tax_id = 9606):
                         score = score,
                     )
                 )
-        
+
         # removing used elements to keep memory low
         if len(used_elements) > 2000:
-            
+
             for _ in xrange(1000):
-                
+
                 e = used_elements.pop(0)
                 e.clear()
-    
+
     # closing the XML
     c.fileobj.close()
     del c
-    
+
     return result
 
 
 def hgnc_genegroups():
-    
+
     HGNCGeneGroupAnnotation = collections.namedtuple(
         'HGNCGeneGroupAnnotation',
         ['mainclass'],
     )
     result = collections.defaultdict(set)
-    
+
     url = urls.urls['hgnc']['groups']
     c = curl.Curl(url, large = True, silent = False)
-    
+
     _ = next(c.result)
-    
+
     for rec in c.result:
-        
+
         rec = rec.split('\t')
         uniprot = rec[2]
-        
+
         if not uniprot:
-            
+
             continue
-        
+
         groups = rec[3].split('|')
-        
+
         for group in groups:
-            
+
             group = group.strip()
-            
+
             if group:
-                
+
                 result[uniprot].add(
                     HGNCGeneGroupAnnotation(mainclass = group)
                 )
-    
+
     return result
 
 
 def zhong2015_annotations():
-    
+
     types = {
         'i': 'iCAM',
         'm': 'matrix adhesion',
@@ -11133,65 +11146,65 @@ def zhong2015_annotations():
         'tj': 'tight junction',
         'my': 'myelin interactions',
     }
-    
+
     Zhong2015Annotation = collections.namedtuple(
         'Zhong2015Annotation',
         ['type'],
     )
     result = collections.defaultdict(set)
-    
+
     fname = urls.files['zhong2015']['s1']
-    
+
     with open(fname, 'r') as fp:
-        
+
         _ = fp.readline()
-        
+
         for rec in fp:
-            
+
             rec = rec.split('\t')
-            
+
             uniprot = mapping.map_name0(rec[0], 'genesymbol', 'uniprot')
-            
+
             if uniprot:
-                
+
                 result[uniprot].add(
                     Zhong2015Annotation(type = types[rec[2]])
                 )
-    
+
     return result
 
 
 def adhesome_annotations():
-    
+
     AdhesomeAnnotation = collections.namedtuple(
         'AdhesomeAnnotation',
         ['mainclass', 'intrinsic'],
     )
-    
+
     result = collections.defaultdict(set)
-    
+
     url = urls.urls['adhesome']['components']
     c = curl.Curl(url, large = True, silent = False)
-    
+
     data = csv.DictReader(c.result, delimiter = ',')
-    
+
     for rec in data:
-        
+
         uniprots = rec['Swiss-Prot ID']
-        
+
         for uniprot in uniprots.split(','):
-            
+
             uniprot = uniprot.strip()
-            
+
             if uniprot == 'null':
-                
+
                 continue
-            
+
             result[uniprot].add(AdhesomeAnnotation(
                 mainclass = rec['Functional Category'].strip(),
                 intrinsic = rec['FA'].strip() == 'Intrinsic Proteins',
             ))
-    
+
     return result
 
 
@@ -11385,7 +11398,7 @@ def get_compartments_localizations(
         text_mining = False,
         predictions = False,
     ):
-        
+
         pass
 
 
@@ -11530,9 +11543,9 @@ def get_locate_localizations(
                                         this_loc = loc.text.lower().split(',')
 
                                         for uniprot in this_uniprots:
-                                            
+
                                             for _loc in this_loc:
-                                                
+
                                                 result[uniprot].add(record(
                                                     source = sources,
                                                     location = _loc,

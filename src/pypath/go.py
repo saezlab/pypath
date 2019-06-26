@@ -240,13 +240,21 @@ class GeneOntology(session_mod.Logger):
         return dct['P']
     
     
-    def subgraph_nodes(self, direction, terms, relations = None):
+    def subgraph_nodes(
+            self,
+            direction,
+            terms,
+            relations = None,
+            include_seed = True,
+        ):
         """
         Returns a set of all nodes either in the subgraph of ancestors 
         or descendants of a single term or a set of terms.
         
         :param str direction:
             Possible values: `ancestors` or `descendants`.
+        :param bool include_seed:
+            Include ``terms`` in the subgraph or only the related nodes.
         """
         
         relations = relations or self.all_relations
@@ -256,7 +264,7 @@ class GeneOntology(session_mod.Logger):
             terms = {terms}
         
         graph = getattr(self, direction)
-        subgraph = set(terms)
+        subgraph = set(terms) if include_seed else set()
         
         for term in terms:
             
@@ -276,20 +284,39 @@ class GeneOntology(session_mod.Logger):
         return subgraph
     
     
-    def get_all_ancestors(self, terms, relations = None):
+    def get_all_ancestors(self, terms, relations = None, include_seed = True):
         """
         Returns a set of all ancestors of a single term or a set of terms.
         """
         
-        return self.subgraph_nodes('ancestors', terms, relations)
+        terms = self.set_of_terms(terms)
+        
+        return self.subgraph_nodes(
+            direction = 'ancestors',
+            terms = terms,
+            relations = relations,
+            include_seed = include_seed,
+        )
     
     
-    def get_all_descendants(self, terms, relations = None):
+    def get_all_descendants(
+            self,
+            terms,
+            relations = None,
+            include_seed = True,
+        ):
         """
         Returns a set of all descendants of a single term or a set of terms.
         """
         
-        return self.subgraph_nodes('descendants', terms, relations)
+        terms = self.set_of_terms(terms)
+        
+        return self.subgraph_nodes(
+            direction = 'descendants',
+            terms = terms,
+            relations = relations,
+            include_seed = include_seed,
+        )
     
     
     def get_aspect(self, term):
@@ -333,8 +360,108 @@ class GeneOntology(session_mod.Logger):
                 term in self.ancestors and
                 term not in self.descendants
             ) or
-            bool(self.descendants[term])
+            not bool(self.descendants[term])
         )
+    
+    
+    def lowest(self, terms, *args):
+        """
+        From a set of terms returns the lowest level ones, removing all which
+        are parents of some others in the set.
+        """
+        
+        return self.flatten(terms, *args)
+    
+    
+    def highest(self, terms, *args):
+        """
+        From a set of terms returns the highest level ones, removing all
+        which are descendants of some others in the set.
+        """
+        
+        return self.flatten(terms, *args, lowest = False)
+    
+    
+    def flatten(self, terms, *args, lowest = True):
+        """
+        Returns a set of terms by removing either all redundant ancestors or
+        descendants from the provided set terms. By removing the ancestors
+        you get the lowest level set of terms, by removing the descendants
+        the result will be the highest level non-redundant terms.
+        
+        :param str direction:
+            Either `lowest` or `highest`.
+        """
+        
+        terms = self.set_of_terms(terms, *args)
+        
+        method = getattr(
+            self,
+            'get_all_%s' % (
+                'ancestors' if lowest else 'descendants'
+            )
+        )
+        
+        return (
+            terms -
+            set.union(
+                *(
+                    method(term, include_seed = False)
+                    for term in terms
+                )
+            )
+        )
+    
+    
+    def set_of_terms(self, terms_names, *args):
+        """
+        Converts anything to a set of terms. ``terms_names`` can be either a
+        single term or name or an iterable of terms and names.
+        """
+        
+        return self.set_of(terms_names, *args)
+    
+    
+    def set_of_names(self, terms_names, *args):
+        """
+        Converts anything to a set of names. ``terms_names`` can be either a
+        single term or name or an iterable of terms and names.
+        """
+        
+        return self.set_of(terms_names, *args, to_terms = False)
+    
+    
+    def set_of(self, terms_names, *args, to_terms = True):
+        """
+        Converts anything to a set of terms or names.
+        ``terms_names`` can be either a single term or name or an iterable
+        of terms and names.
+        
+        :param bool to_terms:
+            The target identifier type is `term`; if ``False`` the target
+            will be `name`.
+        """
+        
+        if isinstance(terms_names, common.basestring):
+            
+            terms_names = {terms_names}
+            
+        elif not isinstance(terms_names, set):
+            
+            terms_names = set(terms_names)
+        
+        if args:
+            
+            terms_names.update(set(args))
+        
+        method = getattr(
+            self,
+            'get_term' if to_terms else 'get_name'
+        )
+        
+        return {
+            method(term) for term in terms_names
+        }
 
 
 class GOAnnotation(session_mod.Logger):

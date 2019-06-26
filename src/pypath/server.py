@@ -22,6 +22,8 @@ from future.utils import iteritems
 
 import sys
 import os
+import copy
+import collections
 
 try:
     import twisted.web.resource
@@ -455,21 +457,86 @@ class TableServer(BaseServer):
         'references', 'sources', 'databases',
         'isoforms', 'organism', 'ncbi_tax_id'
     }
+    default_input_files = {
+        'interactions': 'omnipath_webservice_interactions.tsv',
+        'ptms': 'omnipath_webservice_ptms.tsv',
+        'annotations': 'omnipath_webservice_annotations.tsv',
+        'complexes': 'omnipath_webservice_complexes.tsv',
+        'intercell': 'omnipath_webservice_intercell.tsv',
+    }
+    default_dtypes = collections.defaultdict(
+        dict,
+        interactions = {
+            'source': 'category',
+            'target': 'category',
+            'source_genesymbol': 'category',
+            'target_genesymbol': 'category',
+            'is_directed': 'int8',
+            'is_stimulation': 'int8',
+            'is_inhibition': 'int8',
+            'consensus_direction': 'int8',
+            'consensus_stimulation': 'int8',
+            'consensus_inhibition': 'int8',
+            'sources': 'category',
+            'references': 'category',
+            'dip_url': 'category',
+            'tfregulons_curated': 'category',
+            'tfregulons_chipseq': 'category',
+            'tfregulons_tfbs': 'category',
+            'tfregulons_coexp': 'category',
+            'tfregulons_level': 'category',
+            'type': 'category',
+            'ncbi_tax_id_source': 'int16',
+            'ncbi_tax_id_target': 'int16',
+        },
+        annotations = {
+            'uniprot': 'category',
+            'genesymbol': 'category',
+            'source': 'category',
+            'label': 'category',
+            'value': 'category',
+            'record_id': 'uint32',
+        },
+        ptms = {
+            'enzyme': 'category',
+            'substrate': 'category',
+            'enzyme_genesymbol': 'category',
+            'substrate_genesymbol': 'category',
+            'isoforms': 'category',
+            'residue_type': 'category',
+            'residue_offset': 'uint16',
+            'modification': 'category',
+            'sources': 'category',
+            'references': 'category',
+            'ncbi_tax_id': 'int16',
+        },
+        complexes = {
+            'name': 'category',
+            'stoichiometry': 'category',
+            'sources': 'category',
+            'references': 'category',
+            'identifiers': 'category',
+        },
+    )
     
     
-    def __init__(self, a = 'hey', tbls = {
-            'interactions': 'omnipath_webservice_interactions.tsv',
-            'ptms': 'omnipath_webservice_ptms.tsv',
-            'annotations': 'omnipath_webservice_annotations.tsv',
-            'complexes': 'omnipath_webservice_complexes.tsv',
-            'intercell': 'omnipath_webservice_intercell.tsv',
-        }):
+    def __init__(
+            self,
+            input_files = None,
+        ):
+        """
+        Server based on ``pandas`` data frames.
+        
+        :param dict input_files:
+            Paths to tables exported by the ``pypath.websrvtab`` module.
+        """
         
         session_mod.Logger.__init__(self, name = 'server')
         
         self._log('TableServer starting up.')
         
-        self.tbls = tbls
+        self.input_files = copy.deepcopy(self.default_input_files)
+        self.input_files.update(input_files or {})
         self.data = {}
         self._read_tables()
         self._preprocess_interactions()
@@ -486,7 +553,7 @@ class TableServer(BaseServer):
         
         self._log('Loading data tables.')
         
-        for name, fname in iteritems(self.tbls):
+        for name, fname in iteritems(self.input_files):
             
             if not os.path.exists(fname):
                 
@@ -495,10 +562,13 @@ class TableServer(BaseServer):
                 )
                 continue
             
+            dtype = self.default_dtypes[name]
+            
             self.data[name] = pd.read_csv(
                 fname,
                 sep = '\t',
                 index_col = False,
+                dtype = dtype,
             )
             
             self._log(
