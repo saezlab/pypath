@@ -644,7 +644,7 @@ class TableServer(BaseServer):
         
         self._log('Preprocessing intercell data.')
         tbl = self.data['intercell']
-        tbl.drop('full_name', axis = 1, inplace = True)
+        tbl.drop('full_name', axis = 1, inplace = True, errors = 'ignore')
     
     
     def _check_args(self, req):
@@ -1265,7 +1265,12 @@ class TableServer(BaseServer):
             
             proteins = self._args_set(req, 'proteins')
             
-            tbl = tbl[tbl.uniprot.isin(proteins)]
+            tbl = tbl[
+                np.logical_or(
+                    tbl.uniprot.isin(proteins),
+                    tbl.genesymbol.isin(proteins),
+                )
+            ]
         
         tbl = tbl.loc[:,hdr]
         
