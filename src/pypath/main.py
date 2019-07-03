@@ -2645,57 +2645,6 @@ class PyPath(session_mod.Logger):
         self.raw_data = edge_list_mapped
 
 
-    def load_list(self, lst, name): # XXX: Not used anywhere
-        """
-        Loads a custom list to the object's node data lists. See
-        :py:attr:`pypath.main.PyPath.lists` attribute for more
-        information.
-
-        :arg list lst:
-            The list containing the node names [str] from the given
-            category (*name*).
-        :arg str name:
-            The category or identifier for the list of nodes provided.
-        """
-
-        self.lists[name] = lst
-
-    def receptors_list(self):
-        """
-        Loads the Human Plasma Membrane Receptome as a list. This
-        resource is human only.
-        The list name is ``rec``.
-        """
-
-        self.lists['rec'] = common.uniqList(common.flatList([
-            mapping.map_name(rec, 'genesymbol', 'uniprot',
-                                 ncbi_tax_id = 9606)
-            for rec in dataio.get_hpmr()]))
-
-    def cspa_list(self):
-        """
-        Loads a list of cell surface proteins from the Cell Surface Protein
-        Atlas as a list. This resource is available for human and mouse.
-        The list name is ``cspa``.
-        """
-
-        self.lists['cspa'] = list(
-            dataio.get_cspa(organism = self.ncbi_tax_id)
-        )
-
-    def surfaceome_list(self, score_threshold = .0):
-        """
-        Loads a list of cell surface proteins from the In Silico Human
-        Surfaceome as a list. This resource is human only.
-        The list name is ``ishs``.
-        """
-
-        self.lists['ishs'] = [
-            uniprot
-            for uniprot, data in iteritems(dataio.get_surfaceome())
-            if data[0] >= score_threshold
-        ]
-
     def druggability_list(self):
         """
         Loads the list of druggable proteins from DgiDB. This resource
@@ -2706,16 +2655,7 @@ class PyPath(session_mod.Logger):
         self.lists['dgb'] = common.uniqList(common.flatList([
             mapping.map_name(dgb, 'genesymbol', 'uniprot', 9606)
             for dgb in dataio.get_dgidb()]))
-
-    def kinases_list(self):
-        """
-        Loads the list of all known kinases in the proteome from
-        kinase.com. This resource is human only.
-        """
-
-        self.lists['kin'] = common.uniqList(common.flatList([
-            mapping.map_name(kin, 'genesymbol', 'uniprot', 9606)
-            for kin in dataio.get_kinases()]))
+    
 
     def tfs_list(self):
         """
@@ -2731,21 +2671,7 @@ class PyPath(session_mod.Logger):
                  for h in tfs['hgnc']]
 
         self.lists['tf'] = common.uniqList(common.flatList(utfs))
-
-    def disease_genes_list(self, dataset='curated'):
-        """
-        Loads the list of all disease related genes from DisGeNet. This
-        resource is human only.
-        """
-
-        diss = dataio.get_disgenet(dataset=dataset)
-        dis = []
-
-        for di in diss:
-            dis.extend(mapping.map_name(di['entrez'], 'entrez', 'uniprot',
-                                            9606))
-
-        self.lists['dis'] = common.uniqList(dis)
+    
 
     def signaling_proteins_list(self):
         """
