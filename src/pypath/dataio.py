@@ -6555,32 +6555,56 @@ def get_disgenet(dataset = 'curated'):
         Name of DisGeNet dataset to be obtained:
         `curated`, `literature`, `befree` or `all`.
     """
+    
+    DisGeNetAnnotation = collections.namedtuple(
+        'DisGeNetAnnotation',
+        [
+            'uniprot',
+            'disease',
+            'score',
+            'dsi',
+            'dpi',
+            'nof_pmids',
+            'nof_snps',
+            'source',
+        ]
+    )
+    
     url = urls.urls['disgenet']['url'] % dataset
     c = curl.Curl(
         url,
-        silent = False
+        silent = False,
+        large = True,
+        encoding = 'utf-8',
+        default_mode = 'r',
     )
-
-    cols = {
-        'entrez': 0,
-        'genesymbol': 1,
-        'umls': 2,
-        'disease': 3,
-        'score': 4,
-        'nof_pmids': 5,
-        'nof_snps':  6,
-        'source': 7
-    }
-
-    data = read_table(cols = cols, data = c.result, hdr = 1, sep = '\t')
-
-    for i, d in enumerate(data):
-
-        data[i]['score']  = float(data[i]['score'])
-        data[i]['nof_pmids'] = int(data[i]['nof_pmids'])
-        data[i]['nof_snps']  = int(data[i]['nof_snps'])
-        data[i]['source'] = [x.strip() for x in data[i]['source'].split(';')]
-
+    reader = csv.DictReader(c.result, delimiter = '\t')
+    data = collections.defaultdict(set)
+    
+    for rec in reader:
+        
+        uniprot = mapping.map_name0(
+            rec['geneSymbol'],
+            'genesymbol',
+            'uniprot',
+        )
+        
+        if not uniprot:
+            
+            continue
+        
+        data[uniprot].add(
+            DisGeNetAnnotation(
+                disease = rec['diseaseName'],
+                score = float(rec['score']),
+                dsi = float(rec['DSI']) if rec['DSI'] else None,
+                dpi = float(rec['DPI']) if rec['DPI'] else None,
+                nof_pmids = int(rec['NofPmids']),
+                nof_snps = int(rec['NofSnps']),
+                source = tuple(x.strip() for x in rec['source'].split(';')),
+            )
+        )
+    
     return data
 
 

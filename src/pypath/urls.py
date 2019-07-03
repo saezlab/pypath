@@ -587,10 +587,9 @@ urls = {
     },
     'disgenet': {
         'label': 'Disease-gene associations',
-        'url':
-        'http://www.disgenet.org/ds/DisGeNET/results/'\
-            '%s_gene_disease_associations.tsv.gz',
-        'datasets': ['curated', 'literature', 'befree', 'all']
+        'url': 'http://www.disgenet.org/static/disgenet_ap1/files/'\
+            'downloads/%s_gene_disease_associations.tsv.gz',
+        'datasets': ['curated', 'literature', 'befree', 'all'],
     },
     'hsn': {
         'label': 'The Wang Human Signaling Network',

@@ -77,6 +77,7 @@ protein_sources_default = {
     'KeggPathways',
     'NetpathPathways',
     'Cpad',
+    'Disgenet',
 }
 
 complex_sources_default = {
