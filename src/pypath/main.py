@@ -2656,23 +2656,7 @@ class PyPath(session_mod.Logger):
             mapping.map_name(dgb, 'genesymbol', 'uniprot', 9606)
             for dgb in dataio.get_dgidb()]))
     
-
-    def tfs_list(self):
-        """
-        Loads the list of all known transcription factors from TF census
-        (Vaquerizas 2009). This resource is human only.
-        """
-
-        tfs = dataio.get_tfcensus()
-
-        utfs = [mapping.map_name(tf, 'ensembl', 'uniprot', 9606)
-                for tf in tfs['ensg']]
-        utfs += [mapping.map_name(h, 'genesymbol', 'uniprot', 9606)
-                 for h in tfs['hgnc']]
-
-        self.lists['tf'] = common.uniqList(common.flatList(utfs))
     
-
     def signaling_proteins_list(self):
         """
         Compiles a list of signaling proteins (as opposed to other
@@ -2710,19 +2694,6 @@ class PyPath(session_mod.Logger):
         upsig = spsig & set(self.lists['proteome'])
 
         self.lists['sig'] = list(upsig)
-
-    def proteome_list(self, swissprot=True):
-        """
-        Loads the whole proteome as a list.
-
-        :arg bool swissprot:
-            Optional, ``True`` by default. Determines whether to use
-            also the information from SwissProt.
-        """
-
-        swissprot = 'yes' if swissprot else None
-        self.lists['proteome'] = dataio.all_uniprots(self.ncbi_tax_id,
-                                                     swissprot=swissprot)
 
     def cancer_gene_census_list(self):
         """
