@@ -79,6 +79,7 @@ protein_sources_default = {
     'Cpad',
     'Disgenet',
     'Kinases',
+    'Phosphatome',
 }
 
 complex_sources_default = {
@@ -1562,6 +1563,31 @@ class Kinases(AnnotationBase):
             input_method = 'get_kinases',
             **kwargs
         )
+
+
+class Phosphatome(AnnotationBase):
+    
+    _eq_fields = ()
+    
+    
+    def __init__(self, **kwargs):
+        """
+        The list of phosphatases from Chen et al, Science Signaling (2017)
+        Table S1.
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'Phosphatome',
+            input_method = 'phosphatome_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        self.annot = self.data
+        del self.data
 
 
 class Matrixdb(AnnotationBase):

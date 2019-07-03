@@ -7749,10 +7749,10 @@ def kinases():
     return kinases
 
 
-def get_phosphatases():
+def phosphatome_annotations():
     """
     Downloads the list of phosphatases from Chen et al, Science Signaling
-    (2017) Table S3.
+    (2017) Table S1.
     """
     
     PhosphatomeAnnotation = collections.namedtuple(
