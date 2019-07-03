@@ -1584,6 +1584,24 @@ class Tfcensus(AnnotationBase):
         )
 
 
+class Dgidb(AnnotationBase):
+    
+    _eq_fields = ()
+    
+    
+    def __init__(self, **kwargs):
+        """
+        Druggable proteins from DGIdb (Drug Gene Interaction Database).
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'DGIdb',
+            input_method = 'get_dgidb',
+            **kwargs
+        )
+
+
 class Phosphatome(AnnotationBase):
     
     _eq_fields = ()

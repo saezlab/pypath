@@ -7811,6 +7811,7 @@ def get_dgidb():
     Downloads and processes the list of all human druggable proteins.
     Returns a list of GeneSymbols.
     """
+    
     genesymbols = []
     url = urls.urls['dgidb']['main_url']
     c = curl.Curl(url, silent = False)
@@ -7822,6 +7823,7 @@ def get_dgidb():
         .find_all('option')
     ]
     for cat in cats:
+        
         url = urls.urls['dgidb']['url'] % cat
         c = curl.Curl(url)
         html = c.result
