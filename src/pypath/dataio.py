@@ -7720,11 +7720,12 @@ def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
     sys.stdout.flush()
 
 
-def get_kinases():
+def kinases():
     """
     Downloads and processes the list of all human kinases.
     Returns a list of GeneSymbols.
     """
+    
     url = urls.urls['kinome']['url']
     c = curl.Curl(url, large = True, silent = False)
     xlsf = c.fileobj

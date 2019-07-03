@@ -78,6 +78,7 @@ protein_sources_default = {
     'NetpathPathways',
     'Cpad',
     'Disgenet',
+    'Kinases',
 }
 
 complex_sources_default = {
@@ -1543,6 +1544,24 @@ class HumanPlasmaMembraneReceptome(AnnotationBase):
 
         self.annot = self.data
         del self.data
+
+
+class Kinases(AnnotationBase):
+    
+    _eq_fields = ()
+    
+    
+    def __init__(self, **kwargs):
+        """
+        Kinases from `kinase.com`.
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'Kinases',
+            input_method = 'get_kinases',
+            **kwargs
+        )
 
 
 class Matrixdb(AnnotationBase):
