@@ -7805,6 +7805,7 @@ def phosphatome_annotations():
     
     return data
 
+
 def get_dgidb():
     """
     Downloads and processes the list of all human druggable proteins.
@@ -7827,7 +7828,8 @@ def get_dgidb():
         soup = bs4.BeautifulSoup(html, 'html.parser')
         trs = soup.find('tbody').find_all('tr')
         genesymbols.extend([tr.find('td').text.strip() for tr in trs])
-    return common.uniqList(genesymbols)
+    
+    return mapping.map_names(genesymbols, 'genesymbol', 'uniprot')
 
 
 def reactome_sbml():
