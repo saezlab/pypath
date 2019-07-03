@@ -80,6 +80,7 @@ protein_sources_default = {
     'Disgenet',
     'Kinases',
     'Phosphatome',
+    'Tfcensus',
 }
 
 complex_sources_default = {
@@ -1561,6 +1562,24 @@ class Kinases(AnnotationBase):
             self,
             name = 'Kinases',
             input_method = 'get_kinases',
+            **kwargs
+        )
+
+
+class Tfcensus(AnnotationBase):
+    
+    _eq_fields = ()
+    
+    
+    def __init__(self, **kwargs):
+        """
+        Transcription factors from TF census (Vaquerizas et al 2009).
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'TFcensus',
+            input_method = 'get_tfcensus',
             **kwargs
         )
 
