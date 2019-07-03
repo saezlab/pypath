@@ -121,6 +121,9 @@ default_fields = {
         'cancer',
         'effect_on_cancer',
     ),
+    'Disgenet': (
+        'disease',
+    ),
 }
 
 
@@ -1378,6 +1381,30 @@ class Cpad(AnnotationBase):
             self,
             name = 'CPAD',
             input_method = 'cpad_annotations',
+            ncbi_tax_id = ncbi_tax_id,
+            **kwargs
+        )
+    
+    
+    def _process_method(self):
+        
+        self.annot = self.data
+        delattr(self, 'data')
+
+
+class Disgenet(AnnotationBase):
+    
+    _eq_fields = (
+        'disease',
+    )
+    
+    
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'DisGeNet',
+            input_method = 'disgenet_annotations',
             ncbi_tax_id = ncbi_tax_id,
             **kwargs
         )

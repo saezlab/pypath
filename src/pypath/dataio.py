@@ -6545,7 +6545,7 @@ def get_hprd_ptms(in_vivo = True):
     return ptms
 
 
-def get_disgenet(dataset = 'curated'):
+def disgenet_annotations(dataset = 'curated'):
     """
     Downloads and processes the list of all human disease related proteins
     from DisGeNet.
