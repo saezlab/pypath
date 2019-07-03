@@ -7731,8 +7731,15 @@ def get_kinases():
     xlsname = xlsf.name
     xlsf.close()
     tbl = read_xls(xlsname)
-    genesymbols = [l[23] for l in tbl[1:] if len(l[23]) > 0]
-    return genesymbols
+    
+    kinases = {
+        mapping.map_name0(l[23], 'genesymbol', 'uniprot')
+        for l in tbl[1:] if len(l[23]) > 0
+    }
+    
+    kinases.discard(None)
+    
+    return kinases
 
 
 def get_dgidb():
