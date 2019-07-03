@@ -628,6 +628,11 @@ urls = {
         'http://kinase.com/static/colt/data/human/kinome/tables/'\
             'Kincat_Hsap.08.02.xls'
     },
+    'phosphatome': {
+        'label': 'List of human and other phosphatases',
+        'url': 'https://stke.sciencemag.org/highwire/filestream/210607/'\
+            'field_highwire_adjunct_files/2/aag1796_Tables_S1_to_S23.zip',
+    },
     'dgidb': {
         'label': 'Druggable genes compiled from multiple resources',
         'main_url': 'http://dgidb.genome.wustl.edu/search_categories',

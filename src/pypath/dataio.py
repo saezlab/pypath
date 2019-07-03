@@ -7701,7 +7701,13 @@ def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
     to CSV, or return as a list of lists
     """
     try:
-        book = xlrd.open_workbook(xls_file, on_demand = True)
+        if hasattr(xls_file, 'read'):
+            book = xlrd.open_workbook(
+                file_contents = xls_file.read(),
+                on_demand = True,
+            )
+        else:
+            book = xlrd.open_workbook(xls_file, on_demand = True)
         try:
             sheet = book.sheet_by_name(sheet)
         except XLRDError:
@@ -7742,6 +7748,51 @@ def kinases():
     
     return kinases
 
+
+def get_phosphatases():
+    """
+    Downloads the list of phosphatases from Chen et al, Science Signaling
+    (2017) Table S3.
+    """
+    
+    PhosphatomeAnnotation = collections.namedtuple(
+        'PhosphatomeAnnotation',
+        [
+            'fold',
+            'family',
+            'subfamily',
+            'has_protein_substrates',
+            'has_non_protein_substrates',
+            'has_catalytic_activity',
+        ],
+    )
+    
+    url = urls.urls['phosphatome']['url']
+    c = curl.Curl(url, large = True, silent = False, default_mode = 'rb')
+    tbl = read_xls(c.result['aag1796_Tables S1 to S23.xlsx'])
+    
+    data = collections.defaultdict(set)
+    
+    for rec in tbl[2:]:
+        
+        uniprot = mapping.map_name0(rec[0], 'genesymbol', 'uniprot')
+        
+        if not uniprot:
+            
+            continue
+        
+        data[uniprot].add(
+            PhosphatomeAnnotation(
+                fold = rec[2],
+                family = rec[3],
+                subfamily = rec[4],
+                has_protein_substrates = rec[21].strip().lower() == 'yes',
+                has_non_protein_substrates = rec[22].strip().lower() == 'yes',
+                has_catalytic_activity = rec[23].strip().lower() == 'yes',
+            )
+        )
+    
+    return data
 
 def get_dgidb():
     """
