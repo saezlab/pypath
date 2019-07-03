@@ -5857,10 +5857,11 @@ def get_integrins():
     return set(integrins)
 
 
-def get_tfcensus(classes = ['a', 'b', 'other']):
+def get_tfcensus(classes = ('a', 'b', 'other')):
     """
-    Downloads and processes list of all human transcripton factors.
-    Returns dict with lists of ENSGene IDs and HGNC Gene Names.
+    Downloads and processes the list of all known transcription factors from
+    TF census (Vaquerizas 2009). This resource is human only.
+    Returns set of UniProt IDs.
     """
 
     ensg = []
@@ -5873,12 +5874,22 @@ def get_tfcensus(classes = ['a', 'b', 'other']):
     for l in f:
 
         if len(l) > 0 and l.split('\t')[0] in classes:
+            
             ensg += reensg.findall(l)
             h = l.split('\t')[5].strip()
             if len(h) > 0:
                 hgnc.append(h)
-
-    return {'ensg': ensg, 'hgnc': hgnc}
+    
+    return (
+        set.union(*(
+            mapping.map_name(e, 'ensembl', 'uniprot')
+            for e in ensg
+        )) |
+        set.union(*(
+            mapping.map_name(h, 'genesymbol', 'uniprot')
+            for h in hgnc
+        ))
+    )
 
 
 def get_guide2pharma(
