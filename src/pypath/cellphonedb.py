@@ -239,7 +239,8 @@ class CellPhoneDB(session_mod.Logger):
             
             id_ = entity.__str__()
             
-            name = id_
+            name = (
+                id_
                     if 'COMPLEX' not in id_ else
                 mapping.map_name0(
                     id_,

@@ -4086,16 +4086,14 @@ def go_annotations_goa(organism = 'human'):
     c = curl.Curl(url, silent = False, large = True)
 
     for line in c.result:
-
-        line = line.decode('ascii')
-
+        
         if not line or line[0] == '!':
             continue
-
+        
         line = line.strip().split('\t')
-
+        
         annot[line[8]][line[1]].add(line[4])
-
+    
     return annot
 
 
