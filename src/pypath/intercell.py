@@ -254,3 +254,17 @@ class Intercell(IntercellAnnotation):
         if isinstance(self.network, network_mod.Network):
 
             pass
+
+
+def init_db(**kwargs):
+    
+    globals()['db'] = IntercellAnnotation(**kwargs)
+
+
+def get_db(**kwargs):
+    
+    if 'db' not in globals():
+        
+        init_db(**kwargs)
+    
+    return globals()['db']

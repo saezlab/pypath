@@ -77,6 +77,10 @@ protein_sources_default = {
     'KeggPathways',
     'NetpathPathways',
     'Cpad',
+    'Disgenet',
+    'Kinases',
+    'Phosphatome',
+    'Tfcensus',
 }
 
 complex_sources_default = {
@@ -119,6 +123,9 @@ default_fields = {
     'Cpad': (
         'cancer',
         'effect_on_cancer',
+    ),
+    'Disgenet': (
+        'disease',
     ),
 }
 
@@ -182,7 +189,7 @@ class CustomAnnotation(session_mod.Logger):
         
         if self.pickle_file:
             
-            self.load_from_pickle(fname = self.pickle_file)
+            self.load_from_pickle(pickle_file = self.pickle_file)
             return
         
         for classdef in self._class_definitions.values():
@@ -1388,6 +1395,30 @@ class Cpad(AnnotationBase):
         delattr(self, 'data')
 
 
+class Disgenet(AnnotationBase):
+    
+    _eq_fields = (
+        'disease',
+    )
+    
+    
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'DisGeNet',
+            input_method = 'disgenet_annotations',
+            ncbi_tax_id = ncbi_tax_id,
+            **kwargs
+        )
+    
+    
+    def _process_method(self):
+        
+        self.annot = self.data
+        delattr(self, 'data')
+
+
 class Integrins(AnnotationBase):
     
     _eq_fields = ()
@@ -1507,6 +1538,85 @@ class HumanPlasmaMembraneReceptome(AnnotationBase):
             self,
             name = 'HPMR',
             input_method = 'hpmr_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        self.annot = self.data
+        del self.data
+
+
+class Kinases(AnnotationBase):
+    
+    _eq_fields = ()
+    
+    
+    def __init__(self, **kwargs):
+        """
+        Kinases from `kinase.com`.
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'Kinases',
+            input_method = 'get_kinases',
+            **kwargs
+        )
+
+
+class Tfcensus(AnnotationBase):
+    
+    _eq_fields = ()
+    
+    
+    def __init__(self, **kwargs):
+        """
+        Transcription factors from TF census (Vaquerizas et al 2009).
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'TFcensus',
+            input_method = 'get_tfcensus',
+            **kwargs
+        )
+
+
+class Dgidb(AnnotationBase):
+    
+    _eq_fields = ()
+    
+    
+    def __init__(self, **kwargs):
+        """
+        Druggable proteins from DGIdb (Drug Gene Interaction Database).
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'DGIdb',
+            input_method = 'get_dgidb',
+            **kwargs
+        )
+
+
+class Phosphatome(AnnotationBase):
+    
+    _eq_fields = ()
+    
+    
+    def __init__(self, **kwargs):
+        """
+        The list of phosphatases from Chen et al, Science Signaling (2017)
+        Table S1.
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'Phosphatome',
+            input_method = 'phosphatome_annotations',
             **kwargs
         )
 

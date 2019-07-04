@@ -91,6 +91,7 @@ import pycurl
 import webbrowser
 import requests
 import codecs
+import base64
 
 try:
     import bioservices
@@ -4085,16 +4086,14 @@ def go_annotations_goa(organism = 'human'):
     c = curl.Curl(url, silent = False, large = True)
 
     for line in c.result:
-
-        line = line.decode('ascii')
-
+        
         if not line or line[0] == '!':
             continue
-
+        
         line = line.strip().split('\t')
-
+        
         annot[line[8]][line[1]].add(line[4])
-
+    
     return annot
 
 
@@ -5857,10 +5856,11 @@ def get_integrins():
     return set(integrins)
 
 
-def get_tfcensus(classes = ['a', 'b', 'other']):
+def get_tfcensus(classes = ('a', 'b', 'other')):
     """
-    Downloads and processes list of all human transcripton factors.
-    Returns dict with lists of ENSGene IDs and HGNC Gene Names.
+    Downloads and processes the list of all known transcription factors from
+    TF census (Vaquerizas 2009). This resource is human only.
+    Returns set of UniProt IDs.
     """
 
     ensg = []
@@ -5873,12 +5873,22 @@ def get_tfcensus(classes = ['a', 'b', 'other']):
     for l in f:
 
         if len(l) > 0 and l.split('\t')[0] in classes:
+            
             ensg += reensg.findall(l)
             h = l.split('\t')[5].strip()
             if len(h) > 0:
                 hgnc.append(h)
-
-    return {'ensg': ensg, 'hgnc': hgnc}
+    
+    return (
+        set.union(*(
+            mapping.map_name(e, 'ensembl', 'uniprot')
+            for e in ensg
+        )) |
+        set.union(*(
+            mapping.map_name(h, 'genesymbol', 'uniprot')
+            for h in hgnc
+        ))
+    )
 
 
 def get_guide2pharma(
@@ -6545,7 +6555,7 @@ def get_hprd_ptms(in_vivo = True):
     return ptms
 
 
-def get_disgenet(dataset = 'curated'):
+def disgenet_annotations(dataset = 'curated'):
     """
     Downloads and processes the list of all human disease related proteins
     from DisGeNet.
@@ -6555,32 +6565,56 @@ def get_disgenet(dataset = 'curated'):
         Name of DisGeNet dataset to be obtained:
         `curated`, `literature`, `befree` or `all`.
     """
+    
+    DisGeNetAnnotation = collections.namedtuple(
+        'DisGeNetAnnotation',
+        [
+            'uniprot',
+            'disease',
+            'score',
+            'dsi',
+            'dpi',
+            'nof_pmids',
+            'nof_snps',
+            'source',
+        ]
+    )
+    
     url = urls.urls['disgenet']['url'] % dataset
     c = curl.Curl(
         url,
-        silent = False
+        silent = False,
+        large = True,
+        encoding = 'utf-8',
+        default_mode = 'r',
     )
-
-    cols = {
-        'entrez': 0,
-        'genesymbol': 1,
-        'umls': 2,
-        'disease': 3,
-        'score': 4,
-        'nof_pmids': 5,
-        'nof_snps':  6,
-        'source': 7
-    }
-
-    data = read_table(cols = cols, data = c.result, hdr = 1, sep = '\t')
-
-    for i, d in enumerate(data):
-
-        data[i]['score']  = float(data[i]['score'])
-        data[i]['nof_pmids'] = int(data[i]['nof_pmids'])
-        data[i]['nof_snps']  = int(data[i]['nof_snps'])
-        data[i]['source'] = [x.strip() for x in data[i]['source'].split(';')]
-
+    reader = csv.DictReader(c.result, delimiter = '\t')
+    data = collections.defaultdict(set)
+    
+    for rec in reader:
+        
+        uniprot = mapping.map_name0(
+            rec['geneSymbol'],
+            'genesymbol',
+            'uniprot',
+        )
+        
+        if not uniprot:
+            
+            continue
+        
+        data[uniprot].add(
+            DisGeNetAnnotation(
+                disease = rec['diseaseName'],
+                score = float(rec['score']),
+                dsi = float(rec['DSI']) if rec['DSI'] else None,
+                dpi = float(rec['DPI']) if rec['DPI'] else None,
+                nof_pmids = int(rec['NofPmids']),
+                nof_snps = int(rec['NofSnps']),
+                source = tuple(x.strip() for x in rec['source'].split(';')),
+            )
+        )
+    
     return data
 
 
@@ -7677,7 +7711,13 @@ def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
     to CSV, or return as a list of lists
     """
     try:
-        book = xlrd.open_workbook(xls_file, on_demand = True)
+        if hasattr(xls_file, 'read'):
+            book = xlrd.open_workbook(
+                file_contents = xls_file.read(),
+                on_demand = True,
+            )
+        else:
+            book = xlrd.open_workbook(xls_file, on_demand = True)
         try:
             sheet = book.sheet_by_name(sheet)
         except XLRDError:
@@ -7696,19 +7736,73 @@ def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
     sys.stdout.flush()
 
 
-def get_kinases():
+def kinases():
     """
     Downloads and processes the list of all human kinases.
     Returns a list of GeneSymbols.
     """
+    
     url = urls.urls['kinome']['url']
     c = curl.Curl(url, large = True, silent = False)
     xlsf = c.fileobj
     xlsname = xlsf.name
     xlsf.close()
     tbl = read_xls(xlsname)
-    genesymbols = [l[23] for l in tbl[1:] if len(l[23]) > 0]
-    return genesymbols
+    
+    kinases = {
+        mapping.map_name0(l[23], 'genesymbol', 'uniprot')
+        for l in tbl[1:] if len(l[23]) > 0
+    }
+    
+    kinases.discard(None)
+    
+    return kinases
+
+
+def phosphatome_annotations():
+    """
+    Downloads the list of phosphatases from Chen et al, Science Signaling
+    (2017) Table S1.
+    """
+    
+    PhosphatomeAnnotation = collections.namedtuple(
+        'PhosphatomeAnnotation',
+        [
+            'fold',
+            'family',
+            'subfamily',
+            'has_protein_substrates',
+            'has_non_protein_substrates',
+            'has_catalytic_activity',
+        ],
+    )
+    
+    url = urls.urls['phosphatome']['url']
+    c = curl.Curl(url, large = True, silent = False, default_mode = 'rb')
+    tbl = read_xls(c.result['aag1796_Tables S1 to S23.xlsx'])
+    
+    data = collections.defaultdict(set)
+    
+    for rec in tbl[2:]:
+        
+        uniprot = mapping.map_name0(rec[0], 'genesymbol', 'uniprot')
+        
+        if not uniprot:
+            
+            continue
+        
+        data[uniprot].add(
+            PhosphatomeAnnotation(
+                fold = rec[2],
+                family = rec[3],
+                subfamily = rec[4],
+                has_protein_substrates = rec[21].strip().lower() == 'yes',
+                has_non_protein_substrates = rec[22].strip().lower() == 'yes',
+                has_catalytic_activity = rec[23].strip().lower() == 'yes',
+            )
+        )
+    
+    return data
 
 
 def get_dgidb():
@@ -7716,6 +7810,7 @@ def get_dgidb():
     Downloads and processes the list of all human druggable proteins.
     Returns a list of GeneSymbols.
     """
+    
     genesymbols = []
     url = urls.urls['dgidb']['main_url']
     c = curl.Curl(url, silent = False)
@@ -7727,13 +7822,15 @@ def get_dgidb():
         .find_all('option')
     ]
     for cat in cats:
+        
         url = urls.urls['dgidb']['url'] % cat
         c = curl.Curl(url)
         html = c.result
         soup = bs4.BeautifulSoup(html, 'html.parser')
         trs = soup.find('tbody').find_all('tr')
         genesymbols.extend([tr.find('td').text.strip() for tr in trs])
-    return common.uniqList(genesymbols)
+    
+    return mapping.map_names(genesymbols, 'genesymbol', 'uniprot')
 
 
 def reactome_sbml():
@@ -9162,7 +9259,10 @@ def get_ccmap(organism = 9606):
     return interactions
 
 
-def get_cgc(user = None, passwd = None):
+def get_cgc_old(user = None, passwd = None):
+    """
+    Deprecated, to be removed soon.
+    """
 
     host = urls.urls['cgc']['host']
     fname = urls.urls['cgc']['file']
@@ -9181,7 +9281,8 @@ def get_cgc(user = None, passwd = None):
         sftp_ask = ask,
         sftp_user = user,
         sftp_passwd = passwd,
-        large = True)
+        large = True,
+    )
 
     data = c.result
     null = next(data)
@@ -9202,6 +9303,44 @@ def get_cgc(user = None, passwd = None):
                 field += char
 
         yield fields
+
+
+def get_cgc(user = None, passwd = None):
+    """
+    Retrieves a list of cancer driver genes (Cancer Gene Census) from
+    the Sanger COSMIC (Catalogue of Somatic Mutations in Cancer) database.
+    
+    Does not work at the moment (signature does not match error).
+    """
+    
+    url = urls.urls['cgc']['url_new']
+    
+    auth_str = base64.b64encode(('%s:%s\n' % (user, passwd)).encode())
+    
+    req_hdrs = ['Authorization: %s' % auth_str.decode()]
+    
+    c = curl.Curl(
+        url,
+        large = False,
+        silent = False,
+        req_headers = req_hdrs,
+        cache = False,
+    )
+    
+    access_url = json.loads(c.result)
+    
+    if 'url' not in access_url:
+        
+        _log(
+            'Could not retrieve COSMIC access URL. '
+            'The reply was: `%s`' % c.result
+        )
+        
+        return None
+    
+    c = curl.Curl(access_url['url'], large = True, silent = False)
+    
+    return c
 
 
 def get_matrixdb(organism = 9606):

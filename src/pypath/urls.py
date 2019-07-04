@@ -587,10 +587,9 @@ urls = {
     },
     'disgenet': {
         'label': 'Disease-gene associations',
-        'url':
-        'http://www.disgenet.org/ds/DisGeNET/results/'\
-            '%s_gene_disease_associations.tsv.gz',
-        'datasets': ['curated', 'literature', 'befree', 'all']
+        'url': 'http://www.disgenet.org/static/disgenet_ap1/files/'\
+            'downloads/%s_gene_disease_associations.tsv.gz',
+        'datasets': ['curated', 'literature', 'befree', 'all'],
     },
     'hsn': {
         'label': 'The Wang Human Signaling Network',
@@ -628,6 +627,11 @@ urls = {
         'url':
         'http://kinase.com/static/colt/data/human/kinome/tables/'\
             'Kincat_Hsap.08.02.xls'
+    },
+    'phosphatome': {
+        'label': 'List of human and other phosphatases',
+        'url': 'https://stke.sciencemag.org/highwire/filestream/210607/'\
+            'field_highwire_adjunct_files/2/aag1796_Tables_S1_to_S23.zip',
     },
     'dgidb': {
         'label': 'Druggable genes compiled from multiple resources',
@@ -720,7 +724,9 @@ urls = {
     'cgc': {
         'label': 'Cancer Gene Census: list of cancer related (driver) genes',
         'host': 'sftp-cancer.sanger.ac.uk',
-        'file': '/files/grch38/cosmic/v76/cancer_gene_census.csv'
+        'file': '/files/grch38/cosmic/v76/cancer_gene_census.csv',
+        'url_new': 'https://cancer.sanger.ac.uk/cosmic/file_download/'\
+            'GRCh38/cosmic/v89/cancer_gene_census.csv',
     },
     'havugimana': {
         'label': 'Census of human soluble protein complexes',
