@@ -241,7 +241,7 @@ class CellPhoneDB(session_mod.Logger):
             
             name = (
                 id_
-                    if 'COMPLEX' not in id_ else
+                    if 'COMPLEX' in id_ else
                 mapping.map_name0(
                     id_,
                     'uniprot',
@@ -257,6 +257,7 @@ class CellPhoneDB(session_mod.Logger):
         self._entities = set()
         self.interaction = set()
         
+        int_id = 0
         for iaction in self.network.records.itertuples():
             
             if (
@@ -289,22 +290,25 @@ class CellPhoneDB(session_mod.Logger):
                 
                 self.interaction.add(
                     CellPhoneDBInteraction(
+                        id_cp_interaction = 'CPI-%06u' % int_id,
                         partner_a = id_a,
                         partner_b = id_b,
                         protein_name_a = name_a,
                         protein_name_b = name_b,
                         annotation_strategy = (
-                            'OmniPath;%s' % iaction.sources
-                        ).replace(';', ','),
+                            'OmniPath,%s' % ','.join(sorted(iaction.sources))
+                        ),
                         source = ','.join(
                             'PMID: %s' % pmid
-                            for pmid in iaction.references.split(';')
+                            for pmid in sorted(iaction.references)
                         ),
                     )
                 )
                 
                 self._entities.add(iaction.id_a)
                 self._entities.add(iaction.id_b)
+                
+                int_id += 1
     
     
     def build_protein(self):
