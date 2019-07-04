@@ -2643,18 +2643,6 @@ class PyPath(session_mod.Logger):
             self.data[param.name] = edge_list_mapped
 
         self.raw_data = edge_list_mapped
-
-
-    def druggability_list(self):
-        """
-        Loads the list of druggable proteins from DgiDB. This resource
-        is human only.
-        The list name is ``dgb``.
-        """
-
-        self.lists['dgb'] = common.uniqList(common.flatList([
-            mapping.map_name(dgb, 'genesymbol', 'uniprot', 9606)
-            for dgb in dataio.get_dgidb()]))
     
     
     def signaling_proteins_list(self):

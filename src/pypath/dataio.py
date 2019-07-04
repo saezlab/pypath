@@ -91,6 +91,7 @@ import pycurl
 import webbrowser
 import requests
 import codecs
+import base64
 
 try:
     import bioservices
@@ -9260,7 +9261,10 @@ def get_ccmap(organism = 9606):
     return interactions
 
 
-def get_cgc(user = None, passwd = None):
+def get_cgc_old(user = None, passwd = None):
+    """
+    Deprecated, to be removed soon.
+    """
 
     host = urls.urls['cgc']['host']
     fname = urls.urls['cgc']['file']
@@ -9279,7 +9283,8 @@ def get_cgc(user = None, passwd = None):
         sftp_ask = ask,
         sftp_user = user,
         sftp_passwd = passwd,
-        large = True)
+        large = True,
+    )
 
     data = c.result
     null = next(data)
@@ -9300,6 +9305,44 @@ def get_cgc(user = None, passwd = None):
                 field += char
 
         yield fields
+
+
+def get_cgc(user = None, passwd = None):
+    """
+    Retrieves a list of cancer driver genes (Cancer Gene Census) from
+    the Sanger COSMIC (Catalogue of Somatic Mutations in Cancer) database.
+    
+    Does not work at the moment (signature does not match error).
+    """
+    
+    url = urls.urls['cgc']['url_new']
+    
+    auth_str = base64.b64encode(('%s:%s\n' % (user, passwd)).encode())
+    
+    req_hdrs = ['Authorization: %s' % auth_str.decode()]
+    
+    c = curl.Curl(
+        url,
+        large = False,
+        silent = False,
+        req_headers = req_hdrs,
+        cache = False,
+    )
+    
+    access_url = json.loads(c.result)
+    
+    if 'url' not in access_url:
+        
+        _log(
+            'Could not retrieve COSMIC access URL. '
+            'The reply was: `%s`' % c.result
+        )
+        
+        return None
+    
+    c = curl.Curl(access_url['url'], large = True, silent = False)
+    
+    return c
 
 
 def get_matrixdb(organism = 9606):

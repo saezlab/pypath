@@ -724,7 +724,9 @@ urls = {
     'cgc': {
         'label': 'Cancer Gene Census: list of cancer related (driver) genes',
         'host': 'sftp-cancer.sanger.ac.uk',
-        'file': '/files/grch38/cosmic/v76/cancer_gene_census.csv'
+        'file': '/files/grch38/cosmic/v76/cancer_gene_census.csv',
+        'url_new': 'https://cancer.sanger.ac.uk/cosmic/file_download/'\
+            'GRCh38/cosmic/v89/cancer_gene_census.csv',
     },
     'havugimana': {
         'label': 'Census of human soluble protein complexes',

@@ -1676,19 +1676,21 @@ class Curl(FileOpener):
         sys.stdout.write(self.sftp_ask)
         sys.stdout.flush()
         while True:
-            self.user = raw_input('\n\tUsername: ')
-            self.passwd = raw_input(
+            self.user = input('\n\tUsername: ')
+            self.passwd = input(
                 '\tPassword (leave empty if no password needed): ')
-            correct = raw_input('Are these details correct? '
+            correct = input('Are these details correct? '
                                 'User: `%s`, password: `%s` [Y/n]\n' %
                                 (self.user, self.passwd))
             if correct.lower().strip() not in ['', 'y', 'yes']:
                 continue
-            save = raw_input(
+            save = input(
                 'Do you wish to save your login details unencripted\n'
-                'to the following file, so you don\'t need to enter them next '
-                'time? File: %s\nSave login details [Y/n]' %
-                self.sftp_passwd_file)
+                'to the following file, so you don\'t '
+                'need to enter them next time? File: %s\n'
+                'Save login details [Y/n]' %
+                self.sftp_passwd_file
+            )
             break
         if save.lower().strip() in ['', 'y', 'yes']:
             with open(self.sftp_passwd_file, 'w') as f:
@@ -1697,30 +1699,44 @@ class Curl(FileOpener):
     
     def sftp_download(self):
         
-        self.sftp_ask = 'Please enter your login details for %s\n' % self.host \
-            if self.sftp_ask is None else self.sftp_ask
-        self.sftp_passwd_file = os.path.join('cache', '%s.login' % self.sftp_host) \
-            if self.sftp_passwd_file is None else self.sftp_passwd_file
+        self.sftp_ask = (
+            'Please enter your login details for %s\n' % self.host
+                if self.sftp_ask is None else
+            self.sftp_ask
+        )
+        self.sftp_passwd_file = (
+            os.path.join('cache', '%s.login' % self.sftp_host)
+                if self.sftp_passwd_file is None else
+            self.sftp_passwd_file
+        )
         if self.sftp_user is None:
             self.ask_passwd()
         while True:
-            self.sftp_passwd = None \
-                if self.sftp_passwd.strip() == '' \
-                else self.sftp_passwd
+            
+            self.sftp_passwd = self.sftp_passwd or None
+            cnopts = pysftp.CnOpts()
+            cnopts.hostkeys = None
+            
             with pysftp.Connection(
-                    host = self.sftp_host,
-                    username = self.sftp_user,
-                    password = self.sftp_passwd,
-                    port = self.sftp_port) as con:
+                host = self.sftp_host,
+                username = self.sftp_user,
+                password = self.sftp_passwd,
+                port = self.sftp_port,
+                cnopts = cnopts
+            ) as con:
+                
                 try:
+                    
                     con.get(self.sftp_filename, self.cache_file_name)
                     break
+                    
                 except IOError:
+                    
                     msg = 'Failed to get %s from %s\n'\
                         'Try again (1) || Enter new login details (2) '\
                         '|| Cancel (3) ?\n' % (
                             self.sftp_filename, self.sftp_host)
-                    whattodo = raw_input(msg)
+                    whattodo = input(msg)
                     if '1' in whattodo:
                         continue
                     if '2' in whattodo:
