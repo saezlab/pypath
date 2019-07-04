@@ -189,7 +189,7 @@ class CustomAnnotation(session_mod.Logger):
         
         if self.pickle_file:
             
-            self.load_from_pickle(fname = self.pickle_file)
+            self.load_from_pickle(pickle_file = self.pickle_file)
             return
         
         for classdef in self._class_definitions.values():
