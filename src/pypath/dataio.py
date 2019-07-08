@@ -11274,6 +11274,9 @@ def hgnc_genegroups():
 
 
 def zhong2015_annotations():
+    """
+    From 10.1111/nyas.12776 (PMID 25988664).
+    """
     
     types = {
         'i': 'iCAM',
