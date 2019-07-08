@@ -948,7 +948,10 @@ class GOAnnotation(session_mod.Logger):
         uniprots = uniprots or sorted(self.all_uniprots())
         
         # this is not an individual term but an expression
-        if isinstance(terms, common.basestring) and len(terms) > 10:
+        if (
+            isinstance(terms, common.basestring) and
+            not terms.startswith('GO')
+        ):
             
             result = self.select_by_expr(terms, uniprots = uniprots)
             
