@@ -2362,7 +2362,12 @@ def get_psite_phos(raw = True, organism = 'human', strict = True):
 
     url = urls.urls['psite_kin']['url']
     c = curl.Curl(
-        url, silent = False, compr = 'gz', encoding = 'iso-8859-1', large = True)
+        url,
+        silent = False,
+        compr = 'gz',
+        encoding = 'iso-8859-1',
+        large = True,
+    )
     orto = {}
     data = c.result
     cols = {
@@ -6569,7 +6574,6 @@ def disgenet_annotations(dataset = 'curated'):
     DisGeNetAnnotation = collections.namedtuple(
         'DisGeNetAnnotation',
         [
-            'uniprot',
             'disease',
             'score',
             'dsi',
@@ -9313,11 +9317,34 @@ def get_cgc(user = None, passwd = None):
     Does not work at the moment (signature does not match error).
     """
     
+    CancerGeneCensusAnnotation = collections.namedtuple(
+        'CancerGeneCensusAnnotation',
+        [
+            'tier',
+            'hallmark',
+            'somatic',
+            'germline',
+            'tumour_types_somatic',
+            'tumour_types_germline',
+            'cancer_syndrome',
+            'tissue_type',
+            'genetics',
+            'role',
+            'mutation_type',
+        ]
+    )
+    
+    
+    def multi_field(content):
+        
+        return tuple(sorted(i.strip() for i in content.split(',')))
+    
+    
     url = urls.urls['cgc']['url_new']
     
     auth_str = base64.b64encode(('%s:%s\n' % (user, passwd)).encode())
     
-    req_hdrs = ['Authorization: %s' % auth_str.decode()]
+    req_hdrs = ['Authorization: Basic %s' % auth_str.decode()]
     
     c = curl.Curl(
         url,
@@ -9333,15 +9360,61 @@ def get_cgc(user = None, passwd = None):
         
         _log(
             'Could not retrieve COSMIC access URL. '
+            'Most likely the authentication failed. '
             'The reply was: `%s`' % c.result
         )
         
         return None
     
-    c = curl.Curl(access_url['url'], large = True, silent = False)
+    c = curl.Curl(
+        access_url['url'],
+        large = True,
+        silent = False,
+        bypass_url_encoding = True,
+    )
     
-    return c
-
+    data = csv.DictReader(c.fileobj, delimiter = ',')
+    result = collections.defaultdict(set)
+    
+    for rec in data:
+        
+        uniprots = mapping.map_name(
+            rec['Gene Symbol'],
+            'genesymbol',
+            'uniprot',
+        )
+        
+        for uniprot in uniprots:
+            
+            result[uniprot].add(
+                CancerGeneCensusAnnotation(
+                    tier = int(rec['Tier']),
+                    hallmark = rec['Hallmark'].strip().lower() == 'yes',
+                    somatic = rec['Somatic'].strip().lower() == 'yes',
+                    germline = rec['Germline'].strip().lower() == 'yes',
+                    tumour_types_somatic = (
+                        multi_field(rec['Tumour Types(Somatic)'])
+                    ),
+                    tumour_types_germline = (
+                        multi_field(rec['Tumour Types(Germline)'])
+                    ),
+                    cancer_syndrome = (
+                        multi_field(rec['Cancer Syndrome'])
+                    ),
+                    tissue_type = (
+                        multi_field(rec['Tissue Type'])
+                    ),
+                    genetics = rec['Molecular Genetics'].strip(),
+                    role = (
+                        multi_field(rec['Role in Cancer'])
+                    ),
+                    mutation_type = (
+                        multi_field(rec['Mutation Types'])
+                    ),
+                )
+            )
+    
+    return dict(result)
 
 def get_matrixdb(organism = 9606):
 
