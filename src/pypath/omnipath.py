@@ -6,6 +6,7 @@ from pypath import data_formats
 from pypath import annot
 from pypath import intercell
 from pypath import complex
+from pypath import ptm
 from pypath import settings
 from pypath import session_mod
 
@@ -24,6 +25,7 @@ class OmniPath(session_mod.Logger):
         load_complexes = True,
         load_annotations = True,
         load_intercell = True,
+        load_enz_sub = True,
     ):
         
         if not hasattr(self, '_log_name'):
@@ -44,6 +46,7 @@ class OmniPath(session_mod.Logger):
         )
         self.do_load_annotations = load_annotations or load_intercell
         self.do_load_intercell = load_intercell
+        self.do_load_enz_sub = load_enz_sub
     
     
     def main(self):
@@ -57,6 +60,7 @@ class OmniPath(session_mod.Logger):
         self.load_network()
         self.load_annotations()
         self.load_intercell()
+        self.load_enz_sub()
     
     
     def load_complex(self):
@@ -113,6 +117,19 @@ class OmniPath(session_mod.Logger):
         self.intercell = (
             intercell.get_db(
                 pickle_file = self.ensure_path_exists(self.intercell_pickle)
+            )
+        )
+    
+    
+    def load_enz_sub(self):
+        
+        if not self.do_load_enz_sub:
+            
+            return
+        
+        self.enz_sub = (
+            ptm.get_db(
+                pickle_file = self.ensure_path_exists(self.enz_sub_pickle)
             )
         )
     
