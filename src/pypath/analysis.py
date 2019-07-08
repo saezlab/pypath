@@ -121,10 +121,12 @@ class Workflow(omnipath.OmniPath):
             annotation_pickle = None,
             intercell_pickle = None,
             complex_pickle = None,
-            load_network = True,
+            enz_sub_pickle = None,
+            load_network = False,
             load_complexes = True,
             load_annotations = True,
             load_intercell = True,
+            load_enz_sub = True,
             **kwargs
         ):
         """
@@ -195,11 +197,30 @@ class Workflow(omnipath.OmniPath):
         
         session_mod.Logger.__init__(name = 'analysis')
         
+        omnipath.OmniPath.__init__(
+            network_pickle = network_pickle,
+            annotation_pickle = annotation_pickle,
+            intercell_pickle = intercell_pickle,
+            complex_pickle = complex_pickle,
+            enz_sub_pickle = enz_sub_pickle,
+            load_network = load_network,
+            load_complexes = load_complexes,
+            load_annotations = load_annotations,
+            load_intercell = load_intercell,
+            load_enz_sub = load_enz_sub,
+        )
+        
         for k, v in iteritems(locals()):
-            setattr(self, k, v)
+            
+            if not hasattr(self, k):
+                
+                setattr(self, k, v)
 
         for k, v in iteritems(kwargs):
-            setattr(self, k, v)
+            
+            if not hasattr(self, k):
+                
+                setattr(self, k, v)
 
         self.title = self.name if self.title is None else self.title
 

@@ -21,6 +21,7 @@ class OmniPath(session_mod.Logger):
         annotation_pickle = None,
         intercell_pickle = None,
         complex_pickle = None,
+        enz_sub_pickle = None,
         load_network = True,
         load_complexes = True,
         load_annotations = True,
