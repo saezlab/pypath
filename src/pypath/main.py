@@ -2829,11 +2829,12 @@ class PyPath(session_mod.Logger):
             _input = settings.input
 
         original_name_type = settings.id_type
-        default_name_type = self.default_name_type[settings.typ]
+        default_name_type = self.default_name_type[settings.entity_type]
         mapTbl = ''.join([original_name_type, "_", default_name_type])
 
         if type(_input) in common.charTypes and os.path.isfile(_input):
-            _input = curl.Curl(_input).result
+            
+            _input = curl.Curl(_input, large = True).result
 
             #codecs.open(_input, encoding='utf-8', mode='r')
 
@@ -2873,12 +2874,16 @@ class PyPath(session_mod.Logger):
 
                 # reading names and attributes
                 try:
-                    newItem = {"name": line[settings.id_col],
-                               "id_type": settings.id_type,
-                               "type": settings.typ,
-                               "source": settings.name}
+                    newItem = {
+                        "name": line[settings.id_col],
+                       "id_type": settings.id_type,
+                       "type": settings.entity_type,
+                       "source": settings.name
+                    }
 
                 except:
+                    
+                    print(line)
                     self._log(
                         'Wrong name column indexes (%u and %u), '
                         'or wrong separator (%s)? Line #%u' % (

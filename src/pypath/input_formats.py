@@ -317,7 +317,7 @@ class ReadList:
             header = False,
         ):
 
-        self.enity_type = entity_type
+        self.entity_type = entity_type
         self.id_col = id_col
         self.id_type = id_type
         self.input = input
