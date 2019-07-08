@@ -49,6 +49,7 @@ import pypath.intera as intera
 
 
 protein_sources_default = {
+    'Dgidb',
     'Membranome',
     'Exocarta',
     'Vesiclepedia',
@@ -81,6 +82,7 @@ protein_sources_default = {
     'Kinases',
     'Phosphatome',
     'Tfcensus',
+    'Intogen'
 }
 
 complex_sources_default = {
@@ -1445,6 +1447,27 @@ class HumanProteinAtlas(AnnotationBase):
             self,
             name = 'HPA',
             input_method = 'proteinatlas_annotations',
+            **kwargs
+        )
+        
+        
+    def _process_method(self):
+        
+        self.annot = self.data
+        delattr(self, 'data')
+
+
+class Intogen(AnnotationBase):
+    
+    _eq_fields = None
+    
+    
+    def __init__(self, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'IntOGen',
+            input_method = 'intogen_annotations',
             **kwargs
         )
         
