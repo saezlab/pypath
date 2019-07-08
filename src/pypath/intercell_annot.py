@@ -1447,3 +1447,47 @@ class_types = {
 }
 
 
+class_labels = {
+    'ecm': 'Extracellular matrix',
+    'interleukins_hgnc': 'Interleukins (HGNC)',
+    'chemokine_ligands_hgnc': 'Chemokine ligands (HGNC)',
+    'endogenous_ligands_hgnc': 'Endogenous ligands (HGNC)',
+    'interleukin_receptors_hgnc': 'Interleukin receptors (HGNC)',
+}
+
+
+resource_labels = {
+    'cellphonedb': 'CellPhoneDB',
+    'topdb': 'TopDB',
+    'locate': 'LOCATE',
+    'go': 'Gene Ontology',
+    'matrixdb': 'MatrixDB',
+    'opm': 'OPM',
+    'zhong2015': 'Zhong 2015',
+    'kirouac': 'Kirouac 2010',
+    'hgnc': 'HGNC',
+    'hpmr': 'HPMR',
+    'cspa': 'CSPA',
+    'comppi': 'ComPPI',
+    'ramilowski': 'Ramilowski 2015',
+    'guide2pharma': 'Guide to Pharm',
+}
+
+
+def get_label(key, exceptions):
+    
+    return (
+        exceptions[key]
+            if key in exceptions else
+        key.replace('_', ' ').capitalize()
+    )
+
+
+def get_class_label(class_key):
+    
+    return get_label(class_key, class_labels)
+
+
+def get_resource_label(resource_key):
+    
+    return get_label(resource_key, resource_labels)
