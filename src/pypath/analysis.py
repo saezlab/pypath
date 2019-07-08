@@ -37,6 +37,8 @@ import pypath.dataio as dataio
 import pypath.descriptions as descriptions
 from pypath.common import *
 import pypath.refs as _refs
+import pypath.omnipath as omnipath
+import pypath.session_mod as session_mod
 
 
 # defines a multi-section barplot
@@ -80,41 +82,51 @@ ScatterplotGraphicsParam = collections.namedtuple(
 ScatterplotGraphicsParam.__new__.__defaults__ = ((None, None),)
 
 
-class Workflow(object):
+class Workflow(omnipath.OmniPath):
     
-    def __init__(self,
-                 name,
-                 network_datasets=[],
-                 do_main_table=True,
-                 do_compile_main_table=True,
-                 do_curation_table=True,
-                 do_compile_curation_table=True,
-                 do_simgraphs=True,
-                 do_multi_barplots=True,
-                 do_coverage_groups=True,
-                 do_htp_char=True,
-                 do_ptms_barplot=True,
-                 do_scatterplots=True,
-                 do_history_tree=True,
-                 do_compile_history_tree=True,
-                 do_refs_journals_grid=True,
-                 do_refs_years_grid=True,
-                 do_dirs_stacked=True,
-                 do_refs_composite=True,
-                 do_curation_plot=True,
-                 do_refs_by_j=True,
-                 do_refs_by_db=True,
-                 do_refs_by_year=True,
-                 do_resource_list=True,
-                 do_compile_resource_list=True,
-                 do_consistency_dedrogram=True,
-                 do_consistency_table=True,
-                 only_categories = None,
-                 title=None,
-                 outdir=None,
-                 htdata={},
-                 inc_raw=None,
-                 **kwargs):
+    def __init__(
+            self,
+            name,
+            network_datasets=[],
+            do_main_table=True,
+            do_compile_main_table=True,
+            do_curation_table=True,
+            do_compile_curation_table=True,
+            do_simgraphs=True,
+            do_multi_barplots=True,
+            do_coverage_groups=True,
+            do_htp_char=True,
+            do_ptms_barplot=True,
+            do_scatterplots=True,
+            do_history_tree=True,
+            do_compile_history_tree=True,
+            do_refs_journals_grid=True,
+            do_refs_years_grid=True,
+            do_dirs_stacked=True,
+            do_refs_composite=True,
+            do_curation_plot=True,
+            do_refs_by_j=True,
+            do_refs_by_db=True,
+            do_refs_by_year=True,
+            do_resource_list=True,
+            do_compile_resource_list=True,
+            do_consistency_dedrogram=True,
+            do_consistency_table=True,
+            only_categories = None,
+            title=None,
+            outdir=None,
+            htdata={},
+            inc_raw=None,
+            network_pickle = None,
+            annotation_pickle = None,
+            intercell_pickle = None,
+            complex_pickle = None,
+            load_network = True,
+            load_complexes = True,
+            load_annotations = True,
+            load_intercell = True,
+            **kwargs
+        ):
         """
         Executes the workflow of comparative analysis of network resuorces
         by categories. Creates tables and figures.
@@ -180,7 +192,9 @@ class Workflow(object):
         :arg str outdir:
             Directory to save the output files.
         """
-
+        
+        session_mod.Logger.__init__(name = 'analysis')
+        
         for k, v in iteritems(locals()):
             setattr(self, k, v)
 
@@ -248,9 +262,9 @@ class Workflow(object):
             },
             'fiher_file':
                 'fisher_%s' % self.name,
-            'fisher':
-                [('dis', 'Disease related genes'),
-                 ('rec', 'Receptors'),
+            'fisher': [
+                ('dis', 'Disease related genes'),
+                ('rec', 'Receptors'),
                 ('tf', 'Transcription factors'),
                 ('kin', 'Kinases'),
                 ('dgb', 'Druggable proteins'),
@@ -726,7 +740,12 @@ class Workflow(object):
                 False
             )
         ]
-
+        
+        self.annot_pickle = annot_pickle
+        self.complexes_pickle = complexes_pickle
+        self.intercell_pickle = intercell_pickle
+        self.
+        
         for k, v in iteritems(self.defaults):
             if not hasattr(self, k):
                 setattr(self, k, v)
@@ -756,6 +775,8 @@ class Workflow(object):
         self.set_outdir()
         # creating PyPath object
         self.init_pypath()
+        
+        self.
         # load list of protein annotations (e.g. kinases, receptors, ...)
         self.load_protein_lists()
         # load annotations of proteins
