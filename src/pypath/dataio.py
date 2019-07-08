@@ -9370,6 +9370,62 @@ def get_cgc(user = None, passwd = None):
     
     return dict(result)
 
+
+def intogen_annotations():
+    """
+    Returns a list of cancer driver genes according to the IntOGen database.
+    """
+    
+    IntogenAnnotation = collections.namedtuple(
+        'IntogenAnnotation',
+        [
+            'type',
+            'role',
+            'oncodrive_role_prob',
+        ],
+    )
+    
+    
+    url = urls.urls['intogen']['drivers_url']
+    
+    c = curl.Curl(
+        url,
+        large = True,
+        silent = False,
+        files_needed = ['Drivers_type_role.tsv'],
+    )
+    
+    for _ in xrange(7):
+        
+        __ = c.result['Drivers_type_role.tsv'].readline()
+    
+    data = csv.DictReader(
+        c.result['Drivers_type_role.tsv'],
+        delimiter = '\t',
+    )
+    result = collections.defaultdict(set)
+    
+    for rec in data:
+        
+        uniprots = mapping.map_name(
+            rec['geneHGNCsymbol'],
+            'genesymbol',
+            'uniprot',
+        )
+        
+        for uniprot in uniprots:
+            
+            result[uniprot].add(
+                IntogenAnnotation(
+                    type = rec['Driver_type'],
+                    role = rec['Role'],
+                    oncodrive_role_prob = rec['OncodriveROLE_prob'],
+                )
+            )
+    
+    return result
+
+
 def get_matrixdb(organism = 9606):
 
     url = urls.urls['matrixdb']['url']
