@@ -9263,52 +9263,6 @@ def get_ccmap(organism = 9606):
     return interactions
 
 
-def get_cgc_old(user = None, passwd = None):
-    """
-    Deprecated, to be removed soon.
-    """
-
-    host = urls.urls['cgc']['host']
-    fname = urls.urls['cgc']['file']
-
-    ask = 'To access Cancer Gene Census data you need to be '\
-        'registered at COSMIC\n'\
-        '(http://cancer.sanger.ac.uk/cosmic/).\n'\
-        'If you have already an account, please enter your login details.\n'\
-        'In case you don\'t, you can register now.\n'\
-        'Please see licensing terms to find out how you are allowed to\n'\
-        'use COSMIC data: http://cancer.sanger.ac.uk/cosmic/license\n'
-
-    c = curl.Curl(
-        fname,
-        sftp_host = host,
-        sftp_ask = ask,
-        sftp_user = user,
-        sftp_passwd = passwd,
-        large = True,
-    )
-
-    data = c.result
-    null = next(data)
-
-    for line in data:
-
-        # next_line = line.decode('utf-8')
-        fields = []
-        field = ''
-        in_quotes = False
-        for char in next_line:
-            if char == ',' and not in_quotes:
-                fields.append(field)
-                field = ''
-            elif char == '"':
-                in_quotes = not in_quotes
-            else:
-                field += char
-
-        yield fields
-
-
 def get_cgc(user = None, passwd = None):
     """
     Retrieves a list of cancer driver genes (Cancer Gene Census) from
