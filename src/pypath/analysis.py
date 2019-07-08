@@ -39,6 +39,7 @@ from pypath.common import *
 import pypath.refs as _refs
 import pypath.omnipath as omnipath
 import pypath.session_mod as session_mod
+import pypath.go as go
 
 
 # defines a multi-section barplot
@@ -117,6 +118,8 @@ class Workflow(omnipath.OmniPath):
             outdir=None,
             htdata={},
             inc_raw=None,
+            intogen_file = None,
+            cosmic_credentials = None,
             network_pickle = None,
             annotation_pickle = None,
             intercell_pickle = None,
@@ -762,11 +765,6 @@ class Workflow(omnipath.OmniPath):
             )
         ]
         
-        self.annot_pickle = annot_pickle
-        self.complexes_pickle = complexes_pickle
-        self.intercell_pickle = intercell_pickle
-        self.
-        
         for k, v in iteritems(self.defaults):
             if not hasattr(self, k):
                 setattr(self, k, v)
@@ -797,7 +795,6 @@ class Workflow(omnipath.OmniPath):
         # creating PyPath object
         self.init_pypath()
         
-        self.
         # load list of protein annotations (e.g. kinases, receptors, ...)
         self.load_protein_lists()
         # load annotations of proteins
@@ -953,15 +950,11 @@ class Workflow(omnipath.OmniPath):
         Cancer Gene Census.
         """
         
-        for meth, name in iteritems(self.protein_lists):
-            
-            self.console('Loading list of %s' % name)
-            getattr(self.pp, '%s_list' % meth)()
+        pass
         
-        self.console('Loading list of Cancer Gene Census %scancer drivers' %
+        self._log('Loading list of Cancer Gene Census %scancer drivers' %
                      ('and IntOGen ' if self.intogen_file else ''))
-        
-        self.pp.cancer_drivers_list(intogen_file=self.intogen_file)
+    
 
     def load_annotations(self):
         """
@@ -969,15 +962,84 @@ class Workflow(omnipath.OmniPath):
         By default these are kinases, TFs, receptors, druggability, disease
         relatedness.
         """
-
+        
+        # transcription factors
+        self.pp.graph.vs['tf'] = [
+            v['name'] in self.annot.annots['TFCensus']
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['tf'] = set(self.annot.annots['TFCensus'].annot.keys())
+        
+        # kinases
+        self.pp.graph.vs['kin'] = [
+            v['name'] in self.annot.annots['Kinases']
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['kin'] = set(self.annot.annots['Kinases'].annot.keys())
+        
+        # disease related genes
+        self.pp.graph.vs['dis'] = [
+            v['name'] in self.annot.annots['DisGeNet']
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['dis'] = set(self.annot.annots['DisGeNet'].annot.keys())
+        
+        # druggable proteins
+        self.pp.graph.vs['dgb'] = [
+            v['name'] in self.annot.annots['DGIdb']
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['dgb'] = set(self.annot.annots['DGIdb'].annot.keys())
+        
+        # receptors
+        self.pp.graph.vs['rec'] = [
+            v['name'] in self.intercell.classes['receptor']
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['rec'] = (
+            set(self.intercell.classes['receptor'].annot.keys())
+        )
+        
+        # signaling proteins
+        goannot = go.get_db()
+        sig = goannot.select('signaling')
+        
+        self.pp.graph.vs['sig'] = [
+            v['name'] in sig
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['sig'] = sig
+        
+        # cosmic cancer drivers
+        try:
+            
+            self.pp.lists['cgc'] = (
+                set(dataio.get_cgc(**self.cosmic_credentials).keys())
+            )
+            
+        except:
+            
+            self._log(
+                'Could not retrieve COSMIC Cancer Gene Census. '
+                'Substituting with empty set.'
+            )
+            self.pp.lists['cgc'] = set()
+        
+        self.pp.graph.vs['cgc'] = [
+            v['name'] in self.pp.lists['cgc']
+            for v in self.pp.graph.vs
+        ]
+        
+        self.pp.cancer_drivers_list(intogen_file = self.intogen_file)
+        
         for meth, name in iteritems(self.set_annots):
 
-            self.console('Loading list of %s into protein attribute' % name)
+            self._log('Loading list of %s into protein attribute' % name)
             getattr(self.pp, 'set_%s' % meth)()
 
         for meth, name in iteritems(self.load_annots):
 
-            self.console('Loading %s into protein attribute' % name)
+            self._log('Loading %s into protein attribute' % name)
             getattr(self.pp, 'load_%s' % meth)()
 
     def set_categories(self):
@@ -1041,7 +1103,7 @@ class Workflow(omnipath.OmniPath):
         resources and resource categories.
         """
 
-        self.console('Doing Fisher tests, writing results to `%s`' %
+        self._log('Doing Fisher tests, writing results to `%s`' %
                      self.get_path(self.fisher_file))
         
         with open(self.get_path(self.fisher_file), 'w') as fi:
@@ -1585,7 +1647,7 @@ class Workflow(omnipath.OmniPath):
         Compiles the history of resources figure by LaTeX.
         """
 
-        self.console('Running `%s` on `%s`' %
+        self._log('Running `%s` on `%s`' %
                      (self.latex, self.get_path(self.history_tree_fname)))
 
         self.history_tree_latex_proc = subprocess.Popen(
@@ -1604,7 +1666,7 @@ class Workflow(omnipath.OmniPath):
         self.history_tree_latex_return = \
             self.history_tree_latex_proc.returncode
 
-        self.console('LaTeX %s' % ('compiled successfully'
+        self._log('LaTeX %s' % ('compiled successfully'
                                    if self.history_tree_latex_return == 0 else
                                    'compilation failed'))
 
@@ -1644,7 +1706,7 @@ class Workflow(omnipath.OmniPath):
 
     def make_refs_by_db(self):
         
-        self.console('Plotting references by database')
+        self._log('Plotting references by database')
         bydb_ordr = reversed(
             self.pubmeds.database.value_counts().sort_values().index
         )
@@ -1671,7 +1733,7 @@ class Workflow(omnipath.OmniPath):
 
     def make_refs_by_year(self):
         
-        self.console('Plotting references by year')
+        self._log('Plotting references by year')
         counts = dict(self.pubmeds.year.value_counts())
         ecounts = dict(self.pubmeds_earliest.year.value_counts())
         years = np.arange(1970, max(self.pubmeds.year) + 1)
@@ -1705,7 +1767,7 @@ class Workflow(omnipath.OmniPath):
 
     def make_refs_by_journal(self):
 
-        self.console('Plotting references by journal')
+        self._log('Plotting references by journal')
 
         for i in [50, 100]:
             byj_ordr = list(
@@ -1858,13 +1920,13 @@ class Workflow(omnipath.OmniPath):
 
     def curation_table(self):
 
-        self.console('Making curation statistics '
+        self._log('Making curation statistics '
                      'LaTeX table, writing to file `%s`' %
                      self.get_path(self.table2file))
         self.pp.curation_tab(
             latex_hdr=True, fname=self.get_path(self.table2file))
 
-        self.console('Making curation statistics '
+        self._log('Making curation statistics '
                      'LaTeX table without header, writing to file `%s`' %
                      self.get_path(self.stable2file))
         self.pp.curation_tab(
@@ -1893,7 +1955,7 @@ class Workflow(omnipath.OmniPath):
         the ``latex`` attribute.
         """
 
-        self.console('Running `%s` on `%s`' %
+        self._log('Running `%s` on `%s`' %
                      (self.latex, self.get_path(fname)))
 
         try:
@@ -1917,7 +1979,7 @@ class Workflow(omnipath.OmniPath):
             
             self.latex_return = 1
 
-        self.console(
+        self._log(
             'LaTeX %s' % (
                 'compiled successfully'
                     if self.latex_return == 0 else
