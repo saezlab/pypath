@@ -659,7 +659,10 @@ class FileOpener(session_mod.Logger):
         
         # try:
         if self.large:
-            self._gzfile_mode_r = io.TextIOWrapper(self.gzfile)
+            self._gzfile_mode_r = io.TextIOWrapper(
+                self.gzfile,
+                encoding = self.encoding,
+            )
             self.result = self.iterfile(
                 self.gzfile
                     if self.default_mode == 'rb' else
