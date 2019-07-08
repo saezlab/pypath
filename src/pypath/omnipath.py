@@ -7,9 +7,10 @@ from pypath import annot
 from pypath import intercell
 from pypath import complex
 from pypath import settings
+from pypath import session_mod
 
 
-class OmniPath(object):
+class OmniPath(session_mod.Logger):
     
     
     def __init__(
@@ -19,9 +20,30 @@ class OmniPath(object):
         annotation_pickle = None,
         intercell_pickle = None,
         complex_pickle = None,
+        load_network = True,
+        load_complexes = True,
+        load_annotations = True,
+        load_intercell = True,
     ):
         
-        pass
+        if not hasattr(self, '_log_name'):
+            
+            session_mod.Logger.__init__(self, name = 'omnipath')
+        
+        self.output_dir = output_dir
+        self.network_pickle = network_pickle
+        self.annotation_pickle = annotation_pickle
+        self.intercell_pickle = intercell_pickle
+        self.complex_pickle = complex_pickle
+        
+        self.do_load_network = load_network
+        self.do_load_complexes = (
+            load_complexes or
+            load_annotations or
+            load_intercell
+        )
+        self.do_load_annotations = load_annotations or load_intercell
+        self.do_load_intercell = load_intercell
     
     
     def main(self):
@@ -39,12 +61,20 @@ class OmniPath(object):
     
     def load_complex(self):
         
+        if not self.do_load_complexes:
+            
+            return
+        
         complex.get_db(
             pickle_file = self.ensure_path_exists(self.complex_pickle)
         )
     
     
     def load_network(self):
+        
+        if not self.do_load_network:
+            
+            return
         
         self.network = main.PyPath()
         
@@ -65,12 +95,20 @@ class OmniPath(object):
     
     def load_annotations(self):
         
+        if not self.do_load_annotations:
+            
+            return
+        
         self.annot = annot.get_db(
             pickle_file = self.ensure_path_exists(self.annotation_pickle)
         )
     
     
     def load_intercell(self):
+        
+        if not self.do_load_intercell:
+            
+            return
         
         self.intercell = (
             intercell.get_db(
