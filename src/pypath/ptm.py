@@ -804,3 +804,17 @@ class PtmAggregator(object):
                     pa.graph.es[e]['ptm'] = []
 
                 pa.graph.es[e]['ptm'].extend(ptms)
+
+
+def init_db(**kwargs):
+    
+    globals()['db'] = PtmAggregator(**kwargs)
+
+
+def get_db(**kwargs):
+    
+    if 'db' not in globals():
+        
+        init_db(**kwargs)
+    
+    return globals()['db']
