@@ -7698,6 +7698,7 @@ def vidal_hi_iii(fname):
 
     Returns list of interactions.
     """
+    
     f = curl.FileOpener(fname)
     return \
         list(
@@ -9458,7 +9459,7 @@ def get_matrixdb(organism = 9606):
         if lnum == 0:
             lnum += 1
             continue
-        l = l.decode('utf-8').replace('"', '')
+        
         l = l.replace('\n', '').replace('\r', '')
         l = l.split('\t')
         specA = 0 if l[9] == '-' else int(l[9].split(':')[1].split('(')[0])
@@ -9501,7 +9502,7 @@ def get_innatedb(organism = 9606):
         if lnum == 0:
             lnum += 1
             continue
-        l = l.decode('utf-8')
+        
         l = l.replace('\n', '').replace('\r', '')
         l = l.split('\t')
         specA = 0 if l[9] == '-' else int(l[9].split(':')[1].split('(')[0])

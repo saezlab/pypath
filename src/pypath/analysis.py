@@ -746,24 +746,24 @@ class Workflow(omnipath.OmniPath):
                 'tf-rec',
                 False
             ),
-            ScatterplotParam(
-                lambda gs: len(self.pp.complexes_in_network(graph=gs[0])),
-                lambda gs: sum(map(lambda e: len(e['ptm']) > 0, gs[0].es)),
-                lambda gs: gs[0].ecount(),
-                ScatterplotGraphicsParam(
-                    ylim = [0.5, 5400.0],
-                    xlim = [3.0, 1500.0],
-                    ylog = True,
-                    xlog = True,
-                    xlab = 'Number of complexes',
-                    ylab = 'Number of\nenzyme-substrate relationships',
-                    legtitle = 'Total number of interactions',
-                    title = 'Number of complexes and enzyme-substrate relationships',
-                    legstrip = (3, None)
-                ),
-                'comp-ptm',
-                False
-            )
+            #ScatterplotParam(
+                #lambda gs: len(self.pp.complexes_in_network(graph=gs[0])),
+                #lambda gs: sum(map(lambda e: len(e['ptm']) > 0, gs[0].es)),
+                #lambda gs: gs[0].ecount(),
+                #ScatterplotGraphicsParam(
+                    #ylim = [0.5, 5400.0],
+                    #xlim = [3.0, 1500.0],
+                    #ylog = True,
+                    #xlog = True,
+                    #xlab = 'Number of complexes',
+                    #ylab = 'Number of\nenzyme-substrate relationships',
+                    #legtitle = 'Total number of interactions',
+                    #title = 'Number of complexes and enzyme-substrate relationships',
+                    #legstrip = (3, None)
+                #),
+                #'comp-ptm',
+                #False
+            #)
         ]
         
         for k, v in iteritems(self.defaults):
@@ -800,6 +800,8 @@ class Workflow(omnipath.OmniPath):
         self.load_protein_lists()
         # set the resource categories
         self.set_categories()
+        # load the enzyme-substrate interactions
+        self.pp.load_ptms2()
         # separate the network by resources
         self.separate()
         # assign colors for each resource for the multi-section barplots
