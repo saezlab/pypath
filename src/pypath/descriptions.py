@@ -2740,7 +2740,7 @@ def resource_list_latex(filename='resource-list.tex',
         \setdefaultlanguage{english}
         \usepackage{xltxtra}
         \usepackage{microtype}
-        \usepackage[margin=5pt,portrait,paperwidth=15cm,paperheight=12cm]{geometry}
+        \usepackage[margin=5pt,portrait,paperwidth=15cm,paperheight=18cm]{geometry}
         \usepackage{amsmath}
         \usepackage{amssymb}
         \usepackage{textcomp}
@@ -2758,7 +2758,7 @@ def resource_list_latex(filename='resource-list.tex',
     _latex_end = r'''
             \end{document}
         ''' if latex_hdr else ''
-    tex = r'''\begin{tabularx}{0.94\textwidth}{>{\raggedright\scriptsize\arraybackslash}X>{\raggedright\scriptsize\arraybackslash}X>{\raggedright\scriptsize\arraybackslash}X>{\raggedright\scriptsize\arraybackslash}X}
+    tex = r'''\begin{tabularx}{0.94\textwidth}{>{\raggedright\scriptsize\arraybackslash\hsize=.15\hsize}X>{\raggedright\scriptsize\arraybackslash\hsize=.35\hsize}X>{\raggedright\scriptsize\arraybackslash\hsize=.15\hsize}X>{\raggedright\scriptsize\arraybackslash\hsize=.15\hsize}X}
     \toprule
     Resource name & Class, subclass & Resource name & Class, subclass \\
     \midrule
@@ -2773,9 +2773,12 @@ def resource_list_latex(filename='resource-list.tex',
         res.append('')
     res2 = zip(res[:int(len(res) / 2)], res[int(len(res) / 2):])
     for r in res2:
-        tex += r'%s & %s & %s & %s \\' % (r[0][0], r[0][1], r[1][0]
-                                          if len(r[1]) else '', r[1][1]
-                                          if len(r[1]) else '') + '\n'
+        tex += r'%s & %s & %s & %s \\' % (
+            r[0][0].replace('&', '\&'),
+            r[0][1].replace('&', '\&'),
+            (r[1][0] if len(r[1]) else '').replace('&', '\&'),
+            (r[1][1] if len(r[1]) else '').replace('&', '\&'),
+        ) + '\n'
     tex += r'\bottomrule' + '\n'
     tex += r'\end{tabularx}' + '\n'
     with open(filename, 'w') as f:

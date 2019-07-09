@@ -22,7 +22,11 @@ causal = analysis.Workflow(
         do_refs_journals_grid = True,
         do_refs_years_grid = True,
         do_dirs_stacked = True,
-        do_refs_composite = True
+        do_refs_composite = True,
+        annotation_pickle = 'omnipath_annotations.pickle',
+        enz_sub_pickle = 'omnipath_enz_sub.pickle',
+        complex_pickle = 'omnipath_complexes.pickle',
+        intercell_pickle = 'omnipath_intercell.pickle',
     )
 
 causal.run()
@@ -43,7 +47,11 @@ binary = analysis.Workflow(
         do_refs_journals_grid = True,
         do_refs_years_grid = True,
         do_dirs_stacked = True,
-        do_refs_composite = True
+        do_refs_composite = True,
+        annotation_pickle = 'omnipath_annotations.pickle',
+        enz_sub_pickle = 'omnipath_enz_sub.pickle',
+        complex_pickle = 'omnipath_complexes.pickle',
+        intercell_pickle = 'omnipath_intercell.pickle',
     )
 
 binary.run()

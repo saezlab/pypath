@@ -38,6 +38,7 @@ class OmniPath(session_mod.Logger):
         self.annotation_pickle = annotation_pickle
         self.intercell_pickle = intercell_pickle
         self.complex_pickle = complex_pickle
+        self.enz_sub_pickle = enz_sub_pickle
         
         self.do_load_network = load_network
         self.do_load_complexes = (
@@ -48,6 +49,8 @@ class OmniPath(session_mod.Logger):
         self.do_load_annotations = load_annotations or load_intercell
         self.do_load_intercell = load_intercell
         self.do_load_enz_sub = load_enz_sub
+        
+        self.main()
     
     
     def main(self):
@@ -70,7 +73,7 @@ class OmniPath(session_mod.Logger):
             
             return
         
-        complex.get_db(
+        self.complex = complex.get_db(
             pickle_file = self.ensure_path_exists(self.complex_pickle)
         )
     
@@ -138,4 +141,4 @@ class OmniPath(session_mod.Logger):
     @staticmethod
     def ensure_path_exists(path):
         
-        return path if os.path.exists(path) else None
+        return path if path and os.path.exists(path) else None

@@ -9716,7 +9716,12 @@ class PyPath(session_mod.Logger):
         for p in data:
             prg.step()
 
-            if p['kinase'] is not None and len(p['kinase']) > 0:
+            if (
+                p['kinase'] is not None and
+                not isinstance(p['kinase'], intera.Complex) and
+                not isinstance(p['substrate'], intera.Complex) and
+                len(p['kinase']) > 0
+            ):
 
                 # database specific id conversions
                 if source in ['PhosphoSite', 'phosphoELM', 'Signor']:
@@ -9748,8 +9753,13 @@ class PyPath(session_mod.Logger):
                         p['substrate'], 'genesymbol', 'uniprot')
 
                 if source == 'MIMP':
-                    substrate_ups_all += mapping.map_name(
-                        p['substrate_refseq'], 'refseq', 'uniprot')
+                    substrate_ups_all.update(
+                        mapping.map_name(
+                            p['substrate_refseq'],
+                            'refseq',
+                            'uniprot',
+                        )
+                    )
                     substrate_ups_all = list(set(substrate_ups_all))
 
                 if source in ['phosphoELM', 'dbPTM', 'PhosphoSite', 'Signor']:

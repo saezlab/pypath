@@ -82,7 +82,9 @@ protein_sources_default = {
     'Kinases',
     'Phosphatome',
     'Tfcensus',
-    'Intogen'
+    'Intogen',
+    'Kinases',
+    'CancerGeneCensus',
 }
 
 complex_sources_default = {
@@ -1457,9 +1459,30 @@ class HumanProteinAtlas(AnnotationBase):
         delattr(self, 'data')
 
 
-class Intogen(AnnotationBase):
+class CancerGeneCensus(AnnotationBase):
     
     _eq_fields = None
+    
+    
+    def __init__(self, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'CancerGeneCensus',
+            input_method = 'cancer_gene_census_annotations',
+            **kwargs
+        )
+    
+    
+    def _process_method(self):
+        
+        self.annot = self.data
+        delattr(self, 'data')
+
+
+class Intogen(AnnotationBase):
+    
+    _eq_fields = ('type', 'role')
     
     
     def __init__(self, **kwargs):
@@ -1470,8 +1493,8 @@ class Intogen(AnnotationBase):
             input_method = 'intogen_annotations',
             **kwargs
         )
-        
-        
+    
+    
     def _process_method(self):
         
         self.annot = self.data

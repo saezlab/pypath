@@ -7740,7 +7740,7 @@ def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
     sys.stdout.flush()
 
 
-def kinases():
+def get_kinases():
     """
     Downloads and processes the list of all human kinases.
     Returns a list of GeneSymbols.
@@ -9263,13 +9263,32 @@ def get_ccmap(organism = 9606):
     return interactions
 
 
-def get_cgc(user = None, passwd = None):
+def cancer_gene_census_annotations(user = None, passwd = None):
     """
     Retrieves a list of cancer driver genes (Cancer Gene Census) from
     the Sanger COSMIC (Catalogue of Somatic Mutations in Cancer) database.
     
     Does not work at the moment (signature does not match error).
     """
+    
+    if not user or not passwd:
+        
+        credentials = settings.get('cosmic_credentials')
+        
+        if not credentials:
+            
+            _log(
+                'No credentials available for the COSMIC website. '
+                'Either set the `cosmic_credentials` key in the `settings` '
+                'module (e.g. `{\'user\': \'myuser\', '
+                '\'passwd\': \'mypassword\'}`), or pass them directly to the '
+                '`dataio.cancer_gene_census_annotations` method.'
+            )
+            return {}
+        
+    else:
+        
+        credentials = {'user': user, 'passwd': passwd}
     
     CancerGeneCensusAnnotation = collections.namedtuple(
         'CancerGeneCensusAnnotation',
@@ -9296,7 +9315,9 @@ def get_cgc(user = None, passwd = None):
     
     url = urls.urls['cgc']['url_new']
     
-    auth_str = base64.b64encode(('%s:%s\n' % (user, passwd)).encode())
+    auth_str = base64.b64encode(
+        ('%s:%s\n' % (credentials['user'], credentials['passwd'])).encode()
+    )
     
     req_hdrs = ['Authorization: Basic %s' % auth_str.decode()]
     

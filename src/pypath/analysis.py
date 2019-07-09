@@ -198,9 +198,10 @@ class Workflow(omnipath.OmniPath):
             Directory to save the output files.
         """
         
-        session_mod.Logger.__init__(name = 'analysis')
+        session_mod.Logger.__init__(self, name = 'analysis')
         
         omnipath.OmniPath.__init__(
+            self,
             network_pickle = network_pickle,
             annotation_pickle = annotation_pickle,
             intercell_pickle = intercell_pickle,
@@ -264,7 +265,7 @@ class Workflow(omnipath.OmniPath):
                 'curation_tab_stripped_%s.tex' % self.name,
             'latex':
                 '/usr/bin/xelatex',
-            'latex_timeout': 10,
+            'latex_timeout': 30,
             'compile_latex': True,
             'multi_barplots_summary': True,
             'protein_lists': {
@@ -543,14 +544,14 @@ class Workflow(omnipath.OmniPath):
                     float(len(self.pp.lists['dis'])) * 100.0,
                 'vcount'
             ),
-            MultiBarplotParam(
-                'Complexes',
-                'Number of complexes covered',
-                'complexes',
-                lambda gs: len(self.pp.complexes_in_network(graph=gs[0])),
-                None,
-                'vcount'
-            ),
+            #MultiBarplotParam(
+                #'Complexes',
+                #'Number of complexes covered',
+                #'complexes',
+                #lambda gs: len(self.pp.complexes_in_network(graph=gs[0])),
+                #None,
+                #'vcount'
+            #),
             MultiBarplotParam(
                 'E-S interactions',
                 'Number of enzyme-substrate interactions covered',
@@ -797,8 +798,6 @@ class Workflow(omnipath.OmniPath):
         
         # load list of protein annotations (e.g. kinases, receptors, ...)
         self.load_protein_lists()
-        # load annotations of proteins
-        self.load_annotations()
         # set the resource categories
         self.set_categories()
         # separate the network by resources
@@ -942,21 +941,9 @@ class Workflow(omnipath.OmniPath):
             self.pp = main.PyPath(9606)
             for netdata in self.network_datasets:
                 self.pp.load_resources(getattr(data_formats, netdata))
-
-    def load_protein_lists(self):
-        """
-        Loads the lists of protein categories: the entire proteome,
-        the list of signaling proteins, cancer drivers from IntOGen and
-        Cancer Gene Census.
-        """
-        
-        pass
-        
-        self._log('Loading list of Cancer Gene Census %scancer drivers' %
-                     ('and IntOGen ' if self.intogen_file else ''))
     
-
-    def load_annotations(self):
+    
+    def load_protein_lists(self):
         """
         Loads protein annotations to vertex attributes of the network object.
         By default these are kinases, TFs, receptors, druggability, disease
@@ -965,10 +952,10 @@ class Workflow(omnipath.OmniPath):
         
         # transcription factors
         self.pp.graph.vs['tf'] = [
-            v['name'] in self.annot.annots['TFCensus']
+            v['name'] in self.annot.annots['TFcensus']
             for v in self.pp.graph.vs
         ]
-        self.pp.lists['tf'] = set(self.annot.annots['TFCensus'].annot.keys())
+        self.pp.lists['tf'] = set(self.annot.annots['TFcensus'].annot.keys())
         
         # kinases
         self.pp.graph.vs['kin'] = [
@@ -996,9 +983,7 @@ class Workflow(omnipath.OmniPath):
             v['name'] in self.intercell.classes['receptor']
             for v in self.pp.graph.vs
         ]
-        self.pp.lists['rec'] = (
-            set(self.intercell.classes['receptor'].annot.keys())
-        )
+        self.pp.lists['rec'] = self.intercell.classes['receptor']
         
         # signaling proteins
         goannot = go.get_db()
@@ -1011,37 +996,41 @@ class Workflow(omnipath.OmniPath):
         self.pp.lists['sig'] = sig
         
         # cosmic cancer drivers
-        try:
-            
-            self.pp.lists['cgc'] = (
-                set(dataio.get_cgc(**self.cosmic_credentials).keys())
-            )
-            
-        except:
-            
-            self._log(
-                'Could not retrieve COSMIC Cancer Gene Census. '
-                'Substituting with empty set.'
-            )
-            self.pp.lists['cgc'] = set()
+        self.pp.graph.vs['cgc'] = [
+            v['name'] in self.annot.annots['CancerGeneCensus']
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['cgc'] = (
+            set(self.annot.annots['CancerGeneCensus'].annot.keys())
+        )
         
         self.pp.graph.vs['cgc'] = [
             v['name'] in self.pp.lists['cgc']
             for v in self.pp.graph.vs
         ]
         
-        self.pp.cancer_drivers_list(intogen_file = self.intogen_file)
+        # IntOGen cancer drivers
+        self.pp.graph.vs['IntOGen'] = [
+            v['name'] in self.annot.annots['IntOGen']
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['IntOGen'] = (
+            set(self.annot.annots['IntOGen'].annot.keys())
+        )
         
-        for meth, name in iteritems(self.set_annots):
-
-            self._log('Loading list of %s into protein attribute' % name)
-            getattr(self.pp, 'set_%s' % meth)()
-
-        for meth, name in iteritems(self.load_annots):
-
-            self._log('Loading %s into protein attribute' % name)
-            getattr(self.pp, 'load_%s' % meth)()
-
+        # all cancer drivers
+        self.pp.graph.vs['cdv'] = [
+            (
+                v['name'] in self.annot.annots['IntOGen'] or
+                v['name'] in self.pp.lists['cgc']
+            )
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['cdv'] = self.pp.lists['IntOGen'] | self.pp.lists['cgc']
+        
+        self.pp.lists['proteome'] = dataio.all_uniprots(swissprot = True)
+    
+    
     def set_categories(self):
         """
         Sets the resource categories as a vertex and edge attribute on the
@@ -1561,7 +1550,7 @@ class Workflow(omnipath.OmniPath):
             'PhosphoNetworks': self.pp.load_pnetworks_dmi(return_raw=True),
             'PhosphoELM': self.pp.load_phosphoelm(return_raw=True),
             'dbPTM': self.pp.load_dbptm(return_raw=True),
-            'PhosphoSite': self.pp.load_psite_phos(return_raw=True)
+            'PhosphoSite': self.pp.load_psite_phos(return_raw=True),
         }
 
     def make_ptms_barplot(self):
@@ -1666,9 +1655,11 @@ class Workflow(omnipath.OmniPath):
         self.history_tree_latex_return = \
             self.history_tree_latex_proc.returncode
 
-        self._log('LaTeX %s' % ('compiled successfully'
-                                   if self.history_tree_latex_return == 0 else
-                                   'compilation failed'))
+        self._log('LaTeX %s' % (
+            'compiled successfully'
+                if self.history_tree_latex_return == 0 else
+            'compilation failed')
+        )
 
     def make_refs_years_grid(self):
 
@@ -1741,7 +1732,7 @@ class Workflow(omnipath.OmniPath):
         values = np.array(
             list(map(lambda y: counts[y] if y in counts else 0.0, years)))
         evalues = np.array(
-            list(map(lambda y: ecounts[y] if y in counts else 0.0, years)))
+            list(map(lambda y: ecounts[y] if y in ecounts else 0.0, years)))
         years = list(map(lambda y: '%u' % y if y % 5 == 0 else '', years))
 
         self.refs_by_year = \
@@ -1978,7 +1969,7 @@ class Workflow(omnipath.OmniPath):
         except subprocess.TimeoutExpired:
             
             self.latex_return = 1
-
+        
         self._log(
             'LaTeX %s' % (
                 'compiled successfully'
