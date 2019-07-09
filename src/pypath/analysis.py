@@ -1485,14 +1485,19 @@ class Workflow(omnipath.OmniPath):
                 s = s / 1.0
 
             colors = list(
-                map(lambda l: self.ccolors2[data_formats.categories[l]],
-                    labels))
-
+                map(
+                    lambda l:
+                        self.ccolors2[data_formats.categories[l]],
+                    labels
+                )
+            )
+            
             color_labels = []
             for c in ['p', 'l', 'm', 'i', 'r']:
                 
                 if (
-                    c in self.pp.has_cats and (
+                    c in self.pp.has_cats and
+                    (
                         self.only_categories is None or
                         c in self.only_categories
                     )
@@ -1883,31 +1888,70 @@ class Workflow(omnipath.OmniPath):
             list(zip(*[
                 (
                     s,
-                    sum([sum([s in e['dirs'].positive_sources[e['dirs'].straight],
-                              s in e['dirs'].positive_sources[e['dirs'].reverse]]) for e in g.es]),
-                    sum([sum([s in e['dirs'].negative_sources[e['dirs'].straight],
-                              s in e['dirs'].negative_sources[e['dirs'].reverse]]) for e in g.es]),
-                    sum([sum([s in ((e['dirs'].sources[e['dirs'].straight] -
-                                     e['dirs'].positive_sources[e['dirs'].straight]) -
-                                    e['dirs'].negative_sources[e['dirs'].straight]),
-                              s in ((e['dirs'].sources[e['dirs'].reverse] -
-                                     e['dirs'].positive_sources[e['dirs'].reverse]) -
-                                    e['dirs'].negative_sources[e['dirs'].reverse])]) for e in g.es]),
+                    sum([
+                        sum([
+                            s in
+                            e['dirs'].positive_sources[e['dirs'].straight],
+                            s in
+                            e['dirs'].positive_sources[e['dirs'].reverse]
+                        ])
+                        for e in g.es
+                    ]),
+                    sum([
+                        sum([
+                            s in
+                            e['dirs'].negative_sources[e['dirs'].straight],
+                            s in
+                            e['dirs'].negative_sources[e['dirs'].reverse]
+                        ])
+                        for e in g.es
+                    ]),
+                    sum([
+                        sum([
+                            s in (
+                                (
+                                    e['dirs'].sources[e['dirs'].straight] -
+                                    e['dirs'].positive_sources[
+                                        e['dirs'].straight
+                                    ]
+                                ) -
+                                e['dirs'].negative_sources[e['dirs'].straight]
+                            ),
+                            s in (
+                                (
+                                    e['dirs'].sources[e['dirs'].reverse] -
+                                    e['dirs'].positive_sources[
+                                        e['dirs'].reverse
+                                    ]
+                                ) -
+                                e['dirs'].negative_sources[e['dirs'].reverse]
+                            )
+                        ])
+                        for e in g.es
+                    ]),
                     sum([s in e['dirs'].sources['undirected'] for e in g.es])
                 )
                 for s, g in iteritems(self.sep)] +
                 [(
                     'All',
-                    sum([e['dirs'].is_stimulation()
-                         for e in self.pp.graph.es]),
-                    sum([e['dirs'].is_inhibition()
-                         for e in self.pp.graph.es]),
-                    sum([not e['dirs'].is_stimulation() and
-                         not e['dirs'].is_inhibition() and
-                         e['dirs'].is_directed() for e in self.pp.graph.es]),
-                    sum([not e['dirs'].is_stimulation() and
-                         not e['dirs'].is_inhibition() and
-                         not e['dirs'].is_directed() for e in self.pp.graph.es])
+                    sum([
+                        e['dirs'].is_stimulation()
+                        for e in self.pp.graph.es
+                    ]),
+                    sum([
+                        e['dirs'].is_inhibition()
+                        for e in self.pp.graph.es
+                    ]),
+                    sum([
+                        not e['dirs'].is_stimulation() and
+                        not e['dirs'].is_inhibition() and
+                        e['dirs'].is_directed() for e in self.pp.graph.es
+                    ]),
+                    sum([
+                        not e['dirs'].is_stimulation() and
+                        not e['dirs'].is_inhibition() and
+                        not e['dirs'].is_directed() for e in self.pp.graph.es
+                    ])
                 )]
             ))
 
@@ -1948,8 +1992,9 @@ class Workflow(omnipath.OmniPath):
         the ``latex`` attribute.
         """
 
-        self._log('Running `%s` on `%s`' %
-                     (self.latex, self.get_path(fname)))
+        self._log(
+            'Running `%s` on `%s`' % (self.latex, self.get_path(fname))
+        )
 
         try:
             self.latex_proc = subprocess.Popen(
@@ -1963,8 +2008,8 @@ class Workflow(omnipath.OmniPath):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
             )
-            self.latex_output, self.latex_error = self.latex_proc.communicate(
-                timeout = self.latex_timeout
+            self.latex_output, self.latex_error = (
+                self.latex_proc.communicate(timeout = self.latex_timeout)
             )
             self.latex_return = self.latex_proc.returncode
             
@@ -2086,42 +2131,109 @@ class Workflow(omnipath.OmniPath):
             )
 
         self.incid = dict(
-            map(lambda s: (s, self.inco['directions_edges']['minor'][s] / float(self.inco['directions_edges']['minor'][s] + self.cons['directions_edges']['total'][s] + 0.0001)),
-                self.pp.sources))
+            map(
+                lambda s:
+                (
+                    s,
+                    self.inco['directions_edges']['minor'][s] / float(
+                        self.inco['directions_edges']['minor'][s] +
+                        self.cons['directions_edges']['total'][s] +
+                        0.0001
+                    )
+                ),
+                self.pp.sources
+            )
+        )
 
         self.incis = dict(
-            map(lambda s: (s, self.inco['signs_edges']['minor'][s] / float(self.inco['signs_edges']['minor'][s] + self.cons['signs_edges']['total'][s] + 0.0001)),
+            map(
+                lambda s:
+                (
+                    s,
+                    self.inco['signs_edges']['minor'][s] / float(
+                        self.inco['signs_edges']['minor'][s] +
+                        self.cons['signs_edges']['total'][s] +
+                        0.0001
+                    )
+                ),
                 self.pp.sources))
-
-        self.incidp = dict(map(lambda s: (s[0], (len(s[1]['total']) /
-                                                 float(len(s[1]['total']) +
-                                                       len(self.inc_raw['consistency']['directions_edges'][s[0]]['total']) + 0.0001))
-                                          if (len(s[1]['total']) +
-                                              len(self.inc_raw['consistency']['directions_edges'][s[0]]['total'])) > 5
-                                          else np.nan),
-                               iteritems(self.inc_raw['inconsistency']['directions_edges'])))
-
-        self.incidp = dict(map(lambda s: (s[0], (len(s[1]['total']) /
-                                                 float(len(s[1]['total']) +
-                                                       len(self.inc_raw['consistency']['directions_edges'][s[0]]['total']) + 0.0001))),
-                               iteritems(self.inc_raw['inconsistency']['directions_edges'])))
-
+        
+        self.incidp = dict(
+            map(
+                lambda s: (
+                    s[0],
+                    (
+                        len(s[1]['total']) /
+                        float(
+                            len(s[1]['total']) +
+                            len(
+                                self.inc_raw['consistency'][
+                                    'directions_edges'
+                                ][s[0]]['total']
+                            ) +
+                            0.0001
+                        )
+                    )
+                    if (
+                        len(s[1]['total']) +
+                        len(
+                            self.inc_raw['consistency'][
+                                'directions_edges'
+                            ][s[0]]['total']
+                        )
+                    ) > 5
+                    else np.nan
+                ),
+                iteritems(self.inc_raw['inconsistency']['directions_edges'])
+            )
+        )
+        
+        self.incidp = dict(
+            map(
+                lambda s: (
+                    s[0],
+                    (
+                        len(s[1]['total']) /
+                        float(
+                            len(s[1]['total']) +
+                            len(
+                                self.inc_raw['consistency'][
+                                    'directions_edges'
+                                ][s[0]]['total']
+                            ) +
+                            0.0001
+                        )
+                    )
+                ),
+                iteritems(self.inc_raw['inconsistency']['directions_edges'])
+            )
+        )
+        
         self.incdf = pd.DataFrame(
             np.vstack([
                 np.array(
-                    [self.incidp[(s1, s2)] for s1 in sorted(self.pp.sources)])
+                    [
+                        self.incidp[(s1, s2)]
+                        for s1 in sorted(self.pp.sources)
+                    ]
+                )
                 for s2 in sorted(self.pp.sources)
             ]),
             index=sorted(self.pp.sources),
-            columns=sorted(self.pp.sources))
-
-        self.incdf = self.incdf.loc[(self.incdf.sum(axis=1) != 0), (
-            self.incdf.sum(axis=0) != 0)]
-
-        for lab in [
-                'HPRD', 'NetPath', 'Reactome', 'ACSN', 'PDZBase', 'NCI-PID'
-        ]:
+            columns=sorted(self.pp.sources)
+        )
+        
+        self.incdf = self.incdf.loc[
+            (self.incdf.sum(axis=1) != 0),
+            (self.incdf.sum(axis=0) != 0)
+        ]
+        
+        for lab in (
+            'HPRD', 'NetPath', 'Reactome', 'ACSN', 'PDZBase', 'NCI-PID',
+        ):
+            
             if lab in self.incdf:
+                
                 self.incdf.__delitem__(lab)
                 self.incdf = self.incdf.drop(lab)
 
@@ -2143,91 +2255,243 @@ class Workflow(omnipath.OmniPath):
             map(lambda s: s[0],
                 filter(lambda s: s[1] > 0, iteritems(self.incid)))) - signed
 
-        singles_undirected = dict(map(lambda s:
-                                      (s, len(list(filter(lambda e:
-                                                          s in e['sources'] and len(
-                                                              e['sources']) == 1,
-                                                          self.pp.graph.es)))),
-                                      undirected))
-        singles_directed = dict(map(lambda s:
-                                    (s, sum(map(
-                                        lambda e: sum([
-                                            s in e['dirs'].sources_straight() and len(
-                                                e['dirs'].sources_straight()) == 1,
-                                            s in e['dirs'].sources_reverse() and len(e['dirs'].sources_reverse()) == 1]),
-                                        self.pp.graph.es))), directed))
-        singles_signed = dict(map(lambda s:
-                                  (s, sum(map(
-                                      lambda e: sum([
-                                          s in e['dirs'].positive_sources_straight() and len(
-                                              e['dirs'].positive_sources_straight()) == 1,
-                                          s in e['dirs'].positive_sources_reverse() and len(
-                                              e['dirs'].positive_sources_reverse()) == 1,
-                                          s in e['dirs'].negative_sources_straight() and len(
-                                              e['dirs'].negative_sources_straight()) == 1,
-                                          s in e['dirs'].negative_sources_reverse() and len(e['dirs'].negative_sources_reverse()) == 1]),
-                                      self.pp.graph.es))), signed))
-
-        scores_undirected = dict(map(lambda s: (s[0], s[1] /
-                                                float(max(singles_undirected.values()))), iteritems(singles_undirected)))
-
-        scores_directed = dict(map(lambda s: (s[0], (s[1] /
-                                                     float(max(singles_directed.values())) +
-                                                     (1 - self.incid[s[0]]) / max(map(lambda x: 1 - x, self.incid.values()))) / 2.0),
-                                   iteritems(singles_directed)))
-
-        scores_signed = dict(map(lambda s: (s[0], (s[1] /
-                                                   float(max(singles_signed.values())) +
-                                                   (1 - self.incis[s[0]]) / max(map(lambda x: 1 - x, self.incis.values())) +
-                                                   (1 - self.incid[s[0]]) / max(map(lambda x: 1 - x, self.incid.values()))) / 3.0),
-                                 iteritems(singles_signed)))
-
-        tbl = r'''\begin{tabularx}{\textwidth}{p{3.5cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
-            \toprule
-            Resurce & Specific interactions & Direction inconsistency & Effect inconsistency & Combined score \\
-            \midrule
-            \multicolumn{5}{l}{Undirected resources} \\
-            \midrule
-                '''
-
-        for s, sc in reversed(
+        singles_undirected = dict(
+            map(
+                lambda s:
+                (
+                    s,
+                    len(
+                        list(
+                            filter(
+                                lambda e:
+                                    s in e['sources'] and
+                                    len(e['sources']) == 1,
+                                self.pp.graph.es
+                            )
+                        )
+                    )
+                ),
+                undirected
+            )
+        )
+        
+        singles_directed = dict(
+            map(
+                lambda s:
+                (
+                    s,
+                    sum(
+                        map(
+                            lambda e:
+                                sum([
+                                    s in e['dirs'].sources_straight() and
+                                    len(e['dirs'].sources_straight()) == 1,
+                                    s in e['dirs'].sources_reverse() and
+                                    len(e['dirs'].sources_reverse()) == 1
+                                ]),
+                            self.pp.graph.es
+                        )
+                    )
+                ),
+                directed
+            )
+        )
+        
+        singles_signed = dict(
+            map(
+                lambda s:
+                (
+                    s,
+                    sum(
+                        map(
+                            lambda e:
+                                sum([
+                                    s in
+                                    e['dirs'].positive_sources_straight() and
+                                    len(
+                                        e['dirs'].positive_sources_straight()
+                                    ) == 1,
+                                    s in
+                                    e['dirs'].positive_sources_reverse() and
+                                    len(
+                                        e['dirs'].positive_sources_reverse()
+                                    ) == 1,
+                                    s in
+                                    e['dirs'].negative_sources_straight() and
+                                    len(
+                                        e['dirs'].negative_sources_straight()
+                                    ) == 1,
+                                    s in
+                                    e['dirs'].negative_sources_reverse() and
+                                    len(
+                                        e['dirs'].negative_sources_reverse()
+                                    ) == 1
+                                ]),
+                            self.pp.graph.es
+                        )
+                    )
+                ),
+                signed
+            )
+        )
+        
+        scores_undirected = dict(
+            map(
+                lambda s:
+                (
+                    s[0],
+                    s[1] / float(max(singles_undirected.values()))
+                ),
+                iteritems(singles_undirected)
+            )
+        )
+        
+        scores_directed = dict(
+            map(
+                lambda s:
+                (
+                    s[0],
+                    (
+                        s[1] / float(max(singles_directed.values())) +
+                        (1 - self.incid[s[0]]) /
+                        max(
+                            map(
+                                lambda x: 1 - x,
+                                self.incid.values()
+                            )
+                        )
+                    ) / 2.0
+                ),
+                iteritems(singles_directed)
+            )
+        )
+        
+        scores_signed = dict(
+            map(
+                lambda s: (
+                    s[0],
+                    (
+                        s[1] / float(max(singles_signed.values())) +
+                        (1 - self.incis[s[0]]) / max(
+                            map(
+                                lambda x: 1 - x,
+                                self.incis.values()
+                            )
+                        ) +
+                        (1 - self.incid[s[0]]) / max(
+                            map(
+                                lambda x: 1 - x,
+                                self.incid.values()
+                            )
+                        )
+                    ) / 3.0
+                ),
+                iteritems(singles_signed)
+            )
+        )
+        
+        tbl = (
+            r'\begin{tabularx}{\textwidth}'
+            '\n'
+            r'{p{3.5cm}>{\raggedright\arraybackslash}'
+            '\n'
+            r'X>{\raggedright\arraybackslash}'
+            '\n'
+            r'X>{\raggedright\arraybackslash}'
+            '\n'
+            r'X>{\raggedright\arraybackslash}X}'
+            '\n'
+            r'\toprule'
+            '\n'
+            r'Resurce & Specific interactions & '
+            '\n'
+            r'Direction inconsistency & Effect inconsistency & '
+            '\n'
+            r'Combined score \\'
+            '\n'
+            r'\midrule'
+            '\n'
+            r'\multicolumn{5}{l}{Undirected resources} \\'
+            '\n'
+            r'\midrule'
+            '\n'
+        )
+        
+        for s, sc in (
+            reversed(
                 sorted(
-                    iteritems(scores_undirected), key=lambda s: s[1])):
-            tbl += r'''    %s & %u &   &  & %.04f \\
-                ''' % (s, singles_undirected[s], scores_undirected[s])
-
-        tbl += r'''    \midrule
-            \multicolumn{5}{l}{Directed resources} \\
-            \midrule
-                '''
-
-        for s, sc in reversed(
+                    iteritems(scores_undirected),
+                    key = lambda s: s[1]
+                )
+            )
+        ):
+            
+            tbl += (
+                r'    %s & %u &   &  & %.04f \\' % (
+                    s,
+                    singles_undirected[s],
+                    scores_undirected[s],
+                ) + '\n'
+            )
+        
+        tbl += (
+            r'    \midrule'
+            '\n'
+            r'    \multicolumn{5}{l}{Directed resources} \\'
+            '\n'
+            r'    \midrule'
+            '\n'
+        )
+        
+        for s, sc in (
+            reversed(
                 sorted(
-                    iteritems(scores_directed), key=lambda s: s[1])):
-            tbl += r'''    %s & %u &  %.04f &  & %.04f \\
-                ''' % (s, singles_directed[s], self.incid[s],
-                       scores_directed[s])
-
-        tbl += r'''    \midrule
-            \multicolumn{5}{l}{Signed resources} \\
-            \midrule
-                '''
-
+                    iteritems(scores_directed),
+                    key = lambda s: s[1]
+                )
+            )
+        ):
+            
+            tbl += r'    %s & %u &  %.04f &  & %.04f \\' % (
+                s,
+                singles_directed[s],
+                self.incid[s],
+                scores_directed[s]
+            ) + '\n'
+        
+        tbl += (
+            r'    \midrule'
+            '\n'
+            r'    \multicolumn{5}{l}{Signed resources} \\'
+            '\n'
+            r'    \midrule'
+            '\n'
+        )
+        
         for s, sc in reversed(
                 sorted(
                     iteritems(scores_signed), key=lambda s: s[1])):
-            tbl += r'''    %s & %u &  %.04f &  %.04f & %.04f \\
-                ''' % (s, singles_signed[s], self.incid[s], self.incis[s],
-                       scores_signed[s])
-
-        tbl += r'''    \bottomrule
-        \end{tabularx}'''
-
-        with open(self.get_path(self.consistency_table_fname), 'w') as f:
-            f.write(tbl)
-
+            tbl += r'    %s & %u &  %.04f &  %.04f & %.04f \\' % (
+                s,
+                singles_signed[s],
+                self.incid[s],
+                self.incis[s],
+                scores_signed[s],
+            ) + '\n'
+        
+        tbl += (
+            r'    \bottomrule'
+            '\n'
+            r'\end{tabularx}'
+        )
+        
+        with open(self.get_path(self.consistency_table_fname), 'w') as fp:
+            
+            fp.write(tbl)
+        
         self.consistency_table = tbl
-
+    
+    
     def load_pubmed_data(self):
         """
         Loads data about all references using the web query interface of
