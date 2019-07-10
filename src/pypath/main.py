@@ -2749,6 +2749,24 @@ class PyPath(session_mod.Logger):
             else set([])
 
         return len(set(self.graph.vs['name']) & lst) / float(len(lst))
+    
+    
+    def entities_by_resources(self):
+        """
+        Returns a dict of sets with resources as keys and sets of entity IDs
+        as values.
+        """
+        
+        results = collections.defaultdict(set)
+        
+        for v in self.graph.vs:
+            
+            for resource in v['sources']:
+                
+                result[resource].add(v['name'])
+        
+        return result
+    
 
     def fisher_enrichment(self, lst, attr, ref='proteome'):
         """
@@ -2790,6 +2808,7 @@ class PyPath(session_mod.Logger):
                           len([1 for v in self.graph.vs if len(v[attr]) > 0])]])
 
         return stats.fisher_exact(cont)
+
 
     def read_list_file(self, settings, **kwargs):
         """
@@ -4097,12 +4116,12 @@ class PyPath(session_mod.Logger):
             d.delete_vertices(list(set(toDel)))
 
         if not graph:
+            
             self.dgraph = d
             self._directed = self.dgraph
-
-        self._get_directed()
-        self._get_undirected()
-        self.update_vname()
+            self._get_directed()
+            self._get_undirected()
+            self.update_vname()
 
         self._log('Directed igraph object created.')
 
@@ -5653,6 +5672,7 @@ class PyPath(session_mod.Logger):
             rand_pathlen["header"] = ["path_len", "random"]
             self.write_table(rand_pathlen, "rand_pathlen", sep=";")
 
+
     def update_vertex_sources(self):
         """
         Updates the all the vertex attributes ``'sources'`` and
@@ -5668,6 +5688,7 @@ class PyPath(session_mod.Logger):
             for e in g.es:
                 g.vs[e.source][attr].update(e[attr])
                 g.vs[e.target][attr].update(e[attr])
+
 
     def set_categories(self):
         """
@@ -5707,7 +5728,8 @@ class PyPath(session_mod.Logger):
 
                     if s in e['refs_by_source']:
                         e['refs_by_cat'][cat].update(e['refs_by_source'][s])
-
+    
+    
     def basic_stats_intergroup(self, groupA, groupB, header=None): # TODO
         """
 
@@ -9507,9 +9529,17 @@ class PyPath(session_mod.Logger):
         if self.seq is None or update:
             self.seq = se.swissprot_seq(self.ncbi_tax_id, isoforms)
 
-    def load_ptms2(self, input_methods=None, map_by_homology_from=[9606],
-                   homology_only_swissprot=True, ptm_homology_strict=False,
-                   nonhuman_direct_lookup=True, inputargs={}):
+    def load_ptms2(
+            self,
+            input_methods = None,
+            map_by_homology_from = [9606],
+            homology_only_swissprot = True,
+            ptm_homology_strict = False,
+            nonhuman_direct_lookup = True,
+            inputargs = {},
+            database = None,
+            force_load = False,
+        ):
         """
         This is a new method which will replace `load_ptms`.
         It uses `pypath.ptm.PtmAggregator`, a newly introduced
@@ -9543,20 +9573,36 @@ class PyPath(session_mod.Logger):
             `{'Signor': {...}, 'PhosphoSite': {...}, ...}`.
             Those not used by `PtmProcessor` are forwarded to the
             `pypath.dataio` methods.
+        :param database:
+            A ``PtmAggregator`` object. If provided no new database will be
+            created.
+        :param bool force_load:
+            If ``True`` the database will be loaded with the parameters
+            provided here; otherwise if the ``ptm`` module already has a
+            database no new database will be created. This means the
+            parameters specified in other arguments might have no effect.
         """
-
-        ptma = pypath.ptm.PtmAggregator(
-            input_methods = input_methods,
-            ncbi_tax_id = self.ncbi_tax_id,
-            map_by_homology_from = map_by_homology_from,
-            # here we don't share the mapper as later many
-            # tables which we don't need any more would
-            # just occupy memory
-            homology_only_swissprot = homology_only_swissprot,
-            ptm_homology_strict = ptm_homology_strict,
-            nonhuman_direct_lookup = nonhuman_direct_lookup,
-            inputargs = inputargs
-        )
+        
+        if database:
+            
+            ptma = database
+            
+        else:
+            
+            method = 'init_db' if force_load else 'get_db'
+            
+            _ = getattr(pypath.ptm, 'method')(
+                input_methods = input_methods,
+                ncbi_tax_id = self.ncbi_tax_id,
+                map_by_homology_from = map_by_homology_from,
+                homology_only_swissprot = homology_only_swissprot,
+                ptm_homology_strict = ptm_homology_strict,
+                nonhuman_direct_lookup = nonhuman_direct_lookup,
+                inputargs = inputargs
+            )
+            
+            ptma = pypath.ptm.get_db()
+            
         ptma.assign_to_network(self)
 
         if self.ncbi_tax_id == 9606 and (
