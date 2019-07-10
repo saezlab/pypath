@@ -1354,7 +1354,7 @@ annot_combined_classes = (
         source = af.AnnotOp(
             annots = (
                 af.AnnotDef(
-                    name = 'matrisome_secreted',
+                    name = 'secreted_matrisome',
                     source = 'Matrisome',
                     args = {
                         'mainclass': 'Matrisome-associated',
@@ -1377,24 +1377,34 @@ annot_combined_classes = (
         name = 'secreted',
         source = af.AnnotOp(
             annots = (
-                af.AnnotDef(
-                    name = 'locate_secreted',
-                    source = 'Locate',
-                    args = {
-                        'location': 'secreted',
-                    }
-                ),
-                af.AnnotDef(
-                    name = 'matrisome_secreted',
-                    source = 'Matrisome',
-                    args = {
-                        'mainclass': 'Matrisome-associated',
-                        'subclass': 'Secreted Factors',
-                    },
-                ),
+                'secreted_locate',
+                'secreted_matrisome',
+                'secreted_cellphonedb',
             ),
             op = set.union,
         ),
+    ),
+    af.AnnotDef(
+        name = 'secreted_locate',
+        source = 'Locate',
+        args = {
+            'location': 'secreted',
+        }
+    ),
+    af.AnnotDef(
+        name = 'secreted_matrisome',
+        source = 'Matrisome',
+        args = {
+            'mainclass': 'Matrisome-associated',
+            'subclass': 'Secreted Factors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'secreted_cellphonedb',
+        source = 'CellPhoneDB',
+        args = {
+            'secreted': bool,
+        },
     ),
     # junctions
     af.AnnotDef(
