@@ -88,36 +88,36 @@ class Workflow(omnipath.OmniPath):
     def __init__(
             self,
             name,
-            network_datasets=[],
-            do_main_table=True,
-            do_compile_main_table=True,
-            do_curation_table=True,
-            do_compile_curation_table=True,
-            do_simgraphs=True,
-            do_multi_barplots=True,
-            do_coverage_groups=True,
-            do_htp_char=True,
-            do_ptms_barplot=True,
-            do_scatterplots=True,
-            do_history_tree=True,
-            do_compile_history_tree=True,
-            do_refs_journals_grid=True,
-            do_refs_years_grid=True,
-            do_dirs_stacked=True,
-            do_refs_composite=True,
-            do_curation_plot=True,
-            do_refs_by_j=True,
-            do_refs_by_db=True,
-            do_refs_by_year=True,
-            do_resource_list=True,
-            do_compile_resource_list=True,
-            do_consistency_dedrogram=True,
-            do_consistency_table=True,
+            network_datasets = [],
+            do_main_table = True,
+            do_compile_main_table = True,
+            do_curation_table = True,
+            do_compile_curation_table = True,
+            do_simgraphs = True,
+            do_multi_barplots = True,
+            do_coverage_groups = True,
+            do_htp_char = True,
+            do_ptms_barplot = True,
+            do_scatterplots = True,
+            do_history_tree = True,
+            do_compile_history_tree = True,
+            do_refs_journals_grid = True,
+            do_refs_years_grid = True,
+            do_dirs_stacked = True,
+            do_refs_composite = True,
+            do_curation_plot = True,
+            do_refs_by_j = True,
+            do_refs_by_db = True,
+            do_refs_by_year = True,
+            do_resource_list = True,
+            do_compile_resource_list = True,
+            do_consistency_dedrogram = True,
+            do_consistency_table = True,
             only_categories = None,
-            title=None,
-            outdir=None,
-            htdata={},
-            inc_raw=None,
+            title = None,
+            outdir = None,
+            htdata = {},
+            inc_raw = None,
             intogen_file = None,
             cosmic_credentials = None,
             network_pickle = None,
@@ -125,6 +125,7 @@ class Workflow(omnipath.OmniPath):
             intercell_pickle = None,
             complex_pickle = None,
             enz_sub_pickle = None,
+            omnipath_pickle = None,
             load_network = False,
             load_complexes = True,
             load_annotations = True,
@@ -225,9 +226,9 @@ class Workflow(omnipath.OmniPath):
             if not hasattr(self, k):
                 
                 setattr(self, k, v)
-
-        self.title = self.name if self.title is None else self.title
-
+        
+        self.title = self.title or self.name
+        
         self.defaults = {
             # colors for the categories
             'ccolors': {
@@ -236,6 +237,7 @@ class Workflow(omnipath.OmniPath):
                 'm': '#DDAA77',
                 'i': '#CC99BB',
                 'r': '#77AADD',
+                'o': '#AAAA44',
             },
             # colors of the shaded parts
             'ccolors2': {
@@ -244,6 +246,7 @@ class Workflow(omnipath.OmniPath):
                 'm': '#774411',
                 'i': '#771155',
                 'r': '#4477AA',
+                'o': '#AAAA44',
             },
             'group_colors': [
                 '#4477AA',
@@ -796,12 +799,18 @@ class Workflow(omnipath.OmniPath):
         # creating PyPath object
         self.init_pypath()
         
+        self.load_omnipath()
         # load list of protein annotations (e.g. kinases, receptors, ...)
         self.load_protein_lists()
         # set the resource categories
         self.set_categories()
         # load the enzyme-substrate interactions
         self.pp.load_ptms2()
+        
+        if self.omnipath:
+            
+            self.omnipath.load_ptms2()
+        
         # separate the network by resources
         self.separate()
         # assign colors for each resource for the multi-section barplots
@@ -918,14 +927,16 @@ class Workflow(omnipath.OmniPath):
         if not os.path.exists(self.outdir):
             
             os.mkdir(self.outdir)
-
+    
+    
     def get_path(self, fname):
         """
         Returns the path of an output file by adding the path of the outdir.
         """
         
         return os.path.join(self.outdir, fname)
-
+    
+    
     def init_pypath(self):
         """
         Initializes a ``pypath.PyPath`` object using the resources from
@@ -943,6 +954,19 @@ class Workflow(omnipath.OmniPath):
             self.pp = main.PyPath(9606)
             for netdata in self.network_datasets:
                 self.pp.load_resources(getattr(data_formats, netdata))
+    
+    
+    def load_omnipath(self):
+        """
+        Loads OmniPath from a previously compiled and saved pickle file.
+        """
+        
+        self.omnipath = None
+        
+        if self.omnipath_pickle:
+            
+            self.omnipath = main.PyPath()
+            self.omnipath.init_network(pfile = self.omnipath_pickle)
     
     
     def load_protein_lists(self):
@@ -1040,7 +1064,8 @@ class Workflow(omnipath.OmniPath):
         """
         
         self.pp.set_categories()
-
+    
+    
     def separate(self):
         """
         Separates the network by resource category and resource.
@@ -2502,7 +2527,12 @@ class Workflow(omnipath.OmniPath):
             self.pp,
             htp_threshold = None,
         )
-
-    def console(self, msg):
-        _ = sys.stdout.write('\t:: %s\n' % msg)
-        sys.stdout.flush()
+        
+        if self.omnipath:
+            
+            self.omnipath_pubmeds, self.omnipath_pubmeds_earliest = (
+                _refs.get_pubmed_data(
+                    self.omnipath,
+                    htp_threshold = None,
+                )
+            )

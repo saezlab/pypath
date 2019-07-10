@@ -52,6 +52,7 @@ binary = analysis.Workflow(
         enz_sub_pickle = 'omnipath_enz_sub.pickle',
         complex_pickle = 'omnipath_complexes.pickle',
         intercell_pickle = 'omnipath_intercell.pickle',
+        omnipath_pickle = 'omnipath.pickle',
     )
 
 binary.run()
