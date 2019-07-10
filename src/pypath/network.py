@@ -20,6 +20,7 @@
 
 import imp
 import collections
+import itertools
 
 import pandas as pd
 
@@ -97,4 +98,37 @@ class Network(session_mod.Logger):
                 'type_b': 'category',
                 'effect': 'int8',
             },
+        )
+    
+    
+    @property
+    def resources(self):
+        """
+        Returns a set of all resources.
+        """
+        
+        return set.union(*self.records.sources)
+    
+    
+    def entities_by_resources(self):
+        """
+        Returns a dict of sets with resources as keys and sets of entity IDs
+        as values.
+        """
+        
+        return dict(
+            (
+                resource,
+                set(
+                    itertools.chain(
+                        *self.records[
+                            [
+                                resource in resources
+                                for resources in self.records.sources
+                            ]
+                        ][['id_a', 'id_b']].values
+                    )
+                )
+            )
+            for resource in self.resources
         )
