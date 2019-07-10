@@ -969,13 +969,7 @@ annot_combined_classes = (
                         },
                     },
                 ),
-                af.AnnotDef(
-                    name = 'locate_secretome',
-                    source = 'Locate',
-                    args = {
-                        'cls': 'secretome',
-                    },
-                ),
+                'secreted_locate',
             ),
             op = set.union,
         ),
@@ -1388,8 +1382,8 @@ annot_combined_classes = (
         name = 'secreted_locate',
         source = 'Locate',
         args = {
-            'location': 'secreted',
-        }
+            'cls': 'secretome',
+        },
     ),
     af.AnnotDef(
         name = 'secreted_matrisome',
