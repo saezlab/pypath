@@ -8468,7 +8468,7 @@ class PyPath(session_mod.Logger):
             self.nodLab,
         )
 
-    def up_neighborhood(self, uniprot, order=1, mode='ALL'):
+    def up_neighborhood(self, uniprots, order = 1, mode = 'ALL'):
         """
         """
 
