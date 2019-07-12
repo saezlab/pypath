@@ -2362,7 +2362,12 @@ def get_psite_phos(raw = True, organism = 'human', strict = True):
 
     url = urls.urls['psite_kin']['url']
     c = curl.Curl(
-        url, silent = False, compr = 'gz', encoding = 'iso-8859-1', large = True)
+        url,
+        silent = False,
+        compr = 'gz',
+        encoding = 'iso-8859-1',
+        large = True,
+    )
     orto = {}
     data = c.result
     cols = {
@@ -4086,14 +4091,14 @@ def go_annotations_goa(organism = 'human'):
     c = curl.Curl(url, silent = False, large = True)
 
     for line in c.result:
-        
+
         if not line or line[0] == '!':
             continue
-        
+
         line = line.strip().split('\t')
-        
+
         annot[line[8]][line[1]].add(line[4])
-    
+
     return annot
 
 
@@ -5873,12 +5878,12 @@ def get_tfcensus(classes = ('a', 'b', 'other')):
     for l in f:
 
         if len(l) > 0 and l.split('\t')[0] in classes:
-            
+
             ensg += reensg.findall(l)
             h = l.split('\t')[5].strip()
             if len(h) > 0:
                 hgnc.append(h)
-    
+
     return (
         set.union(*(
             mapping.map_name(e, 'ensembl', 'uniprot')
@@ -6565,11 +6570,10 @@ def disgenet_annotations(dataset = 'curated'):
         Name of DisGeNet dataset to be obtained:
         `curated`, `literature`, `befree` or `all`.
     """
-    
+
     DisGeNetAnnotation = collections.namedtuple(
         'DisGeNetAnnotation',
         [
-            'uniprot',
             'disease',
             'score',
             'dsi',
@@ -6579,7 +6583,7 @@ def disgenet_annotations(dataset = 'curated'):
             'source',
         ]
     )
-    
+
     url = urls.urls['disgenet']['url'] % dataset
     c = curl.Curl(
         url,
@@ -6590,19 +6594,19 @@ def disgenet_annotations(dataset = 'curated'):
     )
     reader = csv.DictReader(c.result, delimiter = '\t')
     data = collections.defaultdict(set)
-    
+
     for rec in reader:
-        
+
         uniprot = mapping.map_name0(
             rec['geneSymbol'],
             'genesymbol',
             'uniprot',
         )
-        
+
         if not uniprot:
-            
+
             continue
-        
+
         data[uniprot].add(
             DisGeNetAnnotation(
                 disease = rec['diseaseName'],
@@ -6614,7 +6618,7 @@ def disgenet_annotations(dataset = 'curated'):
                 source = tuple(x.strip() for x in rec['source'].split(';')),
             )
         )
-    
+
     return data
 
 
@@ -7694,6 +7698,7 @@ def vidal_hi_iii(fname):
 
     Returns list of interactions.
     """
+
     f = curl.FileOpener(fname)
     return \
         list(
@@ -7736,26 +7741,26 @@ def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
     sys.stdout.flush()
 
 
-def kinases():
+def get_kinases():
     """
     Downloads and processes the list of all human kinases.
     Returns a list of GeneSymbols.
     """
-    
+
     url = urls.urls['kinome']['url']
     c = curl.Curl(url, large = True, silent = False)
     xlsf = c.fileobj
     xlsname = xlsf.name
     xlsf.close()
     tbl = read_xls(xlsname)
-    
+
     kinases = {
         mapping.map_name0(l[23], 'genesymbol', 'uniprot')
         for l in tbl[1:] if len(l[23]) > 0
     }
-    
+
     kinases.discard(None)
-    
+
     return kinases
 
 
@@ -7764,7 +7769,7 @@ def phosphatome_annotations():
     Downloads the list of phosphatases from Chen et al, Science Signaling
     (2017) Table S1.
     """
-    
+
     PhosphatomeAnnotation = collections.namedtuple(
         'PhosphatomeAnnotation',
         [
@@ -7776,21 +7781,21 @@ def phosphatome_annotations():
             'has_catalytic_activity',
         ],
     )
-    
+
     url = urls.urls['phosphatome']['url']
     c = curl.Curl(url, large = True, silent = False, default_mode = 'rb')
     tbl = read_xls(c.result['aag1796_Tables S1 to S23.xlsx'])
-    
+
     data = collections.defaultdict(set)
-    
+
     for rec in tbl[2:]:
-        
+
         uniprot = mapping.map_name0(rec[0], 'genesymbol', 'uniprot')
-        
+
         if not uniprot:
-            
+
             continue
-        
+
         data[uniprot].add(
             PhosphatomeAnnotation(
                 fold = rec[2],
@@ -7801,7 +7806,7 @@ def phosphatome_annotations():
                 has_catalytic_activity = rec[23].strip().lower() == 'yes',
             )
         )
-    
+
     return data
 
 
@@ -7810,7 +7815,7 @@ def get_dgidb():
     Downloads and processes the list of all human druggable proteins.
     Returns a list of GeneSymbols.
     """
-    
+
     genesymbols = []
     url = urls.urls['dgidb']['main_url']
     c = curl.Curl(url, silent = False)
@@ -7822,14 +7827,14 @@ def get_dgidb():
         .find_all('option')
     ]
     for cat in cats:
-        
+
         url = urls.urls['dgidb']['url'] % cat
         c = curl.Curl(url)
         html = c.result
         soup = bs4.BeautifulSoup(html, 'html.parser')
         trs = soup.find('tbody').find_all('tr')
         genesymbols.extend([tr.find('td').text.strip() for tr in trs])
-    
+
     return mapping.map_names(genesymbols, 'genesymbol', 'uniprot')
 
 
@@ -9259,66 +9264,64 @@ def get_ccmap(organism = 9606):
     return interactions
 
 
-def get_cgc_old(user = None, passwd = None):
-    """
-    Deprecated, to be removed soon.
-    """
-
-    host = urls.urls['cgc']['host']
-    fname = urls.urls['cgc']['file']
-
-    ask = 'To access Cancer Gene Census data you need to be '\
-        'registered at COSMIC\n'\
-        '(http://cancer.sanger.ac.uk/cosmic/).\n'\
-        'If you have already an account, please enter your login details.\n'\
-        'In case you don\'t, you can register now.\n'\
-        'Please see licensing terms to find out how you are allowed to\n'\
-        'use COSMIC data: http://cancer.sanger.ac.uk/cosmic/license\n'
-
-    c = curl.Curl(
-        fname,
-        sftp_host = host,
-        sftp_ask = ask,
-        sftp_user = user,
-        sftp_passwd = passwd,
-        large = True,
-    )
-
-    data = c.result
-    null = next(data)
-
-    for line in data:
-
-        # next_line = line.decode('utf-8')
-        fields = []
-        field = ''
-        in_quotes = False
-        for char in next_line:
-            if char == ',' and not in_quotes:
-                fields.append(field)
-                field = ''
-            elif char == '"':
-                in_quotes = not in_quotes
-            else:
-                field += char
-
-        yield fields
-
-
-def get_cgc(user = None, passwd = None):
+def cancer_gene_census_annotations(user = None, passwd = None):
     """
     Retrieves a list of cancer driver genes (Cancer Gene Census) from
     the Sanger COSMIC (Catalogue of Somatic Mutations in Cancer) database.
-    
+
     Does not work at the moment (signature does not match error).
     """
-    
+
+    if not user or not passwd:
+
+        credentials = settings.get('cosmic_credentials')
+
+        if not credentials:
+
+            _log(
+                'No credentials available for the COSMIC website. '
+                'Either set the `cosmic_credentials` key in the `settings` '
+                'module (e.g. `{\'user\': \'myuser\', '
+                '\'passwd\': \'mypassword\'}`), or pass them directly to the '
+                '`dataio.cancer_gene_census_annotations` method.'
+            )
+            return {}
+
+    else:
+
+        credentials = {'user': user, 'passwd': passwd}
+
+    CancerGeneCensusAnnotation = collections.namedtuple(
+        'CancerGeneCensusAnnotation',
+        [
+            'tier',
+            'hallmark',
+            'somatic',
+            'germline',
+            'tumour_types_somatic',
+            'tumour_types_germline',
+            'cancer_syndrome',
+            'tissue_type',
+            'genetics',
+            'role',
+            'mutation_type',
+        ]
+    )
+
+
+    def multi_field(content):
+
+        return tuple(sorted(i.strip() for i in content.split(',')))
+
+
     url = urls.urls['cgc']['url_new']
-    
-    auth_str = base64.b64encode(('%s:%s\n' % (user, passwd)).encode())
-    
-    req_hdrs = ['Authorization: %s' % auth_str.decode()]
-    
+
+    auth_str = base64.b64encode(
+        ('%s:%s\n' % (credentials['user'], credentials['passwd'])).encode()
+    )
+
+    req_hdrs = ['Authorization: Basic %s' % auth_str.decode()]
+
     c = curl.Curl(
         url,
         large = False,
@@ -9326,21 +9329,123 @@ def get_cgc(user = None, passwd = None):
         req_headers = req_hdrs,
         cache = False,
     )
-    
+
     access_url = json.loads(c.result)
-    
+
     if 'url' not in access_url:
-        
+
         _log(
             'Could not retrieve COSMIC access URL. '
+            'Most likely the authentication failed. '
             'The reply was: `%s`' % c.result
         )
-        
+
         return None
-    
-    c = curl.Curl(access_url['url'], large = True, silent = False)
-    
-    return c
+
+    c = curl.Curl(
+        access_url['url'],
+        large = True,
+        silent = False,
+        bypass_url_encoding = True,
+    )
+
+    data = csv.DictReader(c.fileobj, delimiter = ',')
+    result = collections.defaultdict(set)
+
+    for rec in data:
+
+        uniprots = mapping.map_name(
+            rec['Gene Symbol'],
+            'genesymbol',
+            'uniprot',
+        )
+
+        for uniprot in uniprots:
+
+            result[uniprot].add(
+                CancerGeneCensusAnnotation(
+                    tier = int(rec['Tier']),
+                    hallmark = rec['Hallmark'].strip().lower() == 'yes',
+                    somatic = rec['Somatic'].strip().lower() == 'yes',
+                    germline = rec['Germline'].strip().lower() == 'yes',
+                    tumour_types_somatic = (
+                        multi_field(rec['Tumour Types(Somatic)'])
+                    ),
+                    tumour_types_germline = (
+                        multi_field(rec['Tumour Types(Germline)'])
+                    ),
+                    cancer_syndrome = (
+                        multi_field(rec['Cancer Syndrome'])
+                    ),
+                    tissue_type = (
+                        multi_field(rec['Tissue Type'])
+                    ),
+                    genetics = rec['Molecular Genetics'].strip(),
+                    role = (
+                        multi_field(rec['Role in Cancer'])
+                    ),
+                    mutation_type = (
+                        multi_field(rec['Mutation Types'])
+                    ),
+                )
+            )
+
+    return dict(result)
+
+
+def intogen_annotations():
+    """
+    Returns a list of cancer driver genes according to the IntOGen database.
+    """
+
+    IntogenAnnotation = collections.namedtuple(
+        'IntogenAnnotation',
+        [
+            'type',
+            'role',
+            'oncodrive_role_prob',
+        ],
+    )
+
+
+    url = urls.urls['intogen']['drivers_url']
+
+    c = curl.Curl(
+        url,
+        large = True,
+        silent = False,
+        files_needed = ['Drivers_type_role.tsv'],
+    )
+
+    for _ in xrange(7):
+
+        __ = c.result['Drivers_type_role.tsv'].readline()
+
+    data = csv.DictReader(
+        c.result['Drivers_type_role.tsv'],
+        delimiter = '\t',
+    )
+    result = collections.defaultdict(set)
+
+    for rec in data:
+
+        uniprots = mapping.map_name(
+            rec['geneHGNCsymbol'],
+            'genesymbol',
+            'uniprot',
+        )
+
+        for uniprot in uniprots:
+
+            result[uniprot].add(
+                IntogenAnnotation(
+                    type = rec['Driver_type'],
+                    role = rec['Role'],
+                    oncodrive_role_prob = rec['OncodriveROLE_prob'],
+                )
+            )
+
+    return result
 
 
 def get_matrixdb(organism = 9606):
@@ -9354,7 +9459,7 @@ def get_matrixdb(organism = 9606):
         if lnum == 0:
             lnum += 1
             continue
-        l = l.decode('utf-8').replace('"', '')
+
         l = l.replace('\n', '').replace('\r', '')
         l = l.split('\t')
         specA = 0 if l[9] == '-' else int(l[9].split(':')[1].split('(')[0])
@@ -9397,7 +9502,7 @@ def get_innatedb(organism = 9606):
         if lnum == 0:
             lnum += 1
             continue
-        l = l.decode('utf-8')
+
         l = l.replace('\n', '').replace('\r', '')
         l = l.split('\t')
         specA = 0 if l[9] == '-' else int(l[9].split(':')[1].split('(')[0])
@@ -11274,6 +11379,9 @@ def hgnc_genegroups():
 
 
 def zhong2015_annotations():
+    """
+    From 10.1111/nyas.12776 (PMID 25988664).
+    """
 
     types = {
         'i': 'iCAM',

@@ -1021,6 +1021,12 @@ urls = {
         'label': 'Compartments subcellular localization database',
         'url': 'http://download.jensenlab.org/%s_compartment_%s_full.tsv',
     },
+    'intogen': {
+        'label': 'IntOGen is a database of cancer related '\
+            'genes and mutations',
+        'drivers_url': 'https://www.intogen.org/repository/downloads/'\
+            'intogen_cancer_drivers-2014.12.zip',
+    }
 }
 
 files = {

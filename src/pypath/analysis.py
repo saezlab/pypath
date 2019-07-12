@@ -37,6 +37,9 @@ import pypath.dataio as dataio
 import pypath.descriptions as descriptions
 from pypath.common import *
 import pypath.refs as _refs
+import pypath.omnipath as omnipath
+import pypath.session_mod as session_mod
+import pypath.go as go
 
 
 # defines a multi-section barplot
@@ -80,41 +83,56 @@ ScatterplotGraphicsParam = collections.namedtuple(
 ScatterplotGraphicsParam.__new__.__defaults__ = ((None, None),)
 
 
-class Workflow(object):
+class Workflow(omnipath.OmniPath):
     
-    def __init__(self,
-                 name,
-                 network_datasets=[],
-                 do_main_table=True,
-                 do_compile_main_table=True,
-                 do_curation_table=True,
-                 do_compile_curation_table=True,
-                 do_simgraphs=True,
-                 do_multi_barplots=True,
-                 do_coverage_groups=True,
-                 do_htp_char=True,
-                 do_ptms_barplot=True,
-                 do_scatterplots=True,
-                 do_history_tree=True,
-                 do_compile_history_tree=True,
-                 do_refs_journals_grid=True,
-                 do_refs_years_grid=True,
-                 do_dirs_stacked=True,
-                 do_refs_composite=True,
-                 do_curation_plot=True,
-                 do_refs_by_j=True,
-                 do_refs_by_db=True,
-                 do_refs_by_year=True,
-                 do_resource_list=True,
-                 do_compile_resource_list=True,
-                 do_consistency_dedrogram=True,
-                 do_consistency_table=True,
-                 only_categories = None,
-                 title=None,
-                 outdir=None,
-                 htdata={},
-                 inc_raw=None,
-                 **kwargs):
+    def __init__(
+            self,
+            name,
+            network_datasets = [],
+            do_main_table = True,
+            do_compile_main_table = True,
+            do_curation_table = True,
+            do_compile_curation_table = True,
+            do_simgraphs = True,
+            do_multi_barplots = True,
+            do_coverage_groups = True,
+            do_htp_char = True,
+            do_ptms_barplot = True,
+            do_scatterplots = True,
+            do_history_tree = True,
+            do_compile_history_tree = True,
+            do_refs_journals_grid = True,
+            do_refs_years_grid = True,
+            do_dirs_stacked = True,
+            do_refs_composite = True,
+            do_curation_plot = True,
+            do_refs_by_j = True,
+            do_refs_by_db = True,
+            do_refs_by_year = True,
+            do_resource_list = True,
+            do_compile_resource_list = True,
+            do_consistency_dedrogram = True,
+            do_consistency_table = True,
+            only_categories = None,
+            title = None,
+            outdir = None,
+            htdata = {},
+            inc_raw = None,
+            intogen_file = None,
+            cosmic_credentials = None,
+            network_pickle = None,
+            annotation_pickle = None,
+            intercell_pickle = None,
+            complex_pickle = None,
+            enz_sub_pickle = None,
+            omnipath_pickle = None,
+            load_network = False,
+            load_complexes = True,
+            load_annotations = True,
+            load_intercell = True,
+            load_enz_sub = True,
+            **kwargs
+        ):
         """
         Executes the workflow of comparative analysis of network resuorces
         by categories. Creates tables and figures.
@@ -180,15 +198,37 @@ class Workflow(object):
         :arg str outdir:
             Directory to save the output files.
         """
-
+        
+        session_mod.Logger.__init__(self, name = 'analysis')
+        
+        omnipath.OmniPath.__init__(
+            self,
+            network_pickle = network_pickle,
+            annotation_pickle = annotation_pickle,
+            intercell_pickle = intercell_pickle,
+            complex_pickle = complex_pickle,
+            enz_sub_pickle = enz_sub_pickle,
+            load_network = load_network,
+            load_complexes = load_complexes,
+            load_annotations = load_annotations,
+            load_intercell = load_intercell,
+            load_enz_sub = load_enz_sub,
+        )
+        
         for k, v in iteritems(locals()):
-            setattr(self, k, v)
+            
+            if not hasattr(self, k):
+                
+                setattr(self, k, v)
 
         for k, v in iteritems(kwargs):
-            setattr(self, k, v)
-
-        self.title = self.name if self.title is None else self.title
-
+            
+            if not hasattr(self, k):
+                
+                setattr(self, k, v)
+        
+        self.title = self.title or self.name
+        
         self.defaults = {
             # colors for the categories
             'ccolors': {
@@ -197,6 +237,7 @@ class Workflow(object):
                 'm': '#DDAA77',
                 'i': '#CC99BB',
                 'r': '#77AADD',
+                'o': '#AAAA44',
             },
             # colors of the shaded parts
             'ccolors2': {
@@ -205,6 +246,7 @@ class Workflow(object):
                 'm': '#774411',
                 'i': '#771155',
                 'r': '#4477AA',
+                'o': '#AAAA44',
             },
             'group_colors': [
                 '#4477AA',
@@ -226,7 +268,7 @@ class Workflow(object):
                 'curation_tab_stripped_%s.tex' % self.name,
             'latex':
                 '/usr/bin/xelatex',
-            'latex_timeout': 10,
+            'latex_timeout': 30,
             'compile_latex': True,
             'multi_barplots_summary': True,
             'protein_lists': {
@@ -248,9 +290,9 @@ class Workflow(object):
             },
             'fiher_file':
                 'fisher_%s' % self.name,
-            'fisher':
-                [('dis', 'Disease related genes'),
-                 ('rec', 'Receptors'),
+            'fisher': [
+                ('dis', 'Disease related genes'),
+                ('rec', 'Receptors'),
                 ('tf', 'Transcription factors'),
                 ('kin', 'Kinases'),
                 ('dgb', 'Druggable proteins'),
@@ -505,14 +547,14 @@ class Workflow(object):
                     float(len(self.pp.lists['dis'])) * 100.0,
                 'vcount'
             ),
-            MultiBarplotParam(
-                'Complexes',
-                'Number of complexes covered',
-                'complexes',
-                lambda gs: len(self.pp.complexes_in_network(graph=gs[0])),
-                None,
-                'vcount'
-            ),
+            #MultiBarplotParam(
+                #'Complexes',
+                #'Number of complexes covered',
+                #'complexes',
+                #lambda gs: len(self.pp.complexes_in_network(graph=gs[0])),
+                #None,
+                #'vcount'
+            #),
             MultiBarplotParam(
                 'E-S interactions',
                 'Number of enzyme-substrate interactions covered',
@@ -707,26 +749,26 @@ class Workflow(object):
                 'tf-rec',
                 False
             ),
-            ScatterplotParam(
-                lambda gs: len(self.pp.complexes_in_network(graph=gs[0])),
-                lambda gs: sum(map(lambda e: len(e['ptm']) > 0, gs[0].es)),
-                lambda gs: gs[0].ecount(),
-                ScatterplotGraphicsParam(
-                    ylim = [0.5, 5400.0],
-                    xlim = [3.0, 1500.0],
-                    ylog = True,
-                    xlog = True,
-                    xlab = 'Number of complexes',
-                    ylab = 'Number of\nenzyme-substrate relationships',
-                    legtitle = 'Total number of interactions',
-                    title = 'Number of complexes and enzyme-substrate relationships',
-                    legstrip = (3, None)
-                ),
-                'comp-ptm',
-                False
-            )
+            #ScatterplotParam(
+                #lambda gs: len(self.pp.complexes_in_network(graph=gs[0])),
+                #lambda gs: sum(map(lambda e: len(e['ptm']) > 0, gs[0].es)),
+                #lambda gs: gs[0].ecount(),
+                #ScatterplotGraphicsParam(
+                    #ylim = [0.5, 5400.0],
+                    #xlim = [3.0, 1500.0],
+                    #ylog = True,
+                    #xlog = True,
+                    #xlab = 'Number of complexes',
+                    #ylab = 'Number of\nenzyme-substrate relationships',
+                    #legtitle = 'Total number of interactions',
+                    #title = 'Number of complexes and enzyme-substrate relationships',
+                    #legstrip = (3, None)
+                #),
+                #'comp-ptm',
+                #False
+            #)
         ]
-
+        
         for k, v in iteritems(self.defaults):
             if not hasattr(self, k):
                 setattr(self, k, v)
@@ -756,12 +798,19 @@ class Workflow(object):
         self.set_outdir()
         # creating PyPath object
         self.init_pypath()
+        
+        self.load_omnipath()
         # load list of protein annotations (e.g. kinases, receptors, ...)
         self.load_protein_lists()
-        # load annotations of proteins
-        self.load_annotations()
         # set the resource categories
         self.set_categories()
+        # load the enzyme-substrate interactions
+        self.pp.load_ptms2()
+        
+        if self.omnipath:
+            
+            self.omnipath.load_ptms2()
+        
         # separate the network by resources
         self.separate()
         # assign colors for each resource for the multi-section barplots
@@ -878,14 +927,16 @@ class Workflow(object):
         if not os.path.exists(self.outdir):
             
             os.mkdir(self.outdir)
-
+    
+    
     def get_path(self, fname):
         """
         Returns the path of an output file by adding the path of the outdir.
         """
         
         return os.path.join(self.outdir, fname)
-
+    
+    
     def init_pypath(self):
         """
         Initializes a ``pypath.PyPath`` object using the resources from
@@ -903,41 +954,109 @@ class Workflow(object):
             self.pp = main.PyPath(9606)
             for netdata in self.network_datasets:
                 self.pp.load_resources(getattr(data_formats, netdata))
-
-    def load_protein_lists(self):
+    
+    
+    def load_omnipath(self):
         """
-        Loads the lists of protein categories: the entire proteome,
-        the list of signaling proteins, cancer drivers from IntOGen and
-        Cancer Gene Census.
+        Loads OmniPath from a previously compiled and saved pickle file.
         """
         
-        for meth, name in iteritems(self.protein_lists):
+        self.omnipath = None
+        
+        if self.omnipath_pickle:
             
-            self.console('Loading list of %s' % name)
-            getattr(self.pp, '%s_list' % meth)()
-        
-        self.console('Loading list of Cancer Gene Census %scancer drivers' %
-                     ('and IntOGen ' if self.intogen_file else ''))
-        
-        self.pp.cancer_drivers_list(intogen_file=self.intogen_file)
-
-    def load_annotations(self):
+            self.omnipath = main.PyPath()
+            self.omnipath.init_network(pfile = self.omnipath_pickle)
+    
+    
+    def load_protein_lists(self):
         """
         Loads protein annotations to vertex attributes of the network object.
         By default these are kinases, TFs, receptors, druggability, disease
         relatedness.
         """
-
-        for meth, name in iteritems(self.set_annots):
-
-            self.console('Loading list of %s into protein attribute' % name)
-            getattr(self.pp, 'set_%s' % meth)()
-
-        for meth, name in iteritems(self.load_annots):
-
-            self.console('Loading %s into protein attribute' % name)
-            getattr(self.pp, 'load_%s' % meth)()
-
+        
+        # transcription factors
+        self.pp.graph.vs['tf'] = [
+            v['name'] in self.annot.annots['TFcensus']
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['tf'] = set(self.annot.annots['TFcensus'].annot.keys())
+        
+        # kinases
+        self.pp.graph.vs['kin'] = [
+            v['name'] in self.annot.annots['Kinases']
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['kin'] = set(self.annot.annots['Kinases'].annot.keys())
+        
+        # disease related genes
+        self.pp.graph.vs['dis'] = [
+            v['name'] in self.annot.annots['DisGeNet']
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['dis'] = set(self.annot.annots['DisGeNet'].annot.keys())
+        
+        # druggable proteins
+        self.pp.graph.vs['dgb'] = [
+            v['name'] in self.annot.annots['DGIdb']
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['dgb'] = set(self.annot.annots['DGIdb'].annot.keys())
+        
+        # receptors
+        self.pp.graph.vs['rec'] = [
+            v['name'] in self.intercell.classes['receptor']
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['rec'] = self.intercell.classes['receptor']
+        
+        # signaling proteins
+        goannot = go.get_db()
+        sig = goannot.select('signaling')
+        
+        self.pp.graph.vs['sig'] = [
+            v['name'] in sig
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['sig'] = sig
+        
+        # cosmic cancer drivers
+        self.pp.graph.vs['cgc'] = [
+            v['name'] in self.annot.annots['CancerGeneCensus']
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['cgc'] = (
+            set(self.annot.annots['CancerGeneCensus'].annot.keys())
+        )
+        
+        self.pp.graph.vs['cgc'] = [
+            v['name'] in self.pp.lists['cgc']
+            for v in self.pp.graph.vs
+        ]
+        
+        # IntOGen cancer drivers
+        self.pp.graph.vs['IntOGen'] = [
+            v['name'] in self.annot.annots['IntOGen']
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['IntOGen'] = (
+            set(self.annot.annots['IntOGen'].annot.keys())
+        )
+        
+        # all cancer drivers
+        self.pp.graph.vs['cdv'] = [
+            (
+                v['name'] in self.annot.annots['IntOGen'] or
+                v['name'] in self.pp.lists['cgc']
+            )
+            for v in self.pp.graph.vs
+        ]
+        self.pp.lists['cdv'] = self.pp.lists['IntOGen'] | self.pp.lists['cgc']
+        
+        self.pp.lists['proteome'] = dataio.all_uniprots(swissprot = True)
+    
+    
     def set_categories(self):
         """
         Sets the resource categories as a vertex and edge attribute on the
@@ -945,7 +1064,8 @@ class Workflow(object):
         """
         
         self.pp.set_categories()
-
+    
+    
     def separate(self):
         """
         Separates the network by resource category and resource.
@@ -999,7 +1119,7 @@ class Workflow(object):
         resources and resource categories.
         """
 
-        self.console('Doing Fisher tests, writing results to `%s`' %
+        self._log('Doing Fisher tests, writing results to `%s`' %
                      self.get_path(self.fisher_file))
         
         with open(self.get_path(self.fisher_file), 'w') as fi:
@@ -1390,14 +1510,19 @@ class Workflow(object):
                 s = s / 1.0
 
             colors = list(
-                map(lambda l: self.ccolors2[data_formats.categories[l]],
-                    labels))
-
+                map(
+                    lambda l:
+                        self.ccolors2[data_formats.categories[l]],
+                    labels
+                )
+            )
+            
             color_labels = []
             for c in ['p', 'l', 'm', 'i', 'r']:
                 
                 if (
-                    c in self.pp.has_cats and (
+                    c in self.pp.has_cats and
+                    (
                         self.only_categories is None or
                         c in self.only_categories
                     )
@@ -1457,7 +1582,7 @@ class Workflow(object):
             'PhosphoNetworks': self.pp.load_pnetworks_dmi(return_raw=True),
             'PhosphoELM': self.pp.load_phosphoelm(return_raw=True),
             'dbPTM': self.pp.load_dbptm(return_raw=True),
-            'PhosphoSite': self.pp.load_psite_phos(return_raw=True)
+            'PhosphoSite': self.pp.load_psite_phos(return_raw=True),
         }
 
     def make_ptms_barplot(self):
@@ -1543,7 +1668,7 @@ class Workflow(object):
         Compiles the history of resources figure by LaTeX.
         """
 
-        self.console('Running `%s` on `%s`' %
+        self._log('Running `%s` on `%s`' %
                      (self.latex, self.get_path(self.history_tree_fname)))
 
         self.history_tree_latex_proc = subprocess.Popen(
@@ -1562,9 +1687,11 @@ class Workflow(object):
         self.history_tree_latex_return = \
             self.history_tree_latex_proc.returncode
 
-        self.console('LaTeX %s' % ('compiled successfully'
-                                   if self.history_tree_latex_return == 0 else
-                                   'compilation failed'))
+        self._log('LaTeX %s' % (
+            'compiled successfully'
+                if self.history_tree_latex_return == 0 else
+            'compilation failed')
+        )
 
     def make_refs_years_grid(self):
 
@@ -1602,7 +1729,7 @@ class Workflow(object):
 
     def make_refs_by_db(self):
         
-        self.console('Plotting references by database')
+        self._log('Plotting references by database')
         bydb_ordr = reversed(
             self.pubmeds.database.value_counts().sort_values().index
         )
@@ -1629,7 +1756,7 @@ class Workflow(object):
 
     def make_refs_by_year(self):
         
-        self.console('Plotting references by year')
+        self._log('Plotting references by year')
         counts = dict(self.pubmeds.year.value_counts())
         ecounts = dict(self.pubmeds_earliest.year.value_counts())
         years = np.arange(1970, max(self.pubmeds.year) + 1)
@@ -1637,7 +1764,7 @@ class Workflow(object):
         values = np.array(
             list(map(lambda y: counts[y] if y in counts else 0.0, years)))
         evalues = np.array(
-            list(map(lambda y: ecounts[y] if y in counts else 0.0, years)))
+            list(map(lambda y: ecounts[y] if y in ecounts else 0.0, years)))
         years = list(map(lambda y: '%u' % y if y % 5 == 0 else '', years))
 
         self.refs_by_year = \
@@ -1663,7 +1790,7 @@ class Workflow(object):
 
     def make_refs_by_journal(self):
 
-        self.console('Plotting references by journal')
+        self._log('Plotting references by journal')
 
         for i in [50, 100]:
             byj_ordr = list(
@@ -1786,43 +1913,82 @@ class Workflow(object):
             list(zip(*[
                 (
                     s,
-                    sum([sum([s in e['dirs'].positive_sources[e['dirs'].straight],
-                              s in e['dirs'].positive_sources[e['dirs'].reverse]]) for e in g.es]),
-                    sum([sum([s in e['dirs'].negative_sources[e['dirs'].straight],
-                              s in e['dirs'].negative_sources[e['dirs'].reverse]]) for e in g.es]),
-                    sum([sum([s in ((e['dirs'].sources[e['dirs'].straight] -
-                                     e['dirs'].positive_sources[e['dirs'].straight]) -
-                                    e['dirs'].negative_sources[e['dirs'].straight]),
-                              s in ((e['dirs'].sources[e['dirs'].reverse] -
-                                     e['dirs'].positive_sources[e['dirs'].reverse]) -
-                                    e['dirs'].negative_sources[e['dirs'].reverse])]) for e in g.es]),
+                    sum([
+                        sum([
+                            s in
+                            e['dirs'].positive_sources[e['dirs'].straight],
+                            s in
+                            e['dirs'].positive_sources[e['dirs'].reverse]
+                        ])
+                        for e in g.es
+                    ]),
+                    sum([
+                        sum([
+                            s in
+                            e['dirs'].negative_sources[e['dirs'].straight],
+                            s in
+                            e['dirs'].negative_sources[e['dirs'].reverse]
+                        ])
+                        for e in g.es
+                    ]),
+                    sum([
+                        sum([
+                            s in (
+                                (
+                                    e['dirs'].sources[e['dirs'].straight] -
+                                    e['dirs'].positive_sources[
+                                        e['dirs'].straight
+                                    ]
+                                ) -
+                                e['dirs'].negative_sources[e['dirs'].straight]
+                            ),
+                            s in (
+                                (
+                                    e['dirs'].sources[e['dirs'].reverse] -
+                                    e['dirs'].positive_sources[
+                                        e['dirs'].reverse
+                                    ]
+                                ) -
+                                e['dirs'].negative_sources[e['dirs'].reverse]
+                            )
+                        ])
+                        for e in g.es
+                    ]),
                     sum([s in e['dirs'].sources['undirected'] for e in g.es])
                 )
                 for s, g in iteritems(self.sep)] +
                 [(
                     'All',
-                    sum([e['dirs'].is_stimulation()
-                         for e in self.pp.graph.es]),
-                    sum([e['dirs'].is_inhibition()
-                         for e in self.pp.graph.es]),
-                    sum([not e['dirs'].is_stimulation() and
-                         not e['dirs'].is_inhibition() and
-                         e['dirs'].is_directed() for e in self.pp.graph.es]),
-                    sum([not e['dirs'].is_stimulation() and
-                         not e['dirs'].is_inhibition() and
-                         not e['dirs'].is_directed() for e in self.pp.graph.es])
+                    sum([
+                        e['dirs'].is_stimulation()
+                        for e in self.pp.graph.es
+                    ]),
+                    sum([
+                        e['dirs'].is_inhibition()
+                        for e in self.pp.graph.es
+                    ]),
+                    sum([
+                        not e['dirs'].is_stimulation() and
+                        not e['dirs'].is_inhibition() and
+                        e['dirs'].is_directed() for e in self.pp.graph.es
+                    ]),
+                    sum([
+                        not e['dirs'].is_stimulation() and
+                        not e['dirs'].is_inhibition() and
+                        not e['dirs'].is_directed() for e in self.pp.graph.es
+                    ])
                 )]
             ))
 
     def curation_table(self):
 
-        self.console('Making curation statistics '
+        self._log('Making curation statistics '
                      'LaTeX table, writing to file `%s`' %
                      self.get_path(self.table2file))
         self.pp.curation_tab(
             latex_hdr=True, fname=self.get_path(self.table2file))
 
-        self.console('Making curation statistics '
+        self._log('Making curation statistics '
                      'LaTeX table without header, writing to file `%s`' %
                      self.get_path(self.stable2file))
         self.pp.curation_tab(
@@ -1851,8 +2017,9 @@ class Workflow(object):
         the ``latex`` attribute.
         """
 
-        self.console('Running `%s` on `%s`' %
-                     (self.latex, self.get_path(fname)))
+        self._log(
+            'Running `%s` on `%s`' % (self.latex, self.get_path(fname))
+        )
 
         try:
             self.latex_proc = subprocess.Popen(
@@ -1866,16 +2033,16 @@ class Workflow(object):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
             )
-            self.latex_output, self.latex_error = self.latex_proc.communicate(
-                timeout = self.latex_timeout
+            self.latex_output, self.latex_error = (
+                self.latex_proc.communicate(timeout = self.latex_timeout)
             )
             self.latex_return = self.latex_proc.returncode
             
         except subprocess.TimeoutExpired:
             
             self.latex_return = 1
-
-        self.console(
+        
+        self._log(
             'LaTeX %s' % (
                 'compiled successfully'
                     if self.latex_return == 0 else
@@ -1989,42 +2156,109 @@ class Workflow(object):
             )
 
         self.incid = dict(
-            map(lambda s: (s, self.inco['directions_edges']['minor'][s] / float(self.inco['directions_edges']['minor'][s] + self.cons['directions_edges']['total'][s] + 0.0001)),
-                self.pp.sources))
+            map(
+                lambda s:
+                (
+                    s,
+                    self.inco['directions_edges']['minor'][s] / float(
+                        self.inco['directions_edges']['minor'][s] +
+                        self.cons['directions_edges']['total'][s] +
+                        0.0001
+                    )
+                ),
+                self.pp.sources
+            )
+        )
 
         self.incis = dict(
-            map(lambda s: (s, self.inco['signs_edges']['minor'][s] / float(self.inco['signs_edges']['minor'][s] + self.cons['signs_edges']['total'][s] + 0.0001)),
+            map(
+                lambda s:
+                (
+                    s,
+                    self.inco['signs_edges']['minor'][s] / float(
+                        self.inco['signs_edges']['minor'][s] +
+                        self.cons['signs_edges']['total'][s] +
+                        0.0001
+                    )
+                ),
                 self.pp.sources))
-
-        self.incidp = dict(map(lambda s: (s[0], (len(s[1]['total']) /
-                                                 float(len(s[1]['total']) +
-                                                       len(self.inc_raw['consistency']['directions_edges'][s[0]]['total']) + 0.0001))
-                                          if (len(s[1]['total']) +
-                                              len(self.inc_raw['consistency']['directions_edges'][s[0]]['total'])) > 5
-                                          else np.nan),
-                               iteritems(self.inc_raw['inconsistency']['directions_edges'])))
-
-        self.incidp = dict(map(lambda s: (s[0], (len(s[1]['total']) /
-                                                 float(len(s[1]['total']) +
-                                                       len(self.inc_raw['consistency']['directions_edges'][s[0]]['total']) + 0.0001))),
-                               iteritems(self.inc_raw['inconsistency']['directions_edges'])))
-
+        
+        self.incidp = dict(
+            map(
+                lambda s: (
+                    s[0],
+                    (
+                        len(s[1]['total']) /
+                        float(
+                            len(s[1]['total']) +
+                            len(
+                                self.inc_raw['consistency'][
+                                    'directions_edges'
+                                ][s[0]]['total']
+                            ) +
+                            0.0001
+                        )
+                    )
+                    if (
+                        len(s[1]['total']) +
+                        len(
+                            self.inc_raw['consistency'][
+                                'directions_edges'
+                            ][s[0]]['total']
+                        )
+                    ) > 5
+                    else np.nan
+                ),
+                iteritems(self.inc_raw['inconsistency']['directions_edges'])
+            )
+        )
+        
+        self.incidp = dict(
+            map(
+                lambda s: (
+                    s[0],
+                    (
+                        len(s[1]['total']) /
+                        float(
+                            len(s[1]['total']) +
+                            len(
+                                self.inc_raw['consistency'][
+                                    'directions_edges'
+                                ][s[0]]['total']
+                            ) +
+                            0.0001
+                        )
+                    )
+                ),
+                iteritems(self.inc_raw['inconsistency']['directions_edges'])
+            )
+        )
+        
         self.incdf = pd.DataFrame(
             np.vstack([
                 np.array(
-                    [self.incidp[(s1, s2)] for s1 in sorted(self.pp.sources)])
+                    [
+                        self.incidp[(s1, s2)]
+                        for s1 in sorted(self.pp.sources)
+                    ]
+                )
                 for s2 in sorted(self.pp.sources)
             ]),
             index=sorted(self.pp.sources),
-            columns=sorted(self.pp.sources))
-
-        self.incdf = self.incdf.loc[(self.incdf.sum(axis=1) != 0), (
-            self.incdf.sum(axis=0) != 0)]
-
-        for lab in [
-                'HPRD', 'NetPath', 'Reactome', 'ACSN', 'PDZBase', 'NCI-PID'
-        ]:
+            columns=sorted(self.pp.sources)
+        )
+        
+        self.incdf = self.incdf.loc[
+            (self.incdf.sum(axis=1) != 0),
+            (self.incdf.sum(axis=0) != 0)
+        ]
+        
+        for lab in (
+            'HPRD', 'NetPath', 'Reactome', 'ACSN', 'PDZBase', 'NCI-PID',
+        ):
+            
             if lab in self.incdf:
+                
                 self.incdf.__delitem__(lab)
                 self.incdf = self.incdf.drop(lab)
 
@@ -2046,91 +2280,243 @@ class Workflow(object):
             map(lambda s: s[0],
                 filter(lambda s: s[1] > 0, iteritems(self.incid)))) - signed
 
-        singles_undirected = dict(map(lambda s:
-                                      (s, len(list(filter(lambda e:
-                                                          s in e['sources'] and len(
-                                                              e['sources']) == 1,
-                                                          self.pp.graph.es)))),
-                                      undirected))
-        singles_directed = dict(map(lambda s:
-                                    (s, sum(map(
-                                        lambda e: sum([
-                                            s in e['dirs'].sources_straight() and len(
-                                                e['dirs'].sources_straight()) == 1,
-                                            s in e['dirs'].sources_reverse() and len(e['dirs'].sources_reverse()) == 1]),
-                                        self.pp.graph.es))), directed))
-        singles_signed = dict(map(lambda s:
-                                  (s, sum(map(
-                                      lambda e: sum([
-                                          s in e['dirs'].positive_sources_straight() and len(
-                                              e['dirs'].positive_sources_straight()) == 1,
-                                          s in e['dirs'].positive_sources_reverse() and len(
-                                              e['dirs'].positive_sources_reverse()) == 1,
-                                          s in e['dirs'].negative_sources_straight() and len(
-                                              e['dirs'].negative_sources_straight()) == 1,
-                                          s in e['dirs'].negative_sources_reverse() and len(e['dirs'].negative_sources_reverse()) == 1]),
-                                      self.pp.graph.es))), signed))
-
-        scores_undirected = dict(map(lambda s: (s[0], s[1] /
-                                                float(max(singles_undirected.values()))), iteritems(singles_undirected)))
-
-        scores_directed = dict(map(lambda s: (s[0], (s[1] /
-                                                     float(max(singles_directed.values())) +
-                                                     (1 - self.incid[s[0]]) / max(map(lambda x: 1 - x, self.incid.values()))) / 2.0),
-                                   iteritems(singles_directed)))
-
-        scores_signed = dict(map(lambda s: (s[0], (s[1] /
-                                                   float(max(singles_signed.values())) +
-                                                   (1 - self.incis[s[0]]) / max(map(lambda x: 1 - x, self.incis.values())) +
-                                                   (1 - self.incid[s[0]]) / max(map(lambda x: 1 - x, self.incid.values()))) / 3.0),
-                                 iteritems(singles_signed)))
-
-        tbl = r'''\begin{tabularx}{\textwidth}{p{3.5cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
-            \toprule
-            Resurce & Specific interactions & Direction inconsistency & Effect inconsistency & Combined score \\
-            \midrule
-            \multicolumn{5}{l}{Undirected resources} \\
-            \midrule
-                '''
-
-        for s, sc in reversed(
+        singles_undirected = dict(
+            map(
+                lambda s:
+                (
+                    s,
+                    len(
+                        list(
+                            filter(
+                                lambda e:
+                                    s in e['sources'] and
+                                    len(e['sources']) == 1,
+                                self.pp.graph.es
+                            )
+                        )
+                    )
+                ),
+                undirected
+            )
+        )
+        
+        singles_directed = dict(
+            map(
+                lambda s:
+                (
+                    s,
+                    sum(
+                        map(
+                            lambda e:
+                                sum([
+                                    s in e['dirs'].sources_straight() and
+                                    len(e['dirs'].sources_straight()) == 1,
+                                    s in e['dirs'].sources_reverse() and
+                                    len(e['dirs'].sources_reverse()) == 1
+                                ]),
+                            self.pp.graph.es
+                        )
+                    )
+                ),
+                directed
+            )
+        )
+        
+        singles_signed = dict(
+            map(
+                lambda s:
+                (
+                    s,
+                    sum(
+                        map(
+                            lambda e:
+                                sum([
+                                    s in
+                                    e['dirs'].positive_sources_straight() and
+                                    len(
+                                        e['dirs'].positive_sources_straight()
+                                    ) == 1,
+                                    s in
+                                    e['dirs'].positive_sources_reverse() and
+                                    len(
+                                        e['dirs'].positive_sources_reverse()
+                                    ) == 1,
+                                    s in
+                                    e['dirs'].negative_sources_straight() and
+                                    len(
+                                        e['dirs'].negative_sources_straight()
+                                    ) == 1,
+                                    s in
+                                    e['dirs'].negative_sources_reverse() and
+                                    len(
+                                        e['dirs'].negative_sources_reverse()
+                                    ) == 1
+                                ]),
+                            self.pp.graph.es
+                        )
+                    )
+                ),
+                signed
+            )
+        )
+        
+        scores_undirected = dict(
+            map(
+                lambda s:
+                (
+                    s[0],
+                    s[1] / float(max(singles_undirected.values()))
+                ),
+                iteritems(singles_undirected)
+            )
+        )
+        
+        scores_directed = dict(
+            map(
+                lambda s:
+                (
+                    s[0],
+                    (
+                        s[1] / float(max(singles_directed.values())) +
+                        (1 - self.incid[s[0]]) /
+                        max(
+                            map(
+                                lambda x: 1 - x,
+                                self.incid.values()
+                            )
+                        )
+                    ) / 2.0
+                ),
+                iteritems(singles_directed)
+            )
+        )
+        
+        scores_signed = dict(
+            map(
+                lambda s: (
+                    s[0],
+                    (
+                        s[1] / float(max(singles_signed.values())) +
+                        (1 - self.incis[s[0]]) / max(
+                            map(
+                                lambda x: 1 - x,
+                                self.incis.values()
+                            )
+                        ) +
+                        (1 - self.incid[s[0]]) / max(
+                            map(
+                                lambda x: 1 - x,
+                                self.incid.values()
+                            )
+                        )
+                    ) / 3.0
+                ),
+                iteritems(singles_signed)
+            )
+        )
+        
+        tbl = (
+            r'\begin{tabularx}{\textwidth}'
+            '\n'
+            r'{p{3.5cm}>{\raggedright\arraybackslash}'
+            '\n'
+            r'X>{\raggedright\arraybackslash}'
+            '\n'
+            r'X>{\raggedright\arraybackslash}'
+            '\n'
+            r'X>{\raggedright\arraybackslash}X}'
+            '\n'
+            r'\toprule'
+            '\n'
+            r'Resurce & Specific interactions & '
+            '\n'
+            r'Direction inconsistency & Effect inconsistency & '
+            '\n'
+            r'Combined score \\'
+            '\n'
+            r'\midrule'
+            '\n'
+            r'\multicolumn{5}{l}{Undirected resources} \\'
+            '\n'
+            r'\midrule'
+            '\n'
+        )
+        
+        for s, sc in (
+            reversed(
                 sorted(
-                    iteritems(scores_undirected), key=lambda s: s[1])):
-            tbl += r'''    %s & %u &   &  & %.04f \\
-                ''' % (s, singles_undirected[s], scores_undirected[s])
-
-        tbl += r'''    \midrule
-            \multicolumn{5}{l}{Directed resources} \\
-            \midrule
-                '''
-
-        for s, sc in reversed(
+                    iteritems(scores_undirected),
+                    key = lambda s: s[1]
+                )
+            )
+        ):
+            
+            tbl += (
+                r'    %s & %u &   &  & %.04f \\' % (
+                    s,
+                    singles_undirected[s],
+                    scores_undirected[s],
+                ) + '\n'
+            )
+        
+        tbl += (
+            r'    \midrule'
+            '\n'
+            r'    \multicolumn{5}{l}{Directed resources} \\'
+            '\n'
+            r'    \midrule'
+            '\n'
+        )
+        
+        for s, sc in (
+            reversed(
                 sorted(
-                    iteritems(scores_directed), key=lambda s: s[1])):
-            tbl += r'''    %s & %u &  %.04f &  & %.04f \\
-                ''' % (s, singles_directed[s], self.incid[s],
-                       scores_directed[s])
-
-        tbl += r'''    \midrule
-            \multicolumn{5}{l}{Signed resources} \\
-            \midrule
-                '''
-
+                    iteritems(scores_directed),
+                    key = lambda s: s[1]
+                )
+            )
+        ):
+            
+            tbl += r'    %s & %u &  %.04f &  & %.04f \\' % (
+                s,
+                singles_directed[s],
+                self.incid[s],
+                scores_directed[s]
+            ) + '\n'
+        
+        tbl += (
+            r'    \midrule'
+            '\n'
+            r'    \multicolumn{5}{l}{Signed resources} \\'
+            '\n'
+            r'    \midrule'
+            '\n'
+        )
+        
         for s, sc in reversed(
                 sorted(
                     iteritems(scores_signed), key=lambda s: s[1])):
-            tbl += r'''    %s & %u &  %.04f &  %.04f & %.04f \\
-                ''' % (s, singles_signed[s], self.incid[s], self.incis[s],
-                       scores_signed[s])
-
-        tbl += r'''    \bottomrule
-        \end{tabularx}'''
-
-        with open(self.get_path(self.consistency_table_fname), 'w') as f:
-            f.write(tbl)
-
+            tbl += r'    %s & %u &  %.04f &  %.04f & %.04f \\' % (
+                s,
+                singles_signed[s],
+                self.incid[s],
+                self.incis[s],
+                scores_signed[s],
+            ) + '\n'
+        
+        tbl += (
+            r'    \bottomrule'
+            '\n'
+            r'\end{tabularx}'
+        )
+        
+        with open(self.get_path(self.consistency_table_fname), 'w') as fp:
+            
+            fp.write(tbl)
+        
         self.consistency_table = tbl
-
+    
+    
     def load_pubmed_data(self):
         """
         Loads data about all references using the web query interface of
@@ -2141,7 +2527,12 @@ class Workflow(object):
             self.pp,
             htp_threshold = None,
         )
-
-    def console(self, msg):
-        _ = sys.stdout.write('\t:: %s\n' % msg)
-        sys.stdout.flush()
+        
+        if self.omnipath:
+            
+            self.omnipath_pubmeds, self.omnipath_pubmeds_earliest = (
+                _refs.get_pubmed_data(
+                    self.omnipath,
+                    htp_threshold = None,
+                )
+            )

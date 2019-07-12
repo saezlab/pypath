@@ -38,25 +38,6 @@ IntercellRole = collections.namedtuple(
 )
 
 
-resource_labels = {
-    'opm': 'OPM',
-    'guide2pharma': 'Guide to Pharm.',
-    'adhesome': 'Adhesome',
-    'matrixdb': 'MatrixDB',
-    'go': 'Gene Ontology',
-    'hpmr': 'HPMR',
-    'cellphonedb': 'CellPhoneDB',
-    'comppi': 'ComPPI',
-    'kirouac': 'Kirouac 2010',
-    'ramilowski': 'Ramilowski 2015',
-    'topdb': 'TopDB',
-    'cspa': 'CSPA',
-    'zhong2015': 'Zhong 2015',
-    'hgnc': 'HGNC',
-}
-
-
-
 class IntercellAnnotation(annot.CustomAnnotation):
 
 
@@ -155,40 +136,43 @@ class IntercellAnnotation(annot.CustomAnnotation):
         
         self.children = collections.defaultdict(set)
         self.parents = {}
-        self.labels = {}
+        self.class_labels = {}
+        self.resource_labels = {}
         
         for cls in self.classes.keys():
+            
+            mainclass = None
             
             if cls in intercell_annot.class_types['misc']:
                 
                 self.parents[cls] = None
-                continue
-            
-            cls_split = cls.split('_')
-            mainclass = None
-            
-            for j in range(len(cls_split) + 1):
                 
-                this_part = '_'.join(cls_split[:j])
+            else:
                 
-                if this_part in self.class_names:
+                cls_split = cls.split('_')
+                
+                for j in range(len(cls_split) + 1):
                     
-                    mainclass = this_part
-            
-            self.children[mainclass].add(cls)
-            self.parents[cls] = mainclass
-            
-            resource = cls_split[-1]
+                    this_part = '_'.join(cls_split[:j])
+                    
+                    if this_part in self.class_names:
+                        
+                        mainclass = this_part
+                
+                self.children[mainclass].add(cls)
+                self.parents[cls] = mainclass
+                
+                resource = cls_split[-1]
             
             if mainclass is not None and resource not in mainclass:
                 
-                resource = (
-                    resource_labels[resource]
-                        if resource in resource_labels else
-                    resource.capitalize()
+                self.resource_labels[cls] = (
+                    intercell_annot.get_resource_label(resource)
                 )
-                
-                self.labels[cls] = resource
+            
+            self.class_labels[cls] = (
+                intercell_annot.get_class_label(mainclass or cls)
+            )
 
 
 class Intercell(IntercellAnnotation):

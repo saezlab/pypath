@@ -6,10 +6,12 @@ from pypath import data_formats
 from pypath import annot
 from pypath import intercell
 from pypath import complex
+from pypath import ptm
 from pypath import settings
+from pypath import session_mod
 
 
-class OmniPath(object):
+class OmniPath(session_mod.Logger):
     
     
     def __init__(
@@ -19,9 +21,36 @@ class OmniPath(object):
         annotation_pickle = None,
         intercell_pickle = None,
         complex_pickle = None,
+        enz_sub_pickle = None,
+        load_network = True,
+        load_complexes = True,
+        load_annotations = True,
+        load_intercell = True,
+        load_enz_sub = True,
     ):
         
-        pass
+        if not hasattr(self, '_log_name'):
+            
+            session_mod.Logger.__init__(self, name = 'omnipath')
+        
+        self.output_dir = output_dir
+        self.network_pickle = network_pickle
+        self.annotation_pickle = annotation_pickle
+        self.intercell_pickle = intercell_pickle
+        self.complex_pickle = complex_pickle
+        self.enz_sub_pickle = enz_sub_pickle
+        
+        self.do_load_network = load_network
+        self.do_load_complexes = (
+            load_complexes or
+            load_annotations or
+            load_intercell
+        )
+        self.do_load_annotations = load_annotations or load_intercell
+        self.do_load_intercell = load_intercell
+        self.do_load_enz_sub = load_enz_sub
+        
+        self.main()
     
     
     def main(self):
@@ -35,16 +64,25 @@ class OmniPath(object):
         self.load_network()
         self.load_annotations()
         self.load_intercell()
+        self.load_enz_sub()
     
     
     def load_complex(self):
         
-        complex.get_db(
+        if not self.do_load_complexes:
+            
+            return
+        
+        self.complex = complex.get_db(
             pickle_file = self.ensure_path_exists(self.complex_pickle)
         )
     
     
     def load_network(self):
+        
+        if not self.do_load_network:
+            
+            return
         
         self.network = main.PyPath()
         
@@ -65,12 +103,20 @@ class OmniPath(object):
     
     def load_annotations(self):
         
+        if not self.do_load_annotations:
+            
+            return
+        
         self.annot = annot.get_db(
             pickle_file = self.ensure_path_exists(self.annotation_pickle)
         )
     
     
     def load_intercell(self):
+        
+        if not self.do_load_intercell:
+            
+            return
         
         self.intercell = (
             intercell.get_db(
@@ -79,7 +125,20 @@ class OmniPath(object):
         )
     
     
+    def load_enz_sub(self):
+        
+        if not self.do_load_enz_sub:
+            
+            return
+        
+        self.enz_sub = (
+            ptm.get_db(
+                pickle_file = self.ensure_path_exists(self.enz_sub_pickle)
+            )
+        )
+    
+    
     @staticmethod
     def ensure_path_exists(path):
         
-        return path if os.path.exists(path) else None
+        return path if path and os.path.exists(path) else None

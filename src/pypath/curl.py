@@ -659,7 +659,10 @@ class FileOpener(session_mod.Logger):
         
         # try:
         if self.large:
-            self._gzfile_mode_r = io.TextIOWrapper(self.gzfile)
+            self._gzfile_mode_r = io.TextIOWrapper(
+                self.gzfile,
+                encoding = self.encoding,
+            )
             self.result = self.iterfile(
                 self.gzfile
                     if self.default_mode == 'rb' else
@@ -817,6 +820,7 @@ class Curl(FileOpener):
             process = True,
             retries = 3,
             cache_dir = None,
+            bypass_url_encoding = False,
         ):
         
         if not hasattr(self, '_logger'):
@@ -835,6 +839,7 @@ class Curl(FileOpener):
         self.local_file = os.path.exists(self.url)
         self.get = get
         self.force_quote = force_quote
+        self.bypass_url_encoding = bypass_url_encoding
         
         self._log(
             'Creating Curl object to retrieve '
@@ -1007,13 +1012,25 @@ class Curl(FileOpener):
         """
         From http://stackoverflow.com/a/121017/854988
         """
+        
+        if self.bypass_url_encoding:
+            
+            return
+        
         if type(self.url) is bytes:
+            
             self.url = self._bytes_to_unicode(self.url, encoding = charset)
+        
         scheme, netloc, path, qs, anchor = urlparse.urlsplit(self.url)
+        
         if self.force_quote or not self.is_quoted(path):
+            
             path = urllib.quote(path, '/%')
+            
         if self.force_quote or not self.is_quoted_plus(qs):
+            
             qs = urllib.quote_plus(qs, '& = ')
+            
         self.url = urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
     
     

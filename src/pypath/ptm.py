@@ -24,6 +24,8 @@ from past.builtins import xrange, range
 import sys
 import imp
 import itertools
+import pickle
+
 import pandas as pd
 
 import pypath.dataio as dataio
@@ -571,21 +573,64 @@ class PtmAggregator(object):
             ptm_homology_strict = False,
             nonhuman_direct_lookup = True,
             inputargs = None,
+            pickle_file = None,
         ):
         """
         Docs not written yet.
         """
+        
+        for k, v in iteritems(locals()):
+            setattr(self, k, v)
+        
+        self.main()
+    
+    
+    def reload(self):
 
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    
+    def main(self):
+        
+        if self.pickle_file:
+            
+            self.load_from_pickle()
+            
+        else:
+            
+            self.build()
+    
+    
+    def load_from_pickle(self):
+        
+        with open(self.pickle_file, 'rb') as fp:
+            
+            self.enz_sub = pickle.load(fp)
+    
+    
+    def save_to_pickle(self, pickle_file):
+        
+        with open(pickle_file, 'wb') as fp:
+            
+            pickle.dump(
+                obj = self.enz_sub,
+                file = fp,
+            )
+    
+    
+    def build(self):
+        
         self.builtin_inputs = ['PhosphoSite', 'phosphoELM',
                                'Signor', 'dbPTM', 'HPRD',
                                'Li2012', 'PhosphoNetworks',
                                'MIMP']
-
-        for k, v in iteritems(locals()):
-            setattr(self, k, v)
-
+        
         self.inputargs = self.inputargs or {}
-        self.map_by_homology_from = self.map_by_homology_from or [9606]
+        self.map_by_homology_from = set(self.map_by_homology_from or [9606])
 
         self.set_inputs()
 
@@ -601,22 +646,13 @@ class PtmAggregator(object):
         for ptm in itertools.chain(*self.enz_sub.values()):
 
             yield ptm
-      
+    
     
     def __len__(self):
         
         return sum([len(esub) for esub in self.enz_sub.values()])
     
     
-    def reload(self):
-
-        modname = self.__class__.__module__
-        mod = __import__(modname, fromlist=[modname.split('.')[0]])
-        imp.reload(mod)
-        new = getattr(mod, self.__class__.__name__)
-        setattr(self, '__class__', new)
-
-
     def set_inputs(self):
 
         if self.input_methods is None:
@@ -804,3 +840,17 @@ class PtmAggregator(object):
                     pa.graph.es[e]['ptm'] = []
 
                 pa.graph.es[e]['ptm'].extend(ptms)
+
+
+def init_db(**kwargs):
+    
+    globals()['db'] = PtmAggregator(**kwargs)
+
+
+def get_db(**kwargs):
+    
+    if 'db' not in globals():
+        
+        init_db(**kwargs)
+    
+    return globals()['db']

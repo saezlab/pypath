@@ -2147,6 +2147,7 @@ categories = {
     'DOMINO': 'm',
     'Signor': 'p',
     'Macrophage': 'p',
+    'Adhesome': 'p',
     'NetPath': 'r',
     'ELM': 'm',
     'SignaLink2': 'p',
@@ -2191,6 +2192,7 @@ categories = {
     'UniProt': 'l',
     'InnateDB-All': 'i',
     'MINT': 'i',
+    'HIPPIE': 'i',
 }
 
 p = set([])

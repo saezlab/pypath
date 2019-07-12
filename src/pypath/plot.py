@@ -3848,7 +3848,7 @@ class CurationPlot(object):
 
         self.ax.set_xlabel('Year', fontproperties=self.fp_axis_lab)
         #self.ax.set_ylabel('Number of proteins\nor interactions', fontproperties = self.fp_axis_lab)
-        self.ax.set_xlim([1980, 2015])
+        self.ax.set_xlim([1980, 2019])
         ymax = max(self.ecount_y.values())
         self.ax.yaxis.set_major_locator(
             mpl.ticker.MultipleLocator(20000 if ymax > 80000 else 10000

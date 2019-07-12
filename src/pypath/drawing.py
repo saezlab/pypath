@@ -199,7 +199,7 @@ class Plot(session_mod.Logger):
                 (self.layout, g.vcount(), g.ecount())
             sys.stdout.write('\t::%s' % msg)
             sys.stdout.flush()
-            self.ownlog.msg(2, msg, 'INFO')
+            self._log(msg)
             if self.grouping is not None:
                 if self.layout in [
                         "intergroup", "modular_fr", "modular_circle"
@@ -319,7 +319,7 @@ class Plot(session_mod.Logger):
             (self.graphix_format, self.nextfile)
         sys.stdout.write('\t::%s' % msg)
         sys.stdout.flush()
-        self.ownlog.msg(2, msg, 'INFO')
+        self._log(msg)
         if self.graphix_format == "pdf":
             sf = cairo.PDFSurface(self.nextfile, self.dimensions[0],
                                   self.dimensions[1])
@@ -366,7 +366,7 @@ class Plot(session_mod.Logger):
         self.plots[-1].save()
         sys.stdout.write('Ready.\n')
         sys.stdout.flush()
-        self.ownlog.msg(2, ("""Plot saved to %s""" % self.nextfile), 'INFO')
+        self._log("Plot saved to %s" % self.nextfile)
         if return_data:
             return (self.plots[-1], g, self.layout_data, sf, self.bbox,
                     DefaultGraphDrawerFFsupport, self.vertex_size,
