@@ -7016,6 +7016,7 @@ class PyPath(session_mod.Logger):
             f.write('\n\t<!-- edges -->\n\n')
 
             for e in g.es:
+                
                 f.write(
                     '<edge id="%s_%s" source="%s" target="%s" directed="%s">\n'
                     % (g.vs[e.source]['name'], g.vs[e.target]['name'],
@@ -7026,8 +7027,21 @@ class PyPath(session_mod.Logger):
                     '\t<data key="PubMedIDs">%s</data>\n' %
                     (';'.join(list(map(lambda r: r.pmid, e['references'])))))
     # XXX: attribute 'dirs_by_source' does not exist (nor created anywhere)
-                f.write('\t<data key="Undirected">%s</data>\n' %
-                        (';'.join(common.uniqList(e['dirs_by_source'][0]))))
+                f.write(
+                    '\t<data key="Undirected">%s</data>\n' % (
+                        ';'.join(sorted(
+                            e['dirs'].sources['undirected']
+                        ))
+                    )
+                )
+                
+                f.write(
+                    '\t<data key="DirectionAB">%s</data>\n' % (
+                        ';'.join(sorted(
+                            e['dirs'].sources[e['dirs'].straight]
+                        ))
+                    )
+                )
                 f.write('\t<data key="DirectionAB">%s</data>\n' %
                         (';'.join(common.uniqList(e['dirs_by_source'][1]))))
                 f.write('\t<data key="DirectionBA">%s</data>\n' %
