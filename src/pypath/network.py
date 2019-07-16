@@ -110,7 +110,7 @@ class Network(session_mod.Logger):
         return set.union(*self.records.sources)
     
     
-    def entities_by_resources(self):
+    def entities_by_resource(self):
         """
         Returns a dict of sets with resources as keys and sets of entity IDs
         as values.
