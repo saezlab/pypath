@@ -300,7 +300,7 @@ only Python 2.7 and Xcode installed. We do not recommend this as it is time
 consuming and troubleshooting requires expertise.
 
 Troubleshooting
-~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^
 
 * ``no module named ...`` when you try to load a module in Python. Did
   theinstallation of the module run without error? Try to run again the specific
@@ -349,7 +349,7 @@ your feedback, and it would be nice to have better support for other computer
 systems.
 
 With Anaconda
-~~~~~~~~~~~~~
+^^^^^^^^^^^^^
 
 The same workflow like you see in ``mac-install-conda.sh`` should work for
 Anaconda on Windows. The only problem you certainly will encounter is that not
@@ -368,7 +368,7 @@ also for Python 3.5. And for win-64 platform, there is the channel of
 modify the channel if necessary, until all packages install successfully.
 
 With other Python distributions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Here the basic principles are the same as everywhere: first try to install all
 external dependencies, after *pip* install should work. On Windows certain
@@ -381,7 +381,7 @@ http://www.lfd.uci.edu/~gohlke/pythonlibs/. We tested the setup with Python
 latter we have issues to be resolved.
 
 Known issues
-~~~~~~~~~~~~
+^^^^^^^^^^^^
 
 * *"No module fabric available."* -- or *pysftp* missing: this is not
   important, only certain data download methods rely on these modules, but
