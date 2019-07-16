@@ -84,7 +84,7 @@ includes much more databases:
     http://omnipathdb.org/info
 
 Molecular interaction network
-`````````````````````````````
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``interactions`` query accepts some parameters and returns interactions in
 tabular format. This example returns all interactions of EGFR (P00533), with
@@ -135,7 +135,7 @@ Note: with the exception of mandatory fields and genesymbols, the columns
 appear exactly in the order you provided in your query.
 
 Enzyme-substrate interactions
-`````````````````````````````
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Another query type available is ``ptms`` which provides enzyme-substrate
 interactions. It is very similar to the ``interactions``:
@@ -157,7 +157,7 @@ from the PhosphoSite database:
 
 
 Molecular complexes
-```````````````````
+^^^^^^^^^^^^^^^^^^^
 
 The ``complexes`` query provides a comprehensive database of more than 22,000
 protein complexes. For example, to query all complexes from CORUM and PDB
@@ -167,7 +167,7 @@ containing MTOR (P42345):
 
 
 Annotations
-```````````
+^^^^^^^^^^^
 
 The ``annotations`` query provides a large variety of data about proteins,
 complexes and in the future other kinds of molecules. For example an
@@ -188,7 +188,7 @@ Or the tissue expression of BMP7 from Human Protein Atlas:
 
 
 Roles in inter-cellular communication
-`````````````````````````````````````
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Another query type is ``intercell`` providing information on the roles in
 inter-cellular signaling. E.g. if a protein is a ligand, a receptor, an
@@ -214,7 +214,7 @@ Or a list of all ECM proteins:
 
 
 Exploring possible parameters
-`````````````````````````````
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Sometimes the names and values of the query parameters are not intuitive,
 even though in many cases the server accepts multiple alternatives. To see
