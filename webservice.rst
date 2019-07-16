@@ -27,7 +27,7 @@ datasets. Each of them has a short name what you can use in the queries
 (e.g. ``&datasets=omnipath,pathwayextra``).
 
 * ``omnipath``: the OmniPath data as defined in the paper, an arbitrary
-optimum between coverage and quality
+  optimum between coverage and quality
 * ``pathwayextra``: activity flow interactions without literature reference
 * ``kinaseextra``: enzyme-substrate interactions without literature reference
 * ``ligrecextra``: ligand-receptor interactions without literature reference
