@@ -950,7 +950,7 @@ annot_combined_classes = (
                 'extracellular_cspa',
                 'extracellular_hpmr',
                 'extracellular_cellphonedb',
-                'extracellular_comppi',
+                #'extracellular_comppi',
             ),
             op = set.union,
         ),
@@ -987,7 +987,13 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'extracellular_matrixdb',
-        source = 'Matrixdb',
+        source = 'MatrixDB',
+        args = {
+            'mainclass': {
+                'secreted',
+                'ecm',
+            },
+        },
     ),
     af.AnnotDef(
         name = 'extracellular_cspa',
