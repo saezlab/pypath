@@ -1641,15 +1641,12 @@ class PyPath(session_mod.Logger):
         )
 
         if save:
-            sys.stdout.write('\t:: Saving igraph object to file `%s`...' %
-                             pfile)
-            sys.stdout.flush()
-            self.save_network()
-            sys.stdout.write(
-                '\r%s\r\t:: Network saved successfully to file `%s`.\n' %
-                (' ' * 90, pfile))
-            sys.stdout.flush()
-
+            
+            self._log('Saving igraph object to file `%s`...' % pfile)
+            self.save_network(pfile = pfile)
+            self._log('Network saved successfully to file `%s`.' % pfile)
+    
+    
     def save_network(self, pfile=None):
         """Saves the network object.
 
