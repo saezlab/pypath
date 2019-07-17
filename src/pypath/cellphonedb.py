@@ -33,6 +33,7 @@ import pypath.network as network_mod
 import pypath.data_formats as data_formats
 import pypath.annot as annot
 import pypath.intercell as intercell
+import pypath.omnipath as omnipath
 
 
 CellPhoneDBGene = collections.namedtuple(
@@ -128,16 +129,22 @@ categories_receiver = {
 categories = categories_transmitter | categories_receiver
 
 
-class CellPhoneDB(session_mod.Logger):
+class CellPhoneDB(omnipath.OmniPath):
     
     def __init__(
             self,
             output_dir = None,
             network = None,
             annotation = None,
+            complexes = None,
+            intercell = None,
             network_param = None,
-            annot_param = None,
-            omnipath = False,
+            intercell_param = None,
+            use_omnipath = False,
+            network_pickle = None,
+            annotation_pickle = None,
+            intercell_pickle = None,
+            complex_pickle = None,
         ):
         
         if not hasattr(self, '_log_name'):
@@ -146,10 +153,25 @@ class CellPhoneDB(session_mod.Logger):
         
         self.output_dir = output_dir
         self.network = network
-        self.annotation = annotation
+        self.annot = annotation
+        self.complex = complexes
+        self.intercell = intercell
         self.network_param = network_param or {}
-        self.annot_param = annot_param or {}
-        self.omnipath = omnipath
+        self.intercell_param = intercell_param or {}
+        self.use_omnipath = use_omnipath
+        
+        omnipath.OmniPath.__init__(
+            self,
+            network_pickle = network_pickle,
+            annotation_pickle = annotation_pickle,
+            intercell_pickle = intercell_pickle,
+            complex_pickle = complex_pickle,
+            load_network = not self.network,
+            load_complexes = not self.complex,
+            load_annotations = not self.intercell and not self.annot,
+            load_intercell = not self.intercell,
+            load_enz_sub = False,
+        )
     
     
     def reload(self):
@@ -164,6 +186,7 @@ class CellPhoneDB(session_mod.Logger):
     
     def main(self):
         
+        omnipath.OmniPath.main(self)
         self.setup()
         self.build()
         self.export()
@@ -198,7 +221,7 @@ class CellPhoneDB(session_mod.Logger):
         
         if self.network is None:
             
-            if not self.omnipath and 'lst' not in self.network_param:
+            if not self.use_omnipath and 'lst' not in self.network_param:
                 
                 self.network_param['lst'] = data_formats.pathway
             
@@ -216,10 +239,10 @@ class CellPhoneDB(session_mod.Logger):
     
     def setup_annotation(self):
         
-        if self.annotation is None:
+        if self.intercell is None:
             
-            self.annotation = intercell.IntercellAnnotation(
-                **self.annot_param
+            self.intercell = intercell.IntercellAnnotation(
+                **self.intercell_param
             )
     
     
@@ -266,22 +289,22 @@ class CellPhoneDB(session_mod.Logger):
                 # is a receiver
                 iaction.directed and
                 (
-                    self.annotation.classes_by_entity(iaction.id_a) &
+                    self.intercell.classes_by_entity(iaction.id_a) &
                     categories_transmitter
                 ) and
                 (
-                    self.annotation.classes_by_entity(iaction.id_b) &
+                    self.intercell.classes_by_entity(iaction.id_b) &
                     categories_transmitter
                 )
             ) or (
                 # or it is indirected but both partners belong to the same
                 # intercellular communication role category
-                self.annotation.classes_by_entity(iaction.id_a) &
-                self.annotation.classes_by_entity(iaction.id_b) &
+                self.intercell.classes_by_entity(iaction.id_a) &
+                self.intercell.classes_by_entity(iaction.id_b) &
                 categories_transmitter
             ) or (
-                self.annotation.classes_by_entity(iaction.id_a) &
-                self.annotation.classes_by_entity(iaction.id_b) &
+                self.intercell.classes_by_entity(iaction.id_a) &
+                self.intercell.classes_by_entity(iaction.id_b) &
                 categories_receiver
             ):
                 
@@ -331,7 +354,7 @@ class CellPhoneDB(session_mod.Logger):
             
             for comp in components:
                 
-                classes = self.annotation.classes_by_entity(comp)
+                classes = self.intercell.classes_by_entity(comp)
                 
                 self.protein.add(
                     CellPhoneDBProtein(
@@ -364,6 +387,7 @@ class CellPhoneDB(session_mod.Logger):
             
             return components[idx] if len(components) > idx else ''
         
+        
         integrins = annot.db.annots['Integrins']
         
         self.complex = set()
@@ -377,7 +401,7 @@ class CellPhoneDB(session_mod.Logger):
             # hey, what to do with complexes with more than 4 components???
             components = sorted(entity.components.keys())
             
-            classes = self.annotation.classes_by_entity(entity)
+            classes = self.intercell.classes_by_entity(entity)
             
             self.complex.add(
                 CellPhoneDBComplex(
