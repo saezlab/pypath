@@ -1641,15 +1641,12 @@ class PyPath(session_mod.Logger):
         )
 
         if save:
-            sys.stdout.write('\t:: Saving igraph object to file `%s`...' %
-                             pfile)
-            sys.stdout.flush()
-            self.save_network()
-            sys.stdout.write(
-                '\r%s\r\t:: Network saved successfully to file `%s`.\n' %
-                (' ' * 90, pfile))
-            sys.stdout.flush()
-
+            
+            self._log('Saving igraph object to file `%s`...' % pfile)
+            self.save_network(pfile = pfile)
+            self._log('Network saved successfully to file `%s`.' % pfile)
+    
+    
     def save_network(self, pfile=None):
         """Saves the network object.
 
@@ -7016,6 +7013,7 @@ class PyPath(session_mod.Logger):
             f.write('\n\t<!-- edges -->\n\n')
 
             for e in g.es:
+                
                 f.write(
                     '<edge id="%s_%s" source="%s" target="%s" directed="%s">\n'
                     % (g.vs[e.source]['name'], g.vs[e.target]['name'],
@@ -7026,8 +7024,21 @@ class PyPath(session_mod.Logger):
                     '\t<data key="PubMedIDs">%s</data>\n' %
                     (';'.join(list(map(lambda r: r.pmid, e['references'])))))
     # XXX: attribute 'dirs_by_source' does not exist (nor created anywhere)
-                f.write('\t<data key="Undirected">%s</data>\n' %
-                        (';'.join(common.uniqList(e['dirs_by_source'][0]))))
+                f.write(
+                    '\t<data key="Undirected">%s</data>\n' % (
+                        ';'.join(sorted(
+                            e['dirs'].sources['undirected']
+                        ))
+                    )
+                )
+                
+                f.write(
+                    '\t<data key="DirectionAB">%s</data>\n' % (
+                        ';'.join(sorted(
+                            e['dirs'].sources[e['dirs'].straight]
+                        ))
+                    )
+                )
                 f.write('\t<data key="DirectionAB">%s</data>\n' %
                         (';'.join(common.uniqList(e['dirs_by_source'][1]))))
                 f.write('\t<data key="DirectionBA">%s</data>\n' %
