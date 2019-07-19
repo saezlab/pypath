@@ -6138,7 +6138,7 @@ def guide2pharma_complexes(**kwargs):
     return complexes
 
 
-def cellphonedb_ligands_receptors():
+def _cellphonedb_ligands_receptors_old():
     """
     Retrieves the set of ligands and receptors from CellPhoneDB.
     Returns tuple of sets.
@@ -6166,6 +6166,37 @@ def cellphonedb_ligands_receptors():
             ligands.add(_cellphonedb_get_uniprot(l[0]))
 
     return ligands, receptors
+
+
+def _cellphonedb_ligands_receptors_old():
+    """
+    Retrieves the set of ligands and receptors from CellPhoneDB.
+    Returns tuple of sets.
+    """
+
+    receptors = set()
+    ligands   = set()
+    
+    proteins = cellphonedb_protein_annotations()
+    complexes = cellphonedb_complex_annotations()
+    
+    for _id, annot in itertools.chain(
+        iteritems(protein),
+        iteritems(complexes)
+    ):
+        
+        if annot.receptor:
+            
+            receptors.add(_id)
+        
+        if annot.secreted or (
+            not annot.receptor and (
+                annot.transmembrane or
+                annot.peripheral
+            )
+        ):
+            
+            ligands.add(_id)
 
 
 def _cellphonedb_annotations(url, name_method):

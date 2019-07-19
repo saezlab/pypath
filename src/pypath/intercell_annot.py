@@ -1262,6 +1262,16 @@ annot_combined_classes = (
     # surface ligand
     af.AnnotDef(
         name = 'surface_ligand',
+        source = af.annotOp(
+            annots = (
+                'surface_ligand_go',
+                'surface_ligand_cellphonedb',
+            ),
+            op = set.union
+        ),
+    ),
+    af.AnnotDef(
+        name = 'surface_ligand_go',
         source = af.AnnotOp(
             annots = (
                 'cell_surface',
@@ -1269,6 +1279,18 @@ annot_combined_classes = (
             ),
             op = set.intersection,
         ),
+    ),
+    af.AnnotDef(
+        name = 'surface_ligand_cellphonedb',
+        source = 'CellPhoneDB',
+        args = {
+            'method': lambda a: (
+                not a.receptor and (
+                    a.peripheral or
+                    a.transmembrane
+                )
+            ),
+        },
     ),
     # transporter
     af.AnnotDef(

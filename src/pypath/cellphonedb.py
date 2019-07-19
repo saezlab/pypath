@@ -278,7 +278,7 @@ class CellPhoneDB(omnipath.OmniPath):
         iuphar = {'Guide2Pharma', 'Guide2Pharma_CP'}
         
         self._entities = set()
-        self.interaction = set()
+        self.cpdb_interaction = set()
         
         int_id = 0
         for iaction in self.network.records.itertuples():
@@ -311,7 +311,7 @@ class CellPhoneDB(omnipath.OmniPath):
                 id_a, name_a = get_id_name(iaction.id_a)
                 id_b, name_b = get_id_name(iaction.id_b)
                 
-                self.interaction.add(
+                self.cpdb_interaction.add(
                     CellPhoneDBInteraction(
                         id_cp_interaction = 'CPI-%06u' % int_id,
                         partner_a = id_a,
@@ -338,7 +338,7 @@ class CellPhoneDB(omnipath.OmniPath):
         
         integrins = annot.db.annots['Integrins']
         
-        self.protein = set()
+        self.cpdb_protein = set()
         
         for entity in self._entities:
             
@@ -356,7 +356,7 @@ class CellPhoneDB(omnipath.OmniPath):
                 
                 classes = self.intercell.classes_by_entity(comp)
                 
-                self.protein.add(
+                self.cpdb_protein.add(
                     CellPhoneDBProtein(
                         uniprot = comp.__str__(),
                         protein_name = mapping.map_name0(
@@ -390,7 +390,7 @@ class CellPhoneDB(omnipath.OmniPath):
         
         integrins = annot.db.annots['Integrins']
         
-        self.complex = set()
+        self.cpdb_complex = set()
         
         for entity in self._entities:
             
@@ -403,7 +403,7 @@ class CellPhoneDB(omnipath.OmniPath):
             
             classes = self.intercell.classes_by_entity(entity)
             
-            self.complex.add(
+            self.cpdb_complex.add(
                 CellPhoneDBComplex(
                     complex_name = entity.__str__(),
                     uniprot_1 = get_component(components, 0),
@@ -434,7 +434,7 @@ class CellPhoneDB(omnipath.OmniPath):
     
     def build_gene(self):
         
-        self.gene = set()
+        self.cpdb_gene = set()
         
         for entity in self._entities:
             
@@ -455,7 +455,7 @@ class CellPhoneDB(omnipath.OmniPath):
                 
                 for ensembl in ensembl_genes:
                     
-                    self.gene.add(
+                    self.cpdb_gene.add(
                         CellPhoneDBGene(
                             gene_name = name,
                             uniprot = comp,
@@ -469,7 +469,7 @@ class CellPhoneDB(omnipath.OmniPath):
         
         for name in ('interaction', 'protein', 'complex', 'gene'):
             
-            data = list(getattr(self, name))
+            data = list(getattr(self, 'cpdb_%s' % name))
             columns = globals()['CellPhoneDB%s' % name.capitalize()]._fields
             
             setattr(
@@ -519,3 +519,9 @@ class CellPhoneDB(omnipath.OmniPath):
     def export_interaction(self):
         
         self._export('interaction')
+
+
+# example:
+# IL12 receptor: 'COMPLEX:P42701-Q99665'
+# IL12 ligand: 'COMPLEX:P29459-P29460'
+# 

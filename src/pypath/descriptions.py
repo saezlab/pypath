@@ -1002,7 +1002,7 @@ descriptions = {
     'TLR': {
         'urls': {
             'articles':
-            ['http://msb.embopress.org/content/2/1/2006.0015.long']
+            ['https://www.embopress.org/doi/10.1038/msb4100057']
         },
         'type': 'literature curated',
         'subtype': 'model',
