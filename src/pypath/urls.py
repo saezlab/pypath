@@ -524,7 +524,7 @@ urls = {
         'pathology': 'http://www.proteinatlas.org/download/pathology.tsv.zip',
         'subcell': 'https://www.proteinatlas.org/download/'\
             'subcellular_location.tsv.zip',
-        
+
     },
     'lincs-compounds': {
         'label':
@@ -912,11 +912,9 @@ urls = {
             'cellphonedb/master/cellphonedb/src/core/data/'\
             'interaction_input.csv',
         'curated': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb/master/cellphonedb/tools/data/'\
-            'interaction_curated_20180729.csv',
+            'cellphonedb-data/data/sources/interaction_curated.csv',
         'negative': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb/master/cellphonedb/tools/data/'\
-            'remove_interactions_20180330.csv',
+            'cellphonedb-data/master/data/sources/excluded_interaction.csv',
     },
     'stitch': {
         'label': 'The STITCH small molecule-protein interaction database',
