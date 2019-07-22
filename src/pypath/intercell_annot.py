@@ -1262,7 +1262,7 @@ annot_combined_classes = (
     # surface ligand
     af.AnnotDef(
         name = 'surface_ligand',
-        source = af.annotOp(
+        source = af.AnnotOp(
             annots = (
                 'surface_ligand_go',
                 'surface_ligand_cellphonedb',
