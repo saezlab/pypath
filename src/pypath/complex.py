@@ -20,7 +20,9 @@
 
 from future.utils import iteritems
 
+import sys
 import imp
+import traceback
 import collections
 
 try:
@@ -400,30 +402,40 @@ class ComplexAggregator(AbstractComplexResource):
         self.data = {}
 
         for res in self.resources:
+            
+            try:
 
-            if not callable(res):
+                if not callable(res):
 
-                if res in globals():
+                    if res in globals():
 
-                    res = globals()[res]
+                        res = globals()[res]
 
-            if callable(res):
+                if callable(res):
 
-                processor = res()
+                    processor = res()
 
-            elif hasattr(res, 'complexes'):
+                elif hasattr(res, 'complexes'):
 
-                processor = res
+                    processor = res
 
-            for key, cplex in iteritems(processor.complexes):
+                for key, cplex in iteritems(processor.complexes):
 
-                if key in self.data:
+                    if key in self.data:
 
-                    self.data[key] += cplex
+                        self.data[key] += cplex
 
-                else:
+                    else:
 
-                    self.data[key] = cplex
+                        self.data[key] = cplex
+                
+            except Exception:
+                
+                self._log(
+                    'Failed to load resouce `%s`: %s' % (
+                        str(res),
+                        traceback.format_exception(*sys.exc_info()),
+                    )
 
         resource.AbstractResource.load(self)
         self.update_index()
