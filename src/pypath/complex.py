@@ -78,9 +78,9 @@ class AbstractComplexResource(resource.AbstractResource):
             Method processing the data and yielding ``intera.Complex``
             instances.
         """
-        
+
         session_mod.Logger.__init__(self, name = 'complex')
-        
+
         self.complexes = {}
 
         resource.AbstractResource.__init__(
@@ -167,7 +167,7 @@ class AbstractComplexResource(resource.AbstractResource):
 
 
     def make_df(self):
-        
+
         colnames = [
             'name',
             'components',
@@ -177,11 +177,11 @@ class AbstractComplexResource(resource.AbstractResource):
             'references',
             'identifiers',
         ]
-        
+
         records = []
-        
+
         for cplex in self.complexes.values():
-            
+
             records.append([
                 cplex.name if cplex.name else None,
                 cplex.__str__()[8:],
@@ -195,17 +195,17 @@ class AbstractComplexResource(resource.AbstractResource):
                     for _id in ids
                 ),
             ])
-        
+
         self.df = pd.DataFrame(
             records,
             columns = colnames,
         )
-    
-    
+
+
     def _from_dump_callback(self):
-        
+
         if hasattr(self, '_from_dump'):
-            
+
             self.complexes = self._from_dump
             delattr(self, '_from_dump')
             delattr(self, 'dump')
@@ -329,10 +329,10 @@ class Hpmr(AbstractComplexResource):
 
 
 class Humap(AbstractComplexResource):
-    
-    
+
+
     def __init__(self, input_args = None, **kwargs):
-        
+
         AbstractComplexResource.__init__(
             self,
             name = 'hu.MAP',
@@ -378,8 +378,8 @@ class ComplexAggregator(AbstractComplexResource):
             self,
             name = 'OmniPath',
         )
-    
-    
+
+
     def reload(self):
         """
         Reloads the object from the module level.
@@ -390,19 +390,19 @@ class ComplexAggregator(AbstractComplexResource):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-    
-    
+
+
     def load(self):
-        
+
         if self.pickle_file:
-            
+
             self.load_from_pickle(self.pickle_file)
             return
-        
+
         self.data = {}
 
         for res in self.resources:
-            
+
             try:
 
                 if not callable(res):
@@ -428,30 +428,30 @@ class ComplexAggregator(AbstractComplexResource):
                     else:
 
                         self.data[key] = cplex
-                
+
             except Exception:
-                
+
                 self._log(
                     'Failed to load resouce `%s`: %s' % (
                         str(res),
                         traceback.format_exception(*sys.exc_info()),
-                    )
+                    ))
 
         resource.AbstractResource.load(self)
         self.update_index()
-    
-    
+
+
     def load_from_pickle(self, pickle_file):
-        
+
         with open(pickle_file, 'rb') as fp:
-            
+
             self.complexes = pickle.load(fp)
-    
-    
+
+
     def save_to_pickle(self, pickle_file):
-        
+
         with open(pickle_file, 'wb') as fp:
-            
+
             pickle.dump(
                 obj = self.complexes,
                 file = fp,
@@ -486,7 +486,7 @@ def all_complexes():
     reference set for many methods, just like ``uniprot_input.all_uniprots``
     represents the proteome.
     """
-    
+
     db = get_db()
-    
+
     return set(db.complexes.values())
