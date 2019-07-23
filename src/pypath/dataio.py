@@ -10948,7 +10948,35 @@ def get_tfregulons(
 
     For details see https://github.com/saezlab/DoRothEA.
     """
-
+    
+    evidence_types = (
+        'chipSeq',
+        'TFbindingMotif',
+        'coexpression',
+        'curateddatabase'
+    )
+    
+    DorotheaInteraction = collections.namedtuple(
+        'DorotheaInteraction',
+        [
+            'tf',
+            'target',
+            'effect',
+            'level',
+            'curated',
+            'chipseq',
+            'predicted',
+            'coexp',
+            'curated_sources',
+            'chipseq_sources',
+            'predicted_sources',
+            'coexp_sources',
+            'all_sources',
+            'pubmed',
+            'kegg_pathways',
+        ]
+    )
+    
     url = urls.urls['tfregulons_git']['url']
 
     c = curl.Curl(
@@ -10958,37 +10986,67 @@ def get_tfregulons(
         files_needed = ['database.csv'],
     )
 
-    _ = c.result['database.csv'].readline()
+    reader = csv.DictReader(c.result['database.csv'])
 
-    for l in c.result['database.csv']:
-
-        l = csv_sep_change(l, ',', '%&%&%&')
-
-        l = l.replace('"', '').strip('\n\r').split('%&%&%&')
+    for rec in reader:
 
         # process only the ones of the requested levels or if curated
-        if l[3] not in levels and not (only_curated and ll[4] == 'TRUE'):
+        if (
+            rec['score'] not in levels and
+            not (
+                only_curated and
+                rec['is_evidence_curateddatabase'] == 'TRUE'
+            )
+        ):
 
             continue
+        
+        rec = dict(
+            (k, v if v not in {'-', 'none'} else '')
+            for k, v in iteritems(rec)
+        )
+        
+        yield DorotheaInteraction(
+            **dict(zip(
+                DorotheaInteraction._fields,
+                itertools.chain(
+                    # TF, target, effect, score
+                    (
+                        rec[key] for key in 
+                        ('TF', 'target', 'effect', 'score')
+                    ),
+                    # boolean values for curated, chipseq, motif pred. and coexp
+                    (
+                        rec['is_evidence_%s' % key] == 'TRUE'
+                        for key in evidence_types
+                    ),
+                    # databases & datasets
+                    (
+                        rec['which_%s' % key]
+                        for key in evidence_types
+                    ),
+                    # all data sources (or only the curated ones)
+                    (
+                        (
+                            ','.join(
+                            rec[key]
+                                for key in
+                                ('which_%s' % evt for evt in evidence_types)
+                                if rec[key]
+                            )
+                                if not only_curated else
+                            rec['which_curateddatabase']
+                        ),
+                    ),
+                    # PubMed and KEGG pw
+                    (
+                        rec['pubmedID_from_curated_resources'],
+                        rec['kegg_pathway'],
+                    )
+                )
+            ))
+        )
 
-        l = tuple(f if f not in  {'-', 'none'} else '' for f in l)
-
-        yield list(itertools.chain(
-            # TF, target, effect, score
-            l[:4],
-            # boolean values for curated, chipseq, motif pred. and coexp
-            (s == 'TRUE' for s in l[4:8]),
-            # databases & datasets
-            l[-6:-2],
-            # all data sources (or only the curated ones)
-            (
-                ','.join(s for s in l[-6:-2] if s)
-                    if not only_curated else
-                l[-3],
-            ),
-            # PubMed and KEGG pw
-            l[-2:],
-        ))
 
 def stitch_interactions(threshold = None):
 
