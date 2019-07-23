@@ -90,8 +90,9 @@ class WebserviceTables(session_mod.Logger):
         
         tfregulons = copy.deepcopy(data_formats.transcription)
         tfregulons['tfregulons'].input_args['levels'] = {
-            'A', 'B', 'C', 'D', 'E'
+            'A', 'B', 'C', 'D',
         }
+        tfregulons.must_have_references = False
         
         param = (
             ('load_omnipath', {

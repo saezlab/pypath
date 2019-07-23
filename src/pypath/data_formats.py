@@ -1553,7 +1553,8 @@ transcription = {
             'tfregulons_kegg_pathways': (14, '|'),
         },
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {})
+        extra_node_attrs_b = {},
+    )
 }
 
 '''
