@@ -977,6 +977,7 @@ urls = {
         'interactions': 'http://www.adhesome.org/interactions.csv',
     },
     'integrins': {
+        'label': 'List of integrins from Takada et al 2007',
         'url': 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1929136/'\
             'table/T1/?report=objectonly',
     },
