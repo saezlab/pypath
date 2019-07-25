@@ -6200,29 +6200,57 @@ def _cellphonedb_annotations(url, name_method):
     tab = list(csv.DictReader(c.result))
 
     for rec in tab:
-
-        annot[name_method(rec)] = record(
-            receptor = get_desc(rec, 'receptor'),
-            adhesion = get_bool(rec, 'adhesion'),
-            cytoplasm = get_bool(rec, 'cytoplasm'),
-            peripheral = get_bool(rec, 'peripheral'),
-            secretion = get_bool(rec, 'secretion'),
-            secreted = get_desc(rec, 'secreted'),
-            transporter = get_bool(rec, 'transporter'),
-            transmembrane = get_bool(rec, 'transmembrane'),
-            extracellular = get_bool(rec, 'extracellular'),
-            integrin = get_bool(rec, 'integrin_interaction'),
-        )
+        
+        names = name_method(rec)
+        
+        if isinstance(names, (common.basestring, intera.Complex)):
+            
+            names = (names,)
+        
+        for name in names:
+            
+            annot[name] = record(
+                receptor = get_desc(rec, 'receptor'),
+                adhesion = get_bool(rec, 'adhesion'),
+                cytoplasm = get_bool(rec, 'cytoplasm'),
+                peripheral = get_bool(rec, 'peripheral'),
+                secretion = get_bool(rec, 'secretion'),
+                secreted = get_desc(rec, 'secreted'),
+                transporter = get_bool(rec, 'transporter'),
+                transmembrane = get_bool(rec, 'transmembrane'),
+                extracellular = get_bool(rec, 'extracellular'),
+                integrin = get_bool(rec, 'integrin_interaction'),
+            )
 
     return annot
 
 
 def cellphonedb_protein_annotations():
-
+    
+    def name_method(rec):
+        
+        uniprot = rec['uniprot']
+        uniprot = _cellphonedb_hla(uniprot)
+        
+        return uniprot
+    
+    
     return _cellphonedb_annotations(
         url = urls.urls['cellphonedb_git']['proteins'],
-        name_method = lambda rec: rec['uniprot'],
+        name_method = name_method,
     )
+
+
+def _cellphonedb_hla(uniprot):
+    
+    uniprots = None
+    
+    if uniprot.startswith('HLA') and '-' not in uniprot:
+        
+        genesymbol = 'HLA-%s' % uniprot[3:]
+        uniprots = mapping.map_name(genesymbol, 'genesymbol', 'uniprot')
+    
+    return uniprots or uniprot
 
 
 def cellphonedb_complex_annotations():
@@ -6274,7 +6302,7 @@ def _cellphonedb_get_entity(name, complexes):
     
     if name in complexes:
         
-        return complexes[name]
+        return (complexes[name],)
     
     if ':' in name:
 
@@ -6289,8 +6317,10 @@ def _cellphonedb_get_entity(name, complexes):
         uniprot = mapping.map_name0(name, 'genesymbol', 'uniprot')
         
         name = uniprot or name
+    
+    name = _cellphonedb_hla(name)
 
-    return name
+    return (name,) if isinstance(name, common.basestring) else name
 
 
 def cellphonedb_interactions():
@@ -6342,45 +6372,48 @@ def cellphonedb_interactions():
 
     for rec in reader:
         
-        partner_a = _cellphonedb_get_entity(
+        _partner_a = _cellphonedb_get_entity(
             rec['partner_a'],
             complexes = complexes,
         )
-        partner_b = _cellphonedb_get_entity(
+        _partner_b = _cellphonedb_get_entity(
             rec['partner_b'],
             complexes = complexes,
         )
-        type_a = get_type(partner_a)
-        type_b = get_type(partner_b)
-        rev = partner_b == 'ligand' and partner_b == 'receptor'
-        _type_a = type_b if rev else type_a
-        _type_b = type_a if rev else type_b
+        
+        for partner_a, partner_b in itertools.product(_partner_a, _partner_b):
+            
+            type_a = get_type(partner_a)
+            type_b = get_type(partner_b)
+            rev = partner_b == 'ligand' and partner_b == 'receptor'
+            _type_a = type_b if rev else type_a
+            _type_b = type_a if rev else type_b
 
-        sources = (
-            'CellPhoneDB'
-                if rec['annotation_strategy'] == 'curated' else
-            '%s;CellPhoneDB' % (
-                rec['annotation_strategy'].replace(
-                    'guidetopharmacology.org',
-                    'Guide2Pharma_CP'
+            sources = (
+                'CellPhoneDB'
+                    if rec['annotation_strategy'] == 'curated' else
+                '%s;CellPhoneDB' % (
+                    rec['annotation_strategy'].replace(
+                        'guidetopharmacology.org',
+                        'Guide2Pharma_CP'
+                    )
                 )
             )
-        )
-        refs   = ';'.join(repmid.findall(rec['source']))
-        
-        type_b if rev else type_b
-        
-        yield(
-            CellphonedbInteraction(
-                id_a = partner_b if rev else partner_a,
-                id_b = partner_a if rev else partner_b,
-                sources = sources,
-                references = refs,
-                interaction_type = '%s-%s' % (_type_a, _type_b),
-                type_a = _type_a,
-                type_b = _type_b,
+            refs   = ';'.join(repmid.findall(rec['source']))
+            
+            type_b if rev else type_b
+            
+            yield(
+                CellphonedbInteraction(
+                    id_a = partner_b if rev else partner_a,
+                    id_b = partner_a if rev else partner_b,
+                    sources = sources,
+                    references = refs,
+                    interaction_type = '%s-%s' % (_type_a, _type_b),
+                    type_a = _type_a,
+                    type_b = _type_b,
+                )
             )
-        )
 
 
 def cellphonedb_complexes():
