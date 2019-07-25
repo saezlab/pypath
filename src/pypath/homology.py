@@ -510,7 +510,7 @@ class PtmHomology(ProteinHomology, SequenceContainer):
             
             for r in data:
                 
-                r = r.decode('utf-8').split('\t')
+                r = r.split('\t')
                 
                 if len(r) < 10:
                     

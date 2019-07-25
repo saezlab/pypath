@@ -25,6 +25,7 @@ import re
 import time
 import datetime
 import timeloop
+timeloop.app.logging.disable(level = 9999)
 
 import pypath.urls as urls
 import pypath.curl as curl
@@ -102,9 +103,7 @@ def is_uniprot(name, organism = 9606, swissprot = None):
     return name in get_db(organism = organism, swissprot = swissprot)
 
 
-
 _cleanup_timeloop = timeloop.Timeloop()
-
 
 @_cleanup_timeloop.job(
     interval = datetime.timedelta(
@@ -120,6 +119,8 @@ def _cleanup():
         if time.time() - globals()['_last_used'][key] > _lifetime:
             
             _remove(key)
+
+_cleanup_timeloop.start(block = False)
 
 
 def _remove(key):

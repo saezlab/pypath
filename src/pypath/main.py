@@ -5460,8 +5460,12 @@ class PyPath(session_mod.Logger):
             if l is None:
 
                 label = None
-
-                if v['type'] in label_name_types:
+                
+                if isinstance(v['name'], intera.Complex):
+                    
+                    label = v['name'].genesymbol_str
+                
+                elif v['type'] in label_name_types:
 
                     label = mapping.map_name0(
                         v['name'],
