@@ -86,6 +86,7 @@ protein_sources_default = {
     'Intogen',
     'Kinases',
     'CancerGeneCensus',
+    'Cancersea',
 }
 
 complex_sources_default = {
@@ -1270,6 +1271,27 @@ class Adhesome(AnnotationBase):
             self,
             name = 'Adhesome',
             input_method = 'adhesome_annotations',
+            **kwargs
+        )
+    
+    
+    def _process_method(self):
+        
+        self.annot = self.data
+        delattr(self, 'data')
+
+
+class Cancersea(AnnotationBase):
+    
+    _eq_fields = ('state',)
+    
+    
+    def __init__(self, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'CancerSEA',
+            input_method = 'cancersea_annotations',
             **kwargs
         )
     
