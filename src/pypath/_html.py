@@ -10,6 +10,7 @@
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
 #                  Nicolàs Palacio
+#                  Olga Ivanova
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -1692,7 +1693,9 @@ _footer = u'''
         <br>
         <p> <a href="http://denes.omnipathdb.org/">Dénes Türei</a>,
             <a href="http://saezlab.org/person/nicolas-palacio/">
-                Nicolàs Palacio</a>,
+                Nicolàs Palacio
+#
+                Olga Ivanova</a>,
             <a href="http://saezlab.org/">Saez Lab</a> 2016-2019. 
             Feedback: omnipath@googlegroups.com </p>
         <p>

@@ -10,6 +10,7 @@
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
 #                  Nicolàs Palacio
+#                  Olga Ivanova
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
