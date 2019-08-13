@@ -1028,8 +1028,14 @@ urls = {
             'genes and mutations',
         'drivers_url': 'https://www.intogen.org/repository/downloads/'\
             'intogen_cancer_drivers-2014.12.zip',
-    }
+    },
+    'cancersea': {
+        'label': 'Cancer Single Cell State Atlas',
+        'url': 'http://biocc.hrbmu.edu.cn/CancerSEA/goDownload',
+        'data_url': 'http://biocc.hrbmu.edu.cn/CancerSEA/%s',
+    },
 }
+
 
 files = {
     'signalink': {
