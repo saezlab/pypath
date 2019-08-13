@@ -125,10 +125,11 @@ import pypath.settings as settings
 omnipath = data_formats.omnipath
 
 # XXX: The following aliases are already defined in common.py
-if 'long' not in __builtins__:
+# For compatibility with python 2, see https://docs.python.org/3/whatsnew/3.0.html
+if 'long' not in dir(__builtins__):
     long = int
 
-if 'unicode' not in __builtins__:
+if 'unicode' not in dir(__builtins__):
     unicode = str
 
 __all__ = ['PyPath', 'Direction', 'AttrHelper', 'omnipath']

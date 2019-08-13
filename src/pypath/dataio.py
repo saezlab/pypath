@@ -71,12 +71,12 @@ except:
 
 import sys
 import os
+import io
 import re
 import time
 import itertools
 import collections
 from collections import Counter
-
 import gzip
 import xlrd
 import bs4
@@ -8721,7 +8721,6 @@ def _reactome_collect_species(elem, tag):
         res.apped(_reactome_extract_id(sp.get(specStr)))
     return res
 
-
 def signalink_interactions():
     """
     Reads and processes SignaLink3 interactions from local file.
@@ -8748,7 +8747,7 @@ def signalink_interactions():
         else:
             return attr
 
-    with open(nodesFile, 'r') as f:
+    with io.open(nodesFile, 'r', encoding="utf8") as f:
 
         for l in f:
 
@@ -8765,7 +8764,7 @@ def signalink_interactions():
 
     prg = progress.Progress(os.path.getsize(edgesFile), 'Reading file', 33)
 
-    with open(edgesFile, 'r') as f:
+    with io.open(edgesFile, 'r', encoding="utf8") as f:
 
         lPrev = None
 
@@ -9698,6 +9697,8 @@ def spike_interactions(high_confidence = True):
     iblock = xmlroot.find('InteractionBlock')
 
     genes = {}
+
+    #TODO: Denes, do we need the out var below?
     #
     #out = 'Entrez_A\tGeneSymbol_A\tEntrez_B\tGeneSymbol_B\tIsDirected\tPMID'\
     #    '\tConfidence\tEffect\tAssayType\tDataSource\tDescription\tMechanism\n'
@@ -10255,7 +10256,6 @@ def deathdomain_interactions():
 
     return result
 
-
 def deathdomain_interactions_static():
     """
     Loads the DeathDomain interactions from module data.
@@ -10263,7 +10263,7 @@ def deathdomain_interactions_static():
 
     fname = settings.get('deathdomain')
 
-    with open(fname, 'r') as fp:
+    with io.open(fname, 'r', encoding="utf8") as fp:
 
         _ = fp.readline()
 

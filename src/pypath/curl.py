@@ -704,9 +704,8 @@ class FileOpener(session_mod.Logger):
                     else:
                         
                         # wrapping the file for decoding
-                        # TODO: check if this is compatible with Py2
                         self.files_multipart[m] = io.TextIOWrapper(
-                            this_file,
+                            this_file, encoding=self.encoding
                         )
                 else:
                     self.files_multipart[m] = this_file.read()
@@ -768,10 +767,10 @@ class FileOpener(session_mod.Logger):
 
 class Curl(FileOpener):
     """
-    This clss is a wrapper around pycurl.
+    This class is a wrapper around pycurl.
     You can set a vast amount of parameters.
-    In addition it has a cacheing functionality, using this downloads
-    performed only once.
+    In addition it has a caching functionality: using this downloads
+    of databases/resources is performed only once.
     It handles HTTP, FTP, cookies, headers, GET and POST params,
     multipart/form data, URL quoting, redirects, timeouts, retries,
     encodings, debugging.

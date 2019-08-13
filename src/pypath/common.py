@@ -168,16 +168,13 @@ mod_keywords = {'Reactome': [('phosphopantetheinylation', ['phosphopantet']),
                          ('malonylation', ['malonyl']),
                          ('glutarylation', ['lutaryl'])]}
 
-# FIXME:
-# Running from file does not raise error, but if you run the lines in
-# the interpreter, raises TypeError: argument of type 'module' is not iterable
-# TODO: __builtins__ -> dir(__builtins__)
 
-# XXX: This is also in main.py, could be directly added in __all__?
-if 'long' not in __builtins__:
+# XXX: This is also in main.py, could be directly added in __all__?'
+# For compatibility with python 2, see https://docs.python.org/3/whatsnew/3.0.html
+if 'long' not in dir(__builtins__):
     long = int
 
-if 'unicode' not in __builtins__:
+if 'unicode' not in dir(__builtins__):
     unicode = str
 
 # Inverted `aacodes` dict
