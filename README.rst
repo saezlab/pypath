@@ -582,19 +582,28 @@ You need to download the ChEMBL MySQL dump, and load into your own server.
 Technical
 ---------
 
-**MySQL** submodule helps to manage MySQL connections and track queries. It is
-able to run queries parallely to optimize CPU and memory usage on the server,
-handling queues, and serve the result by server side or client side storage.
-The ``chembl`` and potentially the ``mapping`` modules rely on this ``mysql``
-module.
+The module ``pypath.curl`` provides a very flexible **download manager**
+built on top of ``pycurl``. The classes ``pypath.curl.Curl()`` and
+``pypath.curl.FileOpener`` accept numerous arguments, try to deal in a smart
+way with local **cache,** authentication, redirects, uncompression, character
+encodings, FTP and HTTP transactions, and many other stuff. Cache can grow to
+several GBs, and takes place in ``~/.pypath/cache`` by default. If you
+experience issues using ``pypath`` these are most often related to failed
+downloads which often result nonsense cache contents. To debug such issues
+you can see the cache file names and cache usage in the log, and you can use
+the context managers in ``pypath.curl`` to show, delete or bypass the cache
+for some particular method calls (``pypath.curl.cache_print_on()``,
+``pypath.curl.cache_delete_on()`` and ``pypath.curl.cache_off()``.
+You can always set up an alternative cache directory for the entire session
+using the ``pypath.settings`` module. 
 
-The most important function in module ``dataio`` is a very flexible **download
-manager** built around ``curl``. The function ``dataio.curl()`` accepts
-numerous arguments, tries to deal in a smart way with local **cache,**
-authentication, redirects, uncompression, character encodings, FTP and HTTP
-transactions, and many other stuff. Cache can grow to several GBs, and takes
-place in ``./cache`` by default. Please be aware of this, and use for example
-symlinks in case of using multiple working directories.
+The ``pypath.session`` and ``pypath.log`` modules take care of setting up
+session level parameters and logging. Each session has a random 5 character
+identifier e.g. ``y5jzx``. The default log file in this case is
+``pypath_log/pypath-y5jzx.log``. The log messages flushed in every 2 seconds
+by default. You can always change these things by the ``settings`` module.
+In this module you can get and set the values of various parameters using
+the ``pypath.settings.setup()`` and the ``pypath.settings.get()`` methods.
 
 A simple **webservice** comes with this module: the ``server`` module based on
 ``twisted.web.server`` opens a custom port and serves plain text tables over
