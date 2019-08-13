@@ -7,7 +7,7 @@
     pypath has been developed only for Python 2.7. Then the code have been
     adjusted to Py3 however we can not guarantee no incompatibilities
     remained. If you find any method does not work please submit an issue on
-    github. For few years I develop and test ``pypath`` in Python 3. Therefore
+    github. For few years we develop and test ``pypath`` in Python 3. Therefore
     this is the better supported Python variant.
 
 :documentation: http://saezlab.github.io/pypath
@@ -489,15 +489,23 @@ Upcoming
 --------
 
 * New, more flexible network reader class
-* Full support for multi-species molecular interaction networks (e.g. pathogene-host)
-* Better support for not protein only molecular interaction networks (metabolites, drug compounds, RNA)
+* Full support for multi-species molecular interaction networks
+  (e.g. pathogene-host)
+* Better support for not protein only molecular interaction networks
+  (metabolites, drug compounds, RNA)
 
 Features
 ========
 
-The primary aim of **pypath** is to build up networks from multiple sources on
-one igraph object. **pypath** handles ambiguous ID conversion, reads custom
-edge and node attributes from text files and **MySQL**.
+In the beginning the primary aim of **pypath** was to build networks from
+multiple sources using an igraph object as the fundament of the integrated
+data structure. From version 0.7 and 0.8 this design principle started to
+change. Today **pypath** builds a number of different databases each having
+**pandas.DataFrame** as a final format. Each of these integrates a specific
+kind of data from various databases (e.g. protein complexes, interactions,
+enzyme-PTM relationships, etc). **pypath** has many submodules with standalone
+functionality which can be used in other modules and scripts. For example
+the ID conversion module **pypath.mapping**.
 
 Submodules perform various features, e.g. graph visualization, working with
 rug compound data, searching drug targets and compounds in **ChEMBL**.
