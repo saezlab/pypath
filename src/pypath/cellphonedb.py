@@ -223,7 +223,7 @@ class CellPhoneDB(omnipath.OmniPath):
             
             if not self.use_omnipath and 'lst' not in self.network_param:
                 
-                self.network_param['lst'] = data_formats.pathway
+                self.network_param['lst'] = data_formats.pathway_all
             
             self.network = main_mod.PyPath()
             self.network.init_network(**self.network_param)
@@ -297,7 +297,7 @@ class CellPhoneDB(omnipath.OmniPath):
                     categories_transmitter
                 )
             ) or (
-                # or it is indirected but both partners belong to the same
+                # or it is undirected but both partners belong to the same
                 # intercellular communication role category
                 self.intercell.classes_by_entity(iaction.id_a) &
                 self.intercell.classes_by_entity(iaction.id_b) &

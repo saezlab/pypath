@@ -131,9 +131,7 @@ if 'long' not in __builtins__:
 if 'unicode' not in __builtins__:
     unicode = str
 
-# XXX: Referenced but not defined: __version__, a (what?), ReferenceList
-__all__ = ['PyPath', 'Direction', '__version__', 'a',
-           'AttrHelper', 'ReferenceList', 'omnipath']
+__all__ = ['PyPath', 'Direction', 'AttrHelper', 'omnipath']
 
 
 class Direction(object):
@@ -5432,16 +5430,16 @@ class PyPath(session_mod.Logger):
         # XXX: What's the purpose of this? I mean attribute _directed is not
         #      accessed in this function (?)
         self._already_has_directed()
-
-        dnt = self.default_name_type
-
+        
         if graph is None and self.dgraph is not None:
             self.genesymbol_labels(graph=self.dgraph, remap_all=remap_all)
 
         g = self.graph if graph is None else graph
-        default_name_type = dnt["protein"]
-        label_name_types = {'protein': 'genesymbol',
-                          'mirna': 'mir-mat-name'}
+        default_name_types = settings.get('default_name_types')
+        label_name_types = {
+            'protein': 'genesymbol',
+            'mirna': 'mir-mat-name',
+        }
 
         if 'label' not in g.vs.attributes():
             remap_all = True
@@ -5465,11 +5463,14 @@ class PyPath(session_mod.Logger):
                     
                     label = v['name'].genesymbol_str
                 
-                elif v['type'] in label_name_types:
+                elif (
+                    v['type'] in label_name_types and
+                    v['type'] in default_name_types
+                ):
 
                     label = mapping.map_name0(
                         v['name'],
-                        dnt[v['type']],
+                        default_name_types[v['type']],
                         label_name_types[v['type']],
                         ncbi_tax_id=v['ncbi_tax_id'],
                     )
@@ -14434,9 +14435,21 @@ class PyPath(session_mod.Logger):
         
         return self.iter_interactions()
     
-    def iter_interactions(self):
+    def iter_interactions(self, signs = True, all_undirected = True):
         """
         Iterates over edges and yields interaction records.
+        
+        :param bool signs:
+            Ignoring signs if ``False``. This way each directed interaction
+            will yield a single record even if it's ambiguously labeled
+            both positive and negative. The default behaviour is to yield
+            two records in this case, one with positive and one with negative
+            sign.
+        :param bool all_undirected:
+            Yield records for undirected interactions even if certain sources
+            provide direction. If ``False`` only the directed records will
+            be provided and the undirected sources and references will be
+            added to the directed records.
         """
         
         def get_references(sources, edge):
