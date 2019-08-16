@@ -796,7 +796,7 @@ class Regulation(object):
             self.add_sources(other.sources)
             self.add_refs(other.refs)
 
-
+#TODO this class does not belong here, find a better place
 class Complex(object):
     
     have_stoichiometry = {

@@ -23,6 +23,9 @@
 import math
 from igraph import *
 
+
+#TODO we don't know now what this module was used for.
+
 # from this module:
 import pypath.colorgen as colorgen
 

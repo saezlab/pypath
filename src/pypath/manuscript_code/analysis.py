@@ -18,6 +18,7 @@
 #
 #  Website: http://pypath.omnipathdb.org/
 #
+#  This code has been used to generate figures for omnipath2/pypath manuscript
 
 from future.utils import iteritems
 from past.builtins import xrange, range, reduce
@@ -135,7 +136,7 @@ class Workflow(omnipath.OmniPath):
             **kwargs
         ):
         """
-        Executes the workflow of comparative analysis of network resuorces
+        Executes the workflow of comparative analysis of network resources
         by categories. Creates tables and figures.
         
         :arg str name:

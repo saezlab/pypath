@@ -3,6 +3,7 @@
 
 #
 #  This file is part of the `pypath` python module
+#  Enables interaction (IO) for GSEA database.
 #
 #  Copyright
 #  2014-2019

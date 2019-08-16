@@ -3,6 +3,7 @@
 
 #
 #  This file is part of the `pypath` python module
+#  Enables ID translations and mapping
 #
 #  Copyright
 #  2014-2019

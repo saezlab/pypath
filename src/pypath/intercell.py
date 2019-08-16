@@ -3,6 +3,9 @@
 
 #
 #  This file is part of the `pypath` python module
+#  Deals with intercellular communication. Provides functionality for
+#  custom set of annotations needed for intercellular communication translation
+#  (based on GO). Thus helps to make a meta-database.
 #
 #  Copyright
 #  2014-2019

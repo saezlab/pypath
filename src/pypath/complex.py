@@ -3,6 +3,8 @@
 
 #
 #  This file is part of the `pypath` python module
+#  Creates a complex meta-database accessible through either pypath
+#  or Omnipath.
 #
 #  Copyright
 #  2014-2019

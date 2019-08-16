@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 #
-#  This file is part of the `pypath` python module
+#  This file is part of the `pypath` python module.
+#  Contains meta-information on all databases/resources.
 #
 #  Copyright
 #  2014-2019
@@ -18,6 +19,8 @@
 #
 #  Website: http://pypath.omnipathdb.org/
 #
+
+#TODO will be moved to jsons
 
 # external modules:
 from future.utils import iteritems

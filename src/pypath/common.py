@@ -3,6 +3,7 @@
 
 #
 #  This file is part of the `pypath` python module
+#  Contains helper functions shared by different modules.
 #
 #  Copyright
 #  2014-2019
@@ -18,6 +19,9 @@
 #
 #  Website: http://pypath.omnipathdb.org/
 #
+
+#TODO requires cleaning, check what functions are not used and may be removed.
+#Some parts can go to jsons.
 
 from future.utils import iteritems
 from past.builtins import xrange, range, reduce

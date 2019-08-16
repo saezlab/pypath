@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 #
 #  This file is part of the `pypath` python module
+#  Converts from pypath internal network representation to CellPhoneDB format
 #
 #  Copyright
 #  2014-2019
