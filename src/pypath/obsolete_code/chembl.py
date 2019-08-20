@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 #
 #  This file is part of the `pypath` python module
+#  MySQL client for a big Chembl database (~30GB size).
+#  It was never really used. Current suggestion: to drop for pypath
+#  release.
 #
 #  Copyright
 #  2014-2019

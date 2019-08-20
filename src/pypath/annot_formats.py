@@ -3,10 +3,12 @@
 
 #
 #  This file is part of the `pypath` python module
+#  Meta-classes used for annotation functionality
 #
 #  Copyright
 #  2014-2019
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
 #                  Nicolàs Palacio

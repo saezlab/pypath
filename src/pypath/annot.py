@@ -3,6 +3,8 @@
 
 #
 #  This file is part of the `pypath` python module
+#  Provides classes for each database for annotations of proteins and complexes.
+#  Also provides meta-annotations for the databases.
 #
 #  Copyright
 #  2014-2019
@@ -48,7 +50,7 @@ import pypath.annot_formats as annot_formats
 import pypath.complex as complex
 import pypath.intera as intera
 
-
+#TODO this should be part of json files
 protein_sources_default = {
     'Dgidb',
     'Membranome',
@@ -88,6 +90,7 @@ protein_sources_default = {
     'CancerGeneCensus',
 }
 
+#TODO this should be part of json files
 complex_sources_default = {
     'CellPhoneDBComplex',
     'CorumFuncat',
@@ -96,6 +99,7 @@ complex_sources_default = {
     #'PypathInferred',
 }
 
+#TODO this should be part of json files
 default_fields = {
     'Matrisome': ('mainclass', 'subclass'),
     'Locate': ('location',),

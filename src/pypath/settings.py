@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 #
-#  This file is part of the `pypath` python module
+#  This file is part of the `pypath` python module.
+#  Settings for PyPath
 #
 #  Copyright
 #  2014-2019
@@ -19,6 +20,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+#TODO move to yaml file
 
 from future.utils import iteritems
 

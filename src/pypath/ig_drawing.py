@@ -20,7 +20,7 @@
 #
 
 #
-#  This module is from `python-igraph`.
+#  This module is from `python-igraph`, with additions that allow to set a typeface.
 #
 #  Authors: Gábor Csárdi & Tamás Nepusz
 #

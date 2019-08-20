@@ -3,6 +3,7 @@
 
 #
 #  This file is part of the `pypath` python module
+#  Annotation information for intercell.py
 #
 #  Copyright
 #  2014-2019
@@ -26,6 +27,7 @@ import pypath.dataio as dataio
 import pypath.annot_formats as af
 
 
+#TODO should go to jsons
 """
 Gene Ontology annotations to select categories relevant in intercellular
 signaling.

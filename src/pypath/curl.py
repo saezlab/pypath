@@ -20,12 +20,14 @@
 #
 
 #
-# this module makes possible
+# This module makes possible
 # dynamic data integration, downloads
 # files from various resources, in standard
 # or non-standard text based and xml formats,
-# processes them, sometimes parses html
+# processes them, can parse html.
 #
+
+#TODO define better (cleaner) scopes and separate to several submodules
 
 from future.utils import iteritems
 from past.builtins import xrange, range

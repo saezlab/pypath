@@ -3,6 +3,7 @@
 
 #
 #  This file is part of the `pypath` python module
+#  Provides many functions to interact with Gene Ontology data.
 #
 #  Copyright
 #  2014-2019
@@ -35,6 +36,8 @@ import pypath.common as common
 from pypath.common import *
 import pypath.session_mod as session_mod
 
+
+#TODO may be separate this module from pypath?
 
 # this is for GO terms parsing:
 _reexprterm = re.compile(r'and|or|not|\(|\)|GO:[0-9]{7}')

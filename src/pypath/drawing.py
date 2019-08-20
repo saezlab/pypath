@@ -376,6 +376,7 @@ class Plot(session_mod.Logger):
                     self.edge_arrow_size, self.edge_arrow_width, self.kwargs)
 
 
+#TODO this class may be dropped?
 class InterSet(object):
     def __init__(self,
                  xsizes,

@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 #
-#  This file is part of the `pypath` python module
+#  This file is part of the `pypath` python module.
+#  Contains descriptions for all resources: e.g. their URLs
 #
 #  Copyright
 #  2014-2019

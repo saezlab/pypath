@@ -3,6 +3,7 @@
 
 #
 #  This file is part of the `pypath` python module
+#  (Planned for) centrally handling cache for all databases/resources.
 #
 #  Copyright
 #  2014-2019
@@ -26,7 +27,7 @@ import pypath.settings as settings
 
 def get_cachedir(cachedir = None):
     """
-    Ensures the cache directory exists and returs its path.
+    Ensures the cache directory exists and returns its path.
     """
     
     cachedir = cachedir or settings.get('cachedir')
