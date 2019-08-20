@@ -3,6 +3,7 @@
 
 #
 #  This file is part of the `pypath` python module
+#  Helps to translate from the mouse data to human data
 #
 #  Copyright
 #  2014-2019

@@ -3,6 +3,7 @@
 
 #
 #  This file is part of the `pypath` python module
+#  Connection to Giant database. This module was never used.
 #
 #  Copyright
 #  2014-2019

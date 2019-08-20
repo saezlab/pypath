@@ -3,6 +3,7 @@
 
 #
 #  This file is part of the `pypath` python module
+#  Exports tables for webservice.
 #
 #  Copyright (c) 2014-2019 - EMBL
 #

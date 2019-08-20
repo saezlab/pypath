@@ -3,6 +3,7 @@
 
 #
 #  This file is part of the `pypath` python module
+#  This code is not used anywhere and may be safely removed.
 #
 #  Copyright
 #  2014-2019

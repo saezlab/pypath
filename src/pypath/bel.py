@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-"""Convert OmniPath components to PyBEL.
+"""Converts OmniPath components to PyBEL.
 
-This module also installs a command line interface that can either be acccessed
+This module also provides a command line interface that can either be acccessed
 via: ``python -m pypath.bel`` or directly as ``bio2bel_omnipath``.
 
-This file is part of the `pypath` python module
+This file is part of the `pypath` python module'
 
 Copyright
 2014-2019

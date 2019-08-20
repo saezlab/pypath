@@ -20,12 +20,14 @@
 #
 
 #
-# this module makes possible
+# This module makes possible
 # dynamic data integration, downloads
 # files from various resources, in standard
 # or non-standard text based and xml formats,
-# processes them, sometimes parses html
+# processes them, can parse html.
 #
+
+#TODO make a cleaner separation, remove/refactor repeating code
 
 from __future__ import print_function
 
