@@ -1222,7 +1222,7 @@ class TableServer(BaseServer):
         # provide genesymbols: yes or no
         if (
             b'genesymbols' in req.args and
-            self._parse_arg(req, 'genesymbols')
+            self._parse_arg(req.args[b'genesymbols'])
         ):
             genesymbols = True
             hdr.insert(1, 'genesymbol')
