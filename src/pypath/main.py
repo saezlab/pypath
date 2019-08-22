@@ -115,7 +115,6 @@ import pypath.export as export
 import pypath.ig_drawing as ig_drawing
 import pypath.common as common
 import pypath._version as _version
-from pypath.gr_plot import *
 from pypath.progress import *
 import pypath.settings as settings
 
