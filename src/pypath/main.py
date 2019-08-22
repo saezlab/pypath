@@ -104,7 +104,6 @@ import pypath.curl as curl
 import pypath.intera as intera
 import pypath.seq as se
 import pypath.go as go
-import pypath.gsea as gsea
 import pypath.drawing as bdrawing
 import pypath.proteomicsdb as proteomicsdb
 import pypath.reflists as reflists

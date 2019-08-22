@@ -38,7 +38,6 @@ from collections import OrderedDict
 # from this module:
 import pypath.dataio as dataio
 import pypath.data_formats as data_formats
-import pypath.enrich as enrich
 import pypath.mapping as mapping
 import pypath.progress as progress
 import pypath.common as common
@@ -181,7 +180,12 @@ class GSEA(object):
                 self.groups[coll] = group
 
 
-class GSEABinaryEnrichmentSet(enrich.EnrichmentSet):
+class GSEABinaryEnrichmentSet(
+        #enrich.EnrichmentSet
+        object
+    ):
+    
+    
     def __init__(self,
                  basic_set,
                  gsea=None,
