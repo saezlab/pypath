@@ -97,8 +97,6 @@ import pypath.cache as cache_mod
 import pypath.data_formats as data_formats
 import pypath.mapping as mapping
 import pypath.descriptions as descriptions
-import pypath.chembl as chembl
-import pypath.mysql as mysql
 import pypath.dataio as dataio
 import pypath.network as network
 import pypath.uniprot_input as uniprot_input
@@ -1230,11 +1228,11 @@ class PyPath(session_mod.Logger):
         :py:class:`pypath.main.PyPath` instance from which the data will
         be copied.
     :arg tuple mysql:
-        Optional, ``(None, 'mapping')`` by default. Contains the MySQL
+        DEPRECATED Optional, ``(None, 'mapping')`` by default. Contains the MySQL
         parameters used by the :py:mod:`pypath.mapping` module to load
         the ID conversion tables.
     :arg tuple chembl_mysql:
-        Optional, ``(None, 'chembl')`` by default. Contains the MySQL
+        DEPRECATED Optional, ``(None, 'chembl')`` by default. Contains the MySQL
         parameters used by the :py:mod:`pypath.mapping` module to load
         the ChEMBL ID conversion tables.
     :arg str name:
@@ -1257,7 +1255,7 @@ class PyPath(session_mod.Logger):
         Contains the ChEMBL data. See :py:mod:`pypath.chembl` module
         documentation for more information.
     :var tuple chembl_mysql:
-        Contains the MySQL parameters used by the
+        DEPRECATED Contains the MySQL parameters used by the
         :py:mod:`pypath.mapping` module to load the ChEMBL ID conversion
         tables.
     :var dict data:
@@ -1355,7 +1353,7 @@ class PyPath(session_mod.Logger):
     :var list mutation_samples:
         DEPRECATED
     :var tuple mysql_conf:
-        Contains the MySQL parameters used by the
+        DEPRECATED Contains the MySQL parameters used by the
         :py:mod:`pypath.mapping` module to load the ID conversion
         tables.
     :var str name:
@@ -1484,9 +1482,6 @@ class PyPath(session_mod.Logger):
             self._undirected = self.graph
             self._directed = None
             self.failed_edges = []
-
-            # self.set_chembl_mysql(chembl_mysql[1], chembl_mysql[0])
-            # self.mysql = mysql.MysqlRunner(self.mysql_conf)
             self.unmapped = []
             self.name = name
             self.outdir = outdir
