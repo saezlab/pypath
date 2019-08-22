@@ -53,7 +53,6 @@ from matplotlib import ticker
 from scipy import stats
 
 import pypath.common as common
-import pypath.colorgen as colorgen
 from pypath.ig_drawing import DefaultGraphDrawerFFsupport
 import pypath.descriptions
 import pypath.progress as progress
@@ -200,12 +199,20 @@ class Plot(object):
             for i, l in enumerate(f):
                 l = [x.strip() for x in l.split(',')]
                 series.append(
-                    colorgen.rgb2hex(tuple([256 * float(x) for x in l[0:3]])))
+                    self.rgb2hex(tuple([256 * float(x) for x in l[0:3]])))
                 if len(series) == 7:
                     cols.append(series)
                     series = []
         return cols
-
+    
+    
+    @staticmethod
+    def rgb2hex(rgb):
+        
+        rgb = tuple(int(i) for i in rgb)
+        return '#%02x%02x%02x' % rgb
+    
+    
     def finish(self):
         '''
         Saves and closes a figure.
