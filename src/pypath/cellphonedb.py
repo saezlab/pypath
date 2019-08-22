@@ -279,7 +279,7 @@ class CellPhoneDB(omnipath.OmniPath):
         iuphar = {'Guide2Pharma', 'Guide2Pharma_CP'}
         
         self._entities = set()
-        self.cpdb_interaction = set()
+        self.cpdb_interaction = defaultdict(set)
         
         int_id = 0
         for iaction in self.network.records.itertuples():
@@ -312,6 +312,27 @@ class CellPhoneDB(omnipath.OmniPath):
                 id_a, name_a = get_id_name(iaction.id_a)
                 id_b, name_b = get_id_name(iaction.id_b)
                 
+                key = (id_a, id_b)
+                
+                int_id = self.cpdb_interaction[key].id_cpdb_interac
+                
+                resources_carry_over, refs_carry_over = (
+                    (
+                        set(
+                            self.cpdb_interaction[
+                                key
+                            ].annotation_strategy.split(',')
+                        ),
+                        set(
+                            pmid[6:]
+                            for pmid in
+                            self.cpdb_interaction[key].source.split(',')
+                        )
+                    )
+                    if key in self.cpdb_interaction else
+                    (set(), set())
+                )
+                
                 self.cpdb_interaction.add(
                     CellPhoneDBInteraction(
                         id_cp_interaction = 'CPI-%06u' % int_id,
@@ -320,11 +341,18 @@ class CellPhoneDB(omnipath.OmniPath):
                         protein_name_a = name_a,
                         protein_name_b = name_b,
                         annotation_strategy = (
-                            'OmniPath,%s' % ','.join(sorted(iaction.sources))
+                            ','.join(sorted(
+                                resources_carry_over |
+                                iaction.sources |
+                                {'OmniPath'}
+                            ))
                         ),
                         source = ','.join(
                             'PMID: %s' % pmid
-                            for pmid in sorted(iaction.references)
+                            for pmid in sorted(
+                                refs_carry_over |
+                                iaction.references
+                            )
                         ),
                     )
                 )
