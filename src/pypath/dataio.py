@@ -8822,7 +8822,8 @@ def signalink_interactions():
 def signalink_pathway_annotations():
 
     SignalinkPathway = collections.namedtuple(
-        'SignalinkPathway', ['pathway'],
+        'SignalinkPathway',
+        ['pathway', 'core'],
     )
 
 
@@ -8833,13 +8834,19 @@ def signalink_pathway_annotations():
     for i in interactions:
 
         for pathway in i[8].split(';'):
-
+            
+            core = 'non-core' not in pathway
+            pathway = pathway.split('(')[0].strip()
+            
             result[i[0]].add(
-                SignalinkPathway(pathway = pathway)
+                SignalinkPathway(pathway = pathway, core = core)
             )
 
         for pathway in i[9].split(';'):
-
+            
+            core = 'non-core' not in pathway
+            pathway = pathway.split('(')[0].strip()
+            
             result[i[1]].add(
                 SignalinkPathway(pathway = pathway)
             )
