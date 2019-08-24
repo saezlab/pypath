@@ -2347,7 +2347,7 @@ def ramilowski_locations():
 
                 result[l[3]].add(
                     RamilowskiLocation(
-                        location = location.lower(),
+                        location = location.lower().replace('=', '').strip(),
                         source = source,
                         tmh = int(tmh) if tmh.isdigit() else None,
                         note = note,
