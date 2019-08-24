@@ -11754,7 +11754,7 @@ def get_compartments_localizations(
         pass
 
 
-def get_locate_localizations(
+def locate_localizations(
         organism = 9606,
         literature = True,
         external = True,
@@ -11900,7 +11900,7 @@ def get_locate_localizations(
 
                                                 result[uniprot].add(record(
                                                     source = sources,
-                                                    location = _loc,
+                                                    location = _loc.strip(),
                                                     cls = this_class,
                                                     score = None,
                                                 ))

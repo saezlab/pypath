@@ -1860,7 +1860,7 @@ class Locate(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'Locate',
-            input_method = 'get_locate_localizations',
+            input_method = 'locate_localizations',
             ncbi_tax_id = ncbi_tax_id,
             input_args = input_args,
             **kwargs
