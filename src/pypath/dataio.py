@@ -8848,7 +8848,7 @@ def signalink_pathway_annotations():
             pathway = pathway.split('(')[0].strip()
             
             result[i[1]].add(
-                SignalinkPathway(pathway = pathway)
+                SignalinkPathway(pathway = pathway, core = core)
             )
 
     return result
@@ -10795,6 +10795,7 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
     ProteinatlasAnnotation = collections.namedtuple(
         'ProtainatlasAnnotation',
         [
+            'organ',
             'tissue',
             'level',
             'status',
@@ -10829,11 +10830,21 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
     if normal:
 
         for tissue, gex in iteritems(data['normal']):
+            
+            organ = tissue
+            
+            if ':' in tissue:
+                
+                organ, tissue = tissue.split(':')
+            
+            organ = organ.strip()
+            tissue = tissue.strip()
 
             for uniprot, ex in iteritems(gex):
 
                 result[uniprot].add(
                     ProteinatlasAnnotation(
+                        organ = organ,
                         tissue = tissue,
                         level = ex[0],
                         status = ex[1],
@@ -10859,6 +10870,7 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
 
                 result[uniprot].add(
                     ProteinatlasAnnotation(
+                        organ = condition,
                         tissue = condition,
                         level = max(
                             (i for i in iteritems(ex) if i[0] in LEVELS),
