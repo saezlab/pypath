@@ -2262,7 +2262,7 @@ def comppi_locations(organism = 9606, score_threshold = .7):
     return result
 
 
-def ramilowski_locations():
+def ramilowski_locations(long_notes = False):
 
     reloc = re.compile(
         r'([^\(]+[^\s^\(])'
@@ -2351,7 +2351,7 @@ def ramilowski_locations():
                         source = source,
                         tmh = int(tmh) if tmh.isdigit() else None,
                         note = note,
-                        long_note = long_note,
+                        long_note = long_note if long_notes else None,
                     )
                 )
 
@@ -9437,6 +9437,7 @@ def intogen_annotations():
         [
             'type',
             'role',
+            'curated',
             'oncodrive_role_prob',
         ],
     )
@@ -9470,12 +9471,25 @@ def intogen_annotations():
         )
 
         for uniprot in uniprots:
-
+            
+            role_prob, curated = (
+                (
+                    1.0,
+                    True,
+                )
+                if rec['OncodriveROLE_prob'] == 'Manually curated' else
+                (
+                    float(rec['OncodriveROLE_prob']),
+                    False,
+                )
+            )
+            
             result[uniprot].add(
                 IntogenAnnotation(
                     type = rec['Driver_type'],
                     role = rec['Role'],
-                    oncodrive_role_prob = rec['OncodriveROLE_prob'],
+                    curated = curated,
+                    oncodrive_role_prob = role_prob,
                 )
             )
 

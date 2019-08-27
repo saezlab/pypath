@@ -699,8 +699,10 @@ class TableServer(BaseServer):
         
         self._log('Preprocessing intercell data.')
         tbl = self.data['intercell']
+        tbl.mainclass = tbl.mainclass.cat.add_categories('')
+        tbl.mainclass[tbl.mainclass.isna()] = ''
         tbl.drop('full_name', axis = 1, inplace = True, errors = 'ignore')
-        self.data['intercell_summary'] = self.data['intercell'].groupby(
+        self.data['intercell_summary'] = tbl.groupby(
             ['category', 'mainclass', 'class_type'],
             as_index = False,
         ).agg({})
@@ -1759,7 +1761,13 @@ class PypathServer(BaseServer):
 
 class Rest(object):
     
-    def __init__(self, port, serverclass = PypathServer, **kwargs):
+    def __init__(
+            self,
+            port,
+            serverclass = PypathServer,
+            start = True,
+            **kwargs
+        ):
         """
         Runs a webserver serving a `PyPath` instance listening
         to a custom port.
@@ -1775,6 +1783,14 @@ class Rest(object):
         """
         
         self.port = port
-        self.site = twisted.web.server.Site(serverclass(**kwargs))
+        self.server = serverclass(**kwargs)
+        
+        if start:
+            
+            self.start()
+    
+    def start(self):
+        
+        self.site = twisted.web.server.Site(self.server)
         twisted.internet.reactor.listenTCP(self.port, self.site)
         twisted.internet.reactor.run()
