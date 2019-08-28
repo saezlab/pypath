@@ -144,7 +144,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
     
     def render_POST(self, request):
         
-        if request.getHeader(b'content-type').startsWith(b'application/json'):
+        if request.getHeader(b'content-type').startswith(b'application/json'):
             
             args_raw = json.loads(request.content.getvalue())
             request.args = dict(
