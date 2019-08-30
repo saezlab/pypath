@@ -390,6 +390,7 @@ Known issues
 * Encoding related exceptions in Python2: these might occur at some points in
   the module, please send the traceback if you encounter one, and we will fix
   as soon as possible.
+* For Mac OS X (v >= 10.11 El Capitan) import of pypath fails with error: "libcurl link-time ssl backend (openssl) is different from compile-time ssl backend (none/other)". To fix it, you may need to reinstall pycurl library using special flags. More information and steps can be found e.g. [here](https://cscheng.info/2018/01/26/installing-pycurl-on-macos-high-sierra.html)   
 
 *Special thanks to Jorge Ferreira for testing pypath on Windows!*
 
