@@ -70,12 +70,14 @@ __all__ = [
     'main',
 ]
 
-Resource = Union[
-    PyPath,
-    PtmAggregator,
-    AbstractComplexResource,
-    Set[Union[PyPath, PtmAggregator, AbstractComplexResource]]
-]
+## if we use the types here we need to import all these modules
+## I am not sure if we want this -- Denes
+#Resource = Union[
+    #PyPath,
+    #PtmAggregator,
+    #AbstractComplexResource,
+    #Set[Union[PyPath, PtmAggregator, AbstractComplexResource]]
+#]
 
 
 class Bel(BELManagerMixin, session_mod.Logger):
@@ -106,7 +108,9 @@ class Bel(BELManagerMixin, session_mod.Logger):
     
     def __init__(
             self,
-            resource: Resource,
+            resource,
+            ## note - type removed here:
+            # resource: Resource
             only_sources: Optional[Set[str]] = None,
             init: bool = False,
             graph_name = 'OmniPath',
