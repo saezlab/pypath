@@ -16377,6 +16377,7 @@ div#notebook {
 <li><a href="#network-pandas">18: Network in <em>pandas.DataFrame</em></a></li>
 <li><a href="#log-session">19: Log messages and sessions</a></li>
 <li><a href="#bel">20: BEL export</a></li>
+<li><a href="#cellphonedb">21: CellPhoneDB export</a></li>
 </ul>
 
 </div>
@@ -18675,7 +18676,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">mapping</span>
@@ -18692,7 +18693,7 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[22]:</div>
+    <div class="prompt output_prompt">Out[20]:</div>
 
 
 
@@ -18709,7 +18710,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[89]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="s1">&#39;8408&#39;</span><span class="p">,</span> <span class="s1">&#39;entrez&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
@@ -18725,7 +18726,7 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[89]:</div>
+    <div class="prompt output_prompt">Out[21]:</div>
 
 
 
@@ -18743,14 +18744,14 @@ AKT1 - GSK3B
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>A number of mapping tables are predefined and loaded automatically. However it does not translate in 2 steps if no direct translation table is available. For example Entrez to Gene Symbol you can translate this way:</p>
+<p>A number of mapping tables are predefined and loaded automatically. However it does not translate in 2 steps if no direct translation table is available. For example <em>Entrez</em> to <em>Gene Symbol</em> you can translate this way:</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[90]:</div>
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">mapping</span><span class="o">.</span><span class="n">map_names</span><span class="p">(</span>
@@ -18770,7 +18771,7 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[90]:</div>
+    <div class="prompt output_prompt">Out[22]:</div>
 
 
 
@@ -18843,7 +18844,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[91]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">ptm</span>
@@ -18865,49 +18866,13 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[92]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">ptm_db</span><span class="o">.</span><span class="n">enz_sub</span><span class="p">[(</span><span class="s1">&#39;Q13177&#39;</span><span class="p">,</span> <span class="s1">&#39;P01236&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Domain-motif interaction:
-  Domain in protein Q13177-1:
-	Name: unknown
-	Range: 0-0
-	3D structures: 
-  PTM: phosphorylation in protein P01236-1
-    Motif: Motif in protein P01236-1:
-	Name: unknown
-	ELM: unknown
-	Range: 200-214
-	Regex: unknown
-	Instance: LHCLRRDSHKIDNYL
-
-
-    Residue: Residue S-207 in protein P01236-1
-  Data sources: PhosphoSite, phosphoELM, MIMP
-  References: 11943200
-  3D structures: 
-
-</pre>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -18922,7 +18887,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[93]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pa</span><span class="o">.</span><span class="n">load_ptms2</span><span class="p">()</span>
@@ -18935,43 +18900,13 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[97]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">pa</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s1">&#39;ptm&#39;</span><span class="p">][</span><span class="mi">444</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Domain-motif interaction:
-  Domain in protein P17612-1:
-	Name: unknown
-	Range: 0-0
-	3D structures: 
-  PTM: phosphorylation in protein P17600-1
-    Motif: unknown
-
-    Residue: Residue S-9 in protein P17600-1
-  Data sources: MIMP
-  References: 
-  3D structures: 
-
-</pre>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -18993,7 +18928,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[33]:</div>
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">annot</span>
@@ -19015,7 +18950,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[44]:</div>
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pathways</span> <span class="o">=</span> <span class="n">annot</span><span class="o">.</span><span class="n">AnnotationTable</span><span class="p">(</span>
@@ -19043,7 +18978,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[34]:</div>
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pathways</span><span class="o">.</span><span class="n">all_annotations</span><span class="p">(</span><span class="s1">&#39;P00533&#39;</span><span class="p">)</span>
@@ -19059,65 +18994,65 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[34]:</div>
+    <div class="prompt output_prompt">Out[26]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>[SignalinkPathway(pathway=&#39;WNT&#39;),
- SignalinkPathway(pathway=&#39;TNF/Apoptosis&#39;),
- SignalinkPathway(pathway=&#39;RTK&#39;),
- SignalinkPathway(pathway=&#39;IIP&#39;),
- KeggPathway(pathway=&#39;Choline metabolism in cancer&#39;),
- KeggPathway(pathway=&#39;Non-small cell lung cancer&#39;),
- KeggPathway(pathway=&#39;HIF-1 signaling pathway&#39;),
- KeggPathway(pathway=&#39;Breast cancer&#39;),
- KeggPathway(pathway=&#39;Human papillomavirus infection&#39;),
- KeggPathway(pathway=&#39;ErbB signaling pathway&#39;),
- KeggPathway(pathway=&#39;Estrogen signaling pathway&#39;),
- KeggPathway(pathway=&#39;Adherens junction&#39;),
- KeggPathway(pathway=&#39;Phospholipase D signaling pathway&#39;),
- KeggPathway(pathway=&#39;Relaxin signaling pathway&#39;),
- KeggPathway(pathway=&#39;Epithelial cell signaling in Helicobacter pylori infection&#39;),
- KeggPathway(pathway=&#39;Glioma&#39;),
- KeggPathway(pathway=&#39;Hepatocellular carcinoma&#39;),
- KeggPathway(pathway=&#39;Prostate cancer&#39;),
- KeggPathway(pathway=&#39;Endometrial cancer&#39;),
- KeggPathway(pathway=&#39;Human cytomegalovirus infection&#39;),
- KeggPathway(pathway=&#39;EGFR tyrosine kinase inhibitor resistance&#39;),
- KeggPathway(pathway=&#39;Focal adhesion&#39;),
- KeggPathway(pathway=&#39;Regulation of actin cytoskeleton&#39;),
- KeggPathway(pathway=&#39;Cushing syndrome&#39;),
- KeggPathway(pathway=&#39;Endocrine resistance&#39;),
- KeggPathway(pathway=&#39;Central carbon metabolism in cancer&#39;),
- KeggPathway(pathway=&#39;Parathyroid hormone synthesis, secretion and action&#39;),
- KeggPathway(pathway=&#39;Gap junction&#39;),
- KeggPathway(pathway=&#39;GnRH signaling pathway&#39;),
- KeggPathway(pathway=&#39;Hepatitis C&#39;),
- KeggPathway(pathway=&#39;Pancreatic cancer&#39;),
- KeggPathway(pathway=&#39;FoxO signaling pathway&#39;),
- KeggPathway(pathway=&#39;Endocytosis&#39;),
- KeggPathway(pathway=&#39;Oxytocin signaling pathway&#39;),
- KeggPathway(pathway=&#39;Bladder cancer&#39;),
- KeggPathway(pathway=&#39;Pathways in cancer&#39;),
- KeggPathway(pathway=&#39;Melanoma&#39;),
+<pre>[SignalinkPathway(pathway=&#39;TNF/Apoptosis&#39;, core=True),
+ SignalinkPathway(pathway=&#39;RTK&#39;, core=True),
+ SignalinkPathway(pathway=&#39;WNT&#39;, core=True),
+ SignalinkPathway(pathway=&#39;IIP&#39;, core=True),
  KeggPathway(pathway=&#39;Proteoglycans in cancer&#39;),
- KeggPathway(pathway=&#39;Calcium signaling pathway&#39;),
+ KeggPathway(pathway=&#39;Pathways in cancer&#39;),
+ KeggPathway(pathway=&#39;Pancreatic cancer&#39;),
+ KeggPathway(pathway=&#39;Central carbon metabolism in cancer&#39;),
+ KeggPathway(pathway=&#39;Phospholipase D signaling pathway&#39;),
+ KeggPathway(pathway=&#39;Human cytomegalovirus infection&#39;),
+ KeggPathway(pathway=&#39;Oxytocin signaling pathway&#39;),
+ KeggPathway(pathway=&#39;Hepatocellular carcinoma&#39;),
+ KeggPathway(pathway=&#39;Bladder cancer&#39;),
+ KeggPathway(pathway=&#39;Endocrine resistance&#39;),
+ KeggPathway(pathway=&#39;Prostate cancer&#39;),
+ KeggPathway(pathway=&#39;Estrogen signaling pathway&#39;),
+ KeggPathway(pathway=&#39;Breast cancer&#39;),
+ KeggPathway(pathway=&#39;ErbB signaling pathway&#39;),
+ KeggPathway(pathway=&#39;Non-small cell lung cancer&#39;),
+ KeggPathway(pathway=&#39;FoxO signaling pathway&#39;),
+ KeggPathway(pathway=&#39;Glioma&#39;),
+ KeggPathway(pathway=&#39;Parathyroid hormone synthesis, secretion and action&#39;),
+ KeggPathway(pathway=&#39;Regulation of actin cytoskeleton&#39;),
+ KeggPathway(pathway=&#39;Human papillomavirus infection&#39;),
+ KeggPathway(pathway=&#39;GnRH signaling pathway&#39;),
+ KeggPathway(pathway=&#39;Relaxin signaling pathway&#39;),
+ KeggPathway(pathway=&#39;Adherens junction&#39;),
+ KeggPathway(pathway=&#39;EGFR tyrosine kinase inhibitor resistance&#39;),
  KeggPathway(pathway=&#39;Colorectal cancer&#39;),
- NetpathPathway(pathway=&#39;Prolactin&#39;),
+ KeggPathway(pathway=&#39;HIF-1 signaling pathway&#39;),
+ KeggPathway(pathway=&#39;Hepatitis C&#39;),
+ KeggPathway(pathway=&#39;Choline metabolism in cancer&#39;),
+ KeggPathway(pathway=&#39;Epithelial cell signaling in Helicobacter pylori infection&#39;),
+ KeggPathway(pathway=&#39;Melanoma&#39;),
+ KeggPathway(pathway=&#39;Endocytosis&#39;),
+ KeggPathway(pathway=&#39;Focal adhesion&#39;),
+ KeggPathway(pathway=&#39;Cushing syndrome&#39;),
+ KeggPathway(pathway=&#39;Calcium signaling pathway&#39;),
+ KeggPathway(pathway=&#39;Endometrial cancer&#39;),
+ KeggPathway(pathway=&#39;Gap junction&#39;),
  NetpathPathway(pathway=&#39;Leptin&#39;),
- NetpathPathway(pathway=&#39;Androgen receptor (AR)&#39;),
- NetpathPathway(pathway=&#39;Receptor activator of nuclear factor kappa-B ligand (RANKL)&#39;),
- NetpathPathway(pathway=&#39;Tumor necrosis factor (TNF) alpha&#39;),
- NetpathPathway(pathway=&#39;Gastrin&#39;),
- NetpathPathway(pathway=&#39;Alpha6 Beta4 Integrin&#39;),
- NetpathPathway(pathway=&#39;Advanced glycation end-products (AGE/RAGE)&#39;),
  NetpathPathway(pathway=&#39;Epidermal growth factor receptor (EGFR)&#39;),
+ NetpathPathway(pathway=&#39;Gastrin&#39;),
+ NetpathPathway(pathway=&#39;Receptor activator of nuclear factor kappa-B ligand (RANKL)&#39;),
+ NetpathPathway(pathway=&#39;Prolactin&#39;),
  NetpathPathway(pathway=&#39;Follicle-stimulating hormone (FSH)&#39;),
+ NetpathPathway(pathway=&#39;Advanced glycation end-products (AGE/RAGE)&#39;),
+ NetpathPathway(pathway=&#39;Tumor necrosis factor (TNF) alpha&#39;),
+ NetpathPathway(pathway=&#39;Androgen receptor (AR)&#39;),
+ NetpathPathway(pathway=&#39;Alpha6 Beta4 Integrin&#39;),
+ SignorPathway(pathway=&#39;EGFR&#39;),
  SignorPathway(pathway=&#39;Glioblastoma Multiforme&#39;),
- SignorPathway(pathway=&#39;PI3K/AKT&#39;),
- SignorPathway(pathway=&#39;EGFR&#39;)]</pre>
+ SignorPathway(pathway=&#39;PI3K/AKT&#39;)]</pre>
 </div>
 
 </div>
@@ -19128,7 +19063,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[46]:</div>
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pathways</span><span class="o">.</span><span class="n">create_dataframe</span> <span class="o">=</span> <span class="kc">True</span>
@@ -19142,10 +19077,10 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[47]:</div>
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pathways</span><span class="o">.</span><span class="n">df</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pathways</span><span class="o">.</span><span class="n">df</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
 </pre></div>
 
     </div>
@@ -19158,7 +19093,7 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[47]:</div>
+    <div class="prompt output_prompt">Out[32]:</div>
 
 
 
@@ -19187,21 +19122,21 @@ AKT1 - GSK3B
       <th>SignaLink3__GPCR</th>
       <th>SignaLink3__HH</th>
       <th>SignaLink3__HIPPO</th>
-      <th>SignaLink3__Hedgehog(core)</th>
-      <th>SignaLink3__Hedgehog(non-core)</th>
+      <th>SignaLink3__Hedgehog</th>
       <th>SignaLink3__Hippo</th>
       <th>SignaLink3__IIP</th>
+      <th>SignaLink3__JAK/STAT</th>
       <th>...</th>
-      <th>CORUM_Funcat__vacuole or lysosome</th>
-      <th>CORUM_Funcat__vascular organs</th>
-      <th>CORUM_Funcat__vesicle formation</th>
-      <th>CORUM_Funcat__vesicle fusion</th>
-      <th>CORUM_Funcat__vesicle recycling</th>
-      <th>CORUM_Funcat__vesicular transport (Golgi network, etc.)</th>
-      <th>CORUM_Funcat__vessels</th>
-      <th>CORUM_Funcat__visual transduction</th>
-      <th>CORUM_Funcat__water homeostasis</th>
-      <th>HPMR_complex</th>
+      <th>CellPhoneDB_complex__Cytokine receptor IL3 family</th>
+      <th>CellPhoneDB_complex__Cytokine receptor IL6 family</th>
+      <th>CellPhoneDB_complex__Cytokine receptor IL6 family, IL12 subfamily</th>
+      <th>CellPhoneDB_complex__Cytokine receptor family</th>
+      <th>CellPhoneDB_complex__Human IgG receptor</th>
+      <th>CellPhoneDB_complex__Receptor</th>
+      <th>CellPhoneDB_complex__T cell receptor add</th>
+      <th>CellPhoneDB_complex__TGFBeta_receptor_add</th>
+      <th>CellPhoneDB_complex__growth factor receptor</th>
+      <th>CellPhoneDB_complex__hematopoyetic receptor</th>
     </tr>
   </thead>
   <tbody>
@@ -19445,1233 +19380,9 @@ AKT1 - GSK3B
       <td>False</td>
       <td>False</td>
     </tr>
-    <tr>
-      <th>A0A075B6K2</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6K4</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6K5</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6K6</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6N1</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6N2</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6N3</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6N4</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6P5</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6Q5</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6R0</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6R2</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6S0</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6S2</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6S4</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6S5</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6S6</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6T6</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6T7</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>A0A075B6T8</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>Q9Y6U7</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6V0</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6V7</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6W3</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6W5</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6W6</th>
-      <td>True</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6W8</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6X0</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6X1</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6X2</th>
-      <td>True</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>True</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6X3</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6X4</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6X5</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6X6</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6X8</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6X9</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6Y0</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6Y1</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6Y8</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6Y9</th>
-      <td>True</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6Z2</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6Z4</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6Z5</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9Y6Z7</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Q9YNA8</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>S4R3P1</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>S4R3Y5</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>U3KPV4</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>W5XKT8</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>W6CW81</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>...</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
   </tbody>
 </table>
-<p>34397 rows × 1618 columns</p>
+<p>10 rows × 1597 columns</p>
 </div>
 </div>
 
@@ -20691,7 +19402,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[48]:</div>
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">a</span><span class="o">.</span><span class="n">annots</span>
@@ -20707,43 +19418,50 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[48]:</div>
+    <div class="prompt output_prompt">Out[33]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>{&#39;CellPhoneDB&#39;: &lt;pypath.annot.CellPhoneDB at 0x6da1f8add470&gt;,
- &#39;Locate&#39;: &lt;pypath.annot.Locate at 0x6da2470594e0&gt;,
- &#39;GO_Intercell&#39;: &lt;pypath.annot.GOIntercell at 0x6da1f82a0400&gt;,
- &#39;Adhesome&#39;: &lt;pypath.annot.Adhesome at 0x6da1f82a0080&gt;,
- &#39;NetPath&#39;: &lt;pypath.annot.NetpathPathways at 0x6da1f82a0f28&gt;,
- &#39;ComPPI&#39;: &lt;pypath.annot.Comppi at 0x6da1f8932eb8&gt;,
- &#39;Signor&#39;: &lt;pypath.annot.SignorPathways at 0x6da23b1a74a8&gt;,
- &#39;Ramilowski2015&#39;: &lt;pypath.annot.Ramilowski2015 at 0x6da1f84ec588&gt;,
- &#39;Ramilowski_location&#39;: &lt;pypath.annot.Ramilowski2015Location at 0x6da23baaf438&gt;,
- &#39;Exocarta&#39;: &lt;pypath.annot.Exocarta at 0x6da224b4b2b0&gt;,
- &#39;Matrisome&#39;: &lt;pypath.annot.Matrisome at 0x6da1f8026ac8&gt;,
- &#39;Integrins&#39;: &lt;pypath.annot.Integrins at 0x6da1f8031978&gt;,
- &#39;CSPA&#39;: &lt;pypath.annot.CellSurfaceProteinAtlas at 0x6da1f8031630&gt;,
- &#39;HPA&#39;: &lt;pypath.annot.HumanProteinAtlas at 0x6da1f3b9ef28&gt;,
- &#39;Surfaceome&#39;: &lt;pypath.annot.Surfaceome at 0x6da1f89f25c0&gt;,
- &#39;HPMR&#39;: &lt;pypath.annot.HumanPlasmaMembraneReceptome at 0x6da1e7e58d30&gt;,
- &#39;Zhong2015&#39;: &lt;pypath.annot.Zhong2015 at 0x6da1f8019b38&gt;,
- &#39;Membranome&#39;: &lt;pypath.annot.Membranome at 0x6da1e7e695f8&gt;,
- &#39;KEGG&#39;: &lt;pypath.annot.KeggPathways at 0x6da23a689e48&gt;,
- &#39;Kirouac2010&#39;: &lt;pypath.annot.Kirouac2010 at 0x6da1e7e69898&gt;,
- &#39;Guide2Pharma&#39;: &lt;pypath.annot.GuideToPharmacology at 0x6da1d6a302b0&gt;,
- &#39;SignaLink3&#39;: &lt;pypath.annot.SignalinkPathways at 0x6da1d6592320&gt;,
- &#39;OPM&#39;: &lt;pypath.annot.Opm at 0x6da1d6614f60&gt;,
- &#39;Vesiclepedia&#39;: &lt;pypath.annot.Vesiclepedia at 0x6da1d6614dd8&gt;,
- &#39;TopDB&#39;: &lt;pypath.annot.Topdb at 0x6da1d4d159b0&gt;,
- &#39;HGNC&#39;: &lt;pypath.annot.Hgnc at 0x6da1d64db860&gt;,
- &#39;MatrixDB&#39;: &lt;pypath.annot.Matrixdb at 0x6da1d659c390&gt;,
- &#39;CORUM_GO&#39;: &lt;pypath.annot.CorumGO at 0x6da1d5c03a90&gt;,
- &#39;CellPhoneDB_complex&#39;: &lt;pypath.annot.CellPhoneDBComplex at 0x6da1d3314828&gt;,
- &#39;CORUM_Funcat&#39;: &lt;pypath.annot.CorumFuncat at 0x6da1d3351cf8&gt;,
- &#39;HPMR_complex&#39;: &lt;pypath.annot.HpmrComplex at 0x6da1d32ee2e8&gt;}</pre>
+<pre>{&#39;CPAD&#39;: &lt;pypath.annot.Cpad at 0x68fbbbff5dd0&gt;,
+ &#39;DisGeNet&#39;: &lt;pypath.annot.Disgenet at 0x68fb8e004a10&gt;,
+ &#39;SignaLink3&#39;: &lt;pypath.annot.SignalinkPathways at 0x68fb8e8975d0&gt;,
+ &#39;CancerGeneCensus&#39;: &lt;pypath.annot.CancerGeneCensus at 0x68fb9b855810&gt;,
+ &#39;Matrisome&#39;: &lt;pypath.annot.Matrisome at 0x68fb8e853310&gt;,
+ &#39;KEGG&#39;: &lt;pypath.annot.KeggPathways at 0x68fb9c004fd0&gt;,
+ &#39;Integrins&#39;: &lt;pypath.annot.Integrins at 0x68fb9a2903d0&gt;,
+ &#39;Ramilowski_location&#39;: &lt;pypath.annot.Ramilowski2015Location at 0x68fb9a4e6110&gt;,
+ &#39;Signor&#39;: &lt;pypath.annot.SignorPathways at 0x68fb92faf690&gt;,
+ &#39;CancerSEA&#39;: &lt;pypath.annot.Cancersea at 0x68fb91f236d0&gt;,
+ &#39;CSPA&#39;: &lt;pypath.annot.CellSurfaceProteinAtlas at 0x68fbadcf5790&gt;,
+ &#39;Membranome&#39;: &lt;pypath.annot.Membranome at 0x68fbb8013d10&gt;,
+ &#39;Guide2Pharma&#39;: &lt;pypath.annot.GuideToPharmacology at 0x68fba9a143d0&gt;,
+ &#39;OPM&#39;: &lt;pypath.annot.Opm at 0x68fb92f40cd0&gt;,
+ &#39;Kirouac2010&#39;: &lt;pypath.annot.Kirouac2010 at 0x68fbada4c990&gt;,
+ &#39;Zhong2015&#39;: &lt;pypath.annot.Zhong2015 at 0x68fbcb89c050&gt;,
+ &#39;HPA&#39;: &lt;pypath.annot.HumanProteinAtlas at 0x68fbaded3810&gt;,
+ &#39;TopDB&#39;: &lt;pypath.annot.Topdb at 0x68fbae51e1d0&gt;,
+ &#39;Kinases&#39;: &lt;pypath.annot.Kinases at 0x68fbc97a8b90&gt;,
+ &#39;TFcensus&#39;: &lt;pypath.annot.Tfcensus at 0x68fbc2262190&gt;,
+ &#39;Adhesome&#39;: &lt;pypath.annot.Adhesome at 0x68fbc8506f10&gt;,
+ &#39;Ramilowski2015&#39;: &lt;pypath.annot.Ramilowski2015 at 0x68fbc227ad90&gt;,
+ &#39;Phosphatome&#39;: &lt;pypath.annot.Phosphatome at 0x68fbc21cbad0&gt;,
+ &#39;Vesiclepedia&#39;: &lt;pypath.annot.Vesiclepedia at 0x68fb8e22aad0&gt;,
+ &#39;NetPath&#39;: &lt;pypath.annot.NetpathPathways at 0x68fb9bec5750&gt;,
+ &#39;HGNC&#39;: &lt;pypath.annot.Hgnc at 0x68fb96c93d50&gt;,
+ &#39;HPMR&#39;: &lt;pypath.annot.HumanPlasmaMembraneReceptome at 0x68fbe932b490&gt;,
+ &#39;DGIdb&#39;: &lt;pypath.annot.Dgidb at 0x68fbc2fc3150&gt;,
+ &#39;Exocarta&#39;: &lt;pypath.annot.Exocarta at 0x68fbc26a8150&gt;,
+ &#39;CellPhoneDB&#39;: &lt;pypath.annot.CellPhoneDB at 0x68fbc26a87d0&gt;,
+ &#39;Locate&#39;: &lt;pypath.annot.Locate at 0x68fb9fff2e90&gt;,
+ &#39;Surfaceome&#39;: &lt;pypath.annot.Surfaceome at 0x68fb9b13b110&gt;,
+ &#39;MatrixDB&#39;: &lt;pypath.annot.Matrixdb at 0x68fba4fa0e10&gt;,
+ &#39;GO_Intercell&#39;: &lt;pypath.annot.GOIntercell at 0x68fba55ae3d0&gt;,
+ &#39;HPMR_complex&#39;: &lt;pypath.annot.HpmrComplex at 0x68fbc26f35d0&gt;,
+ &#39;CORUM_Funcat&#39;: &lt;pypath.annot.CorumFuncat at 0x68fb95d2a1d0&gt;,
+ &#39;CORUM_GO&#39;: &lt;pypath.annot.CorumGO at 0x68fbc832add0&gt;,
+ &#39;CellPhoneDB_complex&#39;: &lt;pypath.annot.CellPhoneDBComplex at 0x68fbc832edd0&gt;}</pre>
 </div>
 
 </div>
@@ -20762,7 +19480,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[49]:</div>
+<div class="prompt input_prompt">In&nbsp;[34]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">matrisome</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">annots</span><span class="p">[</span><span class="s1">&#39;Matrisome&#39;</span><span class="p">]</span>
@@ -20775,7 +19493,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[50]:</div>
+<div class="prompt input_prompt">In&nbsp;[35]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">matrisome</span><span class="o">.</span><span class="n">get_names</span><span class="p">()</span>
@@ -20791,7 +19509,7 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[50]:</div>
+    <div class="prompt output_prompt">Out[35]:</div>
 
 
 
@@ -20808,7 +19526,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[52]:</div>
+<div class="prompt input_prompt">In&nbsp;[36]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">matrisome</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s1">&#39;subclass&#39;</span><span class="p">)</span>
@@ -20824,7 +19542,7 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[52]:</div>
+    <div class="prompt output_prompt">Out[36]:</div>
 
 
 
@@ -20847,7 +19565,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[53]:</div>
+<div class="prompt input_prompt">In&nbsp;[37]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">matrisome</span><span class="o">.</span><span class="n">get_subset</span><span class="p">(</span><span class="n">subclass</span> <span class="o">=</span> <span class="s1">&#39;Collagens&#39;</span><span class="p">)</span>
@@ -20863,7 +19581,7 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[53]:</div>
+    <div class="prompt output_prompt">Out[37]:</div>
 
 
 
@@ -20892,6 +19610,7 @@ AKT1 - GSK3B
  &#39;C9JPW4&#39;,
  &#39;C9JTN9&#39;,
  Complex Collagen type I homotrimer: COMPLEX:P02452,
+ Complex HT_DM_Cluster278: COMPLEX:P02452-P02462-P08572-P29400-P53420-Q01955-Q02388-Q14031-Q17RW2-Q8NFW1,
  Complex Collagen type I trimer: COMPLEX:P02452-P08123,
  Complex Collagen type II trimer: COMPLEX:P02458,
  Complex Collagen type XI trimer variant 1: COMPLEX:P02458-P12107-P13942,
@@ -21082,7 +19801,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[54]:</div>
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">go</span>
@@ -21096,7 +19815,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[55]:</div>
+<div class="prompt input_prompt">In&nbsp;[39]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">goa</span><span class="o">.</span><span class="n">ontology</span> <span class="c1"># the GeneOntology object</span>
@@ -21112,13 +19831,13 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[55]:</div>
+    <div class="prompt output_prompt">Out[39]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;pypath.go.GeneOntology at 0x6da24311be48&gt;</pre>
+<pre>&lt;pypath.go.GeneOntology at 0x68fb7b2ef610&gt;</pre>
 </div>
 
 </div>
@@ -21129,7 +19848,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[56]:</div>
+<div class="prompt input_prompt">In&nbsp;[40]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">goa</span> <span class="c1"># the GOAnnotation object</span>
@@ -21145,13 +19864,13 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[56]:</div>
+    <div class="prompt output_prompt">Out[40]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;pypath.go.GOAnnotation at 0x6da24311bbe0&gt;</pre>
+<pre>&lt;pypath.go.GOAnnotation at 0x68fb7b2ef250&gt;</pre>
 </div>
 
 </div>
@@ -21170,7 +19889,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[58]:</div>
+<div class="prompt input_prompt">In&nbsp;[41]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;(cell surface OR</span>
@@ -21196,7 +19915,7 @@ AKT1 - GSK3B
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[&#39;O15400&#39;, &#39;P62258&#39;, &#39;P0DP23&#39;, &#39;Q8N335&#39;, &#39;P05771&#39;, &#39;Q9Y6J6&#39;, &#39;P57796&#39;]
+<pre>[&#39;P63244&#39;, &#39;Q07699&#39;, &#39;P46934&#39;, &#39;P62258&#39;, &#39;Q16651&#39;, &#39;P57796&#39;, &#39;Q9ULB1&#39;]
 </pre>
 </div>
 </div>
@@ -21207,7 +19926,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[69]:</div>
+<div class="prompt input_prompt">In&nbsp;[42]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">goa</span><span class="o">.</span><span class="n">ontology</span><span class="o">.</span><span class="n">get_all_descendants</span><span class="p">(</span><span class="s1">&#39;GO:0005576&#39;</span><span class="p">)</span>
@@ -21223,7 +19942,7 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[69]:</div>
+    <div class="prompt output_prompt">Out[42]:</div>
 
 
 
@@ -21461,7 +20180,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="nb">complex</span>
@@ -21472,10 +20191,49 @@ AKT1 - GSK3B
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+	=== d i s c l a i m e r ===
+
+	All data accessed through this module,
+	either as redistributed copy or downloaded using the
+	programmatic interfaces included in the present module,
+	are free to use at least for academic research or
+	education purposes.
+	Please be aware of the licenses of all the datasets
+	you use in your analysis, and please give appropriate
+	credits for the original sources when you publish your
+	results. To find out more about data sources please
+	look at `pypath.descriptions` or
+	http://omnipathdb.org/info and 
+	`pypath.data_formats.urls`.
+
+[2019-08-30 16:36:40] [pypath] 
+	- session ID: `hca38`
+	- working directory: `/home/denes/Dokumentumok/norwich2019`
+	- logfile: `/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-hca38.log`
+	- pypath version: 0.8.30
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[72]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">complexdb</span>
@@ -21491,13 +20249,13 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[72]:</div>
+    <div class="prompt output_prompt">Out[4]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;pypath.complex.ComplexAggregator at 0x6da2347f92b0&gt;</pre>
+<pre>&lt;pypath.complex.ComplexAggregator at 0x61b5bb1d2610&gt;</pre>
 </div>
 
 </div>
@@ -21516,7 +20274,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">complexdb</span><span class="o">.</span><span class="n">proteins</span><span class="p">[</span><span class="s1">&#39;P42345&#39;</span><span class="p">]</span>
@@ -21532,7 +20290,7 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[32]:</div>
+    <div class="prompt output_prompt">Out[5]:</div>
 
 
 
@@ -21573,7 +20331,7 @@ AKT1 - GSK3B
  Complex: COMPLEX:O43156-P25490-P42345-Q6PI98-Q8NBZ0-Q9H6T3-Q9H981-Q9H9F9-Q9Y230-Q9Y265-Q9Y5K5,
  Complex: COMPLEX:O43156-P30533-P42345-Q14677-Q9H6T3-Q9Y230-Q9Y265,
  Complex: COMPLEX:O43156-P42345-P54278-Q6NUQ4-Q9BVM2-Q9H6T3-Q9Y230-Q9Y265,
- Complex: COMPLEX:O43156-P42345-P61254-P63092-Q9BVM2-Q9H6T3-Q9Y230-Q9Y265,
+ Complex: COMPLEX:O43156-P42345-P61254-Q5JWF2-Q9BVM2-Q9H6T3-Q9Y230-Q9Y265,
  Complex: COMPLEX:O43156-P42345-P63104-Q6NXG1-Q9BVM2-Q9H6T3-Q9NX40-Q9Y230-Q9Y265,
  Complex: COMPLEX:O43156-P42345-Q14677-Q9H6T3-Q9Y230-Q9Y265-Q9Y4A5,
  Complex: COMPLEX:O43156-P42345-Q15029-Q96MX6-Q9H6T3-Q9Y230-Q9Y265,
@@ -21632,7 +20390,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[100]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">cplex</span> <span class="o">=</span> <span class="n">complexdb</span><span class="o">.</span><span class="n">complexes</span><span class="p">[</span><span class="s1">&#39;COMPLEX:P42345-Q13451&#39;</span><span class="p">]</span>
@@ -21645,7 +20403,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[101]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">cplex</span><span class="o">.</span><span class="n">components</span> <span class="c1"># stoichiometry</span>
@@ -21661,7 +20419,7 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[101]:</div>
+    <div class="prompt output_prompt">Out[7]:</div>
 
 
 
@@ -21678,7 +20436,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[102]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">cplex</span><span class="o">.</span><span class="n">sources</span> <span class="c1"># resources</span>
@@ -21694,7 +20452,7 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[102]:</div>
+    <div class="prompt output_prompt">Out[8]:</div>
 
 
 
@@ -21762,7 +20520,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">main</span>
@@ -21777,7 +20535,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pa</span> <span class="o">=</span> <span class="n">main</span><span class="o">.</span><span class="n">PyPath</span><span class="p">()</span>
@@ -21788,28 +20546,10 @@ AKT1 - GSK3B
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">Network</span><span class="o">.</span><span class="n">from_igraph</span><span class="p">(</span><span class="n">pa</span><span class="p">)</span>
@@ -21822,184 +20562,13 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">records</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[8]:</div>
-
-
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>id_a</th>
-      <th>id_b</th>
-      <th>type_a</th>
-      <th>type_b</th>
-      <th>directed</th>
-      <th>effect</th>
-      <th>type</th>
-      <th>sources</th>
-      <th>references</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>P55072</td>
-      <td>Q13563</td>
-      <td>protein</td>
-      <td>protein</td>
-      <td>False</td>
-      <td>0</td>
-      <td>[PPI]</td>
-      <td>{TRIP}</td>
-      <td>{18178578}</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>P55072</td>
-      <td>Q14191</td>
-      <td>protein</td>
-      <td>protein</td>
-      <td>False</td>
-      <td>0</td>
-      <td>[PPI]</td>
-      <td>{SPIKE}</td>
-      <td>{17145710, 15037256}</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>Q9Y243</td>
-      <td>P55072</td>
-      <td>protein</td>
-      <td>protein</td>
-      <td>True</td>
-      <td>1</td>
-      <td>[PPI]</td>
-      <td>{Signor}</td>
-      <td>{16551632}</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>P31749</td>
-      <td>P55072</td>
-      <td>protein</td>
-      <td>protein</td>
-      <td>True</td>
-      <td>1</td>
-      <td>[PPI]</td>
-      <td>{Signor}</td>
-      <td>{16551632}</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>P78527</td>
-      <td>P55072</td>
-      <td>protein</td>
-      <td>protein</td>
-      <td>True</td>
-      <td>1</td>
-      <td>[PPI]</td>
-      <td>{SPIKE}</td>
-      <td>{16140914}</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>P31751</td>
-      <td>P55072</td>
-      <td>protein</td>
-      <td>protein</td>
-      <td>True</td>
-      <td>1</td>
-      <td>[PPI]</td>
-      <td>{Signor}</td>
-      <td>{16551632}</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>P16871</td>
-      <td>P55072</td>
-      <td>protein</td>
-      <td>protein</td>
-      <td>True</td>
-      <td>0</td>
-      <td>[PPI]</td>
-      <td>{SignaLink3}</td>
-      <td>{20167604}</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>P05161</td>
-      <td>P55072</td>
-      <td>protein</td>
-      <td>protein</td>
-      <td>True</td>
-      <td>0</td>
-      <td>[PPI]</td>
-      <td>{SignaLink3}</td>
-      <td>{16009940}</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>P14784</td>
-      <td>P55072</td>
-      <td>protein</td>
-      <td>protein</td>
-      <td>True</td>
-      <td>0</td>
-      <td>[PPI]</td>
-      <td>{SignaLink3}</td>
-      <td>{11086075}</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>P55072</td>
-      <td>Q01113</td>
-      <td>protein</td>
-      <td>protein</td>
-      <td>False</td>
-      <td>0</td>
-      <td>[PPI]</td>
-      <td>{Wang}</td>
-      <td>{}</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -22057,10 +20626,10 @@ AKT1 - GSK3B
 	http://omnipathdb.org/info and 
 	`pypath.data_formats.urls`.
 
-[2019-08-30 12:47:37] [pypath] 
-	- session ID: `4611w`
+[2019-09-02 13:23:28] [pypath] 
+	- session ID: `vc1lm`
 	- working directory: `/home/denes/Dokumentumok/norwich2019`
-	- logfile: `/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-4611w.log`
+	- logfile: `/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-vc1lm.log`
 	- pypath version: 0.8.30
 
 </pre>
@@ -22103,7 +20672,7 @@ AKT1 - GSK3B
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;pypath.session_mod.Session at 0x6d0838696cd0&gt;</pre>
+<pre>&lt;pypath.session_mod.Session at 0x68fc081b9e90&gt;</pre>
 </div>
 
 </div>
@@ -22114,7 +20683,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pypath</span><span class="o">.</span><span class="n">session_mod</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fname</span>
@@ -22130,13 +20699,13 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[5]:</div>
+    <div class="prompt output_prompt">Out[3]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&#39;/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-4611w.log&#39;</pre>
+<pre>&#39;/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-vc1lm.log&#39;</pre>
 </div>
 
 </div>
@@ -22147,7 +20716,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pypath</span><span class="o">.</span><span class="n">session_mod</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">label</span>
@@ -22163,13 +20732,13 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[7]:</div>
+    <div class="prompt output_prompt">Out[4]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&#39;4611w&#39;</pre>
+<pre>&#39;vc1lm&#39;</pre>
 </div>
 
 </div>
@@ -22188,7 +20757,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pypath</span><span class="o">.</span><span class="n">session_mod</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s1">&#39;Greetings from the pypath tutorial notebook! :)&#39;</span><span class="p">)</span>
@@ -22201,7 +20770,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pypath</span><span class="o">.</span><span class="n">session_mod</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
@@ -22215,7 +20784,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">messages</span><span class="p">))</span>
@@ -22235,15 +20804,15 @@ AKT1 - GSK3B
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[2019-08-30 12:47:37] Welcome!
-[2019-08-30 12:47:37] Logger started, logging into `/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-4611w.log`.
-[2019-08-30 12:47:37] Session `4611w` started.
-[2019-08-30 12:47:37] [pypath] 
-	- session ID: `4611w`
+<pre>[2019-09-02 13:23:28] Welcome!
+[2019-09-02 13:23:28] Logger started, logging into `/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-vc1lm.log`.
+[2019-09-02 13:23:28] Session `vc1lm` started.
+[2019-09-02 13:23:28] [pypath] 
+	- session ID: `vc1lm`
 	- working directory: `/home/denes/Dokumentumok/norwich2019`
-	- logfile: `/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-4611w.log`
+	- logfile: `/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-vc1lm.log`
 	- pypath version: 0.8.30
-[2019-08-30 12:53:00] Greetings from the pypath tutorial notebook! :)
+[2019-09-02 13:23:40] Greetings from the pypath tutorial notebook! :)
 
 </pre>
 </div>
@@ -22263,7 +20832,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">ChildOfLogger</span><span class="p">(</span><span class="n">pypath</span><span class="o">.</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
@@ -22300,17 +20869,16 @@ AKT1 - GSK3B
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[2019-08-30 12:47:37] Welcome!
-[2019-08-30 12:47:37] Logger started, logging into `/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-4611w.log`.
-[2019-08-30 12:47:37] Session `4611w` started.
-[2019-08-30 12:47:37] [pypath] 
-	- session ID: `4611w`
+<pre>[2019-09-02 13:23:28] Welcome!
+[2019-09-02 13:23:28] Logger started, logging into `/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-vc1lm.log`.
+[2019-09-02 13:23:28] Session `vc1lm` started.
+[2019-09-02 13:23:28] [pypath] 
+	- session ID: `vc1lm`
 	- working directory: `/home/denes/Dokumentumok/norwich2019`
-	- logfile: `/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-4611w.log`
+	- logfile: `/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-vc1lm.log`
 	- pypath version: 0.8.30
-[2019-08-30 12:53:00] Greetings from the pypath tutorial notebook! :)
-[2019-08-30 12:59:46] [child] Have a nice day! :D
-[2019-08-30 13:00:22] [child] Have a nice day! :D
+[2019-09-02 13:23:40] Greetings from the pypath tutorial notebook! :)
+[2019-09-02 13:24:00] [child] Have a nice day! :D
 
 </pre>
 </div>
@@ -22338,7 +20906,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">main</span>
@@ -22372,7 +20940,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[26]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pypath</span><span class="o">.</span><span class="n">session_mod</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
@@ -22395,25 +20963,25 @@ AKT1 - GSK3B
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[2019-08-30 13:07:21] [network] Edge attribute `negative_refs` has only None values
-[2019-08-30 13:07:22] [network] load_resources(): all resources have been loaded, current number of nodes: 5243, edges: 22796
-[2019-08-30 13:07:22] [network] Removing duplicate edges...
-[2019-08-30 13:07:23] [network] After duplicate edge removal: number of nodes: 5243, edges: 22214
-[2019-08-30 13:07:23] [network] After removing unmapped nodes: number of nodes: 5243, edges: 22214
-[2019-08-30 13:07:23] [network] Updating network component lookup dictionaries.
-[2019-08-30 13:07:23] [network] Updating vertex labels.
-[2019-08-30 13:07:23] [network] After removing unknown organism nodes: number of nodes: 5243, edges: 22214
-[2019-08-30 13:07:23] [network] Updating network component lookup dictionaries.
-[2019-08-30 13:07:23] [network] Updating vertex labels.
-[2019-08-30 13:07:23] [network] Checking network components against reference lists.
-[2019-08-30 13:07:23] [reflists] ReferenceListManager has been created.
-[2019-08-30 13:07:23] [reflists] Reference list for ID type `uniprot` for organism `9606` has been loaded from `/home/denes/.pypath/cache/1f4ae16dfa769c5591aceeef23928803`.
-[2019-08-30 13:07:24] [network] Updating network component lookup dictionaries.
-[2019-08-30 13:07:24] [network] Updating vertex labels.
-[2019-08-30 13:07:24] [network] After removing zero degree nodes: number of node: 5213, edges: 22214
-[2019-08-30 13:07:24] [network] Updating network component lookup dictionaries.
-[2019-08-30 13:07:24] [network] Updating vertex labels.
-[2019-08-30 13:07:24] [network] Network has been built with 22214 interactions between 5213 nodes from 14 resources
+<pre>[2019-09-02 13:26:15] [network] Edge attribute `negative` has only None values
+[2019-09-02 13:26:17] [network] load_resources(): all resources have been loaded, current number of nodes: 5243, edges: 22796
+[2019-09-02 13:26:17] [network] Removing duplicate edges...
+[2019-09-02 13:26:18] [network] After duplicate edge removal: number of nodes: 5243, edges: 22214
+[2019-09-02 13:26:18] [network] After removing unmapped nodes: number of nodes: 5243, edges: 22214
+[2019-09-02 13:26:18] [network] Updating network component lookup dictionaries.
+[2019-09-02 13:26:18] [network] Updating vertex labels.
+[2019-09-02 13:26:18] [network] After removing unknown organism nodes: number of nodes: 5243, edges: 22214
+[2019-09-02 13:26:18] [network] Updating network component lookup dictionaries.
+[2019-09-02 13:26:18] [network] Updating vertex labels.
+[2019-09-02 13:26:18] [network] Checking network components against reference lists.
+[2019-09-02 13:26:18] [reflists] ReferenceListManager has been created.
+[2019-09-02 13:26:18] [reflists] Reference list for ID type `uniprot` for organism `9606` has been loaded from `/home/denes/.pypath/cache/1f4ae16dfa769c5591aceeef23928803`.
+[2019-09-02 13:26:18] [network] Updating network component lookup dictionaries.
+[2019-09-02 13:26:18] [network] Updating vertex labels.
+[2019-09-02 13:26:18] [network] After removing zero degree nodes: number of node: 5213, edges: 22214
+[2019-09-02 13:26:18] [network] Updating network component lookup dictionaries.
+[2019-09-02 13:26:18] [network] Updating vertex labels.
+[2019-09-02 13:26:19] [network] Network has been built with 22214 interactions between 5213 nodes from 14 resources
 
 </pre>
 </div>
@@ -22440,7 +21008,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[36]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">main</span>
@@ -22455,7 +21023,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[37]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pa</span> <span class="o">=</span> <span class="n">main</span><span class="o">.</span><span class="n">PyPath</span><span class="p">()</span>
@@ -22463,24 +21031,6 @@ AKT1 - GSK3B
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>
-</pre>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -22495,7 +21045,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">bel</span><span class="o">.</span><span class="n">Bel</span><span class="p">(</span><span class="n">resource</span> <span class="o">=</span> <span class="n">pa</span><span class="p">)</span>
@@ -22516,7 +21066,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[39]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
@@ -22532,13 +21082,13 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[39]:</div>
+    <div class="prompt output_prompt">Out[14]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;pypath.bel.Bel at 0x6d07c6636e50&gt;</pre>
+<pre>&lt;pypath.bel.Bel at 0x68fbbc954d50&gt;</pre>
 </div>
 
 </div>
@@ -22549,7 +21099,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[40]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span><span class="o">.</span><span class="n">bel_graph</span>
@@ -22565,13 +21115,13 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[40]:</div>
+    <div class="prompt output_prompt">Out[15]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;pybel.struct.graph.BELGraph at 0x6d07c6c5e6d0&gt;</pre>
+<pre>&lt;pybel.struct.graph.BELGraph at 0x68fbbc954d90&gt;</pre>
 </div>
 
 </div>
@@ -22582,7 +21132,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[43]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span><span class="o">.</span><span class="n">bel_graph</span><span class="o">.</span><span class="n">summarize</span><span class="p">()</span>
@@ -22620,7 +21170,7 @@ Number of Warnings: 0
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[45]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span><span class="o">.</span><span class="n">export_relationships</span><span class="p">(</span><span class="s1">&#39;omnipath_pathways.bel&#39;</span><span class="p">)</span>
@@ -22633,7 +21183,7 @@ Number of Warnings: 0
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[46]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;omnipath_pathways.bel&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
@@ -22647,7 +21197,7 @@ Number of Warnings: 0
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[49]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">bel_str</span><span class="p">[:</span><span class="mi">333</span><span class="p">])</span>
@@ -22668,17 +21218,16 @@ Number of Warnings: 0
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Subject	Predicate	Object
-Q02363	association	Q13563
-Q02363	association	Q13563
-Q02363	directlyDecreases	Q92858
-Q02363	directlyDecreases	Q92858
-Q13563	association	Q9Y3M2
-Q13563	association	Q9Y3M2
-Q13563	association	Q9Y5K6
-Q13563	association	Q9Y5K6
-Q13563	directlyIncreases	Q13507
-Q13563	directlyIncreases	Q13507
-Q13563	directlyIncreases
+P05937	directlyIncreases	Q9NQA5
+P05937	directlyIncreases	Q9NQA5
+Q9NQA5	directlyIncreases	Q9H1D0
+Q9NQA5	directlyIncreases	Q9H1D0
+Q9NQA5	directlyIncreases	Q9H1D0
+Q9NQA5	directlyIncreases	Q9H1D0
+Q9NQA5	directlyIncreases	Q8TDD5
+Q9NQA5	directlyIncreases	Q8TDD5
+Q9UEF7	directlyIncreases	Q9NQA5
+Q9UEF7	directlyIncre
 </pre>
 </div>
 </div>
@@ -22687,15 +21236,500 @@ Q13563	directlyIncreases
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="21:-CellPhoneDB-export-">21: CellPhoneDB export <a class="anchor" id="cellphonedb" /><a class="anchor-link" href="#21:-CellPhoneDB-export-">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>CellPhoneDB is a statistical method and a database for inferring inter-cellular communication pathways between specific cell types from single-cell data. OmniPath/pypath uses CellPhoneDB as a resource for interaction, protein complex and annotation data. Apart from this, pypath is able to export its data in the appropriate format to provide input for the CellPhoneDB Python module. For this you can use the <code>pypath.cellphonedb</code> module:</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">cellphonedb</span>
+<span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">settings</span>
+
+<span class="n">settings</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">network_expand_complexes</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Here you can provide parameters for the network or provide an already built network. Also you can provide the datasets as pickles to make them load really fast. Otherwise this step will take quite long.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="n">cellphonedb</span><span class="o">.</span><span class="n">CellPhoneDB</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>You can access each of the CellPhoneDB input files as a <code>pandas.DataFrame</code> and also they've been exported to csv files. For example the <code>interaction_input.csv</code> contains interactions from all the resources used for building the network (here Signor, SingnaLink, etc.):</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">interaction_dataframe</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[4]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id_cp_interaction</th>
+      <th>partner_a</th>
+      <th>partner_b</th>
+      <th>protein_name_a</th>
+      <th>protein_name_b</th>
+      <th>annotation_strategy</th>
+      <th>source</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>CPI-000001</td>
+      <td>Q13976</td>
+      <td>P50552</td>
+      <td>KGP1_HUMAN</td>
+      <td>VASP_HUMAN</td>
+      <td>KEGG,OmniPath,Signor</td>
+      <td>PMID: ,PMID: 2576312,PMID: 4679200</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>CPI-000001</td>
+      <td>Q13976</td>
+      <td>Q92934</td>
+      <td>KGP1_HUMAN</td>
+      <td>BAD_HUMAN</td>
+      <td>KEGG,OmniPath</td>
+      <td>PMID:</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>CPI-000002</td>
+      <td>Q13976</td>
+      <td>Q13164</td>
+      <td>KGP1_HUMAN</td>
+      <td>MK07_HUMAN</td>
+      <td>OmniPath,Wang</td>
+      <td>PMID:</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>CPI-000003</td>
+      <td>Q13976</td>
+      <td>Q13153</td>
+      <td>KGP1_HUMAN</td>
+      <td>PAK1_HUMAN</td>
+      <td>OmniPath,SignaLink3</td>
+      <td>PMID: 16490784</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>CPI-000004</td>
+      <td>Q13976</td>
+      <td>Q02156</td>
+      <td>KGP1_HUMAN</td>
+      <td>KPCE_HUMAN</td>
+      <td>KEGG,OmniPath</td>
+      <td>PMID:</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>CPI-000005</td>
+      <td>P17252</td>
+      <td>Q13976</td>
+      <td>KPCA_HUMAN</td>
+      <td>KGP1_HUMAN</td>
+      <td>OmniPath,Signor</td>
+      <td>PMID: 12609995</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>CPI-000006</td>
+      <td>Q13976</td>
+      <td>P04792</td>
+      <td>KGP1_HUMAN</td>
+      <td>HSPB1_HUMAN</td>
+      <td>OmniPath,Signor</td>
+      <td>PMID: 19593530</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>CPI-000007</td>
+      <td>Q13976</td>
+      <td>P11831</td>
+      <td>KGP1_HUMAN</td>
+      <td>SRF_HUMAN</td>
+      <td>OmniPath,Signor</td>
+      <td>PMID: 19778940</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>CPI-000008</td>
+      <td>Q13976</td>
+      <td>Q16539</td>
+      <td>KGP1_HUMAN</td>
+      <td>MK14_HUMAN</td>
+      <td>KEGG,OmniPath</td>
+      <td>PMID:</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>CPI-000009</td>
+      <td>Q13976</td>
+      <td>Q14847</td>
+      <td>KGP1_HUMAN</td>
+      <td>LASP1_HUMAN</td>
+      <td>OmniPath,Signor</td>
+      <td>PMID: 12571245</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The proteins and complexes are annotated (transmembrane, peripheral, secreted, etc.) using data from the <code>pypath.intercell</code> module (identical to the <a href="http://omnipathdb.org/intercell">http://omnipathdb.org/intercell</a> query of the web service):</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">protein_dataframe</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[15]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>uniprot</th>
+      <th>protein_name</th>
+      <th>transmembrane</th>
+      <th>peripheral</th>
+      <th>secreted</th>
+      <th>secreted_desc</th>
+      <th>secreted_highlight</th>
+      <th>receptor</th>
+      <th>receptor_desc</th>
+      <th>integrin</th>
+      <th>other</th>
+      <th>other_desc</th>
+      <th>tags</th>
+      <th>tags_reason</th>
+      <th>tags_description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>O14905</td>
+      <td>WNT9B_HUMAN</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td></td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Q14790</td>
+      <td>CASP8_HUMAN</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td></td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Q92729</td>
+      <td>PTPRU_HUMAN</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td></td>
+      <td></td>
+      <td>True</td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>P01258</td>
+      <td>CALC_HUMAN</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td></td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>P01833</td>
+      <td>PIGR_HUMAN</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td></td>
+      <td></td>
+      <td>True</td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Q9HCX4</td>
+      <td>TRPC7_HUMAN</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td></td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Q10588</td>
+      <td>BST1_HUMAN</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td></td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Q92845</td>
+      <td>KIFA3_HUMAN</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td></td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>O60258</td>
+      <td>FGF17_HUMAN</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td></td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>P51679</td>
+      <td>CCR4_HUMAN</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td></td>
+      <td></td>
+      <td>True</td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
 </div>
 </div>
 
