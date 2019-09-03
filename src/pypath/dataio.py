@@ -137,14 +137,11 @@ CellPhoneDBAnnotation = collections.namedtuple(
     'CellPhoneDBAnnotation',
     (
         'receptor',
-        'adhesion',
-        'cytoplasm',
+        'receptor_class',
         'peripheral',
-        'secretion',
         'secreted',
-        'transporter',
+        'secreted_class',
         'transmembrane',
-        'extracellular',
         'integrin',
     )
 )
@@ -6186,9 +6183,9 @@ def _cellphonedb_annotations(url, name_method):
     def get_desc(rec, attr):
 
         desc = '%s_desc' % attr
-
+        
         return (
-            None if (
+            '' if (
                 attr in rec and rec[attr] == 'False' or
                 attr not in rec and not rec[desc]
             ) else
@@ -6214,16 +6211,19 @@ def _cellphonedb_annotations(url, name_method):
         for name in names:
             
             annot[name] = record(
-                receptor = get_desc(rec, 'receptor'),
-                adhesion = get_bool(rec, 'adhesion'),
-                cytoplasm = get_bool(rec, 'cytoplasm'),
+                receptor = get_bool(rec, 'receptor'),
+                receptor_class = (
+                    get_desc(rec, 'receptor').replace('_add', '').lower() or
+                    None
+                ),
                 peripheral = get_bool(rec, 'peripheral'),
-                secretion = get_bool(rec, 'secretion'),
-                secreted = get_desc(rec, 'secreted'),
-                transporter = get_bool(rec, 'transporter'),
+                secreted = get_bool(rec, 'secreted'),
+                secreted_class = (
+                    get_desc(rec, 'secreted').replace(' | ', ',').lower() or
+                    None
+                ),
                 transmembrane = get_bool(rec, 'transmembrane'),
-                extracellular = get_bool(rec, 'extracellular'),
-                integrin = get_bool(rec, 'integrin_interaction'),
+                integrin = get_bool(rec, 'integrin'),
             )
 
     return annot
