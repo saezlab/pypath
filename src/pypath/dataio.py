@@ -9299,7 +9299,11 @@ def get_ccmap(organism = 9606):
     return interactions
 
 
-def cancer_gene_census_annotations(user = None, passwd = None):
+def cancer_gene_census_annotations(
+        user = None,
+        passwd = None,
+        credentials_fname = 'cosmic_credentials',
+    ):
     """
     Retrieves a list of cancer driver genes (Cancer Gene Census) from
     the Sanger COSMIC (Catalogue of Somatic Mutations in Cancer) database.
@@ -9312,7 +9316,29 @@ def cancer_gene_census_annotations(user = None, passwd = None):
         credentials = settings.get('cosmic_credentials')
 
         if not credentials:
-
+            
+            if os.path.exists(credentials_fname):
+                
+                _log(
+                    'Reading COSMIC credentials '
+                    'from file `%s`.' % credentials_fname
+                )
+                
+                with open(credentials_fname, 'r') as fp:
+                    
+                    credentials = dict(
+                        zip(
+                            ('user', 'passwd'),
+                            fp.read().split('\n')[:2],
+                        )
+                    )
+            
+        else:
+            
+            _log('COSMIC credentials provided by `settings`.')
+        
+        if not credentials or {'user', 'passwd'} - set(credentials.keys()):
+            
             _log(
                 'No credentials available for the COSMIC website. '
                 'Either set the `cosmic_credentials` key in the `settings` '
@@ -9346,7 +9372,11 @@ def cancer_gene_census_annotations(user = None, passwd = None):
 
     def multi_field(content):
 
-        return tuple(sorted(i.strip() for i in content.split(',')))
+        return (
+            tuple(sorted(i.strip() for i in content.split(',')))
+                if content.strip() else
+            ()
+        )
 
 
     url = urls.urls['cgc']['url_new']
@@ -9413,9 +9443,9 @@ def cancer_gene_census_annotations(user = None, passwd = None):
                         multi_field(rec['Cancer Syndrome'])
                     ),
                     tissue_type = (
-                        multi_field(rec['Tissue Type'])
+                        multi_field(rec['Tissue Type'].replace(' ', ''))
                     ),
-                    genetics = rec['Molecular Genetics'].strip(),
+                    genetics = rec['Molecular Genetics'].strip() or None,
                     role = (
                         multi_field(rec['Role in Cancer'])
                     ),
