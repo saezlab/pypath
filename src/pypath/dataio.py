@@ -80,6 +80,7 @@ import time
 import itertools
 import collections
 from collections import Counter
+import functools
 import gzip
 import xlrd
 import bs4
@@ -10979,6 +10980,44 @@ def get_tfregulons(
     For details see https://github.com/saezlab/DoRothEA.
     """
     
+    
+    def process_sources(sources):
+        
+        upper = (
+            'jaspar',
+            'trred',
+            'kegg',
+            'trrust',
+            'tred',
+            'trrd',
+            'hocomoco',
+            'fantom4',
+        )
+        
+        special_case = {
+            'tfact': 'TFactS',
+            'oreganno': 'ORegAnno',
+            'reviews': 'DoRothEA_reviews',
+        }
+        
+        
+        revia = re.compile(r',|_via_')
+        
+        sources = functools.reduce(
+            lambda s, r: s.replace(r, r.upper()),
+            upper,
+            sources,
+        )
+        
+        sources = functools.reduce(
+            lambda s, r: s.replace(*r),
+            iteritems(special_case),
+            sources,
+        )
+        
+        return ','.join(revia.split(sources))
+    
+    
     evidence_types = (
         'chipSeq',
         'TFbindingMotif',
@@ -11057,7 +11096,7 @@ def get_tfregulons(
                     ),
                     # all data sources (or only the curated ones)
                     (
-                        (
+                        process_sources(
                             ','.join(
                             rec[key]
                                 for key in
@@ -11076,6 +11115,12 @@ def get_tfregulons(
                 )
             ))
         )
+
+
+# synonyms
+tfregulons_interactions = get_tfregulons
+get_dorothea = get_tfregulons
+dorothea_interactions = get_tfregulons
 
 
 def stitch_interactions(threshold = None):

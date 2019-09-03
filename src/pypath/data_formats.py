@@ -1558,8 +1558,13 @@ transcription = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
-    )
+    ),
 }
+
+# synonyms
+dorothea = transcription
+tfregulons = transcription
+
 
 '''
 Old transctiptional regulation input formats.
