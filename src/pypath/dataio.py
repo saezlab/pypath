@@ -7770,27 +7770,53 @@ def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
     sys.stdout.flush()
 
 
-def get_kinases():
+def kinasedotcom_annotations():
     """
-    Downloads and processes the list of all human kinases.
-    Returns a list of GeneSymbols.
+    Downloads and processes kinase annotations from kinase.com.
     """
-
+    
+    KinasedotcomAnnotation = collections.namedtuple(
+        'KinasedotcomAnnotation',
+        ['group', 'family', 'subfamily']
+    )
+    KinasedotcomAnnotation.__new__.__defaults__ = (None,)
+    
+    
+    def add_record(uniprot, rec, offset = 2):
+        
+        if rec[offset].strip():
+            
+            result[uniprot].add(
+                KinasedotcomAnnotation(
+                    group = rec[offset].strip(),
+                    family = rec[offset + 1].strip(),
+                    subfamily = rec[offset + 2].strip() or None,
+                )
+            )
+    
+    
     url = urls.urls['kinome']['url']
     c = curl.Curl(url, large = True, silent = False)
     xlsf = c.fileobj
     xlsname = xlsf.name
     xlsf.close()
     tbl = read_xls(xlsname)
-
-    kinases = {
-        mapping.map_name0(l[23], 'genesymbol', 'uniprot')
-        for l in tbl[1:] if len(l[23]) > 0
-    }
-
-    kinases.discard(None)
-
-    return kinases
+    
+    result = collections.defaultdict(set)
+    
+    for rec in tbl:
+        
+        uniprots = mapping.map_name(rec[23].strip(), 'genesymbol', 'uniprot')
+        
+        for uniprot in uniprots:
+            
+            add_record(uniprot, rec)
+            
+            if rec[12].strip():
+                
+                add_record(uniprot, rec, offset = 12)
+    
+    return result
 
 
 def phosphatome_annotations():
@@ -8877,7 +8903,7 @@ def signalink_pathway_annotations():
         for pathway in i[8].split(';'):
             
             core = 'non-core' not in pathway
-            pathway = pathway.split('(')[0].strip()
+            pathway = pathway.split('(')[0].strip().replace('/Wingless', '')
             
             result[i[0]].add(
                 SignalinkPathway(pathway = pathway, core = core)
@@ -8886,7 +8912,7 @@ def signalink_pathway_annotations():
         for pathway in i[9].split(';'):
             
             core = 'non-core' not in pathway
-            pathway = pathway.split('(')[0].strip()
+            pathway = pathway.split('(')[0].strip().replace('/Wingless', '')
             
             result[i[1]].add(
                 SignalinkPathway(pathway = pathway, core = core)

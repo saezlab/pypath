@@ -82,11 +82,10 @@ protein_sources_default = {
     'NetpathPathways',
     'Cpad',
     'Disgenet',
-    'Kinases',
+    'Kinasedotcom',
     'Phosphatome',
     'Tfcensus',
     'Intogen',
-    'Kinases',
     'CancerGeneCensus',
     'Cancersea',
 }
@@ -1621,9 +1620,9 @@ class HumanPlasmaMembraneReceptome(AnnotationBase):
         del self.data
 
 
-class Kinases(AnnotationBase):
+class Kinasedotcom(AnnotationBase):
     
-    _eq_fields = ()
+    _eq_fields = ('group', 'family')
     
     
     def __init__(self, **kwargs):
@@ -1633,10 +1632,18 @@ class Kinases(AnnotationBase):
 
         AnnotationBase.__init__(
             self,
-            name = 'Kinases',
-            input_method = 'get_kinases',
+            name = 'kinase.com',
+            input_method = 'kinasedotcom_annotations',
             **kwargs
         )
+    
+    
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
 
 
 class Tfcensus(AnnotationBase):
@@ -1673,6 +1680,14 @@ class Dgidb(AnnotationBase):
             input_method = 'dgidb_annotations',
             **kwargs
         )
+    
+    
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
 
 
 class Phosphatome(AnnotationBase):
