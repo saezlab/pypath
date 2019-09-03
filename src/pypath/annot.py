@@ -1659,7 +1659,7 @@ class Tfcensus(AnnotationBase):
 
 class Dgidb(AnnotationBase):
     
-    _eq_fields = ()
+    _eq_fields = ('category',)
     
     
     def __init__(self, **kwargs):
@@ -1670,7 +1670,7 @@ class Dgidb(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'DGIdb',
-            input_method = 'get_dgidb',
+            input_method = 'dgidb_annotations',
             **kwargs
         )
 

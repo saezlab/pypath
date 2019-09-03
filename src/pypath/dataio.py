@@ -7839,8 +7839,10 @@ def phosphatome_annotations():
     return data
 
 
-def get_dgidb():
+def get_dgidb_old():
     """
+    Deprecated. Will be removed soon.
+    
     Downloads and processes the list of all human druggable proteins.
     Returns a list of GeneSymbols.
     """
@@ -7865,6 +7867,44 @@ def get_dgidb():
         genesymbols.extend([tr.find('td').text.strip() for tr in trs])
 
     return mapping.map_names(genesymbols, 'genesymbol', 'uniprot')
+
+
+def dgidb_annotations():
+    """
+    Downloads druggable protein annotations from DGIdb.
+    """
+    
+    DgidbAnnotation = collections.namedtuple(
+        'DgidbAnnotation',
+        ['category'],
+    )
+    
+    
+    url = urls.urls['dgidb']['categories']
+    
+    c = curl.Curl(url = url, silent = False, large = True)
+    
+    data = csv.DictReader(c.result, delimiter = '\t')
+    
+    result = collections.defaultdict(set)
+    
+    for rec in data:
+        
+        uniprots = mapping.map_name(
+            rec['entrez_gene_symbol'],
+            'genesymbol',
+            'uniprot',
+        )
+        
+        for uniprot in uniprots:
+            
+            result[uniprot].add(
+                DgidbAnnotation(
+                    category = rec['category']
+                )
+            )
+    
+    return result
 
 
 def reactome_sbml():

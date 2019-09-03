@@ -639,7 +639,9 @@ urls = {
         'main_url': 'http://dgidb.genome.wustl.edu/search_categories',
         'url': 'http://dgidb.genome.wustl.edu/druggable_gene_categories/%s?'
         'sources=BaderLabGenes,CarisMolecularIntelligence,FoundationOneGenes,GO,'
-        'GuideToPharmacologyGenes,HopkinsGroom,MskImpact,RussLampel,dGene'
+        'GuideToPharmacologyGenes,HopkinsGroom,MskImpact,RussLampel,dGene',
+        'categories': 'http://www.dgidb.org/data/categories.tsv',
+        'interactions': 'http://www.dgidb.org/data/interactions.tsv',
     },
     'reactome': {
         'label': 'The Reactome reaction network database',
