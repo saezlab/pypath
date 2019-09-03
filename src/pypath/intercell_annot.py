@@ -865,7 +865,6 @@ annot_combined_classes = (
         source = af.AnnotOp(
             annots = (
                 'intracellular_locate',
-                'intracellular_cellphonedb',
                 'intracellular_comppi',
                 'intracellular_go',
             ),
@@ -931,13 +930,6 @@ annot_combined_classes = (
             ),
             op = set.union,
         ),
-    ),
-    af.AnnotDef(
-        name = 'intracellular_cellphonedb',
-        source = 'CellPhoneDB',
-        args = {
-            'cytoplasm': bool,
-        },
     ),
     af.AnnotDef(
         name = 'intracellular_comppi',
@@ -1030,7 +1022,7 @@ annot_combined_classes = (
         name = 'extracellular_cellphonedb',
         source = 'CellPhoneDB',
         args = {
-            'extracellular': bool,
+            'secreted': bool,
         },
     ),
     af.AnnotDef(
@@ -1178,7 +1170,7 @@ annot_combined_classes = (
         name = 'adhesion_cellphonedb',
         source = 'CellPhoneDB',
         args = {
-            'adhesion': bool,
+            'integrin': bool,
         },
     ),
     af.AnnotDef(
