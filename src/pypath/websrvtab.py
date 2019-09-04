@@ -53,6 +53,10 @@ class WebserviceTables(session_mod.Logger):
             outfile_complexes = 'omnipath_webservice_complexes.tsv',
             outfile_annotations = 'omnipath_webservice_annotations.tsv',
             outfile_intercell = 'omnipath_webservice_intercell.tsv',
+            annot_args = None,
+            complex_args = None,
+            intercell_args = None,
+            rebuild = None,
         ):
         
         session_mod.Logger.__init__(self, name = 'websrvtab')
@@ -64,6 +68,10 @@ class WebserviceTables(session_mod.Logger):
         self.outfile_complexes = outfile_complexes
         self.outfile_annotations = outfile_annotations
         self.outfile_intercell = outfile_intercell
+        self.annot_args = annot_args or {}
+        self.complex_args = complex_args or {}
+        self.intercell_args = intercell_args or {}
+        self.rebuild = rebuild or set()
     
     
     def reload(self):
@@ -199,7 +207,13 @@ class WebserviceTables(session_mod.Logger):
         
         self._log('Building `complexes` data frame.')
         
-        co = complex.ComplexAggregator()
+        if 'complex' in self.rebuild:
+            
+            co = complex.ComplexAggregator(**self.complex_args)
+            
+        else:
+            
+            co = complex.get_db(**self.complex_args)
         
         co.make_df()
         
@@ -219,7 +233,13 @@ class WebserviceTables(session_mod.Logger):
         
         self._log('Building `annotations` data frame.')
         
-        an = annot.AnnotationTable(keep_annotators = True)
+        if 'annot' in self.rebuild:
+            
+            an = annot.AnnotationTable(**self.annot_args)
+            
+        else:
+            
+            an = annot.get_db(**self.annot_args)
         
         an.make_narrow_df()
         
@@ -239,7 +259,13 @@ class WebserviceTables(session_mod.Logger):
         
         self._log('Building `intercell` data frame.')
         
-        i = intercell.IntercellAnnotation()
+        if 'intercell' in self.rebuild:
+            
+            i = intercell.IntercellAnnotation(**self.intercell_args)
+            
+        else:
+            
+            i = intercell.get_db(**self.intercell_args)
         
         i.make_df()
         i.add_classes_to_df()

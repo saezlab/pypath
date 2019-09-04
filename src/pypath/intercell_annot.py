@@ -76,7 +76,7 @@ go_combined_classes = {
         """,
     'transmembrane':
         """
-        integral to membrane OR
+        integral component of membrane OR
         transmembrane signaling receptor activity
         """,
     'ecm':
