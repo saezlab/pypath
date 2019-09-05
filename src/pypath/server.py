@@ -397,6 +397,11 @@ class TableServer(BaseServer):
             'proteins': None,
             'fields': None,
             'genesymbols': {'1', '0', 'no', 'yes'},
+            'entity_types': {
+                'protein',
+                'complex',
+                'mirna',
+            },
         },
         'annotations_summary': {
             'header': None,
@@ -1279,7 +1284,7 @@ class TableServer(BaseServer):
         # filtering for entity types
         if b'entity_types' in req.args:
             
-            entity_types = self._args_set(req, 'entity_types'):
+            entity_types = self._args_set(req, 'entity_types')
             
             tbl = tbl[tbl.entity_type.isin(entity_types)]
         
@@ -1363,7 +1368,7 @@ class TableServer(BaseServer):
         # filtering for entity types
         if b'entity_types' in req.args:
             
-            entity_types = self._args_set(req, 'entity_types'):
+            entity_types = self._args_set(req, 'entity_types')
             
             tbl = tbl[tbl.entity_type.isin(entity_types)]
         

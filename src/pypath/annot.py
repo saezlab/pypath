@@ -457,10 +457,10 @@ class AnnotationBase(resource.AbstractResource):
             data_attr_name = 'annot',
         )
         
-        self.entity_type = entity_type
+        self.get_entity_type = entity_type
         self.infer_complexes = (
             infer_complexes and
-            self.entity_type == 'protein'
+            self.get_entity_type == 'protein'
         )
         self.proteins = proteins
         self.complexes = complexes
@@ -691,7 +691,7 @@ class AnnotationBase(resource.AbstractResource):
     
     def has_complexes(self):
         
-        return self.entity_type == 'complex' or self.infer_complexes
+        return self.get_entity_type == 'complex' or self.infer_complexes
     
 
     def _process_method(self, *args, **kwargs):
@@ -875,7 +875,7 @@ class AnnotationBase(resource.AbstractResource):
     
     
     @classmethod
-    def entity_type(cls, key):
+    def get_entity_type(cls, key):
         
         return (
             'complex'
@@ -1083,7 +1083,7 @@ class AnnotationBase(resource.AbstractResource):
                 records.append([
                     element.__str__(),
                     genesymbol_str,
-                    self.entity_type(element),
+                    self.get_entity_type(element),
                     self.name,
                     'in %s' % self.name,
                     'yes',
@@ -1107,6 +1107,7 @@ class AnnotationBase(resource.AbstractResource):
                     records.append([
                         element.__str__(),
                         genesymbol_str,
+                        self.get_entity_type(element),
                         self.name,
                         label,
                         str(value),
