@@ -428,6 +428,11 @@ class TableServer(BaseServer):
             'categories': None,
             'proteins': None,
             'fields': None,
+            'entity_types': {
+                'protein',
+                'complex',
+                'mirna',
+            },
         },
         'intercell_summary': {
             'header': None,
@@ -524,6 +529,7 @@ class TableServer(BaseServer):
         annotations = {
             'uniprot': 'category',
             'genesymbol': 'category',
+            'entity_type': 'category',
             'source': 'category',
             'label': 'category',
             'value': 'category',
@@ -555,6 +561,7 @@ class TableServer(BaseServer):
             'genesymbol': 'category',
             'mainclass': 'category',
             'class_type': 'category',
+            'entity_type': 'category',
         }
     )
     
@@ -1269,6 +1276,13 @@ class TableServer(BaseServer):
             
             tbl = tbl[tbl.source.isin(databases)]
         
+        # filtering for entity types
+        if b'entity_types' in req.args:
+            
+            entity_types = self._args_set(req, 'entity_types'):
+            
+            tbl = tbl[tbl.entity_type.isin(entity_types)]
+        
         # filtering for proteins
         if b'proteins' in req.args:
             
@@ -1345,6 +1359,13 @@ class TableServer(BaseServer):
             categories = self._args_set(req, 'categories')
             
             tbl = tbl[tbl.category.isin(categories)]
+        
+        # filtering for entity types
+        if b'entity_types' in req.args:
+            
+            entity_types = self._args_set(req, 'entity_types'):
+            
+            tbl = tbl[tbl.entity_type.isin(entity_types)]
         
         # filtering for proteins
         if b'proteins' in req.args:

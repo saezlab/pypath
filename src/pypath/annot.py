@@ -321,16 +321,17 @@ class CustomAnnotation(session_mod.Logger):
 
     def make_df(self, all_annotations = False, full_name = False):
         
-        header = ['category', 'uniprot', 'genesymbol']
+        header = ['category', 'uniprot', 'genesymbol', 'entity_type']
         dtypes = {
-            'category':   'category',
-            'uniprot':    'category',
-            'genesymbol': 'category',
+            'category':    'category',
+            'uniprot':     'category',
+            'genesymbol':  'category',
+            'entity_type': 'category',
         }
         
         if full_name:
             
-            header.append('full_name')
+            header.insert(-1, 'full_name')
             dtypes['full_name'] = 'category'
         
         self.df = pd.DataFrame(
@@ -358,6 +359,13 @@ class CustomAnnotation(session_mod.Logger):
                     ]
                     if full_name else []
                 ) +
+                [
+                    'complex'
+                        if hasattr(uniprot, 'genesymbol_str') else
+                    'mirna'
+                        if uniprot.startswith('MIMAT') else
+                    'protein'
+                ] +
                 (
                     [self.annotdb.all_annotations_str(uniprot)]
                         if all_annotations else
@@ -1040,6 +1048,7 @@ class AnnotationBase(resource.AbstractResource):
         columns = [
             'uniprot',
             'genesymbol',
+            'entity_type',
             'source',
             'label',
             'value',
@@ -1074,6 +1083,7 @@ class AnnotationBase(resource.AbstractResource):
                 records.append([
                     element.__str__(),
                     genesymbol_str,
+                    self.entity_type(element),
                     self.name,
                     'in %s' % self.name,
                     'yes',
@@ -1112,6 +1122,7 @@ class AnnotationBase(resource.AbstractResource):
             {
                 'uniprot': 'category',
                 'genesymbol': 'category',
+                'entity_type': 'category',
                 'source': 'category',
                 'label': 'category',
                 'record_id': 'int32',
