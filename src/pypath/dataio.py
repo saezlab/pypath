@@ -10822,6 +10822,7 @@ def get_imweb(verbose = 0):
 
     fp_imweb.close()
 
+
 def get_imweb_req():
 
     import requests
@@ -10845,6 +10846,7 @@ def get_imweb_req():
         for block in r1.iter_content(4096):
 
             fp.write(block)
+
 
 def get_proteinatlas(normal = True, pathology = True, cancer = True):
 

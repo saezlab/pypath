@@ -794,6 +794,26 @@ class AnnotationBase(resource.AbstractResource):
         return set(self.annot.keys())
     
     
+    @staticmethod
+    def _entity_types(entity_types):
+        
+        return (
+            {entity_types}
+                if isinstance(entity_types, common.basestring) else
+            entity_types
+        )
+    
+    
+    def all_entities(self, entity_types = None):
+        
+        entity_types = self._entity_types(entity_types)
+        
+        return sorted((
+            k for k in self.annot.keys()
+            if self._match_entity_type(k, entity_types)
+        ))
+    
+    
     def all_proteins(self):
         """
         All UniProt IDs annotated in this resource.
@@ -801,7 +821,7 @@ class AnnotationBase(resource.AbstractResource):
         
         return sorted((
             k for k in self.annot.keys()
-            if isinstance(k, common.basestring)
+            if self.is_protein(k)
         ))
     
     
@@ -810,8 +830,116 @@ class AnnotationBase(resource.AbstractResource):
         return sorted((
             k
             for k in self.annot.keys()
-            if isinstance(k, intera.Complex)
+            if self.is_complex(k)
         ))
+    
+    
+    def all_mirnas(self):
+        
+        return sorted((
+            k for k in self.annot.keys()
+            if self.is_mirna(k)
+        ))
+    
+    
+    @staticmethod
+    def is_protein(key):
+        
+        return (
+            isinstance(key, common.basestring) and
+            not key.startswith('MIMAT')
+        )
+    
+    
+    @staticmethod
+    def is_mirna(key):
+        
+        return (
+            isinstance(key, common.basestring) and
+            key.startswith('MIMAT')
+        )
+    
+    
+    @staticmethod
+    def is_complex(key):
+        
+        return isinstance(key, intera.Complex)
+    
+    
+    @classmethod
+    def entity_type(cls, key):
+        
+        return (
+            'complex'
+                if cls.is_complex(key) else
+            'mirna'
+                if cls.is_mirna(key) else
+            'protein'
+        )
+    
+    
+    @classmethod
+    def _match_entity_type(cls, key, entity_types):
+        
+        return not entity_types or cls.entity_type(key) in entity_types
+    
+    
+    def numof_records(self, entity_types = None):
+        
+        entity_types = self._entity_types(entity_types)
+        
+        return sum(map(
+            len,
+            (
+                a for k, a in iteritems(self.annot)
+                if self._match_entity_type(k, entity_types)
+            )
+        ))
+    
+    
+    def numof_protein_records(self):
+        
+        return self.numof_records(entity_types = {'protein'})
+    
+    
+    def numof_mirna_records(self):
+        
+        return self.numof_records(entity_types = {'mirna'})
+    
+    
+    def numof_complex_records(self):
+        
+        return self.numof_records(entity_types = {'complex'})
+    
+    
+    def numof_entities(self):
+        
+        return len(self.annot)
+    
+    
+    def _numof_entities(self, entity_types = None):
+        
+        entity_types = self._entity_types(entity_types)
+        
+        return len([
+            k for k in self.annot.keys()
+            if self._match_entity_type(k, entity_types)
+        ])
+    
+    
+    def numof_proteins(self):
+        
+        return self._numof_entities(entity_types = {'protein'})
+    
+    
+    def numof_mirnas(self):
+        
+        return self._numof_entities(entity_types = {'mirna'})
+    
+    
+    def numof_complexes(self):
+        
+        return self._numof_entities(entity_types = {'complex'})
     
     
     def to_array(self, reference_set = None, use_fields = None):
@@ -1074,7 +1202,7 @@ class AnnotationBase(resource.AbstractResource):
 
     def __len__(self):
 
-        return len(self.annot)
+        return self.numof_entities()
 
 
 class Membranome(AnnotationBase):
