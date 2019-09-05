@@ -11621,9 +11621,9 @@ def hgnc_genegroups():
     for rec in c.result:
 
         rec = rec.split('\t')
-        uniprot = rec[2]
+        uniprots = [u.strip() for u in rec[2].split(',')]
 
-        if not uniprot:
+        if not uniprots:
 
             continue
 
@@ -11634,10 +11634,12 @@ def hgnc_genegroups():
             group = group.strip()
 
             if group:
-
-                result[uniprot].add(
-                    HGNCGeneGroupAnnotation(mainclass = group)
-                )
+                
+                for uniprot in uniprots:
+                    
+                    result[uniprot].add(
+                        HGNCGeneGroupAnnotation(mainclass = group)
+                    )
 
     return result
 
