@@ -4988,17 +4988,19 @@ def netpath_pathway_annotations():
 
                     continue
 
-                uniprot = mapping.map_name0(
+                uniprots = mapping.map_name(
                     genesymbol,
                     'genesymbol',
                     'uniprot',
                 )
-
-                result[uniprot].add(
-                    NetpathPathway(
-                        pathway = pathway
+                
+                for uniprot in uniprots:
+                    
+                    result[uniprot].add(
+                        NetpathPathway(
+                            pathway = pathway
+                        )
                     )
-                )
 
     return result
 
