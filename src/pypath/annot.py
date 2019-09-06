@@ -342,7 +342,7 @@ class CustomAnnotation(session_mod.Logger):
                     (
                         mapping.map_name0(uniprot, 'uniprot', 'genesymbol')
                             if isinstance(uniprot, common.basestring) else
-                        uniprot.genesymbol_str
+                        'COMPLEX:%s' % uniprot.genesymbol_str
                             if hasattr(uniprot, 'genesymbol_str') else
                         uniprot.__str__()
                     ),
