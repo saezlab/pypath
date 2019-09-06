@@ -1344,25 +1344,15 @@ class Matrisome(AnnotationBase):
             self,
             name = 'Matrisome',
             ncbi_tax_id = ncbi_tax_id,
-            input_method = 'get_matrisome',
+            input_method = 'matrisome_annotations',
             **kwargs,
         )
 
 
     def _process_method(self):
-
-        _annot = collections.defaultdict(set)
-
-        record = collections.namedtuple(
-            'MatrisomeAnnotation',
-            ['mainclass', 'subclass', 'subsubclass'],
-        )
-
-        for uniprot, a in iteritems(self.data):
-
-            _annot[uniprot].add(record(*a))
-
-        self.annot = dict(_annot)
+        
+        self.annot = self.data
+        delattr(self, 'data')
 
 
 class Surfaceome(AnnotationBase):

@@ -11300,13 +11300,18 @@ def get_surfaceome():
         for r in raw
     )
 
-def get_matrisome(organism = 9606):
+def matrisome_annotations(organism = 9606):
     """
     Downloads MatrisomeDB 2.0, a database of extracellular matrix proteins.
     Returns dict where keys are UniProt IDs and values are tuples of
     classes, subclasses and notes.
     """
-
+    
+    MatrisomeAnnotation = collections.namedtuple(
+        'MatrisomeAnnotation',
+        ['mainclass', 'subclass', 'subsubclass']
+    )
+    
     tax_names = {
         10090: ('Murine', 'mm'),
         9606:  ('Human',  'hs'),
@@ -11319,21 +11324,26 @@ def get_matrisome(organism = 9606):
     raw = read_xls(xlsname)[1:]
 
     result = {}
-
-    return dict(
-        (
-            uniprot,
-            (
-                r[0].strip(),  # class
-                r[1].strip(),  # subclass
-                r[10].strip() or None, # notes
+    
+    uniprots = set(r[7].split(':'))
+    uniprots.discard('')
+    
+    result = collections.defaultdict(set)
+    
+    for uniprot in uniprots:
+        
+        result[uniprot].add(
+            MatrisomeAnnotation(
+                mainclass = r[0].strip(),
+                subclass = r[1].strip(),
+                subsubclass = r[10].strip() or None,
             )
         )
-        for r in raw
-        for uniprot in r[7].split(':')
-    )
+    
+    return dict(result)
 
-def __get_matrisome_2():
+
+def __matrisome_annotations_2():
     """
     This I made only to find out why certain proteins are missing from this
     output. I will contact Matrisome people to ask why.
@@ -11621,7 +11631,8 @@ def hgnc_genegroups():
     for rec in c.result:
 
         rec = rec.split('\t')
-        uniprots = [u.strip() for u in rec[2].split(',')]
+        uniprots = {u.strip() for u in rec[2].split(',')}
+        uniprots.discard('')
 
         if not uniprots:
 
