@@ -457,10 +457,10 @@ class AnnotationBase(resource.AbstractResource):
             data_attr_name = 'annot',
         )
         
-        self.get_entity_type = entity_type
+        self.entity_type = entity_type
         self.infer_complexes = (
             infer_complexes and
-            self.get_entity_type == 'protein'
+            self.entity_type == 'protein'
         )
         self.proteins = proteins
         self.complexes = complexes
@@ -691,7 +691,7 @@ class AnnotationBase(resource.AbstractResource):
     
     def has_complexes(self):
         
-        return self.get_entity_type == 'complex' or self.infer_complexes
+        return self.entity_type == 'complex' or self.infer_complexes
     
 
     def _process_method(self, *args, **kwargs):

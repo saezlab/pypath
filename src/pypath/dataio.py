@@ -2224,7 +2224,7 @@ def comppi_interaction_locations(organism = 9606):
 
     for l in c.result:
 
-        l = l.decode().strip('\r\n').split('\t')
+        l = l.strip('\r\n').split('\t')
 
         organism_a = int(l[7])
         organism_b = int(l[15])
@@ -9578,7 +9578,7 @@ def intogen_annotations():
                 )
                 if rec['OncodriveROLE_prob'] == 'Manually curated' else
                 (
-                    float(rec['OncodriveROLE_prob']),
+                    common.float_or_nan(rec['OncodriveROLE_prob']),
                     False,
                 )
             )
@@ -11323,22 +11323,22 @@ def matrisome_annotations(organism = 9606):
     del(c)
     raw = read_xls(xlsname)[1:]
 
-    result = {}
-    
-    uniprots = set(r[7].split(':'))
-    uniprots.discard('')
-    
     result = collections.defaultdict(set)
     
-    for uniprot in uniprots:
+    for r in raw:
         
-        result[uniprot].add(
-            MatrisomeAnnotation(
-                mainclass = r[0].strip(),
-                subclass = r[1].strip(),
-                subsubclass = r[10].strip() or None,
+        uniprots = set(r[7].split(':'))
+        uniprots.discard('')
+        
+        for uniprot in uniprots:
+            
+            result[uniprot].add(
+                MatrisomeAnnotation(
+                    mainclass = r[0].strip(),
+                    subclass = r[1].strip(),
+                    subsubclass = r[10].strip() or None,
+                )
             )
-        )
     
     return dict(result)
 

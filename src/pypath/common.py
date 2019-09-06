@@ -28,10 +28,13 @@ from past.builtins import xrange, range, reduce
 
 import os
 import sys
+import re
 import math
 import random
 import textwrap
 import hashlib
+
+import numpy as np
 
 __all__ = [
     'ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes',
@@ -44,7 +47,8 @@ __all__ = [
     'uniqOrdList', 'dict_diff', 'to_set', 'to_list',
     'unique_list', 'basestring', 'amino_acids', 'aminoa_1_to_3_letter',
     'aminoa_3_to_1_letter', 'pmod_bel', 'pmod_other_to_bel',
-    'pmod_bel_to_other',
+    'pmod_bel_to_other', 'refloat', 'reint', 'is_float', 'is_int',
+    'float_or_nan',
 ]
 
 # get the location
@@ -189,6 +193,37 @@ aaletters = dict(zip(aacodes.values(), aacodes.keys()))
 simpleTypes = (int, long, float, str, unicode, bytes, bool, type(None))
 numTypes = (int, long, float)
 charTypes = (str, unicode, bytes)
+
+
+refloat = re.compile(r'\s*-?\s*[\s\.\d]+\s*')
+reint   = re.compile(r'\s*-?\s*[\s\d]+\s*')
+
+
+def is_float(num):
+    """
+    Tells if a string represents a floating point number,
+    i.e. it can be converted by `float`.
+    """
+    
+    return bool(refloat.match(num))
+
+
+def is_int(num):
+    """
+    Tells if a string represents an integer,
+    i.e. it can be converted by `int`.
+    """
+    
+    return bool(reint.match(num))
+
+
+def float_or_nan(num):
+    """
+    Returns `num` converted from string to float if `num` represents a
+    float otherwise `numpy.nan`.
+    """
+    
+    return float(num) if is_float(num) else np.nan
 
 
 def to_set(var):
