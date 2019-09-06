@@ -889,20 +889,18 @@ class AnnotationBase(resource.AbstractResource):
     @classmethod
     def _match_entity_type(cls, key, entity_types):
         
-        return not entity_types or cls.entity_type(key) in entity_types
+        return not entity_types or cls.get_entity_type(key) in entity_types
     
     
     def numof_records(self, entity_types = None):
         
         entity_types = self._entity_types(entity_types)
         
-        return sum(map(
-            len,
-            (
-                a for k, a in iteritems(self.annot)
-                if self._match_entity_type(k, entity_types)
-            )
-        ))
+        return sum(
+            max(len(a), 1)
+            for k, a in iteritems(self.annot)
+            if self._match_entity_type(k, entity_types)
+        )
     
     
     def numof_protein_records(self):
