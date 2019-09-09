@@ -14610,7 +14610,7 @@ class PyPath(session_mod.Logger):
         pypath.license()
 
 
-def init_db(use_omnipath = None, **kwargs):
+def init_db(use_omnipath = False, **kwargs):
     
     pa = PyPath()
     getattr(
