@@ -25,6 +25,7 @@ from past.builtins import xrange, range
 import sys
 import imp
 import itertools
+import collections
 import pickle
 
 import pandas as pd
@@ -681,8 +682,16 @@ class PtmAggregator(object):
                     self.enz_sub[key] = []
 
                 self.enz_sub[key].append(ptm)
-
+                
+                for resource in ptm.sources:
+                    
+                    self.references[resource][ptm.key()].update(ptm.refs)
+        
+        
         self.enz_sub = {}
+        self.references = collections.defaultdict(
+            lambda: collections.defaultdict(set)
+        )
 
         for input_method in self.input_methods:
 
@@ -841,6 +850,162 @@ class PtmAggregator(object):
                     pa.graph.es[e]['ptm'] = []
 
                 pa.graph.es[e]['ptm'].extend(ptms)
+    
+    
+    @property
+    def resources(self):
+        
+        return set.union(*(es.sources for es in self))
+    
+    
+    def update_summaries(self):
+        
+        self.summaries = {}
+        
+        refs_by_resource = dict(
+            (
+                resource,
+                set.union(
+                    *itertools.chain(
+                        self.references[resource].values()
+                    )
+                )
+            )
+            for resource in self.resources
+        )
+        curation_effort_by_resource = dict(
+            (
+                resource,
+                {
+                    key + (ref,)
+                    for key, refs in
+                    itertools.chain(
+                        iteritems(self.references[resource])
+                    )
+                    for ref in refs
+                }
+            )
+            for resource in self.resources
+        )
+        
+        for resource in sorted(self.resources):
+            
+            n_total = sum(1 for es in self if resource in es.sources)
+            n_unique = sum(
+                1 for es in self
+                if len(es.sources) == 1 and resource in es.sources
+            )
+            n_shared = sum(
+                1 for es in self
+                if len(es.sources) > 1 and resource in es.sources
+            )
+            
+            curation_effort = len(curation_effort_by_resource[resource])
+            ce_others = set.union(*(
+                ce
+                for res, ce in iteritems(curation_effort_by_resource)
+                if res != resource
+            ))
+            curation_effort_shared = len(
+                curation_effort_by_resource[resource] &
+                ce_others
+            )
+            curation_effort_unique = len(
+                curation_effort_by_resource[resource] -
+                ce_others
+            )
+            
+            references = len(refs_by_resource[resource])
+            refs_others = set.union(*(
+                refs
+                for res, refs in iteritems(refs_by_resource)
+                if res != resource
+            ))
+            references_shared = len(refs_by_resource[resource] & refs_others)
+            references_unique = len(refs_by_resource[resource] - refs_others)
+            
+            enzymes = len(set(
+                es.domain.protein
+                for es in self
+                if resource in es.sources
+            ))
+            substrates = len(set(
+                es.ptm.protein
+                for es in self
+                if resource in es.sources
+            ))
+            
+            modification_types = ', '.join(
+                (
+                    '%s (%u)' % (typ, cnt)
+                    for typ, cnt in
+                    sorted(
+                        iteritems(collections.Counter(
+                            es.ptm.typ
+                            for es in self
+                            if resource in es.sources
+                        )),
+                        key = lambda type_cnt: type_cnt[1],
+                        reverse = True,
+                    )
+                    if typ
+                )
+            )
+            
+            self.summaries[resource] = {
+                'name': resource,
+                'n_es_total': n_total,
+                'n_es_unique': n_unique,
+                'n_es_shared': n_shared,
+                'n_enzymes': enzymes,
+                'n_substrates': substrates,
+                'references': references,
+                'references_unique': references_unique,
+                'reference_shared': references_shared,
+                'curation_effort': curation_effort,
+                'curation_effort_unique': curation_effort_shared,
+                'curation_effort_shared': curation_effort_shared,
+                'modification_types': modification_types,
+            }
+    
+    
+    def summaries_tab(self, outfile = None):
+        
+        columns = (
+            ('name', 'Resource'),
+            ('n_es_total', 'E-S interactions'),
+            ('n_es_shared', 'Shared E-S interactions'),
+            ('n_es_unique', 'Unique E-S interactions'),
+            ('n_enzymes', 'Enzymes'),
+            ('n_substrates', 'Substrates'),
+            ('references', 'References'),
+            ('reference_shared', 'Shared references'),
+            ('references_unique', 'Unique references'),
+            ('curation_effort', 'Curation effort'),
+            ('curation_effort_shared', 'Shared curation effort'),
+            ('curation_effort_unique', 'Unique curation effort'),
+            ('modification_types', 'Modification types'),
+        )
+        
+        tab = []
+        tab.append([f[1] for f in columns])
+        
+        tab.extend([
+            [
+                str(self.summaries[src][f[0]])
+                for f in columns
+            ]
+            for src in sorted(self.summaries.keys())
+        ])
+        
+        if outfile:
+            
+            with open(outfile, 'w') as fp:
+                
+                fp.write('\n'.join('\t'.join(row) for row in tab))
+        
+        return tab
+
 
 
 def init_db(**kwargs):
