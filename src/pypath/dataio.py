@@ -2383,6 +2383,7 @@ def get_psite_phos(raw = True, organism = 'human', strict = True):
     result = []
     non_digit = re.compile(r'[^\d.-]+')
     motre = re.compile(r'(_*)([A-Za-z]+)(_*)')
+    
     for r in data:
 
         if organism is None or \
@@ -6358,6 +6359,7 @@ def cellphonedb_interactions():
 
 
     repmid = re.compile(r'PMID: ([0-9]+)')
+    recomma = re.compile(r'[,;]')
 
 
     ligands, receptors = cellphonedb_ligands_receptors()
@@ -6399,9 +6401,15 @@ def cellphonedb_interactions():
                 'CellPhoneDB'
                     if rec['annotation_strategy'] == 'curated' else
                 '%s;CellPhoneDB' % (
-                    rec['annotation_strategy'].replace(
-                        'guidetopharmacology.org',
-                        'Guide2Pharma_CP'
+                    ';'.join(
+                        '%s_CP' % (
+                            res.replace(
+                                'guidetopharmacology.org',
+                                'Guide2Pharma'
+                            )
+                        )
+                        for res in
+                        recomma.split(rec['annotation_strategy'])
                     )
                 )
             )
@@ -7143,6 +7151,7 @@ def load_signor_ptms(organism = 9606):
                 'motif': inst,
                 'enzyme_isoform': d.source_isoform,
                 'substrate_isoform': d.target_isoform,
+                'references': {d.pubmeds} if d.pubmeds != 'Other' else set()
             })
 
     return result
@@ -9171,6 +9180,7 @@ def get_phosphosite(cache = True):
     noev = []
     noth = []
     edges = []
+    
     for c in xmlroot.findall(bpprefix + 'Catalysis'):
         if rdfprefix + 'resource' in c.find(bpprefix + 'controller').attrib:
             src = 'po_' + \
@@ -9260,6 +9270,261 @@ def get_phosphosite(cache = True):
     pickle.dump(result_curated, open(curated_cache, 'wb'))
     pickle.dump(result_noref, open(noref_cache, 'wb'))
     return result_curated, result_noref
+
+
+def get_phosphosite_new(cache = True):
+    """
+    Downloads curated and HTP data from Phosphosite,
+    from preprocessed cache file if available.
+    Processes BioPAX format.
+    Returns list of interactions.
+    """
+    
+    curated_cache = urls.files['phosphosite']['curated']
+    noref_cache = urls.files['phosphosite']['noref']
+    
+    if (
+        cache and
+        os.path.exists(curated_cache) and
+        os.path.exists(noref_cache)
+    ):
+        
+        with pen(curated_cache, 'rb') as fp:
+            
+            data_curated = pickle.load(fp)
+        
+        with pen(noref_cache, 'rb') as fp:
+            
+            data_noref = pickle.load(fp)
+            
+        return data_curated, data_noref
+    
+    
+    def collect_items(tagname, process_method):
+        
+        result = {}
+        
+        for p in xmlroot.iter(tagname):
+            
+            key, value = process_method(p)
+            result[key] = value
+        
+        return result
+    
+    
+    def process_protein(protein):
+        
+        protein_id = protein.attrib['%sID' % rdfprefix]
+        database = (
+            protein.find(
+                '%sxref' % bpprefix
+            ).find(
+                '%sUnificationXref' % bpprefix
+            ).find(
+                '%sdb' % bpprefix
+            ).text
+        )
+        identifier = (
+            protein.find(
+                '%sxref' % bpprefix
+            ).find(
+                '%sUnificationXref' % bpprefix
+            ).find(
+                '%sid' % bpprefix
+            ).text
+        )
+        
+        organism = None
+        e_organism = protein.find('%sorganism' % bpprefix)
+        if (
+            e_organism is not None and
+            '%sresource' % rdfprefix in e_organism.attrib
+        ):
+            organism = (
+                e_organism.attrib['%sresource' % rdfprefix].split('_')[1]
+            )
+        
+        return protein_id, (databas, identifier, organism)
+    
+    def process_site(site):
+        
+        site_id = site.attrib['%sID' % rdfprefix]
+        site_offset = site.find('%ssequencePosition').text
+        
+        return site_id, site_offset
+    
+    
+    def process_modification(seqmodvoc):
+        
+        mod_id = seqmodvoc.attrib['%sID' % rdfprefix]
+        residue, mod = mod_id.split('_').split('-')
+        
+        return mod_id, (residue, mod)
+    
+    
+    def get_resource(elem, resource_tag):
+        
+        res_attr = '%sresource' % rdfprefix
+        
+        if res_attr in elem.attrib:
+            
+            return elem.attrib[res_attr][1:]
+            
+        else:
+            
+            return elem.find(resource_tag).attrib['%sID' % rdfprefix]
+    
+    
+    def process_feature(feature):
+        
+        feature_id = feature.attrib['%sID' % rdfprefix]
+        site = get_resource(
+            feature.find('%sfeatureLocation' % bpprefix),
+            '%sSequenceSite' % bpprefix,
+        )
+        modification = get_resource(
+            feature.find('%smodificationType' % bpprefix),
+            '%sSequenceModificationVocabulary' % bpprefix,
+        )
+        
+        return feature_id, (site, modification)
+    
+    
+    
+    
+    
+    result_curated = []
+    result_noref = []
+    bpprefix = '{http://www.biopax.org/release/biopax-level3.owl#}'
+    rdfprefix = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+    
+    url = urls.urls['psite_bp']['url']
+    c = curl.Curl(url, silent = False, large = True)
+    bpax = c.gzfile
+    xml = ET.parse(bpax)
+    xmlroot = xml.getroot()
+    
+    
+    proteins = collect_items(
+        '%sProtein' % bpprefix,
+        process_method = process_protein,
+    )
+    sites = collect_items(
+        '%sSequenceSite' % bpprefix,
+        process_method = process_site,
+    )
+    modifications = collect_items(
+        '%sSequenceModificationVocabulary' % bpprefix,
+        process_method = process_modification,
+    )
+    features = collect_items(
+        '%sModificationFeature' % bpprefix,
+        process_method = process_feature,
+    )
+    
+    evidences = {}
+    for p in xmlroot.iter(bpprefix + 'EvidenceCodeVocabulary'):
+        evid = p.attrib[rdfprefix + 'ID'].split('_')[1]
+        evname = p.find(bpprefix + 'term').text
+        evidences[evid] = evname
+    ev_short = {'0113': 'WB', '0427': 'MS', '0074': 'MA', '0421': 'AB'}
+    nosrc = []
+    notgt = []
+    norefs = []
+    noev = []
+    noth = []
+    edges = []
+    
+    for c in xmlroot.findall(bpprefix + 'Catalysis'):
+        if rdfprefix + 'resource' in c.find(bpprefix + 'controller').attrib:
+            src = 'po_' + \
+                c.find(
+                    bpprefix + 'controller').attrib[rdfprefix + 'resource'].split('_')[1]
+        else:
+            srcProt = c.find(bpprefix + 'controller').find(bpprefix +
+                                                           'Protein')
+            if srcProt is not None:
+                src = 'po_' + srcProt.attrib[rdfprefix + 'ID'].split('_')[1]
+            else:
+                nosrc.append(c)
+        tgtProt = c.find(bpprefix + 'controlled').iter(bpprefix +
+                                                       'ProteinReference')
+        tgt = next(tgtProt, None)
+        if tgt is not None:
+            tgt = tgt.attrib[rdfprefix + 'ID']
+        else:
+            tgtProt = c.find(bpprefix + 'controlled').iter(bpprefix +
+                                                           'entityReference')
+            tgt = next(tgtProt, None)
+            if tgt is not None:
+                if rdfprefix + 'resource' in tgt.attrib:
+                    tgt = tgt.attrib[rdfprefix + 'resource'][1:]
+            else:
+                tgtProt = c.find(bpprefix + 'controlled').iter(bpprefix +
+                                                               'left')
+                tgt = next(tgtProt, None)
+                if tgt is not None:
+                    if rdfprefix + 'resource' in tgt.attrib:
+                        tgt = 'po_' + \
+                            tgt.attrib[rdfprefix + 'resource'].split('_')[1]
+                else:
+                    notgt.append(c)
+        refs = c.iter(bpprefix + 'PublicationXref')
+        pmids = []
+        for r in refs:
+            pm = r.attrib[rdfprefix + 'ID'].split('_')
+            if pm[0] == 'pmid':
+                pmids.append(pm[1])
+        refs = c.iter(bpprefix + 'evidence')
+        for r in refs:
+            rrefs = r.iter(bpprefix + 'xref')
+            for rr in rrefs:
+                if rdfprefix + 'resource' in rr.attrib:
+                    pm = rr.attrib[rdfprefix + 'resource'].split('_')
+                    if pm[0] == 'pubmed':
+                        pmids.append(pm[1])
+        evs = []
+        for e in c.iter(bpprefix + 'evidenceCode'):
+            if rdfprefix + 'resource' in e.attrib:
+                evs.append(ev_short[e.attrib[rdfprefix + 'resource'].split('_')
+                                    [1]])
+            else:
+                ev = e.find(bpprefix + 'EvidenceCodeVocabulary')
+                evs.append(ev_short[ev.attrib[rdfprefix + 'ID'].split('_')[1]])
+        for e in c.iter(bpprefix + 'evidence'):
+            if rdfprefix + 'resource' in e.attrib:
+                ev = e.attrib[rdfprefix + 'resource'].split('_')
+                if len(ev) == 4:
+                    if len(ev[3]) == 4:
+                        evs.append(ev_short[ev[3]])
+        if (src is not None and tgt is not None and src in proteins and
+                tgt in proteins and proteins[src]['id'] is not None and
+                proteins[tgt]['id'] is not None):
+            edges.append({
+                'src': proteins[src],
+                'tgt': proteins[tgt],
+                'pmids': list(set(pmids)),
+                'evs': list(set(evs))
+            })
+            if len(evs) == 0:
+                noev.append(c)
+            if len(pmids) == 0:
+                norefs.append(c)
+            if len(evs) == 0 and len(pmids) == 0:
+                noth.append(c)
+    for e in edges:
+        this_iaction = [
+            e['src']['id'], e['tgt']['id'], e['src']['species'],
+            e['tgt']['species'], ';'.join(e['evs']), ';'.join(e['pmids'])
+        ]
+        if len(this_iaction[-1]) > 0:
+            result_curated.append(this_iaction)
+        else:
+            result_noref.append(this_iaction)
+    pickle.dump(result_curated, open(curated_cache, 'wb'))
+    pickle.dump(result_noref, open(noref_cache, 'wb'))
+    return result_curated, result_noref
+
 
 
 def get_phosphosite_curated():
