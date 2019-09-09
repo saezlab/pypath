@@ -14608,3 +14608,23 @@ class PyPath(session_mod.Logger):
         """
 
         pypath.license()
+
+
+def init_db(use_omnipath = None, **kwargs):
+    
+    pa = PyPath()
+    getattr(
+        pa,
+        'load_omnipath' if use_omnipath else 'init_network'
+    )(**kwargs)
+    
+    globals()['db'] = pa
+
+
+def get_db(**kwargs):
+    
+    if 'db' not in globals():
+        
+        init_db(**kwargs)
+    
+    return globals()['db']
