@@ -2519,9 +2519,9 @@ class PyPath(session_mod.Logger):
 
                     resource = (
                         [line[param.resource]]
-                        if type(param.resource) is int else
+                        if isinstance(param.resource, int) else
                         line[param.resource[0]].split(param.resource[1])
-                        if type(param.resource) is tuple else
+                        if isinstance(param.resource, tuple) else
                         [param.resource]
                     )
 
@@ -13090,6 +13090,203 @@ class PyPath(session_mod.Logger):
 
         else:
             return sum(map(len, self.graph.es['references']))
+    
+    
+    def update_summaries(self):
+        
+        self.summaries = {}
+        
+        resources = set(itertools.chain(*self.graph.es['sources']))
+        references = set(itertools.chain(*self.graph.es['references']))
+        refs_by_resource = dict(
+            (
+                resource,
+                set.union(
+                    *(
+                        refs[resource] if resource in refs else set()
+                        for refs in self.graph.es['refs_by_source']
+                    )
+                )
+            )
+            for resource in resources
+        )
+        
+        curation_effort_by_resource = dict(
+            (
+                resource,
+                {
+                    (ref, self.nodNam[e.source], self.nodNam[e.target])
+                    for e in self.graph.es
+                    for ref in (
+                        e['refs_by_source'][resource]
+                            if resource in e['refs_by_source'] else
+                        ()
+                    )
+                }
+            )
+            for resource in resources
+        )
+        curation_effort_total = set.union(
+            *curation_effort_by_resource.values()
+        )
+        
+        all_nodes = self.nodInd
+        nodes_by_resource = dict(
+            (
+                resource,
+                set(
+                    itertools.chain(*(
+                        (self.nodNam[e.source], self.nodNam[e.target])
+                        for e in self.graph.es
+                        if resource in e['sources']
+                    ))
+                )
+            )
+            for resource in resources
+        )
+        all_edges = {
+            (
+                self.nodNam[e.source],
+                self.nodNam[e.target]
+            )
+            for e in self.graph.es
+        }
+        edges_by_resource = dict(
+            (
+                resource,
+                {
+                    (
+                        self.nodNam[e.source],
+                        self.nodNam[e.target]
+                    )
+                    for e in self.graph.es
+                    if resource in e['sources']
+                }
+            )
+            for resource in resources
+        )
+        
+        for resource in resources:
+            
+            if resource.endswith('_CP'):
+                
+                continue
+            
+            nodes = nodes_by_resource[resource]
+            nodes_others = set.union(*(
+                nodes
+                for res, nodes in iteritems(nodes_by_resource)
+                if res != resource
+            ))
+            n_nodes = len(nodes)
+            n_nodes_unique = len(nodes - nodes_others)
+            n_nodes_shared = len(nodes & nodes_others)
+            pct_nodes = n_nodes / len(all_nodes) * 100
+            
+            edges = edges_by_resource[resource]
+            edges_others = set.union(*(
+                edges
+                for res, edges in iteritems(edges_by_resource)
+                if res != resource
+            ))
+            n_edges = len(edges)
+            n_edges_unique = len(edges - edges_others)
+            n_edges_shared = len(edges & edges_others)
+            pct_edges = n_edges / len(all_edges) * 100
+            
+            refs = refs_by_resource[resource]
+            refs_others = set.union(*(
+                refs
+                for res, refs in iteritems(refs_by_resource)
+                if res != resource
+            ))
+            n_refs = len(refs)
+            n_refs_unique = len(refs - refs_others)
+            n_refs_shared = len(refs & refs_others)
+            pct_refs = n_refs / len(references) * 100
+            
+            curation_effort = curation_effort_by_resource[resource]
+            curation_effort_others = set.union(*(
+                curation_effort
+                for res, curation_effort
+                in iteritems(curation_effort_by_resource)
+                if res != resource
+            ))
+            n_curation_effort = len(curation_effort)
+            n_curation_effort_unique = len(
+                curation_effort -
+                curation_effort_others
+            )
+            n_curation_effort_shared = len(
+                curation_effort &
+                curation_effort_others
+            )
+            pct_curation_effort = (
+                n_curation_effort /
+                len(curation_effort_total) * 100
+            )
+            
+            self.summaries[resource] = {
+                'name': resource,
+                'n_nodes': n_nodes,
+                'n_nodes_unique': n_nodes_unique,
+                'n_nodes_shared': n_nodes_shared,
+                'pct_nodes': pct_nodes,
+                'n_edges': n_edges,
+                'n_edges_unique': n_edges_unique,
+                'n_edges_shared': n_edges_shared,
+                'pct_edges': pct_edges,
+                'n_refs': n_refs,
+                'n_refs_unique': n_refs_unique,
+                'n_refs_shared': n_refs_shared,
+                'pct_refs': pct_refs,
+                'n_curation_effort': n_curation_effort,
+                'n_curation_effort_unique': n_curation_effort_unique,
+                'n_curation_effort_shared': n_curation_effort_shared,
+                'pct_curation_effort': pct_curation_effort,
+            }
+    
+    
+    def summaries_tab(self, outfile = None):
+        
+        columns = (
+            ('name', 'Resource'),
+            ('n_nodes', 'Proteins'),
+            ('n_nodes_shared', 'Shared proteins'),
+            ('n_nodes_unique', 'Unique proteins'),
+            ('pct_nodes', 'Proteins [%]'),
+            ('n_edges', 'Edges'),
+            ('n_edges_shared', 'Shared edges'),
+            ('n_edges_unique', 'Unique edges'),
+            ('pct_edges', 'Edges [%]'),
+            ('n_refs', 'References'),
+            ('n_refs_shared', 'Shared references'),
+            ('n_refs_unique', 'Unique references'),
+            ('pct_refs', 'References [%]'),
+            ('n_curation_effort', 'Curation effort'),
+            ('n_curation_effort_shared', 'Shared curation effort'),
+            ('n_curation_effort_unique', 'Unique curation effort'),
+            ('pct_curation_effort', 'Curation effort [%]'),
+        )
+        
+        tab = []
+        tab.append([f[1] for f in columns])
+        
+        tab.extend([
+            [
+                str(self.summaries[src][f[0]])
+                for f in columns
+            ]
+            for src in sorted(self.summaries.keys())
+        ])
+        
+        if outfile:
+            
+            with open(outfile, 'w') as fp:
+                
+                fp.write('\n'.join('\t'.join(row) for row in tab))
+        
+        return tab
 
     def export_dot(self, nodes=None, edges=None, directed=True,
                    labels='genesymbol', edges_filter=lambda e: True,
