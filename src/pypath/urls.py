@@ -631,6 +631,7 @@ urls = {
     },
     'phosphatome': {
         'label': 'List of human and other phosphatases',
+        'webpage': 'http://phosphatome.net/3.0',
         'url': 'https://stke.sciencemag.org/highwire/filestream/210607/'\
             'field_highwire_adjunct_files/2/aag1796_Tables_S1_to_S23.zip',
     },

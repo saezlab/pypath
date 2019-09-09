@@ -42,6 +42,7 @@ import pandas as pd
 import pypath.dataio as dataio
 import pypath.common as common
 import pypath.mapping as mapping
+import pypath.reflists as reflists
 import pypath.resource as resource
 import pypath.go as go
 import pypath.intercell_annot as intercell_annot
@@ -855,7 +856,8 @@ class AnnotationBase(resource.AbstractResource):
         
         return (
             isinstance(key, common.basestring) and
-            not key.startswith('MIMAT')
+            not key.startswith('MIMAT') and
+            not key.startswith('COMPLEX')
         )
     
     
@@ -871,7 +873,10 @@ class AnnotationBase(resource.AbstractResource):
     @staticmethod
     def is_complex(key):
         
-        return isinstance(key, intera.Complex)
+        return isinstance(key, intera.Complex) or (
+            isinstance(key, common.basestring) and
+            key.startswith('COMPLEX')
+        )
     
     
     @classmethod
@@ -1140,7 +1145,7 @@ class AnnotationBase(resource.AbstractResource):
 
         other = other if isinstance(other, set) else set(other)
 
-        return len(self & other) / len(other)
+        return len(self & other) / len(other) if other else .0
 
 
     def subset_intersection(self, universe, **kwargs):
@@ -1213,6 +1218,62 @@ class AnnotationBase(resource.AbstractResource):
     def __len__(self):
 
         return self.numof_entities()
+    
+    
+    def numof_references(self):
+        
+        return len(set(self.all_refs()))
+    
+    
+    def curation_effort(self):
+        
+        return len(self.all_refs())
+    
+    
+    def all_refs(self):
+        
+        if 'pmid' in self.get_names():
+            
+            return [
+                a.pmid
+                for aa in self.annot.values()
+                for a in aa
+                if a.pmid
+            ]
+        
+        return []
+    
+    
+    @property
+    def summary(self):
+        
+        return {
+            'n_total': self.numof_entities(),
+            'n_records_total': self.numof_records(),
+            'n_proteins': self.numof_proteins(),
+            'pct_proteins': self.proportion(self.proteins) * 100,
+            'n_complexes': self.numof_complexes(),
+            'pct_complexes': self.proportion(
+                complex.get_db().complexes.keys()
+            ) * 100,
+            'n_mirnas': self.numof_mirnas(),
+            'pct_mirnas': (
+                self.proportion(reflists.get_reflist('mirbase')) * 100
+            ),
+            'n_protein_records': self.numof_protein_records(),
+            'n_complex_records': self.numof_complex_records(),
+            'n_mirna_records': self.numof_mirna_records(),
+            'references': self.numof_references(),
+            'curation_effort': self.curation_effort(),
+            'records_per_entity': (
+                self.numof_protein_records() / self.numof_proteins()
+                    if self.numof_proteins() else
+                self.numof_records() / self.numof_entities()
+            ),
+            'complex_annotations_inferred': bool(self.numof_proteins()),
+            'fields': ', '.join(self.get_names()),
+            'name': self.name,
+        }
 
 
 class Membranome(AnnotationBase):
@@ -2915,6 +2976,59 @@ class AnnotationTable(session_mod.Logger):
             str(a) for a in
             self.all_annotations(protein = protein)
         )
+    
+    
+    def update_summaries(self):
+        
+        self.summaries = dict(
+            (
+                name,
+                a.summary
+            )
+            for name, a in iteritems(self.annots)
+        )
+    
+    
+    def summary_tab(self, outfile = None):
+        
+        columns = (
+            ('name', 'Resource'),
+            ('n_total', 'Entities'),
+            ('n_records_total', 'Records'),
+            ('records_per_entity', 'Records per entity'),
+            ('n_proteins', 'Proteins'),
+            ('pct_proteins', 'Proteins [%]'),
+            ('n_protein_records', 'Protein records'),
+            ('n_complexes', 'Complexes'),
+            ('pct_complexes', 'Complexes [%]'),
+            ('n_complex_records', 'Complex records'),
+            ('complex_annotations_inferred', 'Inferred complex annotations'),
+            ('n_mirnas', 'miRNA'),
+            ('pct_mirnas', 'miRNA [%]'),
+            ('n_mirna_records', 'miRNA records'),
+            ('references', 'References'),
+            ('curation_effort', 'Curation effort'),
+            ('fields', 'Fields'),
+        )
+        
+        tab = []
+        tab.append([f[1] for f in columns])
+        
+        tab.extend([
+            [
+                str(self.summaries[src][f[0]])
+                for f in columns
+            ]
+            for src in sorted(self.summaries.keys())
+        ])
+        
+        if outfile:
+            
+            with open(outfile, 'w') as fp:
+                
+                fp.write('\n'.join('\t'.join(row) for row in tab))
+        
+        return tab
 
 
 def init_db(
