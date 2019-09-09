@@ -406,6 +406,72 @@ class CustomAnnotation(session_mod.Logger):
             for cls, elements in iteritems(self.classes)
             if element in elements
         )
+    
+    
+    def update_summaries(self):
+        
+        self.summaries = {}
+        
+        for cat, level in iteritems(self.class_types):
+            
+            if level == 'sub':
+                
+                continue
+            
+            label = self.class_labels[cat]
+            
+            self.summaries[label] = {
+                'label': label,
+                'level': level,
+                'resources': sorted(
+                    self.resource_labels[res]
+                    for res in self.children[cat]
+                    if res in self.resource_labels
+                ),
+                'n_proteins': sum(
+                    1 for entity in self.classes[cat]
+                    if not isinstance(entity, intera.Complex)
+                ),
+                'n_complexes': sum(
+                    1 for entity in self.classes[cat]
+                    if isinstance(entity, intera.Complex)
+                ),
+            }
+    
+    
+    def summaries_tab(self, outfile = None):
+        
+        columns = (
+            ('label', 'Category'),
+            ('level', 'Category level'),
+            ('n_proteins', 'Proteins'),
+            ('n_complexes', 'Complexes'),
+            ('resources', 'Resources'),
+        )
+        
+        tab = []
+        tab.append([f[1] for f in columns])
+        
+        tab.extend([
+            [
+                (
+                    ', '.join(self.summaries[src][f[0]])
+                        if isinstance(self.summaries[src][f[0]], list) else
+                    str(self.summaries[src][f[0]])
+                )
+                for f in columns
+            ]
+            for src in sorted(self.summaries.keys())
+        ])
+        
+        if outfile:
+            
+            with open(outfile, 'w') as fp:
+                
+                fp.write('\n'.join('\t'.join(row) for row in tab))
+        
+        return tab
+
 
 
 class AnnotationBase(resource.AbstractResource):
