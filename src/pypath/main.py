@@ -2265,7 +2265,7 @@ class PyPath(session_mod.Logger):
                         silent=False,
                         large=True,
                         cache=curl_use_cache)
-                    infile = c.result.read()
+                    infile = c.fileobj.read()
 
                     if type(infile) is bytes:
 

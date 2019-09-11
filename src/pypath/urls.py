@@ -1055,6 +1055,15 @@ urls = {
     'lmpid': {
         'url': 'http://rescued.omnipathdb.org/LMPID_DATA_pubmed_ref.xml',
     },
+    'nrf2ome': {
+        'url': 'http://rescued.omnipathdb.org/nrf2ome.csv',
+    },
+    'arn': {
+        'url': 'http://rescued.omnipathdb.org/arn_curated.csv',
+    },
+    'alzpathway': {
+        'url': 'http://rescued.omnipathdb.org/alzpw-ppi.csv',
+    },
 }
 
 

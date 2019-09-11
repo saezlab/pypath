@@ -30,6 +30,7 @@ import copy
 
 # from pypath:
 import pypath.input_formats as input_formats
+import pypath.urls as urls
 from pypath import common
 
 __all__ = [
@@ -370,7 +371,7 @@ pathway = {
                          "ca1_function": 8}),
     'arn': input_formats.ReadSettings(
         name = "ARN",
-        separator = ",",
+        separator = None,
         id_col_a = 0,
         id_col_b = 1,
         id_type_a = "uniprot",
@@ -379,7 +380,7 @@ pathway = {
         entity_type_b = "protein",
         is_directed = (3, ['1', '2']),
         sign = (4, '1', '-1'),
-        input = os.path.join(ROOT, 'data', 'arn_curated.csv'),
+        input = 'arn_interactions',
         references = (7, ":"),
         ncbi_tax_id = 9606,
         extra_edge_attrs = {
@@ -391,7 +392,7 @@ pathway = {
         extra_node_attrs_b = {"atg": 6}),
     'nrf2': input_formats.ReadSettings(
         name = "NRF2ome",
-        separator = ",",
+        separator = None,
         id_col_a = 0,
         id_col_b = 1,
         id_type_a = "uniprot",
@@ -400,7 +401,7 @@ pathway = {
         entity_type_b = "protein",
         is_directed = (3, ['1', '2']),
         sign = (4, '1', '-1'),
-        input = os.path.join(ROOT, 'data', 'nrf2ome.csv'),
+        input = 'nrf2ome_interactions',
         references = (5, ":"),
         ncbi_tax_id = 9606,
         extra_edge_attrs = {
@@ -695,8 +696,8 @@ interaction = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
     'alz': input_formats.ReadSettings(
-        name = "AlzPathway",
-        separator = "\t",
+        name = '\t',
+        separator = None,
         id_col_a = 0,
         id_col_b = 1,
         id_type_a = "uniprot",
@@ -705,7 +706,7 @@ interaction = {
         entity_type_b = "protein",
         is_directed = False,
         sign = False,
-        input = os.path.join(ROOT, 'data', 'alzpw-ppi.csv'),
+        input = urls.urls['alzpathway']['url'],
         references = (8, ";"),
         ncbi_tax_id = 9606,
         extra_edge_attrs = {},
