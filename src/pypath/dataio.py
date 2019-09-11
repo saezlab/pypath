@@ -5007,14 +5007,17 @@ def netpath_pathway_annotations():
 
 
 def netpath_interactions():
+    
     result = []
     repwnum = re.compile(r'NetPath_([0-9]+)_')
     mi = '{net:sf:psidev:mi}'
     url = urls.urls['netpath_psimi']['url']
     c = curl.Curl(url, silent = False)
+    
     data = c.result
     data = dict([(k, v) for k, v in iteritems(data) if k.endswith('xml')])
     pwnames = netpath_names()
+    
     for pwfile, rawxml in iteritems(data):
         try:
             pwnum = repwnum.findall(pwfile)[0]

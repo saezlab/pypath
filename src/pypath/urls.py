@@ -503,7 +503,7 @@ urls = {
     },
     'netpath_psimi': {
         'label': 'Batch download of NetPath pathways in PSI-MI format',
-        'url': 'http://www.netpath.org/download/zipped/PSI-MI.zip'
+        'url': 'http://rescued.omnipathdb.org/NetPath_PSI-MI.zip'
     },
     'netpath_bp': {
         'label': 'Netpath pathways one by one in BioPAX level 3 format',
