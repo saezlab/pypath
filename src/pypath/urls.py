@@ -701,7 +701,8 @@ urls = {
         'hi-ii-14':
         'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-II-14.tsv',
         'hi-i-05':
-        'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-I-05.tsv'
+        'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-I-05.tsv',
+        'hi-iii': 'http://interactome.baderlab.org/download',
     },
     'ca1': {
         'label': 'Supplementary Online Materials for Ma\'ayan 2005',

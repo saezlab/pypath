@@ -1133,23 +1133,24 @@ interaction_misc = {
     'hi3': input_formats.ReadSettings(
         name = "HI-III",
         separator = None,
-        id_col_a = 1,
-        id_col_b = 3,
-        id_type_a = "genesymbol",
-        id_type_b = "genesymbol",
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
         entity_type_a = "protein",
         entity_type_b = "protein",
         is_directed = False,
         sign = False,
         ncbi_tax_id = 9606,
-        # note: obtain the file yourself, and replace
-        # this location
-        input = '/home/denes/Documents/pw/data/hi3-2.3.tsv',
+        input = 'hi_iii',
         references = False,
         header = True,
-        extra_edge_attrs = {},
+        extra_edge_attrs = {
+            'hi3_score': 5,
+        },
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'lit13': input_formats.ReadSettings(
         name = "Lit-BM-13",
         separator = None,
@@ -1186,6 +1187,30 @@ interaction_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {})
+}
+
+
+interaction_deprecated = {
+    'hi3': input_formats.ReadSettings(
+        name = "HI-III",
+        separator = None,
+        id_col_a = 1,
+        id_col_b = 3,
+        id_type_a = "genesymbol",
+        id_type_b = "genesymbol",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = False,
+        sign = False,
+        ncbi_tax_id = 9606,
+        # note: obtain the file yourself, and replace
+        # this location
+        input = '/home/denes/Documents/pw/data/hi3-2.3.tsv',
+        references = False,
+        header = True,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {}),
 }
 
 interaction_htp = {
