@@ -1106,7 +1106,7 @@ interaction_misc = {
             'UNKNOWN_POSITIVE_INFLUENCE'
         ], ['INHIBITION', 'inhibits']),
         ncbi_tax_id = 9606,
-        input = 'get_acsn',
+        input = 'acsn_interactions',
         references = False,
         header = False,
         extra_edge_attrs = {'acsn_effect': 1},

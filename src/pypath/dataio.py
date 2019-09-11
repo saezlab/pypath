@@ -3824,6 +3824,7 @@ def get_kinase_class():
 
 
 def get_acsn():
+    
     greek = {
         '_alpha_': 'A',
         '_beta_': 'B',
@@ -3840,9 +3841,11 @@ def get_acsn():
         x.split('\t')
         for x in data.replace('\r', '').replace('*', '').strip().split('\n')
     ]
+    
     for l in data:
         l[0] = regreek.sub('', l[0]).split('_')[0].split('~')[0]
         l[2] = regreek.sub('', l[2]).split('_')[0].split('~')[0]
+    
     return data
 
 
@@ -7723,11 +7726,13 @@ def rolland_hi_ii_14():
     """
     url = urls.urls['hiii14']['url']
     c = curl.Curl(url, silent = False, large = True)
-    xls = c.result
-    xlsname = xls.name
-    xls.close()
+    xlsname = c.fileobj.name
+    c.fileobj.close()
     tbl = read_xls(xlsname, sheet = '2G')
-    return map(lambda l: map(lambda c: c.split('.')[0], l), tbl)[1:]
+    
+    for row in tbl[1:]:
+        
+        yield [c.split('.')[0] for c in row]
 
 
 def vidal_hi_iii(fname):
