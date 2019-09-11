@@ -944,7 +944,7 @@ ptm_misc = {
         is_directed = True,
         header = True,
         ncbi_tax_id = 9606,
-        input = os.path.join(ROOT, 'data', 'phosphopoint.csv'),
+        input = 'phosphopoint_interactions',
         references = False,
         sign = False,
         extra_edge_attrs = {"phosphopoint_category": 4},
@@ -1186,7 +1186,7 @@ interaction_misc = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {})
+        extra_node_attrs_b = {}),
 }
 
 

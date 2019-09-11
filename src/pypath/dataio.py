@@ -3225,6 +3225,7 @@ def get_pdzbase():
 
 
 def get_domino(none_values = False, outfile = None):
+    
     result = []
     taxid = re.compile(r'taxid:(.*)\([a-zA-Z ]*\)')
     miont = re.compile(r'MI:[0-9]{4}\((.*)\)')
@@ -3237,11 +3238,11 @@ def get_domino(none_values = False, outfile = None):
         r'.*sequence:[\s]*[0-9]+-[0-9]+[\s]*:[\s]*([A-Z]{10,}).*')
     ptmty = re.compile(r'[0-9]*;MI:[0-9]*\((.*)\);.*;.*')
     refrs = re.compile(r'(pubmed|doi):["]*([-0-9a-zA-Z\.\(\)/]*)["]*')
-    url = urls.urls['domino']['module_data']
-    c = curl.Curl(url, silent = False)
+    url = urls.urls['domino']['rescued']
+    c = curl.Curl(url, silent = False, large = True)
     data = c.result
-    data = data.split('\n')
-    del data[0]
+    _ = next(data)
+    
     header = [
         'uniprot-A', 'uniprot-B', 'isoform-A', 'isoform-B', 'exp. method',
         'references', 'taxon-A', 'taxon-B', 'role-A', 'role-B',
@@ -3252,8 +3253,10 @@ def get_domino(none_values = False, outfile = None):
         'mutation-effects-B', 'domains-interpro-A', 'domains-interpro-B',
         'negative'
     ]
+    
     for r in data:
-        r = r.split('\t')
+        
+        r = r.strip().split('\t')
         if len(r) < 39:
             continue
         thisRow = [
@@ -3521,33 +3524,32 @@ def get_dbptm(organism = 9606):
     else:
         sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
         return []
-
-    fname = urls.files['dbptm']['old_dbptm']
+    
+    url = urls.urls['dbptm']['old_table']
+    c = curl.Curl(url, silent = False, large = True)
     data = []
 
-    with open(fname, 'r') as fp:
+    hdr = next(c.result).strip().split('\t')
 
-        hdr = fp.readline().strip().split('\t')
+    for l in c.result:
 
-        for l in fp:
+        l = l.strip().split('\t')
 
-            l = l.strip().split('\t')
-
-            data.append(dict(
+        data.append(dict(
+            (
+                key,
                 (
-                    key,
-                    (
-                        None
-                            if val == '' else
-                        val.split(';')
-                            if key in {'references', 'kinase'} else
-                        int(val)
-                            if val.isdigit() else
-                        val
-                    )
+                    None
+                        if val == '' else
+                    val.split(';')
+                        if key in {'references', 'kinase'} else
+                    int(val)
+                        if val.isdigit() else
+                    val
                 )
-                for key, val in zip(hdr, l)
-            ))
+            )
+            for key, val in zip(hdr, l)
+        ))
 
     return data
 
@@ -3779,15 +3781,29 @@ def mimp_interactions():
     return result
 
 
+def phosphopoint_interactions():
+    
+    interactions = []
+    
+    url = urls.urls['phosphopoint']['url']
+    
+    c = curl.Curl(url, silent = False, large = True)
+    
+    _ = next(c.result)
+    
+    for l in c.result:
+        
+        l = l.strip().split(';')
+        interactions.append([l[0], l[2], l[4]])
+    
+    return interactions
+
+
 def phosphopoint_directions():
-    directions = []
-    fname = urls.files['phosphopoint']['data']
-    with open(fname, 'r') as f:
-        nul = f.readline()
-        for l in f:
-            l = l.split(';')
-            directions.append([l[0], l[2]])
-    return directions
+    
+    return [
+        l[:2] for l in phosphopoint_interactions()
+    ]
 
 
 def get_kinase_class():
@@ -6667,7 +6683,7 @@ def disgenet_annotations(dataset = 'curated'):
     return data
 
 
-def load_lmpid(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
+def load_lmpid(organism = 9606):
     """
     Reads and processes LMPID data from local file
     `pypath.data/LMPID_DATA_pubmed_ref.xml`.
@@ -6676,17 +6692,23 @@ def load_lmpid(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
     Returns list of domain-motif interactions.
     """
     result = []
-    with open(os.path.join(common.ROOT, 'data', fname), 'r') as f:
-        data = f.read()
-    soup = bs4.BeautifulSoup(data, 'html.parser')
+    
+    url = urls.urls['lmpid']['url']
+    c = curl.Curl(url, silent = False, large = False)
+    
+    soup = bs4.BeautifulSoup(c.result, 'html.parser')
     uniprots = uniprot_input.get_db(organism = organism, swissprot = None)
     prg = progress.Progress(
         len(soup.find_all('record')), 'Processing data from LMPID', 21)
+    
     for rec in soup.find_all('record'):
+        
         prg.step()
         uniprot_bait = rec.bait_uniprot_id.text
         uniprot_prey = rec.prey_uniprot_id.text
+        
         if uniprot_bait in uniprots and uniprot_prey in uniprots:
+            
             result.append({
                 'bait': uniprot_bait,
                 'prey': uniprot_prey,
@@ -6696,26 +6718,28 @@ def load_lmpid(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
                 'inst': rec.motif_instance.text,
                 'dom': rec.interacting_domain.text
             })
+    
     prg.terminate()
+    
     return result
 
 
-def lmpid_interactions(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
+def lmpid_interactions(organism = 9606):
     """
     Converts list of domain-motif interactions supplied by
     `pypath.dataio.load_lmpid()` to list of interactions.
     """
-    data = load_lmpid(fname = fname, organism = organism)
+    data = load_lmpid(organism = organism)
     return [[l['prey'], l['bait'], ';'.join(l['refs'])] for l in data]
 
 
-def lmpid_dmi(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
+def lmpid_dmi(organism = 9606):
     """
     Converts list of domain-motif interactions supplied by
     `pypath.dataio.load_lmpid()` to list of
     `pypath.intera.DomainMotif() objects.
     """
-    data = load_lmpid(fname = fname, organism = organism)
+    data = load_lmpid(organism = organism)
     return [{
         'motif_protein': l['bait'],
         'domain_protein': l['prey'],
@@ -6735,7 +6759,7 @@ def get_hsn():
     Returns list of interactions.
     """
     url = urls.urls['hsn']['url']
-    c = curl.Curl(url, silent = False).split('\n')[1:]
+    c = curl.Curl(url, silent = False, large = True)
     data = c.result
     data = [r.split(',') for r in data if len(r) > 0]
     return data
@@ -8876,10 +8900,6 @@ def signalink_interactions():
     repar = re.compile(r'.*\(([a-z\s]+)\)')
     repref = re.compile(r'(?:.*:)?((?:[\w]+[^\s])?)\s?')
     notNeeded = set(['acsn', 'reactome'])
-    edgesFile = os.path.join(common.ROOT, 'data',
-                             urls.files['signalink']['edges'])
-    nodesFile = os.path.join(common.ROOT, 'data',
-                             urls.files['signalink']['nodes'])
     nodes = {}
     interactions = []
 
@@ -8892,73 +8912,71 @@ def signalink_interactions():
             return m.groups()[0]
         else:
             return attr
+    
+    url_nodes = urls.urls['signalink']['nodes']
+    c_nodes = curl.Curl(url_nodes, silent = False, large = True)
+    url_edges = urls.urls['signalink']['edges']
+    c_edges = curl.Curl(url_edges, silent = False, large = True)
+    
+    for l in c_nodes.result:
 
-    with io.open(nodesFile, 'r', encoding="utf8") as f:
+        if len(l) > 0:
 
-        for l in f:
+            l = l.split('\t')
+            _id = int(l[0])
+            uniprot = repref.sub('\\1', l[1])
+            pathways = [
+                pw.split(':')[-1].strip() for pw in l[4].split('|')
+                if pw.split(':')[0] not in notNeeded
+            ]
+            nodes[_id] = [uniprot, pathways]
 
-            if len(l) > 0:
+    lPrev = None
 
-                l = l.split('\t')
-                _id = int(l[0])
-                uniprot = repref.sub('\\1', l[1])
-                pathways = [
-                    pw.split(':')[-1].strip() for pw in l[4].split('|')
-                    if pw.split(':')[0] not in notNeeded
+    for l in c_edges.result:
+
+        l = l.strip().split('\t')
+
+        if lPrev is not None:
+            l = lPrev + l[1:]
+            lPrev = None
+
+        if len(l) == 13:
+
+            if l[-1] == '0':
+
+                dbs = [
+                    _process_attr(db.split(':')[-1])
+                    for db in l[9].replace('"', '').split('|')
                 ]
-                nodes[_id] = [uniprot, pathways]
+                dbs = list(set(dbs) - notNeeded)
+                if len(dbs) == 0:
+                    continue
+                idSrc = int(l[1])
+                idTgt = int(l[2])
 
-    prg = progress.Progress(os.path.getsize(edgesFile), 'Reading file', 33)
+                uniprotSrc = repref.sub('\\1', l[3])
+                uniprotTgt = repref.sub('\\1', l[4])
 
-    with io.open(edgesFile, 'r', encoding="utf8") as f:
+                if not uniprotSrc or not uniprotTgt:
 
-        lPrev = None
+                    continue
 
-        for l in f:
-
-            prg.step(len(l))
-            l = l.strip().split('\t')
-
-            if lPrev is not None:
-                l = lPrev + l[1:]
-                lPrev = None
-
-            if len(l) == 13:
-
-                if l[-1] == '0':
-
-                    dbs = [
-                        _process_attr(db.split(':')[-1])
-                        for db in l[9].replace('"', '').split('|')
-                    ]
-                    dbs = list(set(dbs) - notNeeded)
-                    if len(dbs) == 0:
-                        continue
-                    idSrc = int(l[1])
-                    idTgt = int(l[2])
-
-                    uniprotSrc = repref.sub('\\1', l[3])
-                    uniprotTgt = repref.sub('\\1', l[4])
-
-                    if not uniprotSrc or not uniprotTgt:
-
-                        continue
-
-                    refs = [ref.split(':')[-1] for ref in l[7].split('|')]
-                    attrs = dict(
-                        tuple(attr.strip().split(':', 1))
-                        for attr in l[8].replace('"', '').split('|'))
-                    interactions.append([
-                        uniprotSrc, uniprotTgt, ';'.join(refs), ';'.join(dbs),
-                        _get_attr(attrs, 'effect'),
-                        _get_attr(attrs, 'is_direct'),
-                        _get_attr(attrs, 'is_directed'),
-                        _get_attr(attrs, 'molecular_background'),
-                        ';'.join(nodes[idSrc][1]), ';'.join(nodes[idTgt][1])
-                    ])
-            else:
-                lPrev = l
-    prg.terminate()
+                refs = [ref.split(':')[-1] for ref in l[7].split('|')]
+                attrs = dict(
+                    tuple(attr.strip().split(':', 1))
+                    for attr in l[8].replace('"', '').split('|'))
+                interactions.append([
+                    uniprotSrc, uniprotTgt, ';'.join(refs), ';'.join(dbs),
+                    _get_attr(attrs, 'effect'),
+                    _get_attr(attrs, 'is_direct'),
+                    _get_attr(attrs, 'is_directed'),
+                    _get_attr(attrs, 'molecular_background'),
+                    ';'.join(nodes[idSrc][1]), ';'.join(nodes[idTgt][1])
+                ])
+        else:
+            lPrev = l
+    
     return interactions
 
 
@@ -9138,8 +9156,8 @@ def acsn_ppi(keep_in_complex_interactions = True):
     @keep_in_complex_interactions : bool
         Whether to include interactions from complex expansion.
     """
-    nfname = urls.files['acsn']['names']
-    pfname = urls.files['acsn']['ppi']
+    nfname = urls.urls['acsn']['names']
+    pfname = urls.urls['acsn']['ppi']
     names = {}
     interactions = []
     with open(nfname, 'r') as f:
@@ -10669,7 +10687,7 @@ def deathdomain_interactions():
 
     for fam in families:
 
-        url = urls.urls['death']['url'] % fam
+        url = urls.urls['death']['url_dead'] % fam
         c = curl.Curl(url, silent = False)
         html = c.result
 
@@ -10709,22 +10727,22 @@ def deathdomain_interactions():
 
     return result
 
-def deathdomain_interactions_static():
+def deathdomain_interactions_rescued():
     """
-    Loads the DeathDomain interactions from module data.
+    Loads the DeathDomain interactions from rescued data.
     """
 
-    fname = settings.get('deathdomain')
-
-    with io.open(fname, 'r', encoding="utf8") as fp:
-
-        _ = fp.readline()
-
-        return [
-            i.strip()
-            for line in fp.read().split('\n')
-            for i in line.split('\t')
-        ]
+    url = urls.urls['death']['url_alive']
+    
+    c = curl.Curl(url, silent = False, large = True)
+    
+    _ = next(c.result)
+    
+    return [
+        i.strip()
+        for line in c.result
+        for i in line.split('\t')
+    ]
 
 
 def get_string_effects(ncbi_tax_id = 9606,
@@ -12007,23 +12025,22 @@ def zhong2015_annotations():
     )
     result = collections.defaultdict(set)
 
-    fname = urls.files['zhong2015']['s1']
+    url = urls.urls['zhong2015']['url']
+    c = curl.Curl(url, silent = False, large = True)
 
-    with open(fname, 'r') as fp:
+    _ = next(c.result)
 
-        _ = fp.readline()
+    for rec in c.result:
 
-        for rec in fp:
+        rec = rec.strip().split('\t')
 
-            rec = rec.split('\t')
+        uniprot = mapping.map_name0(rec[0], 'genesymbol', 'uniprot')
 
-            uniprot = mapping.map_name0(rec[0], 'genesymbol', 'uniprot')
+        if uniprot:
 
-            if uniprot:
-
-                result[uniprot].add(
-                    Zhong2015Annotation(type = types[rec[2]])
-                )
+            result[uniprot].add(
+                Zhong2015Annotation(type = types[rec[2]])
+            )
 
     return result
 
