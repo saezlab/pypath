@@ -9667,16 +9667,64 @@ def phosphosite_directions(organism = 'human'):
     ]
 
 
-def get_lit_bm_13():
+def lit_bm_13_interactions():
     """
-    Downloads and processes Lit-BM-13 dataset, the high confidence
-    literature curated interactions from CCSB.
+    Downloads and processes Lit-BM-13 dataset, the 2013 version of the 
+    high confidence literature curated interactions from CCSB.
     Returns list of interactions.
     """
+    
     url = urls.urls['hid']['lit-bm-13']
+    c = curl.Curl(url, silent = False, large = True)
+    
+    _ = next(c.result)
+    
+    for row in c.result:
+        
+        row.strip().split('\t')
+
+
+def lit_bm_17_interactions():
+    """
+    Downloads and processes Lit-BM-13 dataset, the 2017 version of the 
+    high confidence literature curated interactions from CCSB.
+    Returns list of interactions.
+    """
+    
+    LitBm17Interaction = collections.namedtuple(
+        'LitBm17Interaction',
+        [
+            'id_a',
+            'id_b',
+            'pubmed',
+            'score',
+        ]
+    )
+    
+    url = urls.urls['hid']['lit-bm-17']
     c = curl.Curl(url, silent = False)
     data = c.result
-    return map(lambda l: l.strip().split('\t'), data.split('\n')[1:])
+    
+    c = curl.Curl(url, silent = False, large = True)
+    
+    _ = next(c.result)
+    
+    for row in c.result:
+        
+        row = row.strip().split('\t')
+        
+        id_a = row[0][10:]
+        id_b = row[1][10:]
+       
+        pubmed = row[8][7:]
+        score = float(row[14][13:])
+        
+        yield LitBm17Interaction(
+            id_a = id_a,
+            id_b = id_b,
+            pubmed = pubmed,
+            score = score,
+        )
 
 
 def get_ca1():
