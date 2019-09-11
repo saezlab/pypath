@@ -3833,7 +3833,7 @@ def get_acsn():
     }
     regreek = re.compile(r'\b(' + '|'.join(greek.keys()) + r')\b')
     result = []
-    url = urls.urls['acsn']['url']
+    url = urls.urls['acsn']['sif']
     c = curl.Curl(url, silent = False)
     data = c.result
     data = [
