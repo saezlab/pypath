@@ -13277,7 +13277,10 @@ class PyPath(session_mod.Logger):
                 str(self.summaries[src][f[0]])
                 for f in columns
             ]
-            for src in sorted(self.summaries.keys())
+            for src in sorted(
+                self.summaries.keys(),
+                key = lambda s: s.lower()
+            )
         ])
         
         if outfile:

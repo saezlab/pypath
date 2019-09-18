@@ -9072,6 +9072,7 @@ def get_acsn_effects():
     """
     Processes ACSN data, returns list of effects.
     """
+    
     negatives = set(['NEGATIVE_INFLUENCE', 'UNKNOWN_NEGATIVE_INFLUENCE'])
     positives = set(
         ['TRIGGER', 'POSITIVE_INFLUENCE', 'UNKNOWN_POSITIVE_INFLUENCE'])
@@ -9083,8 +9084,11 @@ def get_acsn_effects():
         'MODULATION', 'TRANSCRIPTION', 'COMPLEX_EXPANSION', 'TRIGGER',
         'CATALYSIS', 'PHYSICAL_STIMULATION', 'UNKNOWN_INHIBITION', 'TRANSPORT'
     ])
-    data = acsn_ppi()
+    
+    data = acsn_interactions()
+    
     effects = []
+    
     for l in data:
         if len(l) == 4:
             eff = set(l[2].split(';'))
@@ -9094,6 +9098,7 @@ def get_acsn_effects():
                 effects.append([l[0], l[1], '+'])
             elif len(eff & directed) > 0:
                 effects.append([l[0], l[1], '*'])
+    
     return effects
 
 
@@ -9166,7 +9171,7 @@ def biogrid_interactions(organism = 9606, htp_limit = 1, ltp = True):
     return interactions
 
 
-def acsn_ppi(keep_in_complex_interactions = True):
+def acsn_interactions(keep_in_complex_interactions = True):
     """
     Processes ACSN data from local file.
     Returns list of interactions.
@@ -9174,27 +9179,32 @@ def acsn_ppi(keep_in_complex_interactions = True):
     @keep_in_complex_interactions : bool
         Whether to include interactions from complex expansion.
     """
-    nfname = urls.urls['acsn']['names']
-    pfname = urls.urls['acsn']['ppi']
+    
+    names_url = urls.urls['acsn']['names']
+    ppi_url = urls.urls['acsn']['ppi']
+    names_c = curl.Curl(names_url, silent = False, large = True)
+    ppi_c = curl.Curl(ppi_url, silent = False, large = True)
+    
     names = {}
     interactions = []
-    with open(nfname, 'r') as f:
-        for l in f:
-            l = l.strip().split('\t')
-            names[l[0]] = l[2:]
-    with open(pfname, 'r') as f:
-        nul = f.readline()
-        for l in f:
-            l = l.strip().split('\t')
-            if l[0] in names:
-                for a in names[l[0]]:
-                    if l[2] in names:
-                        for b in names[l[2]]:
-                            if keep_in_complex_interactions:
-                                if 'PROTEIN_INTERACTION' in l[1]:
-                                    l[1].replace('COMPLEX_EXPANSION',
-                                                 'IN_COMPLEX_INTERACTION')
-                            interactions.append([a, b, l[1], l[3]])
+    
+    for l in names_c.result:
+        l = l.strip().split('\t')
+        names[l[0]] = l[2:]
+    
+    _ = next(ppi_c.result)
+    for l in ppi_c.result:
+        l = l.strip().split('\t')
+        if l[0] in names:
+            for a in names[l[0]]:
+                if l[2] in names:
+                    for b in names[l[2]]:
+                        if keep_in_complex_interactions:
+                            if 'PROTEIN_INTERACTION' in l[1]:
+                                l[1].replace('COMPLEX_EXPANSION',
+                                             'IN_COMPLEX_INTERACTION')
+                        interactions.append([a, b, l[1], l[3]])
+    
     return interactions
 
 
