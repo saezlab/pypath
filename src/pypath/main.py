@@ -1541,7 +1541,7 @@ class PyPath(session_mod.Logger):
             The instance to be copied from.
         """
 
-        self.__dict__ = copy.deepcopy(other.__dict__)
+        self.__dict__ = modcopy.deepcopy(other.__dict__)
         self.update_vname()
         self._log('PyPath object has been copied and reinitialized.')
 
@@ -2400,6 +2400,30 @@ class PyPath(session_mod.Logger):
                                 param.negative_filters),
                             [0]))
                     ]))
+            
+            must_have_references = (
+                settings.get('keep_noref') or
+                param.must_have_references
+            )
+            self._log(
+                'Resource `%s` %s have literature references '
+                'for all interactions. Interactions without references '
+                'will be dropped. You can alter this condition globally by '
+                '`pypath.settings.keep_noref` or for individual resources '
+                'by the `must_have_references` attribute of their '
+                '`ReadSettings` object.' % (
+                    param.name,
+                    'must' if must_have_references else 'does not need to'
+                ),
+                1,
+            )
+            self._log(
+                '`%s` must have references: %s' % (
+                    param.name,
+                    str(must_have_references)
+                )
+            )
+        
             # iterating lines from input file
             lFiltered = 0
             rFiltered = 0
@@ -2407,7 +2431,7 @@ class PyPath(session_mod.Logger):
             readError = 0
             lnum = 0 # we need to define it here to avoid errors if the
                      # loop below runs zero cycles
-
+            
             for lnum, line in enumerate(infile):
 
                 if len(line) <= 1 or (lnum == 1 and param.header):
@@ -2475,7 +2499,7 @@ class PyPath(session_mod.Logger):
 
                     refs = dataio.only_pmids([r.strip() for r in refs])
 
-                    if len(refs) == 0 and param.must_have_references:
+                    if len(refs) == 0 and must_have_references:
                         rFiltered += 1
                         continue
 
@@ -12781,13 +12805,13 @@ class PyPath(session_mod.Logger):
             
             for name, fmt in iteritems(formats):
                 
-                fmt_noref = copy.deepcopy(fmt)
+                fmt_noref = modcopy.deepcopy(fmt)
                 
                 if fmt.name in getattr(data_formats, cat):
                     
                     fmt_noref.must_have_references = False
                 
-                formats_noref[name] = fmt
+                formats_noref[name] = fmt_noref
             
             return formats_noref
         

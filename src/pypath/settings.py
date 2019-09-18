@@ -98,6 +98,7 @@ _defaults = {
         'MIMP',
         'HPRD-phos',
     },
+    'keep_noref': False,
 }
 
 in_datadir = {
