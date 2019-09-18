@@ -12832,6 +12832,7 @@ class PyPath(session_mod.Logger):
         
         omnipath = reference_constraint(omnipath, pathway_extra, 'p')
         omnipath = reference_constraint(omnipath, kinase_substrate_extra, 'm')
+        omnipath = reference_constraint(omnipath, ligand_receptor_extra, 'l')
         
         self.load_resources(omnipath, exclude = exclude)
 

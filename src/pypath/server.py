@@ -26,6 +26,7 @@ import os
 import re
 import copy
 import collections
+import itertools
 
 try:
     import twisted.web.resource
@@ -69,11 +70,10 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         
         self.htmls = ['info', '']
         self.welcome_message = (
-            'Hello, this is the REST service of pypath %s. Welcome!\n'\
-            'For the descriptions of pathway resources go to `/info`.' % (
-                __version__
-            )
-        )
+            'Hello, this is the REST service of pypath %s. Welcome!\n'
+            'For the descriptions of pathway resources go to `/info`.\n'
+            'Available query types: '
+        ) % __version__
         
         self.isLeaf = True
         
@@ -87,8 +87,10 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         
         request.postpath = [i.decode('utf-8') for i in request.postpath]
         
+        self._log('Processing request: `%s`.' % request.uri.decode('utf-8'))
+        
         html = len(request.postpath) == 0 or request.postpath[0] in self.htmls
-        self._set_defaults(request, html=html)
+        self._set_defaults(request, html = html)
         
         if (
             request.postpath and
@@ -112,7 +114,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             
         elif not request.postpath:
             
-            response = [self.root(request)]
+            response = [self._root(request)]
         
         if not response:
             
@@ -136,6 +138,10 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             ]
         
         request.write(response[0])
+        
+        self._log(
+            'Finished serving request: `%s`.' % request.uri.decode('utf-8')
+        )
         
         request.finish()
         
@@ -223,7 +229,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             
             if ids_right:
                 
-                if req.postpath[0] == 'ptms':
+                if req.postpath[0] == 'enzsub':
                     
                     req.args[b'enzymes'] = ids_left
                     req.args[b'substrates'] = ids_right
@@ -235,7 +241,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             else:
                 req.args[b'partners'] = ids_left
             
-            if req.postpath[0] == 'ptms':
+            if req.postpath[0] == 'enzsub':
                 req.args[b'enzyme_substrate'] = left_right
             else:
                 req.args[b'source_target'] = left_right
@@ -251,7 +257,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         return descriptions.gen_html()
     
     
-    def root(self, req):
+    def _root(self, req):
         
         return _html.main_page()
     
@@ -274,6 +280,26 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
 class TableServer(BaseServer):
     
+    query_types = {
+        'annotations',
+        'intercell',
+        'interactions',
+        'enzsub',
+        'ptms',
+        'complexes',
+        'about',
+        'info',
+        'queries',
+        'annotations_summary',
+        'intercell_summary',
+    }
+    data_query_types = {
+        'annotations',
+        'intercell',
+        'interactions',
+        'enzsub',
+        'complexes',
+    }
     list_fields = {
         'sources',
         'references',
@@ -347,7 +373,7 @@ class TableServer(BaseServer):
             'directed': {'1', '0', 'no', 'yes'},
             'signed': {'1', '0', 'no', 'yes'},
         },
-        'ptms': {
+        'enzsub': {
             'header':      None,
             'format': {
                 'json',
@@ -495,13 +521,13 @@ class TableServer(BaseServer):
         'tfregulons_tfbs', 'tfregulons_coexp', 'type',
         'ncbi_tax_id', 'databases', 'organism'
     }
-    ptms_fields = {
+    enzsub_fields = {
         'references', 'sources', 'databases',
         'isoforms', 'organism', 'ncbi_tax_id'
     }
     default_input_files = {
         'interactions': 'omnipath_webservice_interactions.tsv',
-        'ptms': 'omnipath_webservice_ptms.tsv',
+        'enzsub': 'omnipath_webservice_ptms.tsv',
         'annotations': 'omnipath_webservice_annotations.tsv',
         'complexes': 'omnipath_webservice_complexes.tsv',
         'intercell': 'omnipath_webservice_intercell.tsv',
@@ -540,7 +566,7 @@ class TableServer(BaseServer):
             'value': 'category',
             'record_id': 'uint32',
         },
-        ptms = {
+        enzsub = {
             'enzyme': 'category',
             'substrate': 'category',
             'enzyme_genesymbol': 'category',
@@ -591,10 +617,11 @@ class TableServer(BaseServer):
         self.data = {}
         self._read_tables()
         self._preprocess_interactions()
-        self._preprocess_ptms()
+        self._preprocess_enzsub()
         self._preprocess_annotations()
         self._preprocess_complexes()
         self._preprocess_intercell()
+        self._update_databases()
         
         BaseServer.__init__(self)
         self._log('TableServer startup ready.')
@@ -657,10 +684,10 @@ class TableServer(BaseServer):
         )
     
     
-    def _preprocess_ptms(self):
+    def _preprocess_enzsub(self):
         
-        self._log('Preprocessing ptms.')
-        tbl = self.data['ptms']
+        self._log('Preprocessing enzyme-substrate relationships.')
+        tbl = self.data['enzsub']
         tbl['set_sources'] = pd.Series(
             [set(s.split(';')) for s in tbl.sources]
         )
@@ -704,7 +731,6 @@ class TableServer(BaseServer):
                     '<numeric>'
                 )
         })
-
     
     
     def _preprocess_intercell(self):
@@ -718,6 +744,31 @@ class TableServer(BaseServer):
             ['category', 'mainclass', 'class_type'],
             as_index = False,
         ).agg({})
+    
+    
+    def _update_databases(self):
+        
+        for query_type in self.data_query_types:
+            
+            tbl = self.data[query_type]
+            
+            for colname, argname in (
+                ('sources', 'databases'),
+                ('source', 'databases'),
+                ('category', 'categories')
+            ):
+                
+                if colname in tbl.columns:
+                    
+                    break
+            
+            values = sorted(set(
+                itertools.chain(*(
+                    val.split(';') for val in getattr(tbl, colname)
+                ))
+            ))
+            
+            self.args_reference[query_type][argname] = values
     
     
     def _check_args(self, req):
@@ -767,7 +818,8 @@ class TableServer(BaseServer):
                 'and\n'
                 'https://github.com/saezlab/DoRothEA\n'
                 'If you still experiencing issues contact us at\n'
-                'omnipath@googlegroups.com' % '\n'.join(result)
+                'https://github.com/saezlab/pypath/issues'
+                '' % '\n'.join(result)
             )
     
     
@@ -778,6 +830,8 @@ class TableServer(BaseServer):
                 if len(req.postpath) > 1 else
             'interactions'
         )
+        
+        query_type = 'enzsub' if query_type == 'ptms' else query_type
         
         query_param = (
             req.postpath[2]
@@ -1129,7 +1183,7 @@ class TableServer(BaseServer):
         return self._serve_dataframe(tbl, req)
     
     
-    def ptms(
+    def enzsub(
             self,
             req,
             organisms = {9606},
@@ -1180,7 +1234,7 @@ class TableServer(BaseServer):
             genesymbols = False
         
         # starting from the entire dataset
-        tbl = self.data['ptms']
+        tbl = self.data['enzsub']
         
         # filter by type
         if args['types']:
@@ -1239,7 +1293,7 @@ class TableServer(BaseServer):
             _fields = [
                 f for f in
                 req.args[b'fields'][0].decode('utf-8').split(',')
-                if f in self.ptms_fields
+                if f in self.enzsub_fields
             ]
             
             for f in _fields:
@@ -1259,6 +1313,13 @@ class TableServer(BaseServer):
         tbl = tbl.loc[:,hdr]
         
         return self._serve_dataframe(tbl, req)
+    
+    
+    def ptms(self, req):
+        
+        req.postpath[0] = 'enzsub'
+        
+        return self.enzsub(req)
     
     
     def annotations(self, req):
