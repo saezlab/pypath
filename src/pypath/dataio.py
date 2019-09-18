@@ -3791,12 +3791,10 @@ def phosphopoint_interactions():
     
     _ = next(c.result)
     
-    for l in c.result:
-        
-        l = l.strip().split(';')
-        interactions.append([l[0], l[2], l[4]])
-    
-    return interactions
+    return [
+        l.strip().split(';')
+        for l in c.result
+    ]
 
 
 def phosphopoint_directions():
