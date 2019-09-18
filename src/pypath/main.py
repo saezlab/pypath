@@ -13245,73 +13245,73 @@ class PyPath(session_mod.Logger):
                 'n_curation_effort_shared': n_curation_effort_shared,
                 'pct_curation_effort': pct_curation_effort,
             }
-    
-    resources_by_refs = dict(
-        (
-            ref,
-            set(
-                res
-                for res, refs in iteritems(refs_by_resource)
-                if ref in refs
+        
+        resources_by_refs = dict(
+            (
+                ref,
+                set(
+                    res
+                    for res, refs in iteritems(refs_by_resource)
+                    if ref in refs
+                )
             )
+            for ref in references
         )
-        for ref in references
-    )
-    resources_by_curation_effort = dict(
-        (
-            ce,
-            set(
-                res
-                for res, ces in iteritems(curation_effort_by_resource)
-                if ce in ces
+        resources_by_curation_effort = dict(
+            (
+                ce,
+                set(
+                    res
+                    for res, ces in iteritems(curation_effort_by_resource)
+                    if ce in ces
+                )
             )
+            for ce in curation_effort_total
         )
-        for ce in curation_effort_total
-    )
-    
-    self.summaries['Total'] = {
-        'name': 'Total',
-        'n_nodes': self.vcount,
-        'n_nodes_unique': sum(
-            1 for v in self.graph.vs
-            if len(v['sources']) == 1
-        ),
-        'n_nodes_shared': sum(
-            1 for v in self.graph.vs
-            if len(v['sources']) > 1
-        ),
-        'pct_nodes': 100.,
-        'n_edges': self.ecount,
-        'n_edges_unique': sum(
-            1 for e in self.graph.es
-            if len(e['sources']) == 1
-        ),
-        'n_edges_shared': sum(
-            1 for e in self.graph.es
-            if len(e['sources']) > 1
-        ),
-        'pct_edges': 100.,
-        'n_refs': len(references),
-        'n_refs_unique': sum(
-            1 for refs in resources_by_refs.values()
-            if len)(refs) == 1
-        ),
-        'n_refs_shared': sum(
-            1 for refs in resources_by_refs.values()
-            if len)(refs) > 1
-        ),
-        'pct_refs': 100.,
-        'n_curation_effort': len(curation_effort_total),
-        'n_curation_effort_unique': sum(
-            1 for curation_effort in resources_by_curation_effort.values()
-            if len)(curation_effort) == 1
-        ),
-        'n_curation_effort_shared': sum(
-            1 for curation_effort in resources_by_curation_effort.values()
-            if len)(curation_effort) > 1
-        ),
-        'pct_curation_effort': 100.,
-    }
+        
+        self.summaries['Total'] = {
+            'name': 'Total',
+            'n_nodes': self.vcount,
+            'n_nodes_unique': sum(
+                1 for v in self.graph.vs
+                if len(v['sources']) == 1
+            ),
+            'n_nodes_shared': sum(
+                1 for v in self.graph.vs
+                if len(v['sources']) > 1
+            ),
+            'pct_nodes': 100.,
+            'n_edges': self.ecount,
+            'n_edges_unique': sum(
+                1 for e in self.graph.es
+                if len(e['sources']) == 1
+            ),
+            'n_edges_shared': sum(
+                1 for e in self.graph.es
+                if len(e['sources']) > 1
+            ),
+            'pct_edges': 100.,
+            'n_refs': len(references),
+            'n_refs_unique': sum(
+                1 for refs in resources_by_refs.values()
+                if len(refs) == 1
+            ),
+            'n_refs_shared': sum(
+                1 for refs in resources_by_refs.values()
+                if len(refs) > 1
+            ),
+            'pct_refs': 100.,
+            'n_curation_effort': len(curation_effort_total),
+            'n_curation_effort_unique': sum(
+                1 for curation_effort in resources_by_curation_effort.values()
+                if len(curation_effort) == 1
+            ),
+            'n_curation_effort_shared': sum(
+                1 for curation_effort in resources_by_curation_effort.values()
+                if len(curation_effort) > 1
+            ),
+            'pct_curation_effort': 100.,
+        }
     
     
     def summaries_tab(self, outfile = None):
@@ -13346,7 +13346,7 @@ class PyPath(session_mod.Logger):
             ]
             for src in sorted(
                 self.summaries.keys(),
-                key = lambda s: s.lower()
+                key = lambda s: (1 if s == 'Total' else 0, s.lower())
             )
         ])
         

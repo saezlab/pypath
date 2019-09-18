@@ -10815,9 +10815,8 @@ def deathdomain_interactions_rescued():
     _ = next(c.result)
     
     return [
-        i.strip()
+        [i.strip() for i in line.split('\t')]
         for line in c.result
-        for i in line.split('\t')
     ]
 
 

@@ -1604,6 +1604,7 @@ transcription = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        must_have_references = False,
     ),
 }
 
