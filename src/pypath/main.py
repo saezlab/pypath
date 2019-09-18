@@ -416,13 +416,21 @@ class Direction(object):
         Checks if edge has any directionality information.
 
         :return:
-            (*bool*) -- Returns ``True```if any of the :py:attr:`dirs`
+            (*bool*) -- Returns ``True`` if any of the :py:attr:`dirs`
             attribute values is ``True`` (except ``'undirected'``),
             ``False`` otherwise.
         """
 
         return bool(
-            sum([v for k, v in iteritems(self.dirs) if k != 'undirected']))
+            sum([v for k, v in iteritems(self.dirs) if k != 'undirected'])
+        )
+    
+    def is_mutual(self):
+        """
+        Checks if the edge has mutual directions (both A-->B and B-->A).
+        """
+        
+        return self.dirs[self.straight] and self.dirs[self.reverse]
 
     def is_stimulation(self, direction=None):
         """
@@ -6056,8 +6064,6 @@ class PyPath(session_mod.Logger):
                     redownload = redownload,
                     keep_raw = keep_raw,
                 )
-
-        sys.stdout.write('\n')
 
         self._log(
             'load_resources(): all resources have been loaded, '
