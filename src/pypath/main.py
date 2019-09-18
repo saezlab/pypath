@@ -1559,7 +1559,7 @@ class PyPath(session_mod.Logger):
             pfile=False,
             save=False,
             reread=None,
-            redownload=False,
+            redownload=None,
             keep_raw = False,
             **kwargs
         ): # XXX: kwargs is not used anywhere
@@ -2135,7 +2135,7 @@ class PyPath(session_mod.Logger):
             keep_raw = False,
             cache_files = {},
             reread = None,
-            redownload = False,
+            redownload = None,
         ):
         """
         Reads interaction data file containing node and edge attributes
@@ -2298,10 +2298,15 @@ class PyPath(session_mod.Logger):
 
                 # elif hasattr(dataio, param.input):
                 elif input_func is not None:
+                    
                     self._log("Retrieving data by dataio.%s() ..." %
                                     input_func.__name__)
+                    
                     _store_cache = curl.CACHE
-                    curl.CACHE = not redownload
+                    
+                    if isinstance(redownload, bool):
+                        
+                        curl.CACHE = not redownload
 
                     # this try-except needs to be removed
                     # once correct exception handling will
@@ -6011,7 +6016,7 @@ class PyPath(session_mod.Logger):
         outf.close()
 
     def load_resources(self, lst=None, exclude=[], cache_files={},
-                       reread=False, redownload=False, keep_raw = False):
+                       reread=False, redownload=None, keep_raw = False):
         """
         Loads multiple resources, and cleans up after. Looks up ID
         types, and loads all ID conversion tables from UniProt if
@@ -6095,7 +6100,7 @@ class PyPath(session_mod.Logger):
             clean = True,
             cache_files = {},
             reread = None,
-            redownload = False,
+            redownload = None,
             keep_raw = False,
         ):
         """
@@ -12761,6 +12766,32 @@ class PyPath(session_mod.Logger):
         # XXX: According to the alias above omnipath = data_formats.omnipath already
         # YYY: Ok, but here the user has a chance to override it, is it bad?
         
+        def reference_constraint(formats, extra, cat):
+            """
+            If we anyways load extra interactions without references it does
+            not make sense to throw away the records without references from
+            the default OmniPath sources.
+            """
+            
+            if not extra:
+                
+                return formats
+            
+            formats_noref = {}
+            
+            for name, fmt in iteritems(formats):
+                
+                fmt_noref = copy.deepcopy(fmt)
+                
+                if fmt.name in getattr(data_formats, cat):
+                    
+                    fmt_noref.must_have_references = False
+                
+                formats_noref[name] = fmt
+            
+            return formats_noref
+        
+        
         exclude = exclude or []
         
         if omnipath is None:
@@ -12774,7 +12805,10 @@ class PyPath(session_mod.Logger):
 
             else:
                 omnipath = data_formats.omnipath
-
+        
+        omnipath = reference_constraint(omnipath, pathway_extra, 'p')
+        omnipath = reference_constraint(omnipath, kinase_substrate_extra, 'm')
+        
         self.load_resources(omnipath, exclude = exclude)
 
         if kinase_substrate_extra:
