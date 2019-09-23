@@ -1492,3 +1492,37 @@ def n_unique_elements(by_group, group):
     """
     
     return len(unique_elements(by_group = by_group, group = group))
+
+
+def shared_unique_foreach(by_group, op = 'shared'):
+    """
+    For a *dict* of *set*s ``by_group`` returns a *dict* of *set*s with
+    either shared or unique elements across all *set*s, depending on
+    the operation ``op``.
+    """
+    
+    return dict(
+        (
+            label,
+            shared_unique(by_group = by_group, group = label, op = op)
+        )
+        for label in by_group.keys()
+    )
+
+
+def shared_foreach(by_group):
+    
+    return shared_unique_foreach(by_group = by_group, op = 'shared')
+
+
+def unique_foreach(by_group):
+    
+    return shared_unique_foreach(by_group = by_group, op = 'unique')
+
+
+def dict_union(dict_of_sets):
+    """
+    For a *dict* of *set*s returns the union of the values.
+    """
+    
+    return set.union(*dict_of_sets.values())
