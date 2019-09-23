@@ -31,6 +31,8 @@ import sys
 import re
 import math
 import random
+import operator
+import warnings
 import textwrap
 import hashlib
 
@@ -1402,3 +1404,91 @@ def paginate(lst, size = 10):
     for i in xrange((len(lst) // size) + 1):
         
         yield lst[size * i:size * (i + 1)]
+
+
+def shared_unique(by_group, group, op = 'shared'):
+    """
+    For a *dict* of *set*s ``by_group`` and a particular key ``group``
+    returns a *set* of all elements in the *set* belonging to the
+    key ``group`` which either does or does not occure in any of the sets
+    assigned to the other keys, depending on the operator ``op``.
+    This method can be used among other things to find the shared and
+    unique entities across resources.
+    
+    :param str op:
+        Either `shared` or `unique`.
+    """
+    
+    if group not in by_group:
+        
+        warnings.warn(
+            'Group `%s` missing from the dict of groups!' % group
+        )
+    
+    _op = operator.sub if op == 'unique' else operator.and_
+    
+    return _op(
+        by_group[group] if group in by_group else set(),
+        set.union(*(
+            elements
+            for label, elements
+            in iteritems(by_group)
+            if label != group
+        ))
+    )
+
+
+def shared_elements(by_group, group):
+    """
+    For a *dict* of *set*s ``by_group`` and a particular key ``group``
+    returns a *set* of all elements in the *set* belonging to the
+    key ``group`` which occure in any of the sets assigned to the other keys.
+    This method can be used among other things to find the shared entities
+    across resources.
+    """
+    
+    return shared_unique(
+        by_group = by_group,
+        group = group,
+        op = 'shared',
+    )
+
+
+def unique_elements(by_group, group):
+    """
+    For a *dict* of *set*s ``by_group`` and a particular key ``group``
+    returns a *set* of all elements in the *set* belonging to the
+    key ``group`` which don't occure in any of the sets assigned to the
+    other keys. This method can be used among other things to find the
+    unique entities across resources.
+    """
+    
+    return shared_unique(
+        by_group = by_group,
+        group = group,
+        op = 'unique',
+    )
+
+
+def n_shared_elements(by_group, group):
+    """
+    For a *dict* of *set*s ``by_group`` and a particular key ``group``
+    returns the number of all elements in the *set* belonging to the
+    key ``group`` which occure in any of the other sets.
+    This method can be used among other things to count the shared entities
+    across resources.
+    """
+    
+    return len(shared_elements(by_group = by_group, group = group))
+
+
+def n_unique_elements(by_group, group):
+    """
+    For a *dict* of *set*s ``by_group`` and a particular key ``group``
+    returns the number of all elements in the *set* belonging to the
+    key ``group`` which don't occure in any of the other sets.
+    This method can be used among other things to count the unique entities
+    across resources.
+    """
+    
+    return len(unique_elements(by_group = by_group, group = group))
