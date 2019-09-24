@@ -32,6 +32,8 @@ import re
 import math
 import random
 import operator
+import collections
+import itertools
 import warnings
 import textwrap
 import hashlib
@@ -1554,3 +1556,51 @@ def dict_union(dict_of_sets):
     """
     
     return set.union(*dict_of_sets.values())
+
+
+def dict_counts(dict_of_sets):
+    """
+    For a *dict* of *set*s or other values with ``__len__`` returns a
+    *dict* of numbers with the length of each value in the original *dict*.
+    """
+    
+    return dict((key, len(val)) for key, val in iteritems(dict_of_sets))
+
+
+def shared_unique_total(by_group, op = 'shared'):
+    
+    counts = collections.Counter(itertools.chain(*by_group.values()))
+    _op = operator.eq if op == 'unique' else operator.gt
+    
+    return {key for key, val in iteritems(counts) if _op(val, 1)}
+
+
+def shared_total(by_group):
+    
+    return shared_unique_total(by_group = by_group, op = 'shared')
+
+
+def unique_total(by_group):
+    
+    return shared_unique_total(by_group = by_group, op = 'unique')
+
+
+def n_shared_total(by_group):
+    
+    return len(shared_total(by_group))
+
+
+def n_unique_total(by_group):
+    
+    return len(unique_total(by_group))
+
+
+def dict_percent(dict_of_counts, total):
+    """
+    For a *dict* of counts and a total count creates a *dict* of percentages.
+    """
+    
+    return dict(
+        (key, val / total * 100)
+        for key, val in iteritems(dict_of_counts)
+    )
