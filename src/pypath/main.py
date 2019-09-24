@@ -1804,13 +1804,14 @@ class PyPath(session_mod.Logger):
 
     def init_network(
             self,
-            lst=None,
-            exclude=[],
-            cache_files={},
-            pfile=False,
-            save=False,
-            reread=None,
-            redownload=None,
+            lst = None,
+            exclude = [],
+            cache_files = {},
+            pickle_file = None,
+            pfile = False,
+            save = False,
+            reread = None,
+            redownload = None,
             keep_raw = False,
             **kwargs
         ): # XXX: kwargs is not used anywhere
@@ -1857,31 +1858,30 @@ class PyPath(session_mod.Logger):
 
         if lst is None:
             lst = omnipath
+        
+        pfile = pickle_file or pfile
+        
+        if pfile and os.path.exists(pfile):
+            
+            self._log(
+                'Loading igraph object from file `%s`...' % pfile
+            )
+            graph = pickle.load(open(pfile, 'rb'))
 
-        if pfile:
-            pfile = pfile if not isinstance(pfile, bool) \
-                else os.path.join(self.cache_dir, 'default_network.pickle')
-
-            if os.path.exists(pfile):
+            if isinstance(graph, igraph.Graph) and graph.vcount() > 0:
+                self.graph = graph
                 self._log(
-                    'Loading igraph object from file `%s`...' % pfile
-                )
-                graph = pickle.load(open(pfile, 'rb'))
-
-                if isinstance(graph, igraph.Graph) and graph.vcount() > 0:
-                    self.graph = graph
-                    self._log(
-                        'Network loaded from `%s`. %u nodes, %u edges.' % (
-                            pfile,
-                            self.graph.vcount(),
-                            self.graph.ecount(),
-                        )
+                    'Network loaded from `%s`. %u nodes, %u edges.' % (
+                        pfile,
+                        self.graph.vcount(),
+                        self.graph.ecount(),
                     )
-                    self.update_vname()
-                    self.update_vindex()
-                    self.update_sources()
+                )
+                self.update_vname()
+                self.update_vindex()
+                self.update_sources()
 
-                    return None
+                return None
 
         self.load_resources(
             lst = lst,
@@ -1899,23 +1899,38 @@ class PyPath(session_mod.Logger):
             self._log('Network saved successfully to file `%s`.' % pfile)
     
     
-    def save_network(self, pfile=None):
+    def load_from_pickle(self, pickle_file):
+        """
+        Shortcut for loading a network from a pickle dump.
+        """
+        
+        self.init_network(pfile = pickle_file)
+    
+    
+    def save_to_pickle(self, pickle_file = None, pfile = None):
         """Saves the network object.
 
         Stores the instance into a pickle (binary) file which can be
         reloaded in the future.
 
-        :arg str pfile:
+        :arg str pickle_file:
             Optional, ``None`` by default. The path/file name where to
             store the pcikle file. If not specified, saves the network
             to its default location
             (``'cache/default_network.pickle'``).
         """
 
-        pfile = pfile if pfile is not None \
-            else os.path.join(self.cache_dir, 'default_network.pickle')
+        pfile = (
+            pickle_file or
+            pfile or
+            os.path.join(self.cache_dir, 'default_network.pickle')
+        )
         pickle.dump(self.graph, open(pfile, 'wb'), -1)
 
+    
+    # synonym for old name
+    save_network = save_to_pickle
+    
     ###
     # functions to read networks from text files or mysql
     ###
@@ -13033,13 +13048,22 @@ class PyPath(session_mod.Logger):
             min_refs_undirected = 2,
             old_omnipath_resources = False,
             exclude = None,
+            pickle_file = None,
         ):
         """
         Loads the OmniPath network.
+        Note, if ``pickle_file`` provided the network will be loaded directly
+        from there regardless of its content.
         """
 
         # XXX: According to the alias above omnipath = data_formats.omnipath already
         # YYY: Ok, but here the user has a chance to override it, is it bad?
+        
+        if pickle_file and os.path.exists(pickle_file):
+            
+            self.init_network(pickle_file = pickle_file)
+            return
+        
         
         def reference_constraint(formats, extra, cat):
             """
