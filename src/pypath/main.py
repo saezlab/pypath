@@ -15448,7 +15448,11 @@ class PyPath(session_mod.Logger):
             significantly.
         """
         
-        def get_references(sources, edge, with_references = False):
+        
+        source_op = operator.eq if by_source else operator.contains
+        
+        
+        def get_references(sources, edge):
             
             return (
                 set(
@@ -15457,7 +15461,7 @@ class PyPath(session_mod.Logger):
                     (
                         refs
                         for src, refs in iteritems(edge['refs_by_source'])
-                        if src in sources
+                        if source_op(sources, src)
                     )
                     for ref in this_refs
                 )
@@ -15466,6 +15470,18 @@ class PyPath(session_mod.Logger):
                 
                 None
             )
+        
+        
+        def iter_sources(sources, edge):
+            
+            sources = sources if by_source else (sources,)
+            
+            for _sources in sources:
+                
+                yield (
+                    _sources,
+                    get_references(_sources, edge)
+                )
         
         
         for edge in self.graph.es:
@@ -15490,13 +15506,10 @@ class PyPath(session_mod.Logger):
                     directions.get_sign(direction, sources = True)
                 ):
                     
-                    if sign_sources:
-                        
-                        references = get_references(
-                            sign_sources,
-                            edge,
-                            with_references,
-                        )
+                    for sources, references in iter_sources(
+                        sign_sources,
+                        edge
+                    ):
                         
                         yield network.Interaction(
                             id_a = id_a,
@@ -15506,7 +15519,7 @@ class PyPath(session_mod.Logger):
                             type = edge['type'],
                             directed = True,
                             effect = effect,
-                            sources = sign_sources,
+                            sources = sources,
                             references = references,
                         )
                 
@@ -15515,13 +15528,10 @@ class PyPath(session_mod.Logger):
                 )
                 sources_without_sign = dir_sources - sources_with_sign
                 
-                if sources_without_sign:
-                    
-                    references = get_references(
-                        sources_without_sign,
-                        edge,
-                        with_references,
-                    )
+                for sources, references in iter_sources(
+                    sources_without_sign,
+                    edge
+                ):
                     
                     yield network.Interaction(
                         id_a = id_a,
@@ -15531,7 +15541,7 @@ class PyPath(session_mod.Logger):
                         type = edge['type'],
                         directed = True,
                         effect = 0,
-                        sources = sources_without_sign,
+                        sources = sources,
                         references = references,
                     )
             
@@ -15539,17 +15549,19 @@ class PyPath(session_mod.Logger):
                 directions.get_dir('undirected', sources = True)
             )
             
-            if undirected_sources:
+            if not undirected_sources:
                 
-                id_a = self.graph.vs[edge.source]['name']
-                id_b = self.graph.vs[edge.target]['name']
-                type_a = self.graph.vs[edge.source]['type']
-                type_b = self.graph.vs[edge.target]['type']
-                references = get_references(
-                    undirected_sources,
-                    edge,
-                    with_references,
-                )
+                continue
+            
+            id_a = self.graph.vs[edge.source]['name']
+            id_b = self.graph.vs[edge.target]['name']
+            type_a = self.graph.vs[edge.source]['type']
+            type_b = self.graph.vs[edge.target]['type']
+            
+            for sources, references in iter_sources(
+                undirected_sources,
+                edge,
+            ):
                 
                 yield network.Interaction(
                     id_a = id_a,
@@ -15559,7 +15571,7 @@ class PyPath(session_mod.Logger):
                     type = edge['type'],
                     directed = False,
                     effect = 0,
-                    sources = undirected_sources,
+                    sources = sources,
                     references = references,
                 )
     
