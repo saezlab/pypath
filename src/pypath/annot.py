@@ -211,12 +211,18 @@ class CustomAnnotation(session_mod.Logger):
     
     def load_from_pickle(self, pickle_file):
         
+        self._log('Loading from pickle `%s`.' % pickle_file)
+        
         with open(pickle_file, 'rb') as fp:
             
             self.classes = pickle.load(fp)
+        
+        self._log('Loaded from pickle `%s`.' % pickle_file)
     
     
     def save_to_pickle(self, pickle_file):
+        
+        self._log('Saving to pickle `%s`.' % pickle_file)
         
         with open(pickle_file, 'wb') as fp:
             
@@ -224,6 +230,8 @@ class CustomAnnotation(session_mod.Logger):
                 obj = self.classes,
                 file = fp,
             )
+        
+        self._log('Saved to pickle `%s`.' % pickle_file)
     
 
     def create_class(self, classdef):
@@ -2728,6 +2736,8 @@ class AnnotationTable(session_mod.Logger):
     
     def load_from_pickle(self, pickle_file):
         
+        self._log('Loading from pickle `%s`.' % pickle_file)
+        
         with open(pickle_file, 'rb') as fp:
             
             self.proteins, self.complexes, self.reference_set, annots = (
@@ -2768,10 +2778,11 @@ class AnnotationTable(session_mod.Logger):
                 cls = globals()[cls_name]
                 
                 self.annots[name] = cls(dump = data)
+        
+        self._log('Loaded from pickle `%s`.' % pickle_file)
     
     
     def save_to_pickle(self, pickle_file):
-        
         
         def get_record_class(annot):
             
@@ -2781,6 +2792,8 @@ class AnnotationTable(session_mod.Logger):
                     
                     return elem.__class__
         
+        
+        self._log('Saving to pickle `%s`.' % pickle_file)
         
         with open(pickle_file, 'wb') as fp:
             
@@ -2827,6 +2840,8 @@ class AnnotationTable(session_mod.Logger):
                 ),
                 file = fp,
             )
+        
+        self._log('Saved to pickle `%s`.' % pickle_file)
     
     
     def set_reference_set(self):

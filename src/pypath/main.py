@@ -1864,7 +1864,7 @@ class PyPath(session_mod.Logger):
         if pfile and os.path.exists(pfile):
             
             self._log(
-                'Loading igraph object from file `%s`...' % pfile
+                'Loading igraph object from pickle `%s`...' % pfile
             )
             graph = pickle.load(open(pfile, 'rb'))
 
@@ -1919,13 +1919,17 @@ class PyPath(session_mod.Logger):
             to its default location
             (``'cache/default_network.pickle'``).
         """
-
+        
+        self._log('Saving to pickle `%s`.' % pickle_file)
+        
         pfile = (
             pickle_file or
             pfile or
             os.path.join(self.cache_dir, 'default_network.pickle')
         )
         pickle.dump(self.graph, open(pfile, 'wb'), -1)
+        
+        self._log('Saved to pickle `%s`.' % pickle_file)
 
     
     # synonym for old name

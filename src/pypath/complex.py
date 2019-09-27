@@ -557,10 +557,14 @@ class ComplexAggregator(AbstractComplexResource):
 
 
     def load_from_pickle(self, pickle_file):
-
+        
+        self._log('Loading from pickle `%s`.' % pickle_file)
+        
         with open(pickle_file, 'rb') as fp:
 
             self.complexes, self.summaries = pickle.load(fp)
+        
+        self._log('Loaded from pickle `%s`.' % pickle_file)
     
     
     def update_summary(self):
@@ -613,13 +617,17 @@ class ComplexAggregator(AbstractComplexResource):
 
 
     def save_to_pickle(self, pickle_file):
-
+        
+        self._log('Saving to pickle `%s`.' % pickle_file)
+        
         with open(pickle_file, 'wb') as fp:
 
             pickle.dump(
                 obj = (self.complexes, self.summaries),
                 file = fp,
             )
+        
+        self._log('Saved to pickle `%s`.' % pickle_file)
 
 
 def init_db(**kwargs):
