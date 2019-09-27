@@ -86,19 +86,23 @@ class Network(session_mod.Logger):
     
     
     @classmethod
-    def from_igraph(cls, pa):
+    def from_igraph(cls, pa, by_source = False, with_references = False):
         """
         Creates an instance using a ``pypath.main.PyPath`` object.
         """
         
         return cls(
-            records = pa.__iter__(),
+            records = pa.iter_interactions(
+                by_source = by_source,
+                with_references = with_references,
+            ),
             dtypes = {
                 'id_a': 'category',
                 'id_b': 'category',
                 'type_a': 'category',
                 'type_b': 'category',
                 'effect': 'int8',
+                'sources': 'category' if by_source else 'object',
             },
         )
     

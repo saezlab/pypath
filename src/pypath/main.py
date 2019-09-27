@@ -15474,7 +15474,13 @@ class PyPath(session_mod.Logger):
         
         def iter_sources(sources, edge):
             
-            sources = sources if by_source else (sources,)
+            sources = (
+                sources
+                    if by_source else
+                (sources,)
+                    if sources else
+                ()
+            )
             
             for _sources in sources:
                 
