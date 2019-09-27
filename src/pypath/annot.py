@@ -393,7 +393,7 @@ class CustomAnnotation(session_mod.Logger):
         self._log('Custom annotation data frame has been created.')
     
     
-    def network_df(self, network, resources, classes):
+    def network_df(self, network, resources = None, classes = None):
         """
         Combines the annotation data frame and a network data frame.
         Creates a ``pandas.DataFrame`` where each record is an interaction
@@ -402,35 +402,55 @@ class CustomAnnotation(session_mod.Logger):
         
         self._log('Combining custom annotation with network data frame.')
         
-        network = network.records if hasattr(network, 'records') else network
+        network_df = (
+            network.records
+                if hasattr(network, 'records') else
+            network
+        )
         
-        network_df = pd.merge(
-            self.network,
-            self.df,
+        annot_df = self.df
+        
+        if classes:
+            
+            annot_df = annot_df[annot_df.category.isin(classes)]
+        
+        if resources:
+            
+            filter_op = (
+                network_df.sources.eq
+                    if isinstance(resources, common.basestring) else
+                network_df.sources.isin
+            )
+            
+            network_df = network_df[filter_op(resources)]
+        
+        annot_network_df = pd.merge(
+            network_df,
+            annot_df,
             suffixes = ['', '_a'],
             how = 'inner',
             left_on = 'id_a',
             right_on = 'uniprot',
         )
-        network_df.id_a = network_df.id_a.astype('category')
+        annot_network_df.id_a = annot_network_df.id_a.astype('category')
         
-        network_df = pd.merge(
-            network_df,
-            self.df,
+        annot_network_df = pd.merge(
+            annot_network_df,
+            annot_df,
             suffixes = ['_a', '_b'],
             how = 'inner',
             left_on = 'id_b',
             right_on = 'uniprot',
         )
-        network_df.id_b = network_df.id_b.astype('category')
+        annot_network_df.id_b = annot_network_df.id_b.astype('category')
         
-        network_df.set_index(
+        annot_network_df.set_index(
             'id_a',
             drop = False,
             inplace = True,
         )
         
-        return network_df
+        return annot_network_df
 
 
     def export(self, fname, **kwargs):
