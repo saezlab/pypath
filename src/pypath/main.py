@@ -15452,7 +15452,7 @@ class PyPath(session_mod.Logger):
         source_op = operator.eq if by_source else operator.contains
         
         
-        def get_references(sources, edge):
+        def get_references(sources, edge, typ):
             
             return (
                 set(
@@ -15463,7 +15463,7 @@ class PyPath(session_mod.Logger):
                         for src, refs in iteritems(edge['refs_by_source'])
                         if source_op(sources, src)
                     )
-                    for ref in this_refs
+                    for ref in this_refs & edge['refs_by_type'][typ]
                 )
                 
                 if with_references else
@@ -15472,7 +15472,7 @@ class PyPath(session_mod.Logger):
             )
         
         
-        def iter_sources(sources, edge):
+        def iter_sources(sources, edge, typ):
             
             sources = (
                 sources
@@ -15486,7 +15486,7 @@ class PyPath(session_mod.Logger):
                 
                 yield (
                     _sources,
-                    get_references(_sources, edge)
+                    get_references(_sources, edge, typ)
                 )
         
         
@@ -15519,7 +15519,8 @@ class PyPath(session_mod.Logger):
                         
                         for sources, references in iter_sources(
                             sign_sources & typ_sources,
-                            edge
+                            edge,
+                            typ,
                         ):
                             
                             yield network.Interaction(
@@ -15541,7 +15542,8 @@ class PyPath(session_mod.Logger):
                     
                     for sources, references in iter_sources(
                         sources_without_sign,
-                        edge
+                        edge,
+                        typ,
                     ):
                         
                         yield network.Interaction(
@@ -15572,6 +15574,7 @@ class PyPath(session_mod.Logger):
                 for sources, references in iter_sources(
                     undirected_sources,
                     edge,
+                    typ,
                 ):
                     
                     yield network.Interaction(
