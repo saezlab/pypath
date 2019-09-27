@@ -228,8 +228,7 @@ class CustomAnnotation(session_mod.Logger):
 
     def create_class(self, classdef):
         """
-        Creates a category of entities with specific role in intercellular
-        communication.
+        Creates a category of entities by processing an custom definition.
         """
 
         self.classes[classdef.name] = self.process_annot(classdef)
@@ -321,6 +320,13 @@ class CustomAnnotation(session_mod.Logger):
 
 
     def make_df(self, all_annotations = False, full_name = False):
+        """
+        Creates a ``pandas.DataFrame`` where each record assigns a
+        molecular entity to an annotation category. The data frame will
+        be assigned to the ``df`` attribute.
+        """
+        
+        self._log('Creating data frame from custom annotation.')
         
         header = ['category', 'uniprot', 'genesymbol', 'entity_type']
         dtypes = {
@@ -337,6 +343,7 @@ class CustomAnnotation(session_mod.Logger):
         
         self.df = pd.DataFrame(
             [
+                # annotation category, entity id
                 [
                     cls,
                     uniprot.__str__(),
@@ -348,6 +355,7 @@ class CustomAnnotation(session_mod.Logger):
                         uniprot.__str__()
                     ),
                 ] +
+                # full name
                 (
                     [
                         '; '.join(
@@ -360,6 +368,7 @@ class CustomAnnotation(session_mod.Logger):
                     ]
                     if full_name else []
                 ) +
+                # entity type
                 [
                     'complex'
                         if hasattr(uniprot, 'genesymbol_str') else
@@ -367,6 +376,7 @@ class CustomAnnotation(session_mod.Logger):
                         if uniprot.startswith('MIMAT') else
                     'protein'
                 ] +
+                # all annotations
                 (
                     [self.annotdb.all_annotations_str(uniprot)]
                         if all_annotations else
@@ -379,6 +389,48 @@ class CustomAnnotation(session_mod.Logger):
                 ['all_annotations'] if all_annotations else []
             ),
         ).astype(dtypes)
+        
+        self._log('Custom annotation data frame has been created.')
+    
+    
+    def network_df(self, network, resources, classes):
+        """
+        Combines the annotation data frame and a network data frame.
+        Creates a ``pandas.DataFrame`` where each record is an interaction
+        between a pair of molecular enitities labeled by their annotations.
+        """
+        
+        self._log('Combining custom annotation with network data frame.')
+        
+        network = network.records if hasattr(network, 'records') else network
+        
+        network_df = pd.merge(
+            self.network,
+            self.df,
+            suffixes = ['', '_a'],
+            how = 'inner',
+            left_on = 'id_a',
+            right_on = 'uniprot',
+        )
+        network_df.id_a = network_df.id_a.astype('category')
+        
+        network_df = pd.merge(
+            network_df,
+            self.df,
+            suffixes = ['_a', '_b'],
+            how = 'inner',
+            left_on = 'id_b',
+            right_on = 'uniprot',
+        )
+        network_df.id_b = network_df.id_b.astype('category')
+        
+        network_df.set_index(
+            'id_a',
+            drop = False,
+            inplace = True,
+        )
+        
+        return network_df
 
 
     def export(self, fname, **kwargs):
