@@ -15414,7 +15414,13 @@ class PyPath(session_mod.Logger):
         
         return self.iter_interactions()
     
-    def iter_interactions(self, signs = True, all_undirected = True):
+    def iter_interactions(
+            self,
+            signs = True,
+            all_undirected = True,
+            by_source = False,
+            with_references = False,
+        ):
         """
         Iterates over edges and yields interaction records.
         
@@ -15429,19 +15435,36 @@ class PyPath(session_mod.Logger):
             provide direction. If ``False`` only the directed records will
             be provided and the undirected sources and references will be
             added to the directed records.
+        :param bool by_source:
+            Yield separate records by resources. This way the node pairs
+            will be redundant and you need to group later if you want
+            unique interacting pairs. By default is ``False`` because for
+            most applications unique interactions are preferred.
+            If ``False`` the *refrences* field will still be present
+            but with ``None`` values.
+        :param bool with_references:
+            Include the literature references. By default is ``False``
+            because you rarely need these and they increase the data size
+            significantly.
         """
         
-        def get_references(sources, edge):
+        def get_references(sources, edge, with_references = False):
             
-            return set(
-                ref.pmid
-                for this_refs in
-                (
-                    refs
-                    for src, refs in iteritems(edge['refs_by_source'])
-                    if src in sources
+            return (
+                set(
+                    ref.pmid
+                    for this_refs in
+                    (
+                        refs
+                        for src, refs in iteritems(edge['refs_by_source'])
+                        if src in sources
+                    )
+                    for ref in this_refs
                 )
-                for ref in this_refs
+                
+                if with_references else
+                
+                None
             )
         
         
@@ -15469,7 +15492,11 @@ class PyPath(session_mod.Logger):
                     
                     if sign_sources:
                         
-                        references = get_references(sign_sources, edge)
+                        references = get_references(
+                            sign_sources,
+                            edge,
+                            with_references,
+                        )
                         
                         yield network.Interaction(
                             id_a = id_a,
@@ -15490,7 +15517,11 @@ class PyPath(session_mod.Logger):
                 
                 if sources_without_sign:
                     
-                    references = get_references(sources_without_sign, edge)
+                    references = get_references(
+                        sources_without_sign,
+                        edge,
+                        with_references,
+                    )
                     
                     yield network.Interaction(
                         id_a = id_a,
@@ -15514,7 +15545,11 @@ class PyPath(session_mod.Logger):
                 id_b = self.graph.vs[edge.target]['name']
                 type_a = self.graph.vs[edge.source]['type']
                 type_b = self.graph.vs[edge.target]['type']
-                references = get_references(undirected_sources, edge)
+                references = get_references(
+                    undirected_sources,
+                    edge,
+                    with_references,
+                )
                 
                 yield network.Interaction(
                     id_a = id_a,
