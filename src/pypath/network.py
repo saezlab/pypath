@@ -102,7 +102,9 @@ class Network(session_mod.Logger):
                 'type_a': 'category',
                 'type_b': 'category',
                 'effect': 'int8',
+                'type': 'category',
                 'sources': 'category' if by_source else 'object',
+                'references': 'object' if with_references else 'category',
             },
         )
     

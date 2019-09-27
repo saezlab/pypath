@@ -15494,26 +15494,53 @@ class PyPath(session_mod.Logger):
             
             directions = edge['dirs']
             
-            for direction in (directions.straight, directions.reverse):
+            for typ, typ_sources in iteritems(edge['sources_by_type']):
                 
-                if not directions.dirs[direction]:
-                    # this direction does not exist
-                    continue
-                
-                dir_sources = directions.get_dir(direction, sources = True)
-                
-                id_a = direction[0]
-                id_b = direction[1]
-                type_a = self.uniprot(id_a)['type']
-                type_b = self.uniprot(id_b)['type']
-                
-                for effect, sign_sources in zip(
-                    (1, -1),
-                    directions.get_sign(direction, sources = True)
-                ):
+                for direction in (directions.straight, directions.reverse):
+                    
+                    if not directions.dirs[direction]:
+                        # this direction does not exist
+                        continue
+                    
+                    dir_sources = directions.get_dir(
+                        direction,
+                        sources = True,
+                    ) & typ_sources
+                    
+                    id_a = direction[0]
+                    id_b = direction[1]
+                    type_a = self.uniprot(id_a)['type']
+                    type_b = self.uniprot(id_b)['type']
+                    
+                    for effect, sign_sources in zip(
+                        (1, -1),
+                        directions.get_sign(direction, sources = True)
+                    ):
+                        
+                        for sources, references in iter_sources(
+                            sign_sources & typ_sources,
+                            edge
+                        ):
+                            
+                            yield network.Interaction(
+                                id_a = id_a,
+                                id_b = id_b,
+                                type_a = type_a,
+                                type_b = type_b,
+                                type = typ,
+                                directed = True,
+                                effect = effect,
+                                sources = sources,
+                                references = references,
+                            )
+                    
+                    sources_with_sign = set.union(
+                        *directions.get_sign(direction, sources = True)
+                    )
+                    sources_without_sign = dir_sources - sources_with_sign
                     
                     for sources, references in iter_sources(
-                        sign_sources,
+                        sources_without_sign,
                         edge
                     ):
                         
@@ -15522,21 +15549,29 @@ class PyPath(session_mod.Logger):
                             id_b = id_b,
                             type_a = type_a,
                             type_b = type_b,
-                            type = edge['type'],
+                            type = typ,
                             directed = True,
-                            effect = effect,
+                            effect = 0,
                             sources = sources,
                             references = references,
                         )
                 
-                sources_with_sign = set.union(
-                    *directions.get_sign(direction, sources = True)
-                )
-                sources_without_sign = dir_sources - sources_with_sign
+                undirected_sources = (
+                    directions.get_dir('undirected', sources = True)
+                ) & typ_sources
+                
+                if not undirected_sources:
+                    
+                    continue
+                
+                id_a = self.graph.vs[edge.source]['name']
+                id_b = self.graph.vs[edge.target]['name']
+                type_a = self.graph.vs[edge.source]['type']
+                type_b = self.graph.vs[edge.target]['type']
                 
                 for sources, references in iter_sources(
-                    sources_without_sign,
-                    edge
+                    undirected_sources,
+                    edge,
                 ):
                     
                     yield network.Interaction(
@@ -15544,42 +15579,12 @@ class PyPath(session_mod.Logger):
                         id_b = id_b,
                         type_a = type_a,
                         type_b = type_b,
-                        type = edge['type'],
-                        directed = True,
+                        type = typ,
+                        directed = False,
                         effect = 0,
                         sources = sources,
                         references = references,
                     )
-            
-            undirected_sources = (
-                directions.get_dir('undirected', sources = True)
-            )
-            
-            if not undirected_sources:
-                
-                continue
-            
-            id_a = self.graph.vs[edge.source]['name']
-            id_b = self.graph.vs[edge.target]['name']
-            type_a = self.graph.vs[edge.source]['type']
-            type_b = self.graph.vs[edge.target]['type']
-            
-            for sources, references in iter_sources(
-                undirected_sources,
-                edge,
-            ):
-                
-                yield network.Interaction(
-                    id_a = id_a,
-                    id_b = id_b,
-                    type_a = type_a,
-                    type_b = type_b,
-                    type = edge['type'],
-                    directed = False,
-                    effect = 0,
-                    sources = sources,
-                    references = references,
-                )
     
     # shortcuts for the most often used igraph attributes:
 
