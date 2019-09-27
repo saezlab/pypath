@@ -42,6 +42,7 @@ Interaction = collections.namedtuple(
         'references',
     ],
 )
+Interaction.__new__.__defaults__ = (None,) * 7
 
 
 class Network(session_mod.Logger):
@@ -91,7 +92,7 @@ class Network(session_mod.Logger):
         """
         
         return cls(
-            records = list(pa),
+            records = pa.__iter__(),
             dtypes = {
                 'id_a': 'category',
                 'id_b': 'category',
