@@ -401,7 +401,15 @@ class CustomAnnotation(session_mod.Logger):
         self._log('Custom annotation data frame has been created.')
     
     
-    def network_df(self, network, resources = None, classes = None):
+    def network_df(
+            self,
+            network,
+            resources = None,
+            classes = None,
+            only_directed = False,
+            only_effect = None,
+            only_proteins = False,
+        ):
         """
         Combines the annotation data frame and a network data frame.
         Creates a ``pandas.DataFrame`` where each record is an interaction
@@ -431,6 +439,21 @@ class CustomAnnotation(session_mod.Logger):
             )
             
             network_df = network_df[filter_op(resources)]
+        
+        if only_directed:
+            
+            network_df = network_df[network_df.directed]
+        
+        if only_effect:
+            
+            network_df = network_df[network_df.effect == only_effect]
+        
+        if only_proteins:
+            
+            network_df = network_df[
+                network_df.type_a == 'protein' &
+                network_df.type_b == 'protein'
+            ]
         
         annot_network_df = pd.merge(
             network_df,

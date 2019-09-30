@@ -81,7 +81,7 @@ _defaults = {
     'trip_preprocessed': 'trip_preprocessed.pickle',
     'deathdomain': 'deathdomain.tsv',
     'hpmr_preprocessed': 'hpmr_preprocessed.pickle',
-    'network_expand_complexes': True,
+    'network_expand_complexes': False,
     'network_keep_original_names': True,
     'network_pickle_cache': True,
     'network_extra_directions': {
