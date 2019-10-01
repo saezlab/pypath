@@ -50,7 +50,7 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         'phosphosite': 'get_psite_phos',
         'hprd': 'get_hprd_ptms',
         'li2012': 'li2012_phospho',
-        'depod': 'depod_ptms',
+        'depod': 'get_depod',
     }
 
     organisms_supported = set(['signor', 'phosphosite',

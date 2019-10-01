@@ -3694,19 +3694,24 @@ def pnetworks_interactions():
     return [list(x) for x in list(set(result))]
 
 
-def get_depod(organism = 'Homo sapiens'):
+def get_depod(organism = 9606):
     
     result = []
+    
     reunip = re.compile(r'uniprotkb:([A-Z0-9]+)')
+    reptm = re.compile(r'([A-Z][a-z]{2})-([0-9]+)')
+    repmidsep = re.compile(r'[,|]\s?')
+    
     url = urls.urls['depod']['urls'][0]
-    url_mitab = urls.urls['depod']['urls'][1]
     c = curl.Curl(url, silent = False, encoding = 'ascii')
     data = c.result
-    data_c = curl.Curl(url_mitab, silent = False, encoding = 'iso-8859-1')
-    data_mitab = c.result
     data = [x.split('\t') for x in data.split('\n')]
-    data_mitab = [x.split('\t') for x in data_mitab.split('\n')]
     del data[0]
+    
+    url_mitab = urls.urls['depod']['urls'][1]
+    c_mitab = curl.Curl(url_mitab, silent = False, encoding = 'iso-8859-1')
+    data_mitab = c_mitab.result
+    data_mitab = [x.split('\t') for x in data_mitab.split('\n')]
     del data_mitab[0]
     
     for i, l in enumerate(data):
@@ -3714,17 +3719,48 @@ def get_depod(organism = 'Homo sapiens'):
         if (
             len(l) > 6 and
             l[2] == 'protein substrate' and
-            l[3].strip().startswith(organism) and
+            common.ensure_ncbi_tax_id(
+                l[3].split('(')[0].strip()
+            ) == organism and
             l[4].strip() != 'N/A'
         ):
             
-            result.append(
-                [x.strip() for y, x in enumerate(l) if y in [0, 1, 4, 6]] +
-                [
-                    reunip.findall(data_mitab[i][0]),
-                    reunip.findall(data_mitab[i][1]),
-                ]
-            )
+            enzyme_uniprot = reunip.search(data_mitab[i][0]).groups()[0]
+            substrate_uniprot = reunip.search(data_mitab[i][1]).groups()[0]
+            
+            for enzyme_up, substrate_up in itertools.product(
+                    mapping.map_name(
+                        enzyme_uniprot,
+                        'uniprot',
+                        'uniprot'
+                    ),
+                    mapping.map_name(
+                        substrate_uniprot,
+                        'uniprot',
+                        'uniprot'
+                    ),
+                ):
+                
+                for resaa, resnum in reptm.findall(l[4]):
+                    
+                    resnum = int(resnum)
+                    resaa = (
+                        common.aminoa_3_to_1_letter[resaa]
+                            if resaa in common.aminoa_3_to_1_letter else
+                        resaa
+                    )
+                    
+                    result.append({
+                        'instance': None,
+                        'kinase': enzyme_up,
+                        'resaa': resaa,
+                        'resnum': resnum,
+                        'references': repmidsep.split(l[6].strip()),
+                        'substrate': substrate_up,
+                        'start': None,
+                        'end': None,
+                        'typ': 'dephosphorylation',
+                    })
     
     return result
 
@@ -3795,6 +3831,7 @@ def get_mimp():
                     'end': end,
                     'databases': databases,
                 })
+    
     return result
 
 
@@ -6826,22 +6863,42 @@ def li2012_phospho():
     Converts table read by `pypath.dataio.get_li2012()` to
     list of dicts of kinase-substrate interactions.
     """
+    
     result = []
     non_digit = re.compile(r'[^\d]+')
     data = get_li2012()
+    
     for l in data:
+        
         subs_protein = l[1].split('/')[0]
         tk_protein = l[2].split()[0]
         subs_resnum = int(non_digit.sub('', l[1].split('/')[1]))
-        result.append((subs_protein, tk_protein, None, None, None, 'Y',
-                       subs_resnum))
+        result.append(
+            (
+                subs_protein, # substrate
+                tk_protein, # kinase
+                None, # instance
+                None, # start
+                None, # end
+                'Y',  # residue letter
+                subs_resnum, # residue offset
+            )
+        )
+    
     result = [
         dict(
-            zip([
-                'substrate', 'kinase', 'instance', 'start', 'end', 'resaa',
-                'resnum'
-            ], list(l))) for l in common.uniqList(result)
+            zip(
+                [
+                    'substrate', 'kinase', 'instance',
+                    'start', 'end', 'resaa',
+                    'resnum',
+                ],
+                list(l)
+            )
+        )
+        for l in common.uniqList(result)
     ]
+    
     return result
 
 
@@ -10421,7 +10478,9 @@ def depod_interactions(organism = 9606):
             ty = l[11].split('(')[1].replace(')', '')
             l = [l[0], l[1]]
             interaction = ()
+            
             for ll in l:
+                
                 ll = ll.split('|')
                 uniprot = ''
                 for lll in ll:
@@ -10430,9 +10489,11 @@ def depod_interactions(organism = 9606):
                     if nm[0] == 'uniprotkb' and len(u) == 6:
                         uniprot = u
                 interaction += (uniprot, )
+            
             interaction += (pm, sc, ty)
             if len(interaction[0]) > 1 and len(interaction[1]) > 1:
                 i.append(interaction)
+        
         lnum += 1
 
     return i
