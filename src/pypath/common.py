@@ -251,7 +251,7 @@ def to_set(var):
         
     else:
         
-        return set([var])
+        return {var}
 
 
 def to_list(var):

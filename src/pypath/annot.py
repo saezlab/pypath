@@ -163,6 +163,7 @@ class CustomAnnotation(session_mod.Logger):
 
         self.classes = {}
         self.populate_classes()
+        self.network = None
 
 
     def reload(self):
@@ -403,9 +404,11 @@ class CustomAnnotation(session_mod.Logger):
     
     def network_df(
             self,
-            network,
+            network = None,
             resources = None,
             classes = None,
+            source_classes = None,
+            target_classes = None,
             only_directed = False,
             only_effect = None,
             only_proteins = False,
@@ -414,21 +417,54 @@ class CustomAnnotation(session_mod.Logger):
         Combines the annotation data frame and a network data frame.
         Creates a ``pandas.DataFrame`` where each record is an interaction
         between a pair of molecular enitities labeled by their annotations.
+        
+        network : pypath.network.Network,pandas.DataFrame
+            A ``pypath.network.Network`` object or a data frame with network
+            data.
+        resources : set,None
+            Use only these network resouces.
+        classes : set,None
+            Use only these annotation classes.
+        only_directed : bool
+            Use only the directed interactions.
+        only_effect : int,None
+            Use only the interactions with this effect. Either -1 or 1.
+        only_proteins : bool
+            Use only the interactions where each of the partners is a protein
+            (i.e. not complex, miRNA, small molecule or other kind of entity).
         """
         
         self._log('Combining custom annotation with network data frame.')
         
         network_df = (
-            network.records
-                if hasattr(network, 'records') else
-            network
+            self._network_df(network)
+                if network is not None else
+            self.network
         )
+        
+        if network_df is None:
+            
+            return
         
         annot_df = self.df
         
+        if (
+            not only_directed and
+            not only_effect and
+            not classes and (
+                source_classes or
+                target_classes
+            )
+        ):
+            
+            classes = set.union(
+                common.to_set(source_classes),
+                common.to_set(target_classes),
+            )
+        
         if classes:
             
-            annot_df = annot_df[annot_df.category.isin(classes)]
+            annot_df = self._filter_by_classes(annot_df, classes)
         
         if resources:
             
@@ -451,13 +487,13 @@ class CustomAnnotation(session_mod.Logger):
         if only_proteins:
             
             network_df = network_df[
-                network_df.type_a == 'protein' &
-                network_df.type_b == 'protein'
+                (network_df.type_a == 'protein') &
+                (network_df.type_b == 'protein')
             ]
         
         annot_network_df = pd.merge(
             network_df,
-            annot_df,
+            self._filter_by_classes(annot_df, source_classes),
             suffixes = ['', '_a'],
             how = 'inner',
             left_on = 'id_a',
@@ -467,7 +503,7 @@ class CustomAnnotation(session_mod.Logger):
         
         annot_network_df = pd.merge(
             annot_network_df,
-            annot_df,
+            self._filter_by_classes(annot_df, target_classes),
             suffixes = ['_a', '_b'],
             how = 'inner',
             left_on = 'id_b',
@@ -475,15 +511,80 @@ class CustomAnnotation(session_mod.Logger):
         )
         annot_network_df.id_b = annot_network_df.id_b.astype('category')
         
-        annot_network_df.set_index(
-            'id_a',
-            drop = False,
-            inplace = True,
-        )
+        #annot_network_df.set_index(
+            #'id_a',
+            #drop = False,
+            #inplace = True,
+        #)
         
         return annot_network_df
-
-
+    
+    
+    def inter_class_network(
+            self,
+            source_classes = None,
+            target_classes = None,
+            network = None,
+            **kwargs,
+        ):
+        
+        return self.network_df(
+            network = network,
+            source_classes = source_classes,
+            target_classes = target_classes,
+            **kwargs,
+        )
+    
+    
+    def count_inter_class_connections(
+            self,
+            source_classes = None,
+            target_classes = None,
+            **kwargs,
+        ):
+        
+        return self.inter_class_network(
+            source_classes = source_classes,
+            target_classes = target_classes,
+            **kwargs,
+        ).groupby(['id_a', 'id_b']).ngroups
+    
+    
+    def register_network(self, network):
+        """
+        Sets ``network`` as the default network dataset for the instance.
+        All methods afterwards will use this network.
+        """
+        
+        self.network = self._network_df(network)
+    
+    
+    @staticmethod
+    def _network_df(network):
+        
+        return (
+            network.records
+                if hasattr(network, 'records') else
+            network
+        )
+    
+    
+    @staticmethod
+    def _filter_by_classes(annot_df, classes = None):
+        
+        if not classes:
+            
+            return annot_df
+        
+        filter_op = (
+            annot_df.category.eq
+                if isinstance(classes, common.basestring) else
+            annot_df.category.isin
+        )
+        
+        return annot_df[filter_op(classes)]
+    
+    
     def export(self, fname, **kwargs):
 
         self.make_df()
