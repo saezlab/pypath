@@ -519,6 +519,11 @@ class CustomAnnotation(session_mod.Logger):
         
         return annot_network_df
     
+    #
+    # Below only thin wrappers to make the interface more intuitive
+    # without knowing the argument names
+    #
+    
     
     def inter_class_network(
             self,
@@ -527,6 +532,66 @@ class CustomAnnotation(session_mod.Logger):
             network = None,
             **kwargs,
         ):
+        
+        return self.network_df(
+            network = network,
+            source_classes = source_classes,
+            target_classes = target_classes,
+            **kwargs,
+        )
+    
+    
+    def inter_class_network_directed(
+            self,
+            source_classes = None,
+            target_classes = None,
+            network = None,
+            **kwargs,
+        ):
+        
+        kwargs.update({'only_directed': True})
+        
+        return self.network_df(
+            network = network,
+            source_classes = source_classes,
+            target_classes = target_classes,
+            **kwargs,
+        )
+    
+    
+    def inter_class_network_stimulatory(
+            self,
+            source_classes = None,
+            target_classes = None,
+            network = None,
+            **kwargs,
+        ):
+        
+        kwargs.update({
+            'only_directed': True,
+            'only_effect': 1,
+        })
+        
+        return self.network_df(
+            network = network,
+            source_classes = source_classes,
+            target_classes = target_classes,
+            **kwargs,
+        )
+    
+    
+    def inter_class_network_inhibitory(
+            self,
+            source_classes = None,
+            target_classes = None,
+            network = None,
+            **kwargs,
+        ):
+        
+        kwargs.update({
+            'only_directed': True,
+            'only_effect': -1,
+        })
         
         return self.network_df(
             network = network,
@@ -549,6 +614,51 @@ class CustomAnnotation(session_mod.Logger):
             **kwargs,
         ).groupby(['id_a', 'id_b']).ngroups
     
+    
+    def count_inter_class_connections_directed(
+            self,
+            source_classes = None,
+            target_classes = None,
+            **kwargs,
+        ):
+        
+        return self.inter_class_network_directed(
+            source_classes = source_classes,
+            target_classes = target_classes,
+            **kwargs,
+        ).groupby(['id_a', 'id_b']).ngroups
+    
+    
+    def count_inter_class_connections_stimulatory(
+            self,
+            source_classes = None,
+            target_classes = None,
+            **kwargs,
+        ):
+        
+        return self.inter_class_network_stimulatory(
+            source_classes = source_classes,
+            target_classes = target_classes,
+            **kwargs,
+        ).groupby(['id_a', 'id_b']).ngroups
+    
+    
+    def count_inter_class_connections_inhibitory(
+            self,
+            source_classes = None,
+            target_classes = None,
+            **kwargs,
+        ):
+        
+        return self.inter_class_network_inhibitory(
+            source_classes = source_classes,
+            target_classes = target_classes,
+            **kwargs,
+        ).groupby(['id_a', 'id_b']).ngroups
+    
+    #
+    # End of wrappers
+    #
     
     def register_network(self, network):
         """
