@@ -41,6 +41,7 @@ import pypath.intera as intera
 import pypath.resource as resource
 import pypath.settings as settings
 import pypath.session_mod as session_mod
+import pypath.common as common
 
 
 complex_resources = (
@@ -238,7 +239,9 @@ class AbstractComplexResource(resource.AbstractResource):
             'references',
             'identifiers',
         ]
-
+        
+        self._log('Creating a data frame of complexes.')
+        
         records = []
 
         for cplex in self.complexes.values():
@@ -260,6 +263,11 @@ class AbstractComplexResource(resource.AbstractResource):
         self.df = pd.DataFrame(
             records,
             columns = colnames,
+        )
+        
+        self._log(
+            'Created data frame of complexes. '
+            'Memory usage: %s.' % common.df_memory_usage(self.df)
         )
 
 

@@ -26,7 +26,7 @@ import itertools
 import pandas as pd
 
 import pypath.session_mod as session_mod
-
+import pypath.common as common
 
 Interaction = collections.namedtuple(
     'Interaction',
@@ -52,6 +52,8 @@ class Network(session_mod.Logger):
         
         session_mod.Logger.__init__(self, name = 'network')
         
+        self._log('Creating network object with interactions data frame.')
+        
         if isinstance(records, pd.DataFrame):
             
             self.records = records
@@ -71,6 +73,11 @@ class Network(session_mod.Logger):
         if dtypes:
             
             self.records = self.records.astype(dtypes)
+        
+        self._log(
+            'Created network data frame. '
+            'Memory usage: %s ' % common.df_memory_usage(self.records)
+        )
     
     
     def reload(self):

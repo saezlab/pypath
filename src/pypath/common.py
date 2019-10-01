@@ -1604,3 +1604,33 @@ def dict_percent(dict_of_counts, total):
         (key, val / total * 100)
         for key, val in iteritems(dict_of_counts)
     )
+
+
+def df_memory_usage(df, deep = False):
+    """
+    Returns the memory usage of a ``pandas.DataFrame`` as a string.
+    Modified from ``pandas.DataFrame.info``.
+    """
+    
+    counts = df._data.get_dtype_counts()
+    
+    size_qualifier = (
+        '+'
+            if (
+                'object' in counts or
+                df.index._is_memory_usage_qualified()
+            ) else
+        ''
+    )
+    
+    mem_usage = df.memory_usage(index = True, deep = deep).sum()
+    
+    for unit in ['bytes', 'KB', 'MB', 'GB', 'TB']:
+        
+        if mem_usage < 1024.0:
+            
+            return '%3.1f%s %s' % (mem_usage, size_qualifier, unit)
+            
+            mem_usage /= 1024.0
+        
+        return '%3.1f%s PB' % (mem_usage, size_qualifier)

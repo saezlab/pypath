@@ -399,7 +399,10 @@ class CustomAnnotation(session_mod.Logger):
             ),
         ).astype(dtypes)
         
-        self._log('Custom annotation data frame has been created.')
+        self._log(
+            'Custom annotation data frame has been created. '
+            'Memory usage: %s.' % common.df_memory_usage(self.df)
+        )
     
     
     def network_df(
@@ -517,6 +520,11 @@ class CustomAnnotation(session_mod.Logger):
             #inplace = True,
         #)
         
+        self._log(
+            'Combined custom annotation data frame with network data frame. '
+            'Memory usage: %s.' % common.df_memory_usage(annot_network_df)
+        )
+        
         return annot_network_df
     
     #
@@ -524,6 +532,9 @@ class CustomAnnotation(session_mod.Logger):
     # without knowing the argument names
     #
     
+    #
+    # Building a network of connections between classes
+    #
     
     def inter_class_network(
             self,
@@ -600,6 +611,9 @@ class CustomAnnotation(session_mod.Logger):
             **kwargs,
         )
     
+    #
+    # Counting connections between classes
+    #
     
     def count_inter_class_connections(
             self,
@@ -659,6 +673,7 @@ class CustomAnnotation(session_mod.Logger):
     #
     # End of wrappers
     #
+    
     
     def register_network(self, network):
         """
@@ -3298,6 +3313,8 @@ class AnnotationTable(session_mod.Logger):
 
     def to_dataframe(self, reference_set = None):
         
+        self._log('Creating data frame from AnnotationTable.')
+        
         self.ensure_array(
             reference_set = reference_set,
             rebuild = reference_set is not None,
@@ -3311,10 +3328,18 @@ class AnnotationTable(session_mod.Logger):
             columns = colnames,
         )
         
+        self._log(
+            'Created annotation data frame, memory usage: %s.' % (
+                common.df_memory_usage(self.df)
+            )
+        )
+        
         return df
 
 
     def make_narrow_df(self):
+        
+        self._log('Creating narrow data frame from AnnotationTable.')
 
         for annot in self.annots.values():
 
@@ -3322,6 +3347,12 @@ class AnnotationTable(session_mod.Logger):
 
         self.narrow_df = pd.concat(
             annot.df for annot in self.annots.values()
+        )
+        
+        self._log(
+            'Created annotation data frame, memory usage: %s.' % (
+                common.df_memory_usage(self.narrow_df)
+            )
         )
 
 

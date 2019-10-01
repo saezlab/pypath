@@ -765,7 +765,10 @@ class PtmAggregator(object):
 
 
     def make_df(self, tax_id = False):
-
+        
+        self._log('Creating enzyme-substrate interaction data frame.')
+        
+        
         hdr = ['enzyme', 'substrate', 'isoforms',
                'residue_type', 'residue_offset', 'modification',
                'sources', 'references']
@@ -816,6 +819,11 @@ class PtmAggregator(object):
         if tax_id:
 
             self.df['ncbi_tax_id'] = [self.ncbi_tax_id] * self.df.shape[0]
+        
+        self._log(
+            'Created enzyme-substrate interaction data frame. '
+            'Memory usage: %s.' % common.df_memory_usage(self.df)
+        )
 
 
     def export_table(self, fname):
