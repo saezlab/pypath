@@ -49,13 +49,14 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         'dbptm': 'get_dbptm',
         'phosphosite': 'get_psite_phos',
         'hprd': 'get_hprd_ptms',
-        'li2012': 'li2012_phospho'
+        'li2012': 'li2012_phospho',
+        'depod': 'depod_ptms',
     }
 
     organisms_supported = set(['signor', 'phosphosite',
-                               'phosphoelm', 'dbptm'])
+                               'phosphoelm', 'dbptm', 'depod'])
 
-    enzyme_id_uniprot = set(['phosphosite', 'phosphoelm', 'signor'])
+    enzyme_id_uniprot = set(['phosphosite', 'phosphoelm', 'signor', 'depod'])
 
     substrate_id_types = {
         'mimp': [('genesymbol', 'substrate'), ('refseq', 'substrate_refseq')],
@@ -65,7 +66,8 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         'dbptm': ['uniprot'],
         'phosphosite': ['uniprot'],
         'signor': ['uniprot'],
-        'hprd': [('refseqp', 'substrate_refseqp')]
+        'hprd': [('refseqp', 'substrate_refseqp')],
+        'depod': ['uniprot'],
     }
 
 
@@ -629,7 +631,7 @@ class PtmAggregator(object):
         self.builtin_inputs = ['PhosphoSite', 'phosphoELM',
                                'Signor', 'dbPTM', 'HPRD',
                                'Li2012', 'PhosphoNetworks',
-                               'MIMP']
+                               'MIMP', 'DEPOD']
         
         self.inputargs = self.inputargs or {}
         self.map_by_homology_from = set(self.map_by_homology_from or [9606])

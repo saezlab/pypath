@@ -3695,6 +3695,7 @@ def pnetworks_interactions():
 
 
 def get_depod(organism = 'Homo sapiens'):
+    
     result = []
     reunip = re.compile(r'uniprotkb:([A-Z0-9]+)')
     url = urls.urls['depod']['urls'][0]
@@ -3707,19 +3708,29 @@ def get_depod(organism = 'Homo sapiens'):
     data_mitab = [x.split('\t') for x in data_mitab.split('\n')]
     del data[0]
     del data_mitab[0]
+    
     for i, l in enumerate(data):
-        if len(l) > 6 and l[2] == 'protein substrate' and \
-                l[3].strip().startswith(organism) and \
-                l[4].strip() != 'N/A':
+        
+        if (
+            len(l) > 6 and
+            l[2] == 'protein substrate' and
+            l[3].strip().startswith(organism) and
+            l[4].strip() != 'N/A'
+        ):
+            
             result.append(
-                [x.strip() for y, x in enumerate(l) if y in [0, 1, 4, 6]] + [
-                    reunip.findall(data_mitab[i][0]), reunip.findall(
-                        data_mitab[i][1])
-                ])
+                [x.strip() for y, x in enumerate(l) if y in [0, 1, 4, 6]] +
+                [
+                    reunip.findall(data_mitab[i][0]),
+                    reunip.findall(data_mitab[i][1]),
+                ]
+            )
+    
     return result
 
 
 def get_mimp():
+    
     result = []
     non_digit = re.compile(r'[^\d.-]+')
     motre = re.compile(r'(-*)([A-Za-z]+)(-*)')
@@ -3731,10 +3742,14 @@ def get_mimp():
         return None
     data = [x.split('\t') for x in data.split('\n')]
     del data[0]
+    
     for l in data:
+        
         if len(l) > 6 and len(l[2]) > 0:
+            
             kinases = l[2].split(';')
             kinases_gnames = []
+            
             for k in kinases:
                 if k.endswith('GROUP'):
                     grp = k.split('_')[0]
@@ -3746,10 +3761,14 @@ def get_mimp():
                         kinases_gnames += kclass['subfamilies'][grp]
                 else:
                     kinases_gnames.append(k)
+            
             mot = motre.match(l[4])
+            
             for k in kinases_gnames:
+                
                 resaa = l[4][7]
                 resnum = int(non_digit.sub('', l[3]))
+                
                 if mot:
                     start = resnum - 7 + len(mot.groups()[0])
                     end = resnum + 7 - len(mot.groups()[2])
@@ -3758,6 +3777,12 @@ def get_mimp():
                     start = None
                     end = None
                     instance = l[4]
+                    
+                databases = ';'.join(
+                    tuple('%s_MIMP' % db for db in l[6].split(';')) +
+                    ('MIMP',)
+                )
+                
                 result.append({
                     'instance': instance,
                     'kinase': k.upper(),
@@ -3768,16 +3793,17 @@ def get_mimp():
                     'substrate': l[0],
                     'start': start,
                     'end': end,
-                    'databases': l[6]
+                    'databases': databases,
                 })
     return result
 
 
 def mimp_interactions():
+    
     result = []
     mimp = get_mimp()
     for m in mimp:
-        result.append([m['kinase'], m['substrate']])
+        result.append([m['kinase'], m['substrate'], m['databases']])
     return result
 
 
@@ -10387,7 +10413,9 @@ def depod_interactions(organism = 9606):
         l = l.split('\t')
         specA = int(l[9].split(':')[1].split('(')[0])
         specB = int(l[10].split(':')[1].split('(')[0])
+        
         if organism is None or (specA == organism and specB == organism):
+            
             pm = l[8].replace('pubmed:', '')
             sc = l[14].replace('curator score:', '')
             ty = l[11].split('(')[1].replace(')', '')

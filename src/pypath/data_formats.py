@@ -983,6 +983,7 @@ ptm_misc = {
         ncbi_tax_id = 9606,
         input = 'mimp_interactions',
         references = False,
+        resource = (2, ';'),
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
