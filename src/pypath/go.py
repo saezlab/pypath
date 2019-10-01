@@ -23,6 +23,7 @@
 from future.utils import iteritems
 from past.builtins import xrange, range
 
+import os
 import sys
 import imp
 import re
@@ -30,11 +31,18 @@ from collections import Counter, OrderedDict
 import numpy as np
 import itertools
 
+try:
+    import cPickle as pickle
+except:
+    import pickle
+
+import pypath.cache as cache
 import pypath.dataio as dataio
 import pypath.progress as progress
 import pypath.common as common
 from pypath.common import *
 import pypath.session_mod as session_mod
+import pypath.settings as settings
 
 
 #TODO may be separate this module from pypath?
@@ -58,12 +66,27 @@ class GeneOntology(session_mod.Logger):
     }
     
     
-    def __init__(self):
+    def __init__(
+            self,
+            terms = None,
+            ancestors = None,
+            descendants = None,
+            aspect = None,
+            term = None,
+            name = None,
+        ):
         """
         Loads data about Gene Ontology terms and their relations.
         """
         
         session_mod.Logger.__init__(self, name = 'go')
+        
+        self._terms_provided = terms
+        self._ancestors_provided = ancestors
+        self._descendants_provided = descendants
+        self._aspect_provided = aspect
+        self._term_provided = term
+        self._name_provided = name
         
         self._load()
     
@@ -80,53 +103,76 @@ class GeneOntology(session_mod.Logger):
     
     def _load(self):
         
+        self._log('Populating Gene Ontology: ontology.')
+        
         self._load_terms()
         self._load_tree()
         self._set_aspect()
         self._set_name()
         self._set_term()
         
-        delattr(self, '_terms')
+        # delattr(self, '_terms')
+        
+        self._log('Gene Ontology: ontology populated.')
     
     
     def _load_terms(self):
         
-        self._terms = dataio.go_terms_quickgo()
+        self._terms = self._terms_provided or dataio.go_terms_quickgo()
     
     
     def _load_tree(self):
         
-        self.ancestors = self._merge_aspects(
-            dataio.go_ancestors_quickgo()
+        self._log('Gene Ontology: building the ontology tree.')
+        
+        self.ancestors = (
+            self._ancestors_provided or
+            self._merge_aspects(
+                dataio.go_ancestors_quickgo()
+            )
         )
-        self.descendants = self._merge_aspects(
-            dataio.go_descendants_quickgo()
+        self.descendants = (
+            self._descendants_provided or
+            self._merge_aspects(
+                dataio.go_descendants_quickgo()
+            )
         )
     
     
     def _set_aspect(self):
         
-        self.aspect = dict(
-            (term, asp)
-            for asp, terms in iteritems(self._terms)
-            for term in terms.keys()
+        self.aspect = (
+            self._aspect_provided or
+            dict(
+                (term, asp)
+                for asp, terms in iteritems(self._terms)
+                for term in terms.keys()
+            )
         )
     
     
     def _set_name(self):
         
-        self.name = dict(
-            i
-            for ii in self._terms.values()
-            for i in iteritems(ii)
+        self._log('Collecting short names of GO terms.')
+        
+        self.name = (
+            self._name_provided or
+            dict(
+                i
+                for ii in self._terms.values()
+                for i in iteritems(ii)
+            )
         )
     
     
     def _set_term(self):
         
-        self.term = dict(
-            reversed(i)
-            for i in iteritems(self.name)
+        self.term = (
+            self._term_provided or
+            dict(
+                reversed(i)
+                for i in iteritems(self.name)
+            )
         )
     
     
@@ -473,7 +519,13 @@ class GOAnnotation(session_mod.Logger):
     aspects = ('C', 'F', 'P')
     
     
-    def __init__(self, organism = 9606, ontology = None):
+    def __init__(
+            self,
+            organism = 9606,
+            ontology = None,
+            pickle_file = None,
+            use_pickle_cache = True,
+        ):
         """
         For one organism loads Gene Ontology annotations, in addition it
         accepts or creates a ``GeneOntology`` object.
@@ -481,7 +533,20 @@ class GOAnnotation(session_mod.Logger):
         
         session_mod.Logger.__init__(self, name = 'go')
         
+        self.organism = organism
+        self._pickle_file = pickle_file
+        self._use_pickle_cache = use_pickle_cache
+        
+        if self._pickle_cache_load_hook():
+            
+            return
+        
         self.ontology = ontology or GeneOntology()
+        
+        self._log(
+            'Populating Gene Ontology: '
+            'annotations for organism `%u`.' % organism
+        )
         
         annot = dataio.go_annotations_goa(organism = organism)
         self.c = annot['C']
@@ -490,6 +555,8 @@ class GOAnnotation(session_mod.Logger):
         
         self._ancestors_annotate()
         self._merge_annotations()
+        
+        self._pickle_cache_save_hook()
     
     
     def reload(self):
@@ -505,6 +572,8 @@ class GOAnnotation(session_mod.Logger):
     
     
     def _ancestors_annotate(self):
+        
+        self._log('Creating ancestors lookup dictionary.')
         
         for asp in self.aspects:
             
@@ -523,6 +592,8 @@ class GOAnnotation(session_mod.Logger):
     
     
     def _merge_annotations(self):
+        
+        self._log('Creating complete lookup dictionary.')
         
         uniprots = self.all_uniprots()
         
@@ -997,6 +1068,112 @@ class GOAnnotation(session_mod.Logger):
             return set(np.array(uniprots)[list(idx)])
         
         return idx
+    
+    
+    def _pickle_cache_load_hook(self):
+        
+        if not self._use_pickle_cache:
+            
+            return
+        
+        self._set_pickle_path()
+        self.load_from_pickle()
+        
+        return os.path.exists(self._pickle_file)
+    
+    
+    def _pickle_cache_save_hook(self):
+        
+        self._set_pickle_path()
+        self.save_to_pickle()
+    
+    
+    def _set_pickle_path(self):
+        
+        self._pickle_file = (
+            self._pickle_file or
+            os.path.join(
+                cache.get_cachedir(),
+                settings.get('go_pickle_cache_fname') % self.organism,
+            )
+        )
+    
+    
+    def save_to_pickle(self, pickle_file = None):
+        
+        pickle_file = pickle_file or self._pickle_file
+        
+        if not isinstance(pickle_file, common.basestring):
+            
+            self._log(
+                'Pickle file path must be a string: `%s`.' % str(pickle_file)
+            )
+            return
+        
+        self._log('Saving to pickle `%s`.' % pickle_file)
+        
+        with open(pickle_file, 'wb') as fp:
+            
+            pickle.dump(
+                obj = (
+                    self.c_full,
+                    self.p_full,
+                    self.f_full,
+                    self.all_full,
+                    self.c,
+                    self.p,
+                    self.f,
+                    self.all,
+                    self.ontology._terms,
+                    self.ontology.ancestors,
+                    self.ontology.descendants,
+                    self.ontology.term,
+                    self.ontology.name,
+                ),
+                file = fp,
+            )
+        
+        self._log('Saved to pickle `%s`.' % pickle_file)
+    
+    
+    def load_from_pickle(self, pickle_file = None):
+        
+        pickle_file = pickle_file or self._pickle_file
+        
+        if not os.path.exists(pickle_file):
+            
+            self._log('Pickle file does not exist: `%s`.' % str(pickle_file))
+            return
+        
+        self._log('Loading from pickle `%s`.' % pickle_file)
+        
+        with open(pickle_file, 'rb') as fp:
+            
+            (
+                self.c_full,
+                self.p_full,
+                self.f_full,
+                self.all_full,
+                self.c,
+                self.p,
+                self.f,
+                self.all,
+                ontology_terms,
+                ontology_ancestors,
+                ontology_descendants,
+                ontology_term,
+                ontology_name,
+            ) = pickle.load(fp)
+        
+        self.ontology = GeneOntology(
+            terms = ontology_terms,
+            ancestors = ontology_ancestors,
+            descendants = ontology_descendants,
+            term = ontology_term,
+            name = ontology_name,
+        )
+        
+        self._log('Loaded from pickle `%s`.' % pickle_file)
 
 
 class GOCustomAnnotation(session_mod.Logger):
@@ -1154,27 +1331,39 @@ def annotate(graph, organism = 9606, aspects = ('C', 'F', 'P')):
 load_go = annotate
 
 
-def init_db():
+def init_db(organism = 9606, pickle_file = None, use_pickle_cache = True):
     """
     Initializes or reloads the GO annotation database.
     The database will be assigned to the ``db`` attribute of this module.
     """
     
-    globals()['db'] = GOAnnotation()
+    if 'db' not in globals():
+        
+        globals()['db'] = {}
+    
+    globals()['db'][organism] = GOAnnotation(
+        organism,
+        pickle_file = pickle_file,
+        use_pickle_cache = use_pickle_cache,
+    )
 
 
-def get_db():
+def get_db(organism = 9606, pickle_file = None, use_pickle_cache = True):
     """
     Retrieves the current database instance and initializes it if does
     not exist yet.
     """
     
     # TODO: consider organism
-    # TODO: delete the DB if not used to free memory
+    # TODO: delete the DB if not used in order to free memory
     # TODO: introduce pickle cache to make it load quicker
     
-    if 'db' not in globals():
+    if 'db' not in globals() or organism not in globals()['db']:
         
-        init_db()
+        init_db(
+            organism,
+            pickle_file = pickle_file,
+            use_pickle_cache = use_pickle_cache,
+        )
     
-    return globals()['db']
+    return globals()['db'][organism]

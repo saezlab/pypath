@@ -84,6 +84,8 @@ _defaults = {
     'network_expand_complexes': False,
     'network_keep_original_names': True,
     'network_pickle_cache': True,
+    'go_pickle_cache': True,
+    'go_pickle_cache_fname': 'goa__%u.pickle',
     'network_extra_directions': {
         'Wang',
         'KEGG',
