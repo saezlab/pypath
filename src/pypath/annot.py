@@ -447,6 +447,8 @@ class CustomAnnotation(session_mod.Logger):
         
         if network_df is None:
             
+            self._log('No network provided, no default network set.')
+            
             return
         
         annot_df = self.df
@@ -502,6 +504,45 @@ class CustomAnnotation(session_mod.Logger):
             left_on = 'id_a',
             right_on = 'uniprot',
         )
+        
+        # if we deal with undirected interactions but source & target classes
+        if (
+            not only_directed and
+            not only_effect and (
+                source_classes or
+                target_classes
+            )
+        ):
+            
+            annot_network_df = pd.concat(
+                (
+                    
+                    annot_network_df,
+                    
+                    pd.merge(
+                        network_df[
+                            np.logical_not(network_df.directed)
+                        ][
+                            network_df.columns[
+                                np.r_[1, 0, 3, 2, 4:len(network_df.columns)]
+                            ]
+                        ][
+                            ['id_a', 'id_b', 'type_a', 'type_b'] +
+                            list(network_df.columns)[4:]
+                        ],
+                        self._filter_by_classes(annot_df, source_classes),
+                        suffixes = ['', '_a'],
+                        how = 'inner',
+                        left_on = 'id_a',
+                        right_on = 'uniprot',
+                    ),
+                    
+                ),
+                
+                sort = False,
+                ignore_index = True,
+            )
+        
         annot_network_df.id_a = annot_network_df.id_a.astype('category')
         
         annot_network_df = pd.merge(
@@ -512,6 +553,7 @@ class CustomAnnotation(session_mod.Logger):
             left_on = 'id_b',
             right_on = 'uniprot',
         )
+        
         annot_network_df.id_b = annot_network_df.id_b.astype('category')
         
         #annot_network_df.set_index(
@@ -669,6 +711,88 @@ class CustomAnnotation(session_mod.Logger):
             target_classes = target_classes,
             **kwargs,
         ).groupby(['id_a', 'id_b']).ngroups
+    
+    #
+    # Inter-class degrees
+    #
+    
+    def degree_inter_class_network(
+            self,
+            source_classes = None,
+            target_classes = None,
+            **kwargs,
+        ):
+        
+        degrees = (
+            self.inter_class_network(
+                source_classes = source_classes,
+                target_classes = target_classes,
+                **kwargs,
+            ).groupby('id_a')['id_b'].nunique()
+        )
+        
+        return degrees[degrees != 0]
+    
+    
+    def degree_inter_class_network_directed(
+            self,
+            source_classes = None,
+            target_classes = None,
+            **kwargs,
+        ):
+        
+        kwargs.update({'only_directed': True})
+        
+        return (
+            self.degree_inter_class_network(
+                source_classes = source_classes,
+                target_classes = target_classes,
+                **kwargs,
+            )
+        )
+    
+    
+    def degree_inter_class_network_stimulatory(
+            self,
+            source_classes = None,
+            target_classes = None,
+            **kwargs,
+        ):
+        
+        kwargs.update({
+            'only_directed': True,
+            'only_effect': 1,
+        })
+        
+        return (
+            self.degree_inter_class_network(
+                source_classes = source_classes,
+                target_classes = target_classes,
+                **kwargs,
+            )
+        )
+    
+    
+    def degree_inter_class_network_inhibitory(
+            self,
+            source_classes = None,
+            target_classes = None,
+            **kwargs,
+        ):
+        
+        kwargs.update({
+            'only_directed': True,
+            'only_effect': -1,
+        })
+        
+        return (
+            self.degree_inter_class_network(
+                source_classes = source_classes,
+                target_classes = target_classes,
+                **kwargs,
+            )
+        )
+    
     
     #
     # End of wrappers

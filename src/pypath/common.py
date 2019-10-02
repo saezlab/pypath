@@ -1606,7 +1606,7 @@ def dict_percent(dict_of_counts, total):
     )
 
 
-def df_memory_usage(df, deep = False):
+def df_memory_usage(df, deep = True):
     """
     Returns the memory usage of a ``pandas.DataFrame`` as a string.
     Modified from ``pandas.DataFrame.info``.
@@ -1630,7 +1630,7 @@ def df_memory_usage(df, deep = False):
         if mem_usage < 1024.0:
             
             return '%3.1f%s %s' % (mem_usage, size_qualifier, unit)
-            
-            mem_usage /= 1024.0
         
-        return '%3.1f%s PB' % (mem_usage, size_qualifier)
+        mem_usage /= 1024.0
+    
+    return '%3.1f%s PB' % (mem_usage, size_qualifier)
