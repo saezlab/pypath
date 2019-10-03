@@ -2788,65 +2788,6 @@ def resource_list_latex(filename='resource-list.tex',
                             if latex_hdr else ''))
 
 
-def licenses_emails(outfile='licenses_emails.txt'):
-    emails = []
-    template = '''
-    Dear %s,
-    
-    I am Denes Turei, a postdoc at EMBL-EBI in Julio Saez-Rodriguez group.
-    
-    We recently created a software tool called pypath, for the integration and analysis of literature curated signaling pathway data, with the aim of having a high quality and high coverage network of pathways. I am pleased to let you know that we included in our library methods for handling %s, the excellent resource you and your colleagues created.
-    
-    We also would like to run pypath on a public server to expose a limited set of features (called OmniPath) without local installation. This means that a subset of data originated from %s would be redistributed by us.
-    
-    %s
-    
-    At our webpage we point to the licensing information of all the original resources (http://omnipathdb.org/info), and we included a disclaimer in our software for users that they should consider these licenses when using the data.
-    
-    Please let me know if you have any question.
-    
-    Best wishes,
-    
-    Denes Turei
-    
-    -- 
-    Denes Turei, Ph.D.
-
-    postdoc @ EMBL-EBI
-    +447442970610
-    denes@ebi.ac.uk
-    http://pypath.omnipathdb.org/
-    public key: http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x5706A4B609DD65A6
-    '''
-    no_license = 'Unfortunately, we could not find licensing information for %s. According to todays copyright laws, we are not allowed to redistribute data without the explicit permission of the copyright holder (http://www.gnu.org/licenses/license-list.html#NoLicense). We would like to ask you for permission to redistribute %s data in the way outlined above.'
-    license_ok = 'We understand you published %s under %s license. This should allow us the redistribution outlined above, so I am writing only to keep you informed, and to say thank you for making your data available.'
-    license_problem = 'We understand you published %s under license %s, which does not allow us the redistribution of the data. We would like to ask you for special permission to redistribute %s data in the way outlined above.'
-    for db, inp in iteritems(data_formats.omnipath):
-        desc = descriptions[inp.name]
-        name = desc['full_name'] if 'full_name' in desc else desc[
-            'label'] if 'label' in desc else inp.name
-        if desc['license']['name'].startswith('No'):
-            this_license = no_license % (name, name)
-            subject = 'asking for permission to redistribute %s data' % name
-        elif desc['license']['name'].startswith('CC'):
-            this_license = license_ok % (name, desc['license']['name'])
-            subject = 'information about redistributing %s data' % name
-        else:
-            this_license = license_problem % (name, desc['license']['name'],
-                                              name)
-            subject = 'asking for permission to redistribute %s data' % name
-        addresses = map(lambda e: e[0], desc['emails'])
-        authors = map(lambda e: e[1], desc['emails'])
-        authors = '%s%s' % (
-            ', '.join(authors[:max(1, len(authors) - 1)]),
-            ('' if len(authors) == 1 else ' and %s' % authors[-1]))
-        this_email = template % (authors, name, name, this_license)
-        emails.append('To: %s\n\nSubject: %s\n\n%s\n\n' % (
-            ', '.join(addresses), subject, textwrap.dedent(this_email)))
-    with open(outfile, 'w') as f:
-        f.write(''.join(emails))
-
-
 def export_licenses(outfile = 'licenses.tsv'):
     
     hdr = [
