@@ -2569,33 +2569,39 @@ def gen_html():
     '''
     # Header
     title = 'Metadata about signaling pathway resources'
-    doc = '\t<p>This collection was created during the construction '\
-        'of OmniPath when we considered more than 50 resources and '\
-        'selected the ones containing literature curation effort. OmniPath is a network '\
-        'of signaling pathways intending to '\
-        'combine all high quality, manually curated efforts. The '\
-        'descriptions here cite the relevant sentences '\
-        'about the curation protocols from the original articles and webpages. '\
-        'URLs pointing to the articles and the webpages, and some '\
-        'additional metadata are provided where available. '\
-        'The resources with green title are included by default in '\
-        'OmniPath. <span class="code">pypath</span> methods are listed '\
-        ' where available, to know more please look at <a '\
-        'target="_blank" href="http://pypath.omnipathdb.org/">'\
-        'pypath documentation.</a> This list is only about network '\
-        'resources. <span class="code">pypath</span> is able to '\
-        'process and integrate many other resources, please see '\
-        'the paper and the documentation to know more.</p>'\
-        '<p class="small">We searched for license information '\
-        'in the main, About, Download and FAQ sections of the webpages, '\
-        'and run Google searches for the database name and license. '\
-        'Where we could not find anything about licensing, we assumed '\
-        'no license. Unfortunately due to todays restrictive copyright '\
-        'legislations, users don\'t have the freedom to use, modify and '\
-        'redistribute the data without a license explicitely granting '\
-        'these to them. Despite the clear intention from the authors to '\
-        'make their data public, and statements on the webpage like '\
+    doc = (
+        '<p>This collection was created during the construction '
+        'of OmniPath when we considered more than 50 resources and '
+        'selected the ones containing literature curation effort. '
+        'OmniPath is a network '
+        'of signaling pathways intending to '
+        'combine all high quality, manually curated efforts. The '
+        'descriptions here cite the relevant sentences '
+        'about the curation protocols from the original articles and webpages. '
+        'URLs pointing to the articles and the webpages, and some '
+        'additional metadata are provided where available. '
+        'The resources with green title are included by default in '
+        'OmniPath. <span class="code">pypath</span> methods are listed '
+        ' where available, to know more please look at <a '
+        'target="_blank" href="http://pypath.omnipathdb.org/">'
+        'pypath documentation.</a> This list is only about network '
+        'resources. <span class="code">pypath</span> is able to '
+        'process and integrate many other resources, please see '
+        'the paper and the documentation to know more.</p>'
+        '<p class="small">We searched for license information '
+        'in the main, About, Download and FAQ sections of the webpages, '
+        'and run Google searches for the database name and license. '
+        'Where we could not find anything about licensing, we assumed '
+        'no license. Unfortunately due to todays restrictive copyright '
+        'legislations, users don\'t have the freedom to use, modify and '
+        'redistribute the data without a license explicitely granting '
+        'these to them. Despite the clear intention from the authors to '
+        'make their data public, and statements on the webpage like '
         '"free to use" or "available for download".</p>\n'
+        '<br>\n'
+        '<p><em>Information on this page last revised in Nov 2016</em></p>\n'
+        '<br>\n'
+    )
     doc += '\t<h2>Contents</h2>\n'
     doc += '\t<ul>\n'
     # Table of Content
