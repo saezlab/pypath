@@ -2599,7 +2599,15 @@ def gen_html():
         'make their data public, and statements on the webpage like '
         '"free to use" or "available for download".</p>\n'
         '<br>\n'
-        '<p><em>Information on this page last revised in Nov 2016</em></p>\n'
+        '<p>\n'
+            '<em>\n'
+            'Information on this page last revised in Nov 2016.\n'
+            'About updates of the OmniPath database content please refer to\n'
+            '<a href="http://archive.omnipathdb.org/README.txt">\n'
+                'our archive.\n'
+            '</a>\n'
+            '</em>\n'
+        '</p>\n'
         '<br>\n'
     )
     doc += '\t<h2>Contents</h2>\n'
@@ -2620,9 +2628,9 @@ def gen_html():
             (v['type'].capitalize() if 'type' in v else 'Undefined',
                 v['subtype'].capitalize() if 'subtype' in v else 'Undefined')
         if 'year' in v:
-            doc += '\t\t\t<h3>Last updated: %u<\h3>\n' % v['year']
+            doc += '\t\t\t<h3>Last released: %u<\h3>\n' % v['year']
         if 'releases' in v:
-            doc += '\t\t\t<p><b>Updated in years: </b>%s</p>\n' % \
+            doc += '\t\t\t<p><b>Released in years: </b>%s</p>\n' % \
                 ', '.join(['%u' % y for y in v['releases']])
         if 'authors' in v and v['authors'] is not None:
             doc += '\t\t\t<p><b>Created by </b>%s</p>\n' % ', '.join(v[
