@@ -792,7 +792,7 @@ class TableServer(BaseServer):
                     set(val[0].decode('utf-8').split(','))
                 )
                 
-                unknowns = val - ref[arg]
+                unknowns = val - set(ref[arg])
                 
                 if unknowns:
                     
