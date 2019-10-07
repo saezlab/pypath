@@ -720,15 +720,28 @@ class CustomAnnotation(session_mod.Logger):
             self,
             source_classes = None,
             target_classes = None,
+            degrees_of = 'target',
             **kwargs,
         ):
+        """
+        degrees_of : str
+            Either *source* or *target*. Count the degrees for the source
+            or the target class.
+        """
+        
+        id_cols = ('id_a', 'id_b')
+        groupby, unique = (
+            id_cols
+                if degrees_of == 'source' else
+            reversed(id_cols)
+        )
         
         degrees = (
             self.inter_class_network(
                 source_classes = source_classes,
                 target_classes = target_classes,
                 **kwargs,
-            ).groupby('id_a')['id_b'].nunique()
+            ).groupby(groupby)[unique].nunique()
         )
         
         return degrees[degrees != 0]
