@@ -405,6 +405,31 @@ class CustomAnnotation(session_mod.Logger):
         )
     
     
+    def counts_by_class(
+            self,
+            class_types = 'main',
+            entity_types = 'protein',
+            labels = True,
+        ):
+        
+        class_types = common.to_set(class_types)
+        
+        df = self.df[self.df.class_type.isin(class_types)]
+        
+        if entity_types:
+            
+            entity_types = common.to_set(entity_types)
+            df = df[df.entity_type.isin(entity_types)]
+        
+        counts = df.groupby('category')['uniprot'].nunique()
+        
+        if labels:
+            
+            counts.index = counts.index.map(self.class_labels)
+        
+        return counts[counts > 0]
+    
+    
     def network_df(
             self,
             network = None,
