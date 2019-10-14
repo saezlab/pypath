@@ -16371,13 +16371,14 @@ div#notebook {
 <li><a href="#mapping">12: Translating identifiers</a></li>
 <li><a href="#enz-sub">13: Enzyme-substrate interactions</a></li>
 <li><a href="#annotations">14: Annotations</a></li>
-<li><a href="#gene-ontology">15: Gene Ontology</a></li>
-<li><a href="#complexes">16: Protein complexes</a></li>
-<li><a href="#pickle">17: Saving datasets as pickles</a></li>
-<li><a href="#network-pandas">18: Network in <em>pandas.DataFrame</em></a></li>
-<li><a href="#log-session">19: Log messages and sessions</a></li>
-<li><a href="#bel">20: BEL export</a></li>
-<li><a href="#cellphonedb">21: CellPhoneDB export</a></li>
+<li><a href="#intercell">15: Inter-cellular signaling roles</a></li>
+<li><a href="#gene-ontology">16: Gene Ontology</a></li>
+<li><a href="#complexes">17: Protein complexes</a></li>
+<li><a href="#pickle">18: Saving datasets as pickles</a></li>
+<li><a href="#network-pandas">19: Network in <em>pandas.DataFrame</em></a></li>
+<li><a href="#log-session">20: Log messages and sessions</a></li>
+<li><a href="#bel">21: BEL export</a></li>
+<li><a href="#cellphonedb">22: CellPhoneDB export</a></li>
 </ul>
 
 </div>
@@ -19787,7 +19788,663 @@ AKT1 - GSK3B
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="15:-Gene-Ontology-">15: Gene Ontology <a class="anchor" id="gene-ontology" /><a class="anchor-link" href="#15:-Gene-Ontology-">&#182;</a></h2>
+<h2 id="15:-Inter-cellular-signaling-roles-">15: Inter-cellular signaling roles <a class="anchor" id="intercell" /><a class="anchor-link" href="#15:-Inter-cellular-signaling-roles-">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>pypath</code> does not combine the annotations in the <code>annot</code> module, exactly what goes in goes out. For example, WNT pathway from Signor and SignaLink won't be merged automatically. However with the <code>pypath.annot.CustomAnnotation</code> class anyone can do it. For inter-cellular communication categories the <code>pypath.intercell</code> module combines the data from all the relevant resources and creates categories based on a combination of evidences.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">intercell</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">i</span> <span class="o">=</span> <span class="n">intercell</span><span class="o">.</span><span class="n">get_db</span><span class="p">()</span> <span class="c1"># this takes quite some time</span>
+                    <span class="c1"># unless you load annotations from a pickle cache</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">i</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[8]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;pypath.intercell.IntercellAnnotation at 0x666c56b9ef90&gt;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">i</span><span class="o">.</span><span class="n">make_df</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">i</span><span class="o">.</span><span class="n">df</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[6]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>category</th>
+      <th>uniprot</th>
+      <th>genesymbol</th>
+      <th>entity_type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>receptor_cellphonedb</td>
+      <td>COMPLEX:Q5KU26</td>
+      <td>COLEC12</td>
+      <td>complex</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>receptor_cellphonedb</td>
+      <td>COMPLEX:Q15223</td>
+      <td>NECTIN1</td>
+      <td>complex</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>receptor_cellphonedb</td>
+      <td>P33032</td>
+      <td>MC5R</td>
+      <td>protein</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>receptor_cellphonedb</td>
+      <td>Q13467</td>
+      <td>FZD5</td>
+      <td>protein</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>receptor_cellphonedb</td>
+      <td>P30495</td>
+      <td>HLA-B</td>
+      <td>protein</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>receptor_cellphonedb</td>
+      <td>P35916</td>
+      <td>FLT4</td>
+      <td>protein</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>receptor_cellphonedb</td>
+      <td>COMPLEX:P04629</td>
+      <td>NTRK1</td>
+      <td>complex</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>receptor_cellphonedb</td>
+      <td>Q9UKP6</td>
+      <td>UTS2R</td>
+      <td>protein</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>receptor_cellphonedb</td>
+      <td>COMPLEX:P27037-P36896-Q13705-Q8NER5</td>
+      <td>ACVR1B-ACVR1C-ACVR2A-ACVR2B</td>
+      <td>complex</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>receptor_cellphonedb</td>
+      <td>COMPLEX:Q9NZQ7</td>
+      <td>CD274</td>
+      <td>complex</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">i</span><span class="o">.</span><span class="n">class_names</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[38]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{&#39;adhesion&#39;,
+ &#39;cell_surface&#39;,
+ &#39;chemokine_ligands_hgnc&#39;,
+ &#39;ecm&#39;,
+ &#39;endogenous_ligands_hgnc&#39;,
+ &#39;extracellular&#39;,
+ &#39;extracellular_enzyme&#39;,
+ &#39;extracellular_peptidase&#39;,
+ &#39;gap_junction&#39;,
+ &#39;growth_factor_binder&#39;,
+ &#39;growth_factor_regulator&#39;,
+ &#39;interleukin_receptors_hgnc&#39;,
+ &#39;interleukins_hgnc&#39;,
+ &#39;intracellular&#39;,
+ &#39;ligand&#39;,
+ &#39;receptor&#39;,
+ &#39;secreted&#39;,
+ &#39;surface_enzyme&#39;,
+ &#39;surface_ligand&#39;,
+ &#39;tight_junction&#39;,
+ &#39;transmembrane&#39;,
+ &#39;transporter&#39;}</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[41]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">i</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="s1">&#39;receptor&#39;</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[41]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{&#39;receptor&#39;,
+ &#39;receptor_cellphonedb&#39;,
+ &#39;receptor_dgidb&#39;,
+ &#39;receptor_go&#39;,
+ &#39;receptor_guide2pharma&#39;,
+ &#39;receptor_hgnc&#39;,
+ &#39;receptor_hpmr&#39;,
+ &#39;receptor_kirouac&#39;,
+ &#39;receptor_ramilowski&#39;,
+ &#39;receptor_surfaceome&#39;}</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[43]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">i</span><span class="o">.</span><span class="n">counts</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[43]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{&#39;receptor_cellphonedb&#39;: 860,
+ &#39;receptor_surfaceome&#39;: 1563,
+ &#39;receptor_go&#39;: 594,
+ &#39;receptor_hpmr&#39;: 1276,
+ &#39;receptor_ramilowski&#39;: 979,
+ &#39;receptor_kirouac&#39;: 127,
+ &#39;receptor_guide2pharma&#39;: 393,
+ &#39;interleukin_receptors_hgnc&#39;: 78,
+ &#39;receptor_hgnc&#39;: 78,
+ &#39;receptor_dgidb&#39;: 979,
+ &#39;receptor&#39;: 2517,
+ &#39;ecm_matrixdb&#39;: 656,
+ &#39;cell_surface_surfaceome&#39;: 3544,
+ &#39;cell_surface_go&#39;: 907,
+ &#39;cell_surface_hpmr&#39;: 1276,
+ &#39;cell_surface_membranome&#39;: 2435,
+ &#39;cell_surface_cspa&#39;: 2213,
+ &#39;cell_surface_cellphonedb&#39;: 1159,
+ &#39;cell_surface_dgidb&#39;: 1384,
+ &#39;cell_surface&#39;: 6098,
+ &#39;ecm_matrisome&#39;: 1466,
+ &#39;ecm_go&#39;: 343,
+ &#39;ecm&#39;: 1912,
+ &#39;ligand_cellphonedb&#39;: 848,
+ &#39;ligand_go&#39;: 468,
+ &#39;ligand_hpmr&#39;: 393,
+ &#39;ligand_ramilowski&#39;: 976,
+ &#39;ligand_kirouac&#39;: 267,
+ &#39;ligand_guide2pharma&#39;: 441,
+ &#39;interleukins_hgnc&#39;: 64,
+ &#39;endogenous_ligands_hgnc&#39;: 367,
+ &#39;chemokine_ligands_hgnc&#39;: 65,
+ &#39;ligand_hgnc&#39;: 429,
+ &#39;ligand_dgidb&#39;: 403,
+ &#39;ligand&#39;: 1495,
+ &#39;intracellular_locate&#39;: 15474,
+ &#39;intracellular_comppi&#39;: 0,
+ &#39;intracellular_go&#39;: 14982,
+ &#39;intracellular&#39;: 22020,
+ &#39;secreted_locate&#39;: 1299,
+ &#39;extracellular_locate&#39;: 2250,
+ &#39;extracellular_surfaceome&#39;: 3544,
+ &#39;extracellular_matrixdb&#39;: 4279,
+ &#39;extracellular_membranome&#39;: 2435,
+ &#39;extracellular_cspa&#39;: 2213,
+ &#39;extracellular_hpmr&#39;: 1669,
+ &#39;extracellular_cellphonedb&#39;: 848,
+ &#39;extracellular&#39;: 9246,
+ &#39;extracellular_comppi&#39;: 0,
+ &#39;transmembrane_cellphonedb&#39;: 1147,
+ &#39;transmembrane_go&#39;: 5432,
+ &#39;transmembrane_opm&#39;: 170,
+ &#39;transmembrane_locate&#39;: 3098,
+ &#39;transmembrane_topdb&#39;: 1275,
+ &#39;transmembrane&#39;: 7022,
+ &#39;adhesion_cellphonedb&#39;: 0,
+ &#39;adhesion_go&#39;: 1099,
+ &#39;adhesion_matrisome&#39;: 109,
+ &#39;adhesion_hgnc&#39;: 232,
+ &#39;adhesion_integrins&#39;: 63,
+ &#39;adhesion_zhong2015&#39;: 676,
+ &#39;adhesion_adhesome&#39;: 398,
+ &#39;adhesion&#39;: 1774,
+ &#39;surface_enzyme_go&#39;: 583,
+ &#39;surface_enzyme_surfaceome&#39;: 131,
+ &#39;surface_enzyme&#39;: 630,
+ &#39;surface_ligand_go&#39;: 120,
+ &#39;surface_ligand_cellphonedb&#39;: 299,
+ &#39;surface_ligand&#39;: 384,
+ &#39;transporter_surfaceome&#39;: 523,
+ &#39;transporter_go&#39;: 499,
+ &#39;transporter_dgidb&#39;: 2119,
+ &#39;transporter&#39;: 2156,
+ &#39;extracellular_enzyme&#39;: 2597,
+ &#39;extracellular_peptidase&#39;: 577,
+ &#39;growth_factor_binder&#39;: 67,
+ &#39;growth_factor_regulator&#39;: 125,
+ &#39;secreted_matrisome&#39;: 805,
+ &#39;secreted_cellphonedb&#39;: 848,
+ &#39;secreted&#39;: 2362,
+ &#39;gap_junction&#39;: 33,
+ &#39;tight_junction&#39;: 130}</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[45]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">i</span><span class="o">.</span><span class="n">classes_by_entity</span><span class="p">(</span><span class="s1">&#39;P00533&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[45]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{&#39;adhesion&#39;,
+ &#39;adhesion_go&#39;,
+ &#39;cell_surface&#39;,
+ &#39;cell_surface_cellphonedb&#39;,
+ &#39;cell_surface_cspa&#39;,
+ &#39;cell_surface_dgidb&#39;,
+ &#39;cell_surface_go&#39;,
+ &#39;cell_surface_hpmr&#39;,
+ &#39;cell_surface_membranome&#39;,
+ &#39;cell_surface_surfaceome&#39;,
+ &#39;extracellular&#39;,
+ &#39;extracellular_cellphonedb&#39;,
+ &#39;extracellular_cspa&#39;,
+ &#39;extracellular_enzyme&#39;,
+ &#39;extracellular_hpmr&#39;,
+ &#39;extracellular_locate&#39;,
+ &#39;extracellular_matrixdb&#39;,
+ &#39;extracellular_membranome&#39;,
+ &#39;extracellular_surfaceome&#39;,
+ &#39;growth_factor_binder&#39;,
+ &#39;intracellular&#39;,
+ &#39;intracellular_go&#39;,
+ &#39;intracellular_locate&#39;,
+ &#39;ligand&#39;,
+ &#39;ligand_cellphonedb&#39;,
+ &#39;receptor&#39;,
+ &#39;receptor_cellphonedb&#39;,
+ &#39;receptor_go&#39;,
+ &#39;receptor_guide2pharma&#39;,
+ &#39;receptor_hpmr&#39;,
+ &#39;receptor_kirouac&#39;,
+ &#39;receptor_ramilowski&#39;,
+ &#39;receptor_surfaceome&#39;,
+ &#39;secreted&#39;,
+ &#39;secreted_cellphonedb&#39;,
+ &#39;secreted_locate&#39;,
+ &#39;transmembrane&#39;,
+ &#39;transmembrane_cellphonedb&#39;,
+ &#39;transmembrane_go&#39;,
+ &#39;transmembrane_opm&#39;,
+ &#39;transmembrane_topdb&#39;}</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[51]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">i</span><span class="o">.</span><span class="n">class_labels</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[51]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{&#39;receptor_cellphonedb&#39;: &#39;Receptor&#39;,
+ &#39;receptor_surfaceome&#39;: &#39;Receptor&#39;,
+ &#39;receptor_go&#39;: &#39;Receptor&#39;,
+ &#39;receptor_hpmr&#39;: &#39;Receptor&#39;,
+ &#39;receptor_ramilowski&#39;: &#39;Receptor&#39;,
+ &#39;receptor_kirouac&#39;: &#39;Receptor&#39;,
+ &#39;receptor_guide2pharma&#39;: &#39;Receptor&#39;,
+ &#39;interleukin_receptors_hgnc&#39;: &#39;Interleukin receptors (HGNC)&#39;,
+ &#39;receptor_hgnc&#39;: &#39;Receptor&#39;,
+ &#39;receptor_dgidb&#39;: &#39;Receptor&#39;,
+ &#39;receptor&#39;: &#39;Receptor&#39;,
+ &#39;ecm_matrixdb&#39;: &#39;Extracellular matrix&#39;,
+ &#39;cell_surface_surfaceome&#39;: &#39;Cell surface&#39;,
+ &#39;cell_surface_go&#39;: &#39;Cell surface&#39;,
+ &#39;cell_surface_hpmr&#39;: &#39;Cell surface&#39;,
+ &#39;cell_surface_membranome&#39;: &#39;Cell surface&#39;,
+ &#39;cell_surface_cspa&#39;: &#39;Cell surface&#39;,
+ &#39;cell_surface_cellphonedb&#39;: &#39;Cell surface&#39;,
+ &#39;cell_surface_dgidb&#39;: &#39;Cell surface&#39;,
+ &#39;cell_surface&#39;: &#39;Cell surface&#39;,
+ &#39;ecm_matrisome&#39;: &#39;Extracellular matrix&#39;,
+ &#39;ecm_go&#39;: &#39;Extracellular matrix&#39;,
+ &#39;ecm&#39;: &#39;Extracellular matrix&#39;,
+ &#39;ligand_cellphonedb&#39;: &#39;Ligand&#39;,
+ &#39;ligand_go&#39;: &#39;Ligand&#39;,
+ &#39;ligand_hpmr&#39;: &#39;Ligand&#39;,
+ &#39;ligand_ramilowski&#39;: &#39;Ligand&#39;,
+ &#39;ligand_kirouac&#39;: &#39;Ligand&#39;,
+ &#39;ligand_guide2pharma&#39;: &#39;Ligand&#39;,
+ &#39;interleukins_hgnc&#39;: &#39;Interleukins (HGNC)&#39;,
+ &#39;endogenous_ligands_hgnc&#39;: &#39;Endogenous ligands (HGNC)&#39;,
+ &#39;chemokine_ligands_hgnc&#39;: &#39;Chemokine ligands (HGNC)&#39;,
+ &#39;ligand_hgnc&#39;: &#39;Ligand&#39;,
+ &#39;ligand_dgidb&#39;: &#39;Ligand&#39;,
+ &#39;ligand&#39;: &#39;Ligand&#39;,
+ &#39;intracellular_locate&#39;: &#39;Intracellular&#39;,
+ &#39;intracellular_comppi&#39;: &#39;Intracellular&#39;,
+ &#39;intracellular_go&#39;: &#39;Intracellular&#39;,
+ &#39;intracellular&#39;: &#39;Intracellular&#39;,
+ &#39;secreted_locate&#39;: &#39;Secreted&#39;,
+ &#39;extracellular_locate&#39;: &#39;Extracellular&#39;,
+ &#39;extracellular_surfaceome&#39;: &#39;Extracellular&#39;,
+ &#39;extracellular_matrixdb&#39;: &#39;Extracellular&#39;,
+ &#39;extracellular_membranome&#39;: &#39;Extracellular&#39;,
+ &#39;extracellular_cspa&#39;: &#39;Extracellular&#39;,
+ &#39;extracellular_hpmr&#39;: &#39;Extracellular&#39;,
+ &#39;extracellular_cellphonedb&#39;: &#39;Extracellular&#39;,
+ &#39;extracellular&#39;: &#39;Extracellular&#39;,
+ &#39;extracellular_comppi&#39;: &#39;Extracellular&#39;,
+ &#39;transmembrane_cellphonedb&#39;: &#39;Transmembrane&#39;,
+ &#39;transmembrane_go&#39;: &#39;Transmembrane&#39;,
+ &#39;transmembrane_opm&#39;: &#39;Transmembrane&#39;,
+ &#39;transmembrane_locate&#39;: &#39;Transmembrane&#39;,
+ &#39;transmembrane_topdb&#39;: &#39;Transmembrane&#39;,
+ &#39;transmembrane&#39;: &#39;Transmembrane&#39;,
+ &#39;adhesion_cellphonedb&#39;: &#39;Adhesion&#39;,
+ &#39;adhesion_go&#39;: &#39;Adhesion&#39;,
+ &#39;adhesion_matrisome&#39;: &#39;Adhesion&#39;,
+ &#39;adhesion_hgnc&#39;: &#39;Adhesion&#39;,
+ &#39;adhesion_integrins&#39;: &#39;Adhesion&#39;,
+ &#39;adhesion_zhong2015&#39;: &#39;Adhesion&#39;,
+ &#39;adhesion_adhesome&#39;: &#39;Adhesion&#39;,
+ &#39;adhesion&#39;: &#39;Adhesion&#39;,
+ &#39;surface_enzyme_go&#39;: &#39;Surface enzyme&#39;,
+ &#39;surface_enzyme_surfaceome&#39;: &#39;Surface enzyme&#39;,
+ &#39;surface_enzyme&#39;: &#39;Surface enzyme&#39;,
+ &#39;surface_ligand_go&#39;: &#39;Surface ligand&#39;,
+ &#39;surface_ligand_cellphonedb&#39;: &#39;Surface ligand&#39;,
+ &#39;surface_ligand&#39;: &#39;Surface ligand&#39;,
+ &#39;transporter_surfaceome&#39;: &#39;Transporter&#39;,
+ &#39;transporter_go&#39;: &#39;Transporter&#39;,
+ &#39;transporter_dgidb&#39;: &#39;Transporter&#39;,
+ &#39;transporter&#39;: &#39;Transporter&#39;,
+ &#39;extracellular_enzyme&#39;: &#39;Extracellular enzyme&#39;,
+ &#39;extracellular_peptidase&#39;: &#39;Extracellular peptidase&#39;,
+ &#39;growth_factor_binder&#39;: &#39;Growth factor binder&#39;,
+ &#39;growth_factor_regulator&#39;: &#39;Growth factor regulator&#39;,
+ &#39;secreted_matrisome&#39;: &#39;Secreted&#39;,
+ &#39;secreted_cellphonedb&#39;: &#39;Secreted&#39;,
+ &#39;secreted&#39;: &#39;Secreted&#39;,
+ &#39;gap_junction&#39;: &#39;Gap junction&#39;,
+ &#39;tight_junction&#39;: &#39;Tight junction&#39;}</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[54]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">list</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="s1">&#39;adhesion&#39;</span><span class="p">])[:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[54]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&#39;Q9HBL0&#39;,
+ Complex: COMPLEX:P05556-P08195-P08648-P23229,
+ &#39;O75509&#39;,
+ &#39;P13747&#39;,
+ &#39;Q9ULB1&#39;,
+ Complex: COMPLEX:O94813-Q9Y6N7,
+ &#39;Q07092&#39;,
+ &#39;Q8NFY4&#39;,
+ &#39;P25105&#39;,
+ &#39;P35222&#39;]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="16:-Gene-Ontology-">16: Gene Ontology <a class="anchor" id="gene-ontology" /><a class="anchor-link" href="#16:-Gene-Ontology-">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -19801,7 +20458,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">go</span>
@@ -19815,7 +20472,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[39]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">goa</span><span class="o">.</span><span class="n">ontology</span> <span class="c1"># the GeneOntology object</span>
@@ -19831,13 +20488,13 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[39]:</div>
+    <div class="prompt output_prompt">Out[8]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;pypath.go.GeneOntology at 0x68fb7b2ef610&gt;</pre>
+<pre>&lt;pypath.go.GeneOntology at 0x6ad3e1951cd0&gt;</pre>
 </div>
 
 </div>
@@ -19848,7 +20505,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[40]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">goa</span> <span class="c1"># the GOAnnotation object</span>
@@ -19864,13 +20521,13 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[40]:</div>
+    <div class="prompt output_prompt">Out[9]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;pypath.go.GOAnnotation at 0x68fb7b2ef250&gt;</pre>
+<pre>&lt;pypath.go.GOAnnotation at 0x6ad3e1999610&gt;</pre>
 </div>
 
 </div>
@@ -19889,7 +20546,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[41]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;(cell surface OR</span>
@@ -19915,7 +20572,7 @@ AKT1 - GSK3B
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[&#39;P63244&#39;, &#39;Q07699&#39;, &#39;P46934&#39;, &#39;P62258&#39;, &#39;Q16651&#39;, &#39;P57796&#39;, &#39;Q9ULB1&#39;]
+<pre>[&#39;P80108&#39;, &#39;Q16623&#39;, &#39;Q07699&#39;, &#39;Q92913&#39;, &#39;Q8NBP7&#39;, &#39;Q9UKS6&#39;, &#39;Q9UEU0&#39;]
 </pre>
 </div>
 </div>
@@ -19926,7 +20583,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[42]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">goa</span><span class="o">.</span><span class="n">ontology</span><span class="o">.</span><span class="n">get_all_descendants</span><span class="p">(</span><span class="s1">&#39;GO:0005576&#39;</span><span class="p">)</span>
@@ -19942,7 +20599,7 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[42]:</div>
+    <div class="prompt output_prompt">Out[11]:</div>
 
 
 
@@ -20166,7 +20823,7 @@ AKT1 - GSK3B
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="16:-Protein-complexes-">16: Protein complexes <a class="anchor" id="complexes" /><a class="anchor-link" href="#16:-Protein-complexes-">&#182;</a></h2>
+<h2 id="17:-Protein-complexes-">17: Protein complexes <a class="anchor" id="complexes" /><a class="anchor-link" href="#17:-Protein-complexes-">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -20180,60 +20837,22 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="nb">complex</span>
 <span class="n">complexdb</span> <span class="o">=</span> <span class="nb">complex</span><span class="o">.</span><span class="n">get_db</span><span class="p">()</span>
+<span class="n">complexdb</span><span class="o">.</span><span class="n">update_index</span><span class="p">()</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>
-	=== d i s c l a i m e r ===
-
-	All data accessed through this module,
-	either as redistributed copy or downloaded using the
-	programmatic interfaces included in the present module,
-	are free to use at least for academic research or
-	education purposes.
-	Please be aware of the licenses of all the datasets
-	you use in your analysis, and please give appropriate
-	credits for the original sources when you publish your
-	results. To find out more about data sources please
-	look at `pypath.descriptions` or
-	http://omnipathdb.org/info and 
-	`pypath.data_formats.urls`.
-
-[2019-08-30 16:36:40] [pypath] 
-	- session ID: `hca38`
-	- working directory: `/home/denes/Dokumentumok/norwich2019`
-	- logfile: `/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-hca38.log`
-	- pypath version: 0.8.30
-
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">complexdb</span>
@@ -20249,13 +20868,13 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[4]:</div>
+    <div class="prompt output_prompt">Out[17]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;pypath.complex.ComplexAggregator at 0x61b5bb1d2610&gt;</pre>
+<pre>&lt;pypath.complex.ComplexAggregator at 0x6ad441788e50&gt;</pre>
 </div>
 
 </div>
@@ -20274,7 +20893,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">complexdb</span><span class="o">.</span><span class="n">proteins</span><span class="p">[</span><span class="s1">&#39;P42345&#39;</span><span class="p">]</span>
@@ -20290,7 +20909,7 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[5]:</div>
+    <div class="prompt output_prompt">Out[18]:</div>
 
 
 
@@ -20322,6 +20941,7 @@ AKT1 - GSK3B
  Complex: COMPLEX:O15530-P23443-P42345-Q6R327-Q8N122-Q96BR1-Q96J02-Q9BPZ7-Q9BVC4-Q9NY26,
  Complex: COMPLEX:O15530-P23443-P42345-Q6R327-Q8N122-Q96BR1-Q9BPZ7-Q9BVC4-Q9HBY8-Q9NY26,
  Complex: COMPLEX:O43156-O75925-P36508-P42345-Q9BVM2-Q9H6T3-Q9Y230-Q9Y265,
+ Complex: COMPLEX:O43156-O95467-P42345-P61254-Q9BVM2-Q9H6T3-Q9Y230-Q9Y265,
  Complex: COMPLEX:O43156-O95619-P42345-Q71UI9-Q92993-Q9H0E9-Q9H6T3-Q9NPF5-Q9UBU8-Q9Y230-Q9Y265-Q9Y4A5,
  Complex: COMPLEX:O43156-O95831-P42345-Q6NUQ4-Q9BVM2-Q9H6T3-Q9Y230-Q9Y265,
  Complex: COMPLEX:O43156-P11766-P42345-Q6NXG1-Q96CM8-Q9BVM2-Q9H6T3-Q9Y230-Q9Y265,
@@ -20331,7 +20951,6 @@ AKT1 - GSK3B
  Complex: COMPLEX:O43156-P25490-P42345-Q6PI98-Q8NBZ0-Q9H6T3-Q9H981-Q9H9F9-Q9Y230-Q9Y265-Q9Y5K5,
  Complex: COMPLEX:O43156-P30533-P42345-Q14677-Q9H6T3-Q9Y230-Q9Y265,
  Complex: COMPLEX:O43156-P42345-P54278-Q6NUQ4-Q9BVM2-Q9H6T3-Q9Y230-Q9Y265,
- Complex: COMPLEX:O43156-P42345-P61254-Q5JWF2-Q9BVM2-Q9H6T3-Q9Y230-Q9Y265,
  Complex: COMPLEX:O43156-P42345-P63104-Q6NXG1-Q9BVM2-Q9H6T3-Q9NX40-Q9Y230-Q9Y265,
  Complex: COMPLEX:O43156-P42345-Q14677-Q9H6T3-Q9Y230-Q9Y265-Q9Y4A5,
  Complex: COMPLEX:O43156-P42345-Q15029-Q96MX6-Q9H6T3-Q9Y230-Q9Y265,
@@ -20390,7 +21009,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">cplex</span> <span class="o">=</span> <span class="n">complexdb</span><span class="o">.</span><span class="n">complexes</span><span class="p">[</span><span class="s1">&#39;COMPLEX:P42345-Q13451&#39;</span><span class="p">]</span>
@@ -20403,7 +21022,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">cplex</span><span class="o">.</span><span class="n">components</span> <span class="c1"># stoichiometry</span>
@@ -20419,7 +21038,7 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[7]:</div>
+    <div class="prompt output_prompt">Out[20]:</div>
 
 
 
@@ -20436,7 +21055,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">cplex</span><span class="o">.</span><span class="n">sources</span> <span class="c1"># resources</span>
@@ -20452,7 +21071,7 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[8]:</div>
+    <div class="prompt output_prompt">Out[21]:</div>
 
 
 
@@ -20470,7 +21089,7 @@ AKT1 - GSK3B
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="17:-Saving-datasets-as-pickles-">17: Saving datasets as pickles <a class="anchor" id="pickle" /><a class="anchor-link" href="#17:-Saving-datasets-as-pickles-">&#182;</a></h2>
+<h2 id="18:-Saving-datasets-as-pickles-">18: Saving datasets as pickles <a class="anchor" id="pickle" /><a class="anchor-link" href="#18:-Saving-datasets-as-pickles-">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -20506,7 +21125,7 @@ AKT1 - GSK3B
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="18:-Network-in-pandas.DataFrame-">18: Network in <em>pandas.DataFrame</em> <a class="anchor" id="network-pandas" /><a class="anchor-link" href="#18:-Network-in-pandas.DataFrame-">&#182;</a></h2>
+<h2 id="19:-Network-in-pandas.DataFrame-">19: Network in <em>pandas.DataFrame</em> <a class="anchor" id="network-pandas" /><a class="anchor-link" href="#19:-Network-in-pandas.DataFrame-">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -20520,7 +21139,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">main</span>
@@ -20535,65 +21154,11 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pa</span> <span class="o">=</span> <span class="n">main</span><span class="o">.</span><span class="n">PyPath</span><span class="p">()</span>
 <span class="n">pa</span><span class="o">.</span><span class="n">init_network</span><span class="p">(</span><span class="n">data_formats</span><span class="o">.</span><span class="n">pathway_all</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">Network</span><span class="o">.</span><span class="n">from_igraph</span><span class="p">(</span><span class="n">pa</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">records</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="19:-Log-messages-and-sessions-">19: Log messages and sessions <a class="anchor" id="log-session" /><a class="anchor-link" href="#19:-Log-messages-and-sessions-">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Now <code>pypath</code> has an improved logger. All modules sends messages to a log file named by default by the session ID (a 5 char random string). The default path to the log file is <code>./pypath_log/pypath-xxxxx.log</code> where <code>xxxxx</code> is the session ID. When you import <code>pypath</code> the welcome message tells you the session ID and the log file location.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pypath</span>
 </pre></div>
 
     </div>
@@ -20611,31 +21176,235 @@ AKT1 - GSK3B
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>
-	=== d i s c l a i m e r ===
-
-	All data accessed through this module,
-	either as redistributed copy or downloaded using the
-	programmatic interfaces included in the present module,
-	are free to use at least for academic research or
-	education purposes.
-	Please be aware of the licenses of all the datasets
-	you use in your analysis, and please give appropriate
-	credits for the original sources when you publish your
-	results. To find out more about data sources please
-	look at `pypath.descriptions` or
-	http://omnipathdb.org/info and 
-	`pypath.data_formats.urls`.
-
-[2019-09-02 13:23:28] [pypath] 
-	- session ID: `vc1lm`
-	- working directory: `/home/denes/Dokumentumok/norwich2019`
-	- logfile: `/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-vc1lm.log`
-	- pypath version: 0.8.30
-
 </pre>
 </div>
 </div>
 
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">Network</span><span class="o">.</span><span class="n">from_igraph</span><span class="p">(</span><span class="n">pa</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">records</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[25]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id_a</th>
+      <th>id_b</th>
+      <th>type_a</th>
+      <th>type_b</th>
+      <th>directed</th>
+      <th>effect</th>
+      <th>type</th>
+      <th>sources</th>
+      <th>references</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>P17612</td>
+      <td>P20020</td>
+      <td>protein</td>
+      <td>protein</td>
+      <td>True</td>
+      <td>1</td>
+      <td>[PPI]</td>
+      <td>{KEGG}</td>
+      <td>{}</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>P17612</td>
+      <td>P20020</td>
+      <td>protein</td>
+      <td>protein</td>
+      <td>True</td>
+      <td>-1</td>
+      <td>[PPI]</td>
+      <td>{CA1, Wang}</td>
+      <td>{9824678}</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>P20020</td>
+      <td>P17612</td>
+      <td>protein</td>
+      <td>protein</td>
+      <td>False</td>
+      <td>0</td>
+      <td>[PPI]</td>
+      <td>{Wang, KEGG}</td>
+      <td>{}</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>P0DP25</td>
+      <td>P20020</td>
+      <td>protein</td>
+      <td>protein</td>
+      <td>True</td>
+      <td>1</td>
+      <td>[PPI]</td>
+      <td>{CA1}</td>
+      <td>{6455424}</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>P20020</td>
+      <td>Q13507</td>
+      <td>protein</td>
+      <td>protein</td>
+      <td>False</td>
+      <td>0</td>
+      <td>[PPI]</td>
+      <td>{TRIP}</td>
+      <td>{18205297, 16887806}</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Q13976</td>
+      <td>P20020</td>
+      <td>protein</td>
+      <td>protein</td>
+      <td>True</td>
+      <td>1</td>
+      <td>[PPI]</td>
+      <td>{KEGG}</td>
+      <td>{}</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>P20020</td>
+      <td>Q13976</td>
+      <td>protein</td>
+      <td>protein</td>
+      <td>False</td>
+      <td>0</td>
+      <td>[PPI]</td>
+      <td>{KEGG}</td>
+      <td>{}</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>P0DP24</td>
+      <td>P20020</td>
+      <td>protein</td>
+      <td>protein</td>
+      <td>True</td>
+      <td>1</td>
+      <td>[PPI]</td>
+      <td>{CA1}</td>
+      <td>{6455424}</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>P0DP23</td>
+      <td>P20020</td>
+      <td>protein</td>
+      <td>protein</td>
+      <td>True</td>
+      <td>1</td>
+      <td>[PPI]</td>
+      <td>{CA1, Wang}</td>
+      <td>{6455424}</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>P20020</td>
+      <td>P0DP23</td>
+      <td>protein</td>
+      <td>protein</td>
+      <td>False</td>
+      <td>0</td>
+      <td>[PPI]</td>
+      <td>{Wang}</td>
+      <td>{}</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="20:-Log-messages-and-sessions-">20: Log messages and sessions <a class="anchor" id="log-session" /><a class="anchor-link" href="#20:-Log-messages-and-sessions-">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now <code>pypath</code> has an improved logger. All modules sends messages to a log file named by default by the session ID (a 5 char random string). The default path to the log file is <code>./pypath_log/pypath-xxxxx.log</code> where <code>xxxxx</code> is the session ID. When you import <code>pypath</code> the welcome message tells you the session ID and the log file location.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pypath</span>
+</pre></div>
+
+    </div>
 </div>
 </div>
 
@@ -20650,7 +21419,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pypath</span><span class="o">.</span><span class="n">session_mod</span><span class="o">.</span><span class="n">session</span>
@@ -20660,30 +21429,10 @@ AKT1 - GSK3B
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[2]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>&lt;pypath.session_mod.Session at 0x68fc081b9e90&gt;</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pypath</span><span class="o">.</span><span class="n">session_mod</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fname</span>
@@ -20693,56 +21442,16 @@ AKT1 - GSK3B
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[3]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>&#39;/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-vc1lm.log&#39;</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pypath</span><span class="o">.</span><span class="n">session_mod</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">label</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[4]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>&#39;vc1lm&#39;</pre>
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -20757,7 +21466,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">pypath</span><span class="o">.</span><span class="n">session_mod</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s1">&#39;Greetings from the pypath tutorial notebook! :)&#39;</span><span class="p">)</span>
@@ -20770,7 +21479,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pypath</span><span class="o">.</span><span class="n">session_mod</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
@@ -20784,40 +21493,13 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">messages</span><span class="p">))</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[2019-09-02 13:23:28] Welcome!
-[2019-09-02 13:23:28] Logger started, logging into `/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-vc1lm.log`.
-[2019-09-02 13:23:28] Session `vc1lm` started.
-[2019-09-02 13:23:28] [pypath] 
-	- session ID: `vc1lm`
-	- working directory: `/home/denes/Dokumentumok/norwich2019`
-	- logfile: `/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-vc1lm.log`
-	- pypath version: 0.8.30
-[2019-09-02 13:23:40] Greetings from the pypath tutorial notebook! :)
-
-</pre>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -20832,7 +21514,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">ChildOfLogger</span><span class="p">(</span><span class="n">pypath</span><span class="o">.</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
@@ -20859,34 +21541,6 @@ AKT1 - GSK3B
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[2019-09-02 13:23:28] Welcome!
-[2019-09-02 13:23:28] Logger started, logging into `/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-vc1lm.log`.
-[2019-09-02 13:23:28] Session `vc1lm` started.
-[2019-09-02 13:23:28] [pypath] 
-	- session ID: `vc1lm`
-	- working directory: `/home/denes/Dokumentumok/norwich2019`
-	- logfile: `/home/denes/Dokumentumok/norwich2019/pypath_log/pypath-vc1lm.log`
-	- pypath version: 0.8.30
-[2019-09-02 13:23:40] Greetings from the pypath tutorial notebook! :)
-[2019-09-02 13:24:00] [child] Have a nice day! :D
-
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
@@ -20906,7 +21560,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">main</span>
@@ -20919,28 +21573,10 @@ AKT1 - GSK3B
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pypath</span><span class="o">.</span><span class="n">session_mod</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
@@ -20953,48 +21589,11 @@ AKT1 - GSK3B
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[2019-09-02 13:26:15] [network] Edge attribute `negative` has only None values
-[2019-09-02 13:26:17] [network] load_resources(): all resources have been loaded, current number of nodes: 5243, edges: 22796
-[2019-09-02 13:26:17] [network] Removing duplicate edges...
-[2019-09-02 13:26:18] [network] After duplicate edge removal: number of nodes: 5243, edges: 22214
-[2019-09-02 13:26:18] [network] After removing unmapped nodes: number of nodes: 5243, edges: 22214
-[2019-09-02 13:26:18] [network] Updating network component lookup dictionaries.
-[2019-09-02 13:26:18] [network] Updating vertex labels.
-[2019-09-02 13:26:18] [network] After removing unknown organism nodes: number of nodes: 5243, edges: 22214
-[2019-09-02 13:26:18] [network] Updating network component lookup dictionaries.
-[2019-09-02 13:26:18] [network] Updating vertex labels.
-[2019-09-02 13:26:18] [network] Checking network components against reference lists.
-[2019-09-02 13:26:18] [reflists] ReferenceListManager has been created.
-[2019-09-02 13:26:18] [reflists] Reference list for ID type `uniprot` for organism `9606` has been loaded from `/home/denes/.pypath/cache/1f4ae16dfa769c5591aceeef23928803`.
-[2019-09-02 13:26:18] [network] Updating network component lookup dictionaries.
-[2019-09-02 13:26:18] [network] Updating vertex labels.
-[2019-09-02 13:26:18] [network] After removing zero degree nodes: number of node: 5213, edges: 22214
-[2019-09-02 13:26:18] [network] Updating network component lookup dictionaries.
-[2019-09-02 13:26:18] [network] Updating vertex labels.
-[2019-09-02 13:26:19] [network] Network has been built with 22214 interactions between 5213 nodes from 14 resources
-
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="20:-BEL-export-">20: BEL export <a class="anchor" id="bel" /><a class="anchor-link" href="#20:-BEL-export-">&#182;</a></h2>
+<h2 id="21:-BEL-export-">21: BEL export <a class="anchor" id="bel" /><a class="anchor-link" href="#21:-BEL-export-">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -21008,7 +21607,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">main</span>
@@ -21045,7 +21644,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span> <span class="o">=</span> <span class="n">bel</span><span class="o">.</span><span class="n">Bel</span><span class="p">(</span><span class="n">resource</span> <span class="o">=</span> <span class="n">pa</span><span class="p">)</span>
@@ -21066,7 +21665,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
@@ -21082,13 +21681,13 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[14]:</div>
+    <div class="prompt output_prompt">Out[32]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;pypath.bel.Bel at 0x68fbbc954d50&gt;</pre>
+<pre>&lt;pypath.bel.Bel at 0x6ad3b70cc1d0&gt;</pre>
 </div>
 
 </div>
@@ -21099,7 +21698,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span><span class="o">.</span><span class="n">bel_graph</span>
@@ -21115,13 +21714,13 @@ AKT1 - GSK3B
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[15]:</div>
+    <div class="prompt output_prompt">Out[33]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;pybel.struct.graph.BELGraph at 0x68fbbc954d90&gt;</pre>
+<pre>&lt;pybel.struct.graph.BELGraph at 0x6ad3b70cc790&gt;</pre>
 </div>
 
 </div>
@@ -21132,7 +21731,7 @@ AKT1 - GSK3B
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[34]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span><span class="o">.</span><span class="n">bel_graph</span><span class="o">.</span><span class="n">summarize</span><span class="p">()</span>
@@ -21153,12 +21752,12 @@ AKT1 - GSK3B
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>OmniPath vNone
-Number of Nodes: 5213
-Number of Edges: 71410
-Number of Citations: 12533
+Number of Nodes: 4927
+Number of Edges: 70528
+Number of Citations: 11930
 Number of Authors: 0
-Network Density: 2.63E-03
-Number of Components: 94
+Network Density: 2.91E-03
+Number of Components: 84
 Number of Warnings: 0
 </pre>
 </div>
@@ -21170,7 +21769,7 @@ Number of Warnings: 0
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[35]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">b</span><span class="o">.</span><span class="n">export_relationships</span><span class="p">(</span><span class="s1">&#39;omnipath_pathways.bel&#39;</span><span class="p">)</span>
@@ -21183,7 +21782,7 @@ Number of Warnings: 0
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[36]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;omnipath_pathways.bel&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
@@ -21197,7 +21796,7 @@ Number of Warnings: 0
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[37]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">bel_str</span><span class="p">[:</span><span class="mi">333</span><span class="p">])</span>
@@ -21218,16 +21817,16 @@ Number of Warnings: 0
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Subject	Predicate	Object
-P05937	directlyIncreases	Q9NQA5
-P05937	directlyIncreases	Q9NQA5
-Q9NQA5	directlyIncreases	Q9H1D0
-Q9NQA5	directlyIncreases	Q9H1D0
-Q9NQA5	directlyIncreases	Q9H1D0
-Q9NQA5	directlyIncreases	Q9H1D0
-Q9NQA5	directlyIncreases	Q8TDD5
-Q9NQA5	directlyIncreases	Q8TDD5
-Q9UEF7	directlyIncreases	Q9NQA5
-Q9UEF7	directlyIncre
+P17612	directlyDecreases	P20020
+P17612	directlyDecreases	P20020
+P17612	directlyIncreases	P20020
+P17612	directlyIncreases	P20020
+P17612	directlyDecreases	Q14643
+P17612	directlyDecreases	Q14643
+P17612	directlyDecreases	Q14643
+P17612	directlyDecreases	Q14643
+P17612	directlyIncreases	Q14643
+P17612	directlyIncre
 </pre>
 </div>
 </div>
@@ -21239,7 +21838,7 @@ Q9UEF7	directlyIncre
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="21:-CellPhoneDB-export-">21: CellPhoneDB export <a class="anchor" id="cellphonedb" /><a class="anchor-link" href="#21:-CellPhoneDB-export-">&#182;</a></h2>
+<h2 id="22:-CellPhoneDB-export-">22: CellPhoneDB export <a class="anchor" id="cellphonedb" /><a class="anchor-link" href="#22:-CellPhoneDB-export-">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -21253,7 +21852,7 @@ Q9UEF7	directlyIncre
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">cellphonedb</span>
@@ -21277,7 +21876,7 @@ Q9UEF7	directlyIncre
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="n">cellphonedb</span><span class="o">.</span><span class="n">CellPhoneDB</span><span class="p">()</span>
@@ -21316,7 +21915,7 @@ Q9UEF7	directlyIncre
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[28]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">interaction_dataframe</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
@@ -21332,7 +21931,7 @@ Q9UEF7	directlyIncre
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[4]:</div>
+    <div class="prompt output_prompt">Out[28]:</div>
 
 
 
@@ -21368,102 +21967,102 @@ Q9UEF7	directlyIncre
     <tr>
       <th>0</th>
       <td>CPI-000001</td>
-      <td>Q13976</td>
-      <td>P50552</td>
-      <td>KGP1_HUMAN</td>
-      <td>VASP_HUMAN</td>
-      <td>KEGG,OmniPath,Signor</td>
-      <td>PMID: ,PMID: 2576312,PMID: 4679200</td>
+      <td>P17612</td>
+      <td>P20020</td>
+      <td>KAPCA_HUMAN</td>
+      <td>AT2B1_HUMAN</td>
+      <td>CA1,KEGG,OmniPath,Wang</td>
+      <td>PMID: ,PMID: 9824678</td>
     </tr>
     <tr>
       <th>1</th>
       <td>CPI-000001</td>
-      <td>Q13976</td>
-      <td>Q92934</td>
-      <td>KGP1_HUMAN</td>
-      <td>BAD_HUMAN</td>
-      <td>KEGG,OmniPath</td>
-      <td>PMID:</td>
+      <td>P20020</td>
+      <td>P17612</td>
+      <td>AT2B1_HUMAN</td>
+      <td>KAPCA_HUMAN</td>
+      <td>KEGG,OmniPath,Wang</td>
+      <td></td>
     </tr>
     <tr>
       <th>2</th>
       <td>CPI-000002</td>
-      <td>Q13976</td>
-      <td>Q13164</td>
-      <td>KGP1_HUMAN</td>
-      <td>MK07_HUMAN</td>
-      <td>OmniPath,Wang</td>
-      <td>PMID:</td>
+      <td>P0DP25</td>
+      <td>P20020</td>
+      <td>CALM3_HUMAN</td>
+      <td>AT2B1_HUMAN</td>
+      <td>CA1,OmniPath</td>
+      <td>PMID: 6455424</td>
     </tr>
     <tr>
       <th>3</th>
       <td>CPI-000003</td>
-      <td>Q13976</td>
-      <td>Q13153</td>
-      <td>KGP1_HUMAN</td>
-      <td>PAK1_HUMAN</td>
-      <td>OmniPath,SignaLink3</td>
-      <td>PMID: 16490784</td>
+      <td>P20020</td>
+      <td>Q13507</td>
+      <td>AT2B1_HUMAN</td>
+      <td>TRPC3_HUMAN</td>
+      <td>OmniPath,TRIP</td>
+      <td>PMID: 16887806,PMID: 18205297</td>
     </tr>
     <tr>
       <th>4</th>
       <td>CPI-000004</td>
       <td>Q13976</td>
-      <td>Q02156</td>
+      <td>P20020</td>
       <td>KGP1_HUMAN</td>
-      <td>KPCE_HUMAN</td>
+      <td>AT2B1_HUMAN</td>
       <td>KEGG,OmniPath</td>
-      <td>PMID:</td>
+      <td></td>
     </tr>
     <tr>
       <th>5</th>
       <td>CPI-000005</td>
-      <td>P17252</td>
+      <td>P20020</td>
       <td>Q13976</td>
-      <td>KPCA_HUMAN</td>
+      <td>AT2B1_HUMAN</td>
       <td>KGP1_HUMAN</td>
-      <td>OmniPath,Signor</td>
-      <td>PMID: 12609995</td>
+      <td>KEGG,OmniPath</td>
+      <td></td>
     </tr>
     <tr>
       <th>6</th>
       <td>CPI-000006</td>
-      <td>Q13976</td>
-      <td>P04792</td>
-      <td>KGP1_HUMAN</td>
-      <td>HSPB1_HUMAN</td>
-      <td>OmniPath,Signor</td>
-      <td>PMID: 19593530</td>
+      <td>P0DP24</td>
+      <td>P20020</td>
+      <td>CALM2_HUMAN</td>
+      <td>AT2B1_HUMAN</td>
+      <td>CA1,OmniPath</td>
+      <td>PMID: 6455424</td>
     </tr>
     <tr>
       <th>7</th>
       <td>CPI-000007</td>
-      <td>Q13976</td>
-      <td>P11831</td>
-      <td>KGP1_HUMAN</td>
-      <td>SRF_HUMAN</td>
-      <td>OmniPath,Signor</td>
-      <td>PMID: 19778940</td>
+      <td>P0DP23</td>
+      <td>P20020</td>
+      <td>CALM1_HUMAN</td>
+      <td>AT2B1_HUMAN</td>
+      <td>CA1,OmniPath,Wang</td>
+      <td>PMID: 6455424</td>
     </tr>
     <tr>
       <th>8</th>
       <td>CPI-000008</td>
-      <td>Q13976</td>
-      <td>Q16539</td>
-      <td>KGP1_HUMAN</td>
-      <td>MK14_HUMAN</td>
-      <td>KEGG,OmniPath</td>
-      <td>PMID:</td>
+      <td>P20020</td>
+      <td>P0DP23</td>
+      <td>AT2B1_HUMAN</td>
+      <td>CALM1_HUMAN</td>
+      <td>OmniPath,Wang</td>
+      <td></td>
     </tr>
     <tr>
       <th>9</th>
       <td>CPI-000009</td>
-      <td>Q13976</td>
-      <td>Q14847</td>
-      <td>KGP1_HUMAN</td>
-      <td>LASP1_HUMAN</td>
-      <td>OmniPath,Signor</td>
-      <td>PMID: 12571245</td>
+      <td>Q96QT4</td>
+      <td>P35579</td>
+      <td>TRPM7_HUMAN</td>
+      <td>MYH9_HUMAN</td>
+      <td>Adhesome,OmniPath,TRIP</td>
+      <td>PMID: 16407977,PMID: 18394644,PMID: 18675813</td>
     </tr>
   </tbody>
 </table>
@@ -21486,7 +22085,7 @@ Q9UEF7	directlyIncre
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[29]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">protein_dataframe</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
@@ -21502,7 +22101,7 @@ Q9UEF7	directlyIncre
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[15]:</div>
+    <div class="prompt output_prompt">Out[29]:</div>
 
 
 
@@ -21545,11 +22144,11 @@ Q9UEF7	directlyIncre
   <tbody>
     <tr>
       <th>0</th>
-      <td>O14905</td>
-      <td>WNT9B_HUMAN</td>
-      <td>False</td>
-      <td>False</td>
+      <td>P55087</td>
+      <td>AQP4_HUMAN</td>
       <td>True</td>
+      <td>True</td>
+      <td>False</td>
       <td></td>
       <td></td>
       <td>False</td>
@@ -21563,10 +22162,10 @@ Q9UEF7	directlyIncre
     </tr>
     <tr>
       <th>1</th>
-      <td>Q14790</td>
-      <td>CASP8_HUMAN</td>
+      <td>O43184</td>
+      <td>ADA12_HUMAN</td>
       <td>True</td>
-      <td>False</td>
+      <td>True</td>
       <td>True</td>
       <td></td>
       <td></td>
@@ -21581,14 +22180,14 @@ Q9UEF7	directlyIncre
     </tr>
     <tr>
       <th>2</th>
-      <td>Q92729</td>
-      <td>PTPRU_HUMAN</td>
+      <td>P24001</td>
+      <td>IL32_HUMAN</td>
       <td>True</td>
-      <td>True</td>
+      <td>False</td>
       <td>False</td>
       <td></td>
       <td></td>
-      <td>True</td>
+      <td>False</td>
       <td></td>
       <td>False</td>
       <td></td>
@@ -21599,14 +22198,14 @@ Q9UEF7	directlyIncre
     </tr>
     <tr>
       <th>3</th>
-      <td>P01258</td>
-      <td>CALC_HUMAN</td>
-      <td>False</td>
-      <td>False</td>
+      <td>Q92956</td>
+      <td>TNR14_HUMAN</td>
       <td>True</td>
-      <td></td>
-      <td></td>
+      <td>True</td>
       <td>False</td>
+      <td></td>
+      <td></td>
+      <td>True</td>
       <td></td>
       <td>False</td>
       <td></td>
@@ -21617,14 +22216,14 @@ Q9UEF7	directlyIncre
     </tr>
     <tr>
       <th>4</th>
-      <td>P01833</td>
-      <td>PIGR_HUMAN</td>
-      <td>True</td>
-      <td>True</td>
+      <td>P54284</td>
+      <td>CACB3_HUMAN</td>
+      <td>False</td>
+      <td>False</td>
       <td>False</td>
       <td></td>
       <td></td>
-      <td>True</td>
+      <td>False</td>
       <td></td>
       <td>False</td>
       <td></td>
@@ -21635,11 +22234,11 @@ Q9UEF7	directlyIncre
     </tr>
     <tr>
       <th>5</th>
-      <td>Q9HCX4</td>
-      <td>TRPC7_HUMAN</td>
+      <td>O60542</td>
+      <td>PSPN_HUMAN</td>
       <td>False</td>
       <td>False</td>
-      <td>False</td>
+      <td>True</td>
       <td></td>
       <td></td>
       <td>False</td>
@@ -21653,10 +22252,10 @@ Q9UEF7	directlyIncre
     </tr>
     <tr>
       <th>6</th>
-      <td>Q10588</td>
-      <td>BST1_HUMAN</td>
-      <td>True</td>
-      <td>True</td>
+      <td>P48426</td>
+      <td>PI42A_HUMAN</td>
+      <td>False</td>
+      <td>False</td>
       <td>True</td>
       <td></td>
       <td></td>
@@ -21671,26 +22270,8 @@ Q9UEF7	directlyIncre
     </tr>
     <tr>
       <th>7</th>
-      <td>Q92845</td>
-      <td>KIFA3_HUMAN</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td></td>
-      <td></td>
-      <td>False</td>
-      <td></td>
-      <td>False</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>O60258</td>
-      <td>FGF17_HUMAN</td>
+      <td>P81172</td>
+      <td>HEPC_HUMAN</td>
       <td>False</td>
       <td>False</td>
       <td>True</td>
@@ -21706,9 +22287,27 @@ Q9UEF7	directlyIncre
       <td></td>
     </tr>
     <tr>
+      <th>8</th>
+      <td>Q9HD43</td>
+      <td>PTPRH_HUMAN</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td></td>
+      <td></td>
+      <td>True</td>
+      <td></td>
+      <td>False</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
       <th>9</th>
-      <td>P51679</td>
-      <td>CCR4_HUMAN</td>
+      <td>P01130</td>
+      <td>LDLR_HUMAN</td>
       <td>True</td>
       <td>True</td>
       <td>False</td>
@@ -21730,6 +22329,19 @@ Q9UEF7	directlyIncre
 
 </div>
 
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
 </div>
 </div>
 

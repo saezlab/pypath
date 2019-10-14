@@ -76,7 +76,7 @@ go_combined_classes = {
         """,
     'transmembrane':
         """
-        integral to membrane OR
+        integral component of membrane OR
         transmembrane signaling receptor activity
         """,
     'ecm':
@@ -624,6 +624,7 @@ annot_combined_classes = (
                 'receptor_kirouac',
                 'receptor_guide2pharma',
                 'receptor_hgnc',
+                'receptor_dgidb',
             ),
             op = set.union,
         ),
@@ -694,6 +695,13 @@ annot_combined_classes = (
             'mainclass': 'receptor',
         },
     ),
+    af.AnnotDef(
+        name = 'receptor_dgidb',
+        source = 'DGIdb',
+        args = {
+            'category': 'G PROTEIN COUPLED RECEPTOR',
+        },
+    ),
     # ECM
     af.AnnotDef(
         name = 'ecm',
@@ -761,6 +769,7 @@ annot_combined_classes = (
                 'ligand_kirouac',
                 'ligand_guide2pharma',
                 'ligand_hgnc',
+                'ligand_dgidb',
             ),
             op = set.union,
         ),
@@ -843,13 +852,19 @@ annot_combined_classes = (
             'mainclass': 'ligand',
         },
     ),
+    af.AnnotDef(
+        name = 'ligand_dgidb',
+        source = 'DGIdb',
+        args = {
+            'category': {'GROWTH FACTOR', 'HORMONE ACTIVITY'},
+        },
+    ),
     # intracellular
     af.AnnotDef(
         name = 'intracellular',
         source = af.AnnotOp(
             annots = (
                 'intracellular_locate',
-                'intracellular_cellphonedb',
                 'intracellular_comppi',
                 'intracellular_go',
             ),
@@ -915,13 +930,6 @@ annot_combined_classes = (
             ),
             op = set.union,
         ),
-    ),
-    af.AnnotDef(
-        name = 'intracellular_cellphonedb',
-        source = 'CellPhoneDB',
-        args = {
-            'cytoplasm': bool,
-        },
     ),
     af.AnnotDef(
         name = 'intracellular_comppi',
@@ -1014,7 +1022,7 @@ annot_combined_classes = (
         name = 'extracellular_cellphonedb',
         source = 'CellPhoneDB',
         args = {
-            'extracellular': bool,
+            'secreted': bool,
         },
     ),
     af.AnnotDef(
@@ -1040,6 +1048,7 @@ annot_combined_classes = (
                 'cell_surface_membranome',
                 'cell_surface_cspa',
                 'cell_surface_cellphonedb',
+                'cell_surface_dgidb',
             ),
             op = set.union,
         ),
@@ -1079,6 +1088,13 @@ annot_combined_classes = (
         args = {
             'membrane': 'Plasma membrane',
             'side': 'extracellular side',
+        },
+    ),
+    af.AnnotDef(
+        name = 'cell_surface_dgidb',
+        source = 'DGIdb',
+        args = {
+            'category': {'CELL SURFACE', 'EXTERNAL SIDE OF PLASMA MEMBRANE'},
         },
     ),
     # transmembrane
@@ -1154,7 +1170,7 @@ annot_combined_classes = (
         name = 'adhesion_cellphonedb',
         source = 'CellPhoneDB',
         args = {
-            'adhesion': bool,
+            'integrin': bool,
         },
     ),
     af.AnnotDef(
@@ -1302,6 +1318,7 @@ annot_combined_classes = (
             annots = (
                 'transporter_surfaceome',
                 'transporter_go',
+                'transporter_dgidb',
             ),
             op = set.union,
         ),
@@ -1318,6 +1335,13 @@ annot_combined_classes = (
         source = 'GO_Intercell',
         args = {
             'mainclass': {'transport', 'ion channels'},
+        },
+    ),
+    af.AnnotDef(
+        name = 'transporter_dgidb',
+        source = 'DGIdb',
+        args = {
+            'category': {'ABC TRANSPORTER', 'TRANSPORTER', 'ION CHANNEL'},
         },
     ),
     # extracellular enzyme

@@ -87,7 +87,7 @@ def get_mirbase_aliases(organism = 9606):
     
     for l in c.result:
         
-        l = l.decode('utf-8').strip().strip(';').split('\t')
+        l = l.strip().strip(';').split('\t')
         
         if l[1][:3] != mborganism:
             continue

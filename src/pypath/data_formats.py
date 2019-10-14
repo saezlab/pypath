@@ -30,6 +30,7 @@ import copy
 
 # from pypath:
 import pypath.input_formats as input_formats
+import pypath.urls as urls
 from pypath import common
 
 __all__ = [
@@ -370,7 +371,7 @@ pathway = {
                          "ca1_function": 8}),
     'arn': input_formats.ReadSettings(
         name = "ARN",
-        separator = ",",
+        separator = None,
         id_col_a = 0,
         id_col_b = 1,
         id_type_a = "uniprot",
@@ -379,7 +380,7 @@ pathway = {
         entity_type_b = "protein",
         is_directed = (3, ['1', '2']),
         sign = (4, '1', '-1'),
-        input = os.path.join(ROOT, 'data', 'arn_curated.csv'),
+        input = 'arn_interactions',
         references = (7, ":"),
         ncbi_tax_id = 9606,
         extra_edge_attrs = {
@@ -391,7 +392,7 @@ pathway = {
         extra_node_attrs_b = {"atg": 6}),
     'nrf2': input_formats.ReadSettings(
         name = "NRF2ome",
-        separator = ",",
+        separator = None,
         id_col_a = 0,
         id_col_b = 1,
         id_type_a = "uniprot",
@@ -400,7 +401,7 @@ pathway = {
         entity_type_b = "protein",
         is_directed = (3, ['1', '2']),
         sign = (4, '1', '-1'),
-        input = os.path.join(ROOT, 'data', 'nrf2ome.csv'),
+        input = 'nrf2ome_interactions',
         references = (5, ":"),
         ncbi_tax_id = 9606,
         extra_edge_attrs = {
@@ -441,7 +442,7 @@ pathway = {
         entity_type_b = "protein",
         is_directed = False,
         sign = False,
-        input = 'deathdomain_interactions_static',
+        input = 'deathdomain_interactions_rescued',
         references = (3, ";"),
         ncbi_tax_id = 9606,
         extra_edge_attrs = {"dd_methods": (2, ';')},
@@ -695,8 +696,8 @@ interaction = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
     'alz': input_formats.ReadSettings(
-        name = "AlzPathway",
-        separator = "\t",
+        name = '\t',
+        separator = None,
         id_col_a = 0,
         id_col_b = 1,
         id_type_a = "uniprot",
@@ -705,7 +706,7 @@ interaction = {
         entity_type_b = "protein",
         is_directed = False,
         sign = False,
-        input = os.path.join(ROOT, 'data', 'alzpw-ppi.csv'),
+        input = urls.urls['alzpathway']['url'],
         references = (8, ";"),
         ncbi_tax_id = 9606,
         extra_edge_attrs = {},
@@ -935,16 +936,16 @@ ptm_misc = {
     'ppoint': input_formats.ReadSettings(
         name = "PhosphoPoint",
         separator = ";",
-        id_col_a = 1,
-        id_col_b = 3,
-        id_type_a = "entrez",
-        id_type_b = "entrez",
+        id_col_a = 0,
+        id_col_b = 2,
+        id_type_a = "genesymbol",
+        id_type_b = "genesymbol",
         entity_type_a = "protein",
         entity_type_b = "protein",
         is_directed = True,
         header = True,
         ncbi_tax_id = 9606,
-        input = os.path.join(ROOT, 'data', 'phosphopoint.csv'),
+        input = 'phosphopoint_interactions',
         references = False,
         sign = False,
         extra_edge_attrs = {"phosphopoint_category": 4},
@@ -982,6 +983,7 @@ ptm_misc = {
         ncbi_tax_id = 9606,
         input = 'mimp_interactions',
         references = False,
+        resource = (2, ';'),
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
@@ -1106,7 +1108,7 @@ interaction_misc = {
             'UNKNOWN_POSITIVE_INFLUENCE'
         ], ['INHIBITION', 'inhibits']),
         ncbi_tax_id = 9606,
-        input = 'get_acsn',
+        input = 'acsn_interactions',
         references = False,
         header = False,
         extra_edge_attrs = {'acsn_effect': 1},
@@ -1133,23 +1135,24 @@ interaction_misc = {
     'hi3': input_formats.ReadSettings(
         name = "HI-III",
         separator = None,
-        id_col_a = 1,
-        id_col_b = 3,
-        id_type_a = "genesymbol",
-        id_type_b = "genesymbol",
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
         entity_type_a = "protein",
         entity_type_b = "protein",
         is_directed = False,
         sign = False,
         ncbi_tax_id = 9606,
-        # note: obtain the file yourself, and replace
-        # this location
-        input = '/home/denes/Documents/pw/data/hi3-2.3.tsv',
+        input = 'hi_iii',
         references = False,
         header = True,
-        extra_edge_attrs = {},
+        extra_edge_attrs = {
+            'hi3_score': 5,
+        },
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'lit13': input_formats.ReadSettings(
         name = "Lit-BM-13",
         separator = None,
@@ -1166,6 +1169,26 @@ interaction_misc = {
         references = False,
         header = False,
         extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {}),
+    'lit17': input_formats.ReadSettings(
+        name = "Lit-BM-17",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = False,
+        sign = False,
+        ncbi_tax_id = 9606,
+        references = (2, ';'),
+        input = 'get_lit_bm_17',
+        header = False,
+        extra_edge_attrs = {
+            'mentha_score': 3,
+        },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
     'cpdb': input_formats.ReadSettings(
@@ -1185,7 +1208,31 @@ interaction_misc = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {})
+        extra_node_attrs_b = {}),
+}
+
+
+interaction_deprecated = {
+    'hi3': input_formats.ReadSettings(
+        name = "HI-III",
+        separator = None,
+        id_col_a = 1,
+        id_col_b = 3,
+        id_type_a = "genesymbol",
+        id_type_b = "genesymbol",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = False,
+        sign = False,
+        ncbi_tax_id = 9606,
+        # note: obtain the file yourself, and replace
+        # this location
+        input = '/home/denes/Documents/pw/data/hi3-2.3.tsv',
+        references = False,
+        header = True,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {}),
 }
 
 interaction_htp = {
@@ -1558,8 +1605,14 @@ transcription = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
-    )
+        must_have_references = False,
+    ),
 }
+
+# synonyms
+dorothea = transcription
+tfregulons = transcription
+
 
 '''
 Old transctiptional regulation input formats.

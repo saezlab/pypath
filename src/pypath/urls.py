@@ -222,11 +222,8 @@ urls = {
         'label': 'Domino PPI and domain-motif database in MI-TAB format',
         'url': 'ftp://mint.bio.uniroma2.it/pub/domino/release/mitab/'
         '2009-10-22/2009-10-22-domino-full-binary.mitab26',
-        'module_data': os.path.join(
-            common.ROOT,
-            'data',
+        'rescued': 'http://rescued.omnipathdb.org/'\
             'domino_2009-10-22-full-binary.mitab26.gz',
-        ),
     },
     'hprd_all': {
         'label': 'HPRD all data in flat files',
@@ -325,6 +322,7 @@ urls = {
             'Pyruvate',
             'S-linkedGlycosylation',
         ],
+        'old_table': 'http://rescued.omnipathdb.org/old_dbptm.tab',
     },
     'phosnw': {
         'label': 'Human kinase-substrate relationships and phosphosites',
@@ -503,7 +501,7 @@ urls = {
     },
     'netpath_psimi': {
         'label': 'Batch download of NetPath pathways in PSI-MI format',
-        'url': 'http://www.netpath.org/download/zipped/PSI-MI.zip'
+        'url': 'http://rescued.omnipathdb.org/NetPath_PSI-MI.zip'
     },
     'netpath_bp': {
         'label': 'Netpath pathways one by one in BioPAX level 3 format',
@@ -594,7 +592,9 @@ urls = {
     },
     'hsn': {
         'label': 'The Wang Human Signaling Network',
-        'url': 'http://www.cancer-systemsbiology.org/HuamnSignalingNet_v6.csv'
+        'url': (
+            'http://rescued.omnipathdb.org/WangLab_HumanSignalingNet_v6.csv'
+        )
     },
     'li2012': {
         'label': 'Human Phosphotyrosine Signaling Network',
@@ -631,6 +631,7 @@ urls = {
     },
     'phosphatome': {
         'label': 'List of human and other phosphatases',
+        'webpage': 'http://phosphatome.net/3.0',
         'url': 'https://stke.sciencemag.org/highwire/filestream/210607/'\
             'field_highwire_adjunct_files/2/aag1796_Tables_S1_to_S23.zip',
     },
@@ -639,7 +640,9 @@ urls = {
         'main_url': 'http://dgidb.genome.wustl.edu/search_categories',
         'url': 'http://dgidb.genome.wustl.edu/druggable_gene_categories/%s?'
         'sources=BaderLabGenes,CarisMolecularIntelligence,FoundationOneGenes,GO,'
-        'GuideToPharmacologyGenes,HopkinsGroom,MskImpact,RussLampel,dGene'
+        'GuideToPharmacologyGenes,HopkinsGroom,MskImpact,RussLampel,dGene',
+        'categories': 'http://www.dgidb.org/data/categories.tsv',
+        'interactions': 'http://www.dgidb.org/data/interactions.tsv',
     },
     'reactome': {
         'label': 'The Reactome reaction network database',
@@ -651,7 +654,9 @@ urls = {
     'acsn': {
         'label': 'Atlas of Cancer Signaling Networks',
         'biopax_l3': 'https://acsn.curie.fr/files/acsn_v1.1.owl',
-        'sif': 'https://acsn.curie.fr/files/acsn_ppi.sif'
+        'sif': 'https://acsn.curie.fr/files/acsn_ppi.sif',
+        'ppi': 'http://rescued.omnipathdb.org/acsn_ppi.txt',
+        'names': 'http://rescued.omnipathdb.org/acsn_names.gmt',
     },
     'nci-pid': {
         'label': 'National Cancer Institute -- Pathway Interaction Database',
@@ -698,7 +703,9 @@ urls = {
         'hi-ii-14':
         'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-II-14.tsv',
         'hi-i-05':
-        'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-I-05.tsv'
+        'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-I-05.tsv',
+        'hi-iii': 'http://interactome.baderlab.org/download',
+        'lit-bm-17': 'http://interactome.baderlab.org/data/LitBM-17.psi',
     },
     'ca1': {
         'label': 'Supplementary Online Materials for Ma\'ayan 2005',
@@ -787,7 +794,8 @@ urls = {
     },
     'death': {
         'label': 'DeathDomain webpage',
-        'url': 'http://www.deathdomain.org/proteins/show?family=%s'
+        'url_dead': 'http://www.deathdomain.org/proteins/show?family=%s',
+        'url_alive': 'http://rescued.omnipathdb.org/deathdomain.tsv',
     },
     'string': {
         'label': 'STRING',
@@ -1034,21 +1042,33 @@ urls = {
         'url': 'http://biocc.hrbmu.edu.cn/CancerSEA/goDownload',
         'data_url': 'http://biocc.hrbmu.edu.cn/CancerSEA/%s',
     },
+    'signalink': {
+        'label': 'Literature curated activity flow signaling network',
+        'nodes': 'http://rescued.omnipathdb.org/signalink3_nodes.tsv',
+        'edges': 'http://rescued.omnipathdb.org/signalink3_edges.tsv',
+    },
+    'zhong2015': {
+        'url': 'http://rescued.omnipathdb.org/zhong2015_S1.tsv',
+    },
+    'phosphopoint': {
+        'url': 'http://rescued.omnipathdb.org/phosphopoint.csv',
+    },
+    'lmpid': {
+        'url': 'http://rescued.omnipathdb.org/LMPID_DATA_pubmed_ref.xml',
+    },
+    'nrf2ome': {
+        'url': 'http://rescued.omnipathdb.org/nrf2ome.csv',
+    },
+    'arn': {
+        'url': 'http://rescued.omnipathdb.org/arn_curated.csv',
+    },
+    'alzpathway': {
+        'url': 'http://rescued.omnipathdb.org/alzpw-ppi.csv',
+    },
 }
 
 
 files = {
-    'signalink': {
-        'edges': 'signalink3_edges.tsv',
-        'nodes': 'signalink3_nodes.tsv'
-    },
-    'acsn': {
-        'names': os.path.join(common.ROOT, 'data', 'acsn_names.gmt'),
-        'ppi': os.path.join(common.ROOT, 'data', 'acsn_ppi.txt')
-    },
-    'phosphopoint': {
-        'data': os.path.join(common.ROOT, 'data', 'phosphopoint.csv')
-    },
     'phosphosite': {
         'curated': os.path.join(
             settings.get('cachedir'),
@@ -1058,11 +1078,5 @@ files = {
             settings.get('cachedir'),
             'phosphosite_noref.pickle',
         )
-    },
-    'dbptm': {
-        'old_dbptm': os.path.join(common.ROOT, 'data', 'old_dbptm.tab'),
-    },
-    'zhong2015': {
-        's1': os.path.join(common.ROOT, 'data', 'zhong2015_S1.tsv'),
     },
 }

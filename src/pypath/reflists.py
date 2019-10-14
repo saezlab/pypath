@@ -38,6 +38,7 @@ except ImportError:
 timeloop.app.logging.disable(level = 9999)
 
 import pypath.uniprot_input as uniprot_input
+import pypath.mapping_input as mapping_input
 import pypath.common as common
 import pypath.session_mod as session_mod
 import pypath.settings as settings
@@ -258,15 +259,22 @@ def select(names, id_type, ncbi_tax_id = None):
 
 
 def is_not(names, id_type, ncbi_tax_id = None):
-        """
-        Returns the identifiers from ``names`` which are not instances of
-        the provided ``id_type`` and from the given organism.
-        """
-        
-        manager = get_manager()
-        
-        return manager.is_not(
-            names = names,
-            id_type = id_type,
-            ncbi_tax_id = ncbi_tax_id,
-        )
+    """
+    Returns the identifiers from ``names`` which are not instances of
+    the provided ``id_type`` and from the given organism.
+    """
+    
+    manager = get_manager()
+    
+    return manager.is_not(
+        names = names,
+        id_type = id_type,
+        ncbi_tax_id = ncbi_tax_id,
+    )
+
+
+def get_reflist(id_type, ncbi_tax_id = None):
+    
+    manager = get_manager()
+    
+    return manager.which_list(id_type = id_type, ncbi_tax_id = ncbi_tax_id)

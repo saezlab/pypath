@@ -28,10 +28,17 @@ from past.builtins import xrange, range, reduce
 
 import os
 import sys
+import re
 import math
 import random
+import operator
+import collections
+import itertools
+import warnings
 import textwrap
 import hashlib
+
+import numpy as np
 
 __all__ = [
     'ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes',
@@ -44,7 +51,8 @@ __all__ = [
     'uniqOrdList', 'dict_diff', 'to_set', 'to_list',
     'unique_list', 'basestring', 'amino_acids', 'aminoa_1_to_3_letter',
     'aminoa_3_to_1_letter', 'pmod_bel', 'pmod_other_to_bel',
-    'pmod_bel_to_other',
+    'pmod_bel_to_other', 'refloat', 'reint', 'is_float', 'is_int',
+    'float_or_nan',
 ]
 
 # get the location
@@ -191,6 +199,37 @@ numTypes = (int, long, float)
 charTypes = (str, unicode, bytes)
 
 
+refloat = re.compile(r'\s*-?\s*[\s\.\d]+\s*')
+reint   = re.compile(r'\s*-?\s*[\s\d]+\s*')
+
+
+def is_float(num):
+    """
+    Tells if a string represents a floating point number,
+    i.e. it can be converted by `float`.
+    """
+    
+    return bool(refloat.match(num))
+
+
+def is_int(num):
+    """
+    Tells if a string represents an integer,
+    i.e. it can be converted by `int`.
+    """
+    
+    return bool(reint.match(num))
+
+
+def float_or_nan(num):
+    """
+    Returns `num` converted from string to float if `num` represents a
+    float otherwise `numpy.nan`.
+    """
+    
+    return float(num) if is_float(num) else np.nan
+
+
 def to_set(var):
     """
     Makes sure the object `var` is a set, if it is a list converts it to set,
@@ -212,7 +251,7 @@ def to_set(var):
         
     else:
         
-        return set([var])
+        return {var}
 
 
 def to_list(var):
@@ -1367,3 +1406,231 @@ def paginate(lst, size = 10):
     for i in xrange((len(lst) // size) + 1):
         
         yield lst[size * i:size * (i + 1)]
+
+
+def shared_unique(by_group, group, op = 'shared'):
+    """
+    For a *dict* of *set*s ``by_group`` and a particular key ``group``
+    returns a *set* of all elements in the *set* belonging to the
+    key ``group`` which either does or does not occure in any of the sets
+    assigned to the other keys, depending on the operator ``op``.
+    This method can be used among other things to find the shared and
+    unique entities across resources.
+    
+    :param str op:
+        Either `shared` or `unique`.
+    """
+    
+    if group not in by_group:
+        
+        warnings.warn(
+            'Group `%s` missing from the dict of groups!' % group
+        )
+    
+    _op = operator.sub if op == 'unique' else operator.and_
+    
+    return _op(
+        by_group[group] if group in by_group else set(),
+        set.union(*(
+            elements
+            for label, elements
+            in iteritems(by_group)
+            if label != group
+        ))
+    )
+
+
+def shared_elements(by_group, group):
+    """
+    For a *dict* of *set*s ``by_group`` and a particular key ``group``
+    returns a *set* of all elements in the *set* belonging to the
+    key ``group`` which occure in any of the sets assigned to the other keys.
+    This method can be used among other things to find the shared entities
+    across resources.
+    """
+    
+    return shared_unique(
+        by_group = by_group,
+        group = group,
+        op = 'shared',
+    )
+
+
+def unique_elements(by_group, group):
+    """
+    For a *dict* of *set*s ``by_group`` and a particular key ``group``
+    returns a *set* of all elements in the *set* belonging to the
+    key ``group`` which don't occure in any of the sets assigned to the
+    other keys. This method can be used among other things to find the
+    unique entities across resources.
+    """
+    
+    return shared_unique(
+        by_group = by_group,
+        group = group,
+        op = 'unique',
+    )
+
+
+def n_shared_elements(by_group, group):
+    """
+    For a *dict* of *set*s ``by_group`` and a particular key ``group``
+    returns the number of all elements in the *set* belonging to the
+    key ``group`` which occure in any of the other sets.
+    This method can be used among other things to count the shared entities
+    across resources.
+    """
+    
+    return len(shared_elements(by_group = by_group, group = group))
+
+
+def n_unique_elements(by_group, group):
+    """
+    For a *dict* of *set*s ``by_group`` and a particular key ``group``
+    returns the number of all elements in the *set* belonging to the
+    key ``group`` which don't occure in any of the other sets.
+    This method can be used among other things to count the unique entities
+    across resources.
+    """
+    
+    return len(unique_elements(by_group = by_group, group = group))
+
+
+def shared_unique_foreach(by_group, op = 'shared', counts = False):
+    """
+    For a *dict* of *set*s ``by_group`` returns a *dict* of *set*s with
+    either shared or unique elements across all *set*s, depending on
+    the operation ``op``.
+    """
+    
+    method = len if counts else lambda x: x
+    
+    return dict(
+        (
+            label,
+            method(
+                shared_unique(by_group = by_group, group = label, op = op)
+            ),
+        )
+        for label in by_group.keys()
+    )
+
+
+def n_shared_unique_foreach(by_group, op = 'shared'):
+    """
+    For a *dict* of *set*s ``by_group`` returns a *dict* of numbers with
+    the counts of either the shared or unique elements across all *set*s,
+    depending on the operation ``op``.
+    """
+    
+    return shared_unique_foreach(
+        by_group = by_group,
+        op = 'shared',
+        counts = True,
+    )
+
+
+def shared_foreach(by_group):
+    
+    return shared_unique_foreach(by_group = by_group, op = 'shared')
+
+
+def unique_foreach(by_group):
+    
+    return shared_unique_foreach(by_group = by_group, op = 'unique')
+
+
+def n_shared_foreach(by_group):
+    
+    return n_shared_unique_foreach(by_group = by_group, op = 'shared')
+
+
+def n_unique_foreach(by_group):
+    
+    return n_shared_unique_foreach(by_group = by_group, op = 'unique')
+
+
+def dict_union(dict_of_sets):
+    """
+    For a *dict* of *set*s returns the union of the values.
+    """
+    
+    return set.union(*dict_of_sets.values())
+
+
+def dict_counts(dict_of_sets):
+    """
+    For a *dict* of *set*s or other values with ``__len__`` returns a
+    *dict* of numbers with the length of each value in the original *dict*.
+    """
+    
+    return dict((key, len(val)) for key, val in iteritems(dict_of_sets))
+
+
+def shared_unique_total(by_group, op = 'shared'):
+    
+    counts = collections.Counter(itertools.chain(*by_group.values()))
+    _op = operator.eq if op == 'unique' else operator.gt
+    
+    return {key for key, val in iteritems(counts) if _op(val, 1)}
+
+
+def shared_total(by_group):
+    
+    return shared_unique_total(by_group = by_group, op = 'shared')
+
+
+def unique_total(by_group):
+    
+    return shared_unique_total(by_group = by_group, op = 'unique')
+
+
+def n_shared_total(by_group):
+    
+    return len(shared_total(by_group))
+
+
+def n_unique_total(by_group):
+    
+    return len(unique_total(by_group))
+
+
+def dict_percent(dict_of_counts, total):
+    """
+    For a *dict* of counts and a total count creates a *dict* of percentages.
+    """
+    
+    return dict(
+        (key, val / total * 100)
+        for key, val in iteritems(dict_of_counts)
+    )
+
+
+def df_memory_usage(df, deep = True):
+    """
+    Returns the memory usage of a ``pandas.DataFrame`` as a string.
+    Modified from ``pandas.DataFrame.info``.
+    """
+    
+    counts = df._data.get_dtype_counts()
+    
+    size_qualifier = (
+        '+'
+            if (
+                'object' in counts or
+                df.index._is_memory_usage_qualified()
+            ) else
+        ''
+    )
+    
+    mem_usage = df.memory_usage(index = True, deep = deep).sum()
+    
+    for unit in ['bytes', 'KB', 'MB', 'GB', 'TB']:
+        
+        if mem_usage < 1024.0:
+            
+            return '%3.1f%s %s' % (mem_usage, size_qualifier, unit)
+        
+        mem_usage /= 1024.0
+    
+    return '%3.1f%s PB' % (mem_usage, size_qualifier)

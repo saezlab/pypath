@@ -26,7 +26,7 @@ import itertools
 import pandas as pd
 
 import pypath.session_mod as session_mod
-
+import pypath.common as common
 
 Interaction = collections.namedtuple(
     'Interaction',
@@ -42,6 +42,7 @@ Interaction = collections.namedtuple(
         'references',
     ],
 )
+Interaction.__new__.__defaults__ = (None,) * 7
 
 
 class Network(session_mod.Logger):
@@ -50,6 +51,8 @@ class Network(session_mod.Logger):
     def __init__(self, records, dtypes = None, **kwargs):
         
         session_mod.Logger.__init__(self, name = 'network')
+        
+        self._log('Creating network object with interactions data frame.')
         
         if isinstance(records, pd.DataFrame):
             
@@ -70,6 +73,11 @@ class Network(session_mod.Logger):
         if dtypes:
             
             self.records = self.records.astype(dtypes)
+        
+        self._log(
+            'Created network data frame. '
+            'Memory usage: %s ' % common.df_memory_usage(self.records)
+        )
     
     
     def reload(self):
@@ -85,19 +93,25 @@ class Network(session_mod.Logger):
     
     
     @classmethod
-    def from_igraph(cls, pa):
+    def from_igraph(cls, pa, by_source = False, with_references = False):
         """
         Creates an instance using a ``pypath.main.PyPath`` object.
         """
         
         return cls(
-            records = list(pa),
+            records = pa.iter_interactions(
+                by_source = by_source,
+                with_references = with_references,
+            ),
             dtypes = {
                 'id_a': 'category',
                 'id_b': 'category',
                 'type_a': 'category',
                 'type_b': 'category',
                 'effect': 'int8',
+                'type': 'category',
+                'sources': 'category' if by_source else 'object',
+                'references': 'object' if with_references else 'category',
             },
         )
     

@@ -41,6 +41,7 @@ import pypath.intera as intera
 import pypath.resource as resource
 import pypath.settings as settings
 import pypath.session_mod as session_mod
+import pypath.common as common
 
 
 complex_resources = (
@@ -167,8 +168,66 @@ class AbstractComplexResource(resource.AbstractResource):
     def __len__(self):
 
         return len(self.complexes)
-
-
+    
+    
+    @property
+    def numof_references(self):
+        
+        return len(
+            set.union(*(
+                cplex.references for cplex in self.complexes.values()
+            ))
+        )
+    
+    
+    @property
+    def curation_effort(self):
+        
+        return len(
+            set.union(*(
+                {(key, ref) for ref in cplex.references}
+                for key, cplex in iteritems(self.complexes)
+            ))
+        )
+    
+    
+    @property
+    def has_stoichiometry(self):
+        
+        return any(
+            cnt > 1
+            for cplex in self.complexes.values()
+            for cnt in cplex.components.values()
+        )
+    
+    
+    @property
+    def all_sources(self):
+        
+        return set.union(*(
+            cplex.sources
+            for cplex in self.complexes.values()
+        ))
+    
+    
+    @property
+    def homomers(self):
+        
+        return sum(
+            1 for cplex in self.complexes.values()
+            if len(cplex.components) == 1
+        )
+    
+    
+    @property
+    def heteromers(self):
+        
+        return sum(
+            1 for cplex in self.complexes.values()
+            if len(cplex.components) > 1
+        )
+    
+    
     def make_df(self):
 
         colnames = [
@@ -180,7 +239,9 @@ class AbstractComplexResource(resource.AbstractResource):
             'references',
             'identifiers',
         ]
-
+        
+        self._log('Creating a data frame of complexes.')
+        
         records = []
 
         for cplex in self.complexes.values():
@@ -203,6 +264,11 @@ class AbstractComplexResource(resource.AbstractResource):
             records,
             columns = colnames,
         )
+        
+        self._log(
+            'Created data frame of complexes. '
+            'Memory usage: %s.' % common.df_memory_usage(self.df)
+        )
 
 
     def _from_dump_callback(self):
@@ -212,6 +278,54 @@ class AbstractComplexResource(resource.AbstractResource):
             self.complexes = self._from_dump
             delattr(self, '_from_dump')
             delattr(self, 'dump')
+    
+    
+    @property
+    def summary(self):
+        
+        return {
+            'n_complexes': self.__len__(),
+            'n_references': self.numof_references,
+            'curation_effort': self.curation_effort,
+            'has_stoichiometry': self.has_stoichiometry,
+            'name': self.name,
+            'sources': self.all_sources,
+            'homomers': self.homomers,
+            'heteromers': self.heteromers,
+        }
+    
+    
+    @property
+    def summary_str(self):
+        
+        s = self.summary
+        bar = '=' * 70
+        
+        return (
+            '\n%s\n'
+            'Complex resource `%s`\n'
+            '%s\n'
+            '\tNumber of complexes: %u\n'
+            '\tHomomers: %u\n'
+            '\tHeteromers: %u\n'
+            '\tNumber of literature references: %u\n'
+            '\tCuration effort (reference-entity pairs): %u\n'
+            '\tHas stoichiometry: %s\n'
+            '\tSources: %s\n'
+            '%s\n\n'
+        ) % (
+            bar,
+            self.name,
+            bar,
+            s['n_complexes'],
+            s['homomers'],
+            s['heteromers'],
+            s['n_references'],
+            s['curation_effort'],
+            str(s['has_stoichiometry']),
+            ', '.join(s['sources']),
+            bar
+        )
 
 
 class CellPhoneDB(AbstractComplexResource):
@@ -403,6 +517,7 @@ class ComplexAggregator(AbstractComplexResource):
             return
 
         self.data = {}
+        self.summaries = {}
 
         for res in self.resources:
 
@@ -421,7 +536,11 @@ class ComplexAggregator(AbstractComplexResource):
                 elif hasattr(res, 'complexes'):
 
                     processor = res
-
+                
+                if hasattr(processor, 'summary'):
+                    
+                    self.summaries[processor.name] = processor.summary
+                
                 for key, cplex in iteritems(processor.complexes):
 
                     if key in self.data:
@@ -442,23 +561,81 @@ class ComplexAggregator(AbstractComplexResource):
 
         resource.AbstractResource.load(self)
         self.update_index()
+        self.update_summary()
 
 
     def load_from_pickle(self, pickle_file):
-
+        
+        self._log('Loading from pickle `%s`.' % pickle_file)
+        
         with open(pickle_file, 'rb') as fp:
 
-            self.complexes = pickle.load(fp)
+            self.complexes, self.summaries = pickle.load(fp)
+        
+        self._log('Loaded from pickle `%s`.' % pickle_file)
+    
+    
+    def update_summary(self):
+        
+        for src in self.summaries.keys():
+            
+            self.summaries[src]['unique_complexes'] = sum(
+                1 for cplex in self.complexes.values()
+                if len(cplex.sources) == 1 and src in cplex.sources
+            )
+            
+            self.summaries[src]['shared_complexes'] = sum(
+                1 for cplex in self.complexes.values()
+                if len(cplex.sources) > 1 and src in cplex.sources
+            )
+    
+    
+    def summaries_tab(self, outfile = None):
+        
+        columns = (
+            ('name', 'Resource'),
+            ('n_complexes', 'All complexes'),
+            ('homomers', 'Homomers'),
+            ('heteromers', 'Heteromers'),
+            ('has_stoichiometry', 'Stoichiometry'),
+            ('unique_complexes', 'Unique complexes'),
+            ('shared_complexes', 'Shared complexes'),
+            ('n_references', 'References'),
+            ('curation_effort', 'Curation effort'),
+        )
+        
+        tab = []
+        tab.append([f[1] for f in columns])
+        
+        tab.extend([
+            [
+                str(self.summaries[src][f[0]])
+                for f in columns
+            ]
+            for src in sorted(self.summaries.keys())
+        ])
+        
+        if outfile:
+            
+            with open(outfile, 'w') as fp:
+                
+                fp.write('\n'.join('\t'.join(row) for row in tab))
+        
+        return tab
 
 
     def save_to_pickle(self, pickle_file):
-
+        
+        self._log('Saving to pickle `%s`.' % pickle_file)
+        
         with open(pickle_file, 'wb') as fp:
 
             pickle.dump(
-                obj = self.complexes,
+                obj = (self.complexes, self.summaries),
                 file = fp,
             )
+        
+        self._log('Saved to pickle `%s`.' % pickle_file)
 
 
 def init_db(**kwargs):

@@ -676,7 +676,21 @@ class DomainMotif(object):
             return True
         else:
             return False
-
+    
+    def key(self):
+        """
+        Returns a unique key which is a tuple of the proteins, the residue
+        and the modification type.
+        """
+        
+        return (
+            self.domain.protein,
+            self.ptm.protein,
+            self.ptm.residue.name,
+            self.ptm.residue.number,
+            self.ptm.typ,
+        )
+    
     def get_proteins(self):
         return [self.domain.protein, self.ptm.protein]
 
