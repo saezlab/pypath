@@ -72,8 +72,8 @@
 
 
 \title{pypath Documentation}
-\date{May 21, 2019}
-\release{0.8.7}
+\date{Oct 14, 2019}
+\release{0.8.34}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
 \renewcommand{\releasename}{Release}
@@ -287,11 +287,47 @@ as soon as possible.
 \index{AnnotationBase (class in pypath.annot)@\spxentry{AnnotationBase}\spxextra{class in pypath.annot}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.annot.AnnotationBase}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{AnnotationBase}}}{\emph{name}, \emph{ncbi\_tax\_id=9606}, \emph{input\_method=None}, \emph{input\_args=None}, \emph{**kwargs}}{}~\index{all\_uniprots() (pypath.annot.AnnotationBase method)@\spxentry{all\_uniprots()}\spxextra{pypath.annot.AnnotationBase method}}
+\phantomsection\label{\detokenize{reference:pypath.annot.AnnotationBase}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{AnnotationBase}}}{\emph{name}, \emph{ncbi\_tax\_id=9606}, \emph{input\_method=None}, \emph{input\_args=None}, \emph{entity\_type='protein'}, \emph{swissprot\_only=True}, \emph{proteins=()}, \emph{complexes=()}, \emph{reference\_set=()}, \emph{infer\_complexes=True}, \emph{dump=None}, \emph{**kwargs}}{}~\index{add\_complexes\_by\_inference() (pypath.annot.AnnotationBase method)@\spxentry{add\_complexes\_by\_inference()}\spxextra{pypath.annot.AnnotationBase method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.annot.AnnotationBase.all_uniprots}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{all\_uniprots}}}{}{}
+\phantomsection\label{\detokenize{reference:pypath.annot.AnnotationBase.add_complexes_by_inference}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_complexes\_by\_inference}}}{\emph{complexes=None}}{}
+Creates complex annotations by in silico inference and adds them
+to this annotation set.
+
+\end{fulllineitems}
+
+\index{all\_proteins() (pypath.annot.AnnotationBase method)@\spxentry{all\_proteins()}\spxextra{pypath.annot.AnnotationBase method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.AnnotationBase.all_proteins}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{all\_proteins}}}{}{}
 All UniProt IDs annotated in this resource.
+
+\end{fulllineitems}
+
+\index{annotate\_complex() (pypath.annot.AnnotationBase method)@\spxentry{annotate\_complex()}\spxextra{pypath.annot.AnnotationBase method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.AnnotationBase.annotate_complex}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{annotate\_complex}}}{\emph{cplex}}{}
+Infers annotations for a single complex.
+
+\end{fulllineitems}
+
+\index{complex\_inference() (pypath.annot.AnnotationBase method)@\spxentry{complex\_inference()}\spxextra{pypath.annot.AnnotationBase method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.AnnotationBase.complex_inference}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{complex\_inference}}}{\emph{complexes=None}}{}
+Annotates all complexes in \sphinxtitleref{complexes}, by default in the default
+complex database (existing in the \sphinxtitleref{complex} module or generated
+on demand according to the module’s current settings).
+
+Dict with complexes as keys and sets of annotations as values.
+Complexes with no valid information in this annotation resource
+won’t be in the dict.
+\begin{description}
+\item[{complexes}] \leavevmode{[}iterable{]}
+Iterable yielding complexes.
+
+\end{description}
 
 \end{fulllineitems}
 
@@ -307,10 +343,10 @@ Returns a set of UniProt IDs.
 
 \end{fulllineitems}
 
-\index{load\_uniprots() (pypath.annot.AnnotationBase method)@\spxentry{load\_uniprots()}\spxextra{pypath.annot.AnnotationBase method}}
+\index{load\_proteins() (pypath.annot.AnnotationBase method)@\spxentry{load\_proteins()}\spxextra{pypath.annot.AnnotationBase method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.annot.AnnotationBase.load_uniprots}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_uniprots}}}{}{}
+\phantomsection\label{\detokenize{reference:pypath.annot.AnnotationBase.load_proteins}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_proteins}}}{}{}
 Retrieves a set of all UniProt IDs to have a base set of the entire
 proteome.
 
@@ -327,10 +363,30 @@ Reloads the object from the module level.
 
 \end{fulllineitems}
 
+\index{CancerGeneCensus (class in pypath.annot)@\spxentry{CancerGeneCensus}\spxextra{class in pypath.annot}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.CancerGeneCensus}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{CancerGeneCensus}}}{\emph{**kwargs}}{}
+\end{fulllineitems}
+
+\index{Cancersea (class in pypath.annot)@\spxentry{Cancersea}\spxextra{class in pypath.annot}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.Cancersea}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Cancersea}}}{\emph{**kwargs}}{}
+\end{fulllineitems}
+
 \index{CellPhoneDB (class in pypath.annot)@\spxentry{CellPhoneDB}\spxextra{class in pypath.annot}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.annot.CellPhoneDB}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{CellPhoneDB}}}{\emph{**kwargs}}{}
+\phantomsection\label{\detokenize{reference:pypath.annot.CellPhoneDB}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{CellPhoneDB}}}{\emph{**kwargs}}{}~\index{record (pypath.annot.CellPhoneDB attribute)@\spxentry{record}\spxextra{pypath.annot.CellPhoneDB attribute}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.CellPhoneDB.record}}\pysigline{\sphinxbfcode{\sphinxupquote{record}}}
+alias of \sphinxcode{\sphinxupquote{pypath.dataio.CellPhoneDBAnnotation}}
+
+\end{fulllineitems}
+
+
 \end{fulllineitems}
 
 \index{CellPhoneDBComplex (class in pypath.annot)@\spxentry{CellPhoneDBComplex}\spxextra{class in pypath.annot}}
@@ -345,10 +401,16 @@ Reloads the object from the module level.
 \phantomsection\label{\detokenize{reference:pypath.annot.CellSurfaceProteinAtlas}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{CellSurfaceProteinAtlas}}}{\emph{ncbi\_tax\_id=9606}, \emph{**kwargs}}{}
 \end{fulllineitems}
 
+\index{Comppi (class in pypath.annot)@\spxentry{Comppi}\spxextra{class in pypath.annot}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.Comppi}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Comppi}}}{\emph{**kwargs}}{}
+\end{fulllineitems}
+
 \index{Corum (class in pypath.annot)@\spxentry{Corum}\spxextra{class in pypath.annot}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.annot.Corum}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Corum}}}{\emph{annot\_attr}, \emph{**kwargs}}{}
+\phantomsection\label{\detokenize{reference:pypath.annot.Corum}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Corum}}}{\emph{name}, \emph{annot\_attr}, \emph{**kwargs}}{}
 \end{fulllineitems}
 
 \index{CorumFuncat (class in pypath.annot)@\spxentry{CorumFuncat}\spxextra{class in pypath.annot}}
@@ -363,6 +425,24 @@ Reloads the object from the module level.
 \phantomsection\label{\detokenize{reference:pypath.annot.CorumGO}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{CorumGO}}}{\emph{**kwargs}}{}
 \end{fulllineitems}
 
+\index{Cpad (class in pypath.annot)@\spxentry{Cpad}\spxextra{class in pypath.annot}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.Cpad}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Cpad}}}{\emph{ncbi\_tax\_id=9606}, \emph{**kwargs}}{}
+\end{fulllineitems}
+
+\index{Dgidb (class in pypath.annot)@\spxentry{Dgidb}\spxextra{class in pypath.annot}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.Dgidb}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Dgidb}}}{\emph{**kwargs}}{}
+\end{fulllineitems}
+
+\index{Disgenet (class in pypath.annot)@\spxentry{Disgenet}\spxextra{class in pypath.annot}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.Disgenet}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Disgenet}}}{\emph{ncbi\_tax\_id=9606}, \emph{**kwargs}}{}
+\end{fulllineitems}
+
 \index{Exocarta (class in pypath.annot)@\spxentry{Exocarta}\spxextra{class in pypath.annot}}
 
 \begin{fulllineitems}
@@ -372,7 +452,7 @@ Reloads the object from the module level.
 \index{GOIntercell (class in pypath.annot)@\spxentry{GOIntercell}\spxextra{class in pypath.annot}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.annot.GOIntercell}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{GOIntercell}}}{\emph{categories=None}, \emph{go\_annot=None}, \emph{ncbi\_tax\_id=9606}}{}
+\phantomsection\label{\detokenize{reference:pypath.annot.GOIntercell}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{GOIntercell}}}{\emph{categories=None}, \emph{go\_annot=None}, \emph{ncbi\_tax\_id=9606}, \emph{**kwargs}}{}
 \end{fulllineitems}
 
 \index{GuideToPharmacology (class in pypath.annot)@\spxentry{GuideToPharmacology}\spxextra{class in pypath.annot}}
@@ -399,10 +479,34 @@ Reloads the object from the module level.
 \phantomsection\label{\detokenize{reference:pypath.annot.HumanPlasmaMembraneReceptome}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{HumanPlasmaMembraneReceptome}}}{\emph{**kwargs}}{}
 \end{fulllineitems}
 
+\index{HumanProteinAtlas (class in pypath.annot)@\spxentry{HumanProteinAtlas}\spxextra{class in pypath.annot}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.HumanProteinAtlas}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{HumanProteinAtlas}}}{\emph{**kwargs}}{}
+\end{fulllineitems}
+
 \index{Integrins (class in pypath.annot)@\spxentry{Integrins}\spxextra{class in pypath.annot}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{reference:pypath.annot.Integrins}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Integrins}}}{\emph{**kwargs}}{}
+\end{fulllineitems}
+
+\index{Intogen (class in pypath.annot)@\spxentry{Intogen}\spxextra{class in pypath.annot}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.Intogen}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Intogen}}}{\emph{**kwargs}}{}
+\end{fulllineitems}
+
+\index{KeggPathways (class in pypath.annot)@\spxentry{KeggPathways}\spxextra{class in pypath.annot}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.KeggPathways}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{KeggPathways}}}{\emph{ncbi\_tax\_id=9606}, \emph{**kwargs}}{}
+\end{fulllineitems}
+
+\index{Kinasedotcom (class in pypath.annot)@\spxentry{Kinasedotcom}\spxextra{class in pypath.annot}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.Kinasedotcom}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Kinasedotcom}}}{\emph{**kwargs}}{}
 \end{fulllineitems}
 
 \index{Kirouac2010 (class in pypath.annot)@\spxentry{Kirouac2010}\spxextra{class in pypath.annot}}
@@ -420,7 +524,7 @@ Reloads the object from the module level.
 \index{Locate (class in pypath.annot)@\spxentry{Locate}\spxextra{class in pypath.annot}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.annot.Locate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Locate}}}{\emph{ncbi\_tax\_id=9606}, \emph{literature=True}, \emph{external=True}, \emph{predictions=False}}{}
+\phantomsection\label{\detokenize{reference:pypath.annot.Locate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Locate}}}{\emph{ncbi\_tax\_id=9606}, \emph{literature=True}, \emph{external=True}, \emph{predictions=False}, \emph{**kwargs}}{}
 \end{fulllineitems}
 
 \index{Matrisome (class in pypath.annot)@\spxentry{Matrisome}\spxextra{class in pypath.annot}}
@@ -432,7 +536,7 @@ Reloads the object from the module level.
 \index{Matrixdb (class in pypath.annot)@\spxentry{Matrixdb}\spxextra{class in pypath.annot}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.annot.Matrixdb}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Matrixdb}}}{\emph{ncbi\_tax\_id=9606}}{}
+\phantomsection\label{\detokenize{reference:pypath.annot.Matrixdb}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Matrixdb}}}{\emph{ncbi\_tax\_id=9606}, \emph{**kwargs}}{}
 \end{fulllineitems}
 
 \index{Membranome (class in pypath.annot)@\spxentry{Membranome}\spxextra{class in pypath.annot}}
@@ -441,10 +545,22 @@ Reloads the object from the module level.
 \phantomsection\label{\detokenize{reference:pypath.annot.Membranome}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Membranome}}}{\emph{**kwargs}}{}
 \end{fulllineitems}
 
+\index{NetpathPathways (class in pypath.annot)@\spxentry{NetpathPathways}\spxextra{class in pypath.annot}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.NetpathPathways}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{NetpathPathways}}}{\emph{ncbi\_tax\_id=9606}, \emph{**kwargs}}{}
+\end{fulllineitems}
+
 \index{Opm (class in pypath.annot)@\spxentry{Opm}\spxextra{class in pypath.annot}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{reference:pypath.annot.Opm}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Opm}}}{\emph{ncbi\_tax\_id=9606}, \emph{**kwargs}}{}
+\end{fulllineitems}
+
+\index{Phosphatome (class in pypath.annot)@\spxentry{Phosphatome}\spxextra{class in pypath.annot}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.Phosphatome}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Phosphatome}}}{\emph{**kwargs}}{}
 \end{fulllineitems}
 
 \index{Ramilowski2015 (class in pypath.annot)@\spxentry{Ramilowski2015}\spxextra{class in pypath.annot}}
@@ -453,10 +569,34 @@ Reloads the object from the module level.
 \phantomsection\label{\detokenize{reference:pypath.annot.Ramilowski2015}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Ramilowski2015}}}{\emph{load\_sources=False}, \emph{**kwargs}}{}
 \end{fulllineitems}
 
+\index{Ramilowski2015Location (class in pypath.annot)@\spxentry{Ramilowski2015Location}\spxextra{class in pypath.annot}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.Ramilowski2015Location}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Ramilowski2015Location}}}{\emph{**kwargs}}{}
+\end{fulllineitems}
+
+\index{SignalinkPathways (class in pypath.annot)@\spxentry{SignalinkPathways}\spxextra{class in pypath.annot}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.SignalinkPathways}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{SignalinkPathways}}}{\emph{ncbi\_tax\_id=9606}, \emph{**kwargs}}{}
+\end{fulllineitems}
+
+\index{SignorPathways (class in pypath.annot)@\spxentry{SignorPathways}\spxextra{class in pypath.annot}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.SignorPathways}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{SignorPathways}}}{\emph{ncbi\_tax\_id=9606}, \emph{**kwargs}}{}
+\end{fulllineitems}
+
 \index{Surfaceome (class in pypath.annot)@\spxentry{Surfaceome}\spxextra{class in pypath.annot}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{reference:pypath.annot.Surfaceome}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Surfaceome}}}{\emph{**kwargs}}{}
+\end{fulllineitems}
+
+\index{Tfcensus (class in pypath.annot)@\spxentry{Tfcensus}\spxextra{class in pypath.annot}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.annot.Tfcensus}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{Tfcensus}}}{\emph{**kwargs}}{}
 \end{fulllineitems}
 
 \index{Topdb (class in pypath.annot)@\spxentry{Topdb}\spxextra{class in pypath.annot}}
@@ -480,7 +620,7 @@ Reloads the object from the module level.
 \index{get\_db() (in module pypath.annot)@\spxentry{get\_db()}\spxextra{in module pypath.annot}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.annot.get_db}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{get\_db}}}{\emph{keep\_annotators=True}}{}
+\phantomsection\label{\detokenize{reference:pypath.annot.get_db}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{get\_db}}}{\emph{keep\_annotators=True}, \emph{create\_dataframe=False}, \emph{use\_complexes=True}, \emph{**kwargs}}{}
 Retrieves the current database instance and initializes it if does
 not exist yet.
 
@@ -489,7 +629,7 @@ not exist yet.
 \index{init\_db() (in module pypath.annot)@\spxentry{init\_db()}\spxextra{in module pypath.annot}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.annot.init_db}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{init\_db}}}{\emph{keep\_annotators=True}}{}
+\phantomsection\label{\detokenize{reference:pypath.annot.init_db}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pypath.annot.}}\sphinxbfcode{\sphinxupquote{init\_db}}}{\emph{keep\_annotators=True}, \emph{create\_dataframe=False}, \emph{use\_complexes=True}, \emph{**kwargs}}{}
 Initializes or reloads the annotation database.
 The database will be assigned to the \sphinxcode{\sphinxupquote{db}} attribute of this module.
 
@@ -504,7 +644,7 @@ The database will be assigned to the \sphinxcode{\sphinxupquote{db}} attribute o
 \label{\detokenize{reference:module-pypath.complex}}\label{\detokenize{reference:complex-module}}\index{pypath.complex (module)@\spxentry{pypath.complex}\spxextra{module}}\index{AbstractComplexResource (class in pypath.complex)@\spxentry{AbstractComplexResource}\spxextra{class in pypath.complex}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.complex.AbstractComplexResource}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.complex.}}\sphinxbfcode{\sphinxupquote{AbstractComplexResource}}}{\emph{name}, \emph{ncbi\_tax\_id=9606}, \emph{input\_method=None}, \emph{input\_args=None}, \emph{**kwargs}}{}
+\phantomsection\label{\detokenize{reference:pypath.complex.AbstractComplexResource}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.complex.}}\sphinxbfcode{\sphinxupquote{AbstractComplexResource}}}{\emph{name}, \emph{ncbi\_tax\_id=9606}, \emph{input\_method=None}, \emph{input\_args=None}, \emph{dump=None}, \emph{**kwargs}}{}
 A resource which provides information about molecular complexes.
 
 \end{fulllineitems}
@@ -524,7 +664,15 @@ A resource which provides information about molecular complexes.
 \index{ComplexAggregator (class in pypath.complex)@\spxentry{ComplexAggregator}\spxextra{class in pypath.complex}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.complex.ComplexAggregator}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.complex.}}\sphinxbfcode{\sphinxupquote{ComplexAggregator}}}{\emph{resources=None}}{}
+\phantomsection\label{\detokenize{reference:pypath.complex.ComplexAggregator}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.complex.}}\sphinxbfcode{\sphinxupquote{ComplexAggregator}}}{\emph{resources=None}, \emph{pickle\_file=None}}{}~\index{reload() (pypath.complex.ComplexAggregator method)@\spxentry{reload()}\spxextra{pypath.complex.ComplexAggregator method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.complex.ComplexAggregator.reload}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{reload}}}{}{}
+Reloads the object from the module level.
+
+\end{fulllineitems}
+
+
 \end{fulllineitems}
 
 \index{ComplexPortal (class in pypath.complex)@\spxentry{ComplexPortal}\spxextra{class in pypath.complex}}
@@ -575,10 +723,20 @@ A resource which provides information about molecular complexes.
 \phantomsection\label{\detokenize{reference:pypath.complex.Signor}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.complex.}}\sphinxbfcode{\sphinxupquote{Signor}}}{\emph{input\_args=None}, \emph{**kwargs}}{}
 \end{fulllineitems}
 
+\index{all\_complexes() (in module pypath.complex)@\spxentry{all\_complexes()}\spxextra{in module pypath.complex}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.complex.all_complexes}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pypath.complex.}}\sphinxbfcode{\sphinxupquote{all\_complexes}}}{}{}
+Returns a set of all complexes in the database which serves as a
+reference set for many methods, just like \sphinxcode{\sphinxupquote{uniprot\_input.all\_uniprots}}
+represents the proteome.
+
+\end{fulllineitems}
+
 \index{get\_db() (in module pypath.complex)@\spxentry{get\_db()}\spxextra{in module pypath.complex}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.complex.get_db}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pypath.complex.}}\sphinxbfcode{\sphinxupquote{get\_db}}}{}{}
+\phantomsection\label{\detokenize{reference:pypath.complex.get_db}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pypath.complex.}}\sphinxbfcode{\sphinxupquote{get\_db}}}{\emph{**kwargs}}{}
 Retrieves the current database instance and initializes it if does
 not exist yet.
 
@@ -587,7 +745,7 @@ not exist yet.
 \index{init\_db() (in module pypath.complex)@\spxentry{init\_db()}\spxextra{in module pypath.complex}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.complex.init_db}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pypath.complex.}}\sphinxbfcode{\sphinxupquote{init\_db}}}{}{}
+\phantomsection\label{\detokenize{reference:pypath.complex.init_db}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{pypath.complex.}}\sphinxbfcode{\sphinxupquote{init\_db}}}{\emph{**kwargs}}{}
 Initializes or reloads the complex database.
 The database will be assigned to the \sphinxcode{\sphinxupquote{db}} attribute of this module.
 
@@ -655,12 +813,12 @@ format definitions for the conversion tables.
 be copied.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{mysql}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{(None, 'mapping')}} by default. Contains the MySQL
+\sphinxstyleliteralstrong{\sphinxupquote{mysql}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} DEPRECATED Optional, \sphinxcode{\sphinxupquote{(None, 'mapping')}} by default. Contains the MySQL
 parameters used by the \sphinxcode{\sphinxupquote{pypath.mapping}} module to load
 the ID conversion tables.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{chembl\_mysql}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{(None, 'chembl')}} by default. Contains the MySQL
+\sphinxstyleliteralstrong{\sphinxupquote{chembl\_mysql}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} DEPRECATED Optional, \sphinxcode{\sphinxupquote{(None, 'chembl')}} by default. Contains the MySQL
 parameters used by the \sphinxcode{\sphinxupquote{pypath.mapping}} module to load
 the ChEMBL ID conversion tables.
 
@@ -692,7 +850,7 @@ are allowed in the graph.
 documentation for more information.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{chembl\_mysql}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Contains the MySQL parameters used by the
+\sphinxstyleliteralstrong{\sphinxupquote{chembl\_mysql}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} DEPRECATED Contains the MySQL parameters used by the
 \sphinxcode{\sphinxupquote{pypath.mapping}} module to load the ChEMBL ID conversion
 tables.
 
@@ -793,12 +951,12 @@ indices {[}int{]} (values).
 categories {[}str{]} (keys). These can to be loaded from a file or
 a resource. Some methods include
 \sphinxcode{\sphinxupquote{pypath.main.PyPath.receptor\_list()}} (\sphinxcode{\sphinxupquote{'rec'}}),
-{\hyperref[\detokenize{reference:pypath.main.PyPath.druggability_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.druggability\_list()}}}}} (\sphinxcode{\sphinxupquote{'dgb'}}),
-{\hyperref[\detokenize{reference:pypath.main.PyPath.kinases_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.kinases\_list()}}}}} (\sphinxcode{\sphinxupquote{'kin'}}),
-{\hyperref[\detokenize{reference:pypath.main.PyPath.tfs_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.tfs\_list()}}}}} (\sphinxcode{\sphinxupquote{'tf'}}),
-{\hyperref[\detokenize{reference:pypath.main.PyPath.disease_genes_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.disease\_genes\_list()}}}}} (\sphinxcode{\sphinxupquote{'dis'}}),
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.druggability\_list()}} (\sphinxcode{\sphinxupquote{'dgb'}}),
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.kinases\_list()}} (\sphinxcode{\sphinxupquote{'kin'}}),
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.tfs\_list()}} (\sphinxcode{\sphinxupquote{'tf'}}),
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.disease\_genes\_list()}} (\sphinxcode{\sphinxupquote{'dis'}}),
 {\hyperref[\detokenize{reference:pypath.main.PyPath.signaling_proteins_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.signaling\_proteins\_list()}}}}}
-(\sphinxcode{\sphinxupquote{'sig'}}), {\hyperref[\detokenize{reference:pypath.main.PyPath.proteome_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.proteome\_list()}}}}}
+(\sphinxcode{\sphinxupquote{'sig'}}), \sphinxcode{\sphinxupquote{pypath.main.PyPath.proteome\_list()}}
 (\sphinxcode{\sphinxupquote{'proteome'}}) and
 {\hyperref[\detokenize{reference:pypath.main.PyPath.cancer_drivers_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.cancer\_drivers\_list()}}}}} (\sphinxcode{\sphinxupquote{'cdv'}}).
 
@@ -816,7 +974,7 @@ other ID-related operations across resources.
 \sphinxstyleliteralstrong{\sphinxupquote{mutation\_samples}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} DEPRECATED
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{mysql\_conf}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Contains the MySQL parameters used by the
+\sphinxstyleliteralstrong{\sphinxupquote{mysql\_conf}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} DEPRECATED Contains the MySQL parameters used by the
 \sphinxcode{\sphinxupquote{pypath.mapping}} module to load the ID conversion
 tables.
 
@@ -1189,7 +1347,7 @@ Creates vertex or edge attribute based on a list.
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the list to be added as attribute. Must have
 been previously loaded with
-{\hyperref[\detokenize{reference:pypath.main.PyPath.load_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.load\_list()}}}}} or other methods.
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.load\_list()}} or other methods.
 See description of \sphinxcode{\sphinxupquote{pypath.main.PyPath.lists}}
 attribute for more information.
 
@@ -1545,16 +1703,6 @@ such list exists in \sphinxcode{\sphinxupquote{pypath.main.PyPath.lists}}).
 
 \end{fulllineitems}
 
-\index{cspa\_list() (pypath.main.PyPath method)@\spxentry{cspa\_list()}\spxextra{pypath.main.PyPath method}}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.main.PyPath.cspa_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{cspa\_list}}}{}{}
-Loads a list of cell surface proteins from the Cell Surface Protein
-Atlas as a list. This resource is available for human and mouse.
-The list name is \sphinxcode{\sphinxupquote{cspa}}.
-
-\end{fulllineitems}
-
 \index{curation\_effort() (pypath.main.PyPath method)@\spxentry{curation\_effort()}\spxextra{pypath.main.PyPath method}}
 
 \begin{fulllineitems}
@@ -1780,15 +1928,6 @@ GeneSymbol.
 \phantomsection\label{\detokenize{reference:pypath.main.PyPath.dgss}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{dgss}}}{\emph{genesymbols}}{}
 \end{fulllineitems}
 
-\index{disease\_genes\_list() (pypath.main.PyPath method)@\spxentry{disease\_genes\_list()}\spxextra{pypath.main.PyPath method}}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.main.PyPath.disease_genes_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{disease\_genes\_list}}}{\emph{dataset='curated'}}{}
-Loads the list of all disease related genes from DisGeNet. This
-resource is human only.
-
-\end{fulllineitems}
-
 \index{dneighbors() (pypath.main.PyPath method)@\spxentry{dneighbors()}\spxextra{pypath.main.PyPath method}}
 
 \begin{fulllineitems}
@@ -1823,16 +1962,6 @@ Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{reference:pypath.main.PyPath.dps}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{dps}}}{\emph{identifiers}}{}
-\end{fulllineitems}
-
-\index{druggability\_list() (pypath.main.PyPath method)@\spxentry{druggability\_list()}\spxextra{pypath.main.PyPath method}}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.main.PyPath.druggability_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{druggability\_list}}}{}{}
-Loads the list of druggable proteins from DgiDB. This resource
-is human only.
-The list name is \sphinxcode{\sphinxupquote{dgb}}.
-
 \end{fulllineitems}
 
 \index{duniprot() (pypath.main.PyPath method)@\spxentry{duniprot()}\spxextra{pypath.main.PyPath method}}
@@ -2049,6 +2178,15 @@ the argument \sphinxstyleemphasis{edges}.
 undirected network except the ones on \sphinxstyleemphasis{edges} argument.
 
 \end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{entities\_by\_resources() (pypath.main.PyPath method)@\spxentry{entities\_by\_resources()}\spxextra{pypath.main.PyPath method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.main.PyPath.entities_by_resources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{entities\_by\_resources}}}{}{}
+Returns a dict of sets with resources as keys and sets of entity IDs
+as values.
 
 \end{fulllineitems}
 
@@ -3160,7 +3298,7 @@ collections in MSigDB.
 \index{init\_network() (pypath.main.PyPath method)@\spxentry{init\_network()}\spxextra{pypath.main.PyPath method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.main.PyPath.init_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_network}}}{\emph{lst=None}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{pfile=False}, \emph{save=False}, \emph{reread=None}, \emph{redownload=False}, \emph{keep\_raw=False}, \emph{**kwargs}}{}
+\phantomsection\label{\detokenize{reference:pypath.main.PyPath.init_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_network}}}{\emph{lst=None}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{pfile=False}, \emph{save=False}, \emph{reread=None}, \emph{redownload=None}, \emph{keep\_raw=False}, \emph{**kwargs}}{}
 Loads the network data.
 
 This is a lazy way to start the module, load data and build the
@@ -3256,8 +3394,26 @@ the data. In general, anything accepted by
 \index{iter\_interactions() (pypath.main.PyPath method)@\spxentry{iter\_interactions()}\spxextra{pypath.main.PyPath method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.main.PyPath.iter_interactions}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{iter\_interactions}}}{}{}
+\phantomsection\label{\detokenize{reference:pypath.main.PyPath.iter_interactions}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{iter\_interactions}}}{\emph{signs=True}, \emph{all\_undirected=True}}{}
 Iterates over edges and yields interaction records.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{signs}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Ignoring signs if \sphinxcode{\sphinxupquote{False}}. This way each directed interaction
+will yield a single record even if it’s ambiguously labeled
+both positive and negative. The default behaviour is to yield
+two records in this case, one with positive and one with negative
+sign.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{all\_undirected}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Yield records for undirected interactions even if certain sources
+provide direction. If \sphinxcode{\sphinxupquote{False}} only the directed records will
+be provided and the undirected sources and references will be
+added to the directed records.
+
+\end{itemize}
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3325,15 +3481,6 @@ threshold specified by \sphinxstyleemphasis{critical}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{reference:pypath.main.PyPath.kinase_stats}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{kinase\_stats}}}{}{}
-\end{fulllineitems}
-
-\index{kinases\_list() (pypath.main.PyPath method)@\spxentry{kinases\_list()}\spxextra{pypath.main.PyPath method}}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.main.PyPath.kinases_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{kinases\_list}}}{}{}
-Loads the list of all known kinases in the proteome from
-kinase.com. This resource is human only.
-
 \end{fulllineitems}
 
 \index{label() (pypath.main.PyPath method)@\spxentry{label()}\spxextra{pypath.main.PyPath method}}
@@ -3641,28 +3788,6 @@ Initializes a ligand-receptor network.
 
 \end{fulllineitems}
 
-\index{load\_list() (pypath.main.PyPath method)@\spxentry{load\_list()}\spxextra{pypath.main.PyPath method}}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.main.PyPath.load_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_list}}}{\emph{lst}, \emph{name}}{}
-Loads a custom list to the object’s node data lists. See
-\sphinxcode{\sphinxupquote{pypath.main.PyPath.lists}} attribute for more
-information.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{itemize}
-\item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{lst}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} The list containing the node names {[}str{]} from the given
-category (\sphinxstyleemphasis{name}).
-
-\item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The category or identifier for the list of nodes provided.
-
-\end{itemize}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
 \index{load\_lmpid() (pypath.main.PyPath method)@\spxentry{load\_lmpid()}\spxextra{pypath.main.PyPath method}}
 
 \begin{fulllineitems}
@@ -3722,7 +3847,7 @@ Furthermore it gives some more options.
 \index{load\_omnipath() (pypath.main.PyPath method)@\spxentry{load\_omnipath()}\spxextra{pypath.main.PyPath method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.main.PyPath.load_omnipath}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_omnipath}}}{\emph{kinase\_substrate\_extra=False}, \emph{remove\_htp=True}, \emph{htp\_threshold=1}, \emph{keep\_directed=True}, \emph{min\_refs\_undirected=2}, \emph{old\_omnipath\_resources=False}}{}
+\phantomsection\label{\detokenize{reference:pypath.main.PyPath.load_omnipath}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_omnipath}}}{\emph{omnipath=None}, \emph{kinase\_substrate\_extra=False}, \emph{ligand\_receptor\_extra=False}, \emph{pathway\_extra=False}, \emph{remove\_htp=True}, \emph{htp\_threshold=1}, \emph{keep\_directed=True}, \emph{min\_refs\_undirected=2}, \emph{old\_omnipath\_resources=False}, \emph{exclude=None}}{}
 Loads the OmniPath network.
 
 \end{fulllineitems}
@@ -3873,7 +3998,7 @@ documentation for more information).
 \index{load\_ptms2() (pypath.main.PyPath method)@\spxentry{load\_ptms2()}\spxextra{pypath.main.PyPath method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.main.PyPath.load_ptms2}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_ptms2}}}{\emph{input\_methods=None, map\_by\_homology\_from={[}9606{]}, homology\_only\_swissprot=True, ptm\_homology\_strict=False, nonhuman\_direct\_lookup=True, inputargs=\{\}}}{}
+\phantomsection\label{\detokenize{reference:pypath.main.PyPath.load_ptms2}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_ptms2}}}{\emph{input\_methods=None, map\_by\_homology\_from={[}9606{]}, homology\_only\_swissprot=True, ptm\_homology\_strict=False, nonhuman\_direct\_lookup=True, inputargs=\{\}, database=None, force\_load=False}}{}
 This is a new method which will replace \sphinxtitleref{load\_ptms}.
 It uses \sphinxtitleref{pypath.ptm.PtmAggregator}, a newly introduced
 module for combining enzyme-substrate data from multiple
@@ -3919,6 +4044,16 @@ A \sphinxtitleref{dict} can be supplied for each resource, e.g.
 Those not used by \sphinxtitleref{PtmProcessor} are forwarded to the
 \sphinxtitleref{pypath.dataio} methods.
 
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{database}} \textendash{} A \sphinxcode{\sphinxupquote{PtmAggregator}} object. If provided no new database will be
+created.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{force\_load}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} If \sphinxcode{\sphinxupquote{True}} the database will be loaded with the parameters
+provided here; otherwise if the \sphinxcode{\sphinxupquote{ptm}} module already has a
+database no new database will be created. This means the
+parameters specified in other arguments might have no effect.
+
 \end{itemize}
 
 \end{description}\end{quote}
@@ -3928,7 +4063,7 @@ Those not used by \sphinxtitleref{PtmProcessor} are forwarded to the
 \index{load\_resource() (pypath.main.PyPath method)@\spxentry{load\_resource()}\spxextra{pypath.main.PyPath method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.main.PyPath.load_resource}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_resource}}}{\emph{settings}, \emph{clean=True}, \emph{cache\_files=\{\}}, \emph{reread=None}, \emph{redownload=False}, \emph{keep\_raw=False}}{}
+\phantomsection\label{\detokenize{reference:pypath.main.PyPath.load_resource}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_resource}}}{\emph{settings}, \emph{clean=True}, \emph{cache\_files=\{\}}, \emph{reread=None}, \emph{redownload=None}, \emph{keep\_raw=False}}{}
 Loads the data from a single resource and attaches it to the
 network
 \begin{quote}\begin{description}
@@ -3968,7 +4103,7 @@ re-download the data and ignore the cache.
 \index{load\_resources() (pypath.main.PyPath method)@\spxentry{load\_resources()}\spxextra{pypath.main.PyPath method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.main.PyPath.load_resources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_resources}}}{\emph{lst=None}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{reread=False}, \emph{redownload=False}, \emph{keep\_raw=False}}{}
+\phantomsection\label{\detokenize{reference:pypath.main.PyPath.load_resources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_resources}}}{\emph{lst=None}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{reread=False}, \emph{redownload=None}, \emph{keep\_raw=False}}{}
 Loads multiple resources, and cleans up after. Looks up ID
 types, and loads all ID conversion tables from UniProt if
 necessary. This is much faster than loading the ID conversion
@@ -4832,20 +4967,6 @@ object.
 \phantomsection\label{\detokenize{reference:pypath.main.PyPath.proteins}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{proteins}}}{\emph{identifiers}}{}
 \end{fulllineitems}
 
-\index{proteome\_list() (pypath.main.PyPath method)@\spxentry{proteome\_list()}\spxextra{pypath.main.PyPath method}}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.main.PyPath.proteome_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{proteome\_list}}}{\emph{swissprot=True}}{}
-Loads the whole proteome as a list.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{swissprot}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{True}} by default. Determines whether to use
-also the information from SwissProt.
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
 \index{ps() (pypath.main.PyPath method)@\spxentry{ps()}\spxextra{pypath.main.PyPath method}}
 
 \begin{fulllineitems}
@@ -4906,7 +5027,7 @@ Only for testing of the other method, to be deleted later.
 \index{read\_data\_file() (pypath.main.PyPath method)@\spxentry{read\_data\_file()}\spxextra{pypath.main.PyPath method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.main.PyPath.read_data_file}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{read\_data\_file}}}{\emph{param}, \emph{keep\_raw=False}, \emph{cache\_files=\{\}}, \emph{reread=None}, \emph{redownload=False}}{}
+\phantomsection\label{\detokenize{reference:pypath.main.PyPath.read_data_file}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{read\_data\_file}}}{\emph{param}, \emph{keep\_raw=False}, \emph{cache\_files=\{\}}, \emph{reread=None}, \emph{redownload=None}}{}
 Reads interaction data file containing node and edge attributes
 that can be read from simple text based files and adds it to the
 networkdata. This function works not only with files, but with
@@ -4990,16 +5111,6 @@ defined in \sphinxcode{\sphinxupquote{pypath.dataio}}.
 \end{itemize}
 
 \end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{receptors\_list() (pypath.main.PyPath method)@\spxentry{receptors\_list()}\spxextra{pypath.main.PyPath method}}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.main.PyPath.receptors_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{receptors\_list}}}{}{}
-Loads the Human Plasma Membrane Receptome as a list. This
-resource is human only.
-The list name is \sphinxcode{\sphinxupquote{rec}}.
 
 \end{fulllineitems}
 
@@ -5714,29 +5825,10 @@ The graph object to do the calculations on.
 
 \end{fulllineitems}
 
-\index{surfaceome\_list() (pypath.main.PyPath method)@\spxentry{surfaceome\_list()}\spxextra{pypath.main.PyPath method}}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.main.PyPath.surfaceome_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{surfaceome\_list}}}{\emph{score\_threshold=0.0}}{}
-Loads a list of cell surface proteins from the In Silico Human
-Surfaceome as a list. This resource is human only.
-The list name is \sphinxcode{\sphinxupquote{ishs}}.
-
-\end{fulllineitems}
-
 \index{table\_latex() (pypath.main.PyPath method)@\spxentry{table\_latex()}\spxextra{pypath.main.PyPath method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{reference:pypath.main.PyPath.table_latex}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{table\_latex}}}{\emph{fname}, \emph{header}, \emph{data}, \emph{sum\_row=True}, \emph{row\_order=None}, \emph{latex\_hdr=True}, \emph{caption=''}, \emph{font='HelveticaNeueLTStd-LtCn'}, \emph{fontsize=8}, \emph{sum\_label='Total'}, \emph{sum\_cols=None}, \emph{header\_format='\%s'}, \emph{by\_category=True}}{}
-\end{fulllineitems}
-
-\index{tfs\_list() (pypath.main.PyPath method)@\spxentry{tfs\_list()}\spxextra{pypath.main.PyPath method}}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.main.PyPath.tfs_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{tfs\_list}}}{}{}
-Loads the list of all known transcription factors from TF census
-(Vaquerizas 2009). This resource is human only.
-
 \end{fulllineitems}
 
 \index{third\_source\_directions() (pypath.main.PyPath method)@\spxentry{third\_source\_directions()}\spxextra{pypath.main.PyPath method}}
@@ -5908,7 +6000,7 @@ To be passed to igraph.Graph.get\_eid()
 \index{up\_neighborhood() (pypath.main.PyPath method)@\spxentry{up\_neighborhood()}\spxextra{pypath.main.PyPath method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{reference:pypath.main.PyPath.up_neighborhood}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{up\_neighborhood}}}{\emph{uniprot}, \emph{order=1}, \emph{mode='ALL'}}{}
+\phantomsection\label{\detokenize{reference:pypath.main.PyPath.up_neighborhood}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{up\_neighborhood}}}{\emph{uniprots}, \emph{order=1}, \emph{mode='ALL'}}{}
 \end{fulllineitems}
 
 \index{up\_neighbors() (pypath.main.PyPath method)@\spxentry{up\_neighbors()}\spxextra{pypath.main.PyPath method}}
@@ -6383,8 +6475,8 @@ sign of the interaction, \sphinxcode{\sphinxupquote{False}} otherwise.
 Checks if edge has any directionality information.
 \begin{quote}\begin{description}
 \item[{Returns}] \leavevmode
-(\sphinxstyleemphasis{bool}) \textendash{} Returns \sphinxcode{\sphinxupquote{True{}`{}`{}`if any of the :py:attr:{}`dirs{}`
-attribute values is {}`{}`True}} (except \sphinxcode{\sphinxupquote{'undirected'}}),
+(\sphinxstyleemphasis{bool}) \textendash{} Returns \sphinxcode{\sphinxupquote{True}} if any of the \sphinxcode{\sphinxupquote{dirs}}
+attribute values is \sphinxcode{\sphinxupquote{True}} (except \sphinxcode{\sphinxupquote{'undirected'}}),
 \sphinxcode{\sphinxupquote{False}} otherwise.
 
 \end{description}\end{quote}
@@ -6408,6 +6500,14 @@ directionality. If not specified, checks both.
 \sphinxstyleemphasis{direction}) is inhibitory (negative).
 
 \end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{is\_mutual() (pypath.main.Direction method)@\spxentry{is\_mutual()}\spxextra{pypath.main.Direction method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{reference:pypath.main.Direction.is_mutual}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{is\_mutual}}}{}{}
+Checks if the edge has mutual directions (both A\textendash{}\textgreater{}B and B\textendash{}\textgreater{}A).
 
 \end{fulllineitems}
 

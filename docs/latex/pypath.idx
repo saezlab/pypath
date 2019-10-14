@@ -1,445 +1,460 @@
 \indexentry{pypath.annot (module)@\spxentry{pypath.annot}\spxextra{module}|hyperpage}{7}
 \indexentry{Adhesome (class in pypath.annot)@\spxentry{Adhesome}\spxextra{class in pypath.annot}|hyperpage}{7}
 \indexentry{AnnotationBase (class in pypath.annot)@\spxentry{AnnotationBase}\spxextra{class in pypath.annot}|hyperpage}{7}
-\indexentry{all\_uniprots() (pypath.annot.AnnotationBase method)@\spxentry{all\_uniprots()}\spxextra{pypath.annot.AnnotationBase method}|hyperpage}{7}
+\indexentry{add\_complexes\_by\_inference() (pypath.annot.AnnotationBase method)@\spxentry{add\_complexes\_by\_inference()}\spxextra{pypath.annot.AnnotationBase method}|hyperpage}{7}
+\indexentry{all\_proteins() (pypath.annot.AnnotationBase method)@\spxentry{all\_proteins()}\spxextra{pypath.annot.AnnotationBase method}|hyperpage}{7}
+\indexentry{annotate\_complex() (pypath.annot.AnnotationBase method)@\spxentry{annotate\_complex()}\spxextra{pypath.annot.AnnotationBase method}|hyperpage}{7}
+\indexentry{complex\_inference() (pypath.annot.AnnotationBase method)@\spxentry{complex\_inference()}\spxextra{pypath.annot.AnnotationBase method}|hyperpage}{7}
 \indexentry{get\_subset() (pypath.annot.AnnotationBase method)@\spxentry{get\_subset()}\spxextra{pypath.annot.AnnotationBase method}|hyperpage}{7}
-\indexentry{load\_uniprots() (pypath.annot.AnnotationBase method)@\spxentry{load\_uniprots()}\spxextra{pypath.annot.AnnotationBase method}|hyperpage}{7}
+\indexentry{load\_proteins() (pypath.annot.AnnotationBase method)@\spxentry{load\_proteins()}\spxextra{pypath.annot.AnnotationBase method}|hyperpage}{7}
 \indexentry{reload() (pypath.annot.AnnotationBase method)@\spxentry{reload()}\spxextra{pypath.annot.AnnotationBase method}|hyperpage}{7}
+\indexentry{CancerGeneCensus (class in pypath.annot)@\spxentry{CancerGeneCensus}\spxextra{class in pypath.annot}|hyperpage}{7}
+\indexentry{Cancersea (class in pypath.annot)@\spxentry{Cancersea}\spxextra{class in pypath.annot}|hyperpage}{7}
 \indexentry{CellPhoneDB (class in pypath.annot)@\spxentry{CellPhoneDB}\spxextra{class in pypath.annot}|hyperpage}{7}
-\indexentry{CellPhoneDBComplex (class in pypath.annot)@\spxentry{CellPhoneDBComplex}\spxextra{class in pypath.annot}|hyperpage}{7}
-\indexentry{CellSurfaceProteinAtlas (class in pypath.annot)@\spxentry{CellSurfaceProteinAtlas}\spxextra{class in pypath.annot}|hyperpage}{7}
-\indexentry{Corum (class in pypath.annot)@\spxentry{Corum}\spxextra{class in pypath.annot}|hyperpage}{7}
-\indexentry{CorumFuncat (class in pypath.annot)@\spxentry{CorumFuncat}\spxextra{class in pypath.annot}|hyperpage}{7}
-\indexentry{CorumGO (class in pypath.annot)@\spxentry{CorumGO}\spxextra{class in pypath.annot}|hyperpage}{7}
-\indexentry{Exocarta (class in pypath.annot)@\spxentry{Exocarta}\spxextra{class in pypath.annot}|hyperpage}{7}
-\indexentry{GOIntercell (class in pypath.annot)@\spxentry{GOIntercell}\spxextra{class in pypath.annot}|hyperpage}{7}
-\indexentry{GuideToPharmacology (class in pypath.annot)@\spxentry{GuideToPharmacology}\spxextra{class in pypath.annot}|hyperpage}{7}
-\indexentry{Hgnc (class in pypath.annot)@\spxentry{Hgnc}\spxextra{class in pypath.annot}|hyperpage}{7}
-\indexentry{HpmrComplex (class in pypath.annot)@\spxentry{HpmrComplex}\spxextra{class in pypath.annot}|hyperpage}{7}
-\indexentry{HumanPlasmaMembraneReceptome (class in pypath.annot)@\spxentry{HumanPlasmaMembraneReceptome}\spxextra{class in pypath.annot}|hyperpage}{7}
-\indexentry{Integrins (class in pypath.annot)@\spxentry{Integrins}\spxextra{class in pypath.annot}|hyperpage}{7}
-\indexentry{Kirouac2010 (class in pypath.annot)@\spxentry{Kirouac2010}\spxextra{class in pypath.annot}|hyperpage}{7}
-\indexentry{LigandReceptor (class in pypath.annot)@\spxentry{LigandReceptor}\spxextra{class in pypath.annot}|hyperpage}{7}
+\indexentry{record (pypath.annot.CellPhoneDB attribute)@\spxentry{record}\spxextra{pypath.annot.CellPhoneDB attribute}|hyperpage}{7}
+\indexentry{CellPhoneDBComplex (class in pypath.annot)@\spxentry{CellPhoneDBComplex}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{CellSurfaceProteinAtlas (class in pypath.annot)@\spxentry{CellSurfaceProteinAtlas}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{Comppi (class in pypath.annot)@\spxentry{Comppi}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{Corum (class in pypath.annot)@\spxentry{Corum}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{CorumFuncat (class in pypath.annot)@\spxentry{CorumFuncat}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{CorumGO (class in pypath.annot)@\spxentry{CorumGO}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{Cpad (class in pypath.annot)@\spxentry{Cpad}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{Dgidb (class in pypath.annot)@\spxentry{Dgidb}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{Disgenet (class in pypath.annot)@\spxentry{Disgenet}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{Exocarta (class in pypath.annot)@\spxentry{Exocarta}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{GOIntercell (class in pypath.annot)@\spxentry{GOIntercell}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{GuideToPharmacology (class in pypath.annot)@\spxentry{GuideToPharmacology}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{Hgnc (class in pypath.annot)@\spxentry{Hgnc}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{HpmrComplex (class in pypath.annot)@\spxentry{HpmrComplex}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{HumanPlasmaMembraneReceptome (class in pypath.annot)@\spxentry{HumanPlasmaMembraneReceptome}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{HumanProteinAtlas (class in pypath.annot)@\spxentry{HumanProteinAtlas}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{Integrins (class in pypath.annot)@\spxentry{Integrins}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{Intogen (class in pypath.annot)@\spxentry{Intogen}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{KeggPathways (class in pypath.annot)@\spxentry{KeggPathways}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{Kinasedotcom (class in pypath.annot)@\spxentry{Kinasedotcom}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{Kirouac2010 (class in pypath.annot)@\spxentry{Kirouac2010}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{LigandReceptor (class in pypath.annot)@\spxentry{LigandReceptor}\spxextra{class in pypath.annot}|hyperpage}{8}
 \indexentry{Locate (class in pypath.annot)@\spxentry{Locate}\spxextra{class in pypath.annot}|hyperpage}{8}
 \indexentry{Matrisome (class in pypath.annot)@\spxentry{Matrisome}\spxextra{class in pypath.annot}|hyperpage}{8}
 \indexentry{Matrixdb (class in pypath.annot)@\spxentry{Matrixdb}\spxextra{class in pypath.annot}|hyperpage}{8}
 \indexentry{Membranome (class in pypath.annot)@\spxentry{Membranome}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{NetpathPathways (class in pypath.annot)@\spxentry{NetpathPathways}\spxextra{class in pypath.annot}|hyperpage}{8}
 \indexentry{Opm (class in pypath.annot)@\spxentry{Opm}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{Phosphatome (class in pypath.annot)@\spxentry{Phosphatome}\spxextra{class in pypath.annot}|hyperpage}{8}
 \indexentry{Ramilowski2015 (class in pypath.annot)@\spxentry{Ramilowski2015}\spxextra{class in pypath.annot}|hyperpage}{8}
-\indexentry{Surfaceome (class in pypath.annot)@\spxentry{Surfaceome}\spxextra{class in pypath.annot}|hyperpage}{8}
-\indexentry{Topdb (class in pypath.annot)@\spxentry{Topdb}\spxextra{class in pypath.annot}|hyperpage}{8}
-\indexentry{Vesiclepedia (class in pypath.annot)@\spxentry{Vesiclepedia}\spxextra{class in pypath.annot}|hyperpage}{8}
-\indexentry{Zhong2015 (class in pypath.annot)@\spxentry{Zhong2015}\spxextra{class in pypath.annot}|hyperpage}{8}
-\indexentry{get\_db() (in module pypath.annot)@\spxentry{get\_db()}\spxextra{in module pypath.annot}|hyperpage}{8}
-\indexentry{init\_db() (in module pypath.annot)@\spxentry{init\_db()}\spxextra{in module pypath.annot}|hyperpage}{8}
-\indexentry{pypath.complex (module)@\spxentry{pypath.complex}\spxextra{module}|hyperpage}{8}
-\indexentry{AbstractComplexResource (class in pypath.complex)@\spxentry{AbstractComplexResource}\spxextra{class in pypath.complex}|hyperpage}{8}
-\indexentry{CellPhoneDB (class in pypath.complex)@\spxentry{CellPhoneDB}\spxextra{class in pypath.complex}|hyperpage}{8}
-\indexentry{Compleat (class in pypath.complex)@\spxentry{Compleat}\spxextra{class in pypath.complex}|hyperpage}{8}
-\indexentry{ComplexAggregator (class in pypath.complex)@\spxentry{ComplexAggregator}\spxextra{class in pypath.complex}|hyperpage}{8}
-\indexentry{ComplexPortal (class in pypath.complex)@\spxentry{ComplexPortal}\spxextra{class in pypath.complex}|hyperpage}{8}
-\indexentry{Corum (class in pypath.complex)@\spxentry{Corum}\spxextra{class in pypath.complex}|hyperpage}{8}
-\indexentry{GuideToPharmacology (class in pypath.complex)@\spxentry{GuideToPharmacology}\spxextra{class in pypath.complex}|hyperpage}{8}
-\indexentry{Havugimana (class in pypath.complex)@\spxentry{Havugimana}\spxextra{class in pypath.complex}|hyperpage}{8}
-\indexentry{Hpmr (class in pypath.complex)@\spxentry{Hpmr}\spxextra{class in pypath.complex}|hyperpage}{8}
-\indexentry{Humap (class in pypath.complex)@\spxentry{Humap}\spxextra{class in pypath.complex}|hyperpage}{8}
-\indexentry{Pdb (class in pypath.complex)@\spxentry{Pdb}\spxextra{class in pypath.complex}|hyperpage}{8}
-\indexentry{Signor (class in pypath.complex)@\spxentry{Signor}\spxextra{class in pypath.complex}|hyperpage}{8}
-\indexentry{get\_db() (in module pypath.complex)@\spxentry{get\_db()}\spxextra{in module pypath.complex}|hyperpage}{8}
+\indexentry{Ramilowski2015Location (class in pypath.annot)@\spxentry{Ramilowski2015Location}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{SignalinkPathways (class in pypath.annot)@\spxentry{SignalinkPathways}\spxextra{class in pypath.annot}|hyperpage}{8}
+\indexentry{SignorPathways (class in pypath.annot)@\spxentry{SignorPathways}\spxextra{class in pypath.annot}|hyperpage}{9}
+\indexentry{Surfaceome (class in pypath.annot)@\spxentry{Surfaceome}\spxextra{class in pypath.annot}|hyperpage}{9}
+\indexentry{Tfcensus (class in pypath.annot)@\spxentry{Tfcensus}\spxextra{class in pypath.annot}|hyperpage}{9}
+\indexentry{Topdb (class in pypath.annot)@\spxentry{Topdb}\spxextra{class in pypath.annot}|hyperpage}{9}
+\indexentry{Vesiclepedia (class in pypath.annot)@\spxentry{Vesiclepedia}\spxextra{class in pypath.annot}|hyperpage}{9}
+\indexentry{Zhong2015 (class in pypath.annot)@\spxentry{Zhong2015}\spxextra{class in pypath.annot}|hyperpage}{9}
+\indexentry{get\_db() (in module pypath.annot)@\spxentry{get\_db()}\spxextra{in module pypath.annot}|hyperpage}{9}
+\indexentry{init\_db() (in module pypath.annot)@\spxentry{init\_db()}\spxextra{in module pypath.annot}|hyperpage}{9}
+\indexentry{pypath.complex (module)@\spxentry{pypath.complex}\spxextra{module}|hyperpage}{9}
+\indexentry{AbstractComplexResource (class in pypath.complex)@\spxentry{AbstractComplexResource}\spxextra{class in pypath.complex}|hyperpage}{9}
+\indexentry{CellPhoneDB (class in pypath.complex)@\spxentry{CellPhoneDB}\spxextra{class in pypath.complex}|hyperpage}{9}
+\indexentry{Compleat (class in pypath.complex)@\spxentry{Compleat}\spxextra{class in pypath.complex}|hyperpage}{9}
+\indexentry{ComplexAggregator (class in pypath.complex)@\spxentry{ComplexAggregator}\spxextra{class in pypath.complex}|hyperpage}{9}
+\indexentry{reload() (pypath.complex.ComplexAggregator method)@\spxentry{reload()}\spxextra{pypath.complex.ComplexAggregator method}|hyperpage}{9}
+\indexentry{ComplexPortal (class in pypath.complex)@\spxentry{ComplexPortal}\spxextra{class in pypath.complex}|hyperpage}{9}
+\indexentry{Corum (class in pypath.complex)@\spxentry{Corum}\spxextra{class in pypath.complex}|hyperpage}{9}
+\indexentry{GuideToPharmacology (class in pypath.complex)@\spxentry{GuideToPharmacology}\spxextra{class in pypath.complex}|hyperpage}{9}
+\indexentry{Havugimana (class in pypath.complex)@\spxentry{Havugimana}\spxextra{class in pypath.complex}|hyperpage}{9}
+\indexentry{Hpmr (class in pypath.complex)@\spxentry{Hpmr}\spxextra{class in pypath.complex}|hyperpage}{9}
+\indexentry{Humap (class in pypath.complex)@\spxentry{Humap}\spxextra{class in pypath.complex}|hyperpage}{9}
+\indexentry{Pdb (class in pypath.complex)@\spxentry{Pdb}\spxextra{class in pypath.complex}|hyperpage}{9}
+\indexentry{Signor (class in pypath.complex)@\spxentry{Signor}\spxextra{class in pypath.complex}|hyperpage}{9}
+\indexentry{all\_complexes() (in module pypath.complex)@\spxentry{all\_complexes()}\spxextra{in module pypath.complex}|hyperpage}{9}
+\indexentry{get\_db() (in module pypath.complex)@\spxentry{get\_db()}\spxextra{in module pypath.complex}|hyperpage}{9}
 \indexentry{init\_db() (in module pypath.complex)@\spxentry{init\_db()}\spxextra{in module pypath.complex}|hyperpage}{9}
-\indexentry{pypath.intera (module)@\spxentry{pypath.intera}\spxextra{module}|hyperpage}{9}
-\indexentry{pypath.intercell (module)@\spxentry{pypath.intercell}\spxextra{module}|hyperpage}{9}
-\indexentry{IntercellRole (class in pypath.intercell)@\spxentry{IntercellRole}\spxextra{class in pypath.intercell}|hyperpage}{9}
-\indexentry{role (pypath.intercell.IntercellRole attribute)@\spxentry{role}\spxextra{pypath.intercell.IntercellRole attribute}|hyperpage}{9}
-\indexentry{source (pypath.intercell.IntercellRole attribute)@\spxentry{source}\spxextra{pypath.intercell.IntercellRole attribute}|hyperpage}{9}
-\indexentry{pypath.main (module)@\spxentry{pypath.main}\spxextra{module}|hyperpage}{9}
-\indexentry{PyPath (class in pypath.main)@\spxentry{PyPath}\spxextra{class in pypath.main}|hyperpage}{9}
-\indexentry{acsn\_effects() (pypath.main.PyPath method)@\spxentry{acsn\_effects()}\spxextra{pypath.main.PyPath method}|hyperpage}{12}
-\indexentry{add\_genesets() (pypath.main.PyPath method)@\spxentry{add\_genesets()}\spxextra{pypath.main.PyPath method}|hyperpage}{12}
-\indexentry{add\_grouped\_eattr() (pypath.main.PyPath method)@\spxentry{add\_grouped\_eattr()}\spxextra{pypath.main.PyPath method}|hyperpage}{12}
-\indexentry{add\_grouped\_set\_eattr() (pypath.main.PyPath method)@\spxentry{add\_grouped\_set\_eattr()}\spxextra{pypath.main.PyPath method}|hyperpage}{12}
-\indexentry{add\_list\_eattr() (pypath.main.PyPath method)@\spxentry{add\_list\_eattr()}\spxextra{pypath.main.PyPath method}|hyperpage}{13}
-\indexentry{add\_set\_eattr() (pypath.main.PyPath method)@\spxentry{add\_set\_eattr()}\spxextra{pypath.main.PyPath method}|hyperpage}{13}
-\indexentry{add\_update\_edge() (pypath.main.PyPath method)@\spxentry{add\_update\_edge()}\spxextra{pypath.main.PyPath method}|hyperpage}{13}
-\indexentry{add\_update\_vertex() (pypath.main.PyPath method)@\spxentry{add\_update\_vertex()}\spxextra{pypath.main.PyPath method}|hyperpage}{13}
-\indexentry{affects() (pypath.main.PyPath method)@\spxentry{affects()}\spxextra{pypath.main.PyPath method}|hyperpage}{14}
-\indexentry{all\_between() (pypath.main.PyPath method)@\spxentry{all\_between()}\spxextra{pypath.main.PyPath method}|hyperpage}{14}
-\indexentry{all\_neighbours() (pypath.main.PyPath method)@\spxentry{all\_neighbours()}\spxextra{pypath.main.PyPath method}|hyperpage}{14}
-\indexentry{apply\_list() (pypath.main.PyPath method)@\spxentry{apply\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{14}
-\indexentry{apply\_negative() (pypath.main.PyPath method)@\spxentry{apply\_negative()}\spxextra{pypath.main.PyPath method}|hyperpage}{14}
-\indexentry{attach\_network() (pypath.main.PyPath method)@\spxentry{attach\_network()}\spxextra{pypath.main.PyPath method}|hyperpage}{14}
-\indexentry{basic\_stats() (pypath.main.PyPath method)@\spxentry{basic\_stats()}\spxextra{pypath.main.PyPath method}|hyperpage}{15}
-\indexentry{basic\_stats\_intergroup() (pypath.main.PyPath method)@\spxentry{basic\_stats\_intergroup()}\spxextra{pypath.main.PyPath method}|hyperpage}{15}
-\indexentry{cancer\_drivers\_list() (pypath.main.PyPath method)@\spxentry{cancer\_drivers\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{15}
-\indexentry{cancer\_gene\_census\_list() (pypath.main.PyPath method)@\spxentry{cancer\_gene\_census\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{15}
-\indexentry{clean\_graph() (pypath.main.PyPath method)@\spxentry{clean\_graph()}\spxextra{pypath.main.PyPath method}|hyperpage}{15}
-\indexentry{collapse\_by\_name() (pypath.main.PyPath method)@\spxentry{collapse\_by\_name()}\spxextra{pypath.main.PyPath method}|hyperpage}{15}
-\indexentry{combine\_attr() (pypath.main.PyPath method)@\spxentry{combine\_attr()}\spxextra{pypath.main.PyPath method}|hyperpage}{15}
-\indexentry{communities() (pypath.main.PyPath method)@\spxentry{communities()}\spxextra{pypath.main.PyPath method}|hyperpage}{16}
-\indexentry{complex\_comembership\_network() (pypath.main.PyPath method)@\spxentry{complex\_comembership\_network()}\spxextra{pypath.main.PyPath method}|hyperpage}{16}
-\indexentry{complexes() (pypath.main.PyPath method)@\spxentry{complexes()}\spxextra{pypath.main.PyPath method}|hyperpage}{16}
-\indexentry{complexes\_in\_network() (pypath.main.PyPath method)@\spxentry{complexes\_in\_network()}\spxextra{pypath.main.PyPath method}|hyperpage}{16}
-\indexentry{compounds\_from\_chembl() (pypath.main.PyPath method)@\spxentry{compounds\_from\_chembl()}\spxextra{pypath.main.PyPath method}|hyperpage}{16}
-\indexentry{consistency() (pypath.main.PyPath method)@\spxentry{consistency()}\spxextra{pypath.main.PyPath method}|hyperpage}{16}
-\indexentry{copy() (pypath.main.PyPath method)@\spxentry{copy()}\spxextra{pypath.main.PyPath method}|hyperpage}{16}
+\indexentry{pypath.intera (module)@\spxentry{pypath.intera}\spxextra{module}|hyperpage}{10}
+\indexentry{pypath.intercell (module)@\spxentry{pypath.intercell}\spxextra{module}|hyperpage}{10}
+\indexentry{IntercellRole (class in pypath.intercell)@\spxentry{IntercellRole}\spxextra{class in pypath.intercell}|hyperpage}{10}
+\indexentry{role (pypath.intercell.IntercellRole attribute)@\spxentry{role}\spxextra{pypath.intercell.IntercellRole attribute}|hyperpage}{10}
+\indexentry{source (pypath.intercell.IntercellRole attribute)@\spxentry{source}\spxextra{pypath.intercell.IntercellRole attribute}|hyperpage}{10}
+\indexentry{pypath.main (module)@\spxentry{pypath.main}\spxextra{module}|hyperpage}{10}
+\indexentry{PyPath (class in pypath.main)@\spxentry{PyPath}\spxextra{class in pypath.main}|hyperpage}{10}
+\indexentry{acsn\_effects() (pypath.main.PyPath method)@\spxentry{acsn\_effects()}\spxextra{pypath.main.PyPath method}|hyperpage}{13}
+\indexentry{add\_genesets() (pypath.main.PyPath method)@\spxentry{add\_genesets()}\spxextra{pypath.main.PyPath method}|hyperpage}{13}
+\indexentry{add\_grouped\_eattr() (pypath.main.PyPath method)@\spxentry{add\_grouped\_eattr()}\spxextra{pypath.main.PyPath method}|hyperpage}{13}
+\indexentry{add\_grouped\_set\_eattr() (pypath.main.PyPath method)@\spxentry{add\_grouped\_set\_eattr()}\spxextra{pypath.main.PyPath method}|hyperpage}{13}
+\indexentry{add\_list\_eattr() (pypath.main.PyPath method)@\spxentry{add\_list\_eattr()}\spxextra{pypath.main.PyPath method}|hyperpage}{14}
+\indexentry{add\_set\_eattr() (pypath.main.PyPath method)@\spxentry{add\_set\_eattr()}\spxextra{pypath.main.PyPath method}|hyperpage}{14}
+\indexentry{add\_update\_edge() (pypath.main.PyPath method)@\spxentry{add\_update\_edge()}\spxextra{pypath.main.PyPath method}|hyperpage}{14}
+\indexentry{add\_update\_vertex() (pypath.main.PyPath method)@\spxentry{add\_update\_vertex()}\spxextra{pypath.main.PyPath method}|hyperpage}{14}
+\indexentry{affects() (pypath.main.PyPath method)@\spxentry{affects()}\spxextra{pypath.main.PyPath method}|hyperpage}{15}
+\indexentry{all\_between() (pypath.main.PyPath method)@\spxentry{all\_between()}\spxextra{pypath.main.PyPath method}|hyperpage}{15}
+\indexentry{all\_neighbours() (pypath.main.PyPath method)@\spxentry{all\_neighbours()}\spxextra{pypath.main.PyPath method}|hyperpage}{15}
+\indexentry{apply\_list() (pypath.main.PyPath method)@\spxentry{apply\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{15}
+\indexentry{apply\_negative() (pypath.main.PyPath method)@\spxentry{apply\_negative()}\spxextra{pypath.main.PyPath method}|hyperpage}{15}
+\indexentry{attach\_network() (pypath.main.PyPath method)@\spxentry{attach\_network()}\spxextra{pypath.main.PyPath method}|hyperpage}{15}
+\indexentry{basic\_stats() (pypath.main.PyPath method)@\spxentry{basic\_stats()}\spxextra{pypath.main.PyPath method}|hyperpage}{16}
+\indexentry{basic\_stats\_intergroup() (pypath.main.PyPath method)@\spxentry{basic\_stats\_intergroup()}\spxextra{pypath.main.PyPath method}|hyperpage}{16}
+\indexentry{cancer\_drivers\_list() (pypath.main.PyPath method)@\spxentry{cancer\_drivers\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{16}
+\indexentry{cancer\_gene\_census\_list() (pypath.main.PyPath method)@\spxentry{cancer\_gene\_census\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{16}
+\indexentry{clean\_graph() (pypath.main.PyPath method)@\spxentry{clean\_graph()}\spxextra{pypath.main.PyPath method}|hyperpage}{16}
+\indexentry{collapse\_by\_name() (pypath.main.PyPath method)@\spxentry{collapse\_by\_name()}\spxextra{pypath.main.PyPath method}|hyperpage}{16}
+\indexentry{combine\_attr() (pypath.main.PyPath method)@\spxentry{combine\_attr()}\spxextra{pypath.main.PyPath method}|hyperpage}{16}
+\indexentry{communities() (pypath.main.PyPath method)@\spxentry{communities()}\spxextra{pypath.main.PyPath method}|hyperpage}{17}
+\indexentry{complex\_comembership\_network() (pypath.main.PyPath method)@\spxentry{complex\_comembership\_network()}\spxextra{pypath.main.PyPath method}|hyperpage}{17}
+\indexentry{complexes() (pypath.main.PyPath method)@\spxentry{complexes()}\spxextra{pypath.main.PyPath method}|hyperpage}{17}
+\indexentry{complexes\_in\_network() (pypath.main.PyPath method)@\spxentry{complexes\_in\_network()}\spxextra{pypath.main.PyPath method}|hyperpage}{17}
+\indexentry{compounds\_from\_chembl() (pypath.main.PyPath method)@\spxentry{compounds\_from\_chembl()}\spxextra{pypath.main.PyPath method}|hyperpage}{17}
+\indexentry{consistency() (pypath.main.PyPath method)@\spxentry{consistency()}\spxextra{pypath.main.PyPath method}|hyperpage}{17}
+\indexentry{copy() (pypath.main.PyPath method)@\spxentry{copy()}\spxextra{pypath.main.PyPath method}|hyperpage}{17}
 \indexentry{copy\_edges() (pypath.main.PyPath method)@\spxentry{copy\_edges()}\spxextra{pypath.main.PyPath method}|hyperpage}{17}
-\indexentry{count\_sol() (pypath.main.PyPath method)@\spxentry{count\_sol()}\spxextra{pypath.main.PyPath method}|hyperpage}{17}
-\indexentry{coverage() (pypath.main.PyPath method)@\spxentry{coverage()}\spxextra{pypath.main.PyPath method}|hyperpage}{17}
-\indexentry{cspa\_list() (pypath.main.PyPath method)@\spxentry{cspa\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{17}
-\indexentry{curation\_effort() (pypath.main.PyPath method)@\spxentry{curation\_effort()}\spxextra{pypath.main.PyPath method}|hyperpage}{17}
-\indexentry{curation\_stats() (pypath.main.PyPath method)@\spxentry{curation\_stats()}\spxextra{pypath.main.PyPath method}|hyperpage}{17}
-\indexentry{curation\_tab() (pypath.main.PyPath method)@\spxentry{curation\_tab()}\spxextra{pypath.main.PyPath method}|hyperpage}{17}
-\indexentry{curators\_work() (pypath.main.PyPath method)@\spxentry{curators\_work()}\spxextra{pypath.main.PyPath method}|hyperpage}{17}
-\indexentry{databases\_similarity() (pypath.main.PyPath method)@\spxentry{databases\_similarity()}\spxextra{pypath.main.PyPath method}|hyperpage}{17}
-\indexentry{degree\_dist() (pypath.main.PyPath method)@\spxentry{degree\_dist()}\spxextra{pypath.main.PyPath method}|hyperpage}{17}
-\indexentry{degree\_dists() (pypath.main.PyPath method)@\spxentry{degree\_dists()}\spxextra{pypath.main.PyPath method}|hyperpage}{18}
-\indexentry{delete\_by\_organism() (pypath.main.PyPath method)@\spxentry{delete\_by\_organism()}\spxextra{pypath.main.PyPath method}|hyperpage}{18}
-\indexentry{delete\_by\_source() (pypath.main.PyPath method)@\spxentry{delete\_by\_source()}\spxextra{pypath.main.PyPath method}|hyperpage}{18}
-\indexentry{delete\_unknown() (pypath.main.PyPath method)@\spxentry{delete\_unknown()}\spxextra{pypath.main.PyPath method}|hyperpage}{18}
-\indexentry{delete\_unmapped() (pypath.main.PyPath method)@\spxentry{delete\_unmapped()}\spxextra{pypath.main.PyPath method}|hyperpage}{18}
-\indexentry{dgenesymbol() (pypath.main.PyPath method)@\spxentry{dgenesymbol()}\spxextra{pypath.main.PyPath method}|hyperpage}{18}
+\indexentry{count\_sol() (pypath.main.PyPath method)@\spxentry{count\_sol()}\spxextra{pypath.main.PyPath method}|hyperpage}{18}
+\indexentry{coverage() (pypath.main.PyPath method)@\spxentry{coverage()}\spxextra{pypath.main.PyPath method}|hyperpage}{18}
+\indexentry{curation\_effort() (pypath.main.PyPath method)@\spxentry{curation\_effort()}\spxextra{pypath.main.PyPath method}|hyperpage}{18}
+\indexentry{curation\_stats() (pypath.main.PyPath method)@\spxentry{curation\_stats()}\spxextra{pypath.main.PyPath method}|hyperpage}{18}
+\indexentry{curation\_tab() (pypath.main.PyPath method)@\spxentry{curation\_tab()}\spxextra{pypath.main.PyPath method}|hyperpage}{18}
+\indexentry{curators\_work() (pypath.main.PyPath method)@\spxentry{curators\_work()}\spxextra{pypath.main.PyPath method}|hyperpage}{18}
+\indexentry{databases\_similarity() (pypath.main.PyPath method)@\spxentry{databases\_similarity()}\spxextra{pypath.main.PyPath method}|hyperpage}{18}
+\indexentry{degree\_dist() (pypath.main.PyPath method)@\spxentry{degree\_dist()}\spxextra{pypath.main.PyPath method}|hyperpage}{18}
+\indexentry{degree\_dists() (pypath.main.PyPath method)@\spxentry{degree\_dists()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
+\indexentry{delete\_by\_organism() (pypath.main.PyPath method)@\spxentry{delete\_by\_organism()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
+\indexentry{delete\_by\_source() (pypath.main.PyPath method)@\spxentry{delete\_by\_source()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
+\indexentry{delete\_unknown() (pypath.main.PyPath method)@\spxentry{delete\_unknown()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
+\indexentry{delete\_unmapped() (pypath.main.PyPath method)@\spxentry{delete\_unmapped()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
+\indexentry{dgenesymbol() (pypath.main.PyPath method)@\spxentry{dgenesymbol()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
 \indexentry{dgenesymbols() (pypath.main.PyPath method)@\spxentry{dgenesymbols()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
 \indexentry{dgs() (pypath.main.PyPath method)@\spxentry{dgs()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
 \indexentry{dgss() (pypath.main.PyPath method)@\spxentry{dgss()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
-\indexentry{disease\_genes\_list() (pypath.main.PyPath method)@\spxentry{disease\_genes\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
-\indexentry{dneighbors() (pypath.main.PyPath method)@\spxentry{dneighbors()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
-\indexentry{dp() (pypath.main.PyPath method)@\spxentry{dp()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
-\indexentry{dproteins() (pypath.main.PyPath method)@\spxentry{dproteins()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
-\indexentry{dps() (pypath.main.PyPath method)@\spxentry{dps()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
-\indexentry{druggability\_list() (pypath.main.PyPath method)@\spxentry{druggability\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
-\indexentry{duniprot() (pypath.main.PyPath method)@\spxentry{duniprot()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
-\indexentry{duniprots() (pypath.main.PyPath method)@\spxentry{duniprots()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
-\indexentry{dup() (pypath.main.PyPath method)@\spxentry{dup()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
-\indexentry{dups() (pypath.main.PyPath method)@\spxentry{dups()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
-\indexentry{dv() (pypath.main.PyPath method)@\spxentry{dv()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
-\indexentry{dvs() (pypath.main.PyPath method)@\spxentry{dvs()}\spxextra{pypath.main.PyPath method}|hyperpage}{19}
+\indexentry{dneighbors() (pypath.main.PyPath method)@\spxentry{dneighbors()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
+\indexentry{dp() (pypath.main.PyPath method)@\spxentry{dp()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
+\indexentry{dproteins() (pypath.main.PyPath method)@\spxentry{dproteins()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
+\indexentry{dps() (pypath.main.PyPath method)@\spxentry{dps()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
+\indexentry{duniprot() (pypath.main.PyPath method)@\spxentry{duniprot()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
+\indexentry{duniprots() (pypath.main.PyPath method)@\spxentry{duniprots()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
+\indexentry{dup() (pypath.main.PyPath method)@\spxentry{dup()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
+\indexentry{dups() (pypath.main.PyPath method)@\spxentry{dups()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
+\indexentry{dv() (pypath.main.PyPath method)@\spxentry{dv()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
+\indexentry{dvs() (pypath.main.PyPath method)@\spxentry{dvs()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
 \indexentry{edge\_exists() (pypath.main.PyPath method)@\spxentry{edge\_exists()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
 \indexentry{edge\_loc() (pypath.main.PyPath method)@\spxentry{edge\_loc()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
 \indexentry{edge\_names() (pypath.main.PyPath method)@\spxentry{edge\_names()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
-\indexentry{edges\_3d() (pypath.main.PyPath method)@\spxentry{edges\_3d()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
-\indexentry{edges\_between() (pypath.main.PyPath method)@\spxentry{edges\_between()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
-\indexentry{edges\_expression() (pypath.main.PyPath method)@\spxentry{edges\_expression()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
-\indexentry{edges\_in\_comlexes() (pypath.main.PyPath method)@\spxentry{edges\_in\_comlexes()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
-\indexentry{edges\_ptms() (pypath.main.PyPath method)@\spxentry{edges\_ptms()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
-\indexentry{edgeseq\_inverse() (pypath.main.PyPath method)@\spxentry{edgeseq\_inverse()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
-\indexentry{export\_dot() (pypath.main.PyPath method)@\spxentry{export\_dot()}\spxextra{pypath.main.PyPath method}|hyperpage}{20}
-\indexentry{export\_edgelist() (pypath.main.PyPath method)@\spxentry{export\_edgelist()}\spxextra{pypath.main.PyPath method}|hyperpage}{21}
-\indexentry{export\_graphml() (pypath.main.PyPath method)@\spxentry{export\_graphml()}\spxextra{pypath.main.PyPath method}|hyperpage}{21}
+\indexentry{edges\_3d() (pypath.main.PyPath method)@\spxentry{edges\_3d()}\spxextra{pypath.main.PyPath method}|hyperpage}{21}
+\indexentry{edges\_between() (pypath.main.PyPath method)@\spxentry{edges\_between()}\spxextra{pypath.main.PyPath method}|hyperpage}{21}
+\indexentry{edges\_expression() (pypath.main.PyPath method)@\spxentry{edges\_expression()}\spxextra{pypath.main.PyPath method}|hyperpage}{21}
+\indexentry{edges\_in\_comlexes() (pypath.main.PyPath method)@\spxentry{edges\_in\_comlexes()}\spxextra{pypath.main.PyPath method}|hyperpage}{21}
+\indexentry{edges\_ptms() (pypath.main.PyPath method)@\spxentry{edges\_ptms()}\spxextra{pypath.main.PyPath method}|hyperpage}{21}
+\indexentry{edgeseq\_inverse() (pypath.main.PyPath method)@\spxentry{edgeseq\_inverse()}\spxextra{pypath.main.PyPath method}|hyperpage}{21}
+\indexentry{entities\_by\_resources() (pypath.main.PyPath method)@\spxentry{entities\_by\_resources()}\spxextra{pypath.main.PyPath method}|hyperpage}{21}
+\indexentry{export\_dot() (pypath.main.PyPath method)@\spxentry{export\_dot()}\spxextra{pypath.main.PyPath method}|hyperpage}{21}
+\indexentry{export\_edgelist() (pypath.main.PyPath method)@\spxentry{export\_edgelist()}\spxextra{pypath.main.PyPath method}|hyperpage}{22}
+\indexentry{export\_graphml() (pypath.main.PyPath method)@\spxentry{export\_graphml()}\spxextra{pypath.main.PyPath method}|hyperpage}{22}
 \indexentry{export\_ptms\_tab() (pypath.main.PyPath method)@\spxentry{export\_ptms\_tab()}\spxextra{pypath.main.PyPath method}|hyperpage}{22}
 \indexentry{export\_sif() (pypath.main.PyPath method)@\spxentry{export\_sif()}\spxextra{pypath.main.PyPath method}|hyperpage}{22}
-\indexentry{export\_struct\_tab() (pypath.main.PyPath method)@\spxentry{export\_struct\_tab()}\spxextra{pypath.main.PyPath method}|hyperpage}{22}
-\indexentry{export\_tab() (pypath.main.PyPath method)@\spxentry{export\_tab()}\spxextra{pypath.main.PyPath method}|hyperpage}{22}
-\indexentry{filters() (pypath.main.PyPath method)@\spxentry{filters()}\spxextra{pypath.main.PyPath method}|hyperpage}{22}
-\indexentry{find\_all\_paths() (pypath.main.PyPath method)@\spxentry{find\_all\_paths()}\spxextra{pypath.main.PyPath method}|hyperpage}{22}
+\indexentry{export\_struct\_tab() (pypath.main.PyPath method)@\spxentry{export\_struct\_tab()}\spxextra{pypath.main.PyPath method}|hyperpage}{23}
+\indexentry{export\_tab() (pypath.main.PyPath method)@\spxentry{export\_tab()}\spxextra{pypath.main.PyPath method}|hyperpage}{23}
+\indexentry{filters() (pypath.main.PyPath method)@\spxentry{filters()}\spxextra{pypath.main.PyPath method}|hyperpage}{23}
+\indexentry{find\_all\_paths() (pypath.main.PyPath method)@\spxentry{find\_all\_paths()}\spxextra{pypath.main.PyPath method}|hyperpage}{23}
 \indexentry{find\_all\_paths2() (pypath.main.PyPath method)@\spxentry{find\_all\_paths2()}\spxextra{pypath.main.PyPath method}|hyperpage}{23}
 \indexentry{find\_complex() (pypath.main.PyPath method)@\spxentry{find\_complex()}\spxextra{pypath.main.PyPath method}|hyperpage}{23}
 \indexentry{first\_neighbours() (pypath.main.PyPath method)@\spxentry{first\_neighbours()}\spxextra{pypath.main.PyPath method}|hyperpage}{23}
-\indexentry{fisher\_enrichment() (pypath.main.PyPath method)@\spxentry{fisher\_enrichment()}\spxextra{pypath.main.PyPath method}|hyperpage}{23}
-\indexentry{geneset\_enrichment() (pypath.main.PyPath method)@\spxentry{geneset\_enrichment()}\spxextra{pypath.main.PyPath method}|hyperpage}{23}
-\indexentry{genesymbol() (pypath.main.PyPath method)@\spxentry{genesymbol()}\spxextra{pypath.main.PyPath method}|hyperpage}{23}
+\indexentry{fisher\_enrichment() (pypath.main.PyPath method)@\spxentry{fisher\_enrichment()}\spxextra{pypath.main.PyPath method}|hyperpage}{24}
+\indexentry{geneset\_enrichment() (pypath.main.PyPath method)@\spxentry{geneset\_enrichment()}\spxextra{pypath.main.PyPath method}|hyperpage}{24}
+\indexentry{genesymbol() (pypath.main.PyPath method)@\spxentry{genesymbol()}\spxextra{pypath.main.PyPath method}|hyperpage}{24}
 \indexentry{genesymbol\_labels() (pypath.main.PyPath method)@\spxentry{genesymbol\_labels()}\spxextra{pypath.main.PyPath method}|hyperpage}{24}
-\indexentry{genesymbols() (pypath.main.PyPath method)@\spxentry{genesymbols()}\spxextra{pypath.main.PyPath method}|hyperpage}{24}
-\indexentry{get\_attrs() (pypath.main.PyPath method)@\spxentry{get\_attrs()}\spxextra{pypath.main.PyPath method}|hyperpage}{24}
-\indexentry{get\_directed() (pypath.main.PyPath method)@\spxentry{get\_directed()}\spxextra{pypath.main.PyPath method}|hyperpage}{24}
-\indexentry{get\_dirs\_signs() (pypath.main.PyPath method)@\spxentry{get\_dirs\_signs()}\spxextra{pypath.main.PyPath method}|hyperpage}{24}
-\indexentry{get\_edge() (pypath.main.PyPath method)@\spxentry{get\_edge()}\spxextra{pypath.main.PyPath method}|hyperpage}{24}
-\indexentry{get\_edges() (pypath.main.PyPath method)@\spxentry{get\_edges()}\spxextra{pypath.main.PyPath method}|hyperpage}{24}
+\indexentry{genesymbols() (pypath.main.PyPath method)@\spxentry{genesymbols()}\spxextra{pypath.main.PyPath method}|hyperpage}{25}
+\indexentry{get\_attrs() (pypath.main.PyPath method)@\spxentry{get\_attrs()}\spxextra{pypath.main.PyPath method}|hyperpage}{25}
+\indexentry{get\_directed() (pypath.main.PyPath method)@\spxentry{get\_directed()}\spxextra{pypath.main.PyPath method}|hyperpage}{25}
+\indexentry{get\_dirs\_signs() (pypath.main.PyPath method)@\spxentry{get\_dirs\_signs()}\spxextra{pypath.main.PyPath method}|hyperpage}{25}
+\indexentry{get\_edge() (pypath.main.PyPath method)@\spxentry{get\_edge()}\spxextra{pypath.main.PyPath method}|hyperpage}{25}
+\indexentry{get\_edges() (pypath.main.PyPath method)@\spxentry{get\_edges()}\spxextra{pypath.main.PyPath method}|hyperpage}{25}
 \indexentry{get\_function() (pypath.main.PyPath method)@\spxentry{get\_function()}\spxextra{pypath.main.PyPath method}|hyperpage}{25}
 \indexentry{get\_giant() (pypath.main.PyPath method)@\spxentry{get\_giant()}\spxextra{pypath.main.PyPath method}|hyperpage}{25}
-\indexentry{get\_go() (pypath.main.PyPath method)@\spxentry{get\_go()}\spxextra{pypath.main.PyPath method}|hyperpage}{25}
-\indexentry{get\_max() (pypath.main.PyPath method)@\spxentry{get\_max()}\spxextra{pypath.main.PyPath method}|hyperpage}{25}
-\indexentry{get\_network() (pypath.main.PyPath method)@\spxentry{get\_network()}\spxextra{pypath.main.PyPath method}|hyperpage}{25}
-\indexentry{get\_node() (pypath.main.PyPath method)@\spxentry{get\_node()}\spxextra{pypath.main.PyPath method}|hyperpage}{25}
-\indexentry{get\_node\_d() (pypath.main.PyPath method)@\spxentry{get\_node\_d()}\spxextra{pypath.main.PyPath method}|hyperpage}{25}
+\indexentry{get\_go() (pypath.main.PyPath method)@\spxentry{get\_go()}\spxextra{pypath.main.PyPath method}|hyperpage}{26}
+\indexentry{get\_max() (pypath.main.PyPath method)@\spxentry{get\_max()}\spxextra{pypath.main.PyPath method}|hyperpage}{26}
+\indexentry{get\_network() (pypath.main.PyPath method)@\spxentry{get\_network()}\spxextra{pypath.main.PyPath method}|hyperpage}{26}
+\indexentry{get\_node() (pypath.main.PyPath method)@\spxentry{get\_node()}\spxextra{pypath.main.PyPath method}|hyperpage}{26}
+\indexentry{get\_node\_d() (pypath.main.PyPath method)@\spxentry{get\_node\_d()}\spxextra{pypath.main.PyPath method}|hyperpage}{26}
 \indexentry{get\_node\_pair() (pypath.main.PyPath method)@\spxentry{get\_node\_pair()}\spxextra{pypath.main.PyPath method}|hyperpage}{26}
-\indexentry{get\_nodes() (pypath.main.PyPath method)@\spxentry{get\_nodes()}\spxextra{pypath.main.PyPath method}|hyperpage}{26}
-\indexentry{get\_nodes\_d() (pypath.main.PyPath method)@\spxentry{get\_nodes\_d()}\spxextra{pypath.main.PyPath method}|hyperpage}{26}
-\indexentry{get\_pathways() (pypath.main.PyPath method)@\spxentry{get\_pathways()}\spxextra{pypath.main.PyPath method}|hyperpage}{26}
-\indexentry{get\_proteomicsdb() (pypath.main.PyPath method)@\spxentry{get\_proteomicsdb()}\spxextra{pypath.main.PyPath method}|hyperpage}{26}
-\indexentry{get\_sub() (pypath.main.PyPath method)@\spxentry{get\_sub()}\spxextra{pypath.main.PyPath method}|hyperpage}{26}
-\indexentry{get\_taxon() (pypath.main.PyPath method)@\spxentry{get\_taxon()}\spxextra{pypath.main.PyPath method}|hyperpage}{26}
-\indexentry{go\_annotate\_graph() (pypath.main.PyPath method)@\spxentry{go\_annotate\_graph()}\spxextra{pypath.main.PyPath method}|hyperpage}{26}
-\indexentry{go\_enrichment() (pypath.main.PyPath method)@\spxentry{go\_enrichment()}\spxextra{pypath.main.PyPath method}|hyperpage}{26}
-\indexentry{gs() (pypath.main.PyPath method)@\spxentry{gs()}\spxextra{pypath.main.PyPath method}|hyperpage}{26}
-\indexentry{gs\_affected\_by() (pypath.main.PyPath method)@\spxentry{gs\_affected\_by()}\spxextra{pypath.main.PyPath method}|hyperpage}{26}
-\indexentry{gs\_affects() (pypath.main.PyPath method)@\spxentry{gs\_affects()}\spxextra{pypath.main.PyPath method}|hyperpage}{26}
+\indexentry{get\_nodes() (pypath.main.PyPath method)@\spxentry{get\_nodes()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
+\indexentry{get\_nodes\_d() (pypath.main.PyPath method)@\spxentry{get\_nodes\_d()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
+\indexentry{get\_pathways() (pypath.main.PyPath method)@\spxentry{get\_pathways()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
+\indexentry{get\_proteomicsdb() (pypath.main.PyPath method)@\spxentry{get\_proteomicsdb()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
+\indexentry{get\_sub() (pypath.main.PyPath method)@\spxentry{get\_sub()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
+\indexentry{get\_taxon() (pypath.main.PyPath method)@\spxentry{get\_taxon()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
+\indexentry{go\_annotate\_graph() (pypath.main.PyPath method)@\spxentry{go\_annotate\_graph()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
+\indexentry{go\_enrichment() (pypath.main.PyPath method)@\spxentry{go\_enrichment()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
+\indexentry{gs() (pypath.main.PyPath method)@\spxentry{gs()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
+\indexentry{gs\_affected\_by() (pypath.main.PyPath method)@\spxentry{gs\_affected\_by()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
+\indexentry{gs\_affects() (pypath.main.PyPath method)@\spxentry{gs\_affects()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
 \indexentry{gs\_edge() (pypath.main.PyPath method)@\spxentry{gs\_edge()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
 \indexentry{gs\_in\_directed() (pypath.main.PyPath method)@\spxentry{gs\_in\_directed()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
 \indexentry{gs\_in\_undirected() (pypath.main.PyPath method)@\spxentry{gs\_in\_undirected()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
 \indexentry{gs\_inhibited\_by() (pypath.main.PyPath method)@\spxentry{gs\_inhibited\_by()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
 \indexentry{gs\_inhibits() (pypath.main.PyPath method)@\spxentry{gs\_inhibits()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
 \indexentry{gs\_neighborhood() (pypath.main.PyPath method)@\spxentry{gs\_neighborhood()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
-\indexentry{gs\_neighbors() (pypath.main.PyPath method)@\spxentry{gs\_neighbors()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
-\indexentry{gs\_stimulated\_by() (pypath.main.PyPath method)@\spxentry{gs\_stimulated\_by()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
-\indexentry{gs\_stimulates() (pypath.main.PyPath method)@\spxentry{gs\_stimulates()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
-\indexentry{gss() (pypath.main.PyPath method)@\spxentry{gss()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
-\indexentry{guide2pharma() (pypath.main.PyPath method)@\spxentry{guide2pharma()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
-\indexentry{having\_attr() (pypath.main.PyPath method)@\spxentry{having\_attr()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
-\indexentry{having\_eattr() (pypath.main.PyPath method)@\spxentry{having\_eattr()}\spxextra{pypath.main.PyPath method}|hyperpage}{27}
+\indexentry{gs\_neighbors() (pypath.main.PyPath method)@\spxentry{gs\_neighbors()}\spxextra{pypath.main.PyPath method}|hyperpage}{28}
+\indexentry{gs\_stimulated\_by() (pypath.main.PyPath method)@\spxentry{gs\_stimulated\_by()}\spxextra{pypath.main.PyPath method}|hyperpage}{28}
+\indexentry{gs\_stimulates() (pypath.main.PyPath method)@\spxentry{gs\_stimulates()}\spxextra{pypath.main.PyPath method}|hyperpage}{28}
+\indexentry{gss() (pypath.main.PyPath method)@\spxentry{gss()}\spxextra{pypath.main.PyPath method}|hyperpage}{28}
+\indexentry{guide2pharma() (pypath.main.PyPath method)@\spxentry{guide2pharma()}\spxextra{pypath.main.PyPath method}|hyperpage}{28}
+\indexentry{having\_attr() (pypath.main.PyPath method)@\spxentry{having\_attr()}\spxextra{pypath.main.PyPath method}|hyperpage}{28}
+\indexentry{having\_eattr() (pypath.main.PyPath method)@\spxentry{having\_eattr()}\spxextra{pypath.main.PyPath method}|hyperpage}{28}
 \indexentry{having\_ptm() (pypath.main.PyPath method)@\spxentry{having\_ptm()}\spxextra{pypath.main.PyPath method}|hyperpage}{28}
-\indexentry{having\_vattr() (pypath.main.PyPath method)@\spxentry{having\_vattr()}\spxextra{pypath.main.PyPath method}|hyperpage}{28}
-\indexentry{homology\_translation() (pypath.main.PyPath method)@\spxentry{homology\_translation()}\spxextra{pypath.main.PyPath method}|hyperpage}{28}
-\indexentry{htp\_stats() (pypath.main.PyPath method)@\spxentry{htp\_stats()}\spxextra{pypath.main.PyPath method}|hyperpage}{28}
-\indexentry{in\_complex() (pypath.main.PyPath method)@\spxentry{in\_complex()}\spxextra{pypath.main.PyPath method}|hyperpage}{28}
-\indexentry{in\_directed() (pypath.main.PyPath method)@\spxentry{in\_directed()}\spxextra{pypath.main.PyPath method}|hyperpage}{28}
-\indexentry{in\_undirected() (pypath.main.PyPath method)@\spxentry{in\_undirected()}\spxextra{pypath.main.PyPath method}|hyperpage}{28}
-\indexentry{info() (pypath.main.PyPath method)@\spxentry{info()}\spxextra{pypath.main.PyPath method}|hyperpage}{28}
-\indexentry{init\_complex\_attr() (pypath.main.PyPath method)@\spxentry{init\_complex\_attr()}\spxextra{pypath.main.PyPath method}|hyperpage}{28}
-\indexentry{init\_edge\_attr() (pypath.main.PyPath method)@\spxentry{init\_edge\_attr()}\spxextra{pypath.main.PyPath method}|hyperpage}{28}
+\indexentry{having\_vattr() (pypath.main.PyPath method)@\spxentry{having\_vattr()}\spxextra{pypath.main.PyPath method}|hyperpage}{29}
+\indexentry{homology\_translation() (pypath.main.PyPath method)@\spxentry{homology\_translation()}\spxextra{pypath.main.PyPath method}|hyperpage}{29}
+\indexentry{htp\_stats() (pypath.main.PyPath method)@\spxentry{htp\_stats()}\spxextra{pypath.main.PyPath method}|hyperpage}{29}
+\indexentry{in\_complex() (pypath.main.PyPath method)@\spxentry{in\_complex()}\spxextra{pypath.main.PyPath method}|hyperpage}{29}
+\indexentry{in\_directed() (pypath.main.PyPath method)@\spxentry{in\_directed()}\spxextra{pypath.main.PyPath method}|hyperpage}{29}
+\indexentry{in\_undirected() (pypath.main.PyPath method)@\spxentry{in\_undirected()}\spxextra{pypath.main.PyPath method}|hyperpage}{29}
+\indexentry{info() (pypath.main.PyPath method)@\spxentry{info()}\spxextra{pypath.main.PyPath method}|hyperpage}{29}
+\indexentry{init\_complex\_attr() (pypath.main.PyPath method)@\spxentry{init\_complex\_attr()}\spxextra{pypath.main.PyPath method}|hyperpage}{29}
+\indexentry{init\_edge\_attr() (pypath.main.PyPath method)@\spxentry{init\_edge\_attr()}\spxextra{pypath.main.PyPath method}|hyperpage}{29}
 \indexentry{init\_gsea() (pypath.main.PyPath method)@\spxentry{init\_gsea()}\spxextra{pypath.main.PyPath method}|hyperpage}{29}
 \indexentry{init\_network() (pypath.main.PyPath method)@\spxentry{init\_network()}\spxextra{pypath.main.PyPath method}|hyperpage}{29}
-\indexentry{init\_vertex\_attr() (pypath.main.PyPath method)@\spxentry{init\_vertex\_attr()}\spxextra{pypath.main.PyPath method}|hyperpage}{29}
-\indexentry{intergroup\_shortest\_paths() (pypath.main.PyPath method)@\spxentry{intergroup\_shortest\_paths()}\spxextra{pypath.main.PyPath method}|hyperpage}{29}
-\indexentry{intogen\_cancer\_drivers\_list() (pypath.main.PyPath method)@\spxentry{intogen\_cancer\_drivers\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{29}
-\indexentry{iter\_interactions() (pypath.main.PyPath method)@\spxentry{iter\_interactions()}\spxextra{pypath.main.PyPath method}|hyperpage}{29}
-\indexentry{jaccard\_edges() (pypath.main.PyPath method)@\spxentry{jaccard\_edges()}\spxextra{pypath.main.PyPath method}|hyperpage}{29}
-\indexentry{jaccard\_meta() (pypath.main.PyPath method)@\spxentry{jaccard\_meta()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
-\indexentry{kegg\_directions() (pypath.main.PyPath method)@\spxentry{kegg\_directions()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
-\indexentry{kegg\_pathways() (pypath.main.PyPath method)@\spxentry{kegg\_pathways()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
-\indexentry{kinase\_stats() (pypath.main.PyPath method)@\spxentry{kinase\_stats()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
-\indexentry{kinases\_list() (pypath.main.PyPath method)@\spxentry{kinases\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
-\indexentry{label() (pypath.main.PyPath method)@\spxentry{label()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
-\indexentry{label\_by\_go() (pypath.main.PyPath method)@\spxentry{label\_by\_go()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
-\indexentry{label\_edges() (pypath.main.PyPath method)@\spxentry{label\_edges()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
-\indexentry{label\_vertices() (pypath.main.PyPath method)@\spxentry{label\_vertices()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
-\indexentry{laudanna\_directions() (pypath.main.PyPath method)@\spxentry{laudanna\_directions()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
-\indexentry{laudanna\_effects() (pypath.main.PyPath method)@\spxentry{laudanna\_effects()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
-\indexentry{license() (pypath.main.PyPath static method)@\spxentry{license()}\spxextra{pypath.main.PyPath static method}|hyperpage}{30}
-\indexentry{list\_resources() (pypath.main.PyPath static method)@\spxentry{list\_resources()}\spxextra{pypath.main.PyPath static method}|hyperpage}{30}
-\indexentry{load\_3dcomplexes() (pypath.main.PyPath method)@\spxentry{load\_3dcomplexes()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
-\indexentry{load\_3did\_ddi() (pypath.main.PyPath method)@\spxentry{load\_3did\_ddi()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
-\indexentry{load\_3did\_ddi2() (pypath.main.PyPath method)@\spxentry{load\_3did\_ddi2()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
-\indexentry{load\_3did\_dmi() (pypath.main.PyPath method)@\spxentry{load\_3did\_dmi()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
-\indexentry{load\_3did\_interfaces() (pypath.main.PyPath method)@\spxentry{load\_3did\_interfaces()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
-\indexentry{load\_all\_pathways() (pypath.main.PyPath method)@\spxentry{load\_all\_pathways()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
-\indexentry{load\_compleat() (pypath.main.PyPath method)@\spxentry{load\_compleat()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
+\indexentry{init\_vertex\_attr() (pypath.main.PyPath method)@\spxentry{init\_vertex\_attr()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
+\indexentry{intergroup\_shortest\_paths() (pypath.main.PyPath method)@\spxentry{intergroup\_shortest\_paths()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
+\indexentry{intogen\_cancer\_drivers\_list() (pypath.main.PyPath method)@\spxentry{intogen\_cancer\_drivers\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
+\indexentry{iter\_interactions() (pypath.main.PyPath method)@\spxentry{iter\_interactions()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
+\indexentry{jaccard\_edges() (pypath.main.PyPath method)@\spxentry{jaccard\_edges()}\spxextra{pypath.main.PyPath method}|hyperpage}{30}
+\indexentry{jaccard\_meta() (pypath.main.PyPath method)@\spxentry{jaccard\_meta()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
+\indexentry{kegg\_directions() (pypath.main.PyPath method)@\spxentry{kegg\_directions()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
+\indexentry{kegg\_pathways() (pypath.main.PyPath method)@\spxentry{kegg\_pathways()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
+\indexentry{kinase\_stats() (pypath.main.PyPath method)@\spxentry{kinase\_stats()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
+\indexentry{label() (pypath.main.PyPath method)@\spxentry{label()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
+\indexentry{label\_by\_go() (pypath.main.PyPath method)@\spxentry{label\_by\_go()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
+\indexentry{label\_edges() (pypath.main.PyPath method)@\spxentry{label\_edges()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
+\indexentry{label\_vertices() (pypath.main.PyPath method)@\spxentry{label\_vertices()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
+\indexentry{laudanna\_directions() (pypath.main.PyPath method)@\spxentry{laudanna\_directions()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
+\indexentry{laudanna\_effects() (pypath.main.PyPath method)@\spxentry{laudanna\_effects()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
+\indexentry{license() (pypath.main.PyPath static method)@\spxentry{license()}\spxextra{pypath.main.PyPath static method}|hyperpage}{31}
+\indexentry{list\_resources() (pypath.main.PyPath static method)@\spxentry{list\_resources()}\spxextra{pypath.main.PyPath static method}|hyperpage}{31}
+\indexentry{load\_3dcomplexes() (pypath.main.PyPath method)@\spxentry{load\_3dcomplexes()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
+\indexentry{load\_3did\_ddi() (pypath.main.PyPath method)@\spxentry{load\_3did\_ddi()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
+\indexentry{load\_3did\_ddi2() (pypath.main.PyPath method)@\spxentry{load\_3did\_ddi2()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
+\indexentry{load\_3did\_dmi() (pypath.main.PyPath method)@\spxentry{load\_3did\_dmi()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
+\indexentry{load\_3did\_interfaces() (pypath.main.PyPath method)@\spxentry{load\_3did\_interfaces()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
+\indexentry{load\_all\_pathways() (pypath.main.PyPath method)@\spxentry{load\_all\_pathways()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
+\indexentry{load\_compleat() (pypath.main.PyPath method)@\spxentry{load\_compleat()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
 \indexentry{load\_complexportal() (pypath.main.PyPath method)@\spxentry{load\_complexportal()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
 \indexentry{load\_comppi() (pypath.main.PyPath method)@\spxentry{load\_comppi()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
-\indexentry{load\_corum() (pypath.main.PyPath method)@\spxentry{load\_corum()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
-\indexentry{load\_dbptm() (pypath.main.PyPath method)@\spxentry{load\_dbptm()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
-\indexentry{load\_ddi() (pypath.main.PyPath method)@\spxentry{load\_ddi()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
-\indexentry{load\_ddis() (pypath.main.PyPath method)@\spxentry{load\_ddis()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
-\indexentry{load\_depod\_dmi() (pypath.main.PyPath method)@\spxentry{load\_depod\_dmi()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
-\indexentry{load\_disgenet() (pypath.main.PyPath method)@\spxentry{load\_disgenet()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
-\indexentry{load\_dmi() (pypath.main.PyPath method)@\spxentry{load\_dmi()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
-\indexentry{load\_dmis() (pypath.main.PyPath method)@\spxentry{load\_dmis()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
-\indexentry{load\_domino\_dmi() (pypath.main.PyPath method)@\spxentry{load\_domino\_dmi()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
-\indexentry{load\_elm() (pypath.main.PyPath method)@\spxentry{load\_elm()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
-\indexentry{load\_exocarta\_attrs() (pypath.main.PyPath method)@\spxentry{load\_exocarta\_attrs()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
-\indexentry{load\_expression() (pypath.main.PyPath method)@\spxentry{load\_expression()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
-\indexentry{load\_go() (pypath.main.PyPath method)@\spxentry{load\_go()}\spxextra{pypath.main.PyPath method}|hyperpage}{31}
+\indexentry{load\_corum() (pypath.main.PyPath method)@\spxentry{load\_corum()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
+\indexentry{load\_dbptm() (pypath.main.PyPath method)@\spxentry{load\_dbptm()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
+\indexentry{load\_ddi() (pypath.main.PyPath method)@\spxentry{load\_ddi()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
+\indexentry{load\_ddis() (pypath.main.PyPath method)@\spxentry{load\_ddis()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
+\indexentry{load\_depod\_dmi() (pypath.main.PyPath method)@\spxentry{load\_depod\_dmi()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
+\indexentry{load\_disgenet() (pypath.main.PyPath method)@\spxentry{load\_disgenet()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
+\indexentry{load\_dmi() (pypath.main.PyPath method)@\spxentry{load\_dmi()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
+\indexentry{load\_dmis() (pypath.main.PyPath method)@\spxentry{load\_dmis()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
+\indexentry{load\_domino\_dmi() (pypath.main.PyPath method)@\spxentry{load\_domino\_dmi()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
+\indexentry{load\_elm() (pypath.main.PyPath method)@\spxentry{load\_elm()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
+\indexentry{load\_exocarta\_attrs() (pypath.main.PyPath method)@\spxentry{load\_exocarta\_attrs()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
+\indexentry{load\_expression() (pypath.main.PyPath method)@\spxentry{load\_expression()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
+\indexentry{load\_go() (pypath.main.PyPath method)@\spxentry{load\_go()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
 \indexentry{load\_havugimana() (pypath.main.PyPath method)@\spxentry{load\_havugimana()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
 \indexentry{load\_hpa() (pypath.main.PyPath method)@\spxentry{load\_hpa()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
-\indexentry{load\_hprd\_ptms() (pypath.main.PyPath method)@\spxentry{load\_hprd\_ptms()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
-\indexentry{load\_ielm() (pypath.main.PyPath method)@\spxentry{load\_ielm()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
-\indexentry{load\_interfaces() (pypath.main.PyPath method)@\spxentry{load\_interfaces()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
-\indexentry{load\_li2012\_ptms() (pypath.main.PyPath method)@\spxentry{load\_li2012\_ptms()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
-\indexentry{load\_ligand\_receptor\_network() (pypath.main.PyPath method)@\spxentry{load\_ligand\_receptor\_network()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
-\indexentry{load\_list() (pypath.main.PyPath method)@\spxentry{load\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
-\indexentry{load\_lmpid() (pypath.main.PyPath method)@\spxentry{load\_lmpid()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
-\indexentry{load\_matrisome\_attrs() (pypath.main.PyPath method)@\spxentry{load\_matrisome\_attrs()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
-\indexentry{load\_membranome\_attrs() (pypath.main.PyPath method)@\spxentry{load\_membranome\_attrs()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
-\indexentry{load\_mimp\_dmi() (pypath.main.PyPath method)@\spxentry{load\_mimp\_dmi()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
-\indexentry{load\_mutations() (pypath.main.PyPath method)@\spxentry{load\_mutations()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
-\indexentry{load\_negatives() (pypath.main.PyPath method)@\spxentry{load\_negatives()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
-\indexentry{load\_old\_omnipath() (pypath.main.PyPath method)@\spxentry{load\_old\_omnipath()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
-\indexentry{load\_omnipath() (pypath.main.PyPath method)@\spxentry{load\_omnipath()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
-\indexentry{load\_pathways() (pypath.main.PyPath method)@\spxentry{load\_pathways()}\spxextra{pypath.main.PyPath method}|hyperpage}{32}
+\indexentry{load\_hprd\_ptms() (pypath.main.PyPath method)@\spxentry{load\_hprd\_ptms()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
+\indexentry{load\_ielm() (pypath.main.PyPath method)@\spxentry{load\_ielm()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
+\indexentry{load\_interfaces() (pypath.main.PyPath method)@\spxentry{load\_interfaces()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
+\indexentry{load\_li2012\_ptms() (pypath.main.PyPath method)@\spxentry{load\_li2012\_ptms()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
+\indexentry{load\_ligand\_receptor\_network() (pypath.main.PyPath method)@\spxentry{load\_ligand\_receptor\_network()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
+\indexentry{load\_lmpid() (pypath.main.PyPath method)@\spxentry{load\_lmpid()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
+\indexentry{load\_matrisome\_attrs() (pypath.main.PyPath method)@\spxentry{load\_matrisome\_attrs()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
+\indexentry{load\_membranome\_attrs() (pypath.main.PyPath method)@\spxentry{load\_membranome\_attrs()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
+\indexentry{load\_mimp\_dmi() (pypath.main.PyPath method)@\spxentry{load\_mimp\_dmi()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
+\indexentry{load\_mutations() (pypath.main.PyPath method)@\spxentry{load\_mutations()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
+\indexentry{load\_negatives() (pypath.main.PyPath method)@\spxentry{load\_negatives()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
+\indexentry{load\_old\_omnipath() (pypath.main.PyPath method)@\spxentry{load\_old\_omnipath()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
+\indexentry{load\_omnipath() (pypath.main.PyPath method)@\spxentry{load\_omnipath()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
+\indexentry{load\_pathways() (pypath.main.PyPath method)@\spxentry{load\_pathways()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
 \indexentry{load\_pdb() (pypath.main.PyPath method)@\spxentry{load\_pdb()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
-\indexentry{load\_pepcyber() (pypath.main.PyPath method)@\spxentry{load\_pepcyber()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
-\indexentry{load\_pfam() (pypath.main.PyPath method)@\spxentry{load\_pfam()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
-\indexentry{load\_pfam2() (pypath.main.PyPath method)@\spxentry{load\_pfam2()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
-\indexentry{load\_pfam3() (pypath.main.PyPath method)@\spxentry{load\_pfam3()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
-\indexentry{load\_phospho\_dmi() (pypath.main.PyPath method)@\spxentry{load\_phospho\_dmi()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
-\indexentry{load\_phosphoelm() (pypath.main.PyPath method)@\spxentry{load\_phosphoelm()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
-\indexentry{load\_pisa() (pypath.main.PyPath method)@\spxentry{load\_pisa()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
-\indexentry{load\_pnetworks\_dmi() (pypath.main.PyPath method)@\spxentry{load\_pnetworks\_dmi()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
-\indexentry{load\_psite\_phos() (pypath.main.PyPath method)@\spxentry{load\_psite\_phos()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
-\indexentry{load\_psite\_reg() (pypath.main.PyPath method)@\spxentry{load\_psite\_reg()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
-\indexentry{load\_ptms() (pypath.main.PyPath method)@\spxentry{load\_ptms()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
-\indexentry{load\_ptms2() (pypath.main.PyPath method)@\spxentry{load\_ptms2()}\spxextra{pypath.main.PyPath method}|hyperpage}{33}
-\indexentry{load\_resource() (pypath.main.PyPath method)@\spxentry{load\_resource()}\spxextra{pypath.main.PyPath method}|hyperpage}{34}
-\indexentry{load\_resources() (pypath.main.PyPath method)@\spxentry{load\_resources()}\spxextra{pypath.main.PyPath method}|hyperpage}{34}
-\indexentry{load\_signor\_ptms() (pypath.main.PyPath method)@\spxentry{load\_signor\_ptms()}\spxextra{pypath.main.PyPath method}|hyperpage}{35}
-\indexentry{load\_surfaceome\_attrs() (pypath.main.PyPath method)@\spxentry{load\_surfaceome\_attrs()}\spxextra{pypath.main.PyPath method}|hyperpage}{35}
-\indexentry{load\_tfregulons() (pypath.main.PyPath method)@\spxentry{load\_tfregulons()}\spxextra{pypath.main.PyPath method}|hyperpage}{35}
-\indexentry{load\_vesiclepedia\_attrs() (pypath.main.PyPath method)@\spxentry{load\_vesiclepedia\_attrs()}\spxextra{pypath.main.PyPath method}|hyperpage}{35}
-\indexentry{lookup\_cache() (pypath.main.PyPath method)@\spxentry{lookup\_cache()}\spxextra{pypath.main.PyPath method}|hyperpage}{35}
+\indexentry{load\_pepcyber() (pypath.main.PyPath method)@\spxentry{load\_pepcyber()}\spxextra{pypath.main.PyPath method}|hyperpage}{34}
+\indexentry{load\_pfam() (pypath.main.PyPath method)@\spxentry{load\_pfam()}\spxextra{pypath.main.PyPath method}|hyperpage}{34}
+\indexentry{load\_pfam2() (pypath.main.PyPath method)@\spxentry{load\_pfam2()}\spxextra{pypath.main.PyPath method}|hyperpage}{34}
+\indexentry{load\_pfam3() (pypath.main.PyPath method)@\spxentry{load\_pfam3()}\spxextra{pypath.main.PyPath method}|hyperpage}{34}
+\indexentry{load\_phospho\_dmi() (pypath.main.PyPath method)@\spxentry{load\_phospho\_dmi()}\spxextra{pypath.main.PyPath method}|hyperpage}{34}
+\indexentry{load\_phosphoelm() (pypath.main.PyPath method)@\spxentry{load\_phosphoelm()}\spxextra{pypath.main.PyPath method}|hyperpage}{34}
+\indexentry{load\_pisa() (pypath.main.PyPath method)@\spxentry{load\_pisa()}\spxextra{pypath.main.PyPath method}|hyperpage}{34}
+\indexentry{load\_pnetworks\_dmi() (pypath.main.PyPath method)@\spxentry{load\_pnetworks\_dmi()}\spxextra{pypath.main.PyPath method}|hyperpage}{34}
+\indexentry{load\_psite\_phos() (pypath.main.PyPath method)@\spxentry{load\_psite\_phos()}\spxextra{pypath.main.PyPath method}|hyperpage}{34}
+\indexentry{load\_psite\_reg() (pypath.main.PyPath method)@\spxentry{load\_psite\_reg()}\spxextra{pypath.main.PyPath method}|hyperpage}{34}
+\indexentry{load\_ptms() (pypath.main.PyPath method)@\spxentry{load\_ptms()}\spxextra{pypath.main.PyPath method}|hyperpage}{34}
+\indexentry{load\_ptms2() (pypath.main.PyPath method)@\spxentry{load\_ptms2()}\spxextra{pypath.main.PyPath method}|hyperpage}{34}
+\indexentry{load\_resource() (pypath.main.PyPath method)@\spxentry{load\_resource()}\spxextra{pypath.main.PyPath method}|hyperpage}{35}
+\indexentry{load\_resources() (pypath.main.PyPath method)@\spxentry{load\_resources()}\spxextra{pypath.main.PyPath method}|hyperpage}{35}
+\indexentry{load\_signor\_ptms() (pypath.main.PyPath method)@\spxentry{load\_signor\_ptms()}\spxextra{pypath.main.PyPath method}|hyperpage}{36}
+\indexentry{load\_surfaceome\_attrs() (pypath.main.PyPath method)@\spxentry{load\_surfaceome\_attrs()}\spxextra{pypath.main.PyPath method}|hyperpage}{36}
+\indexentry{load\_tfregulons() (pypath.main.PyPath method)@\spxentry{load\_tfregulons()}\spxextra{pypath.main.PyPath method}|hyperpage}{36}
+\indexentry{load\_vesiclepedia\_attrs() (pypath.main.PyPath method)@\spxentry{load\_vesiclepedia\_attrs()}\spxextra{pypath.main.PyPath method}|hyperpage}{36}
+\indexentry{lookup\_cache() (pypath.main.PyPath method)@\spxentry{lookup\_cache()}\spxextra{pypath.main.PyPath method}|hyperpage}{36}
 \indexentry{loop\_edges() (pypath.main.PyPath method)@\spxentry{loop\_edges()}\spxextra{pypath.main.PyPath method}|hyperpage}{36}
-\indexentry{map\_edge() (pypath.main.PyPath method)@\spxentry{map\_edge()}\spxextra{pypath.main.PyPath method}|hyperpage}{36}
-\indexentry{map\_item() (pypath.main.PyPath method)@\spxentry{map\_item()}\spxextra{pypath.main.PyPath method}|hyperpage}{36}
-\indexentry{map\_list() (pypath.main.PyPath method)@\spxentry{map\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{36}
-\indexentry{mean\_reference\_per\_interaction() (pypath.main.PyPath method)@\spxentry{mean\_reference\_per\_interaction()}\spxextra{pypath.main.PyPath method}|hyperpage}{36}
+\indexentry{map\_edge() (pypath.main.PyPath method)@\spxentry{map\_edge()}\spxextra{pypath.main.PyPath method}|hyperpage}{37}
+\indexentry{map\_item() (pypath.main.PyPath method)@\spxentry{map\_item()}\spxextra{pypath.main.PyPath method}|hyperpage}{37}
+\indexentry{map\_list() (pypath.main.PyPath method)@\spxentry{map\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{37}
+\indexentry{mean\_reference\_per\_interaction() (pypath.main.PyPath method)@\spxentry{mean\_reference\_per\_interaction()}\spxextra{pypath.main.PyPath method}|hyperpage}{37}
 \indexentry{merge\_lists() (pypath.main.PyPath method)@\spxentry{merge\_lists()}\spxextra{pypath.main.PyPath method}|hyperpage}{37}
-\indexentry{merge\_nodes() (pypath.main.PyPath method)@\spxentry{merge\_nodes()}\spxextra{pypath.main.PyPath method}|hyperpage}{37}
-\indexentry{mimp\_directions() (pypath.main.PyPath method)@\spxentry{mimp\_directions()}\spxextra{pypath.main.PyPath method}|hyperpage}{37}
-\indexentry{mutated\_edges() (pypath.main.PyPath method)@\spxentry{mutated\_edges()}\spxextra{pypath.main.PyPath method}|hyperpage}{37}
-\indexentry{name\_edgelist() (pypath.main.PyPath method)@\spxentry{name\_edgelist()}\spxextra{pypath.main.PyPath method}|hyperpage}{37}
-\indexentry{names2vids() (pypath.main.PyPath method)@\spxentry{names2vids()}\spxextra{pypath.main.PyPath method}|hyperpage}{37}
-\indexentry{negative\_report() (pypath.main.PyPath method)@\spxentry{negative\_report()}\spxextra{pypath.main.PyPath method}|hyperpage}{37}
-\indexentry{neighborhood() (pypath.main.PyPath method)@\spxentry{neighborhood()}\spxextra{pypath.main.PyPath method}|hyperpage}{37}
+\indexentry{merge\_nodes() (pypath.main.PyPath method)@\spxentry{merge\_nodes()}\spxextra{pypath.main.PyPath method}|hyperpage}{38}
+\indexentry{mimp\_directions() (pypath.main.PyPath method)@\spxentry{mimp\_directions()}\spxextra{pypath.main.PyPath method}|hyperpage}{38}
+\indexentry{mutated\_edges() (pypath.main.PyPath method)@\spxentry{mutated\_edges()}\spxextra{pypath.main.PyPath method}|hyperpage}{38}
+\indexentry{name\_edgelist() (pypath.main.PyPath method)@\spxentry{name\_edgelist()}\spxextra{pypath.main.PyPath method}|hyperpage}{38}
+\indexentry{names2vids() (pypath.main.PyPath method)@\spxentry{names2vids()}\spxextra{pypath.main.PyPath method}|hyperpage}{38}
+\indexentry{negative\_report() (pypath.main.PyPath method)@\spxentry{negative\_report()}\spxextra{pypath.main.PyPath method}|hyperpage}{38}
+\indexentry{neighborhood() (pypath.main.PyPath method)@\spxentry{neighborhood()}\spxextra{pypath.main.PyPath method}|hyperpage}{38}
 \indexentry{neighbors() (pypath.main.PyPath method)@\spxentry{neighbors()}\spxextra{pypath.main.PyPath method}|hyperpage}{38}
 \indexentry{neighbourhood\_network() (pypath.main.PyPath method)@\spxentry{neighbourhood\_network()}\spxextra{pypath.main.PyPath method}|hyperpage}{38}
 \indexentry{network\_by\_go() (pypath.main.PyPath method)@\spxentry{network\_by\_go()}\spxextra{pypath.main.PyPath method}|hyperpage}{38}
-\indexentry{network\_filter() (pypath.main.PyPath method)@\spxentry{network\_filter()}\spxextra{pypath.main.PyPath method}|hyperpage}{38}
-\indexentry{network\_stats() (pypath.main.PyPath method)@\spxentry{network\_stats()}\spxextra{pypath.main.PyPath method}|hyperpage}{38}
-\indexentry{new\_edges() (pypath.main.PyPath method)@\spxentry{new\_edges()}\spxextra{pypath.main.PyPath method}|hyperpage}{38}
+\indexentry{network\_filter() (pypath.main.PyPath method)@\spxentry{network\_filter()}\spxextra{pypath.main.PyPath method}|hyperpage}{39}
+\indexentry{network\_stats() (pypath.main.PyPath method)@\spxentry{network\_stats()}\spxextra{pypath.main.PyPath method}|hyperpage}{39}
+\indexentry{new\_edges() (pypath.main.PyPath method)@\spxentry{new\_edges()}\spxextra{pypath.main.PyPath method}|hyperpage}{39}
 \indexentry{new\_nodes() (pypath.main.PyPath method)@\spxentry{new\_nodes()}\spxextra{pypath.main.PyPath method}|hyperpage}{39}
 \indexentry{node\_exists() (pypath.main.PyPath method)@\spxentry{node\_exists()}\spxextra{pypath.main.PyPath method}|hyperpage}{39}
-\indexentry{numof\_directed\_edges() (pypath.main.PyPath method)@\spxentry{numof\_directed\_edges()}\spxextra{pypath.main.PyPath method}|hyperpage}{39}
-\indexentry{numof\_reference\_interaction\_pairs() (pypath.main.PyPath method)@\spxentry{numof\_reference\_interaction\_pairs()}\spxextra{pypath.main.PyPath method}|hyperpage}{39}
-\indexentry{numof\_references() (pypath.main.PyPath method)@\spxentry{numof\_references()}\spxextra{pypath.main.PyPath method}|hyperpage}{39}
-\indexentry{numof\_undirected\_edges() (pypath.main.PyPath method)@\spxentry{numof\_undirected\_edges()}\spxextra{pypath.main.PyPath method}|hyperpage}{39}
-\indexentry{orthology\_translation() (pypath.main.PyPath method)@\spxentry{orthology\_translation()}\spxextra{pypath.main.PyPath method}|hyperpage}{39}
-\indexentry{p() (pypath.main.PyPath method)@\spxentry{p()}\spxextra{pypath.main.PyPath method}|hyperpage}{39}
-\indexentry{pathway\_attributes() (pypath.main.PyPath method)@\spxentry{pathway\_attributes()}\spxextra{pypath.main.PyPath method}|hyperpage}{39}
-\indexentry{pathway\_members() (pypath.main.PyPath method)@\spxentry{pathway\_members()}\spxextra{pypath.main.PyPath method}|hyperpage}{39}
-\indexentry{pathway\_names() (pypath.main.PyPath method)@\spxentry{pathway\_names()}\spxextra{pypath.main.PyPath method}|hyperpage}{39}
-\indexentry{pathway\_similarity() (pypath.main.PyPath method)@\spxentry{pathway\_similarity()}\spxextra{pypath.main.PyPath method}|hyperpage}{39}
-\indexentry{pathways\_table() (pypath.main.PyPath method)@\spxentry{pathways\_table()}\spxextra{pypath.main.PyPath method}|hyperpage}{39}
-\indexentry{pfam\_regions() (pypath.main.PyPath method)@\spxentry{pfam\_regions()}\spxextra{pypath.main.PyPath method}|hyperpage}{39}
+\indexentry{numof\_directed\_edges() (pypath.main.PyPath method)@\spxentry{numof\_directed\_edges()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
+\indexentry{numof\_reference\_interaction\_pairs() (pypath.main.PyPath method)@\spxentry{numof\_reference\_interaction\_pairs()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
+\indexentry{numof\_references() (pypath.main.PyPath method)@\spxentry{numof\_references()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
+\indexentry{numof\_undirected\_edges() (pypath.main.PyPath method)@\spxentry{numof\_undirected\_edges()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
+\indexentry{orthology\_translation() (pypath.main.PyPath method)@\spxentry{orthology\_translation()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
+\indexentry{p() (pypath.main.PyPath method)@\spxentry{p()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
+\indexentry{pathway\_attributes() (pypath.main.PyPath method)@\spxentry{pathway\_attributes()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
+\indexentry{pathway\_members() (pypath.main.PyPath method)@\spxentry{pathway\_members()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
+\indexentry{pathway\_names() (pypath.main.PyPath method)@\spxentry{pathway\_names()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
+\indexentry{pathway\_similarity() (pypath.main.PyPath method)@\spxentry{pathway\_similarity()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
+\indexentry{pathways\_table() (pypath.main.PyPath method)@\spxentry{pathways\_table()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
+\indexentry{pfam\_regions() (pypath.main.PyPath method)@\spxentry{pfam\_regions()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
 \indexentry{phosphonetworks\_directions() (pypath.main.PyPath method)@\spxentry{phosphonetworks\_directions()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
 \indexentry{phosphopoint\_directions() (pypath.main.PyPath method)@\spxentry{phosphopoint\_directions()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
 \indexentry{phosphorylation\_directions() (pypath.main.PyPath method)@\spxentry{phosphorylation\_directions()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
 \indexentry{phosphorylation\_signs() (pypath.main.PyPath method)@\spxentry{phosphorylation\_signs()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
 \indexentry{phosphosite\_directions() (pypath.main.PyPath method)@\spxentry{phosphosite\_directions()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
-\indexentry{prdb\_tissue\_expr() (pypath.main.PyPath method)@\spxentry{prdb\_tissue\_expr()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
-\indexentry{process\_direction() (pypath.main.PyPath method)@\spxentry{process\_direction()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
-\indexentry{process\_directions() (pypath.main.PyPath method)@\spxentry{process\_directions()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
-\indexentry{process\_dmi() (pypath.main.PyPath method)@\spxentry{process\_dmi()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
-\indexentry{process\_sign() (pypath.main.PyPath method)@\spxentry{process\_sign()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
-\indexentry{protein() (pypath.main.PyPath method)@\spxentry{protein()}\spxextra{pypath.main.PyPath method}|hyperpage}{40}
+\indexentry{prdb\_tissue\_expr() (pypath.main.PyPath method)@\spxentry{prdb\_tissue\_expr()}\spxextra{pypath.main.PyPath method}|hyperpage}{41}
+\indexentry{process\_direction() (pypath.main.PyPath method)@\spxentry{process\_direction()}\spxextra{pypath.main.PyPath method}|hyperpage}{41}
+\indexentry{process\_directions() (pypath.main.PyPath method)@\spxentry{process\_directions()}\spxextra{pypath.main.PyPath method}|hyperpage}{41}
+\indexentry{process\_dmi() (pypath.main.PyPath method)@\spxentry{process\_dmi()}\spxextra{pypath.main.PyPath method}|hyperpage}{41}
+\indexentry{process\_sign() (pypath.main.PyPath method)@\spxentry{process\_sign()}\spxextra{pypath.main.PyPath method}|hyperpage}{41}
+\indexentry{protein() (pypath.main.PyPath method)@\spxentry{protein()}\spxextra{pypath.main.PyPath method}|hyperpage}{41}
 \indexentry{protein\_edge() (pypath.main.PyPath method)@\spxentry{protein\_edge()}\spxextra{pypath.main.PyPath method}|hyperpage}{41}
-\indexentry{proteins() (pypath.main.PyPath method)@\spxentry{proteins()}\spxextra{pypath.main.PyPath method}|hyperpage}{41}
-\indexentry{proteome\_list() (pypath.main.PyPath method)@\spxentry{proteome\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{41}
-\indexentry{ps() (pypath.main.PyPath method)@\spxentry{ps()}\spxextra{pypath.main.PyPath method}|hyperpage}{41}
-\indexentry{random\_walk\_with\_return() (pypath.main.PyPath method)@\spxentry{random\_walk\_with\_return()}\spxextra{pypath.main.PyPath method}|hyperpage}{41}
-\indexentry{random\_walk\_with\_return2() (pypath.main.PyPath method)@\spxentry{random\_walk\_with\_return2()}\spxextra{pypath.main.PyPath method}|hyperpage}{41}
-\indexentry{read\_data\_file() (pypath.main.PyPath method)@\spxentry{read\_data\_file()}\spxextra{pypath.main.PyPath method}|hyperpage}{41}
-\indexentry{read\_from\_cache() (pypath.main.PyPath method)@\spxentry{read\_from\_cache()}\spxextra{pypath.main.PyPath method}|hyperpage}{42}
-\indexentry{read\_list\_file() (pypath.main.PyPath method)@\spxentry{read\_list\_file()}\spxextra{pypath.main.PyPath method}|hyperpage}{42}
-\indexentry{receptors\_list() (pypath.main.PyPath method)@\spxentry{receptors\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{42}
-\indexentry{reference\_edge\_ratio() (pypath.main.PyPath method)@\spxentry{reference\_edge\_ratio()}\spxextra{pypath.main.PyPath method}|hyperpage}{42}
-\indexentry{reference\_hist() (pypath.main.PyPath method)@\spxentry{reference\_hist()}\spxextra{pypath.main.PyPath method}|hyperpage}{42}
-\indexentry{reload() (pypath.main.PyPath method)@\spxentry{reload()}\spxextra{pypath.main.PyPath method}|hyperpage}{42}
-\indexentry{remove\_htp() (pypath.main.PyPath method)@\spxentry{remove\_htp()}\spxextra{pypath.main.PyPath method}|hyperpage}{42}
-\indexentry{remove\_undirected() (pypath.main.PyPath method)@\spxentry{remove\_undirected()}\spxextra{pypath.main.PyPath method}|hyperpage}{42}
+\indexentry{proteins() (pypath.main.PyPath method)@\spxentry{proteins()}\spxextra{pypath.main.PyPath method}|hyperpage}{42}
+\indexentry{ps() (pypath.main.PyPath method)@\spxentry{ps()}\spxextra{pypath.main.PyPath method}|hyperpage}{42}
+\indexentry{random\_walk\_with\_return() (pypath.main.PyPath method)@\spxentry{random\_walk\_with\_return()}\spxextra{pypath.main.PyPath method}|hyperpage}{42}
+\indexentry{random\_walk\_with\_return2() (pypath.main.PyPath method)@\spxentry{random\_walk\_with\_return2()}\spxextra{pypath.main.PyPath method}|hyperpage}{42}
+\indexentry{read\_data\_file() (pypath.main.PyPath method)@\spxentry{read\_data\_file()}\spxextra{pypath.main.PyPath method}|hyperpage}{42}
+\indexentry{read\_from\_cache() (pypath.main.PyPath method)@\spxentry{read\_from\_cache()}\spxextra{pypath.main.PyPath method}|hyperpage}{43}
+\indexentry{read\_list\_file() (pypath.main.PyPath method)@\spxentry{read\_list\_file()}\spxextra{pypath.main.PyPath method}|hyperpage}{43}
+\indexentry{reference\_edge\_ratio() (pypath.main.PyPath method)@\spxentry{reference\_edge\_ratio()}\spxextra{pypath.main.PyPath method}|hyperpage}{43}
+\indexentry{reference\_hist() (pypath.main.PyPath method)@\spxentry{reference\_hist()}\spxextra{pypath.main.PyPath method}|hyperpage}{43}
+\indexentry{reload() (pypath.main.PyPath method)@\spxentry{reload()}\spxextra{pypath.main.PyPath method}|hyperpage}{43}
+\indexentry{remove\_htp() (pypath.main.PyPath method)@\spxentry{remove\_htp()}\spxextra{pypath.main.PyPath method}|hyperpage}{43}
+\indexentry{remove\_undirected() (pypath.main.PyPath method)@\spxentry{remove\_undirected()}\spxextra{pypath.main.PyPath method}|hyperpage}{43}
 \indexentry{run\_batch() (pypath.main.PyPath method)@\spxentry{run\_batch()}\spxextra{pypath.main.PyPath method}|hyperpage}{43}
 \indexentry{save\_network() (pypath.main.PyPath method)@\spxentry{save\_network()}\spxextra{pypath.main.PyPath method}|hyperpage}{43}
 \indexentry{save\_session() (pypath.main.PyPath method)@\spxentry{save\_session()}\spxextra{pypath.main.PyPath method}|hyperpage}{43}
 \indexentry{search\_attr\_and() (pypath.main.PyPath method)@\spxentry{search\_attr\_and()}\spxextra{pypath.main.PyPath method}|hyperpage}{43}
-\indexentry{search\_attr\_or() (pypath.main.PyPath method)@\spxentry{search\_attr\_or()}\spxextra{pypath.main.PyPath method}|hyperpage}{43}
-\indexentry{second\_neighbours() (pypath.main.PyPath method)@\spxentry{second\_neighbours()}\spxextra{pypath.main.PyPath method}|hyperpage}{43}
-\indexentry{select\_by\_go() (pypath.main.PyPath method)@\spxentry{select\_by\_go()}\spxextra{pypath.main.PyPath method}|hyperpage}{43}
+\indexentry{search\_attr\_or() (pypath.main.PyPath method)@\spxentry{search\_attr\_or()}\spxextra{pypath.main.PyPath method}|hyperpage}{44}
+\indexentry{second\_neighbours() (pypath.main.PyPath method)@\spxentry{second\_neighbours()}\spxextra{pypath.main.PyPath method}|hyperpage}{44}
+\indexentry{select\_by\_go() (pypath.main.PyPath method)@\spxentry{select\_by\_go()}\spxextra{pypath.main.PyPath method}|hyperpage}{44}
 \indexentry{select\_by\_go\_all() (pypath.main.PyPath method)@\spxentry{select\_by\_go\_all()}\spxextra{pypath.main.PyPath method}|hyperpage}{44}
 \indexentry{select\_by\_go\_expr() (pypath.main.PyPath method)@\spxentry{select\_by\_go\_expr()}\spxextra{pypath.main.PyPath method}|hyperpage}{44}
-\indexentry{separate() (pypath.main.PyPath method)@\spxentry{separate()}\spxextra{pypath.main.PyPath method}|hyperpage}{44}
-\indexentry{separate\_by\_category() (pypath.main.PyPath method)@\spxentry{separate\_by\_category()}\spxextra{pypath.main.PyPath method}|hyperpage}{44}
-\indexentry{sequences() (pypath.main.PyPath method)@\spxentry{sequences()}\spxextra{pypath.main.PyPath method}|hyperpage}{44}
-\indexentry{set\_boolean\_vattr() (pypath.main.PyPath method)@\spxentry{set\_boolean\_vattr()}\spxextra{pypath.main.PyPath method}|hyperpage}{44}
-\indexentry{set\_categories() (pypath.main.PyPath method)@\spxentry{set\_categories()}\spxextra{pypath.main.PyPath method}|hyperpage}{44}
-\indexentry{set\_chembl\_mysql() (pypath.main.PyPath method)@\spxentry{set\_chembl\_mysql()}\spxextra{pypath.main.PyPath method}|hyperpage}{44}
+\indexentry{separate() (pypath.main.PyPath method)@\spxentry{separate()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
+\indexentry{separate\_by\_category() (pypath.main.PyPath method)@\spxentry{separate\_by\_category()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
+\indexentry{sequences() (pypath.main.PyPath method)@\spxentry{sequences()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
+\indexentry{set\_boolean\_vattr() (pypath.main.PyPath method)@\spxentry{set\_boolean\_vattr()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
+\indexentry{set\_categories() (pypath.main.PyPath method)@\spxentry{set\_categories()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
+\indexentry{set\_chembl\_mysql() (pypath.main.PyPath method)@\spxentry{set\_chembl\_mysql()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
 \indexentry{set\_disease\_genes() (pypath.main.PyPath method)@\spxentry{set\_disease\_genes()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
 \indexentry{set\_druggability() (pypath.main.PyPath method)@\spxentry{set\_druggability()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
 \indexentry{set\_drugtargets() (pypath.main.PyPath method)@\spxentry{set\_drugtargets()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
-\indexentry{set\_kinases() (pypath.main.PyPath method)@\spxentry{set\_kinases()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
-\indexentry{set\_plasma\_membrane\_proteins\_cspa() (pypath.main.PyPath method)@\spxentry{set\_plasma\_membrane\_proteins\_cspa()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
-\indexentry{set\_plasma\_membrane\_proteins\_cspa\_surfaceome() (pypath.main.PyPath method)@\spxentry{set\_plasma\_membrane\_proteins\_cspa\_surfaceome()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
-\indexentry{set\_plasma\_membrane\_proteins\_surfaceome() (pypath.main.PyPath method)@\spxentry{set\_plasma\_membrane\_proteins\_surfaceome()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
-\indexentry{set\_receptors() (pypath.main.PyPath method)@\spxentry{set\_receptors()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
-\indexentry{set\_signaling\_proteins() (pypath.main.PyPath method)@\spxentry{set\_signaling\_proteins()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
-\indexentry{set\_tfs() (pypath.main.PyPath method)@\spxentry{set\_tfs()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
-\indexentry{set\_transcription\_factors() (pypath.main.PyPath method)@\spxentry{set\_transcription\_factors()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
-\indexentry{shortest\_path\_dist() (pypath.main.PyPath method)@\spxentry{shortest\_path\_dist()}\spxextra{pypath.main.PyPath method}|hyperpage}{45}
+\indexentry{set\_kinases() (pypath.main.PyPath method)@\spxentry{set\_kinases()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
+\indexentry{set\_plasma\_membrane\_proteins\_cspa() (pypath.main.PyPath method)@\spxentry{set\_plasma\_membrane\_proteins\_cspa()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
+\indexentry{set\_plasma\_membrane\_proteins\_cspa\_surfaceome() (pypath.main.PyPath method)@\spxentry{set\_plasma\_membrane\_proteins\_cspa\_surfaceome()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
+\indexentry{set\_plasma\_membrane\_proteins\_surfaceome() (pypath.main.PyPath method)@\spxentry{set\_plasma\_membrane\_proteins\_surfaceome()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
+\indexentry{set\_receptors() (pypath.main.PyPath method)@\spxentry{set\_receptors()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
+\indexentry{set\_signaling\_proteins() (pypath.main.PyPath method)@\spxentry{set\_signaling\_proteins()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
+\indexentry{set\_tfs() (pypath.main.PyPath method)@\spxentry{set\_tfs()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
+\indexentry{set\_transcription\_factors() (pypath.main.PyPath method)@\spxentry{set\_transcription\_factors()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
+\indexentry{shortest\_path\_dist() (pypath.main.PyPath method)@\spxentry{shortest\_path\_dist()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
 \indexentry{signaling\_proteins\_list() (pypath.main.PyPath method)@\spxentry{signaling\_proteins\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
-\indexentry{signor\_pathways() (pypath.main.PyPath method)@\spxentry{signor\_pathways()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
-\indexentry{similarity\_groups() (pypath.main.PyPath method)@\spxentry{similarity\_groups()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
-\indexentry{small\_plot() (pypath.main.PyPath method)@\spxentry{small\_plot()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
-\indexentry{sorensen\_pathways() (pypath.main.PyPath method)@\spxentry{sorensen\_pathways()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
-\indexentry{source\_diagram() (pypath.main.PyPath method)@\spxentry{source\_diagram()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
-\indexentry{source\_network() (pypath.main.PyPath method)@\spxentry{source\_network()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
-\indexentry{source\_similarity() (pypath.main.PyPath method)@\spxentry{source\_similarity()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
-\indexentry{source\_stats() (pypath.main.PyPath method)@\spxentry{source\_stats()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
-\indexentry{sources\_hist() (pypath.main.PyPath method)@\spxentry{sources\_hist()}\spxextra{pypath.main.PyPath method}|hyperpage}{46}
+\indexentry{signor\_pathways() (pypath.main.PyPath method)@\spxentry{signor\_pathways()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
+\indexentry{similarity\_groups() (pypath.main.PyPath method)@\spxentry{similarity\_groups()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
+\indexentry{small\_plot() (pypath.main.PyPath method)@\spxentry{small\_plot()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
+\indexentry{sorensen\_pathways() (pypath.main.PyPath method)@\spxentry{sorensen\_pathways()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
+\indexentry{source\_diagram() (pypath.main.PyPath method)@\spxentry{source\_diagram()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
+\indexentry{source\_network() (pypath.main.PyPath method)@\spxentry{source\_network()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
+\indexentry{source\_similarity() (pypath.main.PyPath method)@\spxentry{source\_similarity()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
+\indexentry{source\_stats() (pypath.main.PyPath method)@\spxentry{source\_stats()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
+\indexentry{sources\_hist() (pypath.main.PyPath method)@\spxentry{sources\_hist()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
 \indexentry{sources\_overlap() (pypath.main.PyPath method)@\spxentry{sources\_overlap()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
 \indexentry{sources\_venn\_data() (pypath.main.PyPath method)@\spxentry{sources\_venn\_data()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
-\indexentry{straight\_between() (pypath.main.PyPath method)@\spxentry{straight\_between()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
-\indexentry{string\_effects() (pypath.main.PyPath method)@\spxentry{string\_effects()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
-\indexentry{sum\_in\_complex() (pypath.main.PyPath method)@\spxentry{sum\_in\_complex()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
-\indexentry{surfaceome\_list() (pypath.main.PyPath method)@\spxentry{surfaceome\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
-\indexentry{table\_latex() (pypath.main.PyPath method)@\spxentry{table\_latex()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
-\indexentry{tfs\_list() (pypath.main.PyPath method)@\spxentry{tfs\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
-\indexentry{third\_source\_directions() (pypath.main.PyPath method)@\spxentry{third\_source\_directions()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
-\indexentry{tissue\_network() (pypath.main.PyPath method)@\spxentry{tissue\_network()}\spxextra{pypath.main.PyPath method}|hyperpage}{47}
+\indexentry{straight\_between() (pypath.main.PyPath method)@\spxentry{straight\_between()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
+\indexentry{string\_effects() (pypath.main.PyPath method)@\spxentry{string\_effects()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
+\indexentry{sum\_in\_complex() (pypath.main.PyPath method)@\spxentry{sum\_in\_complex()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
+\indexentry{table\_latex() (pypath.main.PyPath method)@\spxentry{table\_latex()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
+\indexentry{third\_source\_directions() (pypath.main.PyPath method)@\spxentry{third\_source\_directions()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
+\indexentry{tissue\_network() (pypath.main.PyPath method)@\spxentry{tissue\_network()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
 \indexentry{transcription\_factors() (pypath.main.PyPath method)@\spxentry{transcription\_factors()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
 \indexentry{uniprot() (pypath.main.PyPath method)@\spxentry{uniprot()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
 \indexentry{uniprots() (pypath.main.PyPath method)@\spxentry{uniprots()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
 \indexentry{uniq\_node\_list() (pypath.main.PyPath method)@\spxentry{uniq\_node\_list()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
-\indexentry{uniq\_ptm() (pypath.main.PyPath method)@\spxentry{uniq\_ptm()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
-\indexentry{uniq\_ptms() (pypath.main.PyPath method)@\spxentry{uniq\_ptms()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
-\indexentry{up() (pypath.main.PyPath method)@\spxentry{up()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
-\indexentry{up\_affected\_by() (pypath.main.PyPath method)@\spxentry{up\_affected\_by()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
-\indexentry{up\_affects() (pypath.main.PyPath method)@\spxentry{up\_affects()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
-\indexentry{up\_edge() (pypath.main.PyPath method)@\spxentry{up\_edge()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
-\indexentry{up\_in\_directed() (pypath.main.PyPath method)@\spxentry{up\_in\_directed()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
-\indexentry{up\_in\_undirected() (pypath.main.PyPath method)@\spxentry{up\_in\_undirected()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
-\indexentry{up\_inhibited\_by() (pypath.main.PyPath method)@\spxentry{up\_inhibited\_by()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
-\indexentry{up\_inhibits() (pypath.main.PyPath method)@\spxentry{up\_inhibits()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
-\indexentry{up\_neighborhood() (pypath.main.PyPath method)@\spxentry{up\_neighborhood()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
-\indexentry{up\_neighbors() (pypath.main.PyPath method)@\spxentry{up\_neighbors()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
-\indexentry{up\_stimulated\_by() (pypath.main.PyPath method)@\spxentry{up\_stimulated\_by()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
-\indexentry{up\_stimulates() (pypath.main.PyPath method)@\spxentry{up\_stimulates()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
-\indexentry{update\_adjlist() (pypath.main.PyPath method)@\spxentry{update\_adjlist()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
-\indexentry{update\_attrs() (pypath.main.PyPath method)@\spxentry{update\_attrs()}\spxextra{pypath.main.PyPath method}|hyperpage}{48}
+\indexentry{uniq\_ptm() (pypath.main.PyPath method)@\spxentry{uniq\_ptm()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
+\indexentry{uniq\_ptms() (pypath.main.PyPath method)@\spxentry{uniq\_ptms()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
+\indexentry{up() (pypath.main.PyPath method)@\spxentry{up()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
+\indexentry{up\_affected\_by() (pypath.main.PyPath method)@\spxentry{up\_affected\_by()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
+\indexentry{up\_affects() (pypath.main.PyPath method)@\spxentry{up\_affects()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
+\indexentry{up\_edge() (pypath.main.PyPath method)@\spxentry{up\_edge()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
+\indexentry{up\_in\_directed() (pypath.main.PyPath method)@\spxentry{up\_in\_directed()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
+\indexentry{up\_in\_undirected() (pypath.main.PyPath method)@\spxentry{up\_in\_undirected()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
+\indexentry{up\_inhibited\_by() (pypath.main.PyPath method)@\spxentry{up\_inhibited\_by()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
+\indexentry{up\_inhibits() (pypath.main.PyPath method)@\spxentry{up\_inhibits()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
+\indexentry{up\_neighborhood() (pypath.main.PyPath method)@\spxentry{up\_neighborhood()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
+\indexentry{up\_neighbors() (pypath.main.PyPath method)@\spxentry{up\_neighbors()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
+\indexentry{up\_stimulated\_by() (pypath.main.PyPath method)@\spxentry{up\_stimulated\_by()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
+\indexentry{up\_stimulates() (pypath.main.PyPath method)@\spxentry{up\_stimulates()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
+\indexentry{update\_adjlist() (pypath.main.PyPath method)@\spxentry{update\_adjlist()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
+\indexentry{update\_attrs() (pypath.main.PyPath method)@\spxentry{update\_attrs()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
 \indexentry{update\_cats() (pypath.main.PyPath method)@\spxentry{update\_cats()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
 \indexentry{update\_db\_dict() (pypath.main.PyPath method)@\spxentry{update\_db\_dict()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
 \indexentry{update\_pathway\_types() (pypath.main.PyPath method)@\spxentry{update\_pathway\_types()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
 \indexentry{update\_pathways() (pypath.main.PyPath method)@\spxentry{update\_pathways()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
 \indexentry{update\_sources() (pypath.main.PyPath method)@\spxentry{update\_sources()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
 \indexentry{update\_vertex\_sources() (pypath.main.PyPath method)@\spxentry{update\_vertex\_sources()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
-\indexentry{update\_vindex() (pypath.main.PyPath method)@\spxentry{update\_vindex()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
-\indexentry{update\_vname() (pypath.main.PyPath method)@\spxentry{update\_vname()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
-\indexentry{ups() (pypath.main.PyPath method)@\spxentry{ups()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
-\indexentry{v() (pypath.main.PyPath method)@\spxentry{v()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
-\indexentry{vertex\_pathways() (pypath.main.PyPath method)@\spxentry{vertex\_pathways()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
-\indexentry{vsgs() (pypath.main.PyPath method)@\spxentry{vsgs()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
-\indexentry{vsup() (pypath.main.PyPath method)@\spxentry{vsup()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
-\indexentry{wang\_effects() (pypath.main.PyPath method)@\spxentry{wang\_effects()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
-\indexentry{write\_table() (pypath.main.PyPath method)@\spxentry{write\_table()}\spxextra{pypath.main.PyPath method}|hyperpage}{49}
+\indexentry{update\_vindex() (pypath.main.PyPath method)@\spxentry{update\_vindex()}\spxextra{pypath.main.PyPath method}|hyperpage}{50}
+\indexentry{update\_vname() (pypath.main.PyPath method)@\spxentry{update\_vname()}\spxextra{pypath.main.PyPath method}|hyperpage}{50}
+\indexentry{ups() (pypath.main.PyPath method)@\spxentry{ups()}\spxextra{pypath.main.PyPath method}|hyperpage}{50}
+\indexentry{v() (pypath.main.PyPath method)@\spxentry{v()}\spxextra{pypath.main.PyPath method}|hyperpage}{50}
+\indexentry{vertex\_pathways() (pypath.main.PyPath method)@\spxentry{vertex\_pathways()}\spxextra{pypath.main.PyPath method}|hyperpage}{50}
+\indexentry{vsgs() (pypath.main.PyPath method)@\spxentry{vsgs()}\spxextra{pypath.main.PyPath method}|hyperpage}{50}
+\indexentry{vsup() (pypath.main.PyPath method)@\spxentry{vsup()}\spxextra{pypath.main.PyPath method}|hyperpage}{50}
+\indexentry{wang\_effects() (pypath.main.PyPath method)@\spxentry{wang\_effects()}\spxextra{pypath.main.PyPath method}|hyperpage}{50}
+\indexentry{write\_table() (pypath.main.PyPath method)@\spxentry{write\_table()}\spxextra{pypath.main.PyPath method}|hyperpage}{50}
 \indexentry{Direction (class in pypath.main)@\spxentry{Direction}\spxextra{class in pypath.main}|hyperpage}{50}
-\indexentry{check\_nodes() (pypath.main.Direction method)@\spxentry{check\_nodes()}\spxextra{pypath.main.Direction method}|hyperpage}{50}
-\indexentry{check\_param() (pypath.main.Direction method)@\spxentry{check\_param()}\spxextra{pypath.main.Direction method}|hyperpage}{50}
+\indexentry{check\_nodes() (pypath.main.Direction method)@\spxentry{check\_nodes()}\spxextra{pypath.main.Direction method}|hyperpage}{51}
+\indexentry{check\_param() (pypath.main.Direction method)@\spxentry{check\_param()}\spxextra{pypath.main.Direction method}|hyperpage}{51}
 \indexentry{consensus\_edges() (pypath.main.Direction method)@\spxentry{consensus\_edges()}\spxextra{pypath.main.Direction method}|hyperpage}{51}
 \indexentry{get\_dir() (pypath.main.Direction method)@\spxentry{get\_dir()}\spxextra{pypath.main.Direction method}|hyperpage}{51}
-\indexentry{get\_dirs() (pypath.main.Direction method)@\spxentry{get\_dirs()}\spxextra{pypath.main.Direction method}|hyperpage}{51}
-\indexentry{get\_sign() (pypath.main.Direction method)@\spxentry{get\_sign()}\spxextra{pypath.main.Direction method}|hyperpage}{51}
+\indexentry{get\_dirs() (pypath.main.Direction method)@\spxentry{get\_dirs()}\spxextra{pypath.main.Direction method}|hyperpage}{52}
+\indexentry{get\_sign() (pypath.main.Direction method)@\spxentry{get\_sign()}\spxextra{pypath.main.Direction method}|hyperpage}{52}
 \indexentry{has\_sign() (pypath.main.Direction method)@\spxentry{has\_sign()}\spxextra{pypath.main.Direction method}|hyperpage}{52}
 \indexentry{is\_directed() (pypath.main.Direction method)@\spxentry{is\_directed()}\spxextra{pypath.main.Direction method}|hyperpage}{52}
 \indexentry{is\_inhibition() (pypath.main.Direction method)@\spxentry{is\_inhibition()}\spxextra{pypath.main.Direction method}|hyperpage}{52}
-\indexentry{is\_stimulation() (pypath.main.Direction method)@\spxentry{is\_stimulation()}\spxextra{pypath.main.Direction method}|hyperpage}{52}
-\indexentry{majority\_dir() (pypath.main.Direction method)@\spxentry{majority\_dir()}\spxextra{pypath.main.Direction method}|hyperpage}{52}
-\indexentry{majority\_sign() (pypath.main.Direction method)@\spxentry{majority\_sign()}\spxextra{pypath.main.Direction method}|hyperpage}{52}
-\indexentry{merge() (pypath.main.Direction method)@\spxentry{merge()}\spxextra{pypath.main.Direction method}|hyperpage}{52}
-\indexentry{negative\_reverse() (pypath.main.Direction method)@\spxentry{negative\_reverse()}\spxextra{pypath.main.Direction method}|hyperpage}{52}
+\indexentry{is\_mutual() (pypath.main.Direction method)@\spxentry{is\_mutual()}\spxextra{pypath.main.Direction method}|hyperpage}{53}
+\indexentry{is\_stimulation() (pypath.main.Direction method)@\spxentry{is\_stimulation()}\spxextra{pypath.main.Direction method}|hyperpage}{53}
+\indexentry{majority\_dir() (pypath.main.Direction method)@\spxentry{majority\_dir()}\spxextra{pypath.main.Direction method}|hyperpage}{53}
+\indexentry{majority\_sign() (pypath.main.Direction method)@\spxentry{majority\_sign()}\spxextra{pypath.main.Direction method}|hyperpage}{53}
+\indexentry{merge() (pypath.main.Direction method)@\spxentry{merge()}\spxextra{pypath.main.Direction method}|hyperpage}{53}
+\indexentry{negative\_reverse() (pypath.main.Direction method)@\spxentry{negative\_reverse()}\spxextra{pypath.main.Direction method}|hyperpage}{53}
 \indexentry{negative\_sources\_reverse() (pypath.main.Direction method)@\spxentry{negative\_sources\_reverse()}\spxextra{pypath.main.Direction method}|hyperpage}{53}
 \indexentry{negative\_sources\_straight() (pypath.main.Direction method)@\spxentry{negative\_sources\_straight()}\spxextra{pypath.main.Direction method}|hyperpage}{53}
 \indexentry{negative\_straight() (pypath.main.Direction method)@\spxentry{negative\_straight()}\spxextra{pypath.main.Direction method}|hyperpage}{53}
-\indexentry{positive\_reverse() (pypath.main.Direction method)@\spxentry{positive\_reverse()}\spxextra{pypath.main.Direction method}|hyperpage}{53}
-\indexentry{positive\_sources\_reverse() (pypath.main.Direction method)@\spxentry{positive\_sources\_reverse()}\spxextra{pypath.main.Direction method}|hyperpage}{53}
-\indexentry{positive\_sources\_straight() (pypath.main.Direction method)@\spxentry{positive\_sources\_straight()}\spxextra{pypath.main.Direction method}|hyperpage}{53}
-\indexentry{positive\_straight() (pypath.main.Direction method)@\spxentry{positive\_straight()}\spxextra{pypath.main.Direction method}|hyperpage}{53}
-\indexentry{set\_dir() (pypath.main.Direction method)@\spxentry{set\_dir()}\spxextra{pypath.main.Direction method}|hyperpage}{53}
-\indexentry{set\_sign() (pypath.main.Direction method)@\spxentry{set\_sign()}\spxextra{pypath.main.Direction method}|hyperpage}{53}
+\indexentry{positive\_reverse() (pypath.main.Direction method)@\spxentry{positive\_reverse()}\spxextra{pypath.main.Direction method}|hyperpage}{54}
+\indexentry{positive\_sources\_reverse() (pypath.main.Direction method)@\spxentry{positive\_sources\_reverse()}\spxextra{pypath.main.Direction method}|hyperpage}{54}
+\indexentry{positive\_sources\_straight() (pypath.main.Direction method)@\spxentry{positive\_sources\_straight()}\spxextra{pypath.main.Direction method}|hyperpage}{54}
+\indexentry{positive\_straight() (pypath.main.Direction method)@\spxentry{positive\_straight()}\spxextra{pypath.main.Direction method}|hyperpage}{54}
+\indexentry{set\_dir() (pypath.main.Direction method)@\spxentry{set\_dir()}\spxextra{pypath.main.Direction method}|hyperpage}{54}
+\indexentry{set\_sign() (pypath.main.Direction method)@\spxentry{set\_sign()}\spxextra{pypath.main.Direction method}|hyperpage}{54}
 \indexentry{sources\_reverse() (pypath.main.Direction method)@\spxentry{sources\_reverse()}\spxextra{pypath.main.Direction method}|hyperpage}{54}
 \indexentry{sources\_straight() (pypath.main.Direction method)@\spxentry{sources\_straight()}\spxextra{pypath.main.Direction method}|hyperpage}{54}
-\indexentry{sources\_undirected() (pypath.main.Direction method)@\spxentry{sources\_undirected()}\spxextra{pypath.main.Direction method}|hyperpage}{54}
-\indexentry{src() (pypath.main.Direction method)@\spxentry{src()}\spxextra{pypath.main.Direction method}|hyperpage}{54}
-\indexentry{src\_by\_source() (pypath.main.Direction method)@\spxentry{src\_by\_source()}\spxextra{pypath.main.Direction method}|hyperpage}{54}
-\indexentry{tgt() (pypath.main.Direction method)@\spxentry{tgt()}\spxextra{pypath.main.Direction method}|hyperpage}{54}
-\indexentry{tgt\_by\_source() (pypath.main.Direction method)@\spxentry{tgt\_by\_source()}\spxextra{pypath.main.Direction method}|hyperpage}{54}
+\indexentry{sources\_undirected() (pypath.main.Direction method)@\spxentry{sources\_undirected()}\spxextra{pypath.main.Direction method}|hyperpage}{55}
+\indexentry{src() (pypath.main.Direction method)@\spxentry{src()}\spxextra{pypath.main.Direction method}|hyperpage}{55}
+\indexentry{src\_by\_source() (pypath.main.Direction method)@\spxentry{src\_by\_source()}\spxextra{pypath.main.Direction method}|hyperpage}{55}
+\indexentry{tgt() (pypath.main.Direction method)@\spxentry{tgt()}\spxextra{pypath.main.Direction method}|hyperpage}{55}
+\indexentry{tgt\_by\_source() (pypath.main.Direction method)@\spxentry{tgt\_by\_source()}\spxextra{pypath.main.Direction method}|hyperpage}{55}
 \indexentry{translate() (pypath.main.Direction method)@\spxentry{translate()}\spxextra{pypath.main.Direction method}|hyperpage}{55}
 \indexentry{unset\_dir() (pypath.main.Direction method)@\spxentry{unset\_dir()}\spxextra{pypath.main.Direction method}|hyperpage}{55}
-\indexentry{unset\_sign() (pypath.main.Direction method)@\spxentry{unset\_sign()}\spxextra{pypath.main.Direction method}|hyperpage}{55}
-\indexentry{which\_dirs() (pypath.main.Direction method)@\spxentry{which\_dirs()}\spxextra{pypath.main.Direction method}|hyperpage}{55}
-\indexentry{AttrHelper (class in pypath.main)@\spxentry{AttrHelper}\spxextra{class in pypath.main}|hyperpage}{55}
+\indexentry{unset\_sign() (pypath.main.Direction method)@\spxentry{unset\_sign()}\spxextra{pypath.main.Direction method}|hyperpage}{56}
+\indexentry{which\_dirs() (pypath.main.Direction method)@\spxentry{which\_dirs()}\spxextra{pypath.main.Direction method}|hyperpage}{56}
+\indexentry{AttrHelper (class in pypath.main)@\spxentry{AttrHelper}\spxextra{class in pypath.main}|hyperpage}{56}
 \indexentry{pypath.ptm (module)@\spxentry{pypath.ptm}\spxextra{module}|hyperpage}{56}
