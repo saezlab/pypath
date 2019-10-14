@@ -685,7 +685,7 @@ class CustomAnnotation(session_mod.Logger):
         )
     
     #
-    # Counting connections between classes
+    # Counting connections between classes (total)
     #
     
     def count_inter_class_connections(
@@ -742,6 +742,25 @@ class CustomAnnotation(session_mod.Logger):
             target_classes = target_classes,
             **kwargs,
         ).groupby(['id_a', 'id_b']).ngroups
+    
+    
+    #
+    # Class to class connection counts
+    #
+    
+    # TODO: maybe add wrappers for directed and others as above
+    def class_to_class_connections(
+            self,
+            **kwargs
+        ):
+        
+        return self.inter_class_network(
+            **kwargs,
+        ).groupby(
+            ['category_a', 'category_b']
+        ).apply(
+            lambda grp: len(set(zip(grp.id_a, grp.id_b)))
+        )
     
     #
     # Inter-class degrees
