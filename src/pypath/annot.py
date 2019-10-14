@@ -899,6 +899,39 @@ class CustomAnnotation(session_mod.Logger):
         )
     
     
+    def entities_by_resource(self, entity_types = None):
+        
+        entity_types = common.to_set(entity_types)
+        by_resource = collections.defaultdict(set)
+        
+        for key, resource in iteritems(self.resource_labels):
+            
+            by_resource[resource].update(
+                self.classes[key]
+                    if not entity_types else
+                {
+                    entity
+                    for entity in self.classes[key]
+                    if AnnotationBase.get_entity_type(entity) in entity_types
+                }
+            )
+        
+        return dict(by_resource)
+    
+    
+    def counts_by_resource(self, entity_types = None):
+        
+        return dict(
+            (
+                resource,
+                len(entities)
+            )
+            for resource, entities in iteritems(
+                self.entities_by_resource(entity_types = entity_types)
+            )
+        )
+    
+    
     def update_summaries(self):
         
         self.summaries = {}

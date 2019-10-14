@@ -2574,6 +2574,8 @@ def gen_html():
         '<p>\n'
             '<em>\n'
             'Information on this page has been last revised in Nov 2016.\n'
+            'As of Oct 2019 we are working on updating and extending this\n'
+            'page and will publish the new version soon.\n'
             'About updates of the OmniPath database content please refer to\n'
             '<a href="http://archive.omnipathdb.org/README.txt">\n'
                 'our archive.\n'
