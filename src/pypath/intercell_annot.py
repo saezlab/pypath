@@ -1530,6 +1530,7 @@ resource_labels = {
     'comppi': 'ComPPI',
     'ramilowski': 'Ramilowski 2015',
     'guide2pharma': 'Guide to Pharm',
+    'dgidb': 'DGIdb',
 }
 
 

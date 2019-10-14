@@ -440,6 +440,7 @@ class CustomAnnotation(session_mod.Logger):
             only_directed = False,
             only_effect = None,
             only_proteins = False,
+            only_class_levels = None,
         ):
         """
         Combines the annotation data frame and a network data frame.
@@ -477,6 +478,11 @@ class CustomAnnotation(session_mod.Logger):
             return
         
         annot_df = self.df
+        
+        if only_class_levels:
+            
+            only_class_levels = common.to_set(only_class_levels)
+            annot_df = annot_df[annot_df.class_type.isin(only_class_levels)]
         
         if (
             not only_directed and
