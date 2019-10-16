@@ -754,13 +754,19 @@ class CustomAnnotation(session_mod.Logger):
             **kwargs
         ):
         
-        return self.inter_class_network(
-            **kwargs,
-        ).groupby(
-            ['category_a', 'category_b']
-        ).apply(
-            lambda grp: len(set(zip(grp.id_a, grp.id_b)))
+        c2c_c = (
+            self.inter_class_network(
+                **kwargs,
+            ).groupby(
+                ['category_a', 'category_b']
+            ).apply(
+                lambda grp: len(set(zip(grp.id_a, grp.id_b)))
+            )
         )
+        
+        c2c_c = c2c_c.reset_index().rename(columns = {0: 'connections'})
+        
+        return c2c_c
     
     #
     # Inter-class degrees

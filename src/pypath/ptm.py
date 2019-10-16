@@ -613,7 +613,7 @@ class PtmAggregator(object):
         
         with open(self.pickle_file, 'rb') as fp:
             
-            self.enz_sub = pickle.load(fp)
+            self.enz_sub, self.references = pickle.load(fp)
     
     
     def save_to_pickle(self, pickle_file):
@@ -621,7 +621,10 @@ class PtmAggregator(object):
         with open(pickle_file, 'wb') as fp:
             
             pickle.dump(
-                obj = self.enz_sub,
+                obj = (
+                    self.enz_sub,
+                    self.references,
+                )
                 file = fp,
             )
     
