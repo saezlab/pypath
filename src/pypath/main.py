@@ -622,7 +622,7 @@ class Direction(object):
         )
     
     
-    def is_stimulation(self, direction=None):
+    def is_stimulation(self, direction = None, resources = None):
         """
         Checks if any (or for a specific *direction*) interaction is
         activation (positive interaction).
@@ -636,12 +636,12 @@ class Direction(object):
             (*bool*) -- ``True`` if any interaction (or the specified
             *direction*) is activatory (positive).
         """
-
-        if direction is None:
-            return bool(sum(self.positive.values()))
-
-        else:
-            return self.positive[direction]
+        
+        return self._is_effect(
+            sign = 'positive',
+            direction = direction,
+            resources = resources,
+        )
     
     
     def is_inhibition(self, direction = None, resources = None):
@@ -675,14 +675,14 @@ class Direction(object):
         )
         _resources = self._resources_set(resources)
         
-        return bool(
-            sum(
-                (
+        return (
+            any(
+                bool(
                     val
                         if not _resources else
                     val & _resources
                 )
-                for _dir, val in _sign.values()
+                for _dir, val in iteritems(_sign)
                 if not direction or direction == _dir
             )
         )
