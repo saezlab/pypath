@@ -887,6 +887,8 @@ class TableServer(BaseServer):
             'interactions'
         )
         
+        query_type = 'enzsub' if query_type == 'ptms' else query_type
+        
         datasets = (
             set(req.postpath[2].split(','))
                 if len(req.postpath) > 2 else
