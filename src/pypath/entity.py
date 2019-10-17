@@ -26,10 +26,11 @@ import pypath.session_mod as session_mod
 class Entitiy(session_mod.Logger):
     
     
-    def __init__(self, identifier, entity_type):
+    def __init__(self, identifier, entity_type, id_type):
         
         self.identifier = identifier
         self.entity_type = entity_type
+        self.id_type = id_type
     
     
     @staticmethod
@@ -39,4 +40,25 @@ class Entitiy(session_mod.Logger):
             entity
                 if isinstance(entity, common.basestring) else
             str(entitiy)
+        )
+    
+    
+    @classmethod
+    def igraph_vertex_name(cls, igraph_v):
+        
+        return cls.entity_name_str(igraph_v['name'])
+    
+    
+    @staticmethod
+    def igraph_vertex_label(igraph_v):
+        
+        return igraph_v['label']
+    
+    
+    @classmethod
+    def igraph_vertex_name_label(cls, igraph_v):
+        
+        return (
+            cls.igraph_vertex_name(igraph_v),
+            cls.igraph_vertex_label(igraph_v),
         )
