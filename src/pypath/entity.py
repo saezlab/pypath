@@ -23,7 +23,7 @@ import pypath.common as common
 import pypath.session_mod as session_mod
 
 
-class Entitiy(session_mod.Logger):
+class Entity(session_mod.Logger):
     
     
     def __init__(self, identifier, entity_type, id_type):
@@ -39,7 +39,7 @@ class Entitiy(session_mod.Logger):
         return (
             entity
                 if isinstance(entity, common.basestring) else
-            str(entitiy)
+            str(entity)
         )
     
     

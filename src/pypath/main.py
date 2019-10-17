@@ -15594,7 +15594,19 @@ class PyPath(session_mod.Logger):
                     )
     
     # shortcuts for the most often used igraph attributes:
-
+    
+    
+    def name_to_label(self, name):
+        
+        try:
+            
+            return self.nodLab[self.nodDct[name]]
+            
+        except (KeyError, IndexError):
+            
+            return str(name)
+    
+    
     @property
     def vcount(self):
 

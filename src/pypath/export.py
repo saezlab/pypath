@@ -18,8 +18,6 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from __future__ import print_function
-
 from future.utils import iteritems
 from past.builtins import xrange, range
 
@@ -36,6 +34,7 @@ import pypath.progress as progress
 import pypath.urls as urls
 import pypath.data_formats as data_formats
 import pypath.settings as settings
+import pypath.entity as entity
 
 strip_json = re.compile(r'[\[\]{}\"]')
 simple_types = {bool, int, float, type(None)}
@@ -237,17 +236,20 @@ class Export(object):
 
             return []
 
-        name_a = self.graph.vs[e.source]['name']
-        name_b = self.graph.vs[e.target]['name']
+        vertex_a = self.graph.vs[e.source]
+        vertex_b = self.graph.vs[e.target]
+        
+        name_a, label_a = entity.Entity.igraph_vertex_name_label(vertex_a)
+        name_b, label_b = entity.Entity.igraph_vertex_name_label(vertex_b)
 
         return [
             list(itertools.chain(
                 (
                     # uniprots, genesymbols
-                        name_a.replace(' ', ''),
-                        self.graph.vs[e.source]['label'].replace(' ', ''),
-                        name_b.replace(' ', ''),
-                        self.graph.vs[e.target]['label'].replace(' ', ''),
+                        name_a,
+                        label_a,
+                        name_b,
+                        label_b,
                     # sources, references
                         ';'.join(list(e['sources'])),
                         ';'.join(map(lambda r: r.pmid, e['references'])),
@@ -263,8 +265,8 @@ class Export(object):
                     # signs
                     ';'.join(a) for a in
                     itertools.chain(
-                            e['dirs'].get_sign((name_a, name_b), sources=True),
-                            e['dirs'].get_sign((name_b, name_a), sources=True)
+                        e['dirs'].get_sign((name_a, name_b), sources=True),
+                        e['dirs'].get_sign((name_b, name_a), sources=True),
                     )
                 ),
                 (
@@ -303,10 +305,10 @@ class Export(object):
                 is_inhibition = int(e['dirs'].is_inhibition(uniprots))
 
                 this_edge = [
-                    uniprots[0],
-                    uniprots[1],
-                    self.pa.nodLab[self.pa.nodDct[uniprots[0]]],
-                    self.pa.nodLab[self.pa.nodDct[uniprots[1]]],
+                    entity.Entity.entity_name_str(uniprots[0]),
+                    entity.Entity.entity_name_str(uniprots[1]),
+                    self.pa.name_to_label(uniprots[0]),
+                    self.pa.name_to_label(uniprots[1]),
                     1, # is_directed
                     is_stimulation,
                     is_inhibition,
@@ -353,10 +355,10 @@ class Export(object):
         if not e['dirs'].is_directed():
             
             this_edge = [
-                e['dirs'].nodes[0],
-                e['dirs'].nodes[1],
-                self.pa.nodLab[self.pa.nodDct[e['dirs'].nodes[0]]],
-                self.pa.nodLab[self.pa.nodDct[e['dirs'].nodes[1]]],
+                entity.Entity.entity_name_str(e['dirs'].nodes[0]),
+                entity.Entity.entity_name_str(e['dirs'].nodes[1]),
+                self.pa.name_to_label(e['dirs'].nodes[0]),
+                self.pa.name_to_label(e['dirs'].nodes[1]),
                 0,
                 0,
                 0,
