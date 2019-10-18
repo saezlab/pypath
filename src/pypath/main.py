@@ -2014,23 +2014,42 @@ class PyPath(session_mod.Logger):
 
             else:
                 return None
-
-    def numof_references(self):
+    
+    
+    def numof_references(self, resources = None):
         """Counts the number of reference on the network.
-
+        
         Counts the total number of unique references in the edges of the
         network.
-
+        
+        resources : None,str,set
+            Limits the query to one or more resources.
+        
         :return:
             (*int*) -- Number of unique references in the network.
         """
-
-        return len(
-            common.uniqList(
-                common.flatList(
-                    list(map(lambda e: e['references'], self.graph.es)))))
-
-    def mean_reference_per_interaction(self):
+        
+        return len(self.references(resources = resources))
+    
+    
+    def references(self, resources = None):
+        """
+        Returns a set of references for all edges.
+        
+        resources : None,str,set
+            Limits the query to one or more resources.
+        """
+        
+        resources = common.to_set(resources)
+        
+        return set.union(*(
+            set(e['references'])
+            for e in self.graph.es
+            if not resources or e['sources'] & resources
+        ))
+    
+    
+    def mean_reference_per_interaction(self, resources = None):
         """
         Computes the mean number of references per interaction of the
         network.
@@ -2039,9 +2058,59 @@ class PyPath(session_mod.Logger):
             (*float*) -- Mean number of interactions per edge.
         """
 
-        return np.mean(
-            list(map(lambda e: len(e['references']), self.graph.es)))
-
+        return (
+            self.numof_references(resources = resources) /
+            self.numof_edges(resources = resources)
+        )
+    
+    
+    def numof_edges(self, resources = None):
+        """
+        Number of edges optionally limited to certain resources.
+        """
+        
+        return len(list(self.iter_edges(resources = resources)))
+    
+    
+    def iter_edges(self, resources = None):
+        """
+        Iterates the edges in the graph optionally limited to certain
+        resources. Yields ``igraph.Edge`` objects.
+        """
+        
+        resources = common.to_set(resources)
+        
+        for e in self.graph.es:
+            
+            if not resources or resources & e['sources']:
+                
+                yield e
+    
+    
+    def numof_nodes(self, resources = None):
+        """
+        Counts the vertices optionally only the ones from certain
+        resources.
+        """
+        
+        return len(list(self.iter_nodes(resources = resources)))
+    
+    
+    def iter_nodes(self, resources = None):
+        """
+        Iterates nodes optionally only for certain resources. Yields
+        ``igraph.Vertex`` objects.
+        """
+        
+        resources = common.to_set(resources)
+        
+        for v in self.graph.vs:
+            
+            if not resources or resources & v['sources']:
+                
+                yield v
+    
+    
     def numof_reference_interaction_pairs(self): # XXX: Not really sure about this one
         """
         Returns the total of unique references per interaction.
