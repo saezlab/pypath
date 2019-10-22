@@ -2230,11 +2230,6 @@ categories = {
     'WikiPathways': 'r',
     'PANTHER': 'r',
     'ABS': 't',
-    'ENCODE_distal': 't',
-    'PAZAR': 't',
-    'ENCODE_proximal': 't',
-    'ORegAnno': 't',
-    'HTRI': 't',
     'MIMP': 'm',
     'PhosphoNetworks': 'm',
     'Li2012': 'm',
@@ -2253,14 +2248,45 @@ categories = {
     'HIPPIE': 'i',
     'Wang': 'p',
     'KEGG': 'p',
+    # TF-target
+    'ENCODE_distal': 't',
+    'PAZAR': 't',
+    'ENCODE_proximal': 't',
+    'ORegAnno': 't',
+    'HTRI': 't',
+    'ARACNe-GTEx': 't',
+    'DoRothEA_reviews': 't',
+    'FANTOM4': 't',
+    'HOCOMOCO_v11': 't',
+    'HTRIdb': 't',
+    'JASPAR_v2018': 't',
+    'NFIRegulomeDB': 't',
+    'ReMap': 't',
+    'RegNetwork': 't',
+    'TFactS': 't',
+    'TFe': 't',
+    'TRED': 't',
+    'TRIP': 't',
+    'TRRD': 't',
+    'TRRUST': 't',
+    # miRNA-mRNA
+    'miR2Disease': 'n',
+    'miRDeathDB': 'n',
+    'miRecords': 'n',
+    'miRTarBase': 'n',
+    # TF-miRNA
+    'TransmiR': 'u',
+    'ENCODE_tf-mirna': 'u',
 }
 
-p = set([])
-i = set([])
-r = set([])
-m = set([])
-t = set([])
-l = set([])
+p = set()
+i = set()
+r = set()
+m = set()
+t = set()
+l = set()
+n = set() # miRNA-target
+u = set() # TF-mirna
 
 for db, cats in iteritems(categories):
     
@@ -2275,6 +2301,8 @@ catnames = {
     'r': 'Process description',
     't': 'Transcription',
     'l': 'Ligand-receptor',
+    'n': 'miRNA-mRNA',
+    'u': 'TF-miRNA',
 }
 
 catletters = dict(map(reversed, iteritems(catnames)))
