@@ -559,25 +559,19 @@ class Direction(object):
     
     def _resources_set(self, resources = None):
         
-        return (
-            None
-                if resources is None else
-            {resources}
-                if isinstance(resources, common.basestring) else
-            set(resources)
-        )
+        return common.to_set(resources)
     
     
     def is_directed(self):
         """
         Checks if edge has any directionality information.
-
+        
         :return:
             (*bool*) -- Returns ``True`` if any of the :py:attr:`dirs`
             attribute values is ``True`` (except ``'undirected'``),
             ``False`` otherwise.
         """
-
+        
         return self.dirs[self.straight] or self.dirs[self.reverse]
     
     
@@ -585,7 +579,7 @@ class Direction(object):
         """
         Checks if edge has any directionality information from some
         resource(s).
-
+        
         :return:
             (*bool*) -- Returns ``True`` if any of the :py:attr:`dirs`
             attribute values is ``True`` (except ``'undirected'``),
@@ -595,12 +589,16 @@ class Direction(object):
         return self._by_resource(resources, op = operator.or_)
     
     
-    def is_mutual(self):
+    def is_mutual(self, resources = None):
         """
         Checks if the edge has mutual directions (both A-->B and B-->A).
         """
         
-        return self.dirs[self.straight] and self.dirs[self.reverse]
+        return (
+            self.dirs[self.straight] and self.dirs[self.reverse]
+                if not resources else
+            self.is_mutual_by_resources(resources = resources)
+        )
     
     
     def is_mutual_by_resources(self, resources = None):
@@ -626,12 +624,12 @@ class Direction(object):
         """
         Checks if any (or for a specific *direction*) interaction is
         activation (positive interaction).
-
+        
         :arg tuple direction:
             Optional, ``None`` by default. If specified, checks the
             :py:attr:`positive` attribute of that specific
             directionality. If not specified, checks both.
-
+        
         :return:
             (*bool*) -- ``True`` if any interaction (or the specified
             *direction*) is activatory (positive).
@@ -648,12 +646,12 @@ class Direction(object):
         """
         Checks if any (or for a specific *direction*) interaction is
         inhibition (negative interaction).
-
+        
         :arg tuple direction:
             Optional, ``None`` by default. If specified, checks the
             :py:attr:`negative` attribute of that specific
             directionality. If not specified, checks both.
-
+        
         :return:
             (*bool*) -- ``True`` if any interaction (or the specified
             *direction*) is inhibitory (negative).
@@ -2016,142 +2014,6 @@ class PyPath(session_mod.Logger):
                 return None
     
     
-    def numof_references(self, resources = None):
-        """Counts the number of reference on the network.
-        
-        Counts the total number of unique references in the edges of the
-        network.
-        
-        resources : None,str,set
-            Limits the query to one or more resources.
-        
-        :return:
-            (*int*) -- Number of unique references in the network.
-        """
-        
-        return len(self.references(resources = resources))
-    
-    
-    def references(self, resources = None):
-        """
-        Returns a set of references for all edges.
-        
-        resources : None,str,set
-            Limits the query to one or more resources.
-        """
-        
-        resources = common.to_set(resources)
-        
-        return set.union(*(
-            set(e['references'])
-            for e in self.graph.es
-            if not resources or e['sources'] & resources
-        ))
-    
-    
-    def mean_reference_per_interaction(self, resources = None):
-        """
-        Computes the mean number of references per interaction of the
-        network.
-
-        :return:
-            (*float*) -- Mean number of interactions per edge.
-        """
-
-        return (
-            self.numof_references(resources = resources) /
-            self.numof_edges(resources = resources)
-        )
-    
-    
-    def numof_edges(self, resources = None):
-        """
-        Number of edges optionally limited to certain resources.
-        """
-        
-        return len(list(self.iter_edges(resources = resources)))
-    
-    
-    def iter_edges(self, resources = None):
-        """
-        Iterates the edges in the graph optionally limited to certain
-        resources. Yields ``igraph.Edge`` objects.
-        """
-        
-        resources = common.to_set(resources)
-        
-        for e in self.graph.es:
-            
-            if not resources or resources & e['sources']:
-                
-                yield e
-    
-    
-    def numof_nodes(self, resources = None):
-        """
-        Counts the vertices optionally only the ones from certain
-        resources.
-        """
-        
-        return len(list(self.iter_nodes(resources = resources)))
-    
-    
-    def iter_nodes(self, resources = None):
-        """
-        Iterates nodes optionally only for certain resources. Yields
-        ``igraph.Vertex`` objects.
-        """
-        
-        resources = common.to_set(resources)
-        
-        for v in self.graph.vs:
-            
-            if not resources or resources & v['sources']:
-                
-                yield v
-    
-    
-    def numof_reference_interaction_pairs(self): # XXX: Not really sure about this one
-        """
-        Returns the total of unique references per interaction.
-
-        :return:
-            (*int*) -- Total number of unique references per
-            interaction.
-        """
-
-        return len(common.uniqList(common.flatList(
-            list(map(lambda e:
-                     list(map(lambda r:
-                              (e.index, r), e['references'])),
-                     self.graph.es)))))
-
-    def curators_work(self):
-        """
-        Computes and prints an estimation of how many years of curation
-        took to achieve the amount of information on the network.
-        """
-
-        curation_effort = self.numof_reference_interaction_pairs()
-        sys.stdout.write(
-            '\t:: Curators worked %.01f-%.01f years to accomplish '
-            'what currently you have incorporated in this network!'
-            '\n\n\tAmazing, isn\'t it?\n' %
-            (curation_effort * 15 / 60.0 / 2087.0,
-             curation_effort * 60 / 60.0 / 2087.0))
-        sys.stdout.flush()
-
-    def reference_edge_ratio(self):
-        """
-        Computes the average number of references per edge (as in the
-        undirected graph).
-
-        :return:
-            (*float*) -- Average number of references per edge.
-        """
-
-        return self.numof_references() / float(self.graph.ecount())
-
     def get_giant(self, replace=False, graph=None):
         """
         Returns the giant component of the *graph*, or replaces the
@@ -13579,6 +13441,103 @@ class PyPath(session_mod.Logger):
         self.summaries_labels = summaries_labels
     
     
+    def mean_reference_per_interaction(self, resources = None):
+        """
+        Computes the mean number of references per interaction of the
+        network.
+
+        :return:
+            (*float*) -- Mean number of interactions per edge.
+        """
+
+        return (
+            self.numof_references(resources = resources) /
+            self.numof_edges(resources = resources)
+        )
+    
+    
+    def mean_reference_per_interaction_by_resource(self, resources = None):
+        """
+        Computes the mean number of references per interaction of the
+        network.
+
+        :return:
+            (*float*) -- Mean number of interactions per edge.
+        """
+        
+        return self._by_resource(
+            method = self.mean_reference_per_interaction,
+            resources = resources,
+        )
+    
+    
+    def numof_edges(self, resources = None):
+        """
+        Number of edges optionally limited to certain resources.
+        """
+        
+        return len(list(self.iter_edges(resources = resources)))
+    
+    
+    def iter_edges(self, resources = None):
+        """
+        Iterates the edges in the graph optionally limited to certain
+        resources. Yields ``igraph.Edge`` objects.
+        """
+        
+        resources = common.to_set(resources)
+        
+        for e in self.graph.es:
+            
+            if not resources or resources & e['sources']:
+                
+                yield e
+    
+    
+    def numof_reference_interaction_pairs(self): # XXX: Not really sure about this one
+        """
+        Returns the total of unique references per interaction.
+
+        :return:
+            (*int*) -- Total number of unique references per
+            interaction.
+        """
+
+        return len(common.uniqList(common.flatList(
+            list(map(lambda e:
+                     list(map(lambda r:
+                              (e.index, r), e['references'])),
+                     self.graph.es)))))
+    
+    
+    def curators_work(self):
+        """
+        Computes and prints an estimation of how many years of curation
+        took to achieve the amount of information on the network.
+        """
+
+        curation_effort = self.numof_reference_interaction_pairs()
+        sys.stdout.write(
+            '\t:: Curators worked %.01f-%.01f years to accomplish '
+            'what currently you have incorporated in this network!'
+            '\n\n\tAmazing, isn\'t it?\n' %
+            (curation_effort * 15 / 60.0 / 2087.0,
+             curation_effort * 60 / 60.0 / 2087.0))
+        sys.stdout.flush()
+    
+    
+    def reference_edge_ratio(self):
+        """
+        Computes the average number of references per edge (as in the
+        undirected graph).
+
+        :return:
+            (*float*) -- Average number of references per edge.
+        """
+
+        return self.numof_references() / float(self.graph.ecount())
+    
+    
     @classmethod
     def _remove_cp(cls, resources):
         """
@@ -13616,107 +13575,161 @@ class PyPath(session_mod.Logger):
         return set(itertools.chain(*self.graph.es[attr]))
     
     
-    @property
-    def references(self):
+    def _by_resource(self, method, resources = None, **kwargs):
+        """
+        Calls a method for each resource (by default for all resources).
+        Returns dict with resources as keys and the output of the method
+        as values.
+        """
         
-        return self._collect_across_edges('references')
-    
-    
-    @property
-    def references_by_resource(self):
-        """
-        A *dict* with resources as keys and *set*s of references as values.
-        """
+        resources = common.to_set(resources) or self.resources
+        method = method if callable(method) else getattr(self, method)
         
         return dict(
             (
                 resource,
-                set.union(
-                    *(
-                        refs[resource] if resource in refs else set()
-                        for refs in self.graph.es['refs_by_source']
-                    )
-                )
+                method(resources = resource, **kwargs)
             )
-            for resource in self.resources
+            for resource in resources
         )
     
     
     @property
-    def curation_effort(self):
+    def all_references(self):
+        
+        return self._collect_across_edges('references')
+    
+    
+    def numof_references(self, resources = None):
+        """
+        Counts the number of reference on the network.
+        
+        Counts the total number of unique references in the edges of the
+        network.
+        
+        resources : None,str,set
+            Limits the query to one or more resources.
+        
+        :return:
+            (*int*) -- Number of unique references in the network.
+        """
+        
+        return len(self.references(resources = resources))
+    
+    
+    def references(self, resources = None):
+        """
+        Returns a set of references for all edges.
+        
+        resources : None,str,set
+            Limits the query to one or more resources.
+        """
+        
+        resources = common.to_set(resources)
+        
+        return set.union(*(
+            refs
+            for e in self.graph.es
+            for res, refs in iteritems(e['refs_by_source'])
+            if not resources or res in resources
+        ))
+    
+    
+    def numof_references(self, resources = None):
+        
+        return len(self.references(resources = resources))
+    
+    
+    def references_by_resource(self, resources = None):
+        """
+        Creates a dict with resources as keys and sets of references
+        as values.
+        """
+        
+        return self._by_resource(self.references, resources = resources)
+    
+    
+    def numof_references_by_resource(self, resources = None):
+        """
+        Counts the references for each resource, optionally limited
+        to certain resources.
+        """
+        
+        return self._by_resource(self.numof_references, resources = resources)
+    
+    
+    def curation_effort(self, resources = None):
         """
         Returns a *set* of reference-interactions pairs.
         """
         
+        resources = common.to_set(resources) or self.resources
+        
         return {
             (ref, self.nodNam[e.source], self.nodNam[e.target])
             for e in self.graph.es
-            for ref in e['references']
+            for resource, refs in iteritems(e['refs_by_source'])
+            for ref in refs
+            if not resources or resource in resources
         }
     
     
-    @property
-    def curation_effort_by_resource(self):
+    def curation_effort_by_resource(self, resources = None):
         """
         A *dict* with resources as keys and *set*s of curation items
         (interaction-reference pairs) as values.
         """
         
-        return dict(
-            (
-                resource,
-                {
-                    (ref, self.nodNam[e.source], self.nodNam[e.target])
-                    for e in self.graph.es
-                    for ref in (
-                        e['refs_by_source'][resource]
-                            if resource in e['refs_by_source'] else
-                        ()
-                    )
-                }
-            )
-            for resource in self.resources
-        )
+        return self._by_resource(self.curation_effort, resources = resources)
     
     
-    @property
-    def entities(self):
+    def iter_vertices(self, resources = None):
+        """
+        Iterates nodes optionally only for certain resources. Yields
+        ``igraph.Vertex`` objects.
+        """
         
-        return set(self.graph.vs['name'])
+        resources = common.to_set(resources)
+        
+        for v in self.graph.vs:
+            
+            if not resources or resources & v['sources']:
+                
+                yield v
     
     
-    @property
-    def entities_by_resource(self):
+    def iter_entities(self, resources = None):
+        
+        for v in self.iter_vertices(resources = resources):
+            
+            yield v['name']
+    
+    
+    def entities(self, resources = None):
+        
+        return set(self.iter_entities(resources = resources))
+    
+    
+    def entities_by_resource(self, resources = None):
         """
         Returns a *dict* of *set*s with resources as keys and sets of
         entities as values.
         """
         
-        return dict(
-            (
-                resource,
-                set(
-                    itertools.chain(*(
-                        (self.nodNam[e.source], self.nodNam[e.target])
-                        for e in self.graph.es
-                        if resource in e['sources']
-                    ))
-                )
-            )
-            for resource in self.resources
-        )
+        return self._by_resource(self.entities, resources = resources)
     
     #
     # interactions undirected
     #
     
-    @property
-    def interactions_undirected(self):
+    def interactions_undirected(self, resources = None):
         """
         Returns a *set* of tuples of node name pairs without being aware
         of the directions.
         Pairs of node names will be sorted alphabetically.
         """
+        
+        resources = common.to_set(resources)
         
         return {
             tuple(sorted(
@@ -13726,41 +13739,27 @@ class PyPath(session_mod.Logger):
                 )
             ))
             for e in self.graph.es
+            if not resources or e['sources'] & resources
         }
     
     
-    @property
-    def interactions_undirected_by_resource(self):
+    def interactions_undirected_by_resource(self, resources = None):
         """
         Returns a *dict* of *set*s of tuples of node name pairs without
         being aware of the directions.
         Pairs of node names will be sorted alphabetically.
         """
         
-        return dict(
-            (
-                resource,
-                {
-                    tuple(sorted(
-                        (
-                            self.nodNam[e.source],
-                            self.nodNam[e.target],
-                        )
-                    ))
-                    for e in self.graph.es
-                    if resource in e['sources']
-                }
-            )
-            for resource in self.resources
+        return self._by_resource(
+            method = self.interactions_undirected,
+            resources = resources,
         )
-    
     
     #
     # interactions directed
     #
     
-    @property
-    def interactions_directed(self):
+    def interactions_directed(self, resources = None):
         """
         Returns a *set* of tuples of node name pairs with being aware
         of the directions.
@@ -13769,11 +13768,14 @@ class PyPath(session_mod.Logger):
         second is the target.
         """
         
-        return self._interactions_directed(resources = None)
+        return self._interactions_directed(resources = resources)
     
     
-    @property
-    def interactions_directed_by_resource(self):
+    def interactions_directed_by_resource(
+            self,
+            resources = None,
+            effect = None,
+        ):
         """
         Returns a *dict* of *set*s of tuples of node name pairs with being
         aware of the directions.
@@ -13782,17 +13784,16 @@ class PyPath(session_mod.Logger):
         second is the target.
         """
         
-        return dict(
-            (
-                resource,
-                self._interactions_directed(resources = resource)
-            )
-            for resource in self.resources
+        return self._by_resource(
+            method = self._interactions_directed,
+            resources = resources,
+            effect = effect,
         )
     
     
     def _interactions_directed(self, resources = None, effect = None):
         
+        resources = common.to_set(resources)
         method = 'which_directions' if not effect else 'which_signs'
         args = {} if not effect else {'effect': effect}
         
@@ -13808,8 +13809,7 @@ class PyPath(session_mod.Logger):
     # interactions signed
     #
     
-    @property
-    def interactions_signed(self):
+    def interactions_signed(self, resources = None):
         """
         Returns a *set* of tuples of node name pairs only for signed
         interactions.
@@ -13818,13 +13818,12 @@ class PyPath(session_mod.Logger):
         """
         
         return self._interactions_directed(
-            resources = None,
+            resources = resources,
             effect = True,
         )
     
     
-    @property
-    def interactions_signed_by_resource(self):
+    def interactions_signed_by_resource(self, resources = None):
         """
         Returns a *dict* of *set*s of tuples of node name pairs with being
         aware of the directions.
@@ -13833,23 +13832,17 @@ class PyPath(session_mod.Logger):
         second is the target.
         """
         
-        return dict(
-            (
-                resource,
-                self._interactions_directed(
-                    resources = resource,
-                    effect = True,
-                )
-            )
-            for resource in self.resources
+        return self._by_resource(
+            method = self._interactions_directed,
+            resources = resources,
+            effect = True,
         )
     
     #
     # interactions stimulatory
     #
     
-    @property
-    def interactions_stimulatory(self):
+    def interactions_stimulatory(self, resources = None):
         """
         Returns a *set* of tuples of node name pairs only for stimulatory
         interactions.
@@ -13858,13 +13851,12 @@ class PyPath(session_mod.Logger):
         """
         
         return self._interactions_directed(
-            resources = None,
+            resources = resources,
             effect = 'stimulation',
         )
     
     
-    @property
-    def interactions_stimulatory_by_resource(self):
+    def interactions_stimulatory_by_resource(self, resources = None):
         """
         Returns a *dict* of *set*s of tuples of node name pairs with being
         aware of the directions.
@@ -13873,15 +13865,10 @@ class PyPath(session_mod.Logger):
         second is the target.
         """
         
-        return dict(
-            (
-                resource,
-                self._interactions_directed(
-                    resources = resource,
-                    effect = 'stimulation',
-                )
-            )
-            for resource in self.resources
+        return self._by_resource(
+            method = self._interactions_directed,
+            resources = resources,
+            effect = 'stimulation',
         )
     
     
@@ -13889,8 +13876,7 @@ class PyPath(session_mod.Logger):
     # interactions inhibitory
     #
     
-    @property
-    def interactions_inhibitory(self):
+    def interactions_inhibitory(self, resources = None):
         """
         Returns a *set* of tuples of node name pairs only for inhibitory
         interactions.
@@ -13899,13 +13885,12 @@ class PyPath(session_mod.Logger):
         """
         
         return self._interactions_directed(
-            resources = None,
+            resources = resources,
             effect = 'inhibition',
         )
     
     
-    @property
-    def interactions_inhibitory_by_resource(self):
+    def interactions_inhibitory_by_resource(self, resources = None):
         """
         Returns a *dict* of *set*s of tuples of node name pairs with being
         aware of the directions.
@@ -13914,15 +13899,10 @@ class PyPath(session_mod.Logger):
         second is the target.
         """
         
-        return dict(
-            (
-                resource,
-                self._interactions_directed(
-                    resources = resource,
-                    effect = 'inhibition',
-                )
-            )
-            for resource in self.resources
+        return self._by_resource(
+            method = self._interactions_directed,
+            resources = resources,
+            effect = 'inhibition',
         )
     
     
@@ -13930,8 +13910,7 @@ class PyPath(session_mod.Logger):
     # interactions mutual
     #
     
-    @property
-    def interactions_mutual(self):
+    def interactions_mutual(self, resources = None):
         """
         Returns a *set* of tuples of node name pairs representing
         mutual interactions (i.e. A-->B and B-->A).
@@ -13940,27 +13919,20 @@ class PyPath(session_mod.Logger):
         
         return {
             tuple(e['dirs'].nodes) for e in self.graph.es
-            if e['dirs'].is_mutual()
+            if e['dirs'].is_mutual(resources = resources)
         }
     
     
-    @property
-    def interactions_mutual_by_resource(self):
+    def interactions_mutual_by_resource(self, resources = None):
         """
         Returns a *dict* of *set*s of tuples of node name pairs representing
         mutual interactions (i.e. A-->B and B-->A).
         Pairs of node names will be sorted alphabetically.
         """
         
-        return dict(
-            (
-                resource,
-                {
-                    tuple(e['dirs'].nodes) for e in self.graph.es
-                    if e['dirs'].is_mutual_by_resources(resource)
-                }
-            )
-            for resource in self.resources
+        return self._by_resource(
+            method = self.interactions_mutual,
+            resources = resources,
         )
     
     
@@ -13975,8 +13947,8 @@ class PyPath(session_mod.Logger):
         
         self._log('Collecting `%s`.' % method)
         
-        total = getattr(self, method)
-        by_resource = getattr(self, '%s_by_resource' % method)
+        total = getattr(self, method)()
+        by_resource = getattr(self, '%s_by_resource' % method)()
         shared = common.shared_foreach(by_resource)
         unique = common.unique_foreach(by_resource)
         
