@@ -117,6 +117,7 @@ import pypath.common as common
 import pypath._version as _version
 from pypath.progress import *
 import pypath.settings as settings
+import pypath.entity as entity_mod
 
 # to make it accessible directly from the module
 omnipath = data_formats.omnipath
@@ -8071,7 +8072,42 @@ class PyPath(session_mod.Logger):
                 result.append((cname, cdata[0]))
 
         return result
-
+    
+    
+    @staticmethod
+    def vertex_name(v):
+        
+        return v['name'] if isinstance(v, igraph.Vertex) else v
+    
+    
+    def get_entity_type(self, entity):
+        
+        entity = self.vertex_name(entity)
+        
+        return entity_mod.Entity._get_entity_type(entity)
+    
+    
+    def is_protein(self, entity):
+        
+        entity = self.vertex_name(entity)
+        
+        return entity_mod.Entity._is_protein(entity)
+    
+    
+    def is_complex(self, entity):
+        
+        entity = self.vertex_name(entity)
+        
+        return entity_mod.Entity._is_complex(entity)
+    
+    
+    def is_mirna(self, entity):
+        
+        entity = self.vertex_name(entity)
+        
+        return entity_mod.Entity._is_mirna(entity)
+    
+    
     def genesymbol(self, genesymbol):
         """
         Returns ``igraph.Vertex()`` object if the GeneSymbol
@@ -8794,7 +8830,7 @@ class PyPath(session_mod.Logger):
 
         pass
 
-    def edges_in_comlexes(self, csources=['corum'], graph=None):
+    def edges_in_complexes(self, csources=['corum'], graph=None):
         """
         Creates edge attributes ``complexes`` and ``in_complex``.
         These are both dicts where the keys are complex resources.
@@ -13594,6 +13630,36 @@ class PyPath(session_mod.Logger):
         )
     
     
+    @staticmethod
+    def resources_by_category():
+        
+        return dict(
+            (
+                label,
+                {
+                    resource
+                    for resource, cat in iteritems(data_formats.categories)
+                    if cat == letter
+                }
+            )
+            for label, letter in iteritems(data_formats.catletters)
+        )
+    
+    
+    def _by_category(self, method, **kwargs):
+        
+        cat_res = self.resources_by_category()
+        method = method if callable(method) else getattr(self, method)
+        
+        return dict(
+            (
+                cat,
+                method(resources = cat_res[cat], **kwargs)
+            )
+            for cat in data_formats.catletters.keys()
+        )
+    
+    
     @property
     def all_references(self):
         
@@ -13649,6 +13715,11 @@ class PyPath(session_mod.Logger):
         return self._by_resource(self.references, resources = resources)
     
     
+    def references_by_category(self):
+        
+        return self._by_category(self.references)
+    
+    
     def numof_references_by_resource(self, resources = None):
         """
         Counts the references for each resource, optionally limited
@@ -13656,6 +13727,11 @@ class PyPath(session_mod.Logger):
         """
         
         return self._by_resource(self.numof_references, resources = resources)
+    
+    
+    def numof_references_by_category(self):
+        
+        return self._by_category(selsf.numof_references)
     
     
     def curation_effort(self, resources = None):
@@ -13683,7 +13759,12 @@ class PyPath(session_mod.Logger):
         return self._by_resource(self.curation_effort, resources = resources)
     
     
-    def iter_vertices(self, resources = None):
+    def curation_effort_by_category(self):
+        
+        return self._by_category(self.curation_effort)
+    
+    
+    def iter_vertices(self, resources = None, entity_type = None):
         """
         Iterates nodes optionally only for certain resources. Yields
         ``igraph.Vertex`` objects.
@@ -13693,30 +13774,118 @@ class PyPath(session_mod.Logger):
         
         for v in self.graph.vs:
             
-            if not resources or resources & v['sources']:
+            if (
+                (
+                    not resources or
+                    resources & v['sources']
+                ) and (
+                    not entity_type or
+                    self.get_entity_type(v) == entity_type
+                )
+            ):
                 
                 yield v
     
     
-    def iter_entities(self, resources = None):
+    def iter_entities(self, resources = None, entity_type = None):
         
-        for v in self.iter_vertices(resources = resources):
+        for v in self.iter_vertices(
+            resources = resources,
+            entity_type = entity_type,
+        ):
             
             yield v['name']
     
     
-    def entities(self, resources = None):
+    def entities(self, resources = None, entity_type = None):
         
-        return set(self.iter_entities(resources = resources))
+        return set(
+            self.iter_entities(
+                resources = resources,
+                entity_type = entity_type,
+            )
+        )
     
     
-    def entities_by_resource(self, resources = None):
+    def entities_by_resource(self, resources = None, entity_type = None):
         """
         Returns a *dict* of *set*s with resources as keys and sets of
         entities as values.
         """
         
-        return self._by_resource(self.entities, resources = resources)
+        return self._by_resource(
+            method = self.entities,
+            resources = resources,
+            entity_type = entity_type,
+        )
+    
+    
+    def entities_by_category(self, entity_type = None):
+        
+        return self._by_category(self.entities, entity_type = entity_type)
+    
+    
+    def protein_entities(self, resources = None):
+        
+        return self.entities(resources = resources, entity_type = 'protein')
+    
+    
+    def protein_entities_by_resource(self, resources = None):
+        
+        return self.entities_by_resource(
+            resources = resources,
+            entity_type = 'protein',
+        )
+    
+    
+    def protein_entities_by_category(self, resources = None):
+        
+        return self.entities_by_category(
+            resources = resources,
+            entity_type = 'protein',
+        )
+    
+    
+    def mirna_entities(self, resources = None):
+        
+        return self.entities(resources = resources, entity_type = 'mirna')
+    
+    
+    def mirna_entities_by_resource(self, resources = None):
+        
+        return self.entities_by_resource(
+            resources = resources,
+            entity_type = 'mirna',
+        )
+    
+    
+    def mirna_entities_by_category(self, resources = None):
+        
+        return self.entities_by_category(
+            resources = resources,
+            entity_type = 'mirna',
+        )
+    
+    
+    def complex_entities(self, resources = None):
+        
+        return self.entities(resources = resources, entity_type = 'complex')
+    
+    
+    def complex_entities_by_resource(self, resources = None):
+        
+        return self.entities_by_resource(
+            resources = resources,
+            entity_type = 'complex',
+        )
+    
+    
+    def complex_entities_by_category(self, resources = None):
+        
+        return self.entities_by_category(
+            resources = resources,
+            entity_type = 'complex',
+        )
     
     #
     # interactions undirected
@@ -13755,6 +13924,11 @@ class PyPath(session_mod.Logger):
             resources = resources,
         )
     
+    
+    def interactions_undirected_by_category(self):
+        
+        return self._by_category(self.interactions_undirected)
+    
     #
     # interactions directed
     #
@@ -13787,6 +13961,14 @@ class PyPath(session_mod.Logger):
         return self._by_resource(
             method = self._interactions_directed,
             resources = resources,
+            effect = effect,
+        )
+    
+    
+    def interactions_directed_by_category(self, effect = None):
+        
+        return self._by_category(
+            method = self._interactions_directed,
             effect = effect,
         )
     
@@ -13838,6 +14020,12 @@ class PyPath(session_mod.Logger):
             effect = True,
         )
     
+    
+    def interactions_signed_by_category(self):
+        
+        return self.interactions_directed_by_category(effect = True)
+    
+    
     #
     # interactions stimulatory
     #
@@ -13870,6 +14058,11 @@ class PyPath(session_mod.Logger):
             resources = resources,
             effect = 'stimulation',
         )
+    
+    
+    def interactions_stimulatory_by_category(self):
+        
+        return self.interactions_directed_by_category(effect = 'stimulation')
     
     
     #
@@ -13906,6 +14099,10 @@ class PyPath(session_mod.Logger):
         )
     
     
+    def interactions_inhibitory_by_category(self):
+        
+        return self.interactions_directed_by_category(effect = 'inhibition')
+    
     #
     # interactions mutual
     #
@@ -13934,6 +14131,11 @@ class PyPath(session_mod.Logger):
             method = self.interactions_mutual,
             resources = resources,
         )
+    
+    
+    def interactions_mutual_by_category(self):
+        
+        return self._by_category(self.interactions_mutual)
     
     
     #
@@ -14260,12 +14462,12 @@ class PyPath(session_mod.Logger):
             _custom_attrs['edge_fontname'] = font
 
         # attribute callbacks
-        for entity in ['graph', 'vertex', 'edge']:
-            callbacks_dict = '%s_callbacks' % entity
+        for _entity in ['graph', 'vertex', 'edge']:
+            callbacks_dict = '%s_callbacks' % _entity
             _attrs[callbacks_dict] = {}
             callbacks = _attrs[callbacks_dict]
 
-            if entity == 'edge':
+            if _entity == 'edge':
 
                 if (auto_edges == 'RESOURCE_CATEGORIES' or
                         auto_edges == 'DIRECTIONS') \
@@ -14282,8 +14484,8 @@ class PyPath(session_mod.Logger):
                         callbacks['arrowhead'] = \
                             AttrHelper('none', 'edge_arrowhead', _defaults)
 
-            for attr in locals()['%s_attrs' % entity].keys():
-                callback_name = '%s_%s' % (entity, attr)
+            for attr in locals()['%s_attrs' % _entity].keys():
+                callback_name = '%s_%s' % (_entity, attr)
 
                 if callback_name in _custom_attrs:
                     callback_value = _custom_attrs[callback_name]
