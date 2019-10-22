@@ -2251,6 +2251,8 @@ categories = {
     'InnateDB-All': 'i',
     'MINT': 'i',
     'HIPPIE': 'i',
+    'Wang': 'p',
+    'KEGG': 'p',
 }
 
 p = set([])
