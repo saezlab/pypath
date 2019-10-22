@@ -50,6 +50,7 @@ import pypath.session_mod as session_mod
 import pypath.annot_formats as annot_formats
 import pypath.complex as complex
 import pypath.intera as intera
+import pypath.entity as entity
 
 #TODO this should be part of json files
 protein_sources_default = {
@@ -1475,41 +1476,25 @@ class AnnotationBase(resource.AbstractResource):
     @staticmethod
     def is_protein(key):
         
-        return (
-            isinstance(key, common.basestring) and
-            not key.startswith('MIMAT') and
-            not key.startswith('COMPLEX')
-        )
+        return entity.Entity._is_protein(key)
     
     
     @staticmethod
     def is_mirna(key):
         
-        return (
-            isinstance(key, common.basestring) and
-            key.startswith('MIMAT')
-        )
+        return entity.Entity._is_mirna(key)
     
     
     @staticmethod
     def is_complex(key):
         
-        return isinstance(key, intera.Complex) or (
-            isinstance(key, common.basestring) and
-            key.startswith('COMPLEX')
-        )
+        return entity.Entity._is_complex(key)
     
     
     @classmethod
     def get_entity_type(cls, key):
         
-        return (
-            'complex'
-                if cls.is_complex(key) else
-            'mirna'
-                if cls.is_mirna(key) else
-            'protein'
-        )
+        return entity.Entity._get_entity_type(key)
     
     
     @classmethod
