@@ -138,6 +138,7 @@ NetworkEntityCollection = collections.namedtuple(
     [
         'total',
         'by_resource',
+        'by_category',
         'shared',
         'unique',
         'method',
@@ -152,6 +153,7 @@ NetworkStatsRecord = collections.namedtuple(
     [
         'total',
         'by_resource',
+        'by_category',
         'shared',
         'unique',
         'percent',
@@ -14151,12 +14153,14 @@ class PyPath(session_mod.Logger):
         
         total = getattr(self, method)()
         by_resource = getattr(self, '%s_by_resource' % method)()
+        by_category = getattr(self, '%s_by_category' % method)()
         shared = common.shared_foreach(by_resource)
         unique = common.unique_foreach(by_resource)
         
         return NetworkEntityCollection(
             total = total,
             by_resource = by_resource,
+            by_category  = by_category,
             shared = shared,
             unique = unique,
             method = method,
@@ -14187,6 +14191,7 @@ class PyPath(session_mod.Logger):
         
         n_total = len(coll.total)
         n_by_resource = common.dict_counts(coll.by_resource)
+        n_by_category = common.dict_counts(coll.by_category)
         n_shared = common.dict_counts(coll.shared)
         n_unique = common.dict_counts(coll.unique)
         _percent = (
@@ -14207,6 +14212,7 @@ class PyPath(session_mod.Logger):
         return NetworkStatsRecord(
             total = n_total,
             by_resource = n_by_resource,
+            by_category = n_by_category,
             shared = n_shared,
             unique = n_unique,
             percent = _percent,
