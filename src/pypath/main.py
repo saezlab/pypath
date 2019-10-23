@@ -143,11 +143,13 @@ NetworkEntityCollection = collections.namedtuple(
         'unique',
         'shared_cat',
         'unique_cat',
+        'resource_cat',
+        'cat_resource',
         'method',
         'label',
     ],
 )
-NetworkEntityCollection.__new__.__defaults__ = (None,) * 4
+NetworkEntityCollection.__new__.__defaults__ = (None,) * 6
 
 
 NetworkStatsRecord = collections.namedtuple(
@@ -162,11 +164,13 @@ NetworkStatsRecord = collections.namedtuple(
         'shared_cat',
         'unique_cat',
         'percent_cat',
+        'resource_cat',
+        'cat_resource',
         'method',
         'label',
     ],
 )
-NetworkStatsRecord.__new__.__defaults__ = (None,) * 6
+NetworkStatsRecord.__new__.__defaults__ = (None,) * 8
 
 
 class Direction(object):
@@ -14149,7 +14153,7 @@ class PyPath(session_mod.Logger):
     # methods for collecting and counting entities
     #
     
-    def collect(self, method):
+    def collect(self, method, **kwargs):
         """
         Collects various entities over the network according to ``method``.
         """
@@ -14176,7 +14180,7 @@ class PyPath(session_mod.Logger):
                                     )
                                 )
                             )
-                            for cat, resources in iteritems(categories)
+                            for cat, resources in iteritems(cat_resource)
                             if resources
                         )
                     )
@@ -14186,13 +14190,13 @@ class PyPath(session_mod.Logger):
         
         self._log('Collecting `%s`.' % method)
         
-        total = getattr(self, method)()
-        by_resource = getattr(self, '%s_by_resource' % method)()
-        by_category = getattr(self, '%s_by_category' % method)()
+        total = getattr(self, method)(**kwargs)
+        by_resource = getattr(self, '%s_by_resource' % method)(**kwargs)
+        by_category = getattr(self, '%s_by_category' % method)(**kwargs)
         shared = common.shared_foreach(by_resource)
         unique = common.unique_foreach(by_resource)
         
-        categories = dict(
+        cat_resource = dict(
             (
                 cat,
                 {
@@ -14203,8 +14207,10 @@ class PyPath(session_mod.Logger):
                     ] == cat
                 }
             )
-            for cat in by_category.keys()
+            for cat, resources in iteritems(by_category)
+            if resources
         )
+        resource_cat = common.swap_dict(cat_resource)
         
         shared_cat = cat_shared_unique(method = 'shared')
         unique_cat = cat_shared_unique(method = 'unique')
@@ -14217,6 +14223,8 @@ class PyPath(session_mod.Logger):
             unique = unique,
             shared_cat = shared_cat,
             unique_cat = unique_cat,
+            resource_cat = resource_cat,
+            cat_resource = cat_resource,
             method = method,
         )
     
@@ -14226,6 +14234,7 @@ class PyPath(session_mod.Logger):
             collection_method,
             add_total = True,
             add_percent = True,
+            **kwargs
         ):
         """
         Collects various entities over the network according to ``method``
@@ -14238,7 +14247,7 @@ class PyPath(session_mod.Logger):
                     collection_method,
                     NetworkEntityCollection
                 ) else
-            self.collect(collection_method)
+            self.collect(collection_method, **kwargs)
         )
         
         self._log('Counting `%s`.' % coll.method)
@@ -14258,12 +14267,16 @@ class PyPath(session_mod.Logger):
         percent_cat = dict(
             (
                 resource,
-                n_by_resource[resource] /
-                n_by_category[
-                    data_formats.catnames[
-                        data_formats.categories[resource]
-                    ]
-                ] * 100
+                (
+                    n_by_resource[resource] /
+                    n_by_category[
+                        data_formats.catnames[
+                            data_formats.categories[resource]
+                        ]
+                    ] * 100
+                        if n_by_resource[resource] else
+                    .0
+                )
             )
             for resource in coll.by_resource.keys()
         )
@@ -14288,6 +14301,8 @@ class PyPath(session_mod.Logger):
             shared_cat = n_shared_cat,
             unique_cat = n_unique_cat,
             percent_cat = percent_cat,
+            resource_cat = coll.resource_cat,
+            cat_resource = coll.cat_resource,
             method = coll.method,
         )
     
@@ -14310,7 +14325,7 @@ class PyPath(session_mod.Logger):
         )
         NetworkEntities.__new__.__defaults__ = (None,)
         
-        collection = self.collect(method = method)
+        collection = self.collect(method = method, **kwargs)
         counts = self.counts(collection_method = collection, **kwargs)
         
         return NetworkEntities(
@@ -14320,49 +14335,49 @@ class PyPath(session_mod.Logger):
         )
     
     
-    def references_stats(self):
+    def references_stats(self, **kwargs):
         
-        return self.stats('references')
+        return self.stats('references', **kwargs)
     
     
-    def interactions_undirected_stats(self):
+    def interactions_undirected_stats(self, **kwargs):
         
-        return self.stats('interactions_undirected')
+        return self.stats('interactions_undirected', **kwargs)
     
     
-    def interactions_directed_stats(self):
+    def interactions_directed_stats(self, **kwargs):
         
-        return self.stats('interactions_directed')
+        return self.stats('interactions_directed', **kwargs)
     
     
-    def interactions_mutual_stats(self):
+    def interactions_mutual_stats(self, **kwargs):
         
-        return self.stats('interactions_mutual')
+        return self.stats('interactions_mutual', **kwargs)
     
     
-    def interactions_signed_stats(self):
+    def interactions_signed_stats(self, **kwargs):
         
-        return self.stats('interactions_signed')
+        return self.stats('interactions_signed', **kwargs)
     
     
-    def interactions_stimulatory_stats(self):
+    def interactions_stimulatory_stats(self, **kwargs):
         
-        return self.stats('interactions_stimulatory')
+        return self.stats('interactions_stimulatory', **kwargs)
     
     
-    def interactions_inhibitory_stats(self):
+    def interactions_inhibitory_stats(self, **kwargs):
         
-        return self.stats('interactions_inhibitory')
+        return self.stats('interactions_inhibitory', **kwargs)
     
     
-    def entities_stats(self):
+    def entities_stats(self, **kwargs):
         
-        return self.stats('entities')
+        return self.stats('entities', **kwargs)
     
     
-    def curation_effort_stats(self):
+    def curation_effort_stats(self, **kwargs):
         
-        return self.stats('curation_effort')
+        return self.stats('curation_effort', **kwargs)
     
     
     #
