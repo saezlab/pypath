@@ -141,11 +141,13 @@ NetworkEntityCollection = collections.namedtuple(
         'by_category',
         'shared',
         'unique',
+        'shared_cat',
+        'unique_cat',
         'method',
         'label',
     ],
 )
-NetworkEntityCollection.__new__.__defaults__ = (None, None)
+NetworkEntityCollection.__new__.__defaults__ = (None,) * 4
 
 
 NetworkStatsRecord = collections.namedtuple(
@@ -157,11 +159,14 @@ NetworkStatsRecord = collections.namedtuple(
         'shared',
         'unique',
         'percent',
+        'shared_cat',
+        'unique_cat',
+        'percent_cat',
         'method',
         'label',
     ],
 )
-NetworkStatsRecord.__new__.__defaults__ = (None, None, None)
+NetworkStatsRecord.__new__.__defaults__ = (None,) * 6
 
 
 class Direction(object):
@@ -14149,6 +14154,36 @@ class PyPath(session_mod.Logger):
         Collects various entities over the network according to ``method``.
         """
         
+        def cat_shared_unique(method):
+            
+            return (
+                dict(
+                    itertools.chain(
+                        *(
+                            iteritems(
+                                getattr(
+                                    common,
+                                    '%s_foreach' % method
+                                )(
+                                    dict(
+                                        (
+                                            resource,
+                                            entities
+                                        )
+                                        for resource, entities
+                                        in iteritems(by_resource)
+                                        if resource in resources
+                                    )
+                                )
+                            )
+                            for cat, resources in iteritems(categories)
+                            if resources
+                        )
+                    )
+                )
+            )
+        
+        
         self._log('Collecting `%s`.' % method)
         
         total = getattr(self, method)()
@@ -14157,12 +14192,31 @@ class PyPath(session_mod.Logger):
         shared = common.shared_foreach(by_resource)
         unique = common.unique_foreach(by_resource)
         
+        categories = dict(
+            (
+                cat,
+                {
+                    resource
+                    for resource in by_resource.keys()
+                    if data_formats.catnames[
+                        data_formats.categories[resource]
+                    ] == cat
+                }
+            )
+            for cat in by_category.keys()
+        )
+        
+        shared_cat = cat_shared_unique(method = 'shared')
+        unique_cat = cat_shared_unique(method = 'unique')
+        
         return NetworkEntityCollection(
             total = total,
             by_resource = by_resource,
             by_category  = by_category,
             shared = shared,
             unique = unique,
+            shared_cat = shared_cat,
+            unique_cat = unique_cat,
             method = method,
         )
     
@@ -14199,6 +14253,21 @@ class PyPath(session_mod.Logger):
                 if add_percent else
             None
         )
+        n_shared_cat = common.dict_counts(coll.shared_cat)
+        n_unique_cat = common.dict_counts(coll.unique_cat)
+        percent_cat = dict(
+            (
+                resource,
+                n_by_resource[resource] /
+                n_by_category[
+                    data_formats.catnames[
+                        data_formats.categories[resource]
+                    ]
+                ] * 100
+            )
+            for resource in coll.by_resource.keys()
+        )
+        
         if add_total:
             
             if _percent:
@@ -14216,6 +14285,9 @@ class PyPath(session_mod.Logger):
             shared = n_shared,
             unique = n_unique,
             percent = _percent,
+            shared_cat = n_shared_cat,
+            unique_cat = n_unique_cat,
+            percent_cat = percent_cat,
             method = coll.method,
         )
     

@@ -1436,7 +1436,7 @@ def shared_unique(by_group, group, op = 'shared'):
             for label, elements
             in iteritems(by_group)
             if label != group
-        ))
+        ), set())
     )
 
 
