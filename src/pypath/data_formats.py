@@ -2228,6 +2228,7 @@ categories = {
     'Reactome': 'r',
     'ACSN': 'r',
     'WikiPathways': 'r',
+    'TRIP': 'p',
     'PANTHER': 'r',
     'ABS': 't',
     'MIMP': 'm',
@@ -2266,7 +2267,6 @@ categories = {
     'TFactS': 't',
     'TFe': 't',
     'TRED': 't',
-    'TRIP': 't',
     'TRRD': 't',
     'TRRUST': 't',
     # miRNA-mRNA

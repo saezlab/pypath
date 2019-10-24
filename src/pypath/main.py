@@ -141,6 +141,8 @@ NetworkEntityCollection = collections.namedtuple(
         'by_category',
         'shared',
         'unique',
+        'shared_res_cat',
+        'unique_res_cat',
         'shared_cat',
         'unique_cat',
         'resource_cat',
@@ -149,7 +151,7 @@ NetworkEntityCollection = collections.namedtuple(
         'label',
     ],
 )
-NetworkEntityCollection.__new__.__defaults__ = (None,) * 6
+NetworkEntityCollection.__new__.__defaults__ = (None,) * 8
 
 
 NetworkStatsRecord = collections.namedtuple(
@@ -161,6 +163,9 @@ NetworkStatsRecord = collections.namedtuple(
         'shared',
         'unique',
         'percent',
+        'shared_res_cat',
+        'unique_res_cat',
+        'percent_res_cat',
         'shared_cat',
         'unique_cat',
         'percent_cat',
@@ -170,7 +175,7 @@ NetworkStatsRecord = collections.namedtuple(
         'label',
     ],
 )
-NetworkStatsRecord.__new__.__defaults__ = (None,) * 8
+NetworkStatsRecord.__new__.__defaults__ = (None,) * 11
 
 
 class Direction(object):
@@ -13662,13 +13667,17 @@ class PyPath(session_mod.Logger):
         cat_res = self.resources_by_category()
         method = method if callable(method) else getattr(self, method)
         
-        return dict(
-            (
-                cat,
-                method(resources = cat_res[cat], **kwargs)
-            )
-            for cat in data_formats.catletters.keys()
-        )
+        result = {}
+        
+        for cat in data_formats.catletters.keys():
+            
+            entities = method(resources = cat_res[cat], **kwargs)
+            
+            if entities:
+                
+                result[cat] = entities
+        
+        return result
     
     
     @property
@@ -13677,7 +13686,7 @@ class PyPath(session_mod.Logger):
         return self._collect_across_edges('references')
     
     
-    def numof_references(self, resources = None):
+    def numof_references(self, resources = None, **kwargs):
         """
         Counts the number of reference on the network.
         
@@ -13694,7 +13703,7 @@ class PyPath(session_mod.Logger):
         return len(self.references(resources = resources))
     
     
-    def references(self, resources = None):
+    def references(self, resources = None, **kwargs):
         """
         Returns a set of references for all edges.
         
@@ -13712,12 +13721,12 @@ class PyPath(session_mod.Logger):
         ))
     
     
-    def numof_references(self, resources = None):
+    def numof_references(self, resources = None, **kwargs):
         
         return len(self.references(resources = resources))
     
     
-    def references_by_resource(self, resources = None):
+    def references_by_resource(self, resources = None, **kwargs):
         """
         Creates a dict with resources as keys and sets of references
         as values.
@@ -13726,12 +13735,12 @@ class PyPath(session_mod.Logger):
         return self._by_resource(self.references, resources = resources)
     
     
-    def references_by_category(self):
+    def references_by_category(self, **kwargs):
         
         return self._by_category(self.references)
     
     
-    def numof_references_by_resource(self, resources = None):
+    def numof_references_by_resource(self, resources = None, **kwargs):
         """
         Counts the references for each resource, optionally limited
         to certain resources.
@@ -13740,12 +13749,12 @@ class PyPath(session_mod.Logger):
         return self._by_resource(self.numof_references, resources = resources)
     
     
-    def numof_references_by_category(self):
+    def numof_references_by_category(self, **kwargs):
         
         return self._by_category(selsf.numof_references)
     
     
-    def curation_effort(self, resources = None):
+    def curation_effort(self, resources = None, **kwargs):
         """
         Returns a *set* of reference-interactions pairs.
         """
@@ -13761,7 +13770,7 @@ class PyPath(session_mod.Logger):
         }
     
     
-    def curation_effort_by_resource(self, resources = None):
+    def curation_effort_by_resource(self, resources = None, **kwargs):
         """
         A *dict* with resources as keys and *set*s of curation items
         (interaction-reference pairs) as values.
@@ -13770,7 +13779,7 @@ class PyPath(session_mod.Logger):
         return self._by_resource(self.curation_effort, resources = resources)
     
     
-    def curation_effort_by_category(self):
+    def curation_effort_by_category(self, **kwargs):
         
         return self._by_category(self.curation_effort)
     
@@ -13808,7 +13817,7 @@ class PyPath(session_mod.Logger):
             yield v['name']
     
     
-    def entities(self, resources = None, entity_type = None):
+    def entities(self, resources = None, entity_type = None, **kwargs):
         
         return set(
             self.iter_entities(
@@ -13818,7 +13827,12 @@ class PyPath(session_mod.Logger):
         )
     
     
-    def entities_by_resource(self, resources = None, entity_type = None):
+    def entities_by_resource(
+            self,
+            resources = None,
+            entity_type = None,
+            **kwargs
+        ):
         """
         Returns a *dict* of *set*s with resources as keys and sets of
         entities as values.
@@ -13831,17 +13845,17 @@ class PyPath(session_mod.Logger):
         )
     
     
-    def entities_by_category(self, entity_type = None):
+    def entities_by_category(self, entity_type = None, **kwargs):
         
         return self._by_category(self.entities, entity_type = entity_type)
     
     
-    def protein_entities(self, resources = None):
+    def protein_entities(self, resources = None, **kwargs):
         
         return self.entities(resources = resources, entity_type = 'protein')
     
     
-    def protein_entities_by_resource(self, resources = None):
+    def protein_entities_by_resource(self, resources = None, **kwargs):
         
         return self.entities_by_resource(
             resources = resources,
@@ -13849,7 +13863,7 @@ class PyPath(session_mod.Logger):
         )
     
     
-    def protein_entities_by_category(self, resources = None):
+    def protein_entities_by_category(self, resources = None, **kwargs):
         
         return self.entities_by_category(
             resources = resources,
@@ -13857,12 +13871,12 @@ class PyPath(session_mod.Logger):
         )
     
     
-    def mirna_entities(self, resources = None):
+    def mirna_entities(self, resources = None, **kwargs):
         
         return self.entities(resources = resources, entity_type = 'mirna')
     
     
-    def mirna_entities_by_resource(self, resources = None):
+    def mirna_entities_by_resource(self, resources = None, **kwargs):
         
         return self.entities_by_resource(
             resources = resources,
@@ -13870,7 +13884,7 @@ class PyPath(session_mod.Logger):
         )
     
     
-    def mirna_entities_by_category(self, resources = None):
+    def mirna_entities_by_category(self, resources = None, **kwargs):
         
         return self.entities_by_category(
             resources = resources,
@@ -13883,7 +13897,7 @@ class PyPath(session_mod.Logger):
         return self.entities(resources = resources, entity_type = 'complex')
     
     
-    def complex_entities_by_resource(self, resources = None):
+    def complex_entities_by_resource(self, resources = None, **kwargs):
         
         return self.entities_by_resource(
             resources = resources,
@@ -13891,7 +13905,7 @@ class PyPath(session_mod.Logger):
         )
     
     
-    def complex_entities_by_category(self, resources = None):
+    def complex_entities_by_category(self, resources = None, **kwargs):
         
         return self.entities_by_category(
             resources = resources,
@@ -13902,7 +13916,7 @@ class PyPath(session_mod.Logger):
     # interactions undirected
     #
     
-    def interactions_undirected(self, resources = None):
+    def interactions_undirected(self, resources = None, **kwargs):
         """
         Returns a *set* of tuples of node name pairs without being aware
         of the directions.
@@ -13923,7 +13937,7 @@ class PyPath(session_mod.Logger):
         }
     
     
-    def interactions_undirected_by_resource(self, resources = None):
+    def interactions_undirected_by_resource(self, resources = None, **kwargs):
         """
         Returns a *dict* of *set*s of tuples of node name pairs without
         being aware of the directions.
@@ -13936,7 +13950,7 @@ class PyPath(session_mod.Logger):
         )
     
     
-    def interactions_undirected_by_category(self):
+    def interactions_undirected_by_category(self, **kwargs):
         
         return self._by_category(self.interactions_undirected)
     
@@ -13944,7 +13958,7 @@ class PyPath(session_mod.Logger):
     # interactions directed
     #
     
-    def interactions_directed(self, resources = None):
+    def interactions_directed(self, resources = None, **kwargs):
         """
         Returns a *set* of tuples of node name pairs with being aware
         of the directions.
@@ -13953,13 +13967,14 @@ class PyPath(session_mod.Logger):
         second is the target.
         """
         
-        return self._interactions_directed(resources = resources)
+        return self._interactions_directed(resources = resources, **kwargs)
     
     
     def interactions_directed_by_resource(
             self,
             resources = None,
             effect = None,
+            **kwargs
         ):
         """
         Returns a *dict* of *set*s of tuples of node name pairs with being
@@ -13973,10 +13988,11 @@ class PyPath(session_mod.Logger):
             method = self._interactions_directed,
             resources = resources,
             effect = effect,
+            **kwargs
         )
     
     
-    def interactions_directed_by_category(self, effect = None):
+    def interactions_directed_by_category(self, effect = None, **kwargs):
         
         return self._by_category(
             method = self._interactions_directed,
@@ -13984,7 +14000,12 @@ class PyPath(session_mod.Logger):
         )
     
     
-    def _interactions_directed(self, resources = None, effect = None):
+    def _interactions_directed(
+            self,
+            resources = None,
+            effect = None,
+            **kwargs
+        ):
         
         resources = common.to_set(resources)
         method = 'which_directions' if not effect else 'which_signs'
@@ -14002,7 +14023,7 @@ class PyPath(session_mod.Logger):
     # interactions signed
     #
     
-    def interactions_signed(self, resources = None):
+    def interactions_signed(self, resources = None, **kwargs):
         """
         Returns a *set* of tuples of node name pairs only for signed
         interactions.
@@ -14016,7 +14037,7 @@ class PyPath(session_mod.Logger):
         )
     
     
-    def interactions_signed_by_resource(self, resources = None):
+    def interactions_signed_by_resource(self, resources = None, **kwargs):
         """
         Returns a *dict* of *set*s of tuples of node name pairs with being
         aware of the directions.
@@ -14032,7 +14053,7 @@ class PyPath(session_mod.Logger):
         )
     
     
-    def interactions_signed_by_category(self):
+    def interactions_signed_by_category(self, **kwargs):
         
         return self.interactions_directed_by_category(effect = True)
     
@@ -14041,7 +14062,7 @@ class PyPath(session_mod.Logger):
     # interactions stimulatory
     #
     
-    def interactions_stimulatory(self, resources = None):
+    def interactions_stimulatory(self, resources = None, **kwargs):
         """
         Returns a *set* of tuples of node name pairs only for stimulatory
         interactions.
@@ -14055,7 +14076,11 @@ class PyPath(session_mod.Logger):
         )
     
     
-    def interactions_stimulatory_by_resource(self, resources = None):
+    def interactions_stimulatory_by_resource(
+            self,
+            resources = None,
+            **kwargs
+        ):
         """
         Returns a *dict* of *set*s of tuples of node name pairs with being
         aware of the directions.
@@ -14071,7 +14096,7 @@ class PyPath(session_mod.Logger):
         )
     
     
-    def interactions_stimulatory_by_category(self):
+    def interactions_stimulatory_by_category(self, **kwargs):
         
         return self.interactions_directed_by_category(effect = 'stimulation')
     
@@ -14080,7 +14105,7 @@ class PyPath(session_mod.Logger):
     # interactions inhibitory
     #
     
-    def interactions_inhibitory(self, resources = None):
+    def interactions_inhibitory(self, resources = None, **kwargs):
         """
         Returns a *set* of tuples of node name pairs only for inhibitory
         interactions.
@@ -14094,7 +14119,7 @@ class PyPath(session_mod.Logger):
         )
     
     
-    def interactions_inhibitory_by_resource(self, resources = None):
+    def interactions_inhibitory_by_resource(self, resources = None, **kwargs):
         """
         Returns a *dict* of *set*s of tuples of node name pairs with being
         aware of the directions.
@@ -14110,7 +14135,7 @@ class PyPath(session_mod.Logger):
         )
     
     
-    def interactions_inhibitory_by_category(self):
+    def interactions_inhibitory_by_category(self, **kwargs):
         
         return self.interactions_directed_by_category(effect = 'inhibition')
     
@@ -14118,7 +14143,7 @@ class PyPath(session_mod.Logger):
     # interactions mutual
     #
     
-    def interactions_mutual(self, resources = None):
+    def interactions_mutual(self, resources = None, **kwargs):
         """
         Returns a *set* of tuples of node name pairs representing
         mutual interactions (i.e. A-->B and B-->A).
@@ -14131,7 +14156,7 @@ class PyPath(session_mod.Logger):
         }
     
     
-    def interactions_mutual_by_resource(self, resources = None):
+    def interactions_mutual_by_resource(self, resources = None, **kwargs):
         """
         Returns a *dict* of *set*s of tuples of node name pairs representing
         mutual interactions (i.e. A-->B and B-->A).
@@ -14144,7 +14169,7 @@ class PyPath(session_mod.Logger):
         )
     
     
-    def interactions_mutual_by_category(self):
+    def interactions_mutual_by_category(self, **kwargs):
         
         return self._by_category(self.interactions_mutual)
     
@@ -14212,8 +14237,11 @@ class PyPath(session_mod.Logger):
         )
         resource_cat = common.swap_dict(cat_resource)
         
-        shared_cat = cat_shared_unique(method = 'shared')
-        unique_cat = cat_shared_unique(method = 'unique')
+        shared_res_cat = cat_shared_unique(method = 'shared')
+        unique_res_cat = cat_shared_unique(method = 'unique')
+        
+        shared_cat = common.shared_foreach(by_category)
+        unique_cat = common.shared_foreach(by_category)
         
         return NetworkEntityCollection(
             total = total,
@@ -14221,6 +14249,8 @@ class PyPath(session_mod.Logger):
             by_category  = by_category,
             shared = shared,
             unique = unique,
+            shared_res_cat = shared_res_cat,
+            unique_res_cat = unique_res_cat,
             shared_cat = shared_cat,
             unique_cat = unique_cat,
             resource_cat = resource_cat,
@@ -14234,6 +14264,7 @@ class PyPath(session_mod.Logger):
             collection_method,
             add_total = True,
             add_percent = True,
+            add_cat_total = True,
             **kwargs
         ):
         """
@@ -14262,9 +14293,9 @@ class PyPath(session_mod.Logger):
                 if add_percent else
             None
         )
-        n_shared_cat = common.dict_counts(coll.shared_cat)
-        n_unique_cat = common.dict_counts(coll.unique_cat)
-        percent_cat = dict(
+        n_shared_res_cat = common.dict_counts(coll.shared_res_cat)
+        n_unique_res_cat = common.dict_counts(coll.unique_res_cat)
+        percent_res_cat = dict(
             (
                 resource,
                 (
@@ -14280,6 +14311,13 @@ class PyPath(session_mod.Logger):
             )
             for resource in coll.by_resource.keys()
         )
+        n_shared_cat = common.dict_counts(coll.shared_cat)
+        n_unique_cat = common.dict_counts(coll.shared_cat)
+        percent_cat = (
+            common.dict_percent(n_by_category, n_total)
+                if add_percent else
+            None
+        )
         
         if add_total:
             
@@ -14290,6 +14328,38 @@ class PyPath(session_mod.Logger):
             n_by_resource['Total'] = n_total
             n_shared['Total'] = common.n_shared_total(coll.by_resource)
             n_unique['Total'] = common.n_unique_total(coll.by_resource)
+            n_shared_res_cat['Total'] = (
+                common.n_shared_total(coll.by_category)
+            )
+            n_unique_res_cat['Total'] = (
+                common.n_unique_total(coll.by_category)
+            )
+            percent_res_cat['Total'] = 100.
+        
+        if add_cat_total:
+            
+            for cat in n_by_category.keys():
+                
+                n_by_resource[cat] = n_by_category[cat]
+                n_shared[cat] = n_shared_cat[cat]
+                n_unique[cat] = n_unique_cat[cat]
+                _percent[cat] = percent_cat[cat]
+                
+                this_cat_by_resource = dict(
+                    it
+                    for it in iteritems(coll.by_resource)
+                    if it[0] in coll.cat_resource[cat]
+                )
+                
+                n_shared_res_cat[cat] = common.n_shared_total(
+                    this_cat_by_resource
+                )
+                n_unique_res_cat[cat] = common.n_unique_total(
+                    this_cat_by_resource
+                )
+                
+                coll.resource_cat[cat] = cat
+                coll.cat_resource[cat].add(cat)
         
         return NetworkStatsRecord(
             total = n_total,
@@ -14298,6 +14368,9 @@ class PyPath(session_mod.Logger):
             shared = n_shared,
             unique = n_unique,
             percent = _percent,
+            shared_res_cat = n_shared_res_cat,
+            unique_res_cat = n_unique_res_cat,
+            percent_res_cat = percent_res_cat,
             shared_cat = n_shared_cat,
             unique_cat = n_unique_cat,
             percent_cat = percent_cat,
