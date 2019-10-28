@@ -820,10 +820,6 @@ descriptions = {
         'subtype': 'activity flow',
         'omnipath': True,
         'data_integration': 'static',
-        'license': {
-            'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
-        },
         'pypath': {
             'data': ['pypath.data/dd_refs.csv'],
             'format': [
@@ -1539,7 +1535,8 @@ descriptions = {
         'license': {
             'name': 'CC-Attribution 2.5',
             'url': 'http://creativecommons.org/licenses/by/2.5/',
-            'commercial_use': True}
+            'commercial_use': True
+            },
         'label': 'NetPath',
         'color': '',
         'data_import': ['CancerCellMap'],
@@ -1589,7 +1586,8 @@ descriptions = {
         'omnipath': False,
         'license': {
             'name': 'CC-Attribution-2.5',
-            'url': 'http://creativecommons.org/licenses/by/2.5/'
+            'url': 'http://creativecommons.org/licenses/by/2.5/',
+            'commercial_use': True
         },
         'pypath': {
             'input': ['pypath.dataio.netpath_names()'],
@@ -1733,7 +1731,7 @@ descriptions = {
             'name': 'No license.',
             'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
             'commercial_use': False
-        }
+        },
     },
     'DIP': {
         'year': 2016,
@@ -2606,63 +2604,393 @@ descriptions = {
         },
         'omictools': ['http://omictools.com/pazar-tool'],
     },
+# From here on, only license info
+    'TRRUST': {
+        'license': {
+            'name': 'CC-Attribution-ShareAlike 4.0'
+            'url': 'http://creativecommons.org/licenses/by-nc-sa/4.0/'
+            'commercial_use': True
+        }
+    },
+    'HTRIdb': {
+        'license': {
+            'name': 'GNU LGPLv3',
+            'url': 'http://www.gnu.org/licenses/license-list.html#LGPLv3',
+            'commercial_use': True
+        }
+    },
+    'NFIRegulomeDB': {
+        'license': {
+            'name': 'GNU LGPLv3',
+            'url': 'http://www.gnu.org/licenses/license-list.html#LGPLv3',
+            'commercial_use': True
+        }
+    },
+    'TFe': {
+        'license': {
+            'name': 'CC-Attribution-ShareAlike 3.0'
+            'url': 'https://creativecommons.org/licenses/by-sa/3.0/'
+            'commercial_use': True
+        }
+    },
+    'TRRD': {
+        'license': {# Via TfactS
+            'name': 'CC-Attribution 4.0'
+            'url': 'https://creativecommons.org/licenses/by/4.0/'
+            'commercial_use': True # Again, via TfactS
+        }
+    },
+    'TRED': {# PENDING
+        #'license': {
+        #    'name': ''
+        #    'url': ''
+        #    'commercial_use': False
+        #}
+    },
+    'Fantom4': {
+        'license': {
+            'name': 'CC-Attribution 4.0'
+            'url': 'http://creativecommons.org/licenses/by/4.0/'
+            'commercial_use': True
+        }
+    },
+    'RegNetwork': {# PENDING
+        #'license': {
+        #    'name': ''
+        #    'url': ''
+        #    'commercial_use': False
+        #}
+    },
+    'TfactS': {
+        'license': {
+            'name': 'CC-Attribution 4.0'
+            'url': 'https://creativecommons.org/licenses/by/4.0/'
+            'commercial_use': True
+        }
+    },
+    'GeneOntology': {
+        'license': {
+            'name': 'CC-Attribution 4.0'
+            'url': 'https://creativecommons.org/licenses/by/4.0/'
+            'commercial_use': True
+        }
+    },
+    'Membranome': {
+        'license': {
+            'name': 'Apache 2.0'
+            'url': 'http://www.apache.org/licenses/LICENSE-2.0.html'
+            'commercial_use': True
+        }
+    },
+    'Exocarta': {# PENDING
+        #'license': {
+        #    'name': ''
+        #    'url': ''
+        #    'commercial_use': False
+        #}
+    },
+    'Vesiclepedia': {# PENDING
+        #'license': {
+        #    'name': ''
+        #    'url': ''
+        #    'commercial_use': False
+        #}
+    },
+    'Matrisome': {# PENDING
+        #'license': {
+        #    'name': ''
+        #    'url': ''
+        #    'commercial_use': False
+        #}
+    },
+    'CSPA': {# PENDING
+        #'license': {
+        #    'name': ''
+        #    'url': ''
+        #    'commercial_use': False
+        #}
+    },
+    'HPMR': {
+        'license': {
+            'name': 'CC-Attribution-NonCommercial 4.0'
+            'url': 'https://creativecommons.org/licenses/by-nc/4.0/'
+            'commercial_use': False
+        }
+    },
+    'Locate': {# PENDING
+        #'license': {
+        #    'name': ''
+        #    'url': ''
+        #    'commercial_use': False
+        #}
+    },
+    'CellPhoneDB': {
+        'license': {
+            'name': 'MIT License'
+            'url': 'https://github.com/Teichlab/cellphonedb/blob/master/LICENSE'
+            'commercial_use': True
+        }
+    },
+    'ComPPI': {
+        'license': {
+            'name': 'CC-Attribution-ShareAlike 4.0'
+            'url': 'https://creativecommons.org/licenses/by-sa/4.0/'
+            'commercial_use': True
+        }
+    },
+    'Kirouac2010': {
+        'license': {
+            'name': 'CC-Attribution-NonCommercial-NoDerivs 3.0'
+            'url': 'https://creativecommons.org/licenses/by-nc-nd/3.0/'
+            'commercial_use': False
+        }
+    },
+    'Ramilowski2015': {
+        'license': {
+            'name': 'CC-Attribution 4.0'
+            'url': 'http://creativecommons.org/licenses/by/4.0/'
+            'commercial_use': True
+        }
+    },
+    'Adhesome': {# PENDING
+        #'license': {
+        #    'name': ''
+        #    'url': ''
+        #    'commercial_use': False
+        #}
+    },
+    'Integrins': {# PENDING
+        #'license': {
+        #    'name': ''
+        #    'url': ''
+        #    'commercial_use': False
+        #}
+    },
+    'Zhong2015': {# PENDING
+        #'license': {
+        #    'name': ''
+        #    'url': ''
+        #    'commercial_use': False
+        #}
+    },
+    'HGNC': {
+        'license': {
+            'name': 'Custom license'
+            'url': 'https://www.genenames.org/about/'
+            'commercial_use': True
+        }
+    },
+    'TopDB': {
+        'license': {
+            'name': 'CC-Attribution-NonCommercial 4.0'
+            'url': 'https://creativecommons.org/licenses/by-nc/4.0/'
+            'commercial_use': False
+        }
+    },
+    'OPM': {
+        'license': {
+            'name': 'Apache 2.0'
+            'url': 'http://www.apache.org/licenses/LICENSE-2.0.html'
+            'commercial_use': True
+        }
+    },
+    'Havugimana': {
+        'license': {
+            'name': 'CC-Attribution-ShareAlike 4.0'
+            'url': 'https://creativecommons.org/licenses/by-sa/4.0/'
+            'commercial_use': True
+        }
+    },
+    'Compleat': {
+        'license': {
+            'name': 'CC-Attribution-NonCommercial 4.0'
+            'url': 'https://creativecommons.org/licenses/by-nc/4.0/'
+            'commercial_use': False
+        }
+    },
+    'ComplexPortal': {
+        'license': {
+            'name': 'CC-Attribution 4.0'
+            'url': 'https://creativecommons.org/licenses/by/4.0/'
+            'commercial_use': True
+        }
+    },
+    'HPA': {
+        'license': {
+            'name': 'CC-Attribution-ShareAlike 3.0'
+            'url': 'https://creativecommons.org/licenses/by-sa/3.0/'
+            'commercial_use': True
+        }
+    },
+    'PDB': {
+        'license': {
+            'name': 'Custom license'
+            'url': 'https://www.wwpdb.org/about/privacy'
+            'commercial_use': True
+        }
+    },
+    'Humap': {
+        'license': {
+            'name': 'CC0-Attribution'
+            'url': 'https://creativecommons.org/share-your-work/public-domain/cc0/'
+            'commercial_use': True
+        }
+    },
+    'PhosphoNetworks': {
+        'license': {
+            'name': 'Custom license'
+            'url': 'https://phosphonetworks.org/about.html'
+            'commercial_use': False
+        }
+    },
+    'MIMP': {# PENDING
+        #'license': {
+        #    'name': ''
+        #    'url': ''
+        #    'commercial_use': False
+        #}
+    },
+    'Li2012': {
+        'license': {
+            'name': 'CC-Attribution-NonCommercial 3.0'
+            'url': 'https://creativecommons.org/licenses/by-nc/3.0/'
+            'commercial_use': False
+        }
+    },
+    'UniProt': {
+        'license': {
+            'name': 'CC-Attribution 4.0'
+            'url': 'http://creativecommons.org/licenses/by/4.0/'
+            'commercial_use': True
+        }
+    },
+    'miRBase': {
+        'license': {
+            'name': 'CC0'
+            'url': 'https://creativecommons.org/share-your-work/public-domain/cc0/'
+            'commercial_use': True
+        }
+    },
+    'mir2Disease': {# PENDING
+        #'license': {
+        #    'name': ''
+        #    'url': ''
+        #    'commercial_use': False
+        #}
+    },
+    'miRDeatdhDB': {# PENDING
+        #'license': {
+        #    'name': ''
+        #    'url': ''
+        #    'commercial_use': False
+        #}
+    },
+    'TransmiR': {
+        'license': {
+            'name': 'CC-Attribution-NonCommercial 4.0'
+            'url': 'https://creativecommons.org/licenses/by-nc/4.0/'
+            'commercial_use': False
+        }
+    },
+    'ENCODE': {
+        'license': {
+            'name': 'CC-Attribution 4.0'
+            'url': 'https://creativecommons.org/licenses/by/4.0/'
+            'commercial_use': True
+        }
+    },
+    'lncRNADisease': {# PENDING
+        #'license': {
+        #    'name': ''
+        #    'url': ''
+        #    'commercial_use': False
+        #}
+    },
+    'lncrnadb': {# PENDING
+        #'license': {
+        #    'name': ''
+        #    'url': ''
+        #    'commercial_use': False
+        #}
+    },
+    'miRecords': {
+        'license': {
+            'name': 'Custom license'
+            'url': 'http://c1.accurascience.com/miRecords/copyright.php'
+            'commercial_use': False
+        }
+    },
+    'miRTarBase': {
+        'license': {
+            'name': 'Custom license'
+            'url': 'http://mirtarbase.mbc.nctu.edu.tw/cache/download/LICENSE'
+            'commercial_use': False
+        }
+    },
+    'HIPPIE': {
+        'license': {
+            'name': 'CC-Attribution 4.0'
+            'url': 'https://creativecommons.org/licenses/by/4.0/'
+            'commercial_use': True
+        }
+    },
+    'CPAD': {
+        'license': {
+            'name': 'Custom license'
+            'url': 'https://www.iitm.ac.in/bioinfo/CPAD/'
+            'commercial_use': False
+        }
+    },
+    'IntOGen': {
+        'license': {
+            'name': 'CC-Attribution-NonCommercial 4.0'
+            'url': 'http://creativecommons.org/licenses/by-nc/4.0/'
+            'commercial_use': False
+        }
+    },
+    'COSMIC': {
+        'license': {
+            'name': 'Custom license'
+            'url': 'https://cancer.sanger.ac.uk/cosmic/license'
+            'commercial_use': False
+        }
+    },
+    'DGIdb': {
+        'license': {
+            'name': 'MIT license'
+            'url': 'https://github.com/griffithlab/dgi-db/blob/master/LICENSE'
+            'commercial_use': True
+        }
+    },
+    'DisGeNet': {
+        'license': {
+            'name': 'CC-Attribution-ShareAlike-NonCommercial 4.0'
+            'url': 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
+            'commercial_use': False
+        }
+    },
+    'kinase': {
+        'license': {
+            'name': 'Custom license'
+            'url': 'http://kinase.com/about/Disclaimer.html'
+            'commercial_use': False
+        }
+    },
+    'phosphatome': {# PENDING
+        #'license': {
+        #    'name': ''
+        #    'url': ''
+        #    'commercial_use': False
+        #}
+    },
+    'Vaquerizas2009': {# PENDING
+        #'license': {
+        #    'name': ''
+        #    'url': ''
+        #    'commercial_use': False
+        #}
+    },
 }
-# Pending to add:
-# TRRUST
-# HTRIdb
-# NFIRegulomeDB
-# TFe
-# TRRD
-# TRED
-# Fantom4
-# RegNetworks
-# TfactS
-# Gene Ontology
-# Membranome
-# Exocarta
-# Vesiclepedia
-# Matrisome
-# Cell Surface Protein Atlas
-# Human Plasma Membrane Receptome
-# Locate
-# CellPhoneDB
-# ComPPI
-# Kirouac 2010
-# Ramilowski 2015
-# Adhesome
-# Integrins
-# Zhong 2015
-# HGNC
-# TopDB
-# OPM
-# Havugimana
-# Compleat
-# ComplexPortal
-# Human Protein Atlas
-# PDB
-# Humap
-# PhosphoNetworks
-# MIMP
-# Li 2012
-# UniProt
-# miRBase
-# mir2Disease
-# miRDeatdhDB
-# TransmiR
-# ENCODE
-# lncRNADisease
-# lncrnadb
-# miRecords
-# miRTarBase
-# HIPPIE
-# CPAD
-# IntOGen
-# COSMIC Cancer Gene Census
-# DGIdb
-# DisGeNet
-# kinase.com
-# phosphatome.net
-# TF Census (Vaquerizas 2009)
 
 pypath_methods = {
     'data': 'Data source (URLs and files)',
