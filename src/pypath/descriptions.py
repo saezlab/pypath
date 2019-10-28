@@ -62,7 +62,8 @@ descriptions = {
         'license': {
             'name':
             'No license. "This dataset is freely available to the research community through the search engine or via download."',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         }
     },
     'Lit13': {
@@ -77,7 +78,7 @@ descriptions = {
         'pubmeds': [25416956],
         'descriptions': [
             u'''
-            High-quality non-systematic Literature dataset. In 2013, we extracted interaction data from BIND, BioGRID, DIP, HPRD, MINT, IntAct, and PDB to generate a high-quality binary literature dataset comprising ~11,000 protein-protein interactions that are binary and supported by at least two traceable pieces of evidence (publications and/or methods) (Rolland et al Cell 2014). Although this dataset does not result from a systematic investigation of the interactome search space and should thus be used with caution for any network topology analyses, it represents valuable interactions for targeted studies and is freely available to the research community through the search engine or via download. 
+            High-quality non-systematic Literature dataset. In 2013, we extracted interaction data from BIND, BioGRID, DIP, HPRD, MINT, IntAct, and PDB to generate a high-quality binary literature dataset comprising ~11,000 protein-protein interactions that are binary and supported by at least two traceable pieces of evidence (publications and/or methods) (Rolland et al Cell 2014). Although this dataset does not result from a systematic investigation of the interactome search space and should thus be used with caution for any network topology analyses, it represents valuable interactions for targeted studies and is freely available to the research community through the search engine or via download.
             '''
         ],
         'emails':
@@ -93,7 +94,8 @@ descriptions = {
         'license': {
             'name':
             'No license. "This dataset is freely available to the research community through the search engine or via download."',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         }
     },
     'ELM': {
@@ -133,7 +135,8 @@ descriptions = {
         'omnipath': True,
         'license': {
             'name': 'ELM Software License Agreement, non-free',
-            'url': 'http://elm.eu.org/media/Elm_academic_license.pdf'
+            'url': 'http://elm.eu.org/media/Elm_academic_license.pdf',
+            'commercial_use': False
         },
         'pypath': {
             'data': [
@@ -203,7 +206,8 @@ descriptions = {
         'license': {
             'name':
             'No license. If you are using this database please cite Sarkar 2015.',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         }
     },
     'PDZBase': {
@@ -248,7 +252,8 @@ descriptions = {
         },
         'license': {
             'name': 'No license.',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         },
         'pathguide': 160
     },
@@ -275,7 +280,7 @@ descriptions = {
         'one of the strongest in ligand-receptor interactions; still does not contain everything, therefore worth to combine with larger activity flow resources like Signor',
         'descriptions': [
             u'''
-            Presently, the resource describes the interactions between target proteins and 6064 distinct ligand entities (Table 1). Ligands are listed against targets by their action (e.g. activator, inhibitor), and also classified according to substance types and their status as approved drugs. Classes include metabolites (a general category for all biogenic, non-peptide, organic molecules including lipids, hormones and neurotransmitters), synthetic organic chemicals (e.g. small molecule drugs), natural products, mammalian endogenous peptides, synthetic and other peptides including toxins from non-mammalian organisms, antibodies, inorganic substances and other, not readily classifiable compounds. 
+            Presently, the resource describes the interactions between target proteins and 6064 distinct ligand entities (Table 1). Ligands are listed against targets by their action (e.g. activator, inhibitor), and also classified according to substance types and their status as approved drugs. Classes include metabolites (a general category for all biogenic, non-peptide, organic molecules including lipids, hormones and neurotransmitters), synthetic organic chemicals (e.g. small molecule drugs), natural products, mammalian endogenous peptides, synthetic and other peptides including toxins from non-mammalian organisms, antibodies, inorganic substances and other, not readily classifiable compounds.
             The new database was constructed by integrating data from IUPHAR-DB and the published GRAC compendium. An overview of the curation process is depicted as an organizational flow chart in Figure 2. New information was added to the existing relational database behind IUPHAR-DB and new webpages were created to display the integrated information. For each new target, information on human, mouse and rat genes and proteins, including gene symbol, full name, location, gene ID, UniProt and Ensembl IDs was manually curated from HGNC, the Mouse Genome Database (MGD) at Mouse Genome Informatics (MGI), the Rat Genome Database (RGD), UniProt and Ensembl, respectively. In addition, ‘Other names’, target-specific fields such as ‘Principal transduction’, text from the ‘Overview’ and ‘Comments’ sections and reference citations (downloaded from PubMed; http://www.ncbi.nlm.nih.gov/pubmed) were captured from GRAC and uploaded into the database against a unique Object ID.
             '''
         ],
@@ -287,7 +292,8 @@ descriptions = {
         'omnipath': True,
         'license': {
             'name': 'CC-Attribution-ShareAlike-3.0',
-            'url': 'http://creativecommons.org/licenses/by-sa/3.0/'
+            'url': 'http://creativecommons.org/licenses/by-sa/3.0/',
+            'commercial_use': True
         },
         'pypath': {
             'data': ['pypath.data_formats'],
@@ -318,7 +324,7 @@ descriptions = {
             u'''
             Phospho.ELM http://phospho.elm.eu.org is a new resource containing experimentally verified phosphorylation sites manually curated from the literature and is developed as part of the ELM (Eukaryotic Linear Motif) resource. Phospho.ELM constitutes the largest searchable collection of phosphorylation sites available to the research community. The Phospho.ELM entries store information about substrate proteins with the exact positions of residues known to be phosphorylated by cellular kinases. Additional annotation includes literature references, subcellular compartment, tissue distribution, and information about the signaling pathways involved as well as links to the molecular interaction database MINT. Phospho.ELM version 2.0 contains 1,703 phosphorylation site instances for 556 phosphorylated proteins. (Diella 2004)
             ''', u'''
-            Phospho.ELM is a manually curated database of eukaryotic phosphorylation sites. The resource includes data collected from published literature as well as high-throughput data sets. The current release of the Phospho.ELM data set (version 7.0, July 2007) contains 4078 phospho-protein sequences covering 12,025 phospho-serine, 2,362 phospho-threonine and 2,083 phospho-tyrosine sites with a total of 16,470 sites. 
+            Phospho.ELM is a manually curated database of eukaryotic phosphorylation sites. The resource includes data collected from published literature as well as high-throughput data sets. The current release of the Phospho.ELM data set (version 7.0, July 2007) contains 4078 phospho-protein sequences covering 12,025 phospho-serine, 2,362 phospho-threonine and 2,083 phospho-tyrosine sites with a total of 16,470 sites.
             For each phospho-site we report if the phosphorylation evidence has been identified by small-scale analysis (low throughput; LTP) that typically focus on one or a few proteins at a time or by large-scale experiments (high throughput; HTP), which mainly apply MS techniques. It is noteworthy that in our data set there is a small overlap between instances identified by LTP and HTP experiments. (Diella 2007)
             ''', u'''
             The current release of the Phospho.ELM data set (version 9.0) contains more than 42,500 non-redundant instances of phosphorylated residues in more than 11,000 different protein sequences (3370 tyrosine, 31 754 serine and 7449 threonine residues). For each phosphosite we report whether the phosphorylation evidence has been identified by small-scale analyses (low-throughput, LTP) and/or by large-scale experiments (high-throughput, HTP), which mainly apply MS techniques. The majority of the protein instances from Phospho. ELM are vertebrate (mostly Homo sapiens (62%) and Mus musculus (16%)) though 22% are from other species, mainly Drosophila melanogaster (13%) and Caenorhabditis elegans (7%). In total, more than 300 different kinases have been annotated and a document providing additional information about all kinases annotated in Phospho.ELM can be found at http://phospho.elm.eu.org/kinases.html. (Dinkel 2010)
@@ -333,7 +339,8 @@ descriptions = {
         'license': {
             'name': 'phospho.ELM Academic License, non-free',
             'url':
-            'http://phospho.elm.eu.org/dumps/Phospho.Elm_AcademicLicense.pdf'
+            'http://phospho.elm.eu.org/dumps/Phospho.Elm_AcademicLicense.pdf',
+            'commercial_use': False
         },
         'pypath': {
             'format': [
@@ -389,7 +396,8 @@ descriptions = {
         'omnipath': True,
         'license': {
             'name': 'CC-Attribution-2.5',
-            'url': 'http://creativecommons.org/licenses/by/2.5'
+            'url': 'http://creativecommons.org/licenses/by/2.5',
+            'commercial_use': True
         },
         'pypath': {
             'data': ['pypath.urls.urls[\'domino\'][\'url\']'],
@@ -444,7 +452,8 @@ descriptions = {
         'data_integration': 'dynamic',
         'license': {
             'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         },
         'pypath': {
             'format': [
@@ -491,8 +500,9 @@ descriptions = {
         'omnipath': True,
         'emails': [('perfetto@live.it', 'Livia Perfetto')],
         'license': {
-            'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'name': 'CC-Attribution-ShareAlike 4.0',
+            'url': 'https://creativecommons.org/licenses/by-sa/4.0/',
+            'commercial_use': True
         },
         'pypath': {
             'data': ['pypath.urls.urls[\'signor\'][\'all_url\']'],
@@ -537,7 +547,8 @@ descriptions = {
         'emails': [('perfetto@live.it', 'Livia Perfetto')],
         'license': {
             'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         }
     },
     'SignaLink3': {
@@ -562,9 +573,9 @@ descriptions = {
         'one of the largest resources with effect sign; due to its specific, biochemically defined pathways suitable for cross-talk analysis',
         'descriptions': [
             u'''
-            In each of the three organisms, we first listed signaling proteins and interactions from reviews (and from WormBook in C.elegans) and then added further signaling interactions of the listed proteins. To identify additional interactions in C.elegans, we examined all interactions (except for transcription regulation) of the signaling proteins listed in WormBase and added only those to SignaLink that we could manually identify in the literature as an experimentally verified signaling interaction. For D.melanogaster, we added to SignaLink those genetic interactions from FlyBase that were also reported in at least one yeast-2-hybrid experiment. For humans, we manually checked the reliability and directions for the PPIs found with the search engines iHop and Chilibot. 
-            SignaLink assigns proteins to signaling pathways using the full texts of pathway reviews (written by pathway experts). While most signaling resources consider 5–15 reviews per pathway, SignaLink uses a total of 170 review papers, i.e. more than 20 per pathway on average. Interactions were curated from a total of 941 articles (PubMed IDs are available at the website). We added a small number of proteins based on InParanoid ortholog clusters. For curation, we used a self-developed graphical tool and Perl/Python scripts. The current version of SignaLink was completed in May 2008 based on WormBase (version 191), FlyBase (2008.6), Ensembl, UniProt and the publications listed on the website. 
-            The curation protocol of SignaLink (Fig. 1A) contains several steps aimed specifically at reducing data and curation errors. We used reviews as a starting point, manually looked up interactions three times, and manually searched for interactions of known signaling proteins with no signaling interactions so far in the database. 
+            In each of the three organisms, we first listed signaling proteins and interactions from reviews (and from WormBook in C.elegans) and then added further signaling interactions of the listed proteins. To identify additional interactions in C.elegans, we examined all interactions (except for transcription regulation) of the signaling proteins listed in WormBase and added only those to SignaLink that we could manually identify in the literature as an experimentally verified signaling interaction. For D.melanogaster, we added to SignaLink those genetic interactions from FlyBase that were also reported in at least one yeast-2-hybrid experiment. For humans, we manually checked the reliability and directions for the PPIs found with the search engines iHop and Chilibot.
+            SignaLink assigns proteins to signaling pathways using the full texts of pathway reviews (written by pathway experts). While most signaling resources consider 5–15 reviews per pathway, SignaLink uses a total of 170 review papers, i.e. more than 20 per pathway on average. Interactions were curated from a total of 941 articles (PubMed IDs are available at the website). We added a small number of proteins based on InParanoid ortholog clusters. For curation, we used a self-developed graphical tool and Perl/Python scripts. The current version of SignaLink was completed in May 2008 based on WormBase (version 191), FlyBase (2008.6), Ensembl, UniProt and the publications listed on the website.
+            The curation protocol of SignaLink (Fig. 1A) contains several steps aimed specifically at reducing data and curation errors. We used reviews as a starting point, manually looked up interactions three times, and manually searched for interactions of known signaling proteins with no signaling interactions so far in the database.
             '''
         ],
         'notes': [
@@ -579,7 +590,8 @@ descriptions = {
         'omnipath': True,
         'license': {
             'name': 'CC-Attribution-NonCommercial-ShareAlike-3.0',
-            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/'
+            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/',
+            'commercial_use': False
         },
         'pathguide': 320
     },
@@ -616,7 +628,8 @@ descriptions = {
         'omnipath': True,
         'license': {
             'name': 'CC-Attribution-NonCommercial-ShareAlike-3.0',
-            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/'
+            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/',
+            'commercial_use': False
         }
     },
     'ARN': {
@@ -649,7 +662,8 @@ descriptions = {
         'omnipath': True,
         'license': {
             'name': 'CC-Attribution-NonCommercial-ShareAlike-3.0',
-            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/'
+            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/',
+            'commercial_use': False
         }
     },
     'HPRD': {
@@ -683,7 +697,8 @@ descriptions = {
         'license': {
             'name':
             'No license. Everything in HPRD is free as long as it is not used for commercial purposes. Commercial entitites will have to pay a fee under a licensing arrangement which will be used to make this database even better. Commercial users should send an e-mail for details. This model of HPRD is similar to the SWISS-PROT licensing arrangement. We do not have any intentions to profit from HPRD. Our goal is to promote science by creating the infrastructure of HPRD. We hope to keep it updated with the assistance of the entire biomedical community. Any licensing fee, if generated, will be used to annotate HPRD better and to add more entries and features.',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         },
         'pypath': {
             'data': [
@@ -719,7 +734,7 @@ descriptions = {
             u'''
             The map curator studies the body of literature dedicated to the biological process or molecular mechanism of interest. The initial sources of information are the major review articles from high-impact journals that represent the consensus view on the studied topic and also provide a list of original references. The map curator extracts information from review papers and represents it in the form of biochemical reactions in CellDesigner. This level of details reflects the ‘canonical’ mechanisms. Afterwards, the curator extends the search and analyses original papers from the list provided in the review articles and beyond. This information is used to enrich the map with details from the recent discoveries in the field. The rule for confident acceptance and inclusion of a biochemical reaction or a process is the presence of sufficient evidences from more than two studies, preferably from different scientific groups. The content of ACSN is also verified and compared with publicly available databases such as REACTOME, KEGG, WikiPathways, BioCarta, Cell Signalling and others to ensure comprehensive representation of consensus pathways and links on PMIDs of original articles confirmed annotated molecular interactions.
             ''', u'''
-            CellDesigner 3.5 version was used to enter biological facts from a carefully studied selection of papers (see the whole bibliography on the web site with Supplementary information). Whenever the details of a biological fact could not be naturally expressed with CellDesigner standard notations, it was fixed and some solution was proposed. For example, we added a notation (co‐factor) to describe all the components intervening in the transcription of genes mediated by the E2F family proteins. 
+            CellDesigner 3.5 version was used to enter biological facts from a carefully studied selection of papers (see the whole bibliography on the web site with Supplementary information). Whenever the details of a biological fact could not be naturally expressed with CellDesigner standard notations, it was fixed and some solution was proposed. For example, we added a notation (co‐factor) to describe all the components intervening in the transcription of genes mediated by the E2F family proteins.
             '''
         ],
         'emails': [('andrei.zinovyev@curie.fr', 'Andrei Zinovyev')],
@@ -728,8 +743,10 @@ descriptions = {
         'full_name': 'Atlas of Cancer Signalling Networks',
         'omnipath': False,
         'license': {
-            'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'name': 'CC-Attribution 4.0',
+            'url': 'https://creativecommons.org/licenses/by/4.0/',
+            'commercial_use': True
+
         },
         'pypath': {
             'data': [
@@ -769,7 +786,8 @@ descriptions = {
         'license': {
             'name':
             'No license. Please cite the following paper when you use Death Domain database in your publications, which is very important to sustain our service: Kwon et al. 2012',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         },
         'emails': [('hyunho@ynu.ac.kr', 'Hyun Ho Park')],
         'files': {
@@ -856,7 +874,7 @@ descriptions = {
         ],
         'notes': [
             u'''
-            Good manually curated dataset focusing on TRP channel proteins, with ~800 binary interactions. The provided formats are not well suitable for bioinformatics use because of the non standard protein names, with greek letters and only human understandable formulas. Using HTML processing from 5-6 different tables, with couple hundreds lines of code, one have a chance to compile a usable table. 
+            Good manually curated dataset focusing on TRP channel proteins, with ~800 binary interactions. The provided formats are not well suitable for bioinformatics use because of the non standard protein names, with greek letters and only human understandable formulas. Using HTML processing from 5-6 different tables, with couple hundreds lines of code, one have a chance to compile a usable table.
             '''
         ],
         'type': 'literature curated',
@@ -882,7 +900,8 @@ descriptions = {
         },
         'license': {
             'name': 'CC-Attribution-ShareAlike-3.0',
-            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/'
+            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/',
+            'commercial_use': True
         },
         'pathguide': 409
     },
@@ -910,7 +929,8 @@ descriptions = {
         'omnipath': False,
         'license': {
             'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         }
     },
     'Cui2007': {
@@ -956,7 +976,8 @@ descriptions = {
         'omnipath': False,
         'license': {
             'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         }
     },
     'BioCarta': {
@@ -998,7 +1019,8 @@ descriptions = {
             'name':
             'BioCarta webpage Terms and Conditions of Use (pathways are not owned by BioCarta and are free to use)',
             'url':
-            'http://web.archive.org/web/20150207091158/http://biocarta.com/legal/terms.asp'
+            'http://web.archive.org/web/20150207091158/http://biocarta.com/legal/terms.asp',
+            'commercial_use': False
         }
     },
     'TLR': {
@@ -1011,7 +1033,8 @@ descriptions = {
         'omnipath': False,
         'license': {
             'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         }
     },
     'CA1': {
@@ -1060,7 +1083,8 @@ descriptions = {
         },
         'license': {
             'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         }
     },
     'CancerCellMap': {
@@ -1106,7 +1130,8 @@ descriptions = {
         'data_integration': 'dynamic',
         'license': {
             'name': 'CC-Attribution-2.5',
-            'url': 'http://creativecommons.org/licenses/by/2.5/'
+            'url': 'http://creativecommons.org/licenses/by/2.5/',
+            'commercial_use': True
         },
         'pathguide': 223
     },
@@ -1123,7 +1148,8 @@ descriptions = {
                    ('sarah.boyd@monash.edu', 'Sarah E Boyd')],
         'license': {
             'name': 'CC-Attribution-4.0',
-            'url': 'http://creativecommons.org/licenses/by/4.0/'
+            'url': 'http://creativecommons.org/licenses/by/4.0/',
+            'commercial_use': True
         },
         'omnipath': False,
         'type': 'Literature curated',
@@ -1154,9 +1180,9 @@ descriptions = {
         ],
         'descriptions': [
             u'''
-            Composed from multiple manually curated datasets, and contains own manual cuartion effort. Methods are unclear, and the dataset has not been published in reviewed paper. Based on the Cui et al 2007. 
-            Wang Lab has manually curated human signaling data from literature since 2005. The data sources include BioCarta, CST Signaling pathways, NCI Pathway Interaction Database, iHOP, and many review papers. The contents are updated every year. 
-            iHOP is not literature curated, but is a literature mining platform. 
+            Composed from multiple manually curated datasets, and contains own manual cuartion effort. Methods are unclear, and the dataset has not been published in reviewed paper. Based on the Cui et al 2007.
+            Wang Lab has manually curated human signaling data from literature since 2005. The data sources include BioCarta, CST Signaling pathways, NCI Pathway Interaction Database, iHOP, and many review papers. The contents are updated every year.
+            iHOP is not literature curated, but is a literature mining platform.
             '''
         ],
         'notes': [
@@ -1170,7 +1196,8 @@ descriptions = {
         'omnipath': False,
         'license': {
             'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         },
         'pypath': {
             'data': ['pypath.urls.urls[\'hsn\']'],
@@ -1194,7 +1221,7 @@ descriptions = {
         ],
         'notes': [
             u'''
-            The Ataxia network doesn't contain original manual curation effort. The integrated data are very old. 
+            The Ataxia network doesn't contain original manual curation effort. The integrated data are very old.
             '''
         ],
         'type': 'high-throughput',
@@ -1204,7 +1231,8 @@ descriptions = {
                    ('barabasi@gmail.com', 'Albert-Laszlo Barabasi')],
         'license': {
             'url': 'http://creativecommons.org/licenses/by-nc/2.5',
-            'name': 'CC-Attribution-2.5'
+            'name': 'CC-Attribution-2.5',
+            'commercial_use': True
         }
     },
     'Reactome': {
@@ -1246,7 +1274,8 @@ descriptions = {
                    ('hhe@ebi.ac.uk', 'Henning Hermjakob')],
         'license': {
             'name': 'CC-Attribution-4.0',
-            'url': 'http://creativecommons.org/licenses/by/4.0/'
+            'url': 'http://creativecommons.org/licenses/by/4.0/',
+            'commercial_use': True
         },
         'pypath': {
             'data': [
@@ -1275,7 +1304,7 @@ descriptions = {
         'taxons': ['human'],
         'descriptions': [
             u'''
-            Human phosphotyrosine signaling network. 
+            Human phosphotyrosine signaling network.
             We manually collected the experimentally determined human TK–substrate interactions and substrate–SH2/PTB domain interactions from the literature (see Supplemental Materials), as well as the Phospho.ELM and PhosphoSitePlus databases. [71 references, 585 circuits]
             '''
         ],
@@ -1296,7 +1325,8 @@ descriptions = {
         },
         'license': {
             'name': 'No license.',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         }
     },
     'Zaman2013': {
@@ -1325,7 +1355,8 @@ descriptions = {
         'omnipath': False,
         'license': {
             'name': 'No license.',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         }
     },
     'AlzPathway': {
@@ -1368,7 +1399,8 @@ descriptions = {
         },
         'license': {
             'name': 'CC-Attribution-3.0',
-            'url': 'http://creativecommons.org/licenses/by/3.0/'
+            'url': 'http://creativecommons.org/licenses/by/3.0/',
+            'commercial_use': True
         }
     },
     'MPPI': {
@@ -1383,7 +1415,8 @@ descriptions = {
             'name':
             'No license. "You are free to use the database as you please including full download of'
             ' the dataset for your own analyses as long as you cite the source properly (Pagel et al. 2005)."',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False # To be clarified
         },
         'label': 'MPPI',
         'full_name': 'The MIPS Mammalian Protein-Protein Interaction Database',
@@ -1449,7 +1482,8 @@ descriptions = {
         'omnipath': True,
         'license': {
             'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         },
         'pypath': {
             'data': ['pypath.data/negatome_manual.csv'],
@@ -1483,8 +1517,9 @@ descriptions = {
         'subtype': 'activity flow',
         'omnipath': True,
         'license': {
-            'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'name': 'CC-Attribution 4.0',
+            'url': 'https://creativecommons.org/licenses/by/4.0/legalcode',
+            'commercial_use': True
         },
         'data_integration': 'static',
         'pypath': {
@@ -1501,8 +1536,10 @@ descriptions = {
         },
         'authors': ['Pandey Lab', 'IOB Bangalore'],
         'emails': [('pandey@jhmi.edu', 'Akhilesh Pandey')],
-        'license':
-        u'''The pathway data are freely available under an adaptive Creative Commons License which stipulates that the pathways may be used if adequate credit is given to the authors.''',
+        'license': {
+            'name': 'CC-Attribution 2.5',
+            'url': 'http://creativecommons.org/licenses/by/2.5/',
+            'commercial_use': True}
         'label': 'NetPath',
         'color': '',
         'data_import': ['CancerCellMap'],
@@ -1579,7 +1616,6 @@ descriptions = {
         'authors': ['Brinkman Lab', 'Hancock Lab', 'Lynn Group'],
         'emails': [('innatedb-mail@sfu.ca', 'InnateDB Team'),
                    ('david.lynn@sahmri.com', 'David Lynn')],
-        'license': 'http://innatedb.com/license.jsp',
         'pubmeds': [20727158, 23180781, 18766178],
         'releases': [2008, 2010, 2013, 2014, 2015],
         'annot': ['experiment', 'mechanism'],
@@ -1605,7 +1641,8 @@ descriptions = {
         'omnipath': True,
         'license': {
             'name': 'Design Science License',
-            'url': 'http://www.innatedb.com/license.jsp'
+            'url': 'http://www.innatedb.com/license.jsp',
+            'commercial_use': False
         },
         'pypath': {
             'format': [
@@ -1651,7 +1688,8 @@ descriptions = {
         'omnipath': False,
         'license': {
             'name': 'No license.',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         },
         'pypath': {
             'data': ['pypath.urls.urls[\'corum\'][\'url\']'],
@@ -1693,7 +1731,8 @@ descriptions = {
         'omnipath': False,
         'license': {
             'name': 'No license.',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         }
     },
     'DIP': {
@@ -1728,7 +1767,7 @@ descriptions = {
         'descriptions': [
             u'''
             In the beginning (near 2000), it was a entirely manually curated database:
-            Currently protein–protein interactions are entered into the DIP only following publication in peer-reviewed journals. Entry is done manually by the curator, followed by automated tests that show the proteins and citations exist. Interactions are double-checked by a second curator and flagged accordingly in the database. 
+            Currently protein–protein interactions are entered into the DIP only following publication in peer-reviewed journals. Entry is done manually by the curator, followed by automated tests that show the proteins and citations exist. Interactions are double-checked by a second curator and flagged accordingly in the database.
             From 2001, it contains high-throughput interactions:
             Because the reliability of experimental evidence varies widely, methods of quality assessment have been developed and utilized to identify the most reliable subset of the interactions. This CORE set can be used as a reference when evaluating the reliability of high-throughput protein-protein interaction data sets, for development of prediction methods, as well as in the studies of the properties of protein interaction networks.
             '''
@@ -1745,7 +1784,8 @@ descriptions = {
         'emails': [('david@mbi.ucla.edu', 'David Eisenberg')],
         'license': {
             'name': 'CC-Attribution-NoDerivs-3.0',
-            'url': 'http://creativecommons.org/licenses/by-nd/3.0/'
+            'url': 'http://creativecommons.org/licenses/by-nd/3.0/',
+            'commercial_use': True
         },
         'pypath': {
             'format': [
@@ -1795,8 +1835,9 @@ descriptions = {
         'omnipath': True,
         'emails': [('koehn@embl.de', 'Maja Kohn')],
         'license': {
-            'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'name': 'CC-Attribution-NonCommercial 4.0',
+            'url': 'https://creativecommons.org/licenses/by-nc/4.0/',
+            'commercial_use': False
         },
         'pypath': {
             'format': [
@@ -1843,8 +1884,9 @@ descriptions = {
         'emails': [('cyhuang5@ym.edu.tw', 'Chi-Ying F. Huang'),
                    ('kmchao@csie.ntu.edu.tw', 'Kun-Mao Chao')],
         'license': {
-            'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'name': 'CC-Attribution-ShareAlike 4.0',
+            'url': 'https://creativecommons.org/licenses/by-sa/4.0/',
+            'commercial_use': True
         },
         'pypath': {
             'format': ['pypath.data_formats.ptm_misc[\'ppoint\']'],
@@ -1884,8 +1926,9 @@ descriptions = {
                    ('paul.thomas@sri.com', 'Paul Thomas')],
         'pathguide': 164,
         'license': {
-            'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'name': 'GNU-GPL v2',
+            'url': 'https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html',
+            'commercial_use': True
         },
         'pathguide': 164
     },
@@ -1929,7 +1972,8 @@ descriptions = {
                    ('EditorPhosphoSite@cellsignal.com', 'PhosphoSite Team')],
         'license': {
             'name': 'CC-NonCommercial-ShareAlike',
-            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/'
+            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/',
+            'commercial_use': False
         },
         'pypath': {
             'format': [
@@ -1993,8 +2037,9 @@ descriptions = {
         'omnipath': True,
         'emails': [('rshamir@tau.ac.il', 'Ron Shamir')],
         'license': {
-            'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'name': 'CC-Attribution 4.0',
+            'url': 'https://creativecommons.org/licenses/by/4.0/',
+            'commercial_use': True
         },
         'pypath': {
             'format': [
@@ -2050,7 +2095,8 @@ descriptions = {
         'emails': [('yanch@mail.nih.gov', 'Chunhua Yan')],
         'license': {
             'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         },
         'pypath': {
             'data': ['pypath.urls.urls[\'nci-pid\'][\'biopax_l3\']'],
@@ -2088,7 +2134,8 @@ descriptions = {
                    ('apico@gladstone.ucsf.edu', 'Alex Pico')],
         'license': {
             'name': 'CC-Attribution-3.0',
-            'url': 'http://creativecommons.org/licenses/by/3.0/'
+            'url': 'http://creativecommons.org/licenses/by/3.0/',
+            'commercial_use': True
         },
         'pathguide': 237
     },
@@ -2108,8 +2155,8 @@ descriptions = {
         'pubmeds': [18940869, 23143270, 21071422],
         'descriptions': [
             '''
-            Interaction data in ConsensusPathDB currently originates from 12 interaction databases and comprises physical interactions, biochemical reactions and gene regulations. Importantly, the source of physical entities and interactions is always recorded, which allows linking to the original data in the source database. 
-            In order to assess the content overlap of the source databases and to reduce redundancy, we have applied a method to merge identical physical entities and identify similar interactions. The method is straightforward and efficient for the integration of networks from any single species. Simple physical entities of the same type (genes, proteins, transcripts, metabolites) are compared on the basis of common database identifiers like UniProt, Ensembl, Entrez, ChEBI, etc. Since different databases tend to annotate physical entities with different identifier types (e.g. some databases annotate proteins with UniProt identifiers, others with Ensembl identifiers), we first translated the annotations to a uniform identifier type, which is a UniProt entry name in case of proteins, Ensembl gene ID in case of genes and transcripts, and KEGG/ChEBI ID in case of metabolites. Protein complexes are compared according to their individual protein composition. Simple physical entities with the same identifier, and complexes with the same composition, are merged in ConsensusPathDB. Information provided by the according source databases for the merged entities is stored in a complementary manner. 
+            Interaction data in ConsensusPathDB currently originates from 12 interaction databases and comprises physical interactions, biochemical reactions and gene regulations. Importantly, the source of physical entities and interactions is always recorded, which allows linking to the original data in the source database.
+            In order to assess the content overlap of the source databases and to reduce redundancy, we have applied a method to merge identical physical entities and identify similar interactions. The method is straightforward and efficient for the integration of networks from any single species. Simple physical entities of the same type (genes, proteins, transcripts, metabolites) are compared on the basis of common database identifiers like UniProt, Ensembl, Entrez, ChEBI, etc. Since different databases tend to annotate physical entities with different identifier types (e.g. some databases annotate proteins with UniProt identifiers, others with Ensembl identifiers), we first translated the annotations to a uniform identifier type, which is a UniProt entry name in case of proteins, Ensembl gene ID in case of genes and transcripts, and KEGG/ChEBI ID in case of metabolites. Protein complexes are compared according to their individual protein composition. Simple physical entities with the same identifier, and complexes with the same composition, are merged in ConsensusPathDB. Information provided by the according source databases for the merged entities is stored in a complementary manner.
             Functional interactions of physical entities are also compared with each other. Here, we distinguish between primary and secondary interaction participants. Primary participants are substrates and products in case of biochemical reactions, interactors in case of physical interactions and target genes in case of gene regulation. All other participants, e.g. enzymes and interaction modifiers, are secondary participants. If the primary participants of two or more interactions match, these interactions are considered similar. Two similar interactions may have different stoichiometry, modification and/or localization of the participants. To allow for flexibility, similar interactions are marked as such in the database, but the decision whether they should be considered identical despite mismatching details is left to the user and depends on his specific problem. Moreover, ConsensusPathDB does not provide any additional quality control filters. All interactions provided by the different database sources are treated in the same way.
             '''
         ],
@@ -2123,7 +2170,9 @@ descriptions = {
         'emails': [('kamburov@molgen.mpg.de', 'Atanas Kamburov')],
         'license': {
             'name':
-            'Constituting resources carry their own licenses. "Due to several licensing issues, we are not allowed to release the complete integrated network (including signaling, metabolism and gene regulation)."'
+            'Constituting resources carry their own licenses. "Due to several licensing issues, we are not allowed to release the complete integrated network (including signaling, metabolism and gene regulation)."',
+            'url': 'http://cpdb.molgen.mpg.de/CPDB/tutorial#moreinfo.lic',
+            'commercial_use': False
         },
         'pathguide': 275
     },
@@ -2151,7 +2200,8 @@ descriptions = {
         'emails': [('kanehisa@kuicr.kyoto-u.ac.jp', 'Minoru Kaneshia')],
         'license': {
             'name': 'KEGG License, non-free',
-            'url': 'http://www.genome.jp/kegg/legal.html'
+            'url': 'http://www.genome.jp/kegg/legal.html',
+            'commercial_use': False
         },
         'pathguide': 16,
         'pypath': {
@@ -2196,8 +2246,9 @@ descriptions = {
         'emails': [('biogridadmin@gmail.com', 'BioGRID Team'),
                    ('md.tyers@umontreal.ca', 'Michael Tyers')],
         'license': {
-            'name': 'BioGRID License, non-free',
-            'url': 'http://wiki.thebiogrid.org/doku.php/terms_and_conditions'
+            'name': 'MIT License',
+            'url': 'https://biogrid-downloads.nyc3.digitaloceanspaces.com/LICENSE.txt',
+            'commercial_use': True
         },
         'pypath': {
             'format': [
@@ -2239,9 +2290,9 @@ descriptions = {
                    ('lars.juhl.jensen@cpr.ku.dk', 'Lars Juhl Jensen'),
                    ('mering@imls.uzh.ch', 'Christian von Mering')],
         'license': {
-            'name':
-            'CC-Attribution-3.0 or CC-Attribution-NonCommercial-ShareAlike-3.0',
-            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/'
+            'name': 'CC-Attribution 4.0',
+            'url': 'http://creativecommons.org/licenses/by/4.0/',
+            'commercial_use': True
         },
         'pathguide': 93
     },
@@ -2260,8 +2311,9 @@ descriptions = {
         'omnipath': False,
         'emails': [('livia.perfetto@live.it', 'Livia Perfetto')],
         'license': {
-            'name': 'CC-Attribution-2.5',
-            'url': 'http://creativecommons.org/licenses/by/2.5/'
+            'name': 'CC-Attribution 4.0',
+            'url': 'http://creativecommons.org/licenses/by/4.0/',
+            'commercial_use': True
         },
         'pathguide': 17
     },
@@ -2310,8 +2362,9 @@ descriptions = {
         'emails': [('orchard@ebi.ac.uk', 'Sandra Orchard'),
                    ('hhe@ebi.ac.uk', 'Henning Hermjakob')],
         'license': {
-            'name': 'Apache License, Version 2.0',
-            'url': 'http://www.apache.org/licenses/LICENSE-2.0'
+            'name': 'CC-Attribution 4.0',
+            'url': 'https://creativecommons.org/licenses/by/4.0/',
+            'commercial_use': True
         },
         'pathguide': 111,
         'pypath': {
@@ -2358,7 +2411,8 @@ descriptions = {
                    ('sylvie.ricard-blum@ibcp.fr', 'Sylvie Ricard-Blum')],
         'license': {
             'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False
         },
         'pypath': {
             'format': [
@@ -2408,7 +2462,9 @@ descriptions = {
             'CORUM',
         ],
         'license': {
-            'name': 'Constituting databases carry their own licenses.'
+            'name': 'Constituting databases carry their own licenses.',
+            'url': 'https://www.pathwaycommons.org/pc2/datasources',
+            'commercial_use': False # Partially
         },
         'type': 'combined',
         'subtype': 'interaction',
@@ -2442,8 +2498,9 @@ descriptions = {
         ],
         'emails': [('giovanni.scardoni@gmail.com', 'Giovanni Scardoni')],
         'license': {
-            'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+            'name': 'CC-Attribution-NonCommercial 4.0',
+            'url': 'https://creativecommons.org/licenses/by-nc/4.0/',
+            'commercial_use': False
         },
         'pypath': {
             'data': [
@@ -2479,7 +2536,8 @@ descriptions = {
         'pubmeds': [26578589],
         'license': {
             'name': 'GNU LGPLv3',
-            'url': 'http://www.gnu.org/licenses/license-list.html#LGPLv3'
+            'url': 'http://www.gnu.org/licenses/license-list.html#LGPLv3',
+            'commercial_use': True
         },
         'notes': [
             '''
@@ -2526,7 +2584,8 @@ descriptions = {
         'pubmeds': [18971253, 17916232],
         'license': {
             'name': 'GNU LGPLv3',
-            'url': 'http://www.gnu.org/licenses/license-list.html#LGPLv3'
+            'url': 'http://www.gnu.org/licenses/license-list.html#LGPLv3',
+            'commercial_use': True
         },
         'notes': [
             '''
@@ -2548,6 +2607,62 @@ descriptions = {
         'omictools': ['http://omictools.com/pazar-tool'],
     },
 }
+# Pending to add:
+# TRRUST
+# HTRIdb
+# NFIRegulomeDB
+# TFe
+# TRRD
+# TRED
+# Fantom4
+# RegNetworks
+# TfactS
+# Gene Ontology
+# Membranome
+# Exocarta
+# Vesiclepedia
+# Matrisome
+# Cell Surface Protein Atlas
+# Human Plasma Membrane Receptome
+# Locate
+# CellPhoneDB
+# ComPPI
+# Kirouac 2010
+# Ramilowski 2015
+# Adhesome
+# Integrins
+# Zhong 2015
+# HGNC
+# TopDB
+# OPM
+# Havugimana
+# Compleat
+# ComplexPortal
+# Human Protein Atlas
+# PDB
+# Humap
+# PhosphoNetworks
+# MIMP
+# Li 2012
+# UniProt
+# miRBase
+# mir2Disease
+# miRDeatdhDB
+# TransmiR
+# ENCODE
+# lncRNADisease
+# lncrnadb
+# miRecords
+# miRTarBase
+# HIPPIE
+# CPAD
+# IntOGen
+# COSMIC Cancer Gene Census
+# DGIdb
+# DisGeNet
+# kinase.com
+# phosphatome.net
+# TF Census (Vaquerizas 2009)
 
 pypath_methods = {
     'data': 'Data source (URLs and files)',
@@ -2805,7 +2920,7 @@ def resource_list_latex(filename='resource-list.tex',
 
 
 def export_licenses(outfile = 'licenses.tsv'):
-    
+
     hdr = [
         'Name',
         'License',
@@ -2813,9 +2928,9 @@ def export_licenses(outfile = 'licenses.tsv'):
         'Contact',
     ]
     rows = []
-    
+
     for k, v in iteritems(descriptions):
-        
+
         name = v['label'] if 'label' in v else k
         license_name = v['license']['name'] if 'license' in v else ''
         license_url = (
@@ -2827,16 +2942,16 @@ def export_licenses(outfile = 'licenses.tsv'):
             ','.join('%s <%s>' % tuple(reversed(e)) for e in v['emails'])
             if 'emails' in v else ''
         )
-        
+
         rows.append([
             name,
             license_name,
             license_url,
             emails,
         ])
-    
+
     with open(outfile, 'w') as fp:
-        
+
         _ = fp.write('\t'.join(hdr) + '\n')
         _ = fp.write('\n'.join(
             '\t'.join(row) for row in rows
