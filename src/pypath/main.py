@@ -13933,7 +13933,11 @@ class PyPath(session_mod.Logger):
                 )
             ))
             for e in self.graph.es
-            if not resources or e['sources'] & resources
+            if not e['dirs'].is_directed() and
+            (
+                not resources or
+                e['sources'] & resources
+            )
         }
     
     
