@@ -1648,9 +1648,14 @@ class AnnotationBase(resource.AbstractResource):
         return any(self.annot.values())
 
 
-    def make_df(self):
+    def make_df(self, rebuild = False):
         
         self._log('Creating dataframe from `%s` annotations.' % self.name)
+        
+        if hasattr(self, 'df') and not rebuild:
+            
+            self._log('Data frame already exists, rebuild not requested.')
+            return
         
         discard = {'n/a', None}
 
