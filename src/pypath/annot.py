@@ -299,7 +299,7 @@ class CustomAnnotation(session_mod.Logger):
         return annotop.op(*annots)
 
 
-    def get_class(self, name):
+    def get_class(self, name, entity_type = None):
         """
         Retrieves a class by its name and loads it if hasn't been loaded yet
         but the name present in the class definitions.
@@ -310,8 +310,18 @@ class CustomAnnotation(session_mod.Logger):
             self.create_class(self._class_definitions[name])
 
         if name in self.classes:
+            
+            entity_type = common.to_set(entity_type)
 
-            return self.classes[name]
+            return (
+                self.classes[name]
+                    if not entity_type else
+                {
+                    e
+                    for e in self.classes[name]
+                    if entity.Entity._get_entity_type(e) in entity_type
+                }
+            )
 
         self._log('No such annotation class: `%s`' % name)
 
