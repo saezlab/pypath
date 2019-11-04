@@ -478,6 +478,21 @@ class CustomAnnotation(session_mod.Logger):
             (i.e. not complex, miRNA, small molecule or other kind of entity).
         """
         
+        if hasattr(self, 'interclass_network'):
+            
+            return self.filter_interclass_network(
+                network = self.interclass_network,
+                resources = resources,
+                classes = classes,
+                source_classes = source_classes,
+                target_classes = target_classes,
+                only_directed = only_directed,
+                only_undirected = only_undirected,
+                only_effect = only_effect,
+                only_proteins = only_proteins,
+                only_class_levels = only_class_levels,
+            )
+        
         self._log('Combining custom annotation with network data frame.')
         
         network_df = (
@@ -618,6 +633,135 @@ class CustomAnnotation(session_mod.Logger):
         )
         
         return annot_network_df
+    
+    
+    def set_interclass_network_df(
+            self,
+            network = None,
+        ):
+        """
+        Creates a data frame of the whole inter-class network and keeps it
+        assigned to the instance in order to make subsequent queries faster.
+        """
+        
+        self.interclass_network = self.network_df(network = network)
+    
+    
+    def unset_interclass_network_df(self):
+        
+        if hasattr(self, 'interclass_network'):
+            
+            del self.interclass_network
+    
+    
+    @classmethod
+    def filter_interclass_network(
+            cls,
+            network,
+            resources = None,
+            classes = None,
+            source_classes = None,
+            target_classes = None,
+            only_directed = False,
+            only_undirected = False,
+            only_effect = None,
+            only_proteins = False,
+            only_class_levels = None,
+        ):
+        
+        if only_class_levels:
+            
+            only_class_levels = common.to_set(only_class_levels)
+            network = network[
+                network.class_type_a.isin(only_class_levels) &
+                network.class_type_b.isin(only_class_levels),
+            ]
+        
+        if (
+            not only_directed and
+            not only_effect and
+            not classes and (
+                source_classes or
+                target_classes
+            )
+        ):
+            
+            classes = set.union(
+                common.to_set(source_classes),
+                common.to_set(target_classes),
+            )
+        
+        if classes:
+            
+            network = cls._filter_by_classes(network, classes, 'category_a')
+            network = cls._filter_by_classes(network, classes, 'category_b')
+        
+        
+        if source_classes:
+            
+            op = (
+                'eq'
+                    if isinstance(source_classes, common.basestring) else
+                'isin'
+            )
+            network = network[
+                np.logical_or(
+                    getattr(network.category_a, op)(source_classes),
+                    np.logical_and(
+                        np.logical_not(network.directed),
+                        getattr(network.category_b, op)(source_classes)
+                    )
+                )
+            ]
+        
+        if target_classes:
+            
+            op = (
+                'eq'
+                    if isinstance(target_classes, common.basestring) else
+                'isin'
+            )
+            network = network[
+                np.logical_or(
+                    getattr(network.category_b, op)(target_classes),
+                    np.logical_and(
+                        np.logical_not(network.directed),
+                        getattr(network.category_a, op)(target_classes)
+                    )
+                )
+            ]
+        
+        if resources:
+            
+            filter_op = (
+                network.sources.eq
+                    if isinstance(resources, common.basestring) else
+                network.sources.isin
+            )
+            
+            network = network[filter_op(resources)]
+        
+        if only_directed:
+            
+            network = network[network.directed]
+        
+        if only_undirected:
+            
+            network = network[np.logical_not(network.directed)]
+        
+        if only_effect:
+            
+            network = network[network.effect == only_effect]
+        
+        if only_proteins:
+            
+            network = network[
+                (network.type_a == 'protein') &
+                (network.type_b == 'protein')
+            ]
+        
+        return network
+    
     
     #
     # Below only thin wrappers to make the interface more intuitive
@@ -957,16 +1101,16 @@ class CustomAnnotation(session_mod.Logger):
     
     
     @staticmethod
-    def _filter_by_classes(annot_df, classes = None):
+    def _filter_by_classes(annot_df, classes = None, attr = 'category'):
         
         if not classes:
             
             return annot_df
         
         filter_op = (
-            annot_df.category.eq
+            getattr(annot_df, attr).eq
                 if isinstance(classes, common.basestring) else
-            annot_df.category.isin
+            getattr(annot_df, attr).isin
         )
         
         return annot_df[filter_op(classes)]
