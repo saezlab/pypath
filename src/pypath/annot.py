@@ -449,6 +449,7 @@ class CustomAnnotation(session_mod.Logger):
             source_classes = None,
             target_classes = None,
             only_directed = False,
+            only_undirected = False,
             only_effect = None,
             only_proteins = False,
             only_class_levels = None,
@@ -467,6 +468,9 @@ class CustomAnnotation(session_mod.Logger):
             Use only these annotation classes.
         only_directed : bool
             Use only the directed interactions.
+        only_undirected : bool
+            Use only the undirected interactions. Specifically for retrieving
+            and counting the interactions without direction information.
         only_effect : int,None
             Use only the interactions with this effect. Either -1 or 1.
         only_proteins : bool
@@ -526,6 +530,10 @@ class CustomAnnotation(session_mod.Logger):
         if only_directed:
             
             network_df = network_df[network_df.directed]
+        
+        if only_undirected:
+            
+            network_df = network_df[np.logical_not(network_df.directed)]
         
         if only_effect:
             
@@ -636,6 +644,24 @@ class CustomAnnotation(session_mod.Logger):
         )
     
     
+    def inter_class_network_undirected(
+            self,
+            source_classes = None,
+            target_classes = None,
+            network = None,
+            **kwargs,
+        ):
+        
+        kwargs.update({'only_undirected': True})
+        
+        return self.network_df(
+            network = network,
+            source_classes = source_classes,
+            target_classes = target_classes,
+            **kwargs,
+        )
+    
+    
     def inter_class_network_directed(
             self,
             source_classes = None,
@@ -707,6 +733,20 @@ class CustomAnnotation(session_mod.Logger):
         ):
         
         return self.inter_class_network(
+            source_classes = source_classes,
+            target_classes = target_classes,
+            **kwargs,
+        ).groupby(['id_a', 'id_b']).ngroups
+    
+    
+    def count_inter_class_connections_undirected(
+            self,
+            source_classes = None,
+            target_classes = None,
+            **kwargs,
+        ):
+        
+        return self.inter_class_network_undirected(
             source_classes = source_classes,
             target_classes = target_classes,
             **kwargs,
@@ -812,6 +852,24 @@ class CustomAnnotation(session_mod.Logger):
         )
         
         return degrees[degrees != 0]
+    
+    
+    def degree_inter_class_network_undirected(
+            self,
+            source_classes = None,
+            target_classes = None,
+            **kwargs,
+        ):
+        
+        kwargs.update({'only_undirected': True})
+        
+        return (
+            self.degree_inter_class_network(
+                source_classes = source_classes,
+                target_classes = target_classes,
+                **kwargs,
+            )
+        )
     
     
     def degree_inter_class_network_directed(
