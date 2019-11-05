@@ -1634,3 +1634,23 @@ def df_memory_usage(df, deep = True):
         mem_usage /= 1024.0
     
     return '%3.1f%s PB' % (mem_usage, size_qualifier)
+
+
+def sum_dicts(*args):
+    """
+    For dicts of numbers returns a dict with the sum of the numbers from
+    all dicts for all keys.
+    """
+    
+    args = [
+        collections.defaultdict(int, d)
+        for d in args
+    ]
+    
+    return dict(
+        (
+            key,
+            sum(d[key] for d in args)
+        )
+        for key in set(itertools.chain(*(d.keys() for d in args)))
+    )

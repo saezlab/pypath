@@ -644,7 +644,24 @@ class CustomAnnotation(session_mod.Logger):
         assigned to the instance in order to make subsequent queries faster.
         """
         
-        self.interclass_network = self.network_df(network = network)
+        self.unset_interclass_network_df()
+        
+        self.interclass_network = self.get_interclass_network_df(
+            network = network,
+        )
+    
+    
+    def get_interclass_network_df(self, network = None):
+        """
+        If the an interclass network is already present the ``network``
+        provided not considered.
+        """
+        
+        return (
+            self.interclass_network
+                if hasattr(self, 'interclass_network') else
+            self.network_df(network = network)
+        )
     
     
     def unset_interclass_network_df(self):
@@ -669,13 +686,18 @@ class CustomAnnotation(session_mod.Logger):
             only_class_levels = None,
         ):
         
+        filter_idx = np.full(network.shape[0], True)
+        
         if only_class_levels:
             
             only_class_levels = common.to_set(only_class_levels)
-            network = network[
-                network.class_type_a.isin(only_class_levels) &
-                network.class_type_b.isin(only_class_levels),
-            ]
+            filter_idx = np.logical_and(
+                filter_idx,
+                np.logical_and(
+                    network.class_type_a.isin(only_class_levels),
+                    network.class_type_b.isin(only_class_levels)
+                )
+            )
         
         if (
             not only_directed and
@@ -693,9 +715,15 @@ class CustomAnnotation(session_mod.Logger):
         
         if classes:
             
-            network = cls._filter_by_classes(network, classes, 'category_a')
-            network = cls._filter_by_classes(network, classes, 'category_b')
-        
+            op = 'eq' if isinstance(classes, common.basestring) else 'isin'
+            
+            filter_idx = np.logical_and(
+                filter_idx,
+                np.logical_or(
+                    getattr(network.category_a, op)(classes),
+                    getattr(network.category_b, op)(classes),
+                )
+            )
         
         if source_classes:
             
@@ -704,7 +732,8 @@ class CustomAnnotation(session_mod.Logger):
                     if isinstance(source_classes, common.basestring) else
                 'isin'
             )
-            network = network[
+            filter_idx = np.logical_and(
+                filter_idx,
                 np.logical_or(
                     getattr(network.category_a, op)(source_classes),
                     np.logical_and(
@@ -712,7 +741,7 @@ class CustomAnnotation(session_mod.Logger):
                         getattr(network.category_b, op)(source_classes)
                     )
                 )
-            ]
+            )
         
         if target_classes:
             
@@ -721,7 +750,8 @@ class CustomAnnotation(session_mod.Logger):
                     if isinstance(target_classes, common.basestring) else
                 'isin'
             )
-            network = network[
+            filter_idx = np.logical_and(
+                filter_idx,
                 np.logical_or(
                     getattr(network.category_b, op)(target_classes),
                     np.logical_and(
@@ -729,7 +759,7 @@ class CustomAnnotation(session_mod.Logger):
                         getattr(network.category_a, op)(target_classes)
                     )
                 )
-            ]
+            )
         
         if resources:
             
@@ -739,26 +769,40 @@ class CustomAnnotation(session_mod.Logger):
                 network.sources.isin
             )
             
-            network = network[filter_op(resources)]
+            filter_idx = np.logical_and(
+                filter_idx,
+                filter_op(resources)
+            )
         
         if only_directed:
             
-            network = network[network.directed]
+            filter_idx = np.logical_and(filter_idx, network.directed)
         
         if only_undirected:
             
-            network = network[np.logical_not(network.directed)]
+            filter_idx = np.logical_and(
+                filter_idx,
+                np.logical_not(network.directed)
+            )
         
         if only_effect:
             
-            network = network[network.effect == only_effect]
+            filter_idx = np.logical_and(
+                filter_idx,
+                network.effect == only_effect
+            )
         
         if only_proteins:
             
-            network = network[
-                (network.type_a == 'protein') &
-                (network.type_b == 'protein')
-            ]
+            filter_idx = np.logical_and(
+                filter_idx,
+                np.logical_and(
+                    network.type_a == 'protein',
+                    network.type_b == 'protein'
+                )
+            )
+        
+        network = network[filter_idx]
         
         return network
     
@@ -943,25 +987,78 @@ class CustomAnnotation(session_mod.Logger):
     # Class to class connection counts
     #
     
-    # TODO: maybe add wrappers for directed and others as above
-    def class_to_class_connections(
-            self,
-            **kwargs
-        ):
+    def class_to_class_connections(self, **kwargs):
+        """
+        ``kwargs`` passed to ``filter_interclass_network``.
+        """
         
-        c2c_c = (
-            self.inter_class_network(
-                **kwargs,
-            ).groupby(
-                ['category_a', 'category_b']
-            ).apply(
-                lambda grp: len(set(zip(grp.id_a, grp.id_b)))
+        if 'network' not in kwargs:
+            
+            kwargs['network'] = self.get_interclass_network_df()
+        
+        network = self.filter_interclass_network(**kwargs)
+        
+        self._log('Counting connections between classes.')
+        
+        return (
+            network.groupby(
+                ['category_a', 'category_b', 'id_a', 'id_b']
+            ).size().groupby(
+                level = ['category_a', 'category_b']
+            ).size()
+        )
+    
+    
+    def class_to_class_connections_undirected(self, **kwargs):
+        
+        param = {
+            'only_undirected': True,
+        }
+        kwargs.update(param)
+        
+        c2c = self.class_to_class_connections(**kwargs)
+        
+        c2c_rev = dict(
+            (
+                (cls1, cls0),
+                val
             )
+            for (cls0, cls1), val in zip(c2c.index, c2c)
+            if cls0 != cls1
         )
         
-        c2c_c = c2c_c.reset_index().rename(columns = {0: 'connections'})
+        return common.sum_dicts(c2c, c2c_rev)
+    
+    
+    def class_to_class_connections_directed(self, **kwargs):
         
-        return c2c_c
+        param = {
+            'only_directed': True,
+        }
+        kwargs.update(param)
+        
+        return self.class_to_class_connections(**kwargs)
+    
+    
+    def class_to_class_connections_stimulatory(self, **kwargs):
+        
+        param = {
+            'only_effect': 1,
+        }
+        kwargs.update(param)
+        
+        return self.class_to_class_connections(**kwargs)
+    
+    
+    def class_to_class_connections_inhibitory(self, **kwargs):
+        
+        param = {
+            'only_effect': -1,
+        }
+        kwargs.update(param)
+        
+        return self.class_to_class_connections(**kwargs)
+    
     
     #
     # Inter-class degrees
@@ -1085,7 +1182,11 @@ class CustomAnnotation(session_mod.Logger):
         """
         Sets ``network`` as the default network dataset for the instance.
         All methods afterwards will use this network.
+        Also it discards the interclass network data frame if it present to
+        make sure future queries will address the network registered here.
         """
+        
+        self.unset_interclass_network_df()
         
         self.network = self._network_df(network)
     
