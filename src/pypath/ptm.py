@@ -619,6 +619,8 @@ class PtmAggregator(session_mod.Logger):
         with open(self.pickle_file, 'rb') as fp:
             
             self.enz_sub, self.references = pickle.load(fp)
+        
+        self.update_ptm_lookup_dict()
     
     
     def save_to_pickle(self, pickle_file):
@@ -764,6 +766,22 @@ class PtmAggregator(session_mod.Logger):
                 extend_lists(proc.__iter__())
         
         self.references = dict(self.references)
+        self.update_ptm_lookup_dict()
+    
+    
+    def update_ptm_lookup_dict(self):
+        
+        self.ptm_to_enzyme = collections.defaultdict(set)
+        self.ptms = {}
+        
+        for (enz, sub), ptms in iteritems(self.enz_sub):
+            
+            for ptm in ptms:
+                
+                self.ptm_to_enzyme[ptm.ptm].add(enz)
+                self.ptms[ptm.ptm] = ptm.ptm
+        
+        self.ptm_to_enzyme = dict(self.ptm_to_enzyme)
 
 
     def unique(self):

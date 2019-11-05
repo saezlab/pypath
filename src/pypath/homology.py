@@ -66,7 +66,8 @@ class SequenceContainer(session_mod.Logger):
             
             self.seq[taxon] = _se.swissprot_seq(
                 organism = taxon,
-                isoforms = self.seq_isoforms)
+                isoforms = self.seq_isoforms
+            )
     
     def get_seq(self, protein, taxon = None):
         

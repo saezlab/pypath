@@ -1512,32 +1512,32 @@ class Mapper(session_mod.Logger):
         swissprots = set()
 
         for uniprot in uniprots:
-
-            swissprot = []
+            
+            swissprot = None
             genesymbols = self.map_name(
                 name = uniprot,
                 id_type = 'trembl',
                 target_id_type = 'genesymbol',
                 ncbi_tax_id = ncbi_tax_id,
             )
-
+            
             for genesymbol in genesymbols:
 
                 swissprot = self.map_name(
                     name = genesymbol,
                     id_type = 'genesymbol',
-                    target_id_type = 'swissprotissprot',
+                    target_id_type = 'swissprot',
                     ncbi_tax_id = ncbi_tax_id
                 )
-
+            
             if not swissprot:
-
+                
                 swissprots.add(uniprot)
-
+                
             else:
-
+                
                 swissprots.update(swissprot)
-
+        
         return swissprots
 
 

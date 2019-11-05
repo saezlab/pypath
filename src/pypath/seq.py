@@ -278,7 +278,7 @@ class Seq(object):
             
             while True:
                 
-                offset = se[offset:].find(fragment)
+                offset = se.find(fragment, offset)
                 
                 if offset == -1:
                     
