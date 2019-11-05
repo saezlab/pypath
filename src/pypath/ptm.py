@@ -762,6 +762,8 @@ class PtmAggregator(session_mod.Logger):
                 )
 
                 extend_lists(proc.__iter__())
+        
+        self.references = dict(self.references)
 
 
     def unique(self):
