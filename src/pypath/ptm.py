@@ -605,14 +605,14 @@ class PtmAggregator(session_mod.Logger):
         
         if self.pickle_file:
             
-            self.load_from_pickle()
+            self.load_from_pickle(pickle_file = self.pickle_file)
             
         else:
             
             self.build()
     
     
-    def load_from_pickle(self):
+    def load_from_pickle(self, pickle_file = None):
         
         self._log('Loading from file `%s`.' % pickle_file)
         
