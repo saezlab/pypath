@@ -1173,6 +1173,75 @@ class CustomAnnotation(session_mod.Logger):
         )
     
     
+    def degree_inter_class_network_2(
+            self,
+            degrees_of = 'target',
+            sum_by_class = True,
+            **kwargs,
+        ):
+        
+        if 'network' not in kwargs:
+            
+            kwargs['network'] = self.get_interclass_network_df()
+        
+        network = self.filter_interclass_network(**kwargs)
+        
+        id_cols = ('id_a', 'id_b')
+        groupby, unique = (
+            id_cols
+                if degrees_of == 'source' else
+            reversed(id_cols)
+        )
+        
+        if sum_by_class:
+            
+            groupby_cat = (
+                'category_a'
+                    if degrees_of == 'source' else
+                'category_b'
+            )
+            groupby = [groupby, groupby_cat]
+        
+        degrees = network.groupby(groupby)[unique].nunique()
+        
+        if sum_by_class:
+            
+            degrees = degrees.groupby(groupby_cat).sum()
+        
+        return degrees[degrees != 0]
+    
+    
+    def degree_inter_class_network_undirected_2(self, **kwargs):
+        
+        kwargs.update({'only_undirected': True, 'degrees_of': 'source'})
+        deg_source = self.degree_inter_class_network_2(**kwargs)
+        
+        kwargs.update({'only_undirected': True, 'degrees_of': 'target'})
+        deg_target = self.degree_inter_class_network_2(**kwargs)
+        
+        return common.sum_dicts(deg_source, deg_target)
+    
+    
+    def degree_inter_class_network_directed_2(self, **kwargs):
+        
+        kwargs.update({'only_directed': True})
+        
+        return self.degree_inter_class_network_2(**kwargs)
+    
+    
+    def degree_inter_class_network_stimulatory_2(self, **kwargs):
+        
+        kwargs.update({'only_effect': 1})
+        
+        return self.degree_inter_class_network_2(**kwargs)
+    
+    
+    def degree_inter_class_network_inhibitory_2(self, **kwargs):
+        
+        kwargs.update({'only_effect': -1})
+        
+        return self.degree_inter_class_network_2(**kwargs)
+    
     #
     # End of wrappers
     #
