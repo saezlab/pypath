@@ -324,8 +324,35 @@ class CustomAnnotation(session_mod.Logger):
             )
 
         self._log('No such annotation class: `%s`' % name)
-
-
+    
+    
+    def get_class_type(self, cls):
+        
+        return (
+            self.class_types[cls]
+                if cls in self.class_types else
+            'sub'
+        )
+    
+    
+    def get_resource_label(self, cls):
+        
+        return (
+            self.resource_labels[cls]
+                if cls in self.resource_labels else
+            ''
+        )
+    
+    
+    def get_class_label(self, cls):
+        
+        return (
+            self.class_labels[cls]
+                if cls in self.class_labels else
+            ''
+        )
+    
+    
     def __len__(self):
 
         return len(self.classes)
@@ -637,7 +664,7 @@ class CustomAnnotation(session_mod.Logger):
     
     def set_interclass_network_df(
             self,
-            network = None,
+            **kwargs,
         ):
         """
         Creates a data frame of the whole inter-class network and keeps it
@@ -646,21 +673,20 @@ class CustomAnnotation(session_mod.Logger):
         
         self.unset_interclass_network_df()
         
-        self.interclass_network = self.get_interclass_network_df(
-            network = network,
-        )
+        self.interclass_network = self.get_interclass_network_df(**kwargs)
     
     
-    def get_interclass_network_df(self, network = None):
+    def get_interclass_network_df(self, **kwargs):
         """
         If the an interclass network is already present the ``network``
-        provided not considered.
+        and other ``kwargs`` provided not considered. Otherwise these
+        are passed to ``network_df``.
         """
         
         return (
             self.interclass_network
                 if hasattr(self, 'interclass_network') else
-            self.network_df(network = network)
+            self.network_df(**kwargs)
         )
     
     
