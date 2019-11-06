@@ -563,11 +563,20 @@ class FileOpener(session_mod.Logger):
             files_needed = None,
             large = True,
             default_mode = 'r',
+            encoding = 'utf-8',
         ):
         
         if not hasattr(self, '_logger'):
             
-            session_mod.Logger.__init__(self, name = 'curl')
+            session_mod.Logger.__init__(self, name = 'file')
+        
+        if not hasattr(self, 'encoding') or not self.encoding:
+            
+            self.encoding = encoding
+        
+        if not hasattr(self, 'default_mode'):
+            
+            self.default_mode = default_mode
         
         if not hasattr(self, 'compr'):
             self.compr = compr
@@ -1241,11 +1250,16 @@ class Curl(FileOpener):
                     self.progress = None
                 self.print_debug_info('ERROR',
                                       'PycURL error: %s' % str(e.args))
+        
         if self.status != 200:
             self.download_failed = True
+            self._log('Download error: HTTP %u' % self.status)
+        
         if os.stat(self.cache_file_name).st_size == 0:
             self.status = 500
             self.download_failed = True
+            self._log('Download error: empty file retrieved.')
+        
         self.curl.close()
         self.target.close()
     
