@@ -14178,6 +14178,34 @@ class PyPath(session_mod.Logger):
         return self._by_category(self.interactions_mutual)
     
     
+    def interactions_all(self, resources = None, **kwargs):
+        """
+        Returns a *set* of tuples of node name pairs representing
+        interactions, both directed and undirected. Directed interactions
+        will be present according to their direction, mutual directed
+        interactions are represented by two tuples. The directed and
+        undirected interactions are not distinguished here.
+        """
+        
+        return (
+            self.interactions_undirected(resources = resources, **kwargs) |
+            self.interactions_directed(resources = resources, **kwargs)
+        )
+    
+    
+    def interactions_all_by_resource(self, resources = None, **kwargs):
+        
+        return self._by_resource(
+            method = self.interactions_all,
+            resources = resources,
+        )
+    
+    
+    def interactions_all_by_category(self, **kwargs):
+        
+        return self._by_category(method = self.interactions_all)
+    
+    
     #
     # methods for collecting and counting entities
     #
@@ -14420,6 +14448,11 @@ class PyPath(session_mod.Logger):
     def interactions_undirected_stats(self, **kwargs):
         
         return self.stats('interactions_undirected', **kwargs)
+    
+    
+    def interactions_all_stats(self, **kwargs):
+        
+        return self.stats('interactions_all', **kwargs)
     
     
     def interactions_directed_stats(self, **kwargs):

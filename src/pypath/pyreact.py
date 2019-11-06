@@ -50,9 +50,10 @@ import pypath.refs as refs
 import pypath.uniprot_input as uniprot_input
 import pypath.urls as urls
 import pypath.seq as seq
+import pypath.session_mod as session_mod
 
 
-class BioPaxReader(object):
+class BioPaxReader(session_mod.Logger):
     """
     This class parses a BioPAX file and exposes its content easily accessible
     for further processing. First it opens the file, if necessary it extracts
@@ -80,12 +81,14 @@ class BioPaxReader(object):
     difications.
     """
 
-    def __init__(self,
-                 biopax,
-                 source,
-                 cleanup_period=800,
-                 file_from_archive=None,
-                 silent=False):
+    def __init__(
+            self,
+            biopax,
+            source,
+            cleanup_period=800,
+            file_from_archive=None,
+            silent=False,
+        ):
         """
         :param str,FileOpener biopax: either a filename, or a FileOpener
         object; if string is supplied, the FileOpener will be created in-
@@ -109,7 +112,9 @@ class BioPaxReader(object):
         files, better to set False, in case of one large file, True.
         The default is *False*.
         """
-
+        
+        session_mod.Logger.__init__(self, name = 'biopax')
+        
         self.biopax = biopax
         self.source = source
         self.file_from_archive = file_from_archive
@@ -964,9 +969,9 @@ class ComplexVariations(Intersecting, EntitySet):
         return self.proteins() - other
 
 
-class PyReact(object):
+class PyReact(session_mod.Logger):
+    
     def __init__(self,
-                 mapper=None,
                  ncbi_tax_id=9606,
                  default_id_types={},
                  modifications=True,
@@ -980,8 +985,7 @@ class PyReact(object):
         self.parsers = {}
         self.sources = set([])
         self.seq = seq
-        self.reflists = {}
-        self.mapper = mapping.Mapper(ncbi_tax_id) if mapper is None else mapper
+        self.mapper = mapping.mapper
         self.silent = silent
         self.max_complex_combinations = max_complex_combinations
         self.max_reaction_combinations = max_reaction_combinations
@@ -1012,7 +1016,8 @@ class PyReact(object):
         self.id_types = {}
         self.default_id_types = {'protein': 'uniprot'}
         self.default_id_types.update(default_id_types)
-        self.load_reflists()
+        
+        session_mod.Logger.__init__(self, name = 'pyreact')
 
     def reload(self):
         modname = self.__class__.__module__
@@ -1022,6 +1027,9 @@ class PyReact(object):
         setattr(self, '__class__', new)
 
     def load_reactome(self):
+        
+        self._log('Loading Reactome.')
+        
         def reactome_id_proc(_id):
             _id = _id.split('-')
             return {
@@ -1041,6 +1049,9 @@ class PyReact(object):
             process_id=reactome_id_proc)
 
     def load_acsn(self):
+        
+        self._log('Loading ACSN.')
+        
         biopax = curl.Curl(
             urls.urls['acsn']['biopax_l3'], large=True, silent=self.silent)
 
@@ -1050,6 +1061,9 @@ class PyReact(object):
         self.add_dataset(parser, id_types={'hgnc': 'genesymbol'})
 
     def load_kegg(self):
+        
+        self._log('Loading KEGG.')
+        
         biopax = curl.Curl(
             urls.urls['kegg_pws']['biopax_l3'], large=True, silent=self.silent)
 
@@ -1059,6 +1073,9 @@ class PyReact(object):
         self.add_dataset(parser, {'uniprot knowledgebase': 'uniprot'})
 
     def load_pid(self):
+        
+        self._log('Loading NCI-PID.')
+        
         biopax = curl.Curl(
             urls.urls['nci-pid']['biopax_l3'], large=True, silent=self.silent)
 
@@ -1067,7 +1084,11 @@ class PyReact(object):
 
         self.add_dataset(parser)
 
+
     def load_wikipathways(self):
+        
+        self._log('Loading WikiPathways.')
+        
         biopaxes = curl.Curl(
             urls.urls['wikipw']['biopax_l3'], large=True, silent=self.silent)
         if not self.silent:
@@ -1100,7 +1121,11 @@ class PyReact(object):
             prg.terminate()
         self.silent = silent_default
 
+
     def load_panther(self):
+        
+        self._log('Loading PANTHER.')
+        
         biopaxes = curl.Curl(
             urls.urls['panther']['biopax_l3'], large=True, silent=self.silent)
         if not self.silent:
@@ -1133,7 +1158,10 @@ class PyReact(object):
             prg.terminate()
         self.silent = silent_default
 
+
     def load_netpath(self):
+        
+        self._log('Loading NetPath.')
 
         names = self.netpath_names()
 
@@ -1167,7 +1195,9 @@ class PyReact(object):
             prg.terminate()
         self.silent = silent_default
 
+
     def netpath_names(self):
+        
         repwnum = re.compile(r'_([0-9]+)$')
         result = {}
         url = urls.urls['netpath_names']['url']
@@ -1181,7 +1211,11 @@ class PyReact(object):
                 result[num] = name
         return result
 
+
     def load_all(self):
+        
+        self._log('Loading all databases.')
+        
         self.load_wikipathways()
         self.load_netpath()
         self.load_panther()
@@ -1189,12 +1223,15 @@ class PyReact(object):
         self.load_pid()
         self.load_reactome()
 
+
     def add_dataset(self, parser, id_types={}, process_id=lambda x: {'id': x}):
+        
         self.id_types.update(id_types)
         self.source = parser.source
         self.parser = parser
         self.id_processor = process_id
         self.merge()
+
 
     def merge(self):
 
@@ -1388,7 +1425,11 @@ class PyReact(object):
                         self.mapper.map_name(id_a['id'], std_id_type,
                                              self.default_id_types['protein']))
             target_ids = filter(
-                lambda p: p in self.reflists[(self.default_id_types['protein'], 'protein', self.ncbi_tax_id)],
+                lambda p: reflists.check(
+                    p,
+                    self.default_id_types['protein'],
+                    self.ncbi_tax_id
+                ),
                 target_ids)
             target_ids = common.uniqList(target_ids)
             if len(target_ids) > 1:
@@ -2205,17 +2246,6 @@ class PyReact(object):
         if self.seq is None:
             self.seq = seq.swissprot_seq(
                 self.ncbi_tax_id, isoforms=True)
-
-    def load_reflists(self, reflst=None):
-        if reflst is None:
-            reflst = reflists.get_reflists()
-        for rl in reflst:
-            self.load_reflist(rl)
-
-    def load_reflist(self, reflist):
-        reflist.load()
-        idx = (reflist.nameType, reflist.typ, reflist.tax)
-        self.reflists[idx] = reflist
 
     # interaction iterators from here
 
