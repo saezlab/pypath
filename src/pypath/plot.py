@@ -30,7 +30,7 @@ import sys
 import os
 import itertools
 import collections
-import imp
+import importlib as imp
 import copy
 import subprocess
 import warnings

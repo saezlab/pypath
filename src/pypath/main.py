@@ -30,7 +30,7 @@ _logger = session_mod.Logger(name = 'main')
 import os
 import sys
 import re
-import imp
+import importlib as imp
 import math
 from functools import reduce
 

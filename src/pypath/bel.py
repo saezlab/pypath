@@ -145,7 +145,7 @@ class Bel(BELManagerMixin, session_mod.Logger):
         
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
-        import imp
+        import importlib as imp
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)

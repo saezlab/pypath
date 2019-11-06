@@ -26,7 +26,7 @@ from past.builtins import xrange, range, reduce
 
 
 import sys
-import imp
+import importlib as imp
 import collections
 import itertools
 import traceback

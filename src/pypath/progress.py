@@ -21,7 +21,7 @@
 
 import time
 import os
-import imp
+import importlib as imp
 
 import tqdm
 

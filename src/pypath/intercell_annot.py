@@ -20,7 +20,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-import imp
+import importlib as imp
 
 import pypath.go as go
 import pypath.dataio as dataio

@@ -26,7 +26,7 @@ import os
 import sys
 import codecs
 import re
-import imp
+import importlib as imp
 import copy
 import itertools
 import collections

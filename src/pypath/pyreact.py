@@ -25,7 +25,7 @@ from past.builtins import xrange, range, reduce
 
 import os
 import sys
-import imp
+import importlib as imp
 import re
 import gzip
 import tarfile

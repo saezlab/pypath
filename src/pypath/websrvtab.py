@@ -24,7 +24,7 @@ building the tables for the webservice.
 
 from future.utils import iteritems
 
-import imp
+import importlib as imp
 import copy
 
 import pandas as pd

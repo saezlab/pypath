@@ -32,7 +32,7 @@
 from future.utils import iteritems
 from past.builtins import xrange, range
 
-import imp
+import importlib as imp
 import sys
 import os
 import io

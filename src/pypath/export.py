@@ -23,7 +23,7 @@ from past.builtins import xrange, range
 
 import os
 import sys
-import imp
+import importlib as imp
 import re
 import json
 import copy

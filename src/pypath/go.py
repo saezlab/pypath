@@ -25,7 +25,7 @@ from past.builtins import xrange, range
 
 import os
 import sys
-import imp
+import importlib as imp
 import re
 from collections import Counter, OrderedDict
 import numpy as np

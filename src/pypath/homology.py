@@ -25,7 +25,7 @@ from past.builtins import xrange, range
 
 import sys
 import itertools
-import imp
+import importlib as imp
 import re
 
 import pypath.mapping as mapping
