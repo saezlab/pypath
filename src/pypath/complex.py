@@ -575,7 +575,7 @@ class ComplexAggregator(AbstractComplexResource):
         self._log('Loaded from pickle `%s`.' % pickle_file)
     
     
-    def update_summary(self):
+    def update_summaries(self):
         
         for src in self.summaries.keys():
             
@@ -590,7 +590,7 @@ class ComplexAggregator(AbstractComplexResource):
             )
     
     
-    def summaries_tab(self, outfile = None):
+    def summaries_tab(self, outfile = None, return_table = False):
         
         columns = (
             ('name', 'Resource'),
@@ -621,7 +621,9 @@ class ComplexAggregator(AbstractComplexResource):
                 
                 fp.write('\n'.join('\t'.join(row) for row in tab))
         
-        return tab
+        if return_table:
+            
+            return tab
 
 
     def save_to_pickle(self, pickle_file):

@@ -1403,7 +1403,7 @@ class CustomAnnotation(session_mod.Logger):
             }
     
     
-    def summaries_tab(self, outfile = None):
+    def summaries_tab(self, outfile = None, return_table = False):
         
         columns = (
             ('label', 'Category'),
@@ -1434,7 +1434,9 @@ class CustomAnnotation(session_mod.Logger):
                 
                 fp.write('\n'.join('\t'.join(row) for row in tab))
         
-        return tab
+        if return_table:
+            
+            return tab
 
 
 
@@ -4031,7 +4033,7 @@ class AnnotationTable(session_mod.Logger):
         )
     
     
-    def summary_tab(self, outfile = None):
+    def summaries_tab(self, outfile = None, return_table = False):
         
         columns = (
             ('name', 'Resource'),
@@ -4070,7 +4072,9 @@ class AnnotationTable(session_mod.Logger):
                 
                 fp.write('\n'.join('\t'.join(row) for row in tab))
         
-        return tab
+        if return_table:
+            
+            return tab
 
 
 def init_db(

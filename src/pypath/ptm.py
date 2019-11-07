@@ -1030,7 +1030,7 @@ class PtmAggregator(session_mod.Logger):
             }
     
     
-    def summaries_tab(self, outfile = None):
+    def summaries_tab(self, outfile = None, return_table = False):
         
         columns = (
             ('name', 'Resource'),
@@ -1065,7 +1065,9 @@ class PtmAggregator(session_mod.Logger):
                 
                 fp.write('\n'.join('\t'.join(row) for row in tab))
         
-        return tab
+        if return_table:
+            
+            return tab
 
 
 
