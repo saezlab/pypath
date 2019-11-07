@@ -13671,6 +13671,10 @@ class PyPath(session_mod.Logger):
         
         for cat in data_formats.catletters.keys():
             
+            if not cat_res[cat] & self.resources:
+                
+                continue
+            
             entities = method(resources = cat_res[cat], **kwargs)
             
             if entities:
