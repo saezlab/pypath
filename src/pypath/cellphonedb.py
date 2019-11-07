@@ -22,7 +22,7 @@
 from future.utils import iteritems
 
 import os
-import imp
+import importlib as imp
 import collections
 import copy
 
@@ -180,7 +180,7 @@ class CellPhoneDB(omnipath.OmniPath):
         
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
-        import imp
+        import importlib as imp
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)

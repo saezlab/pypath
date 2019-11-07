@@ -30,7 +30,7 @@ import sys
 import os
 import itertools
 import collections
-import imp
+import importlib as imp
 import copy
 import subprocess
 import warnings
@@ -667,7 +667,8 @@ class MultiBarplot(Plot):
                     )
         self.xlabs = ([self.summary_name]
                       if self.summary else []) + self.cat_ordr
-
+    
+    
     def sort(self):
         """
         Finds the defined or default order, and
@@ -710,7 +711,8 @@ class MultiBarplot(Plot):
                 colattr = 'col_g%u' % g
                 setattr(self, yattr, getattr(self, yattr)[self.ordr])
                 setattr(self, colattr, getattr(self, colattr)[self.ordr])
-
+    
+    
     def set_figsize(self):
         """
         Converts width and height to a tuple which can be used as figsize.

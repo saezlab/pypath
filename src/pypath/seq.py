@@ -24,6 +24,7 @@ from future.utils import iteritems
 import os
 import sys
 import re
+import collections
 
 import pypath.common as common
 import pypath.dataio as dataio
@@ -225,12 +226,11 @@ class Seq(object):
         self.isof[isoform] = sequence
 
     def match(self, pattern, start, end=None, isoform=None):
+        
         instance = self.get(start, end, isoform)
         pattern = pattern.upper()
-        if instance == pattern:
-            return True
-        else:
-            return False
+        
+        return instance == pattern
 
     def get(self, start, end=None, isoform=None):
         isoform = isoform if isoform is not None else self.canonical
@@ -260,6 +260,33 @@ class Seq(object):
         start = max(start, 1)
         end = min(end, len(self.isof[isoform]))
         return (start, end, self.isof[isoform][start - 1:end])
+    
+    def findall(self, fragment):
+        """
+        Looks up a sequence fragment in the sequences.
+        Yields tuples of isoform and offset.
+        """
+        
+        SeqLookup = collections.namedtuple(
+            'SeqLookup',
+            ['isoform', 'offset'],
+        )
+        
+        for iso, se in iteritems(self.isof):
+            
+            offset = 0
+            
+            while True:
+                
+                offset = se.find(fragment, offset)
+                
+                if offset == -1:
+                    
+                    break
+                
+                yield SeqLookup(iso, offset)
+                
+                offset += 1
     
     def get_biopython(self, isoform = 1):
         

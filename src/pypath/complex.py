@@ -24,7 +24,7 @@
 from future.utils import iteritems
 
 import sys
-import imp
+import importlib as imp
 import traceback
 import collections
 

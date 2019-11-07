@@ -20,7 +20,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-import imp
+import importlib as imp
 
 import pypath.go as go
 import pypath.dataio as dataio
@@ -1530,6 +1530,7 @@ resource_labels = {
     'comppi': 'ComPPI',
     'ramilowski': 'Ramilowski 2015',
     'guide2pharma': 'Guide to Pharm',
+    'dgidb': 'DGIdb',
 }
 
 

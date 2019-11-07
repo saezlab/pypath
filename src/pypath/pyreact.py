@@ -25,7 +25,7 @@ from past.builtins import xrange, range, reduce
 
 import os
 import sys
-import imp
+import importlib as imp
 import re
 import gzip
 import tarfile
@@ -50,9 +50,11 @@ import pypath.refs as refs
 import pypath.uniprot_input as uniprot_input
 import pypath.urls as urls
 import pypath.seq as seq
+import pypath.session_mod as session_mod
+import pypath.cache as cache
 
 
-class BioPaxReader(object):
+class BioPaxReader(session_mod.Logger):
     """
     This class parses a BioPAX file and exposes its content easily accessible
     for further processing. First it opens the file, if necessary it extracts
@@ -80,12 +82,14 @@ class BioPaxReader(object):
     difications.
     """
 
-    def __init__(self,
-                 biopax,
-                 source,
-                 cleanup_period=800,
-                 file_from_archive=None,
-                 silent=False):
+    def __init__(
+            self,
+            biopax,
+            source,
+            cleanup_period=800,
+            file_from_archive=None,
+            silent=False,
+        ):
         """
         :param str,FileOpener biopax: either a filename, or a FileOpener
         object; if string is supplied, the FileOpener will be created in-
@@ -109,13 +113,15 @@ class BioPaxReader(object):
         files, better to set False, in case of one large file, True.
         The default is *False*.
         """
-
+        
+        session_mod.Logger.__init__(self, name = 'biopax')
+        
         self.biopax = biopax
         self.source = source
         self.file_from_archive = file_from_archive
         self.cleanup_period = cleanup_period
         self.biopax_tmp_file = None
-        self.cachedir = 'cache'
+        self.cachedir = cache.get_cachedir()
         self.parser_id = common.gen_session_id()
         self.silent = silent
 
@@ -225,6 +231,7 @@ class BioPaxReader(object):
         }
 
     def reload(self):
+        
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
@@ -243,20 +250,42 @@ class BioPaxReader(object):
         self.extract()
         self.set_progress()
         self.init_etree()
-        self.iterate()
-        self.close_biopax()
-        if len(self.interactions_not2):
-            sys.stdout.write('\n\t:: %u interactions have not exactly 2 '
-                             'participants\n' % len(self.interactions_not2))
-            sys.stdout.flush()
+        if self.bp is not None:
+            
+            self.iterate()
+            self.close_biopax()
+            
+            if len(self.interactions_not2):
+                
+                self._log(
+                    '%u interactions have not exactly 2 '
+                    'participants (%s).' % (
+                        len(self.interactions_not2),
+                        self.source,
+                    )
+                )
+            
+        else:
+            
+            self._log(
+                'XML syntax error or empty file encountered. '
+                'Skipping to next file or resource.'
+            )
 
     def open_biopax(self):
         """
         Opens the BioPax file. This method should not be called directly,
         ``BioPaxReader.process()`` calls it.
         """
-        opener_args = {} if self.file_from_archive is None \
-            else {'files_needed': [self.file_from_archive]}
+        opener_args = (
+            {
+                'default_mode': 'rb',
+            }
+            if self.file_from_archive is None else
+            {
+                'files_needed': [self.file_from_archive],
+            }
+        )
         if type(self.biopax) is curl.FileOpener:
             self.opener = biopax
         else:
@@ -268,7 +297,7 @@ class BioPaxReader(object):
                     sorted(list(self.opener.result.keys()))[0]
             self._biopax = self.opener.result[self.file_from_archive]
         elif self.opener.type == 'gz':
-            self._biopax = self.opener.result
+            self._biopax = self.opener.gzfile
         else:
             self._biopax = self.opener.fileobj
 
@@ -289,22 +318,41 @@ class BioPaxReader(object):
         This method should not be called directly,
         ``BioPaxReader.process()`` calls it.
         """
+        
         if self.opener.type != 'plain':
-            self.biopax_tmp_file = os.path.join(self.cachedir,
-                                                'biopax.processing.tmp.owl')
+            
+            self.biopax_tmp_file = os.path.join(
+                self.cachedir,
+                'biopax.processing.tmp.owl',
+            )
+            
+            self._log(
+                'Extracting %s from %s compressed file.' % (
+                    self.file_from_archive,
+                    self.opener.type
+                )
+            )
+                
             if not self.silent:
                 prg = progress.Progress(
                     self.bp_filesize, 'Extracting %s from %s compressed file' %
                     (self.file_from_archive, self.opener.type), 1000000)
+            
             with open(self.biopax_tmp_file, 'wb') as tmpf:
+                
                 while True:
+                    
                     chunk = self._biopax.read(100000)
                     if not self.silent:
                         prg.step(len(chunk))
                     if not len(chunk):
                         break
+                    if hasattr(chunk, 'encode'):
+                        chunk = chunk.encode('utf8')
                     tmpf.write(chunk)
+            
             self._biopax = open(self.biopax_tmp_file, 'rb')
+            
             if not self.silent:
                 prg.terminate()
 
@@ -314,8 +362,15 @@ class BioPaxReader(object):
         This method should not be called directly,
         ``BioPaxReader.process()`` calls it.
         """
-        self.bp = etree.iterparse(self._biopax, events=('start', 'end'))
-        _, self.root = next(self.bp)
+        try:
+            
+            self.bp = etree.iterparse(self._biopax, events=('start', 'end'))
+            _, self.root = next(self.bp)
+            
+        except etree.XMLSyntaxError:
+            
+            self.bp = None
+        
         self.used_elements = []
 
     def set_progress(self):
@@ -964,24 +1019,28 @@ class ComplexVariations(Intersecting, EntitySet):
         return self.proteins() - other
 
 
-class PyReact(object):
-    def __init__(self,
-                 mapper=None,
-                 ncbi_tax_id=9606,
-                 default_id_types={},
-                 modifications=True,
-                 seq=None,
-                 silent=False,
-                 max_complex_combinations=100,
-                 max_reaction_combinations=100):
-
+class PyReact(session_mod.Logger):
+    
+    def __init__(
+        self,
+        ncbi_tax_id=9606,
+        default_id_types={},
+        modifications=True,
+        seq=None,
+        silent=False,
+        max_complex_combinations=100,
+        max_reaction_combinations=100,
+    ):
+        
+        
+        self.cachedir = cache.get_cachedir()
+        
         self.ncbi_tax_id = ncbi_tax_id
         self.modifications = modifications
         self.parsers = {}
         self.sources = set([])
         self.seq = seq
-        self.reflists = {}
-        self.mapper = mapping.Mapper(ncbi_tax_id) if mapper is None else mapper
+        self.mapper = mapping
         self.silent = silent
         self.max_complex_combinations = max_complex_combinations
         self.max_reaction_combinations = max_reaction_combinations
@@ -1012,7 +1071,8 @@ class PyReact(object):
         self.id_types = {}
         self.default_id_types = {'protein': 'uniprot'}
         self.default_id_types.update(default_id_types)
-        self.load_reflists()
+        
+        session_mod.Logger.__init__(self, name = 'pyreact')
 
     def reload(self):
         modname = self.__class__.__module__
@@ -1022,6 +1082,9 @@ class PyReact(object):
         setattr(self, '__class__', new)
 
     def load_reactome(self):
+        
+        self._log('Loading Reactome.')
+        
         def reactome_id_proc(_id):
             _id = _id.split('-')
             return {
@@ -1030,9 +1093,14 @@ class PyReact(object):
             }
 
         biopax = curl.Curl(
-            urls.urls['reactome']['biopax_l3'], large=True, silent=self.silent)
+            urls.urls['reactome']['biopax_l3'],
+            large=True,
+            silent=self.silent,
+        )
         parser = BioPaxReader(
-            biopax.outfile, 'Reactome', file_from_archive='Homo_sapiens.owl')
+            biopax.outfile, 'Reactome',
+            file_from_archive='Homo_sapiens.owl'
+        )
         parser.process()
 
         self.add_dataset(
@@ -1041,17 +1109,31 @@ class PyReact(object):
             process_id=reactome_id_proc)
 
     def load_acsn(self):
+        
+        self._log('Loading ACSN.')
+        
         biopax = curl.Curl(
-            urls.urls['acsn']['biopax_l3'], large=True, silent=self.silent)
+            urls.urls['acsn']['biopax_l3'],
+            large=True,
+            silent=self.silent,
+            default_mode = 'rb',
+        )
 
-        parser = BioPaxReader(biopax.outfile, 'ACSN')
-        parser.process()
+        self.parser = BioPaxReader(biopax.outfile, 'ACSN')
+        self.parser.process()
 
-        self.add_dataset(parser, id_types={'hgnc': 'genesymbol'})
+        self.add_dataset(self.parser, id_types={'hgnc': 'genesymbol'})
+        del self.parser
 
     def load_kegg(self):
+        
+        self._log('Loading KEGG.')
+        
         biopax = curl.Curl(
-            urls.urls['kegg_pws']['biopax_l3'], large=True, silent=self.silent)
+            urls.urls['kegg_pws']['biopax_l3'],
+            large=True,
+            silent=self.silent,
+        )
 
         parser = BioPaxReader(biopax.outfile, 'KEGG')
         parser.process()
@@ -1059,23 +1141,38 @@ class PyReact(object):
         self.add_dataset(parser, {'uniprot knowledgebase': 'uniprot'})
 
     def load_pid(self):
+        
+        self._log('Loading NCI-PID.')
+        
         biopax = curl.Curl(
-            urls.urls['nci-pid']['biopax_l3'], large=True, silent=self.silent)
+            urls.urls['nci-pid']['biopax_l3'],
+            large=True,
+            silent=self.silent,
+        )
 
         parser = BioPaxReader(biopax.outfile, 'NCI-PID')
         parser.process()
 
         self.add_dataset(parser)
 
+
     def load_wikipathways(self):
+        
+        self._log('Loading WikiPathways.')
+        
         biopaxes = curl.Curl(
-            urls.urls['wikipw']['biopax_l3'], large=True, silent=self.silent)
+            urls.urls['wikipw']['biopax_l3'],
+            large=True,
+            silent=self.silent
+        )
+        
         if not self.silent:
             prg = progress.Progress(
-                len(biopaxes.files_multipart),
+                len(biopaxes.result),
                 'Processing multiple BioPAX files',
                 1,
-                percent=False)
+                percent=False,
+            )
 
         silent_default = self.silent
         self.silent = True
@@ -1100,7 +1197,11 @@ class PyReact(object):
             prg.terminate()
         self.silent = silent_default
 
+
     def load_panther(self):
+        
+        self._log('Loading PANTHER.')
+        
         biopaxes = curl.Curl(
             urls.urls['panther']['biopax_l3'], large=True, silent=self.silent)
         if not self.silent:
@@ -1133,7 +1234,10 @@ class PyReact(object):
             prg.terminate()
         self.silent = silent_default
 
+
     def load_netpath(self):
+        
+        self._log('Loading NetPath.')
 
         names = self.netpath_names()
 
@@ -1167,7 +1271,9 @@ class PyReact(object):
             prg.terminate()
         self.silent = silent_default
 
+
     def netpath_names(self):
+        
         repwnum = re.compile(r'_([0-9]+)$')
         result = {}
         url = urls.urls['netpath_names']['url']
@@ -1181,7 +1287,11 @@ class PyReact(object):
                 result[num] = name
         return result
 
+
     def load_all(self):
+        
+        self._log('Loading all databases.')
+        
         self.load_wikipathways()
         self.load_netpath()
         self.load_panther()
@@ -1189,12 +1299,15 @@ class PyReact(object):
         self.load_pid()
         self.load_reactome()
 
+
     def add_dataset(self, parser, id_types={}, process_id=lambda x: {'id': x}):
+        
         self.id_types.update(id_types)
         self.source = parser.source
         self.parser = parser
         self.id_processor = process_id
         self.merge()
+
 
     def merge(self):
 
@@ -1388,7 +1501,11 @@ class PyReact(object):
                         self.mapper.map_name(id_a['id'], std_id_type,
                                              self.default_id_types['protein']))
             target_ids = filter(
-                lambda p: p in self.reflists[(self.default_id_types['protein'], 'protein', self.ncbi_tax_id)],
+                lambda p: reflists.check(
+                    p,
+                    self.default_id_types['protein'],
+                    self.ncbi_tax_id
+                ),
                 target_ids)
             target_ids = common.uniqList(target_ids)
             if len(target_ids) > 1:
@@ -2206,20 +2323,10 @@ class PyReact(object):
             self.seq = seq.swissprot_seq(
                 self.ncbi_tax_id, isoforms=True)
 
-    def load_reflists(self, reflst=None):
-        if reflst is None:
-            reflst = reflists.get_reflists()
-        for rl in reflst:
-            self.load_reflist(rl)
-
-    def load_reflist(self, reflist):
-        reflist.load()
-        idx = (reflist.nameType, reflist.typ, reflist.tax)
-        self.reflists[idx] = reflist
-
     # interaction iterators from here
 
     def expand(self):
+        
         def add_interactions(gen):
             for i in gen:
                 key = (i[0], i[1])
@@ -2240,6 +2347,7 @@ class PyReact(object):
         self.interactions = list(aggregate.values())
 
     def expand_by_source(self):
+        
         def add_interactions(gen):
             for i in gen:
                 key = (i[0], i[1], i[4])
@@ -2259,8 +2367,14 @@ class PyReact(object):
         self.interactions_by_source = list(aggregate.values())
         pickle.dump(
             self.interactions_by_source,
-            open('cache/reaction_interactions_by_source.pickle', 'wb'),
-            protocol=2)
+            open(
+                os.path.join(
+                    self.cachedir,
+                    'reaction_interactions_by_source.pickle',
+                ),
+                'wb'
+            )
+        )
 
     def in_same_component(self, by_source=False):
         """

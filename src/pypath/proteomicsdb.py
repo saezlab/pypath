@@ -31,7 +31,7 @@ import base64
 import re
 import os
 import sys
-import imp
+import importlib as imp
 
 try:
     import cPickle as pickle

@@ -30,7 +30,7 @@ _logger = session_mod.Logger(name = 'main')
 import os
 import sys
 import re
-import imp
+import importlib as imp
 import math
 from functools import reduce
 
@@ -117,6 +117,7 @@ import pypath.common as common
 import pypath._version as _version
 from pypath.progress import *
 import pypath.settings as settings
+import pypath.entity as entity_mod
 
 # to make it accessible directly from the module
 omnipath = data_formats.omnipath
@@ -137,13 +138,20 @@ NetworkEntityCollection = collections.namedtuple(
     [
         'total',
         'by_resource',
+        'by_category',
         'shared',
         'unique',
+        'shared_res_cat',
+        'unique_res_cat',
+        'shared_cat',
+        'unique_cat',
+        'resource_cat',
+        'cat_resource',
         'method',
         'label',
     ],
 )
-NetworkEntityCollection.__new__.__defaults__ = (None, None)
+NetworkEntityCollection.__new__.__defaults__ = (None,) * 8
 
 
 NetworkStatsRecord = collections.namedtuple(
@@ -151,14 +159,23 @@ NetworkStatsRecord = collections.namedtuple(
     [
         'total',
         'by_resource',
+        'by_category',
         'shared',
         'unique',
         'percent',
+        'shared_res_cat',
+        'unique_res_cat',
+        'percent_res_cat',
+        'shared_cat',
+        'unique_cat',
+        'percent_cat',
+        'resource_cat',
+        'cat_resource',
         'method',
         'label',
     ],
 )
-NetworkStatsRecord.__new__.__defaults__ = (None, None, None)
+NetworkStatsRecord.__new__.__defaults__ = (None,) * 11
 
 
 class Direction(object):
@@ -559,25 +576,19 @@ class Direction(object):
     
     def _resources_set(self, resources = None):
         
-        return (
-            None
-                if resources is None else
-            {resources}
-                if isinstance(resources, common.basestring) else
-            set(resources)
-        )
+        return common.to_set(resources)
     
     
     def is_directed(self):
         """
         Checks if edge has any directionality information.
-
+        
         :return:
             (*bool*) -- Returns ``True`` if any of the :py:attr:`dirs`
             attribute values is ``True`` (except ``'undirected'``),
             ``False`` otherwise.
         """
-
+        
         return self.dirs[self.straight] or self.dirs[self.reverse]
     
     
@@ -585,7 +596,7 @@ class Direction(object):
         """
         Checks if edge has any directionality information from some
         resource(s).
-
+        
         :return:
             (*bool*) -- Returns ``True`` if any of the :py:attr:`dirs`
             attribute values is ``True`` (except ``'undirected'``),
@@ -595,12 +606,16 @@ class Direction(object):
         return self._by_resource(resources, op = operator.or_)
     
     
-    def is_mutual(self):
+    def is_mutual(self, resources = None):
         """
         Checks if the edge has mutual directions (both A-->B and B-->A).
         """
         
-        return self.dirs[self.straight] and self.dirs[self.reverse]
+        return (
+            self.dirs[self.straight] and self.dirs[self.reverse]
+                if not resources else
+            self.is_mutual_by_resources(resources = resources)
+        )
     
     
     def is_mutual_by_resources(self, resources = None):
@@ -622,38 +637,38 @@ class Direction(object):
         )
     
     
-    def is_stimulation(self, direction=None):
+    def is_stimulation(self, direction = None, resources = None):
         """
         Checks if any (or for a specific *direction*) interaction is
         activation (positive interaction).
-
+        
         :arg tuple direction:
             Optional, ``None`` by default. If specified, checks the
             :py:attr:`positive` attribute of that specific
             directionality. If not specified, checks both.
-
+        
         :return:
             (*bool*) -- ``True`` if any interaction (or the specified
             *direction*) is activatory (positive).
         """
-
-        if direction is None:
-            return bool(sum(self.positive.values()))
-
-        else:
-            return self.positive[direction]
+        
+        return self._is_effect(
+            sign = 'positive',
+            direction = direction,
+            resources = resources,
+        )
     
     
     def is_inhibition(self, direction = None, resources = None):
         """
         Checks if any (or for a specific *direction*) interaction is
         inhibition (negative interaction).
-
+        
         :arg tuple direction:
             Optional, ``None`` by default. If specified, checks the
             :py:attr:`negative` attribute of that specific
             directionality. If not specified, checks both.
-
+        
         :return:
             (*bool*) -- ``True`` if any interaction (or the specified
             *direction*) is inhibitory (negative).
@@ -675,14 +690,14 @@ class Direction(object):
         )
         _resources = self._resources_set(resources)
         
-        return bool(
-            sum(
-                (
+        return (
+            any(
+                bool(
                     val
                         if not _resources else
                     val & _resources
                 )
-                for _dir, val in _sign.values()
+                for _dir, val in iteritems(_sign)
                 if not direction or direction == _dir
             )
         )
@@ -2014,75 +2029,8 @@ class PyPath(session_mod.Logger):
 
             else:
                 return None
-
-    def numof_references(self):
-        """Counts the number of reference on the network.
-
-        Counts the total number of unique references in the edges of the
-        network.
-
-        :return:
-            (*int*) -- Number of unique references in the network.
-        """
-
-        return len(
-            common.uniqList(
-                common.flatList(
-                    list(map(lambda e: e['references'], self.graph.es)))))
-
-    def mean_reference_per_interaction(self):
-        """
-        Computes the mean number of references per interaction of the
-        network.
-
-        :return:
-            (*float*) -- Mean number of interactions per edge.
-        """
-
-        return np.mean(
-            list(map(lambda e: len(e['references']), self.graph.es)))
-
-    def numof_reference_interaction_pairs(self): # XXX: Not really sure about this one
-        """
-        Returns the total of unique references per interaction.
-
-        :return:
-            (*int*) -- Total number of unique references per
-            interaction.
-        """
-
-        return len(common.uniqList(common.flatList(
-            list(map(lambda e:
-                     list(map(lambda r:
-                              (e.index, r), e['references'])),
-                     self.graph.es)))))
-
-    def curators_work(self):
-        """
-        Computes and prints an estimation of how many years of curation
-        took to achieve the amount of information on the network.
-        """
-
-        curation_effort = self.numof_reference_interaction_pairs()
-        sys.stdout.write(
-            '\t:: Curators worked %.01f-%.01f years to accomplish '
-            'what currently you have incorporated in this network!'
-            '\n\n\tAmazing, isn\'t it?\n' %
-            (curation_effort * 15 / 60.0 / 2087.0,
-             curation_effort * 60 / 60.0 / 2087.0))
-        sys.stdout.flush()
-
-    def reference_edge_ratio(self):
-        """
-        Computes the average number of references per edge (as in the
-        undirected graph).
-
-        :return:
-            (*float*) -- Average number of references per edge.
-        """
-
-        return self.numof_references() / float(self.graph.ecount())
-
+    
+    
     def get_giant(self, replace=False, graph=None):
         """
         Returns the giant component of the *graph*, or replaces the
@@ -8140,7 +8088,42 @@ class PyPath(session_mod.Logger):
                 result.append((cname, cdata[0]))
 
         return result
-
+    
+    
+    @staticmethod
+    def vertex_name(v):
+        
+        return v['name'] if isinstance(v, igraph.Vertex) else v
+    
+    
+    def get_entity_type(self, entity):
+        
+        entity = self.vertex_name(entity)
+        
+        return entity_mod.Entity._get_entity_type(entity)
+    
+    
+    def is_protein(self, entity):
+        
+        entity = self.vertex_name(entity)
+        
+        return entity_mod.Entity._is_protein(entity)
+    
+    
+    def is_complex(self, entity):
+        
+        entity = self.vertex_name(entity)
+        
+        return entity_mod.Entity._is_complex(entity)
+    
+    
+    def is_mirna(self, entity):
+        
+        entity = self.vertex_name(entity)
+        
+        return entity_mod.Entity._is_mirna(entity)
+    
+    
     def genesymbol(self, genesymbol):
         """
         Returns ``igraph.Vertex()`` object if the GeneSymbol
@@ -8863,7 +8846,7 @@ class PyPath(session_mod.Logger):
 
         pass
 
-    def edges_in_comlexes(self, csources=['corum'], graph=None):
+    def edges_in_complexes(self, csources=['corum'], graph=None):
         """
         Creates edge attributes ``complexes`` and ``in_complex``.
         These are both dicts where the keys are complex resources.
@@ -13510,6 +13493,103 @@ class PyPath(session_mod.Logger):
         self.summaries_labels = summaries_labels
     
     
+    def mean_reference_per_interaction(self, resources = None):
+        """
+        Computes the mean number of references per interaction of the
+        network.
+
+        :return:
+            (*float*) -- Mean number of interactions per edge.
+        """
+
+        return (
+            self.numof_references(resources = resources) /
+            self.numof_edges(resources = resources)
+        )
+    
+    
+    def mean_reference_per_interaction_by_resource(self, resources = None):
+        """
+        Computes the mean number of references per interaction of the
+        network.
+
+        :return:
+            (*float*) -- Mean number of interactions per edge.
+        """
+        
+        return self._by_resource(
+            method = self.mean_reference_per_interaction,
+            resources = resources,
+        )
+    
+    
+    def numof_edges(self, resources = None):
+        """
+        Number of edges optionally limited to certain resources.
+        """
+        
+        return len(list(self.iter_edges(resources = resources)))
+    
+    
+    def iter_edges(self, resources = None):
+        """
+        Iterates the edges in the graph optionally limited to certain
+        resources. Yields ``igraph.Edge`` objects.
+        """
+        
+        resources = common.to_set(resources)
+        
+        for e in self.graph.es:
+            
+            if not resources or resources & e['sources']:
+                
+                yield e
+    
+    
+    def numof_reference_interaction_pairs(self): # XXX: Not really sure about this one
+        """
+        Returns the total of unique references per interaction.
+
+        :return:
+            (*int*) -- Total number of unique references per
+            interaction.
+        """
+
+        return len(common.uniqList(common.flatList(
+            list(map(lambda e:
+                     list(map(lambda r:
+                              (e.index, r), e['references'])),
+                     self.graph.es)))))
+    
+    
+    def curators_work(self):
+        """
+        Computes and prints an estimation of how many years of curation
+        took to achieve the amount of information on the network.
+        """
+
+        curation_effort = self.numof_reference_interaction_pairs()
+        sys.stdout.write(
+            '\t:: Curators worked %.01f-%.01f years to accomplish '
+            'what currently you have incorporated in this network!'
+            '\n\n\tAmazing, isn\'t it?\n' %
+            (curation_effort * 15 / 60.0 / 2087.0,
+             curation_effort * 60 / 60.0 / 2087.0))
+        sys.stdout.flush()
+    
+    
+    def reference_edge_ratio(self):
+        """
+        Computes the average number of references per edge (as in the
+        undirected graph).
+
+        :return:
+            (*float*) -- Average number of references per edge.
+        """
+
+        return self.numof_references() / float(self.graph.ecount())
+    
+    
     @classmethod
     def _remove_cp(cls, resources):
         """
@@ -13547,107 +13627,307 @@ class PyPath(session_mod.Logger):
         return set(itertools.chain(*self.graph.es[attr]))
     
     
-    @property
-    def references(self):
+    def _by_resource(self, method, resources = None, **kwargs):
+        """
+        Calls a method for each resource (by default for all resources).
+        Returns dict with resources as keys and the output of the method
+        as values.
+        """
         
-        return self._collect_across_edges('references')
-    
-    
-    @property
-    def references_by_resource(self):
-        """
-        A *dict* with resources as keys and *set*s of references as values.
-        """
+        resources = common.to_set(resources) or self.resources
+        method = method if callable(method) else getattr(self, method)
         
         return dict(
             (
                 resource,
-                set.union(
-                    *(
-                        refs[resource] if resource in refs else set()
-                        for refs in self.graph.es['refs_by_source']
-                    )
-                )
+                method(resources = resource, **kwargs)
             )
-            for resource in self.resources
+            for resource in resources
         )
     
     
+    @staticmethod
+    def resources_by_category():
+        
+        return dict(
+            (
+                label,
+                {
+                    resource
+                    for resource, cat in iteritems(data_formats.categories)
+                    if cat == letter
+                }
+            )
+            for label, letter in iteritems(data_formats.catletters)
+        )
+    
+    
+    def _by_category(self, method, **kwargs):
+        
+        cat_res = self.resources_by_category()
+        method = method if callable(method) else getattr(self, method)
+        
+        result = {}
+        
+        for cat in data_formats.catletters.keys():
+            
+            if not cat_res[cat] & self.resources:
+                
+                continue
+            
+            entities = method(resources = cat_res[cat], **kwargs)
+            
+            if entities:
+                
+                result[cat] = entities
+        
+        return result
+    
+    
     @property
-    def curation_effort(self):
+    def all_references(self):
+        
+        return self._collect_across_edges('references')
+    
+    
+    def numof_references(self, resources = None, **kwargs):
+        """
+        Counts the number of reference on the network.
+        
+        Counts the total number of unique references in the edges of the
+        network.
+        
+        resources : None,str,set
+            Limits the query to one or more resources.
+        
+        :return:
+            (*int*) -- Number of unique references in the network.
+        """
+        
+        return len(self.references(resources = resources))
+    
+    
+    def references(self, resources = None, **kwargs):
+        """
+        Returns a set of references for all edges.
+        
+        resources : None,str,set
+            Limits the query to one or more resources.
+        """
+        
+        resources = common.to_set(resources)
+        
+        return set.union(*(
+            refs
+            for e in self.graph.es
+            for res, refs in iteritems(e['refs_by_source'])
+            if not resources or res in resources
+        ))
+    
+    
+    def numof_references(self, resources = None, **kwargs):
+        
+        return len(self.references(resources = resources))
+    
+    
+    def references_by_resource(self, resources = None, **kwargs):
+        """
+        Creates a dict with resources as keys and sets of references
+        as values.
+        """
+        
+        return self._by_resource(self.references, resources = resources)
+    
+    
+    def references_by_category(self, **kwargs):
+        
+        return self._by_category(self.references)
+    
+    
+    def numof_references_by_resource(self, resources = None, **kwargs):
+        """
+        Counts the references for each resource, optionally limited
+        to certain resources.
+        """
+        
+        return self._by_resource(self.numof_references, resources = resources)
+    
+    
+    def numof_references_by_category(self, **kwargs):
+        
+        return self._by_category(selsf.numof_references)
+    
+    
+    def curation_effort(self, resources = None, **kwargs):
         """
         Returns a *set* of reference-interactions pairs.
         """
         
+        resources = common.to_set(resources) or self.resources
+        
         return {
             (ref, self.nodNam[e.source], self.nodNam[e.target])
             for e in self.graph.es
-            for ref in e['references']
+            for resource, refs in iteritems(e['refs_by_source'])
+            for ref in refs
+            if not resources or resource in resources
         }
     
     
-    @property
-    def curation_effort_by_resource(self):
+    def curation_effort_by_resource(self, resources = None, **kwargs):
         """
         A *dict* with resources as keys and *set*s of curation items
         (interaction-reference pairs) as values.
         """
         
-        return dict(
-            (
-                resource,
-                {
-                    (ref, self.nodNam[e.source], self.nodNam[e.target])
-                    for e in self.graph.es
-                    for ref in (
-                        e['refs_by_source'][resource]
-                            if resource in e['refs_by_source'] else
-                        ()
-                    )
-                }
+        return self._by_resource(self.curation_effort, resources = resources)
+    
+    
+    def curation_effort_by_category(self, **kwargs):
+        
+        return self._by_category(self.curation_effort)
+    
+    
+    def iter_vertices(self, resources = None, entity_type = None):
+        """
+        Iterates nodes optionally only for certain resources. Yields
+        ``igraph.Vertex`` objects.
+        """
+        
+        resources = common.to_set(resources)
+        
+        for v in self.graph.vs:
+            
+            if (
+                (
+                    not resources or
+                    resources & v['sources']
+                ) and (
+                    not entity_type or
+                    self.get_entity_type(v) == entity_type
+                )
+            ):
+                
+                yield v
+    
+    
+    def iter_entities(self, resources = None, entity_type = None):
+        
+        for v in self.iter_vertices(
+            resources = resources,
+            entity_type = entity_type,
+        ):
+            
+            yield v['name']
+    
+    
+    def entities(self, resources = None, entity_type = None, **kwargs):
+        
+        return set(
+            self.iter_entities(
+                resources = resources,
+                entity_type = entity_type,
             )
-            for resource in self.resources
         )
     
     
-    @property
-    def entities(self):
-        
-        return set(self.graph.vs['name'])
-    
-    
-    @property
-    def entities_by_resource(self):
+    def entities_by_resource(
+            self,
+            resources = None,
+            entity_type = None,
+            **kwargs
+        ):
         """
         Returns a *dict* of *set*s with resources as keys and sets of
         entities as values.
         """
         
-        return dict(
-            (
-                resource,
-                set(
-                    itertools.chain(*(
-                        (self.nodNam[e.source], self.nodNam[e.target])
-                        for e in self.graph.es
-                        if resource in e['sources']
-                    ))
-                )
-            )
-            for resource in self.resources
+        return self._by_resource(
+            method = self.entities,
+            resources = resources,
+            entity_type = entity_type,
+        )
+    
+    
+    def entities_by_category(self, entity_type = None, **kwargs):
+        
+        return self._by_category(self.entities, entity_type = entity_type)
+    
+    
+    def protein_entities(self, resources = None, **kwargs):
+        
+        return self.entities(resources = resources, entity_type = 'protein')
+    
+    
+    def protein_entities_by_resource(self, resources = None, **kwargs):
+        
+        return self.entities_by_resource(
+            resources = resources,
+            entity_type = 'protein',
+        )
+    
+    
+    def protein_entities_by_category(self, resources = None, **kwargs):
+        
+        return self.entities_by_category(
+            resources = resources,
+            entity_type = 'protein',
+        )
+    
+    
+    def mirna_entities(self, resources = None, **kwargs):
+        
+        return self.entities(resources = resources, entity_type = 'mirna')
+    
+    
+    def mirna_entities_by_resource(self, resources = None, **kwargs):
+        
+        return self.entities_by_resource(
+            resources = resources,
+            entity_type = 'mirna',
+        )
+    
+    
+    def mirna_entities_by_category(self, resources = None, **kwargs):
+        
+        return self.entities_by_category(
+            resources = resources,
+            entity_type = 'mirna',
+        )
+    
+    
+    def complex_entities(self, resources = None):
+        
+        return self.entities(resources = resources, entity_type = 'complex')
+    
+    
+    def complex_entities_by_resource(self, resources = None, **kwargs):
+        
+        return self.entities_by_resource(
+            resources = resources,
+            entity_type = 'complex',
+        )
+    
+    
+    def complex_entities_by_category(self, resources = None, **kwargs):
+        
+        return self.entities_by_category(
+            resources = resources,
+            entity_type = 'complex',
         )
     
     #
     # interactions undirected
     #
     
-    @property
-    def interactions_undirected(self):
+    def interactions_undirected(self, resources = None, **kwargs):
         """
         Returns a *set* of tuples of node name pairs without being aware
         of the directions.
         Pairs of node names will be sorted alphabetically.
         """
+        
+        resources = common.to_set(resources)
         
         return {
             tuple(sorted(
@@ -13657,41 +13937,36 @@ class PyPath(session_mod.Logger):
                 )
             ))
             for e in self.graph.es
+            if not e['dirs'].is_directed() and
+            (
+                not resources or
+                e['sources'] & resources
+            )
         }
     
     
-    @property
-    def interactions_undirected_by_resource(self):
+    def interactions_undirected_by_resource(self, resources = None, **kwargs):
         """
         Returns a *dict* of *set*s of tuples of node name pairs without
         being aware of the directions.
         Pairs of node names will be sorted alphabetically.
         """
         
-        return dict(
-            (
-                resource,
-                {
-                    tuple(sorted(
-                        (
-                            self.nodNam[e.source],
-                            self.nodNam[e.target],
-                        )
-                    ))
-                    for e in self.graph.es
-                    if resource in e['sources']
-                }
-            )
-            for resource in self.resources
+        return self._by_resource(
+            method = self.interactions_undirected,
+            resources = resources,
         )
     
+    
+    def interactions_undirected_by_category(self, **kwargs):
+        
+        return self._by_category(self.interactions_undirected)
     
     #
     # interactions directed
     #
     
-    @property
-    def interactions_directed(self):
+    def interactions_directed(self, resources = None, **kwargs):
         """
         Returns a *set* of tuples of node name pairs with being aware
         of the directions.
@@ -13700,11 +13975,15 @@ class PyPath(session_mod.Logger):
         second is the target.
         """
         
-        return self._interactions_directed(resources = None)
+        return self._interactions_directed(resources = resources, **kwargs)
     
     
-    @property
-    def interactions_directed_by_resource(self):
+    def interactions_directed_by_resource(
+            self,
+            resources = None,
+            effect = None,
+            **kwargs
+        ):
         """
         Returns a *dict* of *set*s of tuples of node name pairs with being
         aware of the directions.
@@ -13713,17 +13992,30 @@ class PyPath(session_mod.Logger):
         second is the target.
         """
         
-        return dict(
-            (
-                resource,
-                self._interactions_directed(resources = resource)
-            )
-            for resource in self.resources
+        return self._by_resource(
+            method = self._interactions_directed,
+            resources = resources,
+            effect = effect,
+            **kwargs
         )
     
     
-    def _interactions_directed(self, resources = None, effect = None):
+    def interactions_directed_by_category(self, effect = None, **kwargs):
         
+        return self._by_category(
+            method = self._interactions_directed,
+            effect = effect,
+        )
+    
+    
+    def _interactions_directed(
+            self,
+            resources = None,
+            effect = None,
+            **kwargs
+        ):
+        
+        resources = common.to_set(resources)
         method = 'which_directions' if not effect else 'which_signs'
         args = {} if not effect else {'effect': effect}
         
@@ -13739,8 +14031,7 @@ class PyPath(session_mod.Logger):
     # interactions signed
     #
     
-    @property
-    def interactions_signed(self):
+    def interactions_signed(self, resources = None, **kwargs):
         """
         Returns a *set* of tuples of node name pairs only for signed
         interactions.
@@ -13749,13 +14040,12 @@ class PyPath(session_mod.Logger):
         """
         
         return self._interactions_directed(
-            resources = None,
+            resources = resources,
             effect = True,
         )
     
     
-    @property
-    def interactions_signed_by_resource(self):
+    def interactions_signed_by_resource(self, resources = None, **kwargs):
         """
         Returns a *dict* of *set*s of tuples of node name pairs with being
         aware of the directions.
@@ -13764,23 +14054,23 @@ class PyPath(session_mod.Logger):
         second is the target.
         """
         
-        return dict(
-            (
-                resource,
-                self._interactions_directed(
-                    resources = resource,
-                    effect = True,
-                )
-            )
-            for resource in self.resources
+        return self._by_resource(
+            method = self._interactions_directed,
+            resources = resources,
+            effect = True,
         )
+    
+    
+    def interactions_signed_by_category(self, **kwargs):
+        
+        return self.interactions_directed_by_category(effect = True)
+    
     
     #
     # interactions stimulatory
     #
     
-    @property
-    def interactions_stimulatory(self):
+    def interactions_stimulatory(self, resources = None, **kwargs):
         """
         Returns a *set* of tuples of node name pairs only for stimulatory
         interactions.
@@ -13789,13 +14079,16 @@ class PyPath(session_mod.Logger):
         """
         
         return self._interactions_directed(
-            resources = None,
+            resources = resources,
             effect = 'stimulation',
         )
     
     
-    @property
-    def interactions_stimulatory_by_resource(self):
+    def interactions_stimulatory_by_resource(
+            self,
+            resources = None,
+            **kwargs
+        ):
         """
         Returns a *dict* of *set*s of tuples of node name pairs with being
         aware of the directions.
@@ -13804,24 +14097,23 @@ class PyPath(session_mod.Logger):
         second is the target.
         """
         
-        return dict(
-            (
-                resource,
-                self._interactions_directed(
-                    resources = resource,
-                    effect = 'stimulation',
-                )
-            )
-            for resource in self.resources
+        return self._by_resource(
+            method = self._interactions_directed,
+            resources = resources,
+            effect = 'stimulation',
         )
+    
+    
+    def interactions_stimulatory_by_category(self, **kwargs):
+        
+        return self.interactions_directed_by_category(effect = 'stimulation')
     
     
     #
     # interactions inhibitory
     #
     
-    @property
-    def interactions_inhibitory(self):
+    def interactions_inhibitory(self, resources = None, **kwargs):
         """
         Returns a *set* of tuples of node name pairs only for inhibitory
         interactions.
@@ -13830,13 +14122,12 @@ class PyPath(session_mod.Logger):
         """
         
         return self._interactions_directed(
-            resources = None,
+            resources = resources,
             effect = 'inhibition',
         )
     
     
-    @property
-    def interactions_inhibitory_by_resource(self):
+    def interactions_inhibitory_by_resource(self, resources = None, **kwargs):
         """
         Returns a *dict* of *set*s of tuples of node name pairs with being
         aware of the directions.
@@ -13845,24 +14136,22 @@ class PyPath(session_mod.Logger):
         second is the target.
         """
         
-        return dict(
-            (
-                resource,
-                self._interactions_directed(
-                    resources = resource,
-                    effect = 'inhibition',
-                )
-            )
-            for resource in self.resources
+        return self._by_resource(
+            method = self._interactions_directed,
+            resources = resources,
+            effect = 'inhibition',
         )
     
+    
+    def interactions_inhibitory_by_category(self, **kwargs):
+        
+        return self.interactions_directed_by_category(effect = 'inhibition')
     
     #
     # interactions mutual
     #
     
-    @property
-    def interactions_mutual(self):
+    def interactions_mutual(self, resources = None, **kwargs):
         """
         Returns a *set* of tuples of node name pairs representing
         mutual interactions (i.e. A-->B and B-->A).
@@ -13871,51 +14160,137 @@ class PyPath(session_mod.Logger):
         
         return {
             tuple(e['dirs'].nodes) for e in self.graph.es
-            if e['dirs'].is_mutual()
+            if e['dirs'].is_mutual(resources = resources)
         }
     
     
-    @property
-    def interactions_mutual_by_resource(self):
+    def interactions_mutual_by_resource(self, resources = None, **kwargs):
         """
         Returns a *dict* of *set*s of tuples of node name pairs representing
         mutual interactions (i.e. A-->B and B-->A).
         Pairs of node names will be sorted alphabetically.
         """
         
-        return dict(
-            (
-                resource,
-                {
-                    tuple(e['dirs'].nodes) for e in self.graph.es
-                    if e['dirs'].is_mutual_by_resources(resource)
-                }
-            )
-            for resource in self.resources
+        return self._by_resource(
+            method = self.interactions_mutual,
+            resources = resources,
         )
+    
+    
+    def interactions_mutual_by_category(self, **kwargs):
+        
+        return self._by_category(self.interactions_mutual)
+    
+    
+    def interactions_all(self, resources = None, **kwargs):
+        """
+        Returns a *set* of tuples of node name pairs representing
+        interactions, both directed and undirected. Directed interactions
+        will be present according to their direction, mutual directed
+        interactions are represented by two tuples. The directed and
+        undirected interactions are not distinguished here.
+        """
+        
+        return (
+            self.interactions_undirected(resources = resources, **kwargs) |
+            self.interactions_directed(resources = resources, **kwargs)
+        )
+    
+    
+    def interactions_all_by_resource(self, resources = None, **kwargs):
+        
+        return self._by_resource(
+            method = self.interactions_all,
+            resources = resources,
+        )
+    
+    
+    def interactions_all_by_category(self, **kwargs):
+        
+        return self._by_category(method = self.interactions_all)
     
     
     #
     # methods for collecting and counting entities
     #
     
-    def collect(self, method):
+    def collect(self, method, **kwargs):
         """
         Collects various entities over the network according to ``method``.
         """
         
+        def cat_shared_unique(method):
+            
+            return (
+                dict(
+                    itertools.chain(
+                        *(
+                            iteritems(
+                                getattr(
+                                    common,
+                                    '%s_foreach' % method
+                                )(
+                                    dict(
+                                        (
+                                            resource,
+                                            entities
+                                        )
+                                        for resource, entities
+                                        in iteritems(by_resource)
+                                        if resource in resources
+                                    )
+                                )
+                            )
+                            for cat, resources in iteritems(cat_resource)
+                            if resources
+                        )
+                    )
+                )
+            )
+        
+        
         self._log('Collecting `%s`.' % method)
         
-        total = getattr(self, method)
-        by_resource = getattr(self, '%s_by_resource' % method)
+        total = getattr(self, method)(**kwargs)
+        by_resource = getattr(self, '%s_by_resource' % method)(**kwargs)
+        by_category = getattr(self, '%s_by_category' % method)(**kwargs)
         shared = common.shared_foreach(by_resource)
         unique = common.unique_foreach(by_resource)
+        
+        cat_resource = dict(
+            (
+                cat,
+                {
+                    resource
+                    for resource in by_resource.keys()
+                    if data_formats.catnames[
+                        data_formats.categories[resource]
+                    ] == cat
+                }
+            )
+            for cat, resources in iteritems(by_category)
+            if resources
+        )
+        resource_cat = common.swap_dict(cat_resource)
+        
+        shared_res_cat = cat_shared_unique(method = 'shared')
+        unique_res_cat = cat_shared_unique(method = 'unique')
+        
+        shared_cat = common.shared_foreach(by_category)
+        unique_cat = common.shared_foreach(by_category)
         
         return NetworkEntityCollection(
             total = total,
             by_resource = by_resource,
+            by_category  = by_category,
             shared = shared,
             unique = unique,
+            shared_res_cat = shared_res_cat,
+            unique_res_cat = unique_res_cat,
+            shared_cat = shared_cat,
+            unique_cat = unique_cat,
+            resource_cat = resource_cat,
+            cat_resource = cat_resource,
             method = method,
         )
     
@@ -13925,6 +14300,8 @@ class PyPath(session_mod.Logger):
             collection_method,
             add_total = True,
             add_percent = True,
+            add_cat_total = True,
+            **kwargs
         ):
         """
         Collects various entities over the network according to ``method``
@@ -13937,13 +14314,14 @@ class PyPath(session_mod.Logger):
                     collection_method,
                     NetworkEntityCollection
                 ) else
-            self.collect(collection_method)
+            self.collect(collection_method, **kwargs)
         )
         
         self._log('Counting `%s`.' % coll.method)
         
         n_total = len(coll.total)
         n_by_resource = common.dict_counts(coll.by_resource)
+        n_by_category = common.dict_counts(coll.by_category)
         n_shared = common.dict_counts(coll.shared)
         n_unique = common.dict_counts(coll.unique)
         _percent = (
@@ -13951,6 +14329,32 @@ class PyPath(session_mod.Logger):
                 if add_percent else
             None
         )
+        n_shared_res_cat = common.dict_counts(coll.shared_res_cat)
+        n_unique_res_cat = common.dict_counts(coll.unique_res_cat)
+        percent_res_cat = dict(
+            (
+                resource,
+                (
+                    n_by_resource[resource] /
+                    n_by_category[
+                        data_formats.catnames[
+                            data_formats.categories[resource]
+                        ]
+                    ] * 100
+                        if n_by_resource[resource] else
+                    .0
+                )
+            )
+            for resource in coll.by_resource.keys()
+        )
+        n_shared_cat = common.dict_counts(coll.shared_cat)
+        n_unique_cat = common.dict_counts(coll.shared_cat)
+        percent_cat = (
+            common.dict_percent(n_by_category, n_total)
+                if add_percent else
+            None
+        )
+        
         if add_total:
             
             if _percent:
@@ -13960,13 +14364,54 @@ class PyPath(session_mod.Logger):
             n_by_resource['Total'] = n_total
             n_shared['Total'] = common.n_shared_total(coll.by_resource)
             n_unique['Total'] = common.n_unique_total(coll.by_resource)
+            n_shared_res_cat['Total'] = (
+                common.n_shared_total(coll.by_category)
+            )
+            n_unique_res_cat['Total'] = (
+                common.n_unique_total(coll.by_category)
+            )
+            percent_res_cat['Total'] = 100.
+        
+        if add_cat_total:
+            
+            for cat in n_by_category.keys():
+                
+                n_by_resource[cat] = n_by_category[cat]
+                n_shared[cat] = n_shared_cat[cat]
+                n_unique[cat] = n_unique_cat[cat]
+                _percent[cat] = percent_cat[cat]
+                
+                this_cat_by_resource = dict(
+                    it
+                    for it in iteritems(coll.by_resource)
+                    if it[0] in coll.cat_resource[cat]
+                )
+                
+                n_shared_res_cat[cat] = common.n_shared_total(
+                    this_cat_by_resource
+                )
+                n_unique_res_cat[cat] = common.n_unique_total(
+                    this_cat_by_resource
+                )
+                
+                coll.resource_cat[cat] = cat
+                coll.cat_resource[cat].add(cat)
         
         return NetworkStatsRecord(
             total = n_total,
             by_resource = n_by_resource,
+            by_category = n_by_category,
             shared = n_shared,
             unique = n_unique,
             percent = _percent,
+            shared_res_cat = n_shared_res_cat,
+            unique_res_cat = n_unique_res_cat,
+            percent_res_cat = percent_res_cat,
+            shared_cat = n_shared_cat,
+            unique_cat = n_unique_cat,
+            percent_cat = percent_cat,
+            resource_cat = coll.resource_cat,
+            cat_resource = coll.cat_resource,
             method = coll.method,
         )
     
@@ -13989,7 +14434,7 @@ class PyPath(session_mod.Logger):
         )
         NetworkEntities.__new__.__defaults__ = (None,)
         
-        collection = self.collect(method = method)
+        collection = self.collect(method = method, **kwargs)
         counts = self.counts(collection_method = collection, **kwargs)
         
         return NetworkEntities(
@@ -13999,49 +14444,54 @@ class PyPath(session_mod.Logger):
         )
     
     
-    def references_stats(self):
+    def references_stats(self, **kwargs):
         
-        return self.stats('references')
+        return self.stats('references', **kwargs)
     
     
-    def interactions_undirected_stats(self):
+    def interactions_undirected_stats(self, **kwargs):
         
-        return self.stats('interactions_undirected')
+        return self.stats('interactions_undirected', **kwargs)
     
     
-    def interactions_directed_stats(self):
+    def interactions_all_stats(self, **kwargs):
         
-        return self.stats('interactions_directed')
+        return self.stats('interactions_all', **kwargs)
     
     
-    def interactions_mutual_stats(self):
+    def interactions_directed_stats(self, **kwargs):
         
-        return self.stats('interactions_mutual')
+        return self.stats('interactions_directed', **kwargs)
     
     
-    def interactions_signed_stats(self):
+    def interactions_mutual_stats(self, **kwargs):
         
-        return self.stats('interactions_signed')
+        return self.stats('interactions_mutual', **kwargs)
     
     
-    def interactions_stimulatory_stats(self):
+    def interactions_signed_stats(self, **kwargs):
         
-        return self.stats('interactions_stimulatory')
+        return self.stats('interactions_signed', **kwargs)
     
     
-    def interactions_inhibitory_stats(self):
+    def interactions_stimulatory_stats(self, **kwargs):
         
-        return self.stats('interactions_inhibitory')
+        return self.stats('interactions_stimulatory', **kwargs)
     
     
-    def entities_stats(self):
+    def interactions_inhibitory_stats(self, **kwargs):
         
-        return self.stats('entities')
+        return self.stats('interactions_inhibitory', **kwargs)
     
     
-    def curation_effort_stats(self):
+    def entities_stats(self, **kwargs):
         
-        return self.stats('curation_effort')
+        return self.stats('entities', **kwargs)
+    
+    
+    def curation_effort_stats(self, **kwargs):
+        
+        return self.stats('curation_effort', **kwargs)
     
     
     #
@@ -14219,12 +14669,12 @@ class PyPath(session_mod.Logger):
             _custom_attrs['edge_fontname'] = font
 
         # attribute callbacks
-        for entity in ['graph', 'vertex', 'edge']:
-            callbacks_dict = '%s_callbacks' % entity
+        for _entity in ['graph', 'vertex', 'edge']:
+            callbacks_dict = '%s_callbacks' % _entity
             _attrs[callbacks_dict] = {}
             callbacks = _attrs[callbacks_dict]
 
-            if entity == 'edge':
+            if _entity == 'edge':
 
                 if (auto_edges == 'RESOURCE_CATEGORIES' or
                         auto_edges == 'DIRECTIONS') \
@@ -14241,8 +14691,8 @@ class PyPath(session_mod.Logger):
                         callbacks['arrowhead'] = \
                             AttrHelper('none', 'edge_arrowhead', _defaults)
 
-            for attr in locals()['%s_attrs' % entity].keys():
-                callback_name = '%s_%s' % (entity, attr)
+            for attr in locals()['%s_attrs' % _entity].keys():
+                callback_name = '%s_%s' % (_entity, attr)
 
                 if callback_name in _custom_attrs:
                     callback_value = _custom_attrs[callback_name]
@@ -15594,7 +16044,19 @@ class PyPath(session_mod.Logger):
                     )
     
     # shortcuts for the most often used igraph attributes:
-
+    
+    
+    def name_to_label(self, name):
+        
+        try:
+            
+            return self.nodLab[self.nodDct[name]]
+            
+        except (KeyError, IndexError):
+            
+            return str(name)
+    
+    
     @property
     def vcount(self):
 

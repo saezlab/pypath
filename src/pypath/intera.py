@@ -32,7 +32,7 @@ from past.builtins import xrange, range, reduce
 
 import re
 import sys
-import imp
+import importlib as imp
 import collections
 import itertools
 from collections import Counter
@@ -48,6 +48,9 @@ __all__ = [
 
 if 'unicode' not in __builtins__:
     unicode = str
+
+
+COMPLEX_SEP = '_'
 
 
 class Residue(object):
@@ -884,7 +887,7 @@ class Complex(object):
         
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
-        import imp
+        import importlib as imp
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
@@ -892,7 +895,9 @@ class Complex(object):
     
     def __str__(self):
         
-        return 'COMPLEX:%s' % '-'.join(sorted(self.components.keys()))
+        return 'COMPLEX:%s' % (
+            COMPLEX_SEP.join(sorted(self.components.keys()))
+        )
     
     
     def __repr__(self):
@@ -1104,7 +1109,7 @@ class Complex(object):
     @property
     def genesymbol_str(self):
         
-        return '-'.join(self.genesymbols)
+        return COMPLEX_SEP.join(self.genesymbols)
 
 
 class Interface(object):

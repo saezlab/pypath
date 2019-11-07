@@ -19,7 +19,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-import imp
+import importlib as imp
 import collections
 import itertools
 

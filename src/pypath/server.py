@@ -709,28 +709,32 @@ class TableServer(BaseServer):
         
         renum = re.compile(r'[-\d\.]+')
         
+        
+        def _agg_values(vals):
+            
+            result = (
+                '#'.join(sorted(set(str(ii) for ii in vals)))
+                if not all(
+                    isinstance(i, (int, float)) or (
+                        isinstance(i, str) and
+                        i and (
+                            i is None or
+                            renum.match(i)
+                        )
+                    )
+                    for i in vals
+                ) else
+                '<numeric>'
+            )
+            
+            return result
+        
+        
         self._log('Preprocessing annotations.')
         
         self.data['annotations_summary'] = self.data['annotations'].groupby(
             ['source', 'label'],
-            as_index = False,
-        ).agg({
-            'value':
-                lambda x: (
-                    '#'.join(sorted(set(str(ii) for ii in x)))
-                    if not all(
-                        isinstance(i, (int, float)) or (
-                            isinstance(i, str) and
-                            i and (
-                                i is None or
-                                renum.match(i)
-                            )
-                        )
-                        for i in x
-                    ) else
-                    '<numeric>'
-                )
-        })
+        ).agg({'value': _agg_values}).reset_index(drop = False)
     
     
     def _preprocess_intercell(self):
@@ -792,7 +796,7 @@ class TableServer(BaseServer):
                     set(val[0].decode('utf-8').split(','))
                 )
                 
-                unknowns = val - ref[arg]
+                unknowns = val - set(ref[arg])
                 
                 if unknowns:
                     
@@ -882,6 +886,8 @@ class TableServer(BaseServer):
                 if len(req.postpath) > 1 else
             'interactions'
         )
+        
+        query_type = 'enzsub' if query_type == 'ptms' else query_type
         
         datasets = (
             set(req.postpath[2].split(','))

@@ -26,7 +26,7 @@ from past.builtins import xrange, range, reduce
 
 
 import sys
-import imp
+import importlib as imp
 import collections
 import itertools
 import traceback
@@ -50,6 +50,7 @@ import pypath.session_mod as session_mod
 import pypath.annot_formats as annot_formats
 import pypath.complex as complex
 import pypath.intera as intera
+import pypath.entity as entity
 
 #TODO this should be part of json files
 protein_sources_default = {
@@ -298,7 +299,7 @@ class CustomAnnotation(session_mod.Logger):
         return annotop.op(*annots)
 
 
-    def get_class(self, name):
+    def get_class(self, name, entity_type = None):
         """
         Retrieves a class by its name and loads it if hasn't been loaded yet
         but the name present in the class definitions.
@@ -309,12 +310,49 @@ class CustomAnnotation(session_mod.Logger):
             self.create_class(self._class_definitions[name])
 
         if name in self.classes:
+            
+            entity_type = common.to_set(entity_type)
 
-            return self.classes[name]
+            return (
+                self.classes[name]
+                    if not entity_type else
+                {
+                    e
+                    for e in self.classes[name]
+                    if entity.Entity._get_entity_type(e) in entity_type
+                }
+            )
 
         self._log('No such annotation class: `%s`' % name)
-
-
+    
+    
+    def get_class_type(self, cls):
+        
+        return (
+            self.class_types[cls]
+                if cls in self.class_types else
+            'sub'
+        )
+    
+    
+    def get_resource_label(self, cls):
+        
+        return (
+            self.resource_labels[cls]
+                if cls in self.resource_labels else
+            ''
+        )
+    
+    
+    def get_class_label(self, cls):
+        
+        return (
+            self.class_labels[cls]
+                if cls in self.class_labels else
+            ''
+        )
+    
+    
     def __len__(self):
 
         return len(self.classes)
@@ -405,6 +443,31 @@ class CustomAnnotation(session_mod.Logger):
         )
     
     
+    def counts_by_class(
+            self,
+            class_types = 'main',
+            entity_types = 'protein',
+            labels = True,
+        ):
+        
+        class_types = common.to_set(class_types)
+        
+        df = self.df[self.df.class_type.isin(class_types)]
+        
+        if entity_types:
+            
+            entity_types = common.to_set(entity_types)
+            df = df[df.entity_type.isin(entity_types)]
+        
+        counts = df.groupby('category')['uniprot'].nunique()
+        
+        if labels:
+            
+            counts.index = counts.index.map(self.class_labels)
+        
+        return counts[counts > 0]
+    
+    
     def network_df(
             self,
             network = None,
@@ -413,8 +476,10 @@ class CustomAnnotation(session_mod.Logger):
             source_classes = None,
             target_classes = None,
             only_directed = False,
+            only_undirected = False,
             only_effect = None,
             only_proteins = False,
+            only_class_levels = None,
         ):
         """
         Combines the annotation data frame and a network data frame.
@@ -430,12 +495,30 @@ class CustomAnnotation(session_mod.Logger):
             Use only these annotation classes.
         only_directed : bool
             Use only the directed interactions.
+        only_undirected : bool
+            Use only the undirected interactions. Specifically for retrieving
+            and counting the interactions without direction information.
         only_effect : int,None
             Use only the interactions with this effect. Either -1 or 1.
         only_proteins : bool
             Use only the interactions where each of the partners is a protein
             (i.e. not complex, miRNA, small molecule or other kind of entity).
         """
+        
+        if hasattr(self, 'interclass_network'):
+            
+            return self.filter_interclass_network(
+                network = self.interclass_network,
+                resources = resources,
+                classes = classes,
+                source_classes = source_classes,
+                target_classes = target_classes,
+                only_directed = only_directed,
+                only_undirected = only_undirected,
+                only_effect = only_effect,
+                only_proteins = only_proteins,
+                only_class_levels = only_class_levels,
+            )
         
         self._log('Combining custom annotation with network data frame.')
         
@@ -452,6 +535,11 @@ class CustomAnnotation(session_mod.Logger):
             return
         
         annot_df = self.df
+        
+        if only_class_levels:
+            
+            only_class_levels = common.to_set(only_class_levels)
+            annot_df = annot_df[annot_df.class_type.isin(only_class_levels)]
         
         if (
             not only_directed and
@@ -484,6 +572,10 @@ class CustomAnnotation(session_mod.Logger):
         if only_directed:
             
             network_df = network_df[network_df.directed]
+        
+        if only_undirected:
+            
+            network_df = network_df[np.logical_not(network_df.directed)]
         
         if only_effect:
             
@@ -569,6 +661,178 @@ class CustomAnnotation(session_mod.Logger):
         
         return annot_network_df
     
+    
+    def set_interclass_network_df(
+            self,
+            **kwargs,
+        ):
+        """
+        Creates a data frame of the whole inter-class network and keeps it
+        assigned to the instance in order to make subsequent queries faster.
+        """
+        
+        self.unset_interclass_network_df()
+        
+        self.interclass_network = self.get_interclass_network_df(**kwargs)
+    
+    
+    def get_interclass_network_df(self, **kwargs):
+        """
+        If the an interclass network is already present the ``network``
+        and other ``kwargs`` provided not considered. Otherwise these
+        are passed to ``network_df``.
+        """
+        
+        return (
+            self.interclass_network
+                if hasattr(self, 'interclass_network') else
+            self.network_df(**kwargs)
+        )
+    
+    
+    def unset_interclass_network_df(self):
+        
+        if hasattr(self, 'interclass_network'):
+            
+            del self.interclass_network
+    
+    
+    @classmethod
+    def filter_interclass_network(
+            cls,
+            network,
+            resources = None,
+            classes = None,
+            source_classes = None,
+            target_classes = None,
+            only_directed = False,
+            only_undirected = False,
+            only_effect = None,
+            only_proteins = False,
+            only_class_levels = None,
+        ):
+        
+        filter_idx = np.full(network.shape[0], True)
+        
+        if only_class_levels:
+            
+            only_class_levels = common.to_set(only_class_levels)
+            filter_idx = np.logical_and(
+                filter_idx,
+                np.logical_and(
+                    network.class_type_a.isin(only_class_levels),
+                    network.class_type_b.isin(only_class_levels)
+                )
+            )
+        
+        if (
+            not only_directed and
+            not only_effect and
+            not classes and (
+                source_classes or
+                target_classes
+            )
+        ):
+            
+            classes = set.union(
+                common.to_set(source_classes),
+                common.to_set(target_classes),
+            )
+        
+        if classes:
+            
+            op = 'eq' if isinstance(classes, common.basestring) else 'isin'
+            
+            filter_idx = np.logical_and(
+                filter_idx,
+                np.logical_or(
+                    getattr(network.category_a, op)(classes),
+                    getattr(network.category_b, op)(classes),
+                )
+            )
+        
+        if source_classes:
+            
+            op = (
+                'eq'
+                    if isinstance(source_classes, common.basestring) else
+                'isin'
+            )
+            filter_idx = np.logical_and(
+                filter_idx,
+                np.logical_or(
+                    getattr(network.category_a, op)(source_classes),
+                    np.logical_and(
+                        np.logical_not(network.directed),
+                        getattr(network.category_b, op)(source_classes)
+                    )
+                )
+            )
+        
+        if target_classes:
+            
+            op = (
+                'eq'
+                    if isinstance(target_classes, common.basestring) else
+                'isin'
+            )
+            filter_idx = np.logical_and(
+                filter_idx,
+                np.logical_or(
+                    getattr(network.category_b, op)(target_classes),
+                    np.logical_and(
+                        np.logical_not(network.directed),
+                        getattr(network.category_a, op)(target_classes)
+                    )
+                )
+            )
+        
+        if resources:
+            
+            filter_op = (
+                network.sources.eq
+                    if isinstance(resources, common.basestring) else
+                network.sources.isin
+            )
+            
+            filter_idx = np.logical_and(
+                filter_idx,
+                filter_op(resources)
+            )
+        
+        if only_directed:
+            
+            filter_idx = np.logical_and(filter_idx, network.directed)
+        
+        if only_undirected:
+            
+            filter_idx = np.logical_and(
+                filter_idx,
+                np.logical_not(network.directed)
+            )
+        
+        if only_effect:
+            
+            filter_idx = np.logical_and(
+                filter_idx,
+                network.effect == only_effect
+            )
+        
+        if only_proteins:
+            
+            filter_idx = np.logical_and(
+                filter_idx,
+                np.logical_and(
+                    network.type_a == 'protein',
+                    network.type_b == 'protein'
+                )
+            )
+        
+        network = network[filter_idx]
+        
+        return network
+    
+    
     #
     # Below only thin wrappers to make the interface more intuitive
     # without knowing the argument names
@@ -585,6 +849,24 @@ class CustomAnnotation(session_mod.Logger):
             network = None,
             **kwargs,
         ):
+        
+        return self.network_df(
+            network = network,
+            source_classes = source_classes,
+            target_classes = target_classes,
+            **kwargs,
+        )
+    
+    
+    def inter_class_network_undirected(
+            self,
+            source_classes = None,
+            target_classes = None,
+            network = None,
+            **kwargs,
+        ):
+        
+        kwargs.update({'only_undirected': True})
         
         return self.network_df(
             network = network,
@@ -654,7 +936,7 @@ class CustomAnnotation(session_mod.Logger):
         )
     
     #
-    # Counting connections between classes
+    # Counting connections between classes (total)
     #
     
     def count_inter_class_connections(
@@ -665,6 +947,20 @@ class CustomAnnotation(session_mod.Logger):
         ):
         
         return self.inter_class_network(
+            source_classes = source_classes,
+            target_classes = target_classes,
+            **kwargs,
+        ).groupby(['id_a', 'id_b']).ngroups
+    
+    
+    def count_inter_class_connections_undirected(
+            self,
+            source_classes = None,
+            target_classes = None,
+            **kwargs,
+        ):
+        
+        return self.inter_class_network_undirected(
             source_classes = source_classes,
             target_classes = target_classes,
             **kwargs,
@@ -712,6 +1008,84 @@ class CustomAnnotation(session_mod.Logger):
             **kwargs,
         ).groupby(['id_a', 'id_b']).ngroups
     
+    
+    #
+    # Class to class connection counts
+    #
+    
+    def class_to_class_connections(self, **kwargs):
+        """
+        ``kwargs`` passed to ``filter_interclass_network``.
+        """
+        
+        if 'network' not in kwargs:
+            
+            kwargs['network'] = self.get_interclass_network_df()
+        
+        network = self.filter_interclass_network(**kwargs)
+        
+        self._log('Counting connections between classes.')
+        
+        return (
+            network.groupby(
+                ['category_a', 'category_b', 'id_a', 'id_b']
+            ).size().groupby(
+                level = ['category_a', 'category_b']
+            ).size()
+        )
+    
+    
+    def class_to_class_connections_undirected(self, **kwargs):
+        
+        param = {
+            'only_undirected': True,
+        }
+        kwargs.update(param)
+        
+        c2c = self.class_to_class_connections(**kwargs)
+        
+        c2c_rev = dict(
+            (
+                (cls1, cls0),
+                val
+            )
+            for (cls0, cls1), val in zip(c2c.index, c2c)
+            if cls0 != cls1
+        )
+        
+        return common.sum_dicts(c2c, c2c_rev)
+    
+    
+    def class_to_class_connections_directed(self, **kwargs):
+        
+        param = {
+            'only_directed': True,
+        }
+        kwargs.update(param)
+        
+        return self.class_to_class_connections(**kwargs)
+    
+    
+    def class_to_class_connections_stimulatory(self, **kwargs):
+        
+        param = {
+            'only_effect': 1,
+        }
+        kwargs.update(param)
+        
+        return self.class_to_class_connections(**kwargs)
+    
+    
+    def class_to_class_connections_inhibitory(self, **kwargs):
+        
+        param = {
+            'only_effect': -1,
+        }
+        kwargs.update(param)
+        
+        return self.class_to_class_connections(**kwargs)
+    
+    
     #
     # Inter-class degrees
     #
@@ -720,18 +1094,49 @@ class CustomAnnotation(session_mod.Logger):
             self,
             source_classes = None,
             target_classes = None,
+            degrees_of = 'target',
             **kwargs,
         ):
+        """
+        degrees_of : str
+            Either *source* or *target*. Count the degrees for the source
+            or the target class.
+        """
+        
+        id_cols = ('id_a', 'id_b')
+        groupby, unique = (
+            id_cols
+                if degrees_of == 'source' else
+            reversed(id_cols)
+        )
         
         degrees = (
             self.inter_class_network(
                 source_classes = source_classes,
                 target_classes = target_classes,
                 **kwargs,
-            ).groupby('id_a')['id_b'].nunique()
+            ).groupby(groupby)[unique].nunique()
         )
         
         return degrees[degrees != 0]
+    
+    
+    def degree_inter_class_network_undirected(
+            self,
+            source_classes = None,
+            target_classes = None,
+            **kwargs,
+        ):
+        
+        kwargs.update({'only_undirected': True})
+        
+        return (
+            self.degree_inter_class_network(
+                source_classes = source_classes,
+                target_classes = target_classes,
+                **kwargs,
+            )
+        )
     
     
     def degree_inter_class_network_directed(
@@ -794,6 +1199,75 @@ class CustomAnnotation(session_mod.Logger):
         )
     
     
+    def degree_inter_class_network_2(
+            self,
+            degrees_of = 'target',
+            sum_by_class = True,
+            **kwargs,
+        ):
+        
+        if 'network' not in kwargs:
+            
+            kwargs['network'] = self.get_interclass_network_df()
+        
+        network = self.filter_interclass_network(**kwargs)
+        
+        id_cols = ('id_a', 'id_b')
+        groupby, unique = (
+            id_cols
+                if degrees_of == 'source' else
+            reversed(id_cols)
+        )
+        
+        if sum_by_class:
+            
+            groupby_cat = (
+                'category_a'
+                    if degrees_of == 'source' else
+                'category_b'
+            )
+            groupby = [groupby, groupby_cat]
+        
+        degrees = network.groupby(groupby)[unique].nunique()
+        
+        if sum_by_class:
+            
+            degrees = degrees.groupby(groupby_cat).sum()
+        
+        return degrees[degrees != 0]
+    
+    
+    def degree_inter_class_network_undirected_2(self, **kwargs):
+        
+        kwargs.update({'only_undirected': True, 'degrees_of': 'source'})
+        deg_source = self.degree_inter_class_network_2(**kwargs)
+        
+        kwargs.update({'only_undirected': True, 'degrees_of': 'target'})
+        deg_target = self.degree_inter_class_network_2(**kwargs)
+        
+        return common.sum_dicts(deg_source, deg_target)
+    
+    
+    def degree_inter_class_network_directed_2(self, **kwargs):
+        
+        kwargs.update({'only_directed': True})
+        
+        return self.degree_inter_class_network_2(**kwargs)
+    
+    
+    def degree_inter_class_network_stimulatory_2(self, **kwargs):
+        
+        kwargs.update({'only_effect': 1})
+        
+        return self.degree_inter_class_network_2(**kwargs)
+    
+    
+    def degree_inter_class_network_inhibitory_2(self, **kwargs):
+        
+        kwargs.update({'only_effect': -1})
+        
+        return self.degree_inter_class_network_2(**kwargs)
+    
     #
     # End of wrappers
     #
@@ -803,7 +1277,11 @@ class CustomAnnotation(session_mod.Logger):
         """
         Sets ``network`` as the default network dataset for the instance.
         All methods afterwards will use this network.
+        Also it discards the interclass network data frame if it present to
+        make sure future queries will address the network registered here.
         """
+        
+        self.unset_interclass_network_df()
         
         self.network = self._network_df(network)
     
@@ -819,16 +1297,16 @@ class CustomAnnotation(session_mod.Logger):
     
     
     @staticmethod
-    def _filter_by_classes(annot_df, classes = None):
+    def _filter_by_classes(annot_df, classes = None, attr = 'category'):
         
         if not classes:
             
             return annot_df
         
         filter_op = (
-            annot_df.category.eq
+            getattr(annot_df, attr).eq
                 if isinstance(classes, common.basestring) else
-            annot_df.category.isin
+            getattr(annot_df, attr).isin
         )
         
         return annot_df[filter_op(classes)]
@@ -858,6 +1336,39 @@ class CustomAnnotation(session_mod.Logger):
             cls
             for cls, elements in iteritems(self.classes)
             if element in elements
+        )
+    
+    
+    def entities_by_resource(self, entity_types = None):
+        
+        entity_types = common.to_set(entity_types)
+        by_resource = collections.defaultdict(set)
+        
+        for key, resource in iteritems(self.resource_labels):
+            
+            by_resource[resource].update(
+                self.classes[key]
+                    if not entity_types else
+                {
+                    entity
+                    for entity in self.classes[key]
+                    if AnnotationBase.get_entity_type(entity) in entity_types
+                }
+            )
+        
+        return dict(by_resource)
+    
+    
+    def counts_by_resource(self, entity_types = None):
+        
+        return dict(
+            (
+                resource,
+                len(entities)
+            )
+            for resource, entities in iteritems(
+                self.entities_by_resource(entity_types = entity_types)
+            )
         )
     
     
@@ -1373,41 +1884,25 @@ class AnnotationBase(resource.AbstractResource):
     @staticmethod
     def is_protein(key):
         
-        return (
-            isinstance(key, common.basestring) and
-            not key.startswith('MIMAT') and
-            not key.startswith('COMPLEX')
-        )
+        return entity.Entity._is_protein(key)
     
     
     @staticmethod
     def is_mirna(key):
         
-        return (
-            isinstance(key, common.basestring) and
-            key.startswith('MIMAT')
-        )
+        return entity.Entity._is_mirna(key)
     
     
     @staticmethod
     def is_complex(key):
         
-        return isinstance(key, intera.Complex) or (
-            isinstance(key, common.basestring) and
-            key.startswith('COMPLEX')
-        )
+        return entity.Entity._is_complex(key)
     
     
     @classmethod
     def get_entity_type(cls, key):
         
-        return (
-            'complex'
-                if cls.is_complex(key) else
-            'mirna'
-                if cls.is_mirna(key) else
-            'protein'
-        )
+        return entity.Entity._get_entity_type(key)
     
     
     @classmethod
@@ -1561,9 +2056,14 @@ class AnnotationBase(resource.AbstractResource):
         return any(self.annot.values())
 
 
-    def make_df(self):
+    def make_df(self, rebuild = False):
         
         self._log('Creating dataframe from `%s` annotations.' % self.name)
+        
+        if hasattr(self, 'df') and not rebuild:
+            
+            self._log('Data frame already exists, rebuild not requested.')
+            return
         
         discard = {'n/a', None}
 

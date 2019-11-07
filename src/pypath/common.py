@@ -1436,7 +1436,7 @@ def shared_unique(by_group, group, op = 'shared'):
             for label, elements
             in iteritems(by_group)
             if label != group
-        ))
+        ), set())
     )
 
 
@@ -1601,7 +1601,7 @@ def dict_percent(dict_of_counts, total):
     """
     
     return dict(
-        (key, val / total * 100)
+        (key, (val / total if total != 0 else 0) * 100)
         for key, val in iteritems(dict_of_counts)
     )
 
@@ -1634,3 +1634,23 @@ def df_memory_usage(df, deep = True):
         mem_usage /= 1024.0
     
     return '%3.1f%s PB' % (mem_usage, size_qualifier)
+
+
+def sum_dicts(*args):
+    """
+    For dicts of numbers returns a dict with the sum of the numbers from
+    all dicts for all keys.
+    """
+    
+    args = [
+        collections.defaultdict(int, d)
+        for d in args
+    ]
+    
+    return dict(
+        (
+            key,
+            sum(d[key] for d in args)
+        )
+        for key in set(itertools.chain(*(d.keys() for d in args)))
+    )

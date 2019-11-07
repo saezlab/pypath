@@ -23,7 +23,7 @@ from future.utils import iteritems
 from past.builtins import xrange, range
 
 import sys
-import imp
+import importlib as imp
 import itertools
 import collections
 import pickle
@@ -37,6 +37,7 @@ import pypath.homology as homology
 import pypath.uniprot_input as uniprot_input
 import pypath.intera as intera
 import pypath.progress as progress
+import pypath.session_mod as session_mod
 
 
 class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
@@ -564,7 +565,7 @@ class PtmHomologyProcessor(
                     yield tptm
 
 
-class PtmAggregator(object):
+class PtmAggregator(session_mod.Logger):
 
     def __init__(self,
             input_methods = None,
@@ -582,6 +583,8 @@ class PtmAggregator(object):
         """
         Docs not written yet.
         """
+        
+        session_mod.Logger.__init__(self, name = 'enz_sub')
         
         for k, v in iteritems(locals()):
             setattr(self, k, v)
@@ -602,26 +605,35 @@ class PtmAggregator(object):
         
         if self.pickle_file:
             
-            self.load_from_pickle()
+            self.load_from_pickle(pickle_file = self.pickle_file)
             
         else:
             
             self.build()
     
     
-    def load_from_pickle(self):
+    def load_from_pickle(self, pickle_file = None):
+        
+        self._log('Loading from file `%s`.' % pickle_file)
         
         with open(self.pickle_file, 'rb') as fp:
             
-            self.enz_sub = pickle.load(fp)
+            self.enz_sub, self.references = pickle.load(fp)
+        
+        self.update_ptm_lookup_dict()
     
     
     def save_to_pickle(self, pickle_file):
         
+        self._log('Saving to file file `%s`.' % pickle_file)
+        
         with open(pickle_file, 'wb') as fp:
             
             pickle.dump(
-                obj = self.enz_sub,
+                obj = (
+                    self.enz_sub,
+                    self.references,
+                ),
                 file = fp,
             )
     
@@ -660,6 +672,7 @@ class PtmAggregator(object):
     def set_inputs(self):
 
         if self.input_methods is None:
+            
             self.input_methods = self.builtin_inputs
 
 
@@ -696,6 +709,11 @@ class PtmAggregator(object):
         )
 
         for input_method in self.input_methods:
+            
+            self._log(
+                'Loding enzyme-substrate interactions '
+                'from `%s`.' % input_method
+            )
 
             inputargs = (
                 self.inputargs[input_method]
@@ -704,7 +722,12 @@ class PtmAggregator(object):
             )
 
             if self.ncbi_tax_id == 9606 or self.nonhuman_direct_lookup:
-
+                
+                self._log(
+                    'Loading enzyme-substrate interactions '
+                    'for taxon `%u`.' % self.ncbi_tax_id
+                )
+                
                 proc = PtmProcessor(
                     input_method = input_method,
                     ncbi_tax_id = self.ncbi_tax_id,
@@ -717,6 +740,16 @@ class PtmAggregator(object):
                 extend_lists(proc.__iter__())
 
             if self.map_by_homology_from:
+                
+                self._log(
+                    'Mapping `%s` by homology from taxons %s to %u.' % (
+                        input_method,
+                        ', '.join(
+                            '%u' % tax for tax in self.map_by_homology_from
+                        ),
+                        self.ncbi_tax_id,
+                    )
+                )
 
                 proc = PtmHomologyProcessor(
                     input_method = input_method,
@@ -731,6 +764,24 @@ class PtmAggregator(object):
                 )
 
                 extend_lists(proc.__iter__())
+        
+        self.references = dict(self.references)
+        self.update_ptm_lookup_dict()
+    
+    
+    def update_ptm_lookup_dict(self):
+        
+        self.ptm_to_enzyme = collections.defaultdict(set)
+        self.ptms = {}
+        
+        for (enz, sub), ptms in iteritems(self.enz_sub):
+            
+            for ptm in ptms:
+                
+                self.ptm_to_enzyme[ptm.ptm].add(enz)
+                self.ptms[ptm.ptm] = ptm.ptm
+        
+        self.ptm_to_enzyme = dict(self.ptm_to_enzyme)
 
 
     def unique(self):

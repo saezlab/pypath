@@ -1895,6 +1895,10 @@ _default_css = u'''
                     background-color: #EFF4E9;
                     font-family: monospace;
                 }
+                .yellowbox {
+                    border-color: #FDD73F;
+                    background-color: #FFF8DD;
+                }
                 .small {
                     font-size: small;
                 }

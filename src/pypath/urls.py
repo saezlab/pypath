@@ -393,7 +393,7 @@ urls = {
     'uniprot_sec': {
         'label': 'Secondary UniProt ACs',
         'url': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'
-        'knowledgebase/docs/sec_ac.txt'
+        'knowledgebase/complete/docs/sec_ac.txt'
     },
     'uniprot_idmap_ftp': {
         'label': 'Human ID mapping from UniProt',
@@ -806,8 +806,10 @@ urls = {
     },
     'wikipw': {
         'label': 'WikiPathways human biopax',
-        'biopax_l3': 'http://wikipathways.org//wpi/cache/wikipathways_'
-        'Homo_sapiens_Curation-AnalysisCollection__owl.zip'
+        'biopax_l3_old': 'http://wikipathways.org//wpi/cache/wikipathways_'
+            'Homo_sapiens_Curation-AnalysisCollection__owl.zip',
+        'biopax_l3': 'http://data.wikipathways.org/20191010/gpml/'
+            'wikipathways-20191010-gpml-Homo_sapiens.zip',
     },
     'pwcommons': {
         'label': 'PathwayCommons binary SIF files',
