@@ -1601,7 +1601,7 @@ def dict_percent(dict_of_counts, total):
     """
     
     return dict(
-        (key, val / total * 100)
+        (key, (val / total if total != 0 else 0) * 100)
         for key, val in iteritems(dict_of_counts)
     )
 
