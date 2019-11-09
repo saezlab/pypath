@@ -13443,6 +13443,7 @@ class PyPath(session_mod.Logger):
         resources = self.resources
         references = self.references_stats()
         entities = self.entities_stats()
+        interactions_all = self.interactions_all_stats()
         interactions_undirected = self.interactions_undirected_stats()
         interactions_directed = self.interactions_directed_stats()
         interactions_signed = self.interactions_signed_stats()
@@ -13459,6 +13460,7 @@ class PyPath(session_mod.Logger):
             
             for stats in (
                 entities,
+                interactions_all,
                 interactions_undirected,
                 interactions_directed,
                 interactions_signed,
@@ -13941,7 +13943,7 @@ class PyPath(session_mod.Logger):
                 not resources and
                 not e['dirs'].is_directed()
             ) or (
-                e['dirs'].dirs['undirected'] & resources
+                e['dirs'].sources['undirected'] & resources
             )
         }
     

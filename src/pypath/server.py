@@ -45,6 +45,7 @@ import pypath.descriptions as descriptions
 import pypath._html as _html
 import pypath.urls as urls
 import pypath.session_mod as session_mod
+import pypath.common as common
 from pypath.common import flatList
 from pypath._version import __version__
 
@@ -1539,7 +1540,7 @@ class TableServer(BaseServer):
             
             data_json = tbl.to_json(orient = 'records')
             # this is necessary because in the data frame we keep lists
-            # as `;` separated strings but in json we is nicer to serve
+            # as `;` separated strings but in json is nicer to serve
             # them as lists
             data_json = json.loads(data_json)
             
@@ -1549,10 +1550,21 @@ class TableServer(BaseServer):
                     
                     if k in cls.list_fields:
                         
-                        i[k] = [
-                            int(f) if k in cls.int_list_fields else f
-                            for f in v.split(';')
-                        ]
+                        i[k] = (
+                            [
+                                (
+                                    int(f)
+                                    if (
+                                        k in cls.int_list_fields and
+                                        f.isdigit()
+                                    ) else
+                                    f
+                                )
+                                for f in v.split(';')
+                            ]
+                            if isinstance(v, common.basestring) else
+                            []
+                        )
             
             return json.dumps(data_json)
             
