@@ -52,12 +52,24 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         'hprd': 'get_hprd_ptms',
         'li2012': 'li2012_phospho',
         'depod': 'get_depod',
+        'protmapper': 'protmapper_ptms',
     }
 
-    organisms_supported = set(['signor', 'phosphosite',
-                               'phosphoelm', 'dbptm', 'depod'])
+    organisms_supported = set([
+        'signor',
+        'phosphosite',
+        'phosphoelm',
+        'dbptm',
+        'depod',
+    ])
 
-    enzyme_id_uniprot = set(['phosphosite', 'phosphoelm', 'signor', 'depod'])
+    enzyme_id_uniprot = set([
+        'phosphosite',
+        'phosphoelm',
+        'signor',
+        'depod',
+        'protmapper',
+    ])
 
     substrate_id_types = {
         'mimp': [('genesymbol', 'substrate'), ('refseq', 'substrate_refseq')],
@@ -69,6 +81,7 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         'signor': ['uniprot'],
         'hprd': [('refseqp', 'substrate_refseqp')],
         'depod': ['uniprot'],
+        'protmapper': ['uniprot'],
     }
 
 
@@ -433,18 +446,25 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
                     domain=dom,
                     ptm=ptm,
                     sources=[self.name],
-                    refs=p['references'])
+                    refs=p['references'],
+                )
+                
 
                 if self.input_is('mimp'):
-                    dommot.mimp_sources = ';'.split(p[
-                        'databases'])
+                    dommot.mimp_sources = ';'.split(p['databases'])
+                    dommot.add_sources(dommot.mimp_sources)
                     dommot.npmid = p['npmid']
+                
+                if self.input_is('protmapper'):
+                    dommot.protmapper_sources = p['databases']
+                    dommot.add_sources(p['databases'])
 
                 elif self.input_is('phosphonetworks'):
                     dommot.pnetw_score = p['score']
 
                 elif self.input_is('dbptm'):
-                    dommot.dbptm_sources = [p['source']]
+                    dommot.dbptm_sources = ['%s_dbPTM' % p['source']]
+                    dommot.add_sources(dommot.dbptm_sources)
 
                 yield dommot
 
@@ -736,9 +756,9 @@ class PtmAggregator(session_mod.Logger):
                     substrate_id_type = self.substrate_id_type,
                     **inputargs,
                 )
-
+                
                 extend_lists(proc.__iter__())
-
+            
             if self.map_by_homology_from:
                 
                 self._log(
@@ -750,7 +770,7 @@ class PtmAggregator(session_mod.Logger):
                         self.ncbi_tax_id,
                     )
                 )
-
+                
                 proc = PtmHomologyProcessor(
                     input_method = input_method,
                     ncbi_tax_id = self.ncbi_tax_id,
@@ -762,7 +782,7 @@ class PtmAggregator(session_mod.Logger):
                     ptm_homology_strict = self.ptm_homology_strict,
                     **inputargs
                 )
-
+                
                 extend_lists(proc.__iter__())
         
         self.references = dict(self.references)
