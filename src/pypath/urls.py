@@ -1067,6 +1067,16 @@ urls = {
     'alzpathway': {
         'url': 'http://rescued.omnipathdb.org/alzpw-ppi.csv',
     },
+    'protmapper': {
+        'label': 'Integration of kinase-substrate data across many '\
+            'resources and text mining',
+        'url': 'https://www.biorxiv.org/content/biorxiv/early/2019/11/06/'\
+            '822668.1/DC1/embed/media-1.zip?download=true',
+        'files': [
+            'export.csv',
+            'evidences.csv',
+        ],
+    },
 }
 
 
