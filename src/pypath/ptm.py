@@ -40,6 +40,20 @@ import pypath.progress as progress
 import pypath.session_mod as session_mod
 
 
+builtin_inputs = [
+    'PhosphoSite',
+    'phosphoELM',
+    'Signor',
+    'dbPTM',
+    'HPRD',
+    'Li2012',
+    'PhosphoNetworks',
+    'MIMP',
+    'DEPOD',
+    'ProtMapper'
+]
+
+
 class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
 
     methods = {
@@ -83,6 +97,14 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         'depod': ['uniprot'],
         'protmapper': ['uniprot'],
     }
+    
+    resource_names = dict(
+        (
+            name.lower(),
+            name
+        )
+        for name in builtin_inputs
+    )
 
 
     def __init__(
@@ -196,7 +218,14 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
                 dataio,
                 self.methods[self.input_method.lower()]
             )
-            self.name = self.name or self.input_method
+            self.name = (
+                self.name or
+                (
+                    self.resource_names[self.input_method.lower()]
+                    if self.input_method.lower() in self.resource_names else
+                    self.input_method
+                )
+            )
         else:
             self.inputm = f
             self.name = self.name or 'Unknown'
@@ -328,7 +357,7 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
 
                 for isof in se.isoforms():
 
-                    if p['instance'] is not None:
+                    if 'instance' in p and p['instance'] is not None:
 
                         if se.match(
                             p['instance'],
@@ -406,12 +435,12 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
                     s[0],
                     isoform=s[1])
 
-                if p['instance'] is None:
+                if 'instance' not in p or p['instance'] is None:
 
                     reg = se.get_region(
                         p['resnum'],
-                        p['start'],
-                        p['end'],
+                        p['start'] if 'start' in p else None,
+                        p['end'] if 'end' in p else None,
                         isoform=s[1])
 
                     if reg is not None:
@@ -586,7 +615,8 @@ class PtmHomologyProcessor(
 
 
 class PtmAggregator(session_mod.Logger):
-
+    
+    
     def __init__(self,
             input_methods = None,
             ncbi_tax_id = 9606,
@@ -660,11 +690,6 @@ class PtmAggregator(session_mod.Logger):
     
     def build(self):
         
-        self.builtin_inputs = ['PhosphoSite', 'phosphoELM',
-                               'Signor', 'dbPTM', 'HPRD',
-                               'Li2012', 'PhosphoNetworks',
-                               'MIMP', 'DEPOD']
-        
         self.inputargs = self.inputargs or {}
         self.map_by_homology_from = set(self.map_by_homology_from or [9606])
 
@@ -693,7 +718,7 @@ class PtmAggregator(session_mod.Logger):
 
         if self.input_methods is None:
             
-            self.input_methods = self.builtin_inputs
+            self.input_methods = builtin_inputs
 
 
     def build_list(self):
