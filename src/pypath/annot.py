@@ -953,6 +953,10 @@ class CustomAnnotation(session_mod.Logger):
         ).groupby(['id_a', 'id_b']).ngroups
     
     
+    # synonym
+    count_inter_class_connections_all = count_inter_class_connections
+    
+    
     def count_inter_class_connections_undirected(
             self,
             source_classes = None,
