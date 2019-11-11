@@ -887,7 +887,8 @@ ptm = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
-        must_have_references = True),
+        must_have_references = True
+    ),
     'hprd_p': input_formats.ReadSettings(
         name = "HPRD-phos",
         separator = None,
@@ -905,7 +906,29 @@ ptm = {
         header = False,
         extra_edge_attrs = {'hprd_mechanism': 8},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {})
+        extra_node_attrs_b = {}
+    ),
+    'protmapper': input_formats.ReadSettings(
+        name = "ProtMapper",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = 'uniprot',
+        id_type_b = 'uniprot',
+        entity_type_a = 'protein',
+        entity_type_b = 'protein',
+        is_directed = 1,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'protmapper_interactions',
+        references = 3,
+        resource = 2,
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+        must_have_references = True,
+    ),
 }
 
 # synonym
@@ -1005,8 +1028,13 @@ ptm_misc = {
         extra_edge_attrs = {'li2012_mechanism': 3,
                         'li2012_route': 2},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {})
+        extra_node_attrs_b = {}
+    ),
+    
 }
+
+ptm_misc['protmapper'] = copy.deepcopy(ptm['protmapper'])
+ptm_misc['protmapper'].must_have_references = False
 
 # synonym
 ptm_noref = ptm_misc
@@ -1578,8 +1606,8 @@ pa.init_network(pypath.data_formats.transcription)
 
 """
 transcription = {
-    'tfregulons': input_formats.ReadSettings(
-        name = "TFRegulons",
+    'dorothea': input_formats.ReadSettings(
+        name = "DoRothEA",
         separator = None,
         id_col_a = 0,
         id_col_b = 1,

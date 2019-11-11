@@ -12737,7 +12737,11 @@ def get_protmapper():
     return records, evidences
 
 
-def protmapper_ptms(only_evidences = None, only_literature = False):
+def protmapper_ptms(
+        only_evidences = None,
+        only_literature = False,
+        interactions = False,
+    ):
     """
     only_evidences : str,set,NoneType
         Keep only the interactions with these evidence type, e.g. `VALID`.
@@ -12800,13 +12804,29 @@ def protmapper_ptms(only_evidences = None, only_literature = False):
             for source in rec['SOURCES'].strip('"').split(',')
         }
         
-        result.append({
-            'kinase': rec['CTRL_ID'],
-            'resaa': rec['TARGET_RES'],
-            'resnum': int(rec['TARGET_POS']),
-            'references': references,
-            'substrate': rec['TARGET_UP_ID'],
-            'databases': sources,
-        })
+        if interactions:
+            
+            result.append([
+                rec['CTRL_ID'],
+                rec['TARGET_UP_ID'],
+                sources,
+                references,
+            ])
+            
+        else:
+            
+            result.append({
+                'kinase': rec['CTRL_ID'],
+                'resaa': rec['TARGET_RES'],
+                'resnum': int(rec['TARGET_POS']),
+                'references': references,
+                'substrate': rec['TARGET_UP_ID'],
+                'databases': sources,
+            })
     
     return result
+
+
+def protmapper_interactions(**kwargs):
+    
+    return protmapper_ptms(interactions = True, **kwargs)
