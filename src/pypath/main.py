@@ -2490,7 +2490,8 @@ class PyPath(session_mod.Logger):
                         param.input,
                         silent=False,
                         large=True,
-                        cache=curl_use_cache)
+                        cache=curl_use_cache
+                    )
                     infile = c.fileobj.read()
 
                     if type(infile) is bytes:
@@ -2773,12 +2774,15 @@ class PyPath(session_mod.Logger):
                         stim, inh = self.process_sign(line[sign[0]], sign)
 
                     resource = (
-                        [line[param.resource]]
+                        line[param.resource]
                         if isinstance(param.resource, int) else
                         line[param.resource[0]].split(param.resource[1])
                         if isinstance(param.resource, tuple) else
-                        [param.resource]
+                        param.resource
                     )
+                    
+                    resource = common.to_set(resource)
+                    resource.add(param.name)
 
                     id_a = line[param.id_col_a]
                     id_b = line[param.id_col_b]
@@ -3990,8 +3994,21 @@ class PyPath(session_mod.Logger):
             this_node[key] = self.combine_attr([this_node[key], value])
 
 
-    def add_update_edge(self, id_a, id_b, source, is_directed, refs, stim, inh,
-                        taxon_a, taxon_b, typ, extra_attrs={}, add=False):
+    def add_update_edge(
+            self,
+            id_a,
+            id_b,
+            source,
+            is_directed,
+            refs,
+            stim,
+            inh,
+            taxon_a,
+            taxon_b,
+            typ,
+            extra_attrs = {},
+            add = False,
+        ):
         """
         Updates the attributes of one edge in the (undirected) network.
         Optionally it creates a new edge and sets the attributes, but it
@@ -4145,20 +4162,23 @@ class PyPath(session_mod.Logger):
         :arg set value:
             The value of the attribute to be assigned/merged.
         """
-
-        value = (value if isinstance(value, set) else set(value)
-                 if isinstance(value, list) else set([value]))
+        
+        value = common.to_set(value)
+        
         e = self.graph.es[edge]
 
         if attr not in self.graph.es.attributes():
-            self.graph.es[attr] = [set([]) for _ in
-                                   xrange(0, self.graph.ecount())]
+            
+            self.graph.es[attr] = [
+                set()
+                for _ in xrange(self.graph.ecount())
+            ]
         if e[attr] is None:
-            e[attr] = set([])
+            e[attr] = set()
 
         elif not isinstance(e[attr], set):
-            e[attr] = set(e[attr]) if isinstance(e[attr],
-                                                 list) else set([e[attr]])
+            
+            e[attr] = common.to_set(e[attr])
 
         e[attr].update(value)
 
