@@ -40,7 +40,7 @@ _defaults = {
     # The basedir for every files and directories in the followings.
     'basedir': os.getcwd(),
     
-    'progressbars': True,
+    'progressbars': False,
     # verbosity for messages printed to console
     'console_verbosity': -1,
     # verbosity for messages written to log
