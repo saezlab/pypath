@@ -177,6 +177,18 @@ class IntercellAnnotation(annot.CustomAnnotation):
             self.class_labels[cls] = (
                 intercell_annot.get_class_label(mainclass or cls)
             )
+    
+    
+    def load_from_pickle(self, pickle_file):
+        
+        annot.CustomAnnotation.load_from_pickle(
+            self,
+            pickle_file = pickle_file,
+        )
+        
+        self.set_classes()
+        self.add_classes_to_df()
+        self.collect_classes()
 
 
 def init_db(**kwargs):
