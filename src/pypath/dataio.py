@@ -3463,6 +3463,7 @@ def get_elm_classes():
 
 
 def get_elm_instances():
+    
     url = urls.urls['elm_inst']['url']
     c = curl.Curl(url, silent = False)
     data = c.result
@@ -3470,23 +3471,85 @@ def get_elm_instances():
     data = data[6:]
 
 
-def get_elm_interactions():
+def elm_interactions():
     """
     Downlods manually curated interactions from ELM.
     This is the gold standard set of ELM.
     """
+    
+    
+    def number_or_none(value, typ = int):
+        
+        return typ(value) if value != 'None' else None
+    
+    
+    retax = re.compile(r'"([0-9]+)"\([-:/,\.\[\]\(\)\w\s]+\)')
+    reupi = re.compile(r'([\w]{6,10})(?:-([0-9]{1,2}))?')
+    
+    ELMInteraction = collections.namedtuple(
+        'ELMInteraction',
+        [
+            'motif_elm',
+            'domain_pfam',
+            'uniprot_motif',
+            'uniprot_domain',
+            'isoform_motif',
+            'isoform_domain',
+            'start_motif',
+            'end_motif',
+            'start_domain',
+            'end_domain',
+            'affinity_min',
+            'affinity_max',
+            'pubmeds',
+            'taxon_motif',
+            'taxon_domain',
+        ],
+    )
+    
     result = []
     url = urls.urls['elm_int']['url']
     c = curl.Curl(url, silent = False)
     data = c.result
     data = data.split('\n')
     del data[0]
+    
     for l in data:
-        result.append([x.strip() for x in l.split('\t')])
+        
+        if not l:
+            
+            continue
+        
+        l = tuple(x.strip() for x in l.split('\t'))
+        
+        uniprot_mofif, isoform_motif = reupi.match(l[2]).groups()
+        uniprot_domain, isoform_domain = reupi.match(l[3]).groups()
+        
+        result.append(
+            ELMInteraction(
+                motif_elm = l[0],
+                domain_pfam = l[1],
+                uniprot_motif = uniprot_mofif,
+                uniprot_domain = uniprot_domain,
+                isoform_motif = int(isoform_motif) if isoform_motif else 1,
+                isoform_domain = int(isoform_domain) if isoform_domain else 1,
+                start_motif = int(l[4]),
+                end_motif = int(l[5]),
+                start_domain = number_or_none(l[6]),
+                end_domain = number_or_none(l[7]),
+                affinity_min = number_or_none(l[8], float),
+                affinity_max = number_or_none(l[9], float),
+                pubmeds = tuple(map(int, l[10].split(','))) if l[10] else (),
+                taxon_motif = int(retax.match(l[11]).groups()[0]),
+                taxon_domain = int(retax.match(l[12]).groups()[0]),
+            )
+        )
+    
     return result
 
 
 def pfam_uniprot(uniprots, infile = None):
+    
     result = {}
     url = urls.urls['pfam_up']['url']
     infile = infile if infile is not None \
@@ -6560,7 +6623,7 @@ def only_pmids(idList, strict = True):
     """
     if type(idList) in common.simpleTypes:
         idList = [idList]
-    pmids = set([i for i in idList if i.isdigit()])
+    pmids = {i for i in idList if isinstance(i, int) or i.isdigit()}
     pmcids = [i for i in idList if i.startswith('PMC')]
     dois = [i for i in idList if '/' in i]
     manuscids = [i for i in idList if i.startswith('NIHMS')]

@@ -362,7 +362,7 @@ def delEmpty(lst): # XXX: Only used in main.py line: 1278
         ['a', 'b', 'c']
     """
 
-    return [i for i in lst if len(i) > 0]
+    return [i for i in lst if i or isinstance(i, (int, float))]
 
 
 # Order preserving

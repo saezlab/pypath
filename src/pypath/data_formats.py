@@ -819,25 +819,16 @@ ptm = {
         is_directed = 0,
         sign = False,
         ncbi_tax_id = {
-            'A': {
-                'col': 11,
-                'dict': {
-                    '"9606"(Homo sapiens)': 9606
-                }
-            },
-            'B': {
-                'col': 12,
-                'dict': {
-                    '"9606"(Homo sapiens)': 9606
-                }
-            }
+            'A': {'col': 13, 'include': {9606}},
+            'B': {'col': 14, 'include': {9606}},
         },
-        input = 'get_elm_interactions',
-        references = (10, ','),
+        input = 'elm_interactions',
+        references = 12,
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'domino': input_formats.ReadSettings(
         name = "DOMINO",
         separator = None,

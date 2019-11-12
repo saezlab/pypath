@@ -2016,8 +2016,10 @@ class PyPath(session_mod.Logger):
 
         if 'A' in tax_dict and 'B' in tax_dict:
 
-            return (self.get_taxon(tax_dict['A'], fields),
-                    self.get_taxon(tax_dict['B'], fields))
+            return (
+                self.get_taxon(tax_dict['A'], fields),
+                self.get_taxon(tax_dict['B'], fields),
+            )
 
         else:
 
@@ -2713,11 +2715,11 @@ class PyPath(session_mod.Logger):
                         else:
 
                             refs = line[refCol]
-
+                        
                         refs = common.delEmpty(list(set(refs)))
-
-                    refs = dataio.only_pmids([r.strip() for r in refs])
-
+                    
+                    refs = dataio.only_pmids([str(r).strip() for r in refs])
+                    
                     if len(refs) == 0 and must_have_references:
                         rFiltered += 1
                         continue
@@ -2742,11 +2744,13 @@ class PyPath(session_mod.Logger):
                         taxdA = (
                             param.ncbi_tax_id['A']
                             if 'A' in param.ncbi_tax_id else
-                            param.ncbi_tax_id)
+                            param.ncbi_tax_id
+                        )
                         taxdB = (
                             param.ncbi_tax_id['B']
                             if 'B' in param.ncbi_tax_id else
-                            param.ncbi_tax_id)
+                            param.ncbi_tax_id
+                        )
 
                         if (('include' in taxdA and
                             taxon_a not in taxdA['include']) or
