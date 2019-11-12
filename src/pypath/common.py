@@ -40,6 +40,11 @@ import hashlib
 
 import numpy as np
 
+import pypath.session_mod as session_mod
+
+_logger = session_mod.Logger(name = 'common')
+_log = _logger._log
+
 __all__ = [
     'ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes',
     'uniqList', 'addToList', 'addToSet', 'gen_session_id',
@@ -64,21 +69,6 @@ try:
     basestring
 except NameError:
     basestring = str
-
-
-class _const:
-
-    class ConstError(TypeError):
-
-        pass
-
-    def __setattr__(self, name, value):
-
-        if name in self.__dict__:
-
-            raise(self.ConstError, "Can't rebind const(%s)" % name)
-
-        self.__dict__[name] = value
 
 
 default_name_type = {"protein": "uniprot",
@@ -1222,6 +1212,13 @@ dbptm_taxids = {
     1891767: 'SV40',
 }
 
+nonstandard_taxids = {
+    'drosophila': 7227,
+    'c.elegans': 6239,
+    'xenopus': 8355,
+    'Synechocystis_sp.': 1142,
+}
+
 
 dbptm_to_ncbi_tax_id = swap_dict(dbptm_taxids)
 latin_name_to_ncbi_tax_id = swap_dict(phosphoelm_taxids)
@@ -1257,6 +1254,13 @@ def taxid_from_dbptm_taxon_name(taxon_name):
         return dbptm_to_ncbi_tax_id[taxon_name]
 
 
+def taxid_from_nonstandard(taxon_name):
+    
+    if taxon_name in nonstandard_taxids:
+        
+        return nonstandard_taxids[taxon_name]
+
+
 def ensure_ncbi_tax_id(taxon_id):
     
     if isinstance(taxon_id, int):
@@ -1265,11 +1269,18 @@ def ensure_ncbi_tax_id(taxon_id):
         
     else:
         
-        return (
+        ncbi_tax_id = (
             taxid_from_common_name(taxon_id) or
             taxid_from_latin_name(taxon_id) or
-            taxid_from_dbptm_taxon_name(taxon_id)
+            taxid_from_dbptm_taxon_name(taxon_id) or
+            taxid_from_nonstandard(taxon_id)
         )
+        
+        if not ncbi_tax_id:
+            
+            _log('Could not map to NCBI Taxonomy ID: `%s`.' % str(taxon_id))
+        
+        return ncbi_tax_id
 
 
 

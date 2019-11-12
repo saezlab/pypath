@@ -2708,13 +2708,17 @@ class PyPath(session_mod.Logger):
                     refs = []
                     if refCol is not None:
 
-                        if not isinstance(line[refCol], (list, set, tuple)):
-
-                            refs = line[refCol].split(refSep)
-
-                        else:
-
+                        if isinstance(line[refCol], (list, set, tuple)):
+                            
                             refs = line[refCol]
+                            
+                        elif isinstance(line[refCol], int):
+                            
+                            refs = (line[refCol],)
+                            
+                        else:
+                            
+                            refs = line[refCol].split(refSep)
                         
                         refs = common.delEmpty(list(set(refs)))
                     
@@ -2731,8 +2735,13 @@ class PyPath(session_mod.Logger):
 
                     # to enable more sophisticated inputs:
                     elif isinstance(param.ncbi_tax_id, dict):
-
-                        taxx = self.get_taxon(param.ncbi_tax_id, line)
+                        
+                        try:
+                            taxx = self.get_taxon(param.ncbi_tax_id, line)
+                        except TypeError:
+                            
+                            print(line)
+                            continue
 
                         if isinstance(taxx, tuple):
                             taxon_a = taxx[0]

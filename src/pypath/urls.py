@@ -158,7 +158,8 @@ urls = {
     },
     'pdzbase': {
         'label': 'Manually curated interactions of PDZ domain proteins',
-        'url': 'http://abc.med.cornell.edu/pdzbase/allinteractions'
+        'url_rescued': 'http://rescued.omnipathdb.org/PDZBase.html',
+        'url': 'http://abc.med.cornell.edu/pdzbase/allinteractions',
     },
     'pdz_details': {
         'label': 'Details of interactions in PDZbase',

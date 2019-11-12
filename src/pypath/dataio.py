@@ -128,6 +128,9 @@ if 'unicode' not in __builtins__:
 CURSOR_UP_ONE = '\x1b[1A'
 ERASE_LINE = '\x1b[2K'
 
+# UniProt ID with isoform e.g. O14754-1
+reupi = re.compile(r'([\w]{6,10})(?:-([0-9]{1,2}))?')
+
 #
 # thanks for http://stackoverflow.com/a/3239248/854988
 #
@@ -3206,21 +3209,59 @@ def pepcyber_uniprot(num):
     return result
 
 
-def get_pdzbase():
+def pdzbase_interactions():
     """
     Downloads data from PDZbase. Parses data from the HTML tables.
     """
-
-    url = urls.urls['pdzbase']['url']
+    
+    PDZbaseInteraction = collections.namedtuple(
+        'PDZbaseInteraction',
+        [
+            'uniprot_pdz',
+            'isoform_pdz',
+            'uniprot_ligand',
+            'isoform_ligand',
+            'genesymbol_pdz',
+            'genesymbol_ligand',
+            'pdz_domain',
+            'organism',
+            'pubmed',
+        ],
+    )
+    
+    
+    url = urls.urls['pdzbase']['url_rescued']
     c = curl.Curl(url, silent = False)
     data = c.result
     soup = bs4.BeautifulSoup(data, 'html.parser')
-    rows = soup.find_all('table')[3].find('table').find('table').find_all('tr')
+    rows = (
+        soup.find_all('table')[3].find('table').find('table').find_all('tr')
+    )
     result = []
+    
+    del rows[0]
+    
     for r in rows:
-        thisRow = [c.text.strip() for c in r.find_all('td')]
-        result.append(thisRow)
-    del result[0]
+        
+        r = [c.text.strip() for c in r.find_all('td')]
+        
+        uniprot_pdz, isoform_pdz = reupi.match(r[1]).groups()
+        uniprot_ligand, isoform_ligand = reupi.match(r[4]).groups()
+        
+        result.append(
+            PDZbaseInteraction(
+                uniprot_pdz = uniprot_pdz,
+                isoform_pdz = int(isoform_pdz) if isoform_pdz else 1,
+                uniprot_ligand = uniprot_ligand,
+                isoform_ligand = int(isoform_ligand) if isoform_ligand else 1,
+                genesymbol_pdz = r[0],
+                genesymbol_ligand = r[3],
+                pdz_domain = int(r[2]),
+                organism = common.ensure_ncbi_tax_id(r[5]),
+                pubmed = int(r[6]),
+            )
+        )
+    
     return result
 
 
@@ -3484,7 +3525,6 @@ def elm_interactions():
     
     
     retax = re.compile(r'"([0-9]+)"\([-:/,\.\[\]\(\)\w\s]+\)')
-    reupi = re.compile(r'([\w]{6,10})(?:-([0-9]{1,2}))?')
     
     ELMInteraction = collections.namedtuple(
         'ELMInteraction',
