@@ -10713,7 +10713,13 @@ def intact_interactions(
 
         else:
 
-            return _try_isoform(field.split(':')[1].replace('"', ''))
+            uniprot, isoform = _try_isoform(
+                field.split(':')[1].replace('"', '')
+            )
+            
+            uniprot = uniprot.split('-')[0]
+            
+            return uniprot, isoform
 
 
     def get_taxon(field):

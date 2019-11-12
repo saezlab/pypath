@@ -2736,12 +2736,7 @@ class PyPath(session_mod.Logger):
                     # to enable more sophisticated inputs:
                     elif isinstance(param.ncbi_tax_id, dict):
                         
-                        try:
-                            taxx = self.get_taxon(param.ncbi_tax_id, line)
-                        except TypeError:
-                            
-                            print(line)
-                            continue
+                        taxx = self.get_taxon(param.ncbi_tax_id, line)
 
                         if isinstance(taxx, tuple):
                             taxon_a = taxx[0]
