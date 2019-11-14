@@ -119,6 +119,7 @@ from pypath.progress import *
 import pypath.settings as settings
 import pypath.entity as entity_mod
 import pypath.taxonomy as taxonomy
+import pypath.db_categories as db_categories
 
 # to make it accessible directly from the module
 omnipath = data_formats.omnipath
@@ -5547,7 +5548,7 @@ class PyPath(session_mod.Logger):
             (c, list(filter(lambda s:
                 s in self.sources, map(lambda cs:
                     cs[0], filter(lambda cs:
-                        cs[1] == c, iteritems(data_formats.categories)))))),
+                        cs[1] == c, iteritems(db_categories.categories)))))),
                              self.has_cats)))
 
         return dict([(c, self.get_network({'edge': {'sources': s},
@@ -5641,8 +5642,8 @@ class PyPath(session_mod.Logger):
         """
 
         self.has_cats = set(list(map(lambda s:
-            data_formats.categories[s], filter(lambda s:
-                s in data_formats.categories, self.sources))))
+            db_categories.categories[s], filter(lambda s:
+                s in db_categories.categories, self.sources))))
 
     def update_pathways(self):
         """
@@ -5993,15 +5994,15 @@ class PyPath(session_mod.Logger):
 
             for s in v['sources']:
 
-                if s in data_formats.categories:
-                    v['cat'].add(data_formats.categories[s])
+                if s in db_categories.categories:
+                    v['cat'].add(db_categories.categories[s])
 
         for e in self.graph.es:
 
             for s in e['sources']:
 
-                if s in data_formats.categories:
-                    cat = data_formats.categories[s]
+                if s in db_categories.categories:
+                    cat = db_categories.categories[s]
                     e['cat'].add(cat)
 
                     if cat not in e['refs_by_cat']:
@@ -10737,10 +10738,10 @@ class PyPath(session_mod.Logger):
                 row_order = []
 
                 for cat in use_cats:
-                    row_order.append((data_formats.catnames[cat], 'subtitle'))
+                    row_order.append((db_categories.catnames[cat], 'subtitle'))
                     row_order.extend(
                         sorted(
-                            filter(lambda s: data_formats.categories[s] == cat,
+                            filter(lambda s: db_categories.categories[s] == cat,
                                    self.sources),
                             key=lambda s: s.lower()))
 
@@ -12732,15 +12733,15 @@ class PyPath(session_mod.Logger):
                 []))) if by_category else []
 
         for s in list(self.sources) + cats:
-            sattr = 'cat' if s in data_formats.catnames else 'sources'
-            rattr = 'refs_by_cat' if s in data_formats.catnames else 'refs_by_source'
+            sattr = 'cat' if s in db_categories.catnames else 'sources'
+            rattr = 'refs_by_cat' if s in db_categories.catnames else 'refs_by_source'
 
-            cat = None if s in data_formats.catnames \
-                or s not in data_formats.categories \
-                else data_formats.categories[s]
+            cat = None if s in db_categories.catnames \
+                or s not in db_categories.categories \
+                else db_categories.categories[s]
 
-            catmembers = set(data_formats.catnames.keys()) \
-                if s in data_formats.catnames \
+            catmembers = set(db_categories.catnames.keys()) \
+                if s in db_categories.catnames \
                 else set(self.sources) if not hasattr(data_formats, cat) \
                 else getattr(data_formats, cat)
 
@@ -12833,8 +12834,8 @@ class PyPath(session_mod.Logger):
             ])
             ratio = len(src_refs) / float(src_edges)
 
-            if s in data_formats.catnames:
-                s = data_formats.catnames[s]
+            if s in db_categories.catnames:
+                s = db_categories.catnames[s]
 
             result[s] = {
                 'source_nodes': src_nodes,
@@ -13016,8 +13017,8 @@ class PyPath(session_mod.Logger):
 
         for key in use_cats:
 
-            if key in data_formats.catnames:
-                name = data_formats.catnames[key]
+            if key in db_categories.catnames:
+                name = db_categories.catnames[key]
 
                 if by_category:
                     cs[(name, 'subtitle')] = cs[name]
@@ -13032,10 +13033,10 @@ class PyPath(session_mod.Logger):
         if by_category:
 
             for cat in use_cats:
-                row_order.append((data_formats.catnames[cat], 'subtitle'))
+                row_order.append((db_categories.catnames[cat], 'subtitle'))
                 row_order.extend(sorted(filter(lambda name:
-                            (name in data_formats.categories
-                             and data_formats.categories[name] == cat),
+                            (name in db_categories.categories
+                             and db_categories.categories[name] == cat),
                              cs.keys())))
 
         self.table_latex(fname, header, cs, header_format=header_format,
@@ -13685,11 +13686,11 @@ class PyPath(session_mod.Logger):
                 label,
                 {
                     resource
-                    for resource, cat in iteritems(data_formats.categories)
+                    for resource, cat in iteritems(db_categories.categories)
                     if cat == letter
                 }
             )
-            for label, letter in iteritems(data_formats.catletters)
+            for label, letter in iteritems(db_categories.catletters)
         )
     
     
@@ -13700,7 +13701,7 @@ class PyPath(session_mod.Logger):
         
         result = {}
         
-        for cat in data_formats.catletters.keys():
+        for cat in db_categories.catletters.keys():
             
             if not cat_res[cat] & self.resources:
                 
@@ -14295,8 +14296,8 @@ class PyPath(session_mod.Logger):
                 {
                     resource
                     for resource in by_resource.keys()
-                    if data_formats.catnames[
-                        data_formats.categories[resource]
+                    if db_categories.catnames[
+                        db_categories.categories[resource]
                     ] == cat
                 }
             )
@@ -14369,8 +14370,8 @@ class PyPath(session_mod.Logger):
                 (
                     n_by_resource[resource] /
                     n_by_category[
-                        data_formats.catnames[
-                            data_formats.categories[resource]
+                        db_categories.catnames[
+                            db_categories.categories[resource]
                         ]
                     ] * 100
                         if n_by_resource[resource] else
