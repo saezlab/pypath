@@ -561,7 +561,7 @@ class ComplexAggregator(AbstractComplexResource):
 
         resource.AbstractResource.load(self)
         self.update_index()
-        self.update_summary()
+        self.update_summaries()
 
 
     def load_from_pickle(self, pickle_file):
