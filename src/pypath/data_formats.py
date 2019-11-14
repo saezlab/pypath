@@ -31,7 +31,9 @@ import copy
 # from pypath:
 import pypath.input_formats as input_formats
 import pypath.urls as urls
-from pypath import common
+import pypath.common as common
+import pypath.taxonomy as taxonomy
+
 
 __all__ = [
     'reaction', 'interaction', 'interaction_misc', 'pathway',
@@ -1717,12 +1719,12 @@ mirna_target = {
         sign = False,
         ncbi_tax_id = {'A': {
                 'col': 3,
-                'dict': common.swap_dict(common.phosphoelm_taxids),
+                'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
                 'include': set([9606])
             },
             'B': {
                 'col': 4,
-                'dict': common.swap_dict(common.phosphoelm_taxids),
+                'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
                 'include': set([9606])
             }},
         input = 'mirecords_interactions',
@@ -1745,12 +1747,12 @@ mirna_target = {
         sign = False,
         ncbi_tax_id = {'A': {
                 'col': 2,
-                'dict': common.swap_dict(common.phosphoelm_taxids),
+                'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
                 'include': set([9606])
             },
             'B': {
                 'col': 5,
-                'dict': common.swap_dict(common.phosphoelm_taxids),
+                'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
                 'include': set([9606])
             }},
         positive_filters = [(7, 'Functional MTI')],
@@ -1777,7 +1779,7 @@ tf_mirna = {
         sign = (4, 'activation', 'repression'),
         ncbi_tax_id= {
                 'col': 6,
-                'dict': common.swap_dict(common.taxids),
+                'dict': common.swap_dict(taxonomy.taxids),
                 'include': set([9606])
             },
         input = 'transmir_interactions',
@@ -1822,7 +1824,7 @@ lncrna_protein = {
         sign = False,
         ncbi_tax_id= {
                 'col': 5,
-                'dict': common.swap_dict(common.taxids),
+                'dict': common.swap_dict(taxonomy.taxids),
                 'include': set([9606])
             },
         positive_filters = [(2, 'RNA'), (3, 'Protein')],
@@ -1846,7 +1848,7 @@ lncrna_protein = {
         sign = False,
         ncbi_tax_id= {
                 'col': 3,
-                'dict': common.swap_dict(common.phosphoelm_taxids),
+                'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
                 'include': set([9606])
             },
         positive_filters = [(2, 'protein')],

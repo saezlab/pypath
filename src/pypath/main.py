@@ -118,6 +118,7 @@ import pypath._version as _version
 from pypath.progress import *
 import pypath.settings as settings
 import pypath.entity as entity_mod
+import pypath.taxonomy as taxonomy
 
 # to make it accessible directly from the module
 omnipath = data_formats.omnipath
@@ -10048,8 +10049,8 @@ class PyPath(session_mod.Logger):
             'Li2012': 'li2012_phospho'
         }
 
-        if source == 'PhosphoSite' and self.ncbi_tax_id in common.taxids:
-            kwargs['organism'] = common.taxids[self.ncbi_tax_id]
+        if source == 'PhosphoSite' and self.ncbi_tax_id in taxonomy.taxids:
+            kwargs['organism'] = taxonomy.taxids[self.ncbi_tax_id]
 
             if 'strict' not in kwargs:
                 kwargs['strict'] = False

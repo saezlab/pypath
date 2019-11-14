@@ -118,6 +118,7 @@ import pypath.intera as intera
 # from pypath import reaction
 import pypath.residues as residues
 import pypath.settings as settings
+import pypath.taxonomy as taxonomy
 
 if 'long' not in __builtins__:
     long = int
@@ -521,7 +522,7 @@ def corum_complexes(organism = 9606):
         'endocytosis',
     )
 
-    organism = common.ensure_ncbi_tax_id(organism)
+    organism = taxonomy.ensure_ncbi_tax_id(organism)
 
     complexes = {}
 
@@ -538,7 +539,7 @@ def corum_complexes(organism = 9606):
 
         cplex_organism = rec['Organism']
 
-        if common.ensure_ncbi_tax_id(cplex_organism) != organism:
+        if taxonomy.ensure_ncbi_tax_id(cplex_organism) != organism:
 
             continue
 
@@ -2396,10 +2397,10 @@ def get_psite_phos(raw = True, organism = 'human', strict = True):
             if r['kinase_org'] != organism:
                 korg = r['kinase_org']
                 # attempting to map by orthology:
-                if korg in common.taxa and organism in common.taxa:
+                if korg in taxonomy.taxa and organism in taxonomy.taxa:
 
-                    ktaxid = common.taxa[korg]
-                    taxid = common.taxa[organism]
+                    ktaxid = taxonomy.taxa[korg]
+                    taxid = taxonomy.taxa[organism]
 
                     if korg not in orto:
                         orto[korg] = homologene_dict(ktaxid, taxid, 'refseqp')
@@ -2534,11 +2535,11 @@ def ptm_orthology():
             uniprot = uniprot.split('-')[0]
             aa = r[4][0]
             num = int(nondigit.sub('', r[4]))
-            if r[6] not in common.taxa:
+            if r[6] not in taxonomy.taxa:
                 unknown_taxa.add(r[6])
                 continue
 
-            tax = common.taxa[r[6]]
+            tax = taxonomy.taxa[r[6]]
             group = int(r[5])
 
             this_site = (uniprot, isoform, aa, num, tax, typ[1])
@@ -2810,7 +2811,7 @@ def regsites_one_organism(organism = 9606):
 
             for reg in regs:
 
-                reg_organism = common.taxa[reg['organism']]
+                reg_organism = taxonomy.taxa[reg['organism']]
 
                 if reg_organism not in organisms:
                     continue
@@ -3257,7 +3258,7 @@ def pdzbase_interactions():
                 genesymbol_pdz = r[0],
                 genesymbol_ligand = r[3],
                 pdz_domain = int(r[2]),
-                organism = common.ensure_ncbi_tax_id(r[5]),
+                organism = taxonomy.ensure_ncbi_tax_id(r[5]),
                 pubmed = int(r[6]),
             )
         )
@@ -3409,8 +3410,8 @@ def get_phosphoelm(organism = 9606, ltp_only = True):
 
     if organism is None:
         _organism = None
-    elif organism in common.phosphoelm_taxids:
-        _organism = common.phosphoelm_taxids[organism]
+    elif organism in taxonomy.phosphoelm_taxids:
+        _organism = taxonomy.phosphoelm_taxids[organism]
     else:
         sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
         return []
@@ -3822,7 +3823,7 @@ def get_depod(organism = 9606):
         if (
             len(l) > 6 and
             l[2] == 'protein substrate' and
-            common.ensure_ncbi_tax_id(
+            taxonomy.ensure_ncbi_tax_id(
                 l[3].split('(')[0].strip()
             ) == organism and
             l[4].strip() != 'N/A'
@@ -4071,7 +4072,7 @@ def get_htri():
 
 def get_oreganno_old(organism = 9606):
 
-    taxids = common.swap_dict(common.taxids)
+    taxids = common.swap_dict(taxonomy.taxids)
 
     if organism in taxids:
         organism = taxids[organism]
@@ -4100,7 +4101,7 @@ def get_oreganno_old(organism = 9606):
 
 def get_oreganno(organism = 9606):
 
-    taxids = common.phosphoelm_taxids
+    taxids = taxonomy.phosphoelm_taxids
 
     if organism in taxids:
         organism = taxids[organism]
@@ -4262,7 +4263,7 @@ def go_annotations_goa(organism = 'human'):
     """
 
     organism = (
-        common.taxids[organism]
+        taxonomy.taxids[organism]
             if isinstance(organism, int) else
         organism
     )
@@ -6102,13 +6103,13 @@ def get_guide2pharma(
         Whether to include only endogenous ligands interactions.
     """
 
-    get_taxid = common.taxid_from_common_name
+    get_taxid = taxonomy.taxid_from_common_name
 
     if isinstance(organism, common.basestring):
 
         try:
 
-            organism = common.taxid_from_common_name(organism)
+            organism = taxonomy.taxid_from_common_name(organism)
 
         except KeyError:
 
@@ -7714,8 +7715,8 @@ def signor_interactions(organism = 9606, raw_records = False):
             complexes_by_id[cplex_id].add(cplex)
 
     if type(organism) is int:
-        if organism in common.taxids:
-            _organism = common.taxids[organism]
+        if organism in taxonomy.taxids:
+            _organism = taxonomy.taxids[organism]
         else:
             sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
             return []
@@ -10922,7 +10923,7 @@ def hippie_interactions(
                     for spec in details['species']
                 }
                 _organisms = {
-                    common.ensure_ncbi_tax_id(name)
+                    taxonomy.ensure_ncbi_tax_id(name)
                     for name in names
                 }
                 _organisms.discard(None)
@@ -11323,7 +11324,7 @@ def transmir_interactions():
     _ = next(c.result)
 
     taxids = common.join_dicts(
-        common.taxids,
+        taxonomy.taxids,
         common.mirbase_taxids,
         _from = 'values')
 
@@ -11884,7 +11885,7 @@ def get_cspa(organism = 9606):
         'Mouse': 'Table B',
     }
 
-    str_organism = common.taxids[organism].capitalize()
+    str_organism = taxonomy.taxids[organism].capitalize()
 
     url = urls.urls['cspa']['url']
     c = curl.Curl(url, large = True, silent = False)
@@ -12048,8 +12049,8 @@ def opm_annotations(organism = 9606):
     result = collections.defaultdict(set)
 
     organism_name = (
-        common.phosphoelm_taxids[organism]
-            if organism in common.phosphoelm_taxids else
+        taxonomy.phosphoelm_taxids[organism]
+            if organism in taxonomy.phosphoelm_taxids else
         None
     )
 
@@ -12390,9 +12391,9 @@ def _get_exocarta_vesiclepedia(
 
     types = types or {'protein'}
 
-    organism = common.phosphoelm_taxids[organism]
+    organism = taxonomy.phosphoelm_taxids[organism]
 
-    taxid_rev = dict((v, k) for k, v in iteritems(common.phosphoelm_taxids))
+    taxid_rev = dict((v, k) for k, v in iteritems(taxonomy.phosphoelm_taxids))
 
     # collecting the references
     url_s = urls.urls[database]['url_study']
@@ -12561,7 +12562,7 @@ def locate_localizations(
         all_uniprots(organism = organism, swissprot = True)
     )
 
-    organism_str = common.taxids[organism]
+    organism_str = taxonomy.taxids[organism]
     url = urls.urls['locate']['url'] % organism_str
     fname = url.split('/')[-1][:-4]
 

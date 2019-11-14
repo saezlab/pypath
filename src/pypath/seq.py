@@ -31,6 +31,7 @@ import pypath.dataio as dataio
 import pypath.uniprot_input as uniprot_input
 import pypath.urls as urls
 import pypath.curl as curl
+import pypath.taxonomy as taxonomy
 
 
 def swissprot_seq(organism=9606, isoforms=False):
@@ -78,8 +79,8 @@ def get_isoforms(organism=9606):
     Loads UniProt sequences for all isoforms.
     """
     
-    if organism in common.phosphoelm_taxids:
-        organism = common.phosphoelm_taxids[organism]
+    if organism in taxonomy.phosphoelm_taxids:
+        organism = taxonomy.phosphoelm_taxids[organism]
     
     reorg = re.compile(r'OS=([A-Z][a-z]+\s[a-z]+)')
     result = {}

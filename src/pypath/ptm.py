@@ -38,6 +38,7 @@ import pypath.uniprot_input as uniprot_input
 import pypath.intera as intera
 import pypath.progress as progress
 import pypath.session_mod as session_mod
+import pypath.taxonomy as taxonomy
 
 
 builtin_inputs = [
@@ -252,9 +253,9 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         if 'strict' not in self.inputargs:
             self.inputargs['strict'] = False
 
-        if self.inputargs['organism'] in common.taxids:
+        if self.inputargs['organism'] in taxonomy.taxids:
             self.inputargs['organism'] = (
-                common.taxids[self.inputargs['organism']]
+                taxonomy.taxids[self.inputargs['organism']]
             )
 
 
@@ -284,8 +285,8 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
 
         if self.input_is(self.organisms_supported, '__contains__'):
 
-            if self.ncbi_tax_id in common.taxa:
-                self.ncbi_tax_id = common.taxa[self.ncbi_tax_id]
+            if self.ncbi_tax_id in taxonomy.taxa:
+                self.ncbi_tax_id = taxonomy.taxa[self.ncbi_tax_id]
 
             self.inputargs['organism'] = self.ncbi_tax_id
 

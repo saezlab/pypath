@@ -37,6 +37,7 @@ import pypath.curl as curl
 import pypath.uniprot_input as uniprot_input
 import pypath.seq as _se
 import pypath.session_mod as session_mod
+import pypath.taxonomy as taxonomy
 
 
 class SequenceContainer(session_mod.Logger):
@@ -524,11 +525,11 @@ class PtmHomology(ProteinHomology, SequenceContainer):
                 uniprot = uniprot.split('-')[0]
                 aa = r[4][0]
                 num = int(nondigit.sub('', r[4]))
-                if r[6] not in common.taxa:
+                if r[6] not in taxonomy.taxa:
                     unknown_taxa.add(r[6])
                     continue
                 
-                tax = common.taxa[r[6]]
+                tax = taxonomy.taxa[r[6]]
                 group = int(r[5])
                 
                 this_site = (uniprot, isoform, aa, num, tax, typ[1])
