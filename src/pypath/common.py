@@ -1098,23 +1098,6 @@ def join_dicts(d1, d2, _from='keys', to='values'): # TODO
     return result
 
 
-class Namespace(object): # XXX: WHY? + Not used anywhere
-    pass
-
-
-def fun(): # XXX: Best name for a function. Not 100% sure if used anywhere...
-    """
-
-    """
-
-    print(__name__)
-    print(__name__ in globals())
-
-    for n in __name__.split('.'):
-        print(n, n in globals())
-
-    return __name__
-
 psite_mod_types = [('p', 'phosphorylation'),
                    ('ac', 'acetylation'),
                    ('ga', 'galactosylation'),
