@@ -1158,11 +1158,6 @@ pmod_other_to_bel = dict(
 )
 
 
-mirbase_taxids = {9606: 'hsa',
-                  10090: 'mmu',
-                  10116: 'rno',
-                  7227: 'dme'}
-
 amino_acids = (
     ('alanine', 'Ala', 'A'),
     ('arginine', 'Arg', 'R'),

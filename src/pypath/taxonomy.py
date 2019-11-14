@@ -61,11 +61,14 @@ taxids = {
     9544: 'rhesus macaque',
 }
 
+
 taxa = common.swap_dict(taxids)
+
 
 taxa_synonyms = {
     'bovine': 'cow',
 }
+
 
 phosphoelm_taxids = {
     9606: 'Homo sapiens',
@@ -117,6 +120,15 @@ dbptm_taxids = {
     83333: 'ECOLI',
     1891767: 'SV40',
 }
+
+
+mirbase_taxids = {
+    9606: 'hsa',
+    10090: 'mmu',
+    10116: 'rno',
+    7227: 'dme',
+}
+
 
 nonstandard_taxids = {
     'drosophila': 7227,

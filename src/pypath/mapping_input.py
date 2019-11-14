@@ -30,6 +30,7 @@ import pypath.uniprot_input as uniprot_input
 import pypath.curl as curl
 import pypath.urls as urls
 import pypath.common as common
+import pypath.taxonomy as taxonomy
 
 
 def get_uniprot_sec(organism=9606):
@@ -73,11 +74,16 @@ def get_mirbase_aliases(organism = 9606):
     
     if type(organism) in common.charTypes:
         mborganism = organism
-    elif organism not in common.mirbase_taxids:
-        raise ValueError('Organism not known: %u. Try to pass miRBase '
-                         'taxon prefix as string, e.g. `hsa`.' % organism)
+    elif organism not in taxonomy.mirbase_taxids:
+        
+        raise ValueError(
+            'Organism not known: %u. Try to pass miRBase '
+            'taxon prefix as string, e.g. `hsa`.' % organism
+        )
+        
     else:
-        mborganism = common.mirbase_taxids[organism]
+        
+        mborganism = taxonomy.mirbase_taxids[organism]
     
     mat = {}
     mir = {}

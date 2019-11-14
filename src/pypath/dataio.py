@@ -11325,8 +11325,9 @@ def transmir_interactions():
 
     taxids = common.join_dicts(
         taxonomy.taxids,
-        common.mirbase_taxids,
-        _from = 'values')
+        taxonomy.mirbase_taxids,
+        _from = 'values'
+    )
 
     for l in c.result:
 
