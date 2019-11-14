@@ -2995,7 +2995,8 @@ descriptions = {
             'name': 'CC-Attribution-ShareAlike-NonCommercial 4.0',
             'url': 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
             'commercial_use': False
-        },
+        }
+    },
 }
 
 pypath_methods = {
