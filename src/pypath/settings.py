@@ -31,21 +31,6 @@ import collections
 ROOT = os.path.abspath(os.path.dirname(__file__))
 
 
-class _const:
-
-    class ConstError(TypeError):
-
-        pass
-
-    def __setattr__(self, name, value):
-
-        if name in self.__dict__:
-
-            raise(self.ConstError, "Can't rebind const(%s)" % name)
-
-        self.__dict__[name] = value
-
-
 _defaults = {
     # name of the module
     'module_name': 'pypath',
@@ -147,9 +132,23 @@ in_cachedir = {
 }
 
 
+class Settings(object):
+    
+    
+    def __init__(self, **kwargs):
+        
+        self.__dict__.update(kwargs)
+
+
+Defaults = collections.namedtuple(
+    'Defaults',
+    sorted(_defaults.keys()),
+)
+
+
 def reset_all():
     
-    settings = collections.namedtuple('Settings', list(_defaults.keys()))
+    settings = Settings()
     
     for k in _defaults.keys():
         
@@ -201,10 +200,7 @@ def reset(param):
     setup(param, get_default(param))
 
 
-defaults = _const()
+defaults = Defaults(**_defaults)
 
-for k, v in iteritems(_defaults):
-    
-    setattr(defaults, k, v)
 
 reset_all()
