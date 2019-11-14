@@ -3871,6 +3871,11 @@ def get_depod(organism = 9606):
 
 def get_mimp():
     
+    db_names = {
+        'PhosphoSitePlus': 'PhosphoSite',
+        'PhosphoELM': 'phosphoELM',
+    }
+    
     result = []
     non_digit = re.compile(r'[^\d.-]+')
     motre = re.compile(r'(-*)([A-Za-z]+)(-*)')
@@ -3919,7 +3924,10 @@ def get_mimp():
                     instance = l[4]
                     
                 databases = ';'.join(
-                    tuple('%s_MIMP' % db for db in l[6].split(';')) +
+                    tuple(
+                        '%s_MIMP' % (db_names[db] if db in db_names else db)
+                        for db in l[6].split(';')
+                    ) +
                     ('MIMP',)
                 )
                 
