@@ -88,6 +88,9 @@ categories = {
     'HIPPIE': 'i',
     'Wang': 'p',
     'KEGG': 'p',
+    'ProtMapper': 'm',
+    'RLIMS-P': 'm',
+    'REACH': 'm',
     # TF-target
     'ENCODE_distal': 't',
     'PAZAR': 't',
@@ -159,7 +162,11 @@ def get_categories(database):
     result = (
         {letter for letter in categories[database]}
             if database in categories else
-        get_categories('_'.join(database.split('_')[:-1]))
+        get_categories(
+            '_'.join(
+                reversed(tuple(reversed(database.split('_')))[:-1])
+            )
+        )
             if '_' in database else
         set()
     )
