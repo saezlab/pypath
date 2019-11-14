@@ -21,6 +21,14 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
+import pypath.session_mod as session_mod
+
+_logger = session_mod.Logger(name = 'db_categories')
+_log = _logger._log
+
+
 categories = {
     'Vidal HI-III': 'i',
     'CancerCellMap': 'p',
@@ -148,8 +156,19 @@ ligand_receptor_resources = l
 
 def get_categories(database):
     
-    return (
+    result = (
         {letter for letter in categories[database]}
             if database in categories else
+        get_categories('_'.join(database.split('_')[:-1]))
+            if '_' in database else
         set()
     )
+    
+    if not result:
+        
+        _log(
+            'Could not find database `%s` in any '
+            'of the categories.' % database
+        )
+    
+    return result
