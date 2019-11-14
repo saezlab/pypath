@@ -3623,8 +3623,8 @@ def get_dbptm(organism = 9606):
 
     if organism is None:
         _organism = None
-    elif organism in common.dbptm_taxids:
-        _organism = common.dbptm_taxids[organism]
+    elif organism in taxonomy.dbptm_taxids:
+        _organism = taxonomy.dbptm_taxids[organism]
     else:
         sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
         return []
@@ -3665,8 +3665,8 @@ def get_dbptm_old(organism = 9606):
     """
     if organism is None:
         _organism = None
-    elif organism in common.dbptm_taxids:
-        _organism = common.dbptm_taxids[organism]
+    elif organism in taxonomy.dbptm_taxids:
+        _organism = taxonomy.dbptm_taxids[organism]
     else:
         sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
         return []
