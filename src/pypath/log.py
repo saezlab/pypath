@@ -232,8 +232,8 @@ class Logger(object):
         """
 
         self.close_logfile()
-        
-        self.fp = open(self.fname, 'wb')
+
+        self.fp = open(self.fname, 'wb', errors='replace')
 
 
     def close_logfile(self):
