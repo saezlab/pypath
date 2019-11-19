@@ -36,7 +36,7 @@ import pypath.session_mod as _session_mod
 class pypath(object):
     
     
-    __version__ = _version.__version__
+    __version__ = _version_mod.__version__
     __author__ = _version.__author__
     
     _session_mod.new_session()

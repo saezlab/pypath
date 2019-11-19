@@ -14296,9 +14296,10 @@ class PyPath(session_mod.Logger):
                 {
                     resource
                     for resource in by_resource.keys()
-                    if db_categories.catnames[
-                        db_categories.categories[resource]
-                    ] == cat
+                    if cat in {
+                        db_categories.catnames[c]
+                        for c in db_categories.get_categories(resource)
+                    }
                 }
             )
             for cat, resources in iteritems(by_category)
