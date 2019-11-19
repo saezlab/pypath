@@ -1356,7 +1356,7 @@ class AttrHelper(object):
 
             for resource_type in ['pathway', 'ptm', 'reaction', 'interaction']:
 
-                if len(getattr(data_formats, '%s_resources' % resource_type)
+                if len(getattr(db_categories, '%s_resources' % resource_type)
                        &thisSources) > 0:
 
                     if (self.name in self.defaults
@@ -12742,8 +12742,8 @@ class PyPath(session_mod.Logger):
 
             catmembers = set(db_categories.catnames.keys()) \
                 if s in db_categories.catnames \
-                else set(self.sources) if not hasattr(data_formats, cat) \
-                else getattr(data_formats, cat)
+                else set(self.sources) if not hasattr(db_categories, cat) \
+                else getattr(db_categories, cat)
 
             src_nodes = len([v for v in self.graph.vs if s in v[sattr]])
             cat_nodes = self.graph.vcount() if cat is None else len(
@@ -13099,7 +13099,7 @@ class PyPath(session_mod.Logger):
                 
                 fmt_noref = modcopy.deepcopy(fmt)
                 
-                if fmt.name in getattr(data_formats, cat):
+                if fmt.name in getattr(db_categories, cat):
                     
                     fmt_noref.must_have_references = False
                 
