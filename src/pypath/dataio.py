@@ -5410,14 +5410,41 @@ def kirouac2010_interactions():
             prev = None
 
         return names
-
-    url = urls.urls['kirouac2010']['url']
+    
+    
+    init_url = urls.urls['kirouac2010']['init_url']
     req_headers = [
         (
             'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) '
             'Gecko/20100101 Firefox/68.0'
         ),
     ]
+    
+    c0 = curl.Curl(
+        init_url,
+        silent = True,
+        large = False,
+        req_headers = req_headers,
+    )
+    
+    cookies = []
+    
+    for hdr in c0.resp_headers:
+        
+        if hdr.startswith(b'set-cookie'):
+            
+            cookie = hdr.split(b':')[1].split(b';')[0].strip()
+            
+            if cookie not in cookies:
+                
+                cookies.append(cookie.decode('ascii'))
+    
+    cookies = '; '.join(cookies)
+    
+    req_headers.append('Cookie: %s' % cookies)
+    
+    url = urls.urls['kirouac2010']['url']
+    
     c = curl.Curl(
         url,
         silent = False,
