@@ -360,7 +360,7 @@ class CellPhoneDB(omnipath.OmniPath):
                             'PMID: %s' % pmid
                             for pmid in sorted(
                                 refs_carry_over |
-                                iaction.references
+                                (iaction.references or set())
                             )
                         ),
                     )

@@ -28,7 +28,7 @@ import os
 import copy
 import collections
 
-import pypath.common as common
+ROOT = os.path.abspath(os.path.dirname(__file__))
 
 
 _defaults = {
@@ -40,7 +40,7 @@ _defaults = {
     # The basedir for every files and directories in the followings.
     'basedir': os.getcwd(),
     
-    'progressbars': True,
+    'progressbars': False,
     # verbosity for messages printed to console
     'console_verbosity': -1,
     # verbosity for messages written to log
@@ -132,16 +132,30 @@ in_cachedir = {
 }
 
 
+class Settings(object):
+    
+    
+    def __init__(self, **kwargs):
+        
+        self.__dict__.update(kwargs)
+
+
+Defaults = collections.namedtuple(
+    'Defaults',
+    sorted(_defaults.keys()),
+)
+
+
 def reset_all():
     
-    settings = collections.namedtuple('Settings', list(_defaults.keys()))
+    settings = Settings()
     
     for k in _defaults.keys():
         
         val = getattr(defaults, k)
         
         if k in in_datadir:
-            val = os.path.join(common.ROOT, 'data', val)
+            val = os.path.join(ROOT, 'data', val)
         
         setattr(settings, k, val)
     
@@ -186,10 +200,7 @@ def reset(param):
     setup(param, get_default(param))
 
 
-defaults = common._const()
+defaults = Defaults(**_defaults)
 
-for k, v in iteritems(_defaults):
-    
-    setattr(defaults, k, v)
 
 reset_all()

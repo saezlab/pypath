@@ -150,7 +150,7 @@ class Logger(object):
             msg = self.label_message(msg, label = label)
             msg = self.wrapper.fill(msg) if wrap else msg
             msg = self.timestamp_message(msg)
-            self.fp.write(msg)
+            self.fp.write(msg.encode('utf8', errors='replace'))
 
         if level <= self.console_level:
 
@@ -165,8 +165,8 @@ class Logger(object):
         label = '[%s] ' % label if label else ''
 
         return '%s%s' % (label, msg)
-    
-    
+
+
     def timestamp_message(self, msg):
         """
         Adds a timestamp in front of the message.
@@ -232,7 +232,8 @@ class Logger(object):
         """
 
         self.close_logfile()
-        self.fp = open(self.fname, 'w')
+
+        self.fp = open(self.fname, 'wb')
 
 
     def close_logfile(self):

@@ -58,9 +58,6 @@ class IntercellAnnotation(annot.CustomAnnotation):
         )
 
         self.make_df()
-        self.set_classes()
-        self.add_classes_to_df()
-        self.collect_classes()
 
 
     def reload(self):
@@ -88,7 +85,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
         self.main_classes = {}
 
-        for cls in set(self.df.category):
+        for cls in set(self.classes.keys()):
 
             mainclass = None
 
@@ -106,6 +103,10 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
 
     def add_classes_to_df(self):
+        
+        if not hasattr(self, 'df'):
+            
+            return
 
         self.df['mainclass'] = (
             np.array([self.main_classes[c] for c in self.df.category])
@@ -177,6 +178,30 @@ class IntercellAnnotation(annot.CustomAnnotation):
             self.class_labels[cls] = (
                 intercell_annot.get_class_label(mainclass or cls)
             )
+    
+    
+    def make_df(self):
+        
+        annot.CustomAnnotation.make_df(self)
+        
+        self.setup_intercell_classes()
+    
+    
+    def load_from_pickle(self, pickle_file):
+        
+        annot.CustomAnnotation.load_from_pickle(
+            self,
+            pickle_file = pickle_file,
+        )
+        
+        self.setup_intercell_classes()
+    
+    
+    def setup_intercell_classes(self):
+        
+        self.set_classes()
+        self.add_classes_to_df()
+        self.collect_classes()
 
 
 def init_db(**kwargs):

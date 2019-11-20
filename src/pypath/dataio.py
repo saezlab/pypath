@@ -118,6 +118,7 @@ import pypath.intera as intera
 # from pypath import reaction
 import pypath.residues as residues
 import pypath.settings as settings
+import pypath.taxonomy as taxonomy
 
 if 'long' not in __builtins__:
     long = int
@@ -127,6 +128,9 @@ if 'unicode' not in __builtins__:
 
 CURSOR_UP_ONE = '\x1b[1A'
 ERASE_LINE = '\x1b[2K'
+
+# UniProt ID with isoform e.g. O14754-1
+reupi = re.compile(r'([\w]{6,10})(?:-([0-9]{1,2}))?')
 
 #
 # thanks for http://stackoverflow.com/a/3239248/854988
@@ -518,7 +522,7 @@ def corum_complexes(organism = 9606):
         'endocytosis',
     )
 
-    organism = common.ensure_ncbi_tax_id(organism)
+    organism = taxonomy.ensure_ncbi_tax_id(organism)
 
     complexes = {}
 
@@ -535,7 +539,7 @@ def corum_complexes(organism = 9606):
 
         cplex_organism = rec['Organism']
 
-        if common.ensure_ncbi_tax_id(cplex_organism) != organism:
+        if taxonomy.ensure_ncbi_tax_id(cplex_organism) != organism:
 
             continue
 
@@ -2393,10 +2397,10 @@ def get_psite_phos(raw = True, organism = 'human', strict = True):
             if r['kinase_org'] != organism:
                 korg = r['kinase_org']
                 # attempting to map by orthology:
-                if korg in common.taxa and organism in common.taxa:
+                if korg in taxonomy.taxa and organism in taxonomy.taxa:
 
-                    ktaxid = common.taxa[korg]
-                    taxid = common.taxa[organism]
+                    ktaxid = taxonomy.taxa[korg]
+                    taxid = taxonomy.taxa[organism]
 
                     if korg not in orto:
                         orto[korg] = homologene_dict(ktaxid, taxid, 'refseqp')
@@ -2531,11 +2535,11 @@ def ptm_orthology():
             uniprot = uniprot.split('-')[0]
             aa = r[4][0]
             num = int(nondigit.sub('', r[4]))
-            if r[6] not in common.taxa:
+            if r[6] not in taxonomy.taxa:
                 unknown_taxa.add(r[6])
                 continue
 
-            tax = common.taxa[r[6]]
+            tax = taxonomy.taxa[r[6]]
             group = int(r[5])
 
             this_site = (uniprot, isoform, aa, num, tax, typ[1])
@@ -2807,7 +2811,7 @@ def regsites_one_organism(organism = 9606):
 
             for reg in regs:
 
-                reg_organism = common.taxa[reg['organism']]
+                reg_organism = taxonomy.taxa[reg['organism']]
 
                 if reg_organism not in organisms:
                     continue
@@ -3206,21 +3210,59 @@ def pepcyber_uniprot(num):
     return result
 
 
-def get_pdzbase():
+def pdzbase_interactions():
     """
     Downloads data from PDZbase. Parses data from the HTML tables.
     """
-
-    url = urls.urls['pdzbase']['url']
+    
+    PDZbaseInteraction = collections.namedtuple(
+        'PDZbaseInteraction',
+        [
+            'uniprot_pdz',
+            'isoform_pdz',
+            'uniprot_ligand',
+            'isoform_ligand',
+            'genesymbol_pdz',
+            'genesymbol_ligand',
+            'pdz_domain',
+            'organism',
+            'pubmed',
+        ],
+    )
+    
+    
+    url = urls.urls['pdzbase']['url_rescued']
     c = curl.Curl(url, silent = False)
     data = c.result
     soup = bs4.BeautifulSoup(data, 'html.parser')
-    rows = soup.find_all('table')[3].find('table').find('table').find_all('tr')
+    rows = (
+        soup.find_all('table')[3].find('table').find('table').find_all('tr')
+    )
     result = []
+    
+    del rows[0]
+    
     for r in rows:
-        thisRow = [c.text.strip() for c in r.find_all('td')]
-        result.append(thisRow)
-    del result[0]
+        
+        r = [c.text.strip() for c in r.find_all('td')]
+        
+        uniprot_pdz, isoform_pdz = reupi.match(r[1]).groups()
+        uniprot_ligand, isoform_ligand = reupi.match(r[4]).groups()
+        
+        result.append(
+            PDZbaseInteraction(
+                uniprot_pdz = uniprot_pdz,
+                isoform_pdz = int(isoform_pdz) if isoform_pdz else 1,
+                uniprot_ligand = uniprot_ligand,
+                isoform_ligand = int(isoform_ligand) if isoform_ligand else 1,
+                genesymbol_pdz = r[0],
+                genesymbol_ligand = r[3],
+                pdz_domain = int(r[2]),
+                organism = taxonomy.ensure_ncbi_tax_id(r[5]),
+                pubmed = int(r[6]),
+            )
+        )
+    
     return result
 
 
@@ -3368,8 +3410,8 @@ def get_phosphoelm(organism = 9606, ltp_only = True):
 
     if organism is None:
         _organism = None
-    elif organism in common.phosphoelm_taxids:
-        _organism = common.phosphoelm_taxids[organism]
+    elif organism in taxonomy.phosphoelm_taxids:
+        _organism = taxonomy.phosphoelm_taxids[organism]
     else:
         sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
         return []
@@ -3463,6 +3505,7 @@ def get_elm_classes():
 
 
 def get_elm_instances():
+    
     url = urls.urls['elm_inst']['url']
     c = curl.Curl(url, silent = False)
     data = c.result
@@ -3470,23 +3513,84 @@ def get_elm_instances():
     data = data[6:]
 
 
-def get_elm_interactions():
+def elm_interactions():
     """
     Downlods manually curated interactions from ELM.
     This is the gold standard set of ELM.
     """
+    
+    
+    def number_or_none(value, typ = int):
+        
+        return typ(value) if value != 'None' else None
+    
+    
+    retax = re.compile(r'"([0-9]+)"\([-:/,\.\[\]\(\)\w\s]+\)')
+    
+    ELMInteraction = collections.namedtuple(
+        'ELMInteraction',
+        [
+            'motif_elm',
+            'domain_pfam',
+            'uniprot_motif',
+            'uniprot_domain',
+            'isoform_motif',
+            'isoform_domain',
+            'start_motif',
+            'end_motif',
+            'start_domain',
+            'end_domain',
+            'affinity_min',
+            'affinity_max',
+            'pubmeds',
+            'taxon_motif',
+            'taxon_domain',
+        ],
+    )
+    
     result = []
     url = urls.urls['elm_int']['url']
     c = curl.Curl(url, silent = False)
     data = c.result
     data = data.split('\n')
     del data[0]
+    
     for l in data:
-        result.append([x.strip() for x in l.split('\t')])
+        
+        if not l:
+            
+            continue
+        
+        l = tuple(x.strip() for x in l.split('\t'))
+        
+        uniprot_mofif, isoform_motif = reupi.match(l[2]).groups()
+        uniprot_domain, isoform_domain = reupi.match(l[3]).groups()
+        
+        result.append(
+            ELMInteraction(
+                motif_elm = l[0],
+                domain_pfam = l[1],
+                uniprot_motif = uniprot_mofif,
+                uniprot_domain = uniprot_domain,
+                isoform_motif = int(isoform_motif) if isoform_motif else 1,
+                isoform_domain = int(isoform_domain) if isoform_domain else 1,
+                start_motif = int(l[4]),
+                end_motif = int(l[5]),
+                start_domain = number_or_none(l[6]),
+                end_domain = number_or_none(l[7]),
+                affinity_min = number_or_none(l[8], float),
+                affinity_max = number_or_none(l[9], float),
+                pubmeds = tuple(map(int, l[10].split(','))) if l[10] else (),
+                taxon_motif = int(retax.match(l[11]).groups()[0]),
+                taxon_domain = int(retax.match(l[12]).groups()[0]),
+            )
+        )
+    
     return result
 
 
 def pfam_uniprot(uniprots, infile = None):
+    
     result = {}
     url = urls.urls['pfam_up']['url']
     infile = infile if infile is not None \
@@ -3519,8 +3623,8 @@ def get_dbptm(organism = 9606):
 
     if organism is None:
         _organism = None
-    elif organism in common.dbptm_taxids:
-        _organism = common.dbptm_taxids[organism]
+    elif organism in taxonomy.dbptm_taxids:
+        _organism = taxonomy.dbptm_taxids[organism]
     else:
         sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
         return []
@@ -3561,8 +3665,8 @@ def get_dbptm_old(organism = 9606):
     """
     if organism is None:
         _organism = None
-    elif organism in common.dbptm_taxids:
-        _organism = common.dbptm_taxids[organism]
+    elif organism in taxonomy.dbptm_taxids:
+        _organism = taxonomy.dbptm_taxids[organism]
     else:
         sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
         return []
@@ -3719,7 +3823,7 @@ def get_depod(organism = 9606):
         if (
             len(l) > 6 and
             l[2] == 'protein substrate' and
-            common.ensure_ncbi_tax_id(
+            taxonomy.ensure_ncbi_tax_id(
                 l[3].split('(')[0].strip()
             ) == organism and
             l[4].strip() != 'N/A'
@@ -3766,6 +3870,11 @@ def get_depod(organism = 9606):
 
 
 def get_mimp():
+    
+    db_names = {
+        'PhosphoSitePlus': 'PhosphoSite',
+        'PhosphoELM': 'phosphoELM',
+    }
     
     result = []
     non_digit = re.compile(r'[^\d.-]+')
@@ -3815,7 +3924,10 @@ def get_mimp():
                     instance = l[4]
                     
                 databases = ';'.join(
-                    tuple('%s_MIMP' % db for db in l[6].split(';')) +
+                    tuple(
+                        '%s_MIMP' % (db_names[db] if db in db_names else db)
+                        for db in l[6].split(';')
+                    ) +
                     ('MIMP',)
                 )
                 
@@ -3968,7 +4080,7 @@ def get_htri():
 
 def get_oreganno_old(organism = 9606):
 
-    taxids = common.swap_dict(common.taxids)
+    taxids = common.swap_dict(taxonomy.taxids)
 
     if organism in taxids:
         organism = taxids[organism]
@@ -3997,7 +4109,7 @@ def get_oreganno_old(organism = 9606):
 
 def get_oreganno(organism = 9606):
 
-    taxids = common.phosphoelm_taxids
+    taxids = taxonomy.phosphoelm_taxids
 
     if organism in taxids:
         organism = taxids[organism]
@@ -4159,7 +4271,7 @@ def go_annotations_goa(organism = 'human'):
     """
 
     organism = (
-        common.taxids[organism]
+        taxonomy.taxids[organism]
             if isinstance(organism, int) else
         organism
     )
@@ -5298,14 +5410,41 @@ def kirouac2010_interactions():
             prev = None
 
         return names
-
-    url = urls.urls['kirouac2010']['url']
+    
+    
+    init_url = urls.urls['kirouac2010']['init_url']
     req_headers = [
         (
             'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) '
             'Gecko/20100101 Firefox/68.0'
         ),
     ]
+    
+    c0 = curl.Curl(
+        init_url,
+        silent = True,
+        large = False,
+        req_headers = req_headers,
+    )
+    
+    cookies = []
+    
+    for hdr in c0.resp_headers:
+        
+        if hdr.startswith(b'set-cookie'):
+            
+            cookie = hdr.split(b':')[1].split(b';')[0].strip()
+            
+            if cookie not in cookies:
+                
+                cookies.append(cookie.decode('ascii'))
+    
+    cookies = '; '.join(cookies)
+    
+    req_headers.append('Cookie: %s' % cookies)
+    
+    url = urls.urls['kirouac2010']['url']
+    
     c = curl.Curl(
         url,
         silent = False,
@@ -5999,13 +6138,13 @@ def get_guide2pharma(
         Whether to include only endogenous ligands interactions.
     """
 
-    get_taxid = common.taxid_from_common_name
+    get_taxid = taxonomy.taxid_from_common_name
 
     if isinstance(organism, common.basestring):
 
         try:
 
-            organism = common.taxid_from_common_name(organism)
+            organism = taxonomy.taxid_from_common_name(organism)
 
         except KeyError:
 
@@ -6560,7 +6699,7 @@ def only_pmids(idList, strict = True):
     """
     if type(idList) in common.simpleTypes:
         idList = [idList]
-    pmids = set([i for i in idList if i.isdigit()])
+    pmids = {i for i in idList if isinstance(i, int) or i.isdigit()}
     pmcids = [i for i in idList if i.startswith('PMC')]
     dois = [i for i in idList if '/' in i]
     manuscids = [i for i in idList if i.startswith('NIHMS')]
@@ -7611,8 +7750,8 @@ def signor_interactions(organism = 9606, raw_records = False):
             complexes_by_id[cplex_id].add(cplex)
 
     if type(organism) is int:
-        if organism in common.taxids:
-            _organism = common.taxids[organism]
+        if organism in taxonomy.taxids:
+            _organism = taxonomy.taxids[organism]
         else:
             sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
             return []
@@ -10610,7 +10749,13 @@ def intact_interactions(
 
         else:
 
-            return _try_isoform(field.split(':')[1].replace('"', ''))
+            uniprot, isoform = _try_isoform(
+                field.split(':')[1].replace('"', '')
+            )
+            
+            uniprot = uniprot.split('-')[0]
+            
+            return uniprot, isoform
 
 
     def get_taxon(field):
@@ -10813,7 +10958,7 @@ def hippie_interactions(
                     for spec in details['species']
                 }
                 _organisms = {
-                    common.ensure_ncbi_tax_id(name)
+                    taxonomy.ensure_ncbi_tax_id(name)
                     for name in names
                 }
                 _organisms.discard(None)
@@ -11214,9 +11359,10 @@ def transmir_interactions():
     _ = next(c.result)
 
     taxids = common.join_dicts(
-        common.taxids,
-        common.mirbase_taxids,
-        _from = 'values')
+        taxonomy.taxids,
+        taxonomy.mirbase_taxids,
+        _from = 'values'
+    )
 
     for l in c.result:
 
@@ -11775,7 +11921,7 @@ def get_cspa(organism = 9606):
         'Mouse': 'Table B',
     }
 
-    str_organism = common.taxids[organism].capitalize()
+    str_organism = taxonomy.taxids[organism].capitalize()
 
     url = urls.urls['cspa']['url']
     c = curl.Curl(url, large = True, silent = False)
@@ -11939,8 +12085,8 @@ def opm_annotations(organism = 9606):
     result = collections.defaultdict(set)
 
     organism_name = (
-        common.phosphoelm_taxids[organism]
-            if organism in common.phosphoelm_taxids else
+        taxonomy.phosphoelm_taxids[organism]
+            if organism in taxonomy.phosphoelm_taxids else
         None
     )
 
@@ -12281,9 +12427,9 @@ def _get_exocarta_vesiclepedia(
 
     types = types or {'protein'}
 
-    organism = common.phosphoelm_taxids[organism]
+    organism = taxonomy.phosphoelm_taxids[organism]
 
-    taxid_rev = dict((v, k) for k, v in iteritems(common.phosphoelm_taxids))
+    taxid_rev = dict((v, k) for k, v in iteritems(taxonomy.phosphoelm_taxids))
 
     # collecting the references
     url_s = urls.urls[database]['url_study']
@@ -12452,7 +12598,7 @@ def locate_localizations(
         all_uniprots(organism = organism, swissprot = True)
     )
 
-    organism_str = common.taxids[organism]
+    organism_str = taxonomy.taxids[organism]
     url = urls.urls['locate']['url'] % organism_str
     fname = url.split('/')[-1][:-4]
 
@@ -12711,3 +12857,122 @@ def cancersea_annotations():
                 )
     
     return dict(annotations)
+
+
+def get_protmapper():
+    """
+    Returns the raw records as read by ``csv.DictReader``.
+    From Bachman et al. 2019 "Assembling a phosphoproteomic knowledge base
+    using ProtMapper to normalize phosphosite information from databases and
+    text mining",
+    https://www.biorxiv.org/content/10.1101/822668v3.supplementary-material
+    """
+    
+    url = urls.urls['protmapper']['url']
+    files = urls.urls['protmapper']['files']
+    c = curl.Curl(url, large = True, silent = False, files_needed = files)
+    
+    evidences = collections.defaultdict(list)
+    
+    for rec in csv.DictReader(c.files_multipart['evidences.csv']):
+        
+        evidences[rec['ID']].append(rec)
+    
+    records = list(csv.DictReader(c.files_multipart['export.csv']))
+    
+    return records, evidences
+
+
+def protmapper_ptms(
+        only_evidences = None,
+        only_literature = False,
+        interactions = False,
+    ):
+    """
+    only_evidences : str,set,NoneType
+        Keep only the interactions with these evidence type, e.g. `VALID`.
+        See the 'descriptions' column in the 'evidences.csv' supplementary
+        table.
+    """
+    
+    databases = {
+        'signor': 'Signor',
+        'psp': 'PhosphoSite',
+        'sparser': 'Sparser',
+        'reach': 'REACH',
+        'pid': 'NCI-PID',
+        'reactome': 'Reactome',
+        'rlimsp': 'RLIMS-P',
+        'bel': 'BEL-Large-Corpus',
+    }
+    
+    result = []
+    only_evidences = common.to_set(only_evidences)
+    
+    records, evidences = get_protmapper()
+    
+    for rec in records:
+        
+        if rec['CTRL_NS'] != 'UP':
+            
+            continue
+        
+        if only_evidences:
+            
+            ev_types = {
+                ev['DESCRIPTION']
+                for ev in evidences[rec['ID']]
+            }
+            
+            if not only_evidences & ev_types:
+                
+                continue
+        
+        references = {
+            ev['PMID']
+            for ev in evidences[rec['ID']]
+            if ev['PMID']
+        }
+        
+        if only_literature and not references:
+            
+            continue
+        
+        typ = (
+            'phosphorylation'
+                if rec['CTRL_IS_KINASE'] == 'True' else
+            'unknown'
+        )
+        sources = {
+            '%s_ProtMapper' % (
+                databases[source] if source in databases else source
+            )
+            for source in rec['SOURCES'].strip('"').split(',')
+        }
+        
+        if interactions:
+            
+            result.append([
+                rec['CTRL_ID'],
+                rec['TARGET_UP_ID'],
+                sources,
+                references,
+            ])
+            
+        else:
+            
+            result.append({
+                'kinase': rec['CTRL_ID'],
+                'resaa': rec['TARGET_RES'],
+                'resnum': int(rec['TARGET_POS']),
+                'references': references,
+                'substrate': rec['TARGET_UP_ID'],
+                'databases': sources,
+            })
+    
+    return result
+
+
+def protmapper_interactions(**kwargs):
+    
+    return protmapper_ptms(interactions = True, **kwargs)

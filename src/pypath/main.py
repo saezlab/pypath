@@ -118,6 +118,8 @@ import pypath._version as _version
 from pypath.progress import *
 import pypath.settings as settings
 import pypath.entity as entity_mod
+import pypath.taxonomy as taxonomy
+import pypath.db_categories as db_categories
 
 # to make it accessible directly from the module
 omnipath = data_formats.omnipath
@@ -1354,7 +1356,7 @@ class AttrHelper(object):
 
             for resource_type in ['pathway', 'ptm', 'reaction', 'interaction']:
 
-                if len(getattr(data_formats, '%s_resources' % resource_type)
+                if len(getattr(db_categories, '%s_resources' % resource_type)
                        &thisSources) > 0:
 
                     if (self.name in self.defaults
@@ -2016,8 +2018,10 @@ class PyPath(session_mod.Logger):
 
         if 'A' in tax_dict and 'B' in tax_dict:
 
-            return (self.get_taxon(tax_dict['A'], fields),
-                    self.get_taxon(tax_dict['B'], fields))
+            return (
+                self.get_taxon(tax_dict['A'], fields),
+                self.get_taxon(tax_dict['B'], fields),
+            )
 
         else:
 
@@ -2490,7 +2494,8 @@ class PyPath(session_mod.Logger):
                         param.input,
                         silent=False,
                         large=True,
-                        cache=curl_use_cache)
+                        cache=curl_use_cache
+                    )
                     infile = c.fileobj.read()
 
                     if type(infile) is bytes:
@@ -2705,18 +2710,22 @@ class PyPath(session_mod.Logger):
                     refs = []
                     if refCol is not None:
 
-                        if not isinstance(line[refCol], (list, set, tuple)):
-
-                            refs = line[refCol].split(refSep)
-
-                        else:
-
+                        if isinstance(line[refCol], (list, set, tuple)):
+                            
                             refs = line[refCol]
-
+                            
+                        elif isinstance(line[refCol], int):
+                            
+                            refs = (line[refCol],)
+                            
+                        else:
+                            
+                            refs = line[refCol].split(refSep)
+                        
                         refs = common.delEmpty(list(set(refs)))
-
-                    refs = dataio.only_pmids([r.strip() for r in refs])
-
+                    
+                    refs = dataio.only_pmids([str(r).strip() for r in refs])
+                    
                     if len(refs) == 0 and must_have_references:
                         rFiltered += 1
                         continue
@@ -2728,7 +2737,7 @@ class PyPath(session_mod.Logger):
 
                     # to enable more sophisticated inputs:
                     elif isinstance(param.ncbi_tax_id, dict):
-
+                        
                         taxx = self.get_taxon(param.ncbi_tax_id, line)
 
                         if isinstance(taxx, tuple):
@@ -2741,11 +2750,13 @@ class PyPath(session_mod.Logger):
                         taxdA = (
                             param.ncbi_tax_id['A']
                             if 'A' in param.ncbi_tax_id else
-                            param.ncbi_tax_id)
+                            param.ncbi_tax_id
+                        )
                         taxdB = (
                             param.ncbi_tax_id['B']
                             if 'B' in param.ncbi_tax_id else
-                            param.ncbi_tax_id)
+                            param.ncbi_tax_id
+                        )
 
                         if (('include' in taxdA and
                             taxon_a not in taxdA['include']) or
@@ -2773,12 +2784,15 @@ class PyPath(session_mod.Logger):
                         stim, inh = self.process_sign(line[sign[0]], sign)
 
                     resource = (
-                        [line[param.resource]]
+                        line[param.resource]
                         if isinstance(param.resource, int) else
                         line[param.resource[0]].split(param.resource[1])
                         if isinstance(param.resource, tuple) else
-                        [param.resource]
+                        param.resource
                     )
+                    
+                    resource = common.to_set(resource)
+                    resource.add(param.name)
 
                     id_a = line[param.id_col_a]
                     id_b = line[param.id_col_b]
@@ -3990,8 +4004,21 @@ class PyPath(session_mod.Logger):
             this_node[key] = self.combine_attr([this_node[key], value])
 
 
-    def add_update_edge(self, id_a, id_b, source, is_directed, refs, stim, inh,
-                        taxon_a, taxon_b, typ, extra_attrs={}, add=False):
+    def add_update_edge(
+            self,
+            id_a,
+            id_b,
+            source,
+            is_directed,
+            refs,
+            stim,
+            inh,
+            taxon_a,
+            taxon_b,
+            typ,
+            extra_attrs = {},
+            add = False,
+        ):
         """
         Updates the attributes of one edge in the (undirected) network.
         Optionally it creates a new edge and sets the attributes, but it
@@ -4145,20 +4172,23 @@ class PyPath(session_mod.Logger):
         :arg set value:
             The value of the attribute to be assigned/merged.
         """
-
-        value = (value if isinstance(value, set) else set(value)
-                 if isinstance(value, list) else set([value]))
+        
+        value = common.to_set(value)
+        
         e = self.graph.es[edge]
 
         if attr not in self.graph.es.attributes():
-            self.graph.es[attr] = [set([]) for _ in
-                                   xrange(0, self.graph.ecount())]
+            
+            self.graph.es[attr] = [
+                set()
+                for _ in xrange(self.graph.ecount())
+            ]
         if e[attr] is None:
-            e[attr] = set([])
+            e[attr] = set()
 
         elif not isinstance(e[attr], set):
-            e[attr] = set(e[attr]) if isinstance(e[attr],
-                                                 list) else set([e[attr]])
+            
+            e[attr] = common.to_set(e[attr])
 
         e[attr].update(value)
 
@@ -5518,7 +5548,7 @@ class PyPath(session_mod.Logger):
             (c, list(filter(lambda s:
                 s in self.sources, map(lambda cs:
                     cs[0], filter(lambda cs:
-                        cs[1] == c, iteritems(data_formats.categories)))))),
+                        cs[1] == c, iteritems(db_categories.categories)))))),
                              self.has_cats)))
 
         return dict([(c, self.get_network({'edge': {'sources': s},
@@ -5612,8 +5642,8 @@ class PyPath(session_mod.Logger):
         """
 
         self.has_cats = set(list(map(lambda s:
-            data_formats.categories[s], filter(lambda s:
-                s in data_formats.categories, self.sources))))
+            db_categories.categories[s], filter(lambda s:
+                s in db_categories.categories, self.sources))))
 
     def update_pathways(self):
         """
@@ -5964,15 +5994,15 @@ class PyPath(session_mod.Logger):
 
             for s in v['sources']:
 
-                if s in data_formats.categories:
-                    v['cat'].add(data_formats.categories[s])
+                if s in db_categories.categories:
+                    v['cat'].add(db_categories.categories[s])
 
         for e in self.graph.es:
 
             for s in e['sources']:
 
-                if s in data_formats.categories:
-                    cat = data_formats.categories[s]
+                if s in db_categories.categories:
+                    cat = db_categories.categories[s]
                     e['cat'].add(cat)
 
                     if cat not in e['refs_by_cat']:
@@ -10020,8 +10050,8 @@ class PyPath(session_mod.Logger):
             'Li2012': 'li2012_phospho'
         }
 
-        if source == 'PhosphoSite' and self.ncbi_tax_id in common.taxids:
-            kwargs['organism'] = common.taxids[self.ncbi_tax_id]
+        if source == 'PhosphoSite' and self.ncbi_tax_id in taxonomy.taxids:
+            kwargs['organism'] = taxonomy.taxids[self.ncbi_tax_id]
 
             if 'strict' not in kwargs:
                 kwargs['strict'] = False
@@ -10708,10 +10738,10 @@ class PyPath(session_mod.Logger):
                 row_order = []
 
                 for cat in use_cats:
-                    row_order.append((data_formats.catnames[cat], 'subtitle'))
+                    row_order.append((db_categories.catnames[cat], 'subtitle'))
                     row_order.extend(
                         sorted(
-                            filter(lambda s: data_formats.categories[s] == cat,
+                            filter(lambda s: db_categories.categories[s] == cat,
                                    self.sources),
                             key=lambda s: s.lower()))
 
@@ -12703,17 +12733,17 @@ class PyPath(session_mod.Logger):
                 []))) if by_category else []
 
         for s in list(self.sources) + cats:
-            sattr = 'cat' if s in data_formats.catnames else 'sources'
-            rattr = 'refs_by_cat' if s in data_formats.catnames else 'refs_by_source'
+            sattr = 'cat' if s in db_categories.catnames else 'sources'
+            rattr = 'refs_by_cat' if s in db_categories.catnames else 'refs_by_source'
 
-            cat = None if s in data_formats.catnames \
-                or s not in data_formats.categories \
-                else data_formats.categories[s]
+            cat = None if s in db_categories.catnames \
+                or s not in db_categories.categories \
+                else db_categories.categories[s]
 
-            catmembers = set(data_formats.catnames.keys()) \
-                if s in data_formats.catnames \
-                else set(self.sources) if not hasattr(data_formats, cat) \
-                else getattr(data_formats, cat)
+            catmembers = set(db_categories.catnames.keys()) \
+                if s in db_categories.catnames \
+                else set(self.sources) if not hasattr(db_categories, cat) \
+                else getattr(db_categories, cat)
 
             src_nodes = len([v for v in self.graph.vs if s in v[sattr]])
             cat_nodes = self.graph.vcount() if cat is None else len(
@@ -12804,8 +12834,8 @@ class PyPath(session_mod.Logger):
             ])
             ratio = len(src_refs) / float(src_edges)
 
-            if s in data_formats.catnames:
-                s = data_formats.catnames[s]
+            if s in db_categories.catnames:
+                s = db_categories.catnames[s]
 
             result[s] = {
                 'source_nodes': src_nodes,
@@ -12987,8 +13017,8 @@ class PyPath(session_mod.Logger):
 
         for key in use_cats:
 
-            if key in data_formats.catnames:
-                name = data_formats.catnames[key]
+            if key in db_categories.catnames:
+                name = db_categories.catnames[key]
 
                 if by_category:
                     cs[(name, 'subtitle')] = cs[name]
@@ -13003,10 +13033,10 @@ class PyPath(session_mod.Logger):
         if by_category:
 
             for cat in use_cats:
-                row_order.append((data_formats.catnames[cat], 'subtitle'))
+                row_order.append((db_categories.catnames[cat], 'subtitle'))
                 row_order.extend(sorted(filter(lambda name:
-                            (name in data_formats.categories
-                             and data_formats.categories[name] == cat),
+                            (name in db_categories.categories
+                             and db_categories.categories[name] == cat),
                              cs.keys())))
 
         self.table_latex(fname, header, cs, header_format=header_format,
@@ -13069,7 +13099,7 @@ class PyPath(session_mod.Logger):
                 
                 fmt_noref = modcopy.deepcopy(fmt)
                 
-                if fmt.name in getattr(data_formats, cat):
+                if fmt.name in getattr(db_categories, cat):
                     
                     fmt_noref.must_have_references = False
                 
@@ -13443,6 +13473,7 @@ class PyPath(session_mod.Logger):
         resources = self.resources
         references = self.references_stats()
         entities = self.entities_stats()
+        interactions_all = self.interactions_all_stats()
         interactions_undirected = self.interactions_undirected_stats()
         interactions_directed = self.interactions_directed_stats()
         interactions_signed = self.interactions_signed_stats()
@@ -13459,6 +13490,7 @@ class PyPath(session_mod.Logger):
             
             for stats in (
                 entities,
+                interactions_all,
                 interactions_undirected,
                 interactions_directed,
                 interactions_signed,
@@ -13654,11 +13686,11 @@ class PyPath(session_mod.Logger):
                 label,
                 {
                     resource
-                    for resource, cat in iteritems(data_formats.categories)
+                    for resource, cat in iteritems(db_categories.categories)
                     if cat == letter
                 }
             )
-            for label, letter in iteritems(data_formats.catletters)
+            for label, letter in iteritems(db_categories.catletters)
         )
     
     
@@ -13669,7 +13701,7 @@ class PyPath(session_mod.Logger):
         
         result = {}
         
-        for cat in data_formats.catletters.keys():
+        for cat in db_categories.catletters.keys():
             
             if not cat_res[cat] & self.resources:
                 
@@ -13937,10 +13969,11 @@ class PyPath(session_mod.Logger):
                 )
             ))
             for e in self.graph.es
-            if not e['dirs'].is_directed() and
-            (
-                not resources or
-                e['sources'] & resources
+            if (
+                not resources and
+                not e['dirs'].is_directed()
+            ) or (
+                e['dirs'].sources['undirected'] & resources
             )
         }
     
@@ -14263,9 +14296,10 @@ class PyPath(session_mod.Logger):
                 {
                     resource
                     for resource in by_resource.keys()
-                    if data_formats.catnames[
-                        data_formats.categories[resource]
-                    ] == cat
+                    if cat in {
+                        db_categories.catnames[c]
+                        for c in db_categories.get_categories(resource)
+                    }
                 }
             )
             for cat, resources in iteritems(by_category)
@@ -14337,8 +14371,8 @@ class PyPath(session_mod.Logger):
                 (
                     n_by_resource[resource] /
                     n_by_category[
-                        data_formats.catnames[
-                            data_formats.categories[resource]
+                        db_categories.catnames[
+                            db_categories.categories[resource]
                         ]
                     ] * 100
                         if n_by_resource[resource] else

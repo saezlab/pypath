@@ -42,6 +42,7 @@ import pypath.refs as _refs
 import pypath.omnipath as omnipath
 import pypath.session_mod as session_mod
 import pypath.go as go
+import pypath.db_categories as db_categories
 
 
 # defines a multi-section barplot
@@ -1082,8 +1083,8 @@ class Workflow(omnipath.OmniPath):
         
         # dict of resource names to category names
         self.cats = dict(
-            (c[0], data_formats.catnames[cc])
-            for c in iteritems(data_formats.categories)
+            (c[0], db_categories.catnames[cc])
+            for c in iteritems(db_categories.categories)
             for cc in c[1]
             if not self.only_categories or cc in self.only_categories
         )
@@ -1095,7 +1096,7 @@ class Workflow(omnipath.OmniPath):
                     ('All', c[0]),
                     cname
                 )
-                for c, cname in iteritems(data_formats.catnames)
+                for c, cname in iteritems(db_categories.catnames)
                 if c[0] in self.pp.has_cats and (
                     not self.only_categories or
                     c[0] in self.only_categories
@@ -1108,10 +1109,10 @@ class Workflow(omnipath.OmniPath):
             c
             for c in self.cat_ordr_default # as given in the settings
             # if the category presents in the network
-            if data_formats.catletters[c] in self.pp.has_cats and (
+            if db_categories.catletters[c] in self.pp.has_cats and (
                 # and it is allowed in the settings
                 self.only_categories is None or
-                data_formats.catletters[c] in self.only_categories
+                db_categories.catletters[c] in self.only_categories
             )
         ]
 
@@ -1199,13 +1200,13 @@ class Workflow(omnipath.OmniPath):
             for w in seq
             if (
                 (
-                    s in data_formats.categories and # the resource
+                    s in db_categories.categories and # the resource
                                                      # has category
                     s in w['sources'] and # the element belongs
                                           # to the resource
                     len(
                         w['sources'] & # set of resources for the element
-                        getattr(data_formats, data_formats.categories[s])
+                        getattr(data_formats, db_categories.categories[s])
                             # set of resources in the category
                     ) == 1
                 ) or (
@@ -1332,16 +1333,16 @@ class Workflow(omnipath.OmniPath):
         
         # colors of the bars
         self.labcol = [
-            self.ccolors[data_formats.categories[lab]]
-                if lab in data_formats.categories else
+            self.ccolors[db_categories.categories[lab]]
+                if lab in db_categories.categories else
             self.ccolors[lab[1]] # for resource categories
             for lab in self.data_protein_counts[0]
         ]
         
         # colors of the shaded parts
         self.labcol2 = [
-            self.ccolors2[data_formats.categories[lab]]
-                if lab in data_formats.categories else
+            self.ccolors2[db_categories.categories[lab]]
+                if lab in db_categories.categories else
             self.ccolors2[lab[1]] # for resource categories
             for lab in self.data_protein_counts[0]
         ]
@@ -1514,7 +1515,7 @@ class Workflow(omnipath.OmniPath):
             colors = list(
                 map(
                     lambda l:
-                        self.ccolors2[data_formats.categories[l]],
+                        self.ccolors2[db_categories.categories[l]],
                     labels
                 )
             )
@@ -1531,12 +1532,12 @@ class Workflow(omnipath.OmniPath):
                 ):
                     
                     color_labels.append(
-                        (data_formats.catnames[c], self.ccolors2[c])
+                        (db_categories.catnames[c], self.ccolors2[c])
                     )
 
             for i, l in enumerate(labels):
                 if type(l) is tuple:
-                    labels[i] = data_formats.catnames[l[1]]
+                    labels[i] = db_categories.catnames[l[1]]
 
             csvname = self.get_path('%s_%s.csv' % (par.name, self.name))
 

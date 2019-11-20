@@ -31,7 +31,9 @@ import copy
 # from pypath:
 import pypath.input_formats as input_formats
 import pypath.urls as urls
-from pypath import common
+import pypath.common as common
+import pypath.taxonomy as taxonomy
+
 
 __all__ = [
     'reaction', 'interaction', 'interaction_misc', 'pathway',
@@ -449,26 +451,27 @@ pathway = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
     'pdz': input_formats.ReadSettings(
-        name = "PDZBase",
+        name = 'PDZBase',
         separator = None,
-        id_col_a = 1,
-        id_col_b = 4,
-        id_type_a = "uniprot",
-        id_type_b = "uniprot",
-        entity_type_a = "protein",
-        entity_type_b = "protein",
+        id_col_a = 0,
+        id_col_b = 2,
+        id_type_a = 'uniprot',
+        id_type_b = 'uniprot',
+        entity_type_a = 'protein',
+        entity_type_b = 'protein',
         is_directed = 1,
         sign = False,
-        ncbi_tax_id = {'col': 5,
-                   'dict': {
-                       'human': 9606
-                   }},
-        input = 'get_pdzbase',
-        references = 6,
+        ncbi_tax_id = {
+            'col': 7,
+            'include': {9606},
+        },
+        input = 'pdzbase_interactions',
+        references = 8,
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'signor': input_formats.ReadSettings(
         name = "Signor",
         separator = None,
@@ -819,25 +822,16 @@ ptm = {
         is_directed = 0,
         sign = False,
         ncbi_tax_id = {
-            'A': {
-                'col': 11,
-                'dict': {
-                    '"9606"(Homo sapiens)': 9606
-                }
-            },
-            'B': {
-                'col': 12,
-                'dict': {
-                    '"9606"(Homo sapiens)': 9606
-                }
-            }
+            'A': {'col': 13, 'include': {9606}},
+            'B': {'col': 14, 'include': {9606}},
         },
-        input = 'get_elm_interactions',
-        references = (10, ','),
+        input = 'elm_interactions',
+        references = 12,
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'domino': input_formats.ReadSettings(
         name = "DOMINO",
         separator = None,
@@ -887,7 +881,8 @@ ptm = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
-        must_have_references = True),
+        must_have_references = True
+    ),
     'hprd_p': input_formats.ReadSettings(
         name = "HPRD-phos",
         separator = None,
@@ -905,7 +900,29 @@ ptm = {
         header = False,
         extra_edge_attrs = {'hprd_mechanism': 8},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {})
+        extra_node_attrs_b = {}
+    ),
+    'protmapper': input_formats.ReadSettings(
+        name = "ProtMapper",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = 'uniprot',
+        id_type_b = 'uniprot',
+        entity_type_a = 'protein',
+        entity_type_b = 'protein',
+        is_directed = 1,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'protmapper_interactions',
+        references = 3,
+        resource = 2,
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+        must_have_references = True,
+    ),
 }
 
 # synonym
@@ -1005,8 +1022,13 @@ ptm_misc = {
         extra_edge_attrs = {'li2012_mechanism': 3,
                         'li2012_route': 2},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {})
+        extra_node_attrs_b = {}
+    ),
+    
 }
+
+ptm_misc['protmapper'] = copy.deepcopy(ptm['protmapper'])
+ptm_misc['protmapper'].must_have_references = False
 
 # synonym
 ptm_noref = ptm_misc
@@ -1032,11 +1054,12 @@ interaction_misc = {
         is_directed = False,
         sign = False,
         input = 'intact_interactions',
-        references = (2, ";"),
+        references = 4,
         ncbi_tax_id = 9606,
-        extra_edge_attrs = {"intact_methods": (3, ';')},
+        extra_edge_attrs = {"intact_methods": 5},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'hippie': input_formats.ReadSettings(
         name = "HIPPIE",
         separator = None,
@@ -1578,8 +1601,8 @@ pa.init_network(pypath.data_formats.transcription)
 
 """
 transcription = {
-    'tfregulons': input_formats.ReadSettings(
-        name = "TFRegulons",
+    'dorothea': input_formats.ReadSettings(
+        name = "DoRothEA",
         separator = None,
         id_col_a = 0,
         id_col_b = 1,
@@ -1696,12 +1719,12 @@ mirna_target = {
         sign = False,
         ncbi_tax_id = {'A': {
                 'col': 3,
-                'dict': common.swap_dict(common.phosphoelm_taxids),
+                'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
                 'include': set([9606])
             },
             'B': {
                 'col': 4,
-                'dict': common.swap_dict(common.phosphoelm_taxids),
+                'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
                 'include': set([9606])
             }},
         input = 'mirecords_interactions',
@@ -1724,12 +1747,12 @@ mirna_target = {
         sign = False,
         ncbi_tax_id = {'A': {
                 'col': 2,
-                'dict': common.swap_dict(common.phosphoelm_taxids),
+                'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
                 'include': set([9606])
             },
             'B': {
                 'col': 5,
-                'dict': common.swap_dict(common.phosphoelm_taxids),
+                'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
                 'include': set([9606])
             }},
         positive_filters = [(7, 'Functional MTI')],
@@ -1756,7 +1779,7 @@ tf_mirna = {
         sign = (4, 'activation', 'repression'),
         ncbi_tax_id= {
                 'col': 6,
-                'dict': common.swap_dict(common.taxids),
+                'dict': common.swap_dict(taxonomy.taxids),
                 'include': set([9606])
             },
         input = 'transmir_interactions',
@@ -1801,7 +1824,7 @@ lncrna_protein = {
         sign = False,
         ncbi_tax_id= {
                 'col': 5,
-                'dict': common.swap_dict(common.taxids),
+                'dict': common.swap_dict(taxonomy.taxids),
                 'include': set([9606])
             },
         positive_filters = [(2, 'RNA'), (3, 'Protein')],
@@ -1825,7 +1848,7 @@ lncrna_protein = {
         sign = False,
         ncbi_tax_id= {
                 'col': 3,
-                'dict': common.swap_dict(common.phosphoelm_taxids),
+                'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
                 'include': set([9606])
             },
         positive_filters = [(2, 'protein')],
@@ -2189,127 +2212,3 @@ reactome_modifications = {
     'N-palmitoyl-L-cysteine': ('palmitoylation', 'C'),
     'S-farnesyl-L-cysteine': ('farnesylation', 'C')
 }
-
-categories = {
-    'Vidal HI-III': 'i',
-    'CancerCellMap': 'p',
-    'InnateDB': 'i',
-    'SPIKE': 'p',
-    'LMPID': 'm',
-    'DIP': 'i',
-    'HPRD': 'i',
-    'HPRD-phos': 'm',
-    'PDZBase': 'p',
-    'dbPTM': 'm',
-    'MatrixDB': 'i',
-    'DOMINO': 'm',
-    'Signor': 'p',
-    'Macrophage': 'p',
-    'Adhesome': 'p',
-    'NetPath': 'r',
-    'ELM': 'm',
-    'SignaLink2': 'p',
-    'SignaLink3': 'p',
-    'NRF2ome': 'p',
-    'DEPOD': 'm',
-    'phosphoELM': 'm',
-    'MPPI': 'i',
-    'Guide2Pharma': 'l',
-    'Guide2Pharma_CP': 'l',
-    'TRIP': 'p',
-    'AlzPathway': 'r',
-    'PhosphoSite': 'm',
-    'CA1': 'p',
-    'NCI-PID': 'r',
-    'DeathDomain': 'p',
-    'ARN': 'p',
-    'BioGRID': 'i',
-    'IntAct': 'i',
-    'Reactome': 'r',
-    'ACSN': 'r',
-    'WikiPathways': 'r',
-    'TRIP': 'p',
-    'PANTHER': 'r',
-    'ABS': 't',
-    'MIMP': 'm',
-    'PhosphoNetworks': 'm',
-    'Li2012': 'm',
-    'PhosphoPoint': 'm',
-    'PhosphoSite_noref': 'm',
-    'Ramilowski2015': 'l',
-    'Kirouac2010': 'l',
-    'HPMR': 'l',
-    'CellPhoneDB': 'l',
-    'Guide2Pharma': 'l',
-    'GO_lig_rec': 'l',
-    'guidetopharmacology.org': 'l',
-    'UniProt': 'l',
-    'InnateDB-All': 'i',
-    'MINT': 'i',
-    'HIPPIE': 'i',
-    'Wang': 'p',
-    'KEGG': 'p',
-    # TF-target
-    'ENCODE_distal': 't',
-    'PAZAR': 't',
-    'ENCODE_proximal': 't',
-    'ORegAnno': 't',
-    'HTRI': 't',
-    'ARACNe-GTEx': 't',
-    'DoRothEA_reviews': 't',
-    'FANTOM4': 't',
-    'HOCOMOCO_v11': 't',
-    'HTRIdb': 't',
-    'JASPAR_v2018': 't',
-    'NFIRegulomeDB': 't',
-    'ReMap': 't',
-    'RegNetwork': 't',
-    'TFactS': 't',
-    'TFe': 't',
-    'TRED': 't',
-    'TRRD': 't',
-    'TRRUST': 't',
-    # miRNA-mRNA
-    'miR2Disease': 'n',
-    'miRDeathDB': 'n',
-    'miRecords': 'n',
-    'miRTarBase': 'n',
-    # TF-miRNA
-    'TransmiR': 'u',
-    'ENCODE_tf-mirna': 'u',
-}
-
-p = set()
-i = set()
-r = set()
-m = set()
-t = set()
-l = set()
-n = set() # miRNA-target
-u = set() # TF-mirna
-
-for db, cats in iteritems(categories):
-    
-    for c in cats:
-        
-        locals()[c].add(db)
-
-catnames = {
-    'm': 'Enzyme-substrate',
-    'p': 'Activity flow',
-    'i': 'Undirected PPI',
-    'r': 'Process description',
-    't': 'Transcription',
-    'l': 'Ligand-receptor',
-    'n': 'miRNA-mRNA',
-    'u': 'TF-miRNA',
-}
-
-catletters = dict(map(reversed, iteritems(catnames)))
-
-pathway_resources = p
-interaction_resources = i
-ptm_resources = m
-reaction_resources = r
-transctiption_resources = t
-ligand_receptor_resources = l
