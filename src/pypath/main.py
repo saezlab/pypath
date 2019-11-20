@@ -2624,7 +2624,9 @@ class PyPath(session_mod.Logger):
                             map(lambda x: x[0],
                                 param.negative_filters),
                             [0]))
-                    ]))
+                    ]
+                )
+            )
             
             must_have_references = (
                 settings.get('keep_noref') or
@@ -12759,7 +12761,7 @@ class PyPath(session_mod.Logger):
             sattr = 'cat' if s in db_categories.catnames else 'sources'
             rattr = 'refs_by_cat' if s in db_categories.catnames else 'refs_by_source'
 
-            cat = list(db_categories.get_categories(s))[0] or None
+            cat = db_categories.get_category(s)
 
             catmembers = set(db_categories.catnames.keys()) \
                 if s in db_categories.catnames \
@@ -14398,7 +14400,7 @@ class PyPath(session_mod.Logger):
                     n_by_resource[resource] /
                     n_by_category[
                         db_categories.catnames[
-                            list(db_categories.get_categories(resource))[0]
+                            db_categories.get_category(resource)
                         ]
                     ] * 100
                         if n_by_resource[resource] else

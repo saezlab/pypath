@@ -145,6 +145,8 @@ catnames = {
     'l': 'Ligand-receptor',
     'n': 'miRNA-mRNA',
     'u': 'TF-miRNA',
+    '':  'No category',
+    None: 'No category',
 }
 
 catletters = dict(map(reversed, iteritems(catnames)))
@@ -179,3 +181,10 @@ def get_categories(database):
         )
     
     return result
+
+
+def get_category(database):
+    
+    db_categories = get_categories(database)
+    
+    return db_categories[0] if db_categories else None
