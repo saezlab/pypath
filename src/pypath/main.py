@@ -2279,7 +2279,7 @@ class PyPath(session_mod.Logger):
         return data
 
 
-    def process_sign(self, signData, signDef):
+    def _process_sign(self, signData, signDef):
         """
         Processes the sign of an interaction, used when processing an
         input file.
@@ -2322,7 +2322,7 @@ class PyPath(session_mod.Logger):
         return stim, inh
 
 
-    def process_direction(self, line, dir_col, dir_val, dir_sep):
+    def _process_direction(self, line, dir_col, dir_val, dir_sep):
         """
         Processes the direction information of an interaction according
         to a data file from a source.
@@ -2604,7 +2604,7 @@ class PyPath(session_mod.Logger):
                     0]) in common.simpleTypes else common.flatList(dir_val)
                 dir_sep = sign[3] if len(sign) > 3 else None
 
-            dir_val = set(dir_val if isinstance(dir_val, list) else [dir_val])
+            dir_val = common.to_set(dir_val)
             max_col = max(
                 filter(
                     lambda i: i is not None, [
@@ -2705,7 +2705,7 @@ class PyPath(session_mod.Logger):
                         this_edge_dir = True
 
                     else:
-                        this_edge_dir = self.process_direction(
+                        this_edge_dir = self._process_direction(
                             line,
                             dir_col,
                             dir_val,
@@ -2786,7 +2786,7 @@ class PyPath(session_mod.Logger):
                     inh = False
 
                     if isinstance(sign, tuple):
-                        stim, inh = self.process_sign(line[sign[0]], sign)
+                        stim, inh = self._process_sign(line[sign[0]], sign)
 
                     resource = (
                         line[param.resource]
