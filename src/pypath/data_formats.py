@@ -473,7 +473,7 @@ pathway = {
         extra_node_attrs_b = {}
     ),
     'signor': input_formats.ReadSettings(
-        name = "Signor",
+        name = 'Signor',
         separator = None,
         id_col_a = 0,
         id_col_b = 1,
@@ -492,7 +492,7 @@ pathway = {
                    }},
         is_directed = (
             6,
-            [
+            {
                 'up-regulates',
                 'up-regulates activity',
                 'up-regulates quantity',
@@ -503,24 +503,24 @@ pathway = {
                 'down-regulates quantity by destabilization',
                 'down-regulates quantity',
                 'down-regulates quantity by repression',
-            ]
+            }
         ),
         sign = (
             6,
-            [
+            {
                 'up-regulates',
                 'up-regulates activity',
                 'up-regulates quantity',
                 'up-regulates quantity by stabilization',
                 'up-regulates quantity by expression',
-            ],
-            [
+            },
+            {
                 'down-regulates',
                 'down-regulates activity',
                 'down-regulates quantity by destabilization',
                 'down-regulates quantity',
                 'down-regulates quantity by repression',
-            ]
+            }
         ),
         input = 'signor_interactions',
         references = (9, ";"),
@@ -1574,7 +1574,6 @@ transcription_onebyone = {
         id_type_b = "uniprot",
         # only direct TF-target interactions
         positive_filters = [
-            (10, True),
             (
                 7,
                 {
@@ -1594,20 +1593,20 @@ transcription_onebyone = {
         is_directed = True,
         sign = (
             6,
-            [
+            {
                 'up-regulates',
                 'up-regulates activity',
                 'up-regulates quantity',
                 'up-regulates quantity by stabilization',
                 'up-regulates quantity by expression',
-            ],
-            [
+            },
+            {
                 'down-regulates',
                 'down-regulates activity',
                 'down-regulates quantity by destabilization',
                 'down-regulates quantity',
                 'down-regulates quantity by repression',
-            ]
+            }
         ),
         input = 'signor_interactions',
         references = (9, ";"),
@@ -1639,7 +1638,7 @@ pa = pypath.PyPath()
 pa.init_network(pypath.data_formats.transcription)
 
 """
-transcription_tfregulons = {
+transcription_dorothea = {
     'dorothea': input_formats.ReadSettings(
         name = "DoRothEA",
         separator = None,
@@ -1672,13 +1671,13 @@ transcription_tfregulons = {
 }
 
 # synonyms
-dorothea = transcription_tfregulons
-tfregulons = transcription_tfregulons
+dorothea = transcription_dorothea
+tfregulons = transcription_dorothea
 
 # all transcriptional regulation resources
 transcription = {}
 transcription.update(copy.deepcopy(transcription_onebyone))
-transcription.update(copy.deepcopy(transcription_tfregulons))
+transcription.update(copy.deepcopy(transcription_dorothea))
 
 '''
 Old transctiptional regulation input formats.
