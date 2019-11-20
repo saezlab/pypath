@@ -490,19 +490,38 @@ pathway = {
                        '9606;9606': 9606,
                        '9606': 9606
                    }},
-        is_directed = (6, [
-            'up-regulates', 'up-regulates activity',
-            'up-regulates quantity by stabilization', 'down-regulates',
-            'down-regulates activity',
-            'down-regulates quantity by destabilization'
-        ]),
-        sign = (6, [
-            'up-regulates', 'up-regulates activity',
-            'up-regulates quantity by stabilization'
-        ], [
-            'down-regulates', 'down-regulates activity',
-            'down-regulates quantity by destabilization'
-        ]),
+        is_directed = (
+            6,
+            [
+                'up-regulates',
+                'up-regulates activity',
+                'up-regulates quantity',
+                'up-regulates quantity by stabilization',
+                'up-regulates quantity by expression',
+                'down-regulates',
+                'down-regulates activity',
+                'down-regulates quantity by destabilization',
+                'down-regulates quantity',
+                'down-regulates quantity by repression',
+            ]
+        ),
+        sign = (
+            6,
+            [
+                'up-regulates',
+                'up-regulates activity',
+                'up-regulates quantity',
+                'up-regulates quantity by stabilization',
+                'up-regulates quantity by expression',
+            ],
+            [
+                'down-regulates',
+                'down-regulates activity',
+                'down-regulates quantity by destabilization',
+                'down-regulates quantity',
+                'down-regulates quantity by repression',
+            ]
+        ),
         input = 'signor_interactions',
         references = (9, ";"),
         header = False,
@@ -1554,7 +1573,17 @@ transcription_onebyone = {
         id_type_a = "uniprot",
         id_type_b = "uniprot",
         # only direct TF-target interactions
-        positive_filters = [(10, True), (7, 'transcriptional regulation')],
+        positive_filters = [
+            (10, True),
+            (
+                7,
+                {
+                    'transcriptional regulation',
+                    'transcriptional activation',
+                    'transcriptional repression',
+                }
+            )
+        ],
         entity_type_a = "protein",
         entity_type_b = "protein",
         ncbi_tax_id = {'col': 8,
@@ -1563,13 +1592,23 @@ transcription_onebyone = {
                        '9606': 9606
                    }},
         is_directed = True,
-        sign = (6, [
-            'up-regulates', 'up-regulates activity',
-            'up-regulates quantity by stabilization'
-        ], [
-            'down-regulates', 'down-regulates activity',
-            'down-regulates quantity by destabilization'
-        ]),
+        sign = (
+            6,
+            [
+                'up-regulates',
+                'up-regulates activity',
+                'up-regulates quantity',
+                'up-regulates quantity by stabilization',
+                'up-regulates quantity by expression',
+            ],
+            [
+                'down-regulates',
+                'down-regulates activity',
+                'down-regulates quantity by destabilization',
+                'down-regulates quantity',
+                'down-regulates quantity by repression',
+            ]
+        ),
         input = 'signor_interactions',
         references = (9, ";"),
         header = True,
@@ -1600,7 +1639,7 @@ pa = pypath.PyPath()
 pa.init_network(pypath.data_formats.transcription)
 
 """
-transcription = {
+transcription_tfregulons = {
     'dorothea': input_formats.ReadSettings(
         name = "DoRothEA",
         separator = None,
@@ -1633,9 +1672,13 @@ transcription = {
 }
 
 # synonyms
-dorothea = transcription
-tfregulons = transcription
+dorothea = transcription_tfregulons
+tfregulons = transcription_tfregulons
 
+# all transcriptional regulation resources
+transcription = {}
+transcription.update(copy.deepcopy(transcription_onebyone))
+transcription.update(copy.deepcopy(transcription_tfregulons))
 
 '''
 Old transctiptional regulation input formats.
