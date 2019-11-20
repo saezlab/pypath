@@ -177,7 +177,7 @@ class Logger(object):
 
     def _console(self, msg):
 
-        sys.stdout.write('%s\n' % msg)
+        sys.stdout.write(msg)
         sys.stdout.flush()
 
 
