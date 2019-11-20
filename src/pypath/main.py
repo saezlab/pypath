@@ -5618,6 +5618,7 @@ class PyPath(session_mod.Logger):
         self.write_table(res["nodes"], outfile + "-nodes", cut=20)
         self.write_table(res["edges"], outfile + "-edges", cut=20)
 
+
     def update_sources(self):
         """
         Makes sure that the :py:attr:`pypath.main.PyPath.sources`
@@ -5634,6 +5635,7 @@ class PyPath(session_mod.Logger):
         self.sources = list(set(src))
         self.update_cats()
 
+
     def update_cats(self):
         """
         Makes sure that the :py:attr:`pypath.main.PyPath.has_cats`
@@ -5641,10 +5643,13 @@ class PyPath(session_mod.Logger):
         current network.
         """
 
-        self.has_cats = set(list(map(lambda s:
-            db_categories.categories[s], filter(lambda s:
-                s in db_categories.categories, self.sources))))
-
+        self.has_cats = {
+            db_categories.catnames[catletter]
+            for src in self.sources
+            for catletter in db_categories.get_categories(src)
+        }
+    
+    
     def update_pathways(self):
         """
         Makes sure that the :py:attr:`pypath.main.PyPath.pathways`
@@ -5993,22 +5998,28 @@ class PyPath(session_mod.Logger):
         for v in self.graph.vs:
 
             for s in v['sources']:
-
-                if s in db_categories.categories:
-                    v['cat'].add(db_categories.categories[s])
-
+                
+                vcats = db_categories.get_categories(s)
+                
+                for cat in vcats:
+                    
+                    v['cat'].add(cat)
+        
         for e in self.graph.es:
-
+            
             for s in e['sources']:
-
-                if s in db_categories.categories:
-                    cat = db_categories.categories[s]
+                
+                ecats = db_categories.get_categories(s)
+                
+                for cat in ecats:
+                    
                     e['cat'].add(cat)
-
+                    
                     if cat not in e['refs_by_cat']:
-                        e['refs_by_cat'][cat] = set([])
-
+                        e['refs_by_cat'][cat] = set()
+                    
                     if s in e['refs_by_source']:
+                        
                         e['refs_by_cat'][cat].update(e['refs_by_source'][s])
     
     
@@ -10741,9 +10752,16 @@ class PyPath(session_mod.Logger):
                     row_order.append((db_categories.catnames[cat], 'subtitle'))
                     row_order.extend(
                         sorted(
-                            filter(lambda s: db_categories.categories[s] == cat,
-                                   self.sources),
-                            key=lambda s: s.lower()))
+                            filter(
+                                lambda s:
+                                    list(
+                                        db_categories.get_categories(s)
+                                    )[0] == cat,
+                                self.sources
+                            ),
+                            key = lambda s: s.lower()
+                        )
+                    )
 
             texnewline = r'\\' + '\n'
             _latex_tab = r"""%s
@@ -12736,9 +12754,7 @@ class PyPath(session_mod.Logger):
             sattr = 'cat' if s in db_categories.catnames else 'sources'
             rattr = 'refs_by_cat' if s in db_categories.catnames else 'refs_by_source'
 
-            cat = None if s in db_categories.catnames \
-                or s not in db_categories.categories \
-                else db_categories.categories[s]
+            cat = list(db_categories.get_categories(s))[0] or None
 
             catmembers = set(db_categories.catnames.keys()) \
                 if s in db_categories.catnames \
@@ -13034,10 +13050,15 @@ class PyPath(session_mod.Logger):
 
             for cat in use_cats:
                 row_order.append((db_categories.catnames[cat], 'subtitle'))
-                row_order.extend(sorted(filter(lambda name:
-                            (name in db_categories.categories
-                             and db_categories.categories[name] == cat),
-                             cs.keys())))
+                row_order.extend(
+                    sorted(
+                        filter(
+                            lambda name:
+                                cat in db_categories.get_categories(name),
+                             cs.keys()
+                        )
+                    )
+                )
 
         self.table_latex(fname, header, cs, header_format=header_format,
                          row_order=row_order if by_category else None,
@@ -14372,7 +14393,7 @@ class PyPath(session_mod.Logger):
                     n_by_resource[resource] /
                     n_by_category[
                         db_categories.catnames[
-                            db_categories.categories[resource]
+                            list(db_categories.get_categories(resource))[0]
                         ]
                     ] * 100
                         if n_by_resource[resource] else
