@@ -2167,11 +2167,13 @@ class PyPath(session_mod.Logger):
                     self.graph.vs[e.target][eattr] = e[eattr]
 
 
-    # XXX: Not very clear for me what this function is actually doing...
-    #      I mean, returns True/False and True as soon as the first
-    #      len(thisVal & filtrVal) > 0
-    def filters(self, line, positive_filters=[], negative_filters=[]): # TODO
+    def _filters(self, line, positive_filters=[], negative_filters=[]):
         """
+        Applies negative and positive filters on a line (record from an
+        interaction database). If returns ``True`` the interaction will be
+        discarded, if ``False`` the interaction will be further processed
+        and if all other criteria fit then will be added to the network
+        after identifier translation.
         """
 
         for filtr in negative_filters:
@@ -2183,10 +2185,9 @@ class PyPath(session_mod.Logger):
             else:
                 thisVal = set([line[filtr[0]]])
 
-            filtrVal = set(filtr[1]
-                           if isinstance(filtr[1], list) else [filtr[1]])
+            filtrVal = common.to_set(filtr[1])
 
-            if len(thisVal & filtrVal) > 0:
+            if thisVal & filtrVal:
                 return True
 
         for filtr in positive_filters:
@@ -2196,15 +2197,15 @@ class PyPath(session_mod.Logger):
                 thisVal = set(line[filtr[0]].split(sep))
 
             else:
-                thisVal = set([line[filtr[0]]])
+                thisVal = {line[filtr[0]]}
 
-            filtrVal = set(filtr[1]
-                           if isinstance(filtr[1], list) else [filtr[1]])
+            filtrVal = common.to_set(filtr[1])
 
-            if len(thisVal & filtrVal) == 0:
+            if not thisVal & filtrVal:
                 return True
 
         return False
+
 
     def lookup_cache(self, name, cache_files, int_cache, edges_cache):
         """
@@ -2277,6 +2278,7 @@ class PyPath(session_mod.Logger):
 
         return data
 
+
     def process_sign(self, signData, signDef):
         """
         Processes the sign of an interaction, used when processing an
@@ -2305,8 +2307,8 @@ class PyPath(session_mod.Logger):
         inh = False
         signSep = signDef[3] if len(signDef) > 3 else None
         signData = set(str(signData).split(signSep))
-        pos = set(signDef[1] if isinstance(signDef[1], list) else [signDef[1]])
-        neg = set(signDef[2] if isinstance(signDef[2], list) else [signDef[2]])
+        pos = common.to_set(signDef[1])
+        neg = common.to_set(signDef[2])
 
         # XXX: Isn't using elif here bias the choice to stimulatory interactions
         #      even though there can also be negative sources?
@@ -2690,8 +2692,11 @@ class PyPath(session_mod.Logger):
                 else:
 
                     # applying filters:
-                    if self.filters(line, param.positive_filters,
-                                    param.negative_filters):
+                    if self._filters(
+                        line,
+                        param.positive_filters,
+                        param.negative_filters
+                    ):
                         lFiltered += 1
                         continue
 
