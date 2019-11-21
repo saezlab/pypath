@@ -162,9 +162,7 @@ class _global_context(object):
 
     def __enter__(self):
         self._store_value = getattr(self.module, self.name)
-        print(self.name, self.on_off)
         setattr(self.module, self.name, self.on_off)
-        print('in global_context: ', CACHE)
 
     def __exit__(self, exception_type, exception_value, traceback):
         if exception_type is not None:
@@ -1180,6 +1178,7 @@ class Curl(FileOpener):
         )
 
     def set_resp_headers(self):
+        
         self.resp_headers = []
         self.curl.setopt(self.curl.HEADERFUNCTION, self.resp_headers.append)
 

@@ -5430,23 +5430,25 @@ def kirouac2010_interactions():
     
     cookies = []
     
-    for hdr in c0.resp_headers:
+    if hasattr(c0, 'resp_headers'):
         
-        if hdr.startswith(b'set-cookie'):
+        for hdr in c0.resp_headers:
             
-            cookie = hdr.split(b':')[1].split(b';')[0].strip()
-            
-            if cookie not in cookies:
+            if hdr.lower().startswith(b'set-cookie'):
                 
-                cookies.append(cookie.decode('ascii'))
-    
-    cookies = '; '.join(cookies)
-    
-    req_headers.append('Cookie: %s' % cookies)
-    
-    _log('Response header: %s' % str(c0.resp_headers))
-    _log('Cookies: %s' % str(cookies))
-    _log('Request header: %s' % str(req_headers))
+                cookie = hdr.split(b':')[1].split(b';')[0].strip()
+                
+                if cookie not in cookies:
+                    
+                    cookies.append(cookie.decode('ascii'))
+        
+        cookies = '; '.join(cookies)
+        
+        req_headers.append('Cookie: %s' % cookies)
+        
+        _log('Response header: %s' % str(c0.resp_headers))
+        _log('Cookies: %s' % str(cookies))
+        _log('Request header: %s' % str(req_headers))
     
     url = urls.urls['kirouac2010']['url']
     
