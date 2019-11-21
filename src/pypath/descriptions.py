@@ -3101,18 +3101,23 @@ def gen_html():
             except KeyError:
                 sys.stdout.write('Wrong license format for %s\n' % k)
                 sys.stdout.flush()
-        for uk, uv in iteritems(v['urls']):
-            if len(uv) > 0 and uk != 'omictools':
-                try:
-                    doc += '\t\t\t<h3>%s</h3>\n' % (uk.capitalize())
-                    doc += '\t\t\t<ul>\n'
-                    for a in uv:
-                        doc += '\t\t\t\t<li><a href="%s" target="_blank">%s</a></li>\n' % (
-                            a, a)
-                    doc += '\t\t\t</ul>\n'
-                except UnicodeDecodeError:
-                    sys.stdout.write('UnicdeDecodeError at %s\n' % k)
-                    sys.stdout.flush()
+        if 'urls' in v:
+            for uk, uv in iteritems(v['urls']):
+                if len(uv) > 0 and uk != 'omictools':
+                    try:
+                        doc += '\t\t\t<h3>%s</h3>\n' % (uk.capitalize())
+                        doc += '\t\t\t<ul>\n'
+                        for a in uv:
+                            doc += (
+                                '\t\t\t\t<li><a href="%s" '
+                                'target="_blank">%s</a></li>\n' % (
+                                    a, a
+                                )
+                            )
+                        doc += '\t\t\t</ul>\n'
+                    except UnicodeDecodeError:
+                        sys.stdout.write('UnicdeDecodeError at %s\n' % k)
+                        sys.stdout.flush()
         if 'pubmeds' in v:
             doc += '\t\t\t<h3>PubMed</h3>\n'
             doc += '\t\t\t<ul>\n'
@@ -3123,7 +3128,7 @@ def gen_html():
                         'http://www.ncbi.nlm.nih.gov/pubmed/%u' % pmid
                     )
             doc += '\t\t\t</ul>\n'
-        if 'omictools' in v['urls'] or 'pathguide' in v:
+        if ('urls' in v and 'omictools' in v['urls']) or 'pathguide' in v:
             doc += '\t\t\t<h3>Collections</h3>\n\t\t\t<ul>'
             if 'omictools' in v['urls']:
                 doc += '\t\t\t<li><a href="%s" target="_blank">OmicTools</a></li>\n' % \
@@ -3181,6 +3186,7 @@ def gen_html():
                             '</span></li>\n' % met
                     doc += '\t\t\t\t\t</ul>\n'
             doc += '\t\t\t\t</div>\n'
+    
     return _html.default_template(doc, title, title)
 
 
