@@ -28,12 +28,17 @@ import copy
 import collections
 import itertools
 
+import pypath.session_mod as session_mod
+
+_logger = session_mod.Logger(name = 'server')
+_log = _logger._log
+
 try:
     import twisted.web.resource
     import twisted.web.server
     import twisted.internet
 except:
-    self._log('\t:: No `twisted` available.\n')
+    _log('No module `twisted` available.', -1)
 
 import urllib
 import json
@@ -44,7 +49,6 @@ import numpy as np
 import pypath.descriptions as descriptions
 import pypath._html as _html
 import pypath.urls as urls
-import pypath.session_mod as session_mod
 import pypath.common as common
 from pypath.common import flatList
 from pypath._version import __version__
@@ -702,7 +706,7 @@ class TableServer(BaseServer):
             [set(s.split(';')) for s in tbl.sources]
         )
         tbl['set_proteins'] = pd.Series(
-            [set(c.split('-')) for c in tbl.components]
+            [set(c.split('_')) for c in tbl.components]
         )
     
     
@@ -1869,7 +1873,7 @@ class Rest(object):
     def __init__(
             self,
             port,
-            serverclass = PypathServer,
+            serverclass = TableServer,
             start = True,
             **kwargs
         ):
@@ -1888,14 +1892,19 @@ class Rest(object):
         """
         
         self.port = port
+        _log('Creating the server class.')
         self.server = serverclass(**kwargs)
+        _log('Server class ready.')
         
         if start:
             
+            _log('Starting the twisted server.')
             self.start()
     
     def start(self):
         
         self.site = twisted.web.server.Site(self.server)
+        _log('Site created.')
         twisted.internet.reactor.listenTCP(self.port, self.site)
+        _log('Server going to listen on port %u from now.' % self.port)
         twisted.internet.reactor.run()
