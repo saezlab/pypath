@@ -197,7 +197,7 @@ def get_default(param):
 
 def reset(param):
     
-    setup(param, get_default(param))
+    setup(**{param: get_default(param)})
 
 
 defaults = Defaults(**_defaults)
