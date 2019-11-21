@@ -5425,6 +5425,7 @@ def kirouac2010_interactions():
         silent = True,
         large = False,
         req_headers = req_headers,
+        follow = False,
     )
     
     cookies = []
@@ -5442,6 +5443,10 @@ def kirouac2010_interactions():
     cookies = '; '.join(cookies)
     
     req_headers.append('Cookie: %s' % cookies)
+    
+    _log('Response header: %s' % str(c0.resp_headers))
+    _log('Cookies: %s' % str(cookies))
+    _log('Request header: %s' % str(req_headers))
     
     url = urls.urls['kirouac2010']['url']
     
