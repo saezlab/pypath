@@ -1,21 +1,20 @@
-############################################################
-*pypath:* A Python module for molecular interaction networks
-############################################################
+############################################################################
+*pypath:* A Python module for molecular signaling prior knowledge processing
+############################################################################
 
 
 :note: ``pypath`` supports both Python 2.7 and Python 3.6+. In the beginning,
     pypath has been developed only for Python 2.7. Then the code have been
-    adjusted to Py3 however we can not guarantee no incompatibilities
-    remained. If you find any method does not work please submit an issue on
-    github. For few years we develop and test ``pypath`` in Python 3. Therefore
-    this is the better supported Python variant.
+    adjusted to Py3 and for a few years we develop and test ``pypath`` in
+    Python 3. Therefore this is the better supported Python variant.
 
 :documentation: http://saezlab.github.io/pypath
 :issues: https://github.com/saezlab/pypath/issues
 
-**pypath** is a Python package built around igraph to work with molecular
-network representations e.g. protein, miRNA and drug compound interaction
-networks.
+**pypath** consists of a number of submodules to build various databases.
+Most of these are provided as **pandas** data frames. The network database
+is built around igraph to work with molecular network representations e.g.
+protein, miRNA and drug compound interaction networks.
 
 
 Webservice
