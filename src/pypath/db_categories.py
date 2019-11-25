@@ -187,4 +187,4 @@ def get_category(database):
     
     db_categories = get_categories(database)
     
-    return db_categories[0] if db_categories else None
+    return list(db_categories)[0] if db_categories else None
