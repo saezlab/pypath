@@ -4054,7 +4054,7 @@ def get_abs():
 
 def get_pazar():
 
-    url = urls.urls['pazar']['url']
+    url = urls.urls['pazar']['url_rescued']
     c = curl.Curl(url, silent = False)
     data = c.result
     return [

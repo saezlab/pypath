@@ -407,7 +407,8 @@ urls = {
     },
     'pazar': {
         'label': 'TF-target gene lists from PAZAR',
-        'url': 'http://www.pazar.info/tftargets/tftargets.zip'
+        'url': 'http://www.pazar.info/tftargets/tftargets.zip',
+        'url_rescued': 'http://rescued.omnipathdb.org/pazar_tftargets.zip',
     },
     'htri': {
         'label': 'TF-target gene lists from HTRI',
