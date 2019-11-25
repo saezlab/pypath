@@ -411,10 +411,11 @@ urls = {
     },
     'htri': {
         'label': 'TF-target gene lists from HTRI',
-        'url':
-        'http://www.lbbc.ibb.unesp.br/htri/consulta?type=1&all=true&down=3'
-        '&iconss1.x=57&iconss1.y=48',
-        'init_url': 'http://www.lbbc.ibb.unesp.br/htri/pagdown.jsp'
+        'url': 'http://www.lbbc.ibb.unesp.br/htri/datasHTRIdb?down=3',
+        'url_old': 'http://www.lbbc.ibb.unesp.br/htri/consulta?'\
+            'type=1&all=true&down=3&iconss1.x=57&iconss1.y=48',
+        'init_url': 'http://www.lbbc.ibb.unesp.br/htri/consulta?'\
+            'type=1&all=true&down=3',
     },
     'oreganno_old': {
         'label': 'TF-target gene lists from ORegAnno, previous version',

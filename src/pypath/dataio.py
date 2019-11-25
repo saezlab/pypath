@@ -4064,18 +4064,42 @@ def get_pazar():
 
 
 def get_htri():
-
+    
+    HTRIInteraction = collections.namedtuple(
+        'HTRIInteraction',
+        [
+            'entrez_tf',
+            'genesymbol_tf',
+            'entrez_target',
+            'genesymbol_target',
+            'pubmed',
+        ]
+    )
+    
     c = curl.Curl(
         urls.urls['htri']['url'],
         init_url = urls.urls['htri']['init_url'],
-        silent = False)
+        silent = False,
+        follow = False,
+        large = True,
+    )
+    
     data = c.result
-
+    _ = next(c.result)
+    
     return [
-        list(map(x.split(';').__getitem__, (1, 3, 6)))
-        for x in data.split('\n')
-        if len(x) > 0
-    ][1:]
+        HTRIInteraction(
+            entrez_tf = fields[1],
+            genesymbol_tf = fields[2],
+            entrez_target = fields[3],
+            genesymbol_target = fields[4],
+            pubmed = fields[6],
+        )
+        for fields in
+        (
+            row.split(';') for row in data if row.strip()
+        )
+    ]
 
 
 def get_oreganno_old(organism = 9606):

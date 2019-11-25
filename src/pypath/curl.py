@@ -1168,6 +1168,9 @@ class Curl(FileOpener):
         self.curl.setopt(self.curl.WRITEFUNCTION, self.target.write)
 
     def set_req_headers(self):
+        
+        self.init_request()
+        
         if self.override_post:
             self._log('Overriding HTTP method.')
             
@@ -1364,12 +1367,18 @@ class Curl(FileOpener):
             self.type = 'plain'
 
     def get_jsessionid(self):
+        
         self.jsessionid = [u'']
-        rejsess = re.compile(r'.*(JSESSIONID = [A-Z0-9]*)')
-        for hdr in self.resp_headers_dict.values():
-            jsess = rejsess.findall(hdr)
+        rejsess = re.compile(r'.*(JSESSIONID\s?=\s?\w*)')
+        
+        for hdr in self.resp_headers:
+            
+            jsess = rejsess.findall(hdr.decode('utf-8'))
+            
             if len(jsess) > 0:
+                
                 self.jsessionid = [u'Cookie: %s' % jsess[0]]
+        
         return self.jsessionid
 
     def update_progress(self, download_total, downloaded, upload_total,
@@ -1391,11 +1400,21 @@ class Curl(FileOpener):
     
     
     def init_request(self):
+        
         if self.init_url is not None:
+            
             if self.progress is not None:
+                
                 self.progress.set_status('requesting cookie')
-            self.init_curl = Curl(self.init_url, silent = True, debug = self.debug,
-                                  use_cache = self.init_use_cache)
+            
+            self.init_curl = Curl(
+                self.init_url,
+                silent = True,
+                debug = self.debug,
+                cache = self.init_use_cache,
+                req_headers = self.req_headers,
+                follow = False,
+            )
             headers = getattr(self.init_curl, self.init_fun)()
             self.req_headers.extend(headers)
     
