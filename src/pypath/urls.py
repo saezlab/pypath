@@ -423,8 +423,10 @@ urls = {
     },
     'oreganno': {
         'label': 'TF-target gene lists from ORegAnno',
-        'url': 'http://py-gi1.stanford.edu:8080/oregano/htdocs/'
-        'downloads/ORegAnno_Combined_2015.09.16.tsv'
+        'url_old': 'http://py-gi1.stanford.edu:8080/oregano/htdocs/'
+        'downloads/ORegAnno_Combined_2015.09.16.tsv',
+        'url': 'http://www.oreganno.org/dump/'\
+            'ORegAnno_Combined_2016.01.19.tsv',
     },
     'cpdb': {
         'label': 'All human interactions from ConsensusPathDB',
