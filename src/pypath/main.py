@@ -14393,6 +14393,13 @@ class PyPath(session_mod.Logger):
         )
         n_shared_res_cat = common.dict_counts(coll.shared_res_cat)
         n_unique_res_cat = common.dict_counts(coll.unique_res_cat)
+        
+        for resource in coll.by_resource.keys():
+            
+            if not db_categories.get_category(resource):
+                
+                self._log('Category not known for resource `%s`.' % resource)
+        
         percent_res_cat = dict(
             (
                 resource,

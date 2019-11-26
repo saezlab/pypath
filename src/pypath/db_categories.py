@@ -111,6 +111,7 @@ categories = {
     'TRED': 't',
     'TRRD': 't',
     'TRRUST': 't',
+    'DoRothEA': 't',
     # miRNA-mRNA
     'miR2Disease': 'n',
     'miRDeathDB': 'n',
