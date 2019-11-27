@@ -103,18 +103,28 @@ class WebserviceTables(session_mod.Logger):
         }
         tf_target['dorothea'].must_have_references = False
         
-        param = (
-            ('load_omnipath', {
+        param = {
+            'PPI': (
+                'load_omnipath',
+                {
                     'kinase_substrate_extra': True,
                     'ligand_receptor_extra': True,
                     'pathway_extra': True,
-                }
+                },
             ),
-            ('init_network',  {'lst': tf_target}),
-            ('init_network',  {'lst': data_formats.mirna_target})
-        )
+            'TF-target': (
+                'init_network',
+                {'lst': tf_target},
+            ),
+            'miRNA-target': (
+                'init_network',
+                {'lst': data_formats.mirna_target},
+            ),
+        }
         
-        for to_call, kwargs in param:
+        for name, (to_call, kwargs) in iteritems(param):
+            
+            self._log('Building %s interactions.' % name)
             
             pa = main.PyPath()
             getattr(pa, to_call)(**kwargs)
@@ -128,6 +138,13 @@ class WebserviceTables(session_mod.Logger):
                 graph_human = None
                 
                 for rodent in (10090, 10116):
+                    
+                    self._log(
+                        'Translating %s interactions to organism `%u`' % (
+                            name,
+                            rodent,
+                        )
+                    )
                     
                     if pa.ncbi_tax_id == 9606:
                         
