@@ -11743,6 +11743,49 @@ def proteinatlas_subcellular_annotations():
     return dict(result)
 
 
+def proteinatlas_secretome_annotations():
+    
+    
+    ProteinatlasSecretomeAnnotation = collections.namedtuple(
+        'ProteinatlasSecretomeAnnotation',
+        [
+            'mainclass',
+            'secreted',
+        ],
+    )
+    
+    
+    url = urls.urls['proteinatlas']['secretome']
+    
+    c = curl.Curl(
+        url,
+        large = True,
+        silent = False,
+    )
+    
+    reader = read_xls(c.fileobj.name)[1:]
+    result = collections.defaultdict(set)
+    
+    for rec in reader:
+        
+        for uniprot_original in rec[2].split(','):
+            
+            uniprots = mapping.map_name(
+                uniprot_original,
+                'uniprot',
+                'uniprot',
+            )
+            
+            for uniprot in uniprots:
+                
+                result[uniprot].add(ProteinatlasSecretomeAnnotation(
+                    mainclass = rec[3],
+                    secreted = 'secreted' in rec[3].lower(),
+                ))
+    
+    return dict(result)
+
+
 def get_tfregulons_old(
         levels = {'A', 'B'},
         only_curated = False
