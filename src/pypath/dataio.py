@@ -6655,7 +6655,7 @@ def cellphonedb_interactions():
                     if rec['annotation_strategy'] == 'curated' else
                 '%s;CellPhoneDB' % (
                     ';'.join(
-                        '%s_CP' % (
+                        '%s_CellPhoneDB' % (
                             res.replace(
                                 'guidetopharmacology.org',
                                 'Guide2Pharma'
