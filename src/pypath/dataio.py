@@ -11694,6 +11694,55 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
     return result
 
 
+def proteinatlas_subcellular_annotations():
+    
+    
+    ProteinatlasSubcellularAnnotation = collections.namedtuple(
+        'ProteinatlasSubcellularAnnotation',
+        [
+            'location',
+            'status',
+        ],
+    )
+    
+    
+    url = urls.urls['proteinatlas']['subcell']
+    
+    c = curl.Curl(
+        url,
+        large = True,
+        silent = False,
+        default_mode = 'r',
+    )
+    reader = csv.DictReader(
+        c.files_multipart['subcellular_location.tsv'],
+        delimiter = '\t',
+    )
+    
+    result = collections.defaultdict(set)
+    
+    for rec in reader:
+        
+        uniprots = mapping.map_name(rec['Gene name'], 'genesymbol', 'uniprot')
+        
+        for uniprot in uniprots:
+            
+            for status in ('Enhanced', 'Supported', 'Uncertain'):
+                
+                if not rec[status]:
+                    
+                    continue
+                
+                for location in rec[status].split(';'):
+                    
+                    result[uniprot].add(ProteinatlasSubcellularAnnotation(
+                        location = location,
+                        status = status,
+                    ))
+    
+    return dict(result)
+
+
 def get_tfregulons_old(
         levels = {'A', 'B'},
         only_curated = False
