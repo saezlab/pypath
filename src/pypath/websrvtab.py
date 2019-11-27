@@ -97,11 +97,11 @@ class WebserviceTables(session_mod.Logger):
         self._log('Building `interactions` data frame.')
         dataframes = []
         
-        tfregulons = copy.deepcopy(data_formats.transcription)
-        tfregulons['tfregulons'].input_args['levels'] = {
+        tf_target = copy.deepcopy(data_formats.transcription)
+        tf_target['dorothea'].input_args['levels'] = {
             'A', 'B', 'C', 'D',
         }
-        tfregulons['tfregulons'].must_have_references = False
+        tf_target['dorothea'].must_have_references = False
         
         param = (
             ('load_omnipath', {
@@ -110,7 +110,7 @@ class WebserviceTables(session_mod.Logger):
                     'pathway_extra': True,
                 }
             ),
-            ('init_network',  {'lst': tfregulons}),
+            ('init_network',  {'lst': tf_target}),
             ('init_network',  {'lst': data_formats.mirna_target})
         )
         
