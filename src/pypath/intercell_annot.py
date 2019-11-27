@@ -961,6 +961,7 @@ annot_combined_classes = (
                 'extracellular_cspa',
                 'extracellular_hpmr',
                 'extracellular_cellphonedb',
+                'extracellular_hpa',
                 #'extracellular_comppi',
             ),
             op = set.union,
@@ -1035,6 +1036,13 @@ annot_combined_classes = (
         args = {
             'membrane': 'Plasma membrane',
             'side': 'extracellular side',
+        },
+    ),
+    af.AnnotDef(
+        name = 'extracellular_hpa',
+        source = 'HPA_secretome',
+        args = {
+            'secreted': bool,
         },
     ),
     # cell surface

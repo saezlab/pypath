@@ -2731,7 +2731,7 @@ class HumanProteinAtlasSecretome(AnnotationBase):
         
         AnnotationBase.__init__(
             self,
-            name = 'HPA_subcellular',
+            name = 'HPA_secretome',
             input_method = 'proteinatlas_secretome_annotations',
             **kwargs
         )
