@@ -77,6 +77,8 @@ protein_sources_default = {
     'Hgnc',
     'Zhong2015',
     'HumanProteinAtlas',
+    'HumanProteinAtlasSubcellular',
+    'HumanProteinAtlasSecretome',
     'Comppi',
     'SignorPathways',
     'SignalinkPathways',
@@ -2680,14 +2682,14 @@ class Integrins(AnnotationBase):
 
 class HumanProteinAtlas(AnnotationBase):
     
-    _eq_fields = None
+    _eq_fields = ('organ', 'tissue', 'status', 'level', 'pathology')
     
     
     def __init__(self, **kwargs):
         
         AnnotationBase.__init__(
             self,
-            name = 'HPA',
+            name = 'HPA_tissue',
             input_method = 'proteinatlas_annotations',
             **kwargs
         )
@@ -2697,6 +2699,49 @@ class HumanProteinAtlas(AnnotationBase):
         
         self.annot = self.data
         delattr(self, 'data')
+
+
+class HumanProteinAtlasSubcellular(AnnotationBase):
+    
+    _eq_fields = ('location',)
+    
+    
+    def __init__(self, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'HPA_subcellular',
+            input_method = 'proteinatlas_subcellular_annotations',
+            **kwargs
+        )
+        
+        
+    def _process_method(self):
+        
+        self.annot = self.data
+        delattr(self, 'data')
+
+
+class HumanProteinAtlasSecretome(AnnotationBase):
+    
+    _eq_fields = ('mainclass',)
+    
+    
+    def __init__(self, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'HPA_subcellular',
+            input_method = 'proteinatlas_secretome_annotations',
+            **kwargs
+        )
+        
+        
+    def _process_method(self):
+        
+        self.annot = self.data
+        delattr(self, 'data')
+
 
 
 class CancerGeneCensus(AnnotationBase):
