@@ -11308,6 +11308,60 @@ def mirdeathdb_interactions():
 
             yield (mirna.strip(), geneid, organism, pubmed, function)
 
+
+def ncrnadeathdb_interactions():
+    
+    
+    NcrnadeathdbInteraction = collections.namedtuple(
+        'NcrnadeathdbInteraction',
+        [
+            'ncrna',
+            'protein',
+            'ncrna_type',
+            'pathway',
+            'effect',
+            'pmid',
+            'organism',
+        ]
+    )
+    
+    
+    url = urls.urls['ncrnadeathdb']['url']
+    c = curl.Curl(
+        url,
+        large = True,
+        silent = False,
+        encoding = 'iso-8859-1',
+    )
+    
+    data = csv.DictReader(c.fileobj, delimiter = '\t')
+    result = []
+    
+    for rec in data:
+        
+        typ = rec['RNA Category']
+        
+        rna_ids = (
+            (rec['miRNA_symbol'],)
+                if typ == 'lncrna' else
+            rec['miRBase_ID'].split(',')
+        )
+        
+        for rna_id in rna_ids:
+            
+            result.append(NcrnadeathdbInteraction(
+                ncrna = rna_id,
+                protein = rec['Gene_Symbol'] or None,
+                ncrna_type = typ,
+                pathway = rec['Pathway'],
+                effect = rec['Action_Mode'] or None,
+                pmid = rec['PMID'],
+                organism = int(rec['tax_id']),
+            ))
+    
+    return result
+
+
 def mirecords_interactions():
 
     url = urls.urls['mirecords']['url']
@@ -11322,6 +11376,7 @@ def mirecords_interactions():
         for l in
         ([f.strip() for f in ll] for ll in tbl[1:])
     )
+
 
 def mirtarbase_interactions():
 
