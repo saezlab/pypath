@@ -11309,11 +11309,11 @@ def mirdeathdb_interactions():
             yield (mirna.strip(), geneid, organism, pubmed, function)
 
 
-def ncrnadeathdb_interactions():
+def ncrdeathdb_interactions():
     
     
-    NcrnadeathdbInteraction = collections.namedtuple(
-        'NcrnadeathdbInteraction',
+    NcrdeathdbInteraction = collections.namedtuple(
+        'NcrdeathdbInteraction',
         [
             'ncrna',
             'protein',
@@ -11326,7 +11326,7 @@ def ncrnadeathdb_interactions():
     )
     
     
-    url = urls.urls['ncrnadeathdb']['url']
+    url = urls.urls['ncrdeathdb']['url']
     c = curl.Curl(
         url,
         large = True,
@@ -11339,7 +11339,7 @@ def ncrnadeathdb_interactions():
     
     for rec in data:
         
-        typ = rec['RNA Category']
+        typ = rec['RNA Category'].strip()
         
         rna_ids = (
             (rec['miRNA_symbol'],)
@@ -11349,14 +11349,21 @@ def ncrnadeathdb_interactions():
         
         for rna_id in rna_ids:
             
-            result.append(NcrnadeathdbInteraction(
+            rna_id = rna_id.strip() or None
+            protein_id = rec['Gene_Symbol'].strip() or None
+            
+            if not rna_id and not protein_id:
+                
+                continue
+            
+            result.append(NcrdeathdbInteraction(
                 ncrna = rna_id,
-                protein = rec['Gene_Symbol'] or None,
+                protein = protein_id,
                 ncrna_type = typ,
-                pathway = rec['Pathway'],
-                effect = rec['Action_Mode'] or None,
-                pmid = rec['PMID'],
-                organism = int(rec['tax_id']),
+                pathway = rec['Pathway'].strip(),
+                effect = rec['Action_Mode'].strip() or None,
+                pmid = rec['PMID'].strip(),
+                organism = int(rec['tax_id'].strip()),
             ))
     
     return result
