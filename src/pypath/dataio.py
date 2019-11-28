@@ -11407,7 +11407,7 @@ def lncdisease_interactions():
 
     for l in c.result:
 
-        l = l.decode('utf-8').strip().split('\t')
+        l = l.strip().split('\t')
 
         yield (l[1],
                l[2],
