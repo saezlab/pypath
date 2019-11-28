@@ -1884,7 +1884,7 @@ tf_mirna = {
         extra_node_attrs_b = {})
 }
 
-lncrna_protein = {
+lncrna_target = {
     'lncdisease': input_formats.ReadSettings(
         name = "LncRNADisease",
         separator = None,
@@ -1903,7 +1903,7 @@ lncrna_protein = {
             },
         positive_filters = [(2, 'RNA'), (3, 'Protein')],
         input = 'lncdisease_interactions',
-        interaction_type = 'LNCRP',
+        interaction_type = 'LTI',
         references = 6,
         header = False,
         extra_edge_attrs = {'lncrnadisease_mechanism': 4},
@@ -1927,7 +1927,7 @@ lncrna_protein = {
             },
         positive_filters = [(2, 'protein')],
         input = 'lncrnadb_interactions',
-        interaction_type = 'LNCRP',
+        interaction_type = 'LTI',
         references = 4,
         header = False,
         extra_edge_attrs = {},
@@ -1950,7 +1950,7 @@ lncrna_protein = {
             'include': {9606},
         },
         input = 'ncrdeathdb_interactions',
-        interaction_type = 'LNCRP',
+        interaction_type = 'LTI',
         references = 5,
         header = False,
         positive_filters = [(2, 'lncRNA')],
