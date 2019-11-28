@@ -837,7 +837,8 @@ urls = {
         'label': 'miR2Disease experimentally validated'\
             'miRNA-target interactions',
         'url': 'http://watson.compbio.iupui.edu:8080'\
-            '/miR2Disease/download/miRtar.txt'
+            '/miR2Disease/download/miRtar.txt',
+        'url_rescued': 'http://rescued.omnipathdb.org/miR2Disease_miRtar.txt',
     },
     'mirdeathdb': {
         'label': 'miRDeathDB experimentally verified'\

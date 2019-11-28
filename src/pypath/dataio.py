@@ -11276,7 +11276,7 @@ def homologene_uniprot_dict(source, target, only_swissprot = True):
 
 def mir2disease_interactions():
 
-    url = urls.urls['mir2dis']['url']
+    url = urls.urls['mir2dis']['url_rescued']
     c = curl.Curl(url, silent = True, large = True, encoding = 'iso-8859-1')
 
     return [
@@ -11836,6 +11836,7 @@ def get_tfregulons_old(
             not only_curated or ll[4] == 'TRUE'
         )
     )
+
 
 def get_tfregulons(
         levels = {'A', 'B'},
