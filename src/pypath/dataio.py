@@ -11286,7 +11286,7 @@ def mir2disease_interactions():
 
 def mirdeathdb_interactions():
 
-    url = urls.urls['mirdeathdb']['url']
+    url = urls.urls['mirdeathdb']['url_rescued']
     c = curl.Curl(url, silent = False, large = True)
 
     _ = next(c.result)

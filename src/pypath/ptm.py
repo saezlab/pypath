@@ -480,19 +480,19 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
                 )
                 
 
-                if self.input_is('mimp'):
+                if self.input_is('mimp') and p['databases']:
                     dommot.mimp_sources = ';'.split(p['databases'])
                     dommot.add_sources(dommot.mimp_sources)
                     dommot.npmid = p['npmid']
                 
-                if self.input_is('protmapper'):
+                if self.input_is('protmapper') and p['databases']:
                     dommot.protmapper_sources = p['databases']
                     dommot.add_sources(p['databases'])
 
                 elif self.input_is('phosphonetworks'):
                     dommot.pnetw_score = p['score']
 
-                elif self.input_is('dbptm'):
+                elif self.input_is('dbptm') and p['source']:
                     dommot.dbptm_sources = ['%s_dbPTM' % p['source']]
                     dommot.add_sources(dommot.dbptm_sources)
 

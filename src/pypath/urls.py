@@ -844,7 +844,8 @@ urls = {
         'label': 'miRDeathDB experimentally verified'\
             'miRNA-target interactions',
         'url': 'http://www.rna-world.org/mirdeathdb/data'\
-            '/miRDeathDB_all_data.txt'
+            '/miRDeathDB_all_data.txt',
+        'url_rescued': 'http://rescued.omnipathdb.org/miRDeathDB_all_data.txt'
     },
     'mirecords': {
         'label': 'miRecords experimentally validated'\
