@@ -117,9 +117,13 @@ categories = {
     'miRDeathDB': 'n',
     'miRecords': 'n',
     'miRTarBase': 'n',
+    'ncRDeathDB': 'nw',
     # TF-miRNA
     'TransmiR': 'u',
     'ENCODE_tf-mirna': 'u',
+    # lncRNA-mRNA
+    'LncRNADisease': 'w',
+    'lncrnadb': 'w',
 }
 
 p = set()
@@ -130,6 +134,7 @@ t = set()
 l = set()
 n = set() # miRNA-target
 u = set() # TF-mirna
+w = set() # lncRNA-target
 
 for db, cats in iteritems(categories):
     
@@ -146,6 +151,7 @@ catnames = {
     'l': 'Ligand-receptor',
     'n': 'miRNA-mRNA',
     'u': 'TF-miRNA',
+    'w': 'lncRNA-mRNA',
     '':  'No category',
     None: 'No category',
 }
