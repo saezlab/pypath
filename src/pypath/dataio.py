@@ -11402,7 +11402,7 @@ def mirtarbase_interactions():
 
 def lncdisease_interactions():
 
-    url = urls.urls['lncdisease']['url']
+    url = urls.urls['lncdisease']['url_rescued']
     c = curl.Curl(url, silent = False, large = True)
 
     for l in c.result:

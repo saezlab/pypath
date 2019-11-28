@@ -869,7 +869,8 @@ urls = {
     'lncdisease': {
         'label': 'lncRNA and disease database: experimentally '\
             'verified lncRNA interactions',
-        'url': 'http://210.73.221.6/files/images/ldd/data2.txt'
+        'url': 'http://210.73.221.6/files/images/ldd/data2.txt',
+        'url_rescued': 'http://rescued.omnipathdb.org/LncRNADisease_data2.txt'
     },
     'lncrnadb': {
         'label': 'Literature curated lncRNA interactions',
