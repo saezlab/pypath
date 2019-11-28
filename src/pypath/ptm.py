@@ -481,7 +481,7 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
                 
 
                 if self.input_is('mimp') and p['databases']:
-                    dommot.mimp_sources = ';'.split(p['databases'])
+                    dommot.mimp_sources = p['databases'].split(';')
                     dommot.add_sources(dommot.mimp_sources)
                     dommot.npmid = p['npmid']
                 
