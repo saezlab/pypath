@@ -120,6 +120,10 @@ class WebserviceTables(session_mod.Logger):
                 'init_network',
                 {'lst': data_formats.mirna_target},
             ),
+            'lncRNA-target': (
+                'init_network',
+                {'lst': data_formats.lncrna_target},
+            )
         }
         
         for name, (to_call, kwargs) in iteritems(param):
@@ -133,7 +137,7 @@ class WebserviceTables(session_mod.Logger):
             e.webservice_interactions_df()
             dataframes.append(e.df)
             
-            if not self.only_human:
+            if not self.only_human and name != 'lncRNA-target':
                 
                 graph_human = None
                 
