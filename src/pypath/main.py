@@ -2167,7 +2167,12 @@ class PyPath(session_mod.Logger):
                     self.graph.vs[e.target][eattr] = e[eattr]
 
 
-    def _filters(self, line, positive_filters=[], negative_filters=[]):
+    def _filters(
+            self,
+            line,
+            positive_filters = None,
+            negative_filters = None,
+        ):
         """
         Applies negative and positive filters on a line (record from an
         interaction database). If returns ``True`` the interaction will be
@@ -2175,7 +2180,9 @@ class PyPath(session_mod.Logger):
         and if all other criteria fit then will be added to the network
         after identifier translation.
         """
-
+        
+        negative_filters = negative_filters or ()
+        
         for filtr in negative_filters:
 
             if len(filtr) > 2:
@@ -2189,7 +2196,9 @@ class PyPath(session_mod.Logger):
 
             if thisVal & filtrVal:
                 return True
-
+        
+        positive_filters = positive_filters or ()
+        
         for filtr in positive_filters:
 
             if len(filtr) > 2:
@@ -2660,7 +2669,7 @@ class PyPath(session_mod.Logger):
                      # loop below runs zero cycles
             
             for lnum, line in enumerate(infile):
-
+                
                 if len(line) <= 1 or (lnum == 1 and param.header):
                     # empty lines
                     # or header row
@@ -2692,13 +2701,14 @@ class PyPath(session_mod.Logger):
                     continue
 
                 else:
-
+                    
                     # applying filters:
                     if self._filters(
                         line,
                         param.positive_filters,
                         param.negative_filters
                     ):
+                        
                         lFiltered += 1
                         continue
 
@@ -3308,7 +3318,7 @@ class PyPath(session_mod.Logger):
             ncbi_tax_id = edge['taxon_a'],
             expand_complexes = expand_complexes,
         )
-
+        
         default_id_b = mapping.map_name(
             edge['id_b'],
             edge['id_type_b'],
@@ -3316,7 +3326,7 @@ class PyPath(session_mod.Logger):
             ncbi_tax_id = edge['taxon_b'],
             expand_complexes = expand_complexes,
         )
-
+        
         # this is needed because the possibility ambigous mapping
         # and expansion of complexes
         # one name can be mapped to multiple ones
