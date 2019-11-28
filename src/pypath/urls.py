@@ -847,7 +847,7 @@ urls = {
             '/miRDeathDB_all_data.txt',
         'url_rescued': 'http://rescued.omnipathdb.org/miRDeathDB_all_data.txt'
     },
-    'ncrnadeathdb': {
+    'ncrdeathdb': {
         'label': 'Successor of miRDeathDB. Apoptosis related non-coding RNA'\
             ' literature curated regulatory interactions',
         'url': 'http://www.rna-society.org/ncrdeathdb/data/'\

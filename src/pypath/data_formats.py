@@ -1932,7 +1932,40 @@ lncrna_protein = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {})
+        extra_node_attrs_b = {}
+    ),
+    'ncrdeath': input_formats.ReadSettings(
+        name = "ncRDeathDB",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "lncrna-genesymbol",
+        id_type_b = "genesymbol",
+        entity_type_a = "lncrna",
+        entity_type_b = "protein",
+        is_directed = True,
+        sign = False,
+        ncbi_tax_id = {
+            'col': 6,
+            'include': {9606},
+        },
+        input = 'ncrdeathdb_interactions',
+        interaction_type = 'LNCRP',
+        references = 5,
+        header = False,
+        positive_filters = [(2, 'lncRNA')],
+        negative_filters = [
+            (5, 'prediction'),
+            (1, {None}),
+            (0, {None}),
+        ],
+        extra_edge_attrs = {
+            'ncrdeathdb_pathway': 3,
+            'ncrdeathdb_effect': 4,
+        },
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
 }
 
 ligand_receptor = {

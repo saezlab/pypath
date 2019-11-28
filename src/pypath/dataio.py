@@ -11343,7 +11343,7 @@ def ncrdeathdb_interactions():
         
         rna_ids = (
             (rec['miRNA_symbol'],)
-                if typ == 'lncrna' else
+                if typ == 'lncRNA' else
             rec['miRBase_ID'].split(',')
         )
         
