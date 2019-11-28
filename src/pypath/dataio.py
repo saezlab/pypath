@@ -11400,6 +11400,7 @@ def mirtarbase_interactions():
 
     return tbl[1:]
 
+
 def lncdisease_interactions():
 
     url = urls.urls['lncdisease']['url_rescued']
@@ -11409,23 +11410,30 @@ def lncdisease_interactions():
 
         l = l.strip().split('\t')
 
-        yield (l[1],
-               l[2],
-               l[3].split('-')[0],
-               l[3].split('-')[1] if '-' in l[3] else '',
-               l[4].lower(),
-               l[6].lower(),
-               l[9])
+        yield (
+            l[1],
+            l[2],
+            l[3].split('-')[0],
+            l[3].split('-')[1] if '-' in l[3] else '',
+            l[4].lower(),
+            l[6].lower(),
+            l[9],
+        )
+
 
 def lncrnadb_interactions():
 
     renondigit = re.compile(r'[^\d]+')
 
-    url = urls.urls['lncrnadb']['url']
-    c = curl.Curl(url, silent = False, large = True,
-                  encoding = 'utf-8')
+    url = urls.urls['lncrnadb']['url_rescued']
+    c = curl.Curl(
+        url,
+        silent = False,
+        large = True,
+        encoding = 'utf-8',
+    )
 
-    b = bs4.BeautifulSoup(c.result, 'lxml')
+    b = bs4.BeautifulSoup(c.fileobj, 'lxml')
 
     for res in b.findAll('results'):
 
@@ -11442,6 +11450,7 @@ def lncrnadb_interactions():
                 pmid     = renondigit.sub('', assoc.find('pubmedid').text)
 
                 yield (lncrna, partner, typ, spec, pmid)
+
 
 def transmir_interactions():
 
@@ -11473,6 +11482,7 @@ def transmir_interactions():
                l[8].lower(),
                l[9] if len(l) >= 10 else '')
 
+
 def encode_tf_mirna_interactions():
 
     url = urls.urls['encode']['tf-mirna']
@@ -11486,6 +11496,7 @@ def encode_tf_mirna_interactions():
         if l[1] == '(TF-miRNA)':
 
             yield (l[0], l[2])
+
 
 def _get_imweb():
 
@@ -11531,6 +11542,7 @@ def _get_imweb():
                    compressed = True)
 
     return c0, c2
+
 
 def get_imweb(verbose = 0):
 

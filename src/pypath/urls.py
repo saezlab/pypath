@@ -874,7 +874,9 @@ urls = {
     },
     'lncrnadb': {
         'label': 'Literature curated lncRNA interactions',
-        'url': 'http://lncrna.com/rest/all/nomenclature/species/association'
+        'url': 'http://lncrna.com/rest/all/nomenclature/species/association',
+        'url_rescued': 'http://rescued.omnipathdb.org/'\
+            'lncrnadb_association.xml',
     },
     'transmir': {
         'label': 'Literature curated TF-miRNA interactions',
