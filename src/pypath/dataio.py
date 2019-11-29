@@ -5443,38 +5443,49 @@ def kirouac2010_interactions():
             'Gecko/20100101 Firefox/68.0'
         ),
     ]
-    
-    c0 = curl.Curl(
-        init_url,
-        silent = True,
-        large = False,
-        req_headers = req_headers,
-        follow = False,
-    )
-    
-    cookies = []
-    
-    if hasattr(c0, 'resp_headers'):
-        
-        for hdr in c0.resp_headers:
-            
-            if hdr.lower().startswith(b'set-cookie'):
-                
-                cookie = hdr.split(b':')[1].split(b';')[0].strip()
-                
-                if cookie not in cookies:
-                    
-                    cookies.append(cookie.decode('ascii'))
-        
-        cookies = '; '.join(cookies)
-        
-        req_headers.append('Cookie: %s' % cookies)
-        
-        _log('Response header: %s' % str(c0.resp_headers))
-        _log('Cookies: %s' % str(cookies))
-        _log('Request header: %s' % str(req_headers))
-    
     url = urls.urls['kirouac2010']['url']
+    
+    c00 = curl.Curl(url, call = False, process = False)
+    
+    if (
+        not os.path.exists(c00.cache_file_name) or
+        os.path.getsize(c00.cache_file_name) == 0
+    ):
+        
+        _log('Kirouac 2010 download: requesting website cookie.')
+        
+        c0 = curl.Curl(
+            init_url,
+            silent = True,
+            large = False,
+            req_headers = req_headers,
+            follow = False,
+            cache = False,
+        )
+        
+        cookies = []
+        
+        if hasattr(c0, 'resp_headers'):
+            
+            for hdr in c0.resp_headers:
+                
+                if hdr.lower().startswith(b'set-cookie'):
+                    
+                    cookie = hdr.split(b':')[1].split(b';')[0].strip()
+                    
+                    if cookie not in cookies:
+                        
+                        cookies.append(cookie.decode('ascii'))
+            
+            cookies = '; '.join(cookies)
+            
+            req_headers.append('Cookie: %s' % cookies)
+            
+            _log('Response header: %s' % str(c0.resp_headers))
+            _log('Cookies: %s' % str(cookies))
+            _log('Request header: %s' % str(req_headers))
+        
+        os.remove(c00.cache_file_name)
     
     c = curl.Curl(
         url,
