@@ -11455,32 +11455,37 @@ def lncrnadb_interactions():
 def transmir_interactions():
 
     url = urls.urls['transmir']['url']
-    c = curl.Curl(url, silent = False, large = True,
-                  encoding = 'iso-8859-1')
-
-    _ = next(c.result)
-
-    taxids = common.join_dicts(
-        taxonomy.taxids,
-        taxonomy.mirbase_taxids,
-        _from = 'values'
+    c = curl.Curl(
+        url,
+        silent = False,
+        large = True,
+        encoding = 'iso-8859-1',
     )
+    
+    TransmirInteraction = collections.namedtuple(
+        'TransmirInteraction',
+        [
+            'tf_genesymbol',
+            'mirna',
+            'effect',
+            'pubmed',
+        ]
+    )
+    
+    result = []
 
     for l in c.result:
 
         l = l.strip().split('\t')
-
-        if len(l) < 9:
-            print(l)
-            continue
-
-        l[3] = '%s%s' % (
-            '%s-' % taxids[l[9]] if len(l) >= 10 and l[9] in taxids else '',
-            l[3])
-
-        yield (l[0], l[1], l[3], l[6], l[7],
-               l[8].lower(),
-               l[9] if len(l) >= 10 else '')
+        
+        result.append(TransmirInteraction(
+            tf_genesymbol = l[0],
+            mirna = l[1],
+            effect = l[4].split('(')[0],
+            pubmed = l[5],
+        ))
+    
+    return result
 
 
 def encode_tf_mirna_interactions():

@@ -880,8 +880,10 @@ urls = {
     },
     'transmir': {
         'label': 'Literature curated TF-miRNA interactions',
-        'url': 'http://www.cuilab.cn/files/images/transmir/'\
-            'transmir_v1.2.txt'
+        'url_old': 'http://www.cuilab.cn/files/images/transmir/'\
+            'transmir_v1.2.txt',
+        'url': 'http://www.cuilab.cn/files/images/transmir2/'
+            'download/literature/hsa.tsv.gz',
     },
     'encode': {
         'label': 'Interaction data from the Nature ENCODE project',
