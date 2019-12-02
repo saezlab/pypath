@@ -259,6 +259,10 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
     
     def info(self, req):
         
+        if req.args[b'format'] == b'json' and hasattr(self, 'resources'):
+            
+            return self.resources(req)
+        
         return descriptions.gen_html()
     
     
@@ -501,6 +505,25 @@ class TableServer(BaseServer):
             'proteins': None,
             'fields': None,
         },
+        'resources': {
+            'format': {
+                'json',
+            },
+            'maintype': {
+                'interactions',
+                'interaction',
+                'network',
+                'enz_sub',
+                'enzyme-substrate',
+                'annotations',
+                'annotation',
+                'annot',
+                'intercell',
+                'complex',
+                'complexes',
+            },
+            'subtype': None,
+        },
     }
     
     datasets_ = {
@@ -605,6 +628,8 @@ class TableServer(BaseServer):
     def __init__(
             self,
             input_files = None,
+            only_tables = None,
+            exclude_tables = None,
         ):
         """
         Server based on ``pandas`` data frames.
@@ -620,7 +645,17 @@ class TableServer(BaseServer):
         self.input_files = copy.deepcopy(self.default_input_files)
         self.input_files.update(input_files or {})
         self.data = {}
+        
+        self.to_load = (
+            self.data_query_types - common.to_set(exclude_tables)
+                if only_tables is None else
+            common.to_set(only_tables)
+        )
+        
+        self._log('Datasets to load: %s.' % (', '.join(sorted(self.to_load))))
+        
         self._read_tables()
+        
         self._preprocess_interactions()
         self._preprocess_enzsub()
         self._preprocess_annotations()
@@ -637,6 +672,12 @@ class TableServer(BaseServer):
         self._log('Loading data tables.')
         
         for name, fname in iteritems(self.input_files):
+            
+            if name not in self.to_load:
+                
+                continue
+            
+            self._log('Loading dataset `%s` from file `%s`.' % (name, fname))
             
             if not os.path.exists(fname):
                 
@@ -674,6 +715,10 @@ class TableServer(BaseServer):
     
     def _preprocess_interactions(self):
         
+        if 'interactions' not in self.data:
+            
+            return
+        
         self._log('Preprocessing interactions.')
         tbl = self.data['interactions']
         tbl['set_sources'] = pd.Series(
@@ -691,6 +736,10 @@ class TableServer(BaseServer):
     
     def _preprocess_enzsub(self):
         
+        if 'enzsub' not in self.data:
+            
+            return
+        
         self._log('Preprocessing enzyme-substrate relationships.')
         tbl = self.data['enzsub']
         tbl['set_sources'] = pd.Series(
@@ -699,6 +748,10 @@ class TableServer(BaseServer):
     
     
     def _preprocess_complexes(self):
+        
+        if 'complexes' not in self.data:
+            
+            return
         
         self._log('Preprocessing complexes.')
         tbl = self.data['complexes']
@@ -711,6 +764,10 @@ class TableServer(BaseServer):
     
     
     def _preprocess_annotations(self):
+        
+        if 'annotations' not in self.data:
+            
+            return
         
         renum = re.compile(r'[-\d\.]+')
         
@@ -744,6 +801,10 @@ class TableServer(BaseServer):
     
     def _preprocess_intercell(self):
         
+        if 'intercell' not in self.data:
+            
+            return
+        
         self._log('Preprocessing intercell data.')
         tbl = self.data['intercell']
         tbl.mainclass = tbl.mainclass.cat.add_categories('')
@@ -758,6 +819,10 @@ class TableServer(BaseServer):
     def _update_databases(self):
         
         for query_type in self.data_query_types:
+            
+            if query_type not in self.data:
+                
+                continue
             
             tbl = self.data[query_type]
             
@@ -1535,6 +1600,11 @@ class TableServer(BaseServer):
         tbl = tbl.loc[:,hdr]
         
         return self._serve_dataframe(tbl, req)
+    
+    
+    def resources(self, req):
+        
+        print(req)
     
     
     @classmethod
