@@ -23,6 +23,7 @@
 # http://www.ijbs.com/v06p0051.htm
 # http://www.nature.com/cddis/journal/v4/n8/full/cddis2013292a.html
 
+import sys
 from future.utils import iteritems
 
 import codecs
@@ -3186,7 +3187,7 @@ def gen_html():
                             '</span></li>\n' % met
                     doc += '\t\t\t\t\t</ul>\n'
             doc += '\t\t\t\t</div>\n'
-    
+
     return _html.default_template(doc, title, title)
 
 
