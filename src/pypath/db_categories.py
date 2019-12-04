@@ -166,7 +166,7 @@ transctiption_resources = t
 ligand_receptor_resources = l
 
 
-def get_categories(database):
+def get_categories(database, names = False):
     
     result = (
         {letter for letter in categories[database]}
@@ -186,6 +186,10 @@ def get_categories(database):
             'Could not find database `%s` in any '
             'of the categories.' % database
         )
+    
+    if names:
+        
+        result = {catnames[cat] for cat in result}
     
     return result
 

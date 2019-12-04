@@ -377,9 +377,16 @@ class CustomAnnotation(session_mod.Logger):
         
         self._log('Creating data frame from custom annotation.')
         
-        header = ['category', 'uniprot', 'genesymbol', 'entity_type']
+        header = [
+            'category',
+            'database',
+            'uniprot',
+            'genesymbol',
+            'entity_type',
+        ]
         dtypes = {
             'category':    'category',
+            'database':    'category',
             'uniprot':     'category',
             'genesymbol':  'category',
             'entity_type': 'category',
@@ -390,11 +397,14 @@ class CustomAnnotation(session_mod.Logger):
             header.insert(-1, 'full_name')
             dtypes['full_name'] = 'category'
         
+        self.collect_classes()
+        
         self.df = pd.DataFrame(
             [
                 # annotation category, entity id
                 [
                     cls,
+                    self.get_resource_label(cls) or 'OmniPath',
                     uniprot.__str__(),
                     (
                         mapping.map_name0(uniprot, 'uniprot', 'genesymbol')

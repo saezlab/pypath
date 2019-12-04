@@ -50,6 +50,8 @@ import pypath.descriptions as descriptions
 import pypath._html as _html
 import pypath.urls as urls
 import pypath.common as common
+import pypath.db_categories as db_categories
+import pypath.intercell_annot as intercell_annot
 from pypath.common import flatList
 from pypath._version import __version__
 
@@ -259,7 +261,11 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
     
     def info(self, req):
         
-        if req.args[b'format'] == b'json' and hasattr(self, 'resources'):
+        if (
+            b'format' in req.args and
+            req.args[b'format'][0] == b'json' and
+            hasattr(self, 'resources')
+        ):
             
             return self.resources(req)
         
@@ -509,7 +515,7 @@ class TableServer(BaseServer):
             'format': {
                 'json',
             },
-            'maintype': {
+            'datasets': {
                 'interactions',
                 'interaction',
                 'network',
@@ -522,10 +528,27 @@ class TableServer(BaseServer):
                 'complex',
                 'complexes',
             },
-            'subtype': None,
+            'subtypes': None,
         },
     }
     
+    
+    query_type_synonyms = {
+        'interactions': 'interactions',
+        'interaction': 'interactions',
+        'network': 'interactions',
+        'enz_sub': 'enzsub',
+        'ptms': 'enzsub',
+        'ptm': 'enzsub',
+        'enzyme-substrate': 'enzsub',
+        'enzyme_substrate': 'enzsub',
+        'annotations': 'annotations',
+        'annotation': 'annotations',
+        'annot': 'annotations',
+        'intercell': 'intercell',
+        'complex': 'complexes',
+        'complexes': 'complexes',
+    }
     datasets_ = {
         'omnipath',
         'tfregulons',
@@ -616,6 +639,7 @@ class TableServer(BaseServer):
         },
         intercell = {
             'category': 'category',
+            'database': 'category',
             'uniprot': 'category',
             'genesymbol': 'category',
             'mainclass': 'category',
@@ -818,6 +842,8 @@ class TableServer(BaseServer):
     
     def _update_databases(self):
         
+        self._databases_dict = collections.defaultdict(dict)
+        
         for query_type in self.data_query_types:
             
             if query_type not in self.data:
@@ -842,7 +868,69 @@ class TableServer(BaseServer):
                 ))
             ))
             
+            intercell_databases = dict(
+                set(
+                    zip(
+                        self.data['intercell'].category,
+                        self.data['intercell'].database,
+                    )
+                )
+            )
+            
+            intercell_main_classes = dict(
+                set(
+                    zip(
+                        self.data['intercell'].category,
+                        self.data['intercell'].mainclass,
+                    )
+                )
+            )
+            
+            for db in values:
+                
+                if query_type == 'intercell':
+                    
+                    if any(
+                        db in dbs
+                        for dbs in intercell_annot.class_types.values()
+                    ):
+                        
+                        continue
+                    
+                    db_class = db
+                    db = intercell_databases[db_class]
+                    class_label = intercell_annot.get_class_label(
+                        intercell_main_classes[db_class]
+                    )
+                
+                if 'datasets' not in self._databases_dict[db]:
+                    
+                    self._databases_dict[db]['datasets'] = {}
+                
+                if query_type not in self._databases_dict[db]['datasets']:
+                    
+                    self._databases_dict[db]['datasets'][query_type] = (
+                        
+                        {'classes': {}}
+                        
+                            if query_type == 'intercell' else
+                        
+                        sorted(db_categories.get_categories(db, names = True))
+                        
+                            if query_type == 'interactions' else
+                        
+                        []
+                        
+                    )
+                
+                if query_type == 'intercell':
+                    
+                    qt = self._databases_dict[db]['datasets'][query_type]
+                    qt['classes'][db_class] = class_label
+            
             self.args_reference[query_type][argname] = values
+        
+        self._databases_dict = dict(self._databases_dict)
     
     
     def _check_args(self, req):
@@ -897,6 +985,15 @@ class TableServer(BaseServer):
             )
     
     
+    def _query_type(self, query_type):
+        
+        return (
+            self.query_type_synonyms[query_type]
+                if query_type in self.query_type_synonyms else
+            query_type
+        )
+    
+    
     def queries(self, req):
         
         query_type = (
@@ -905,7 +1002,7 @@ class TableServer(BaseServer):
             'interactions'
         )
         
-        query_type = 'enzsub' if query_type == 'ptms' else query_type
+        query_type = self._query_type(query_type)
         
         query_param = (
             req.postpath[2]
@@ -957,7 +1054,7 @@ class TableServer(BaseServer):
             'interactions'
         )
         
-        query_type = 'enzsub' if query_type == 'ptms' else query_type
+        query_type = self._query_type(query_type)
         
         datasets = (
             set(req.postpath[2].split(','))
@@ -1604,7 +1701,26 @@ class TableServer(BaseServer):
     
     def resources(self, req):
         
-        print(req)
+        datasets = (
+            
+            {
+                self._query_type(dataset.decode('ascii'))
+                for dataset in req.args[b'datasets']
+            }
+            
+            if b'datasets' in req.args else
+            
+            None
+            
+        )
+        
+        return json.dumps(
+            dict(
+                (k, v)
+                for k, v in iteritems(self._databases_dict)
+                if not datasets or datasets & set(v['datasets'].keys())
+            )
+        )
     
     
     @classmethod
@@ -1673,6 +1789,7 @@ class PypathServer(BaseServer):
         BaseServer.__init__(self)
     
     def network(self, req):
+        
         hdr = ['nodes', 'edges', 'is_directed', 'sources']
         val = [
             self.g.vcount(), self.g.ecount(), int(self.g.is_directed()),

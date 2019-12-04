@@ -17,6 +17,8 @@ from pypath import server
 
 server.Rest(33333, serverclass = server.TableServer)
 
+#server.Rest(33333, serverclass = server.TableServer, only_tables = 'intercell')
+
 # Examples:
 #
 # curl 'http://omnipathdb.org/interactions?datasets=tfregulons&sources=FOXA1,FOXA2,FOXA3,FOXB1,FOXB2,FOXC1,FOXH1&genesymbols=1&fields=sources,tfregulons_level' > omnipath_webservice_test_get.tsv
