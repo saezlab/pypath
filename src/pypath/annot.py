@@ -397,9 +397,9 @@ class CustomAnnotation(session_mod.Logger):
 
             header.insert(-1, 'full_name')
             dtypes['full_name'] = 'category'
-        
+
         self.collect_classes()
-        
+
         self.df = pd.DataFrame(
             [
                 # annotation category, entity id
