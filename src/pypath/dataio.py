@@ -11967,7 +11967,9 @@ def get_tfregulons(
         special_case = {
             'tfact': 'TFactS',
             'oreganno': 'ORegAnno',
-            'reviews': 'DoRothEA_reviews',
+            'reviews': 'DoRothEA-reviews',
+            'HOCOMOCO_v11': 'HOCOMOCO-v11',
+            'JASPAR_v2018': 'JASPAR-v2018',
         }
         
         

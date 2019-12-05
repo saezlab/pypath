@@ -42,7 +42,7 @@ categories = {
     'dbPTM': 'm',
     'MatrixDB': 'i',
     'DOMINO': 'm',
-    'Signor': 'p',
+    'SIGNOR': 'p',
     'Macrophage': 'p',
     'Adhesome': 'p',
     'NetPath': 'r',
@@ -92,17 +92,17 @@ categories = {
     'RLIMS-P': 'm',
     'REACH': 'm',
     # TF-target
-    'ENCODE_distal': 't',
+    'ENCODE-distal': 't',
     'PAZAR': 't',
-    'ENCODE_proximal': 't',
+    'ENCODE-proximal': 't',
     'ORegAnno': 't',
     'HTRI': 't',
     'ARACNe-GTEx': 't',
     'DoRothEA_reviews': 't',
     'FANTOM4': 't',
-    'HOCOMOCO_v11': 't',
+    'HOCOMOCO-v11': 't',
     'HTRIdb': 't',
-    'JASPAR_v2018': 't',
+    'JASPAR-v2018': 't',
     'NFIRegulomeDB': 't',
     'ReMap': 't',
     'RegNetwork': 't',
@@ -166,7 +166,7 @@ transctiption_resources = t
 ligand_receptor_resources = l
 
 
-def get_categories(database, names = False):
+def get_categories(database, names = False, top = True):
     
     result = (
         {letter for letter in categories[database]}
@@ -176,11 +176,13 @@ def get_categories(database, names = False):
                 get_categories(
                     '_'.join(
                         reversed(tuple(reversed(database.split('_')))[:-1])
-                    )
+                    ),
+                    top = False,
                 )
             ) or (
                 get_categories(
-                    '_'.join(database.split('_')[:-1])
+                    '_'.join(database.split('_')[:-1]),
+                    top = False,
                 )
             )
         )
@@ -188,7 +190,7 @@ def get_categories(database, names = False):
         set()
     )
     
-    if not result:
+    if not result and top:
         
         _log(
             'Could not find database `%s` in any '

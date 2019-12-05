@@ -473,7 +473,7 @@ pathway = {
         extra_node_attrs_b = {}
     ),
     'signor': input_formats.ReadSettings(
-        name = 'Signor',
+        name = 'SIGNOR',
         separator = None,
         id_col_a = 0,
         id_col_b = 1,
@@ -1466,7 +1466,7 @@ transcription_onebyone = {
         extra_node_attrs_b = {},
     ),
     'encode_dist': input_formats.ReadSettings(
-        name = "ENCODE_distal",
+        name = "ENCODE-distal",
         separator = None,
         id_col_a = 0,
         id_col_b = 2,
@@ -1486,7 +1486,7 @@ transcription_onebyone = {
         extra_node_attrs_b = {},
     ),
     'encode_prox': input_formats.ReadSettings(
-        name = "ENCODE_proximal",
+        name = "ENCODE-proximal",
         separator = None,
         id_col_a = 0,
         id_col_b = 2,
@@ -1526,7 +1526,7 @@ transcription_onebyone = {
         extra_node_attrs_b = {},
     ),
     'htri': input_formats.ReadSettings(
-        name = "HTRI",
+        name = "HTRIdb",
         separator = None,
         id_col_a = 1,
         id_col_b = 3,
@@ -1566,7 +1566,7 @@ transcription_onebyone = {
         extra_node_attrs_b = {},
     ),
     'signor': input_formats.ReadSettings(
-        name = "Signor",
+        name = "SIGNOR",
         separator = None,
         id_col_a = 0,
         id_col_b = 1,
@@ -2057,7 +2057,7 @@ ligand_receptor = {
 
 small_molecule_protein = {
         'signor': input_formats.ReadSettings(
-        name = "Signor",
+        name = "SIGNOR",
         separator = None,
         id_col_a = 0,
         id_col_b = 1,
