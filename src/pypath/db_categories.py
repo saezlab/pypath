@@ -171,9 +171,17 @@ def get_categories(database, names = False):
     result = (
         {letter for letter in categories[database]}
             if database in categories else
-        get_categories(
-            '_'.join(
-                reversed(tuple(reversed(database.split('_')))[:-1])
+        (
+            (
+                get_categories(
+                    '_'.join(
+                        reversed(tuple(reversed(database.split('_')))[:-1])
+                    )
+                )
+            ) or (
+                get_categories(
+                    '_'.join(database.split('_')[:-1])
+                )
             )
         )
             if '_' in database else
