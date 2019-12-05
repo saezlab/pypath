@@ -11985,7 +11985,10 @@ def get_tfregulons(
             sources,
         )
         
-        return ','.join(revia.split(sources))
+        return ','.join(
+            '%s_DoRothEA' % s
+            for s in revia.split(sources)
+        )
     
     
     evidence_types = (
