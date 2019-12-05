@@ -170,3 +170,26 @@ class AbstractResource(session_mod.Logger):
                 obj = getattr(self, self._data_attr_name),
                 file = fp,
             )
+
+
+class ResourceAttributes(object):
+    
+    
+    def __init__(self, name, **kwargs):
+        
+        self.name = name
+        
+        for attr, value in iteritems(kwargs):
+            
+            setattr(self, attr, value)
+        
+        self.specific = {}
+    
+    
+    def __eq__(self, other):
+        
+        return (
+            self.name == other.name
+                if isinstance(other, self.__class__) else
+            self.name == other
+        )
