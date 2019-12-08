@@ -832,6 +832,7 @@ class Curl(FileOpener):
             retries = 3,
             cache_dir = None,
             bypass_url_encoding = False,
+            empty_attempt_again = True,
         ):
         
         if not hasattr(self, '_logger'):
@@ -851,6 +852,7 @@ class Curl(FileOpener):
         self.get = get
         self.force_quote = force_quote
         self.bypass_url_encoding = bypass_url_encoding
+        self.empty_attempt_again = empty_attempt_again
         
         self._log(
             'Creating Curl object to retrieve '
@@ -1143,6 +1145,15 @@ class Curl(FileOpener):
         self.curl = pycurl.Curl()
         self.set_url(url = url)
         self.curl.setopt(self.curl.SSL_VERIFYPEER, False)
+        
+        if DEBUG:
+            
+            self._log(
+                'Following HTTP redirects: %s' % (
+                    str(self.follow_http_redirect)
+                )
+            )
+        
         self.curl.setopt(self.curl.FOLLOWLOCATION, self.follow_http_redirect)
         self.curl.setopt(self.curl.CONNECTTIMEOUT, self.connect_timeout)
         self.curl.setopt(self.curl.TIMEOUT, self.timeout)
@@ -1221,7 +1232,10 @@ class Curl(FileOpener):
                 
                 self.target.flush()
                 
-                if os.stat(self.cache_file_name).st_size == 0:
+                if (
+                    os.stat(self.cache_file_name).st_size == 0 and
+                    self.empty_attempt_again
+                ):
                     
                     self._log(
                         'Empty file retrieved, attempting downlad again'

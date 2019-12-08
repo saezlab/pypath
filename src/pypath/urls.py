@@ -585,13 +585,16 @@ urls = {
         'login1': 'http://software.broadinstitute.org/gsea/login.jsp',
         'login2':
         'http://software.broadinstitute.org/gsea/j_spring_security_check',
-        'url': 'http://www.broadinstitute.org/gsea/msigdb/download_file.jsp?'
-        'filePath=/resources/msigdb/5.0/%s.all.v5.0.%s.gmt',
+        'url': 'http://software.broadinstitute.org/gsea/msigdb/'
+        'download_file.jsp?filePath=/resources/msigdb/7.0/%s.v7.0.%s.gmt',
         'coll': 'http://www.broadinstitute.org/gsea/msigdb/collections.jsp',
         'url_stem': 'http://www.broadinstitute.org/gsea/%s',
         'one_set':
         'http://www.broadinstitute.org/gsea/msigdb/download_geneset.jsp?'
-        'geneSetName=%s&fileType=txt'
+        'geneSetName=%s&fileType=txt',
+        'url_all': 'http://software.broadinstitute.org/gsea/msigdb/'\
+            'download_file.jsp?filePath=/resources/msigdb/7.0/'\
+            'msigdb_v7.0_files_to_download_locally.zip',
     },
     'disgenet': {
         'label': 'Disease-gene associations',

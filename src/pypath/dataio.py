@@ -13195,3 +13195,116 @@ def protmapper_ptms(
 def protmapper_interactions(**kwargs):
     
     return protmapper_ptms(interactions = True, **kwargs)
+
+
+def msigdb_annotations(
+        registered_email,
+        dataset = 'msigdb',
+        id_type = 'symbols',
+        force_download = False,
+    ):
+    
+    url = urls.urls['msigdb']['url'] % (
+        dataset,
+        id_type,
+    )
+    
+    req_headers_1 = []
+    
+    c_nocall = curl.Curl(
+        url,
+        call = False,
+        process = False,
+        bypass_url_encoding = True,
+    )
+    
+    if (
+        not os.path.exists(c_nocall.cache_file_name) or
+        os.path.getsize(c_nocall.cache_file_name) == 0 or
+        force_download
+    ):
+        
+        c_login_1 = curl.Curl(
+            urls.urls['msigdb']['login1'],
+            cache = False,
+            follow = False,
+            large = False,
+            silent = True,
+        )
+        
+        jsessionid = ''
+        
+        if hasattr(c_login_1, 'resp_headers'):
+            
+            for hdr in c_login_1.resp_headers:
+                
+                if hdr.lower().startswith(b'set-cookie'):
+                    
+                    jsessionid = hdr.split(b':')[1].split(b';')[0].strip()
+                    jsessionid = jsessionid.decode('ascii')
+                    _log('msigdb cookie obtained: `%s`.' % jsessionid)
+                    break
+        
+        if not jsessionid:
+            
+            _log('msigdb: could not get cookie, returning empty list.')
+            
+            return []
+        
+        req_headers = ['Cookie: %s' % jsessionid]
+        
+        c_login_2 = curl.Curl(
+            urls.urls['msigdb']['login2'],
+            cache = False,
+            large = False,
+            silent = True,
+            req_headers = req_headers,
+            post = {
+                'j_username': registered_email,
+                'j_password': 'password',
+            },
+            follow = False,
+            empty_attempt_again = False,
+        )
+        
+        jsessionid_1 = ''
+        
+        if hasattr(c_login_2, 'resp_headers'):
+            
+            for hdr in c_login_2.resp_headers:
+                
+                if hdr.lower().startswith(b'set-cookie'):
+                    
+                    jsessionid_1 = hdr.split(b':')[1].split(b';')[0].strip()
+                    jsessionid_1 = jsessionid_1.decode('ascii')
+            
+            _log(
+                'msigdb: logged in with email `%s`, '
+                'new cookie obtained: `%s`.' % (
+                    registered_email,
+                    jsessionid_1
+                )
+            )
+        
+        if not jsessionid_1:
+            
+            _log(
+                'msigdb: could not log in with email `%s`, '
+                'returning empty list.' % registered_email
+            )
+            
+            return []
+        
+        req_headers_1 = ['Cookie: %s' % jsessionid_1]
+    
+    time.sleep(2)
+    
+    c = curl.Curl(
+        url,
+        req_headers = req_headers_1,
+        silent = False,
+        large = True,
+        bypass_url_encoding = True,
+    )
+    
+    return c
