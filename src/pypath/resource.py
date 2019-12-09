@@ -175,21 +175,50 @@ class AbstractResource(session_mod.Logger):
 class ResourceAttributes(object):
     
     
-    def __init__(self, name, **kwargs):
+    def __init__(
+            self,
+            name,
+            data_type,
+            evidence_types = None,
+            **kwargs
+        ):
         
         self.name = name
+        self.data_type = data_type
+        self.evidence_types = evidence_types or set()
         
         for attr, value in iteritems(kwargs):
             
             setattr(self, attr, value)
-        
-        self.specific = {}
     
     
     def __eq__(self, other):
         
         return (
-            self.name == other.name
+            self.name == other.name and self.data_type = other.data_type
                 if isinstance(other, self.__class__) else
             self.name == other
+        )
+
+
+class NetworkResource(ResourceAttributes):
+    
+    
+    def __init__(
+            self,
+            name,
+            interaction_type = 'PPI',
+            data_model = None,
+            evidence_types = None,
+            **kwargs,
+        ):
+        
+        ResourceAttributes.__init__(
+            self,
+            name = name,
+            data_type = 'network',
+            interaction_type = interaction_type,
+            evidence_types = evidence_types,
+            data_model = data_model,
+            **kwargs,
         )
