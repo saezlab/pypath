@@ -120,9 +120,11 @@ import pypath.settings as settings
 import pypath.entity as entity_mod
 import pypath.taxonomy as taxonomy
 import pypath.db_categories as db_categories
+import pypath.resources.network as network_resources
+import pypath.evidence as evidence
 
 # to make it accessible directly from the module
-omnipath = data_formats.omnipath
+omnipath = network_resources.omnipath
 
 # XXX: The following aliases are already defined in common.py
 # For compatibility with python 2, see https://docs.python.org/3/whatsnew/3.0.html
@@ -1841,7 +1843,7 @@ class PyPath(session_mod.Logger):
         :arg dict lst:
             Optional, ``None`` by default. Specifies the data input
             formats for the different resources (keys) [str]. Values
-            are :py:class:`pypath.input_formats.ReadSettings` instances
+            are :py:class:`pypath.input_formats.NetworkInput` instances
             containing the information. By default uses the set of
             resources of OmniPath.
         :arg list exclude:
@@ -2362,7 +2364,7 @@ class PyPath(session_mod.Logger):
             return len(this_directed & dir_val) > 0
 
 
-    def read_data_file(
+    def _read_network_data(
             self,
             param,
             keep_raw = False,
@@ -2378,11 +2380,11 @@ class PyPath(session_mod.Logger):
         preprocess data, and then give it to this function to finally
         attach to the network.
 
-        :arg pypath.input_formats.ReadSettings param:
-            :py:class:`pypath.input_formats.ReadSettings` instance
+        :arg pypath.input_formats.NetworkInput param:
+            :py:class:`pypath.input_formats.NetworkInput` instance
             containing the detailed definition of the input format of
             the file. Instead of the file name (on the
-            :py:attr:`pypath.input_formats.ReadSettings.input`
+            :py:attr:`pypath.input_formats.NetworkInput.input`
             attribute) you can give a custom function name, which will
             be executed, and the returned data will be used instead.
         :arg bool keep_raw:
@@ -2449,11 +2451,11 @@ class PyPath(session_mod.Logger):
 
             if infile is None:
 
-                if param.__class__.__name__ != "ReadSettings":
+                if param.__class__.__name__ != "NetworkInput":
 
                     self._log(
                         'No proper input file definition! `param` '
-                        'should be a `ReadSettings` instance',
+                        'should be a `NetworkInput` instance',
                         -5,
                     )
 
@@ -2647,7 +2649,7 @@ class PyPath(session_mod.Logger):
                 'will be dropped. You can alter this condition globally by '
                 '`pypath.settings.keep_noref` or for individual resources '
                 'by the `must_have_references` attribute of their '
-                '`ReadSettings` object.' % (
+                '`NetworkInput` object.' % (
                     param.name,
                     'must' if must_have_references else 'does not need to'
                 ),
@@ -2974,7 +2976,7 @@ class PyPath(session_mod.Logger):
         :arg str intogen_file:
             Path to the data file. Can also be [function] that provides
             the data. In general, anything accepted by
-            :py:attr:`pypath.input_formats.ReadSettings.input`.
+            :py:attr:`pypath.input_formats.NetworkInput.input`.
         """
 
         data_formats.intogen_cancer.input = intogen_file
@@ -2990,7 +2992,7 @@ class PyPath(session_mod.Logger):
             Optional, ``None`` by default. Path to the data file. Can
             also be [function] that provides the data. In general,
             anything accepted by
-            :py:attr:`pypath.input_formats.ReadSettings.input`.
+            :py:attr:`pypath.input_formats.NetworkInput.input`.
         """
 
         self.cancer_gene_census_list()
@@ -4781,7 +4783,7 @@ class PyPath(session_mod.Logger):
 
                 e[attr] = set(e[attr])
 
-    def attach_network(self, edge_list = False, regulator = False):
+    def _add_network(self, edge_list = False, regulator = False):
         """
         Adds edges to the network from *edge_list* obtained from file or
         other input method. If none is passed, checks for such data in
@@ -4809,7 +4811,7 @@ class PyPath(session_mod.Logger):
                 edge_list = self.raw_data
 
             else:
-                self._log('attach_network(): No data, nothing to do.')
+                self._log('_add_network(): No data, nothing to do.')
                 return True
 
         if isinstance(edge_list, str):
@@ -6326,7 +6328,7 @@ class PyPath(session_mod.Logger):
         :arg dict lst:
             Optional, ``None`` by default. Specifies the data input
             formats for the different resources (keys) [str]. Values
-            are :py:class:`pypath.input_formats.ReadSettings` instances
+            are :py:class:`pypath.input_formats.NetworkInput` instances
             containing the information. By default uses the set of
             resources of OmniPath.
         :arg list exclude:
@@ -6407,8 +6409,8 @@ class PyPath(session_mod.Logger):
         Loads the data from a single resource and attaches it to the
         network
 
-        :arg pypath.input_formats.ReadSettings settings:
-            :py:class:`pypath.input_formats.ReadSettings` instance
+        :arg pypath.input_formats.NetworkInput settings:
+            :py:class:`pypath.input_formats.NetworkInput` instance
             containing the detailed definition of the input format to
             the downloaded file.
         :arg bool clean:
@@ -6432,14 +6434,14 @@ class PyPath(session_mod.Logger):
 
         self._log('Loading network data from resource `%s`.' % settings.name)
 
-        self.read_data_file(
+        self._read_network_data(
             settings,
             cache_files = cache_files,
             reread = reread,
             redownload = redownload,
             keep_raw = keep_raw,
         )
-        self.attach_network()
+        self._add_network()
 
         if clean:
             self.clean_graph()
@@ -6895,8 +6897,8 @@ class PyPath(session_mod.Logger):
         Loads a negative interaction source (e.g.: Negatome) into the
         current network.
 
-        :arg pypath.input_formats.ReadSettings settings:
-            :py:class:`pypath.input_formats.ReadSettings` instance
+        :arg pypath.input_formats.NetworkInput settings:
+            :py:class:`pypath.input_formats.NetworkInput` instance
             containing the detailed definition of the input format to
             the downloaded file. For instance
             :py:data:`pypath.data_formats.negative['negatome']`
@@ -6906,7 +6908,7 @@ class PyPath(session_mod.Logger):
 
         if settings.name not in self.negatives:
             self.raw_data = None
-            self.read_data_file(settings)
+            self._read_network_data(settings)
             self.negatives[settings.name] = self.raw_data
 
         neg = self.negatives[settings.name]
@@ -11290,7 +11292,7 @@ class PyPath(session_mod.Logger):
                'plasmamem': 'GO:0005887'}``.
         :param dict network_sources:
             A dict with anything as keys and network input format definintions
-            (``input_formats.ReadSettings`` instances) as values.
+            (``input_formats.NetworkInput`` instances) as values.
         :param list include:
             A list of tuples of category label pairs. By default we keep all
             edges connecting proteins annotated with any of the defined

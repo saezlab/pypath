@@ -100,12 +100,12 @@ class ReaderBase(object):
 class Reader(ReaderBase):
     """
     Reads network data from an iterable according to
-    an :py:class:``pypath.input_formats.ReadSettings`` object.
+    an :py:class:``pypath.input_formats.NetworkInput`` object.
     """
     def __init__(self, settings):
         """
-        :arg input_formats.ReadSettings settings:
-            ReadSettings instance
+        :arg input_formats.NetworkInput settings:
+            NetworkInput instance
         """
         ReaderBase.__init__(self, settings)
 

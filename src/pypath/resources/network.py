@@ -76,7 +76,7 @@ for resource_set_label in dir(data_formats):
     
     for resource_label, input_def in iteritems(resource_set):
         
-        if not isinstance(input_def, data_formats.input_formats.ReadSettings):
+        if not isinstance(input_def, data_formats.input_formats.NetworkInput):
             
             continue
         

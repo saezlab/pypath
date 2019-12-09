@@ -27,7 +27,7 @@ import copy
 import pypath.settings as settings
 
 __all__ = [
-    'FileMapping', 'PickleMapping', 'ReadSettings', 'ReadList',
+    'FileMapping', 'PickleMapping', 'NetworkInput', 'ReadList',
     'Reference', 'UniprotListMapping',
 ]
 
@@ -228,7 +228,7 @@ class PickleMapping(MappingInput):
         self.fname = fname
 
 
-class ReadSettings:
+class NetworkInput:
 
 
     def __init__(
