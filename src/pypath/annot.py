@@ -1457,6 +1457,16 @@ class CustomAnnotation(session_mod.Logger):
 
 class AnnotationBase(resource.AbstractResource):
 
+    _dtypes = {
+        'uniprot': 'category',
+        'genesymbol': 'category',
+        'entity_type': 'category',
+        'source': 'category',
+        'label': 'category',
+        'value': 'object',
+        'record_id': 'int32',
+    }
+
 
     def __init__(
             self,
@@ -2158,16 +2168,7 @@ class AnnotationBase(resource.AbstractResource):
         self.df = pd.DataFrame(
             records,
             columns = columns,
-        ).astype(
-            {
-                'uniprot': 'category',
-                'genesymbol': 'category',
-                'entity_type': 'category',
-                'source': 'category',
-                'label': 'category',
-                'record_id': 'int32',
-            }
-        )
+        ).astype(self._dtypes)
 
 
     def coverage(self, other):
@@ -4056,7 +4057,7 @@ class AnnotationTable(session_mod.Logger):
 
         self.narrow_df = pd.concat(
             annot.df for annot in self.annots.values()
-        )
+        ).astype(AnnotationBase._dtypes)
 
         self._log(
             'Created annotation data frame, memory usage: %s.' % (
