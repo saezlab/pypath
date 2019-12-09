@@ -224,3 +224,22 @@ class NetworkResource(ResourceAttributes):
             data_model = data_model,
             **kwargs,
         )
+    
+    
+    def __hash__(self):
+        
+        return (
+            self.name,
+            self.data_type,
+            self.interaction_type,
+            self.data_model
+        )
+    
+    
+    def __eq__(self, other):
+        
+        return (
+            self.__hash__() == other.__hash__()
+                if isinstance(other, self.__class__) else
+            self.name == other
+        )
