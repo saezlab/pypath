@@ -1241,10 +1241,6 @@ class Direction(object):
             The new edge object to be merged with the current one.
         """
 
-    # XXX: Not best way to check the class. Probably never happens, but there
-    #      may be other class out there with the same name
-    #      >  if (other.__class__.__name__ == 'Direction' and self.check_nodes(
-    #                 other.nodes):
         if other.__class__ == self.__class__ and self.check_nodes(other.nodes):
             for k in [self.straight, self.reverse, 'undirected']:
                 self.dirs[k] = self.dirs[k] or other.dirs[k]
@@ -1740,6 +1736,7 @@ class PyPath(session_mod.Logger):
             g.vs['ncbi_tax_id'] = []
             g.vs['exp'] = [{}]
             g.es['sources'] = [set([]) for _ in xrange(self.graph.ecount())]
+            g.es['evidences'] = [None]
             g.es['type'] = [[] for _ in xrange(self.graph.ecount())]
             g.es['references'] = [[] for _ in xrange(self.graph.ecount())]
             g.es['refs_by_source'] = [{} for _ in xrange(self.graph.ecount())]
@@ -2407,6 +2404,26 @@ class PyPath(session_mod.Logger):
 
         self._log('Reading network data from `%s`.' % param.name)
 
+        # workaround in order to make it work with both NetworkInput
+        # and NetworkResource type param
+        _resource = (
+            param
+                if isinstance(
+                    param,
+                    network_resources.resource.NetworkResource
+                ) else
+            network_resources.resource.NetworkResource(
+                name = param.name,
+                interaction_type = param.interaction_type,
+                networkinput = param,
+                data_model = param.data_model or 'unknown',
+            )
+        )
+
+        param = _resource.networkinput
+
+        _resources_secondary = ()
+
         expand_complexes = (
             param.expand_complexes
                 if isinstance(param.expand_complexes, bool) else
@@ -2451,11 +2468,19 @@ class PyPath(session_mod.Logger):
 
             if infile is None:
 
-                if param.__class__.__name__ != "NetworkInput":
-
+                if not isinstance(
+                    param,
+                    (
+                        data_formats.input_formats.NetworkInput,
+                        network_resources.resource.NetworkResource,
+                    )
+                ):
+                    
                     self._log(
-                        'No proper input file definition! `param` '
-                        'should be a `NetworkInput` instance',
+                        '_read_network_data: No proper input file '
+                        'definition. `param` should be either '
+                        'a `pypath.input_formats.NetworkInput` or a '
+                        '`pypath.resource.NetworkResource` instance.',
                         -5,
                     )
 
@@ -2465,7 +2490,8 @@ class PyPath(session_mod.Logger):
 
                     sys.stdout.write(
                         '\n\tProcessing %s requires huge memory.\n'
-                        '\tPlease hit `y` if you have at least 2G free memory,\n'
+                        '\tPlease hit `y` if you have at '
+                        'least 2G free memory,\n'
                         '\tor `n` to omit %s.\n'
                         '\tAfter processing once, it will be saved in \n'
                         '\t%s, so next time can be loaded quickly.\n\n'
@@ -2569,13 +2595,13 @@ class PyPath(session_mod.Logger):
                     curl.CACHE = _store_cache
 
                 elif os.path.isfile(param.input):
+
                     infile = curl.Curl(
                         param.input,
                         large = True,
                         silent = False
                     ).result
-                    #infile = codecs.open(
-                    #param.input, encoding='utf-8', mode='r')
+
                     self._log('%s opened...' % param.input)
 
                 if infile is None:
@@ -2588,8 +2614,13 @@ class PyPath(session_mod.Logger):
                     )
                     return None
 
+            # at this point we can be sure we have something to iterate
+            # rows (either lists or strings which can be split into lists)
+
             # finding the largest referred column number,
-            # to avoid references out of range
+            # to avoid list indices out of range
+            # TODO: this should not be necessary, if an input gives an
+            # IndexError that should be fixed elsewhere
             is_directed = param.is_directed
             sign = param.sign
             refCol = param.refs[0] if isinstance(param.refs, tuple) \
@@ -2703,6 +2734,7 @@ class PyPath(session_mod.Logger):
                     continue
 
                 else:
+                    # from here we are committed to process this row
 
                     # applying filters:
                     if self._filters(
@@ -2749,7 +2781,7 @@ class PyPath(session_mod.Logger):
                         rFiltered += 1
                         continue
 
-                    # to give an easy way:
+                    # to give an easy way for input definition:
                     if isinstance(param.ncbi_tax_id, int):
                         taxon_a = param.ncbi_tax_id
                         taxon_b = param.ncbi_tax_id
@@ -2811,12 +2843,36 @@ class PyPath(session_mod.Logger):
                     )
 
                     resource = common.to_set(resource)
+
+                    _resources_secondary = tuple(
+                        network_resources.resource.NetworkResource(
+                            name = sec_res,
+                            interaction_type = _resource.interaction_type,
+                            data_model = _resource.data_model,
+                            via = _resource.name,
+                        )
+                        for sec_res in resource
+                        if sec_res != _resource.name
+                    )
+
                     resource.add(param.name)
 
                     id_a = line[param.id_col_a]
                     id_b = line[param.id_col_b]
                     id_a = id_a.strip() if hasattr(id_a, 'strip') else id_a
                     id_b = id_b.strip() if hasattr(id_b, 'strip') else id_b
+
+                    evidences = evidence.Evidences(
+                        evidences = (
+                            evidence.Evidence(
+                                resource = _res,
+                                references = refs,
+                            )
+                            for _res in
+                            _resources_secondary + (_resource,)
+                        )
+                    )
+
 
                     new_edge = {
                         'id_a': id_a,
@@ -2833,6 +2889,7 @@ class PyPath(session_mod.Logger):
                         'taxon_a': taxon_a,
                         'taxon_b': taxon_b,
                         'type': param.interaction_type,
+                        'evidences': evidences,
                     }
 
                     # getting additional edge and node attributes
@@ -2884,7 +2941,7 @@ class PyPath(session_mod.Logger):
                 infile.close()
 
             # ID translation of edges
-            edge_list_mapped = self.map_list(
+            edge_list_mapped = self._map_list(
                 edge_list,
                 expand_complexes = expand_complexes,
             )
@@ -3218,7 +3275,12 @@ class PyPath(session_mod.Logger):
         self.lists[settings.name] = item_list_mapped
 
 
-    def map_list(self, lst, single_list = False, expand_complexes = True):
+    def _map_list(
+            self,
+            lst,
+            single_list = False,
+            expand_complexes = True,
+        ):
         """
         Maps the names from a list of edges or items (molecules).
 
@@ -3244,7 +3306,7 @@ class PyPath(session_mod.Logger):
         if single_list:
 
             for item in lst:
-                list_mapped += self.map_item(
+                list_mapped += self._map_item(
                     item,
                     expand_complexes = expand_complexes,
                 )
@@ -3252,7 +3314,7 @@ class PyPath(session_mod.Logger):
         else:
 
             for edge in lst:
-                list_mapped += self.map_edge(
+                list_mapped += self._map_edge(
                     edge,
                     expand_complexes = expand_complexes,
                 )
@@ -3260,7 +3322,7 @@ class PyPath(session_mod.Logger):
         return list_mapped
 
 
-    def map_item(self, item, expand_complexes = True):
+    def _map_item(self, item, expand_complexes = True):
         """
         Translates the name in *item* representing a molecule. Default
         name types are defined in
@@ -3292,7 +3354,7 @@ class PyPath(session_mod.Logger):
         return default_id
 
 
-    def map_edge(self, edge, expand_complexes = True):
+    def _map_edge(self, edge, expand_complexes = True):
         """
         Translates the identifiers in *edge* representing an edge. Default
         name types are defined in
@@ -3927,7 +3989,7 @@ class PyPath(session_mod.Logger):
         return s
 
 
-    def add_update_vertex(
+    def _add_update_vertex(
             self,
             default_attrs,
             original_name,
@@ -4023,11 +4085,12 @@ class PyPath(session_mod.Logger):
             this_node[key] = self.combine_attr([this_node[key], value])
 
 
-    def add_update_edge(
+    def _add_update_edge(
             self,
             id_a,
             id_b,
             source,
+            evidences,
             is_directed,
             refs,
             stim,
@@ -4051,6 +4114,8 @@ class PyPath(session_mod.Logger):
         :arg set source:
             Or [list], contains the names [str] of the resources
             supporting that edge.
+        :arg pypath.evidence.Evidence evidence:
+            A ``pypath.evidence.Evidence`` object.
         :arg bool is_directed:
             Whether if the edge is directed or not.
         :arg set refs:
@@ -4085,6 +4150,9 @@ class PyPath(session_mod.Logger):
         if isinstance(edge, list):
 
             if not add:
+                # normally we create all new edges before calling this method
+                # for efficiency reasons; hence if ``add`` is False and the
+                # edge does not exist something must have gone wrong earlier
                 self._log('Failed to add some edges', -5)
                 aid = self.nodDct[id_a]
                 bid = self.nodDct[id_b]
@@ -4099,12 +4167,24 @@ class PyPath(session_mod.Logger):
 
         # assigning source:
         self.add_set_eattr(edge, 'sources', source)
+        
         # adding references:
         # if len(refs) > 0:
         refs = [_refs.Reference(pmid) for pmid in refs]
         self.add_list_eattr(edge, 'references', refs)
+        
+        # adding evidences (this new kind of object either will replace
+        # all source and reference related attributes or is a temporary
+        # solution and something else will replace them):
+        evidences += g.es[edge]['evidences']
+        g.es[edge]['evidences'] = evidences
+        
         # updating references-by-source dict:
-        sources = source if type(source) in {tuple, set, list} else (source,)
+        sources = (
+            source
+                if isinstance(source, (tuple, set, list)) else
+            (source,)
+        )
 
         for src in sources:
             self.add_grouped_set_eattr(edge, 'refs_by_source', src, refs)
@@ -4119,11 +4199,20 @@ class PyPath(session_mod.Logger):
         if is_directed:
             g.es[edge]['dirs'].set_dir((id_a, id_b), source)
             # updating references-by-direction dict:
-            self.add_grouped_set_eattr(edge, 'refs_by_dir', (id_a, id_b),
-                                       refs)
+            self.add_grouped_set_eattr(
+                edge,
+                'refs_by_dir',
+                (id_a, id_b),
+                refs,
+            )
         else:
             g.es[edge]['dirs'].set_dir('undirected', source)
-            self.add_grouped_set_eattr(edge, 'refs_by_dir', 'undirected', refs)
+            self.add_grouped_set_eattr(
+                edge,
+                'refs_by_dir',
+                'undirected',
+                refs,
+            )
 
         # setting signs:
         if stim:
@@ -4145,6 +4234,7 @@ class PyPath(session_mod.Logger):
                              if isinstance(value, list) else [None])
 
             g.es[edge][key] = self.combine_attr([g.es[edge][key], value])
+
 
     def add_list_eattr(self, edge, attr, value):
         """
@@ -4422,6 +4512,7 @@ class PyPath(session_mod.Logger):
         if graph or ret:
             return d
 
+
     def new_edges(self, edges):
         """
         Adds new edges from any iterable of edges to the undirected
@@ -4432,6 +4523,7 @@ class PyPath(session_mod.Logger):
         """
 
         self.graph.add_edges(list(edges))
+
 
     def new_nodes(self, nodes):
         """
@@ -4463,7 +4555,7 @@ class PyPath(session_mod.Logger):
             self.update_vname()
 
         nodes = [self.nodDct[id_a], self.nodDct[id_b]]
-        edge = self.graph.get_eid(nodes[0], nodes[1], error=False)
+        edge = self.graph.get_eid(nodes[0], nodes[1], error = False)
 
         if edge != -1:
             return edge
@@ -4471,6 +4563,7 @@ class PyPath(session_mod.Logger):
         else:
             nodes.sort()
             return nodes
+
 
     def edge_names(self, e):
         """
@@ -4489,6 +4582,7 @@ class PyPath(session_mod.Logger):
 
         return (self.graph.vs[e.source]['name'],
                 self.graph.vs[e.target]['name'])
+
 
     def node_exists(self, name):
         """
@@ -4893,7 +4987,7 @@ class PyPath(session_mod.Logger):
                     'type': e['entity_type_a'],
                     'ncbi_tax_id': e['taxon_a'],
                 }
-                self.add_update_vertex(
+                self._add_update_vertex(
                     default_attrs,
                     e['id_a'],
                     e['id_type_a'],
@@ -4909,7 +5003,7 @@ class PyPath(session_mod.Logger):
                     'type': e['entity_type_b'],
                     'ncbi_tax_id': e['taxon_b']
                 }
-                self.add_update_vertex(
+                self._add_update_vertex(
                     default_attrs,
                     e['id_b'],
                     e['id_type_b'],
@@ -4918,10 +5012,11 @@ class PyPath(session_mod.Logger):
                 nodes_updated.append(e['default_name_b'])
 
             # adding new edge attributes
-            self.add_update_edge(
+            self._add_update_edge(
                 e['default_name_a'],
                 e['default_name_b'],
                 e['source'],
+                e['evidences'],
                 e['is_directed'],
                 e['references'],
                 e['stim'],
@@ -6351,20 +6446,37 @@ class PyPath(session_mod.Logger):
         if lst is None:
             lst = omnipath
 
-        huge = dict((k, v) for k, v in iteritems(lst) if v.huge
-                    and k not in exclude and v.name not in cache_files)
-        nothuge = dict((k, v) for k, v in iteritems(lst)
-                       if (not v.huge or v.name in cache_files)
-                       and k not in exclude)
+        huge = dict(
+            (k, v)
+            for k, v in iteritems(lst)
+            if (
+                (
+                    (hasattr(v, 'huge') and v.huge) or
+                    v.networkinput.huge
+                ) and
+                k not in exclude and
+                v.name not in cache_files
+            )
+        )
+        nothuge = dict(
+            (k, v)
+            for k, v in iteritems(lst)
+            if (
+                (
+                    (hasattr(v, 'huge') and not v.huge) or
+                    not v.networkinput.huge or
+                    v.name in cache_files
+                ) and
+                k not in exclude
+            )
+        )
 
-        # XXX: Not very good practice to name the iterator element
-        #      as one of the kwargs... can lead to confusion
-        for lst in [huge, nothuge]:
+        for inputs in [huge, nothuge]:
 
-            for k, v in iteritems(lst):
+            for this_input in inputs.values():
 
                 self.load_resource(
-                    v,
+                    this_input,
                     clean = False,
                     cache_files = cache_files,
                     reread = reread,
@@ -6450,11 +6562,11 @@ class PyPath(session_mod.Logger):
         self.update_vertex_sources()
 
 
-    def load_negatives(self): # FIXME: global name 'negative' is not defined
+    def load_negatives(self):
         """
         """
 
-        for k, v in iteritems(negative):
+        for k, v in iteritems(data_formats.negative):
 
             self._log(
                 'Loading resource of negative interactions: `%s`.' % v.name
@@ -6462,10 +6574,10 @@ class PyPath(session_mod.Logger):
             self.apply_negative(v)
 
 
-    def load_tfregulons(self, levels={'A', 'B'}, only_curated=False):
+    def load_dorothea(self, levels = {'A', 'B'}, only_curated = False):
         """
         Adds TF-target interactions from TF regulons to the network.
-        TF regulons is a comprehensive resource of TF-target
+        DoRothEA is a comprehensive resource of TF-target
         interactions combining multiple lines of evidences: literature
         curated databases, ChIP-Seq data, PWM based prediction using
         HOCOMOCO and JASPAR matrices and prediction from GTEx expression
@@ -6481,13 +6593,18 @@ class PyPath(session_mod.Logger):
             literature curated interactions or not.
         """
 
-        settings = modcopy.deepcopy(data_formats.transcription['tfregulons'])
-        settings.input_args = {
+        settings = modcopy.deepcopy(
+            network_resources.transcription['dorothea']
+        )
+        settings.networkinput.input_args = {
             'levels': levels,
-            'only_curated': only_curated
+            'only_curated': only_curated,
         }
 
-        self.load_resources({'tfregulons': settings})
+        self.load_resources({'dorothea': settings})
+
+    
+    load_tfregulons = load_dorothea
 
     # XXX: Wouldn't it be better if only printed the resources loaded in
     #      **the current network** rather than omnipath? (e.g. if the user
@@ -10655,10 +10772,10 @@ class PyPath(session_mod.Logger):
         result = {}
 
         for dbs in [
-                data_formats.ptm.values(),
-                data_formats.interaction_htp.values(),
-                data_formats.pathway.values(),
-                data_formats.transcription.values()
+                network_resources.ptm.values(),
+                network_resources.interaction_htp.values(),
+                network_resources.pathway.values(),
+                network_resources.transcription.values()
         ]:
 
             for db in dbs:
@@ -11414,7 +11531,8 @@ class PyPath(session_mod.Logger):
         """
 
         if sources is None:
-            sources = data_formats.pathway
+            
+            sources = network_resources.pathway
 
         CC_EXTRACELL    = 'GO:0005576' # select all extracellular
         CC_EXOSOME      = 'GO:0070062' # remove exosome localized proteins
@@ -11558,12 +11676,14 @@ class PyPath(session_mod.Logger):
         self.update_sources()
 
         if lig_rec_resources:
-            datasets = modcopy.deepcopy(data_formats.ligand_receptor)
-            datasets['cellphonedb'].input_args = {
+            
+            datasets = modcopy.deepcopy(network_resources.ligand_receptor)
+            datasets['cellphonedb'].networkinput.input_args = {
                 'ligand_ligand':     keep_lig_lig,
                 'receptor_receptor': keep_rec_rec,
             }
             self.load_resources(datasets)
+
 
     def set_boolean_vattr(self, attr, vids, negate = False):
         """
@@ -11576,6 +11696,7 @@ class PyPath(session_mod.Logger):
 
         self.graph.vs[attr] = [i in vids for i in xrange(self.graph.vcount())]
 
+
     def go_annotate_graph(self, aspects = ('C', 'F', 'P')):
         """
         Annotates protein nodes with GO terms. In the ``go`` vertex
@@ -11584,6 +11705,7 @@ class PyPath(session_mod.Logger):
         """
 
         go.annotate(self.graph, aspects = aspects)
+
 
     def load_go(self, organism = None):
         """
@@ -11600,6 +11722,7 @@ class PyPath(session_mod.Logger):
             self.go = {}
 
         self.go[organism] = go.GOAnnotation(organism)
+
 
     def get_go(self, organism = None):
         """
@@ -13113,7 +13236,8 @@ class PyPath(session_mod.Logger):
         from there regardless of its content.
         """
 
-        # XXX: According to the alias above omnipath = data_formats.omnipath already
+        # XXX: According to the alias above omnipath = data_formats.omnipath
+        # already
         # YYY: Ok, but here the user has a chance to override it, is it bad?
 
         if pickle_file and os.path.exists(pickle_file):
@@ -13141,7 +13265,7 @@ class PyPath(session_mod.Logger):
 
                 if fmt.name in getattr(db_categories, cat):
 
-                    fmt_noref.must_have_references = False
+                    fmt_noref.networkinput.must_have_references = False
 
                 formats_noref[name] = fmt_noref
 
@@ -13153,14 +13277,14 @@ class PyPath(session_mod.Logger):
         if omnipath is None:
 
             if old_omnipath_resources:
-                omnipath = modcopy.deepcopy(data_formats.omnipath)
-                omnipath['biogrid'] = data_formats.interaction['biogrid']
-                omnipath['alz'] = data_formats.interaction['alz']
-                omnipath['netpath'] = data_formats.interaction['netpath']
+                omnipath = modcopy.deepcopy(network_resources.omnipath)
+                omnipath['biogrid'] = network_resources.interaction['biogrid']
+                omnipath['alz'] = network_resources.interaction['alz']
+                omnipath['netpath'] = network_resources.interaction['netpath']
                 exclude.extend(['intact', 'hprd'])
 
             else:
-                omnipath = data_formats.omnipath
+                omnipath = network_resources.omnipath
 
         omnipath = reference_constraint(omnipath, pathway_extra, 'p')
         omnipath = reference_constraint(omnipath, kinase_substrate_extra, 'm')
@@ -13169,13 +13293,13 @@ class PyPath(session_mod.Logger):
         self.load_resources(omnipath, exclude = exclude)
 
         if kinase_substrate_extra:
-            self.load_resources(data_formats.ptm_misc)
+            self.load_resources(network_resources.ptm_misc)
 
         if ligand_receptor_extra:
-            self.load_resources(data_formats.ligand_receptor)
+            self.load_resources(network_resources.ligand_receptor)
 
         if pathway_extra:
-            self.load_resources(data_formats.pathway_noref)
+            self.load_resources(network_resources.pathway_noref)
 
         self.third_source_directions()
 
@@ -13187,6 +13311,7 @@ class PyPath(session_mod.Logger):
 
         if not keep_directed:
             self.remove_undirected(min_refs = min_refs_undirected)
+
 
     def remove_htp(self, threshold = 50, keep_directed = False):
         """
@@ -15703,11 +15828,15 @@ class PyPath(session_mod.Logger):
                         new_edge['refs_by_dir'] = (
                             self._translate_refsdir(e['refs_by_dir'], ids)
                         )
+                        new_edge['evidence'] = e['evidence']
 
                         # copying the remaining attributes
                         for eattr in e.attributes():
 
-                            if eattr != 'dirs' and eattr != 'refs_by_dir':
+                            if (
+                                eattr not in
+                                {'dirs', 'refs_by_dir', 'evidence'}
+                            ):
 
                                 new_edge[eattr] = modcopy.deepcopy(e[eattr])
 

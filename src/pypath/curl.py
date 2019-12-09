@@ -87,8 +87,9 @@ except:
     _logger.msg(
         'Module `pysftp` not available. '
         'Only downloading of a small number of resources '
-        'relies on this module.'
+        'relies on this module. '
         'Please install by PIP if it is necessary for you.',
+        'curl',
         -1,
     )
 import codecs
@@ -103,7 +104,7 @@ try:
     from fabric.network import connect, HostConnectionCache
     from fabric.state import env
 except:
-    _logger.msg('Module `fabric` not available.', -1)
+    _logger.msg('Module `fabric` not available.', 'curl', -1)
 
 from contextlib import closing
 

@@ -49,7 +49,7 @@ class Evidence(object):
                         if not isinstance(ref, refs.Reference) else
                     ref
                 )
-                for ref references
+                for ref in references
             )
         )
     
@@ -61,7 +61,13 @@ class Evidence(object):
     
     def __eq__(self, other):
         
-        return self.resource == other.resource
+        return (
+            self.resource == other or
+            (
+                hasattr(other, 'resource') and
+                self.resource == other.resource
+            )
+        )
     
     
     def __iadd__(self, other):
@@ -80,6 +86,14 @@ class Evidence(object):
                 'Warning: attempt to merge evidences from different '
                 'resources. Ignoring the second evidence.'
             )
+        
+        return self
+    
+    
+    @property
+    def key(self):
+        
+        return self.resource.key
     
     
     def merge(self, other):
@@ -90,12 +104,21 @@ class Evidence(object):
         
         if self == other:
             
-            self.__iadd__(other)
+            self += other
             return {self}
             
         else:
             
             return {self, other}
+    
+    
+    def __repr__(self):
+        
+        return '<Evidence %s (%s%u references)>' % (
+            self.resource.name,
+            'via %s,' % self.resource.via if self.resource.via else '',
+            len(self.references),
+        )
 
 
 class Evidences(object):
@@ -109,17 +132,25 @@ class Evidences(object):
     
     def __iadd__(self, other):
         
-        other = other if hasattr(other, '__iter__') else (other,)
+        other = (
+            other
+                if hasattr(other, '__iter__') else
+            (other,)
+                if isinstance(other, Evidence) else
+            ()
+        )
         
         for ev in other:
             
-            if ev in self.evidences:
+            if ev.key in self.evidences:
                 
-                self.evidences[ev.__hash__()] += ev
+                self.evidences[ev.key] += ev
                 
             else:
                 
-                self.evidences[ev.__hash__()] = ev
+                self.evidences[ev.key] = ev
+        
+        return self
     
     
     def __iter__(self):
@@ -127,3 +158,11 @@ class Evidences(object):
         for ev in self.evidences.values():
             
             yield ev
+    
+    
+    def __repr__(self):
+        
+        return '<Evidences: %s (%u references)>' % (
+            ', '.join(sorted(ev.resource.name for ev in self)),
+            sum(len(ev.references) for ev in self),
+        )

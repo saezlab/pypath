@@ -54,12 +54,12 @@ _data_models = {
 }
 
 
-def _readsettings_to_networkresource(readsettings, data_model = None):
+def _networkinput_to_networkresource(networkinput, data_model = None):
     
     return resource.NetworkResource(
-        name = readsettings.name,
-        interaction_type = readsettings.interaction_type,
-        readsettings = readsettings,
+        name = networkinput.name,
+        interaction_type = networkinput.interaction_type,
+        networkinput = networkinput,
         data_model = data_model,
     )
 
@@ -89,8 +89,8 @@ for resource_set_label in dir(data_formats):
             )
         )
         
-        new_resource_set[resource_label] = _readsettings_to_networkresource(
-            readsettings = input_def,
+        new_resource_set[resource_label] = _networkinput_to_networkresource(
+            networkinput = input_def,
             data_model = data_model,
         )
     

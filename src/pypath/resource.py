@@ -248,7 +248,7 @@ class NetworkResource(ResourceAttributes):
     
     def __hash__(self):
         
-        return self.key
+        return hash(self.key)
     
     
     @property

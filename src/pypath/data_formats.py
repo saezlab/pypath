@@ -1614,6 +1614,7 @@ transcription_onebyone = {
         extra_edge_attrs = {"signor_mechanism": (7, ';')},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        interaction_type = 'TF',
     ),
 }
 
