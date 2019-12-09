@@ -264,6 +264,7 @@ class ReadSettings:
             resource = None,
             unique_fields = None,
             expand_complexes = None,
+            data_model = None,
         ):
         """
         :param str mark_source:
@@ -305,6 +306,7 @@ class ReadSettings:
         self.mark_target = mark_target
         self.unique_fields = unique_fields or set()
         self.expand_complexes = expand_complexes
+        self.data_model = data_model
 
 
 class ReadList:

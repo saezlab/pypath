@@ -19,6 +19,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
 import os
 
 try:
@@ -195,7 +197,7 @@ class ResourceAttributes(object):
     def __eq__(self, other):
         
         return (
-            self.name == other.name and self.data_type = other.data_type
+            self.name == other.name and self.data_type == other.data_type
                 if isinstance(other, self.__class__) else
             self.name == other
         )
