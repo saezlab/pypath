@@ -22,6 +22,7 @@
 from future.utils import iteritems
 
 import os
+import collections
 
 try:
     import cPickle as pickle
@@ -211,6 +212,17 @@ class ResourceAttributes(object):
 class NetworkResource(ResourceAttributes):
     
     
+    _key = collections.namedtuple(
+        'NetworkResourceKey',
+        [
+            'name',
+            'data_type',
+            'interaction_type',
+            'data_model',
+        ]
+    )
+    
+    
     def __init__(
             self,
             name,
@@ -233,7 +245,13 @@ class NetworkResource(ResourceAttributes):
     
     def __hash__(self):
         
-        return (
+        return self.key
+    
+    
+    @property
+    def key(self):
+        
+        return self._key(
             self.name,
             self.data_type,
             self.interaction_type,
@@ -247,4 +265,13 @@ class NetworkResource(ResourceAttributes):
             self.__hash__() == other.__hash__()
                 if isinstance(other, self.__class__) else
             self.name == other
+        )
+    
+    
+    def __repr__(self):
+        
+        return '<NetworkResource: %s (%s, %s)>' % (
+            self.name,
+            self.interaction_type,
+            self.data_model,
         )
