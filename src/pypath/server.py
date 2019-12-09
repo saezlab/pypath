@@ -787,7 +787,7 @@ class TableServer(BaseServer):
         )
     
     
-    def _preprocess_annotations(self):
+    def _preprocess_annotations_old(self):
         
         if 'annotations' not in self.data:
             
@@ -821,6 +821,66 @@ class TableServer(BaseServer):
         self.data['annotations_summary'] = self.data['annotations'].groupby(
             ['source', 'label'],
         ).agg({'value': _agg_values}).reset_index(drop = False)
+    
+    
+    def _preprocess_annotations(self):
+        
+        if 'annotations' not in self.data:
+            
+            return
+        
+        renum = re.compile(r'[-\d\.]+')
+        
+        
+        def _agg_values(vals):
+            
+            result = (
+                '#'.join(sorted(set(str(ii) for ii in vals)))
+                if not all(
+                    isinstance(i, (int, float)) or (
+                        isinstance(i, str) and
+                        i and (
+                            i is None or
+                            renum.match(i)
+                        )
+                    )
+                    for i in vals
+                ) else
+                '<numeric>'
+            )
+            
+            return result
+        
+        
+        self._log('Preprocessing annotations.')
+        
+        values_by_key = collections.defaultdict(set)
+        
+        # we need to do it this way as we are memory limited on the server
+        # and pandas groupby is very memory intensive
+        for row in self.data['annotations'].itertuples():
+            
+            value = (
+                '<numeric>'
+                if (
+                    (
+                        not isinstance(row.value, bool) and
+                        isinstance(row.value, (int, float))
+                    ) or
+                    renum.match(row.value)
+                ) else
+                str(row.value)
+            )
+            
+            values_by_key[(row.source, row.label)].add(value)
+        
+        self.data['annotations_summary'] = pd.DataFrame(
+            list(
+                (source, label, '#'.join(sorted(values)))
+                for (source, label), values in iteritems(values_by_key)
+            ),
+            columns = ['source', 'label', 'value'],
+        )
     
     
     def _preprocess_intercell(self):
