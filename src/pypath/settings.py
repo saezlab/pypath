@@ -102,6 +102,7 @@ _defaults = {
         'HPRD-phos',
     },
     'keep_noref': False,
+    'msigdb_email': 'omnipathdb@gmail.com',
 }
 
 in_datadir = {
