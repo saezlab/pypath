@@ -92,6 +92,7 @@ protein_sources_default = {
     'Intogen',
     'CancerGeneCensus',
     'Cancersea',
+    'Msigdb',
 }
 
 #TODO this should be part of json files
@@ -2662,6 +2663,31 @@ class Disgenet(AnnotationBase):
             self,
             name = 'DisGeNet',
             input_method = 'disgenet_annotations',
+            ncbi_tax_id = ncbi_tax_id,
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        self.annot = self.data
+        delattr(self, 'data')
+
+
+class Msigdb(AnnotationBase):
+
+    _eq_fields = (
+        'collection',
+        'geneset',
+    )
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+
+        AnnotationBase.__init__(
+            self,
+            name = 'MSigDB',
+            input_method = 'msigdb_annotations',
             ncbi_tax_id = ncbi_tax_id,
             **kwargs
         )
