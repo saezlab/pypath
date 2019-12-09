@@ -201,6 +201,11 @@ class ResourceAttributes(object):
                 if isinstance(other, self.__class__) else
             self.name == other
         )
+    
+    
+    def __str__(self):
+        
+        return self.name
 
 
 class NetworkResource(ResourceAttributes):
