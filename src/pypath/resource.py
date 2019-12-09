@@ -219,6 +219,7 @@ class NetworkResource(ResourceAttributes):
             'data_type',
             'interaction_type',
             'data_model',
+            'via',
         ]
     )
     
@@ -229,6 +230,7 @@ class NetworkResource(ResourceAttributes):
             interaction_type = 'PPI',
             data_model = None,
             evidence_types = None,
+            via = None,
             **kwargs,
         ):
         
@@ -239,6 +241,7 @@ class NetworkResource(ResourceAttributes):
             interaction_type = interaction_type,
             evidence_types = evidence_types,
             data_model = data_model,
+            via = via,
             **kwargs,
         )
     
@@ -252,10 +255,11 @@ class NetworkResource(ResourceAttributes):
     def key(self):
         
         return self._key(
-            self.name,
-            self.data_type,
-            self.interaction_type,
-            self.data_model
+            name = self.name,
+            data_type = self.data_type,
+            interaction_type = self.interaction_type,
+            data_model = self.data_model,
+            via = self.via,
         )
     
     
@@ -275,3 +279,8 @@ class NetworkResource(ResourceAttributes):
             self.interaction_type,
             self.data_model,
         )
+    
+    
+    def is_primary(self):
+        
+        return self.via is None
