@@ -6588,7 +6588,7 @@ def _cellphonedb_get_entity(name, complexes):
         uniprot = mapping.map_name0(name, 'genesymbol', 'uniprot')
         
         name = uniprot or name
-    
+
     name = _cellphonedb_hla(name)
 
     return (name,) if isinstance(name, common.basestring) else name

@@ -230,7 +230,7 @@ def to_set(var):
         
         return set()
         
-    elif hasattr(var, '__iter__'):
+    elif not isinstance(var, basestring) and hasattr(var, '__iter__'):
         
         return set(var)
         

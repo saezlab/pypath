@@ -556,7 +556,7 @@ class Interaction(object):
             self,
             direction,
             only_sign = False,
-            source = None,
+            resource = None,
             interaction_type = None,
             via = False,
             source = None,
@@ -609,7 +609,7 @@ class Interaction(object):
             self,
             direction,
             sign,
-            source = None,
+            resource = None,
             interaction_type = None,
             via = False,
             source = None,
@@ -637,7 +637,7 @@ class Interaction(object):
         self.unset_direction(
             direction = direction,
             only_sign = sign,
-            source = source,
+            resource = resource,
             interaction_type = interaction_type,
             via = via,
             source = source,
@@ -842,7 +842,8 @@ class Interaction(object):
         
         if self._check_direction_key(direction) and evidence is not None:
             
-            getattr(self, sign) += evidence
+            ev_attr = getattr(self, sign)
+            ev_attr += evidence
 
 
     def get_sign(
@@ -1541,7 +1542,7 @@ class Interaction(object):
         self.evidences += other.evidences
         
         for attr, _dir in itertools.product(
-            ('direction', 'positive', 'negative')
+            ('direction', 'positive', 'negative'),
             (self.a_b, self.b_a, 'undirected')
         ):
             
