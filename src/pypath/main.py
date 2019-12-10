@@ -5825,6 +5825,11 @@ class PyPath(session_mod.Logger):
             src += e["sources"]
 
         self.sources = list(set(src))
+        self.sources2 = set(
+            ev.resource
+            for attr in self.graph.es['attrs']
+            for ev in attr.evidences
+        )
         self.update_cats()
 
 
@@ -5839,6 +5844,11 @@ class PyPath(session_mod.Logger):
             db_categories.catnames[catletter]
             for src in self.sources
             for catletter in db_categories.get_categories(src)
+        }
+        self.has_cats2 = {
+            ev.resource.data_model_label
+            for attr in self.graph.es['attrs']
+            for ev in attr.evidences
         }
 
 

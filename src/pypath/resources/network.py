@@ -30,7 +30,7 @@ _data_models = {
     'interaction': 'interaction',
     'interaction_misc': 'interaction',
     'interaction_htp': 'interaction',
-    'ligand_receptor': 'activity_flow',
+    'ligand_receptor': 'ligand_receptor',
     'pathway': 'activity_flow',
     'pathway_all': 'activity_flow',
     'pathway_noref': 'activity_flow',

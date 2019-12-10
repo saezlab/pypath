@@ -266,9 +266,9 @@ class NetworkResource(ResourceAttributes):
     def __eq__(self, other):
         
         return (
-            self.__hash__() == other.__hash__()
-                if isinstance(other, self.__class__) else
             self.name == other
+                if isinstance(other, common.basestring) else
+            self.__hash__() == other.__hash__()
         )
     
     
@@ -284,3 +284,13 @@ class NetworkResource(ResourceAttributes):
     def is_primary(self):
         
         return self.via is None
+    
+    
+    @property
+    def data_model_label(self):
+        
+        return (
+            self.data_model.capitalize().replace('_', ' ')
+                if self.data_model else
+            'Unknown'
+        )

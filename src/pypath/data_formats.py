@@ -350,7 +350,8 @@ pathway = {
         ncbi_tax_id = 9606,
         extra_edge_attrs = {},
         extra_node_attrs_a = {'g2p_ligand_location': 8},
-        extra_node_attrs_b = {'g2p_target_type': 9}),
+        extra_node_attrs_b = {'g2p_target_type': 9},
+    ),
     'ca1': input_formats.NetworkInput(
         name = "CA1",
         id_col_a = 1,
@@ -1990,6 +1991,7 @@ ligand_receptor = {
         input_args = {
             'putative': False
         },
+        data_model = 'ligand_receptor',
     ),
     'kirouac2010': input_formats.NetworkInput(
         name = "Kirouac2010",
@@ -2011,6 +2013,7 @@ ligand_receptor = {
         extra_node_attrs_b = {},
         mark_source = 'kirouac_ligand',
         mark_target = 'kirouac_receptor',
+        data_model = 'ligand_receptor',
     ),
     'hpmr': input_formats.NetworkInput(
         name = 'HPMR',
@@ -2031,6 +2034,7 @@ ligand_receptor = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'ligand_receptor',
     ),
     'cellphonedb': input_formats.NetworkInput(
         name = "CellPhoneDB",
@@ -2053,6 +2057,7 @@ ligand_receptor = {
         extra_node_attrs_a = {'cellphonedb_type': 5},
         extra_node_attrs_b = {'cellphonedb_type': 6},
         positive_filters = [],
+        data_model = 'ligand_receptor',
     ),
 }
 
@@ -2097,14 +2102,18 @@ small_molecule_protein = {
     ),
 }
 
-ligand_receptor['guide2pharma'] = pathway['guide2pharma']
+ligand_receptor['guide2pharma'] = copy.deepcopy(pathway['guide2pharma'])
+ligand_receptor['guide2pharma'].data_model = 'ligand_receptor'
 pathway['hpmr'] = copy.deepcopy(ligand_receptor['hpmr'])
+pathway['hpmr'].data_model = 'activity_flow'
 pathway['hpmr'].must_have_references = True
 pathway['hpmr'].positive_filters = []
 pathway['cellphonedb'] = copy.deepcopy(ligand_receptor['cellphonedb'])
 pathway['cellphonedb'].must_have_references = True
+pathway['cellphonedb'].data_model = 'activity_flow'
 pathway['ramilowski2015'] = copy.deepcopy(ligand_receptor['ramilowski2015'])
 pathway['ramilowski2015'].must_have_references = True
+pathway['ramilowski2015'].data_model = 'activity_flow'
 '''
 The default set of resources in OmniPath.
 '''

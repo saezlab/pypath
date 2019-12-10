@@ -211,3 +211,89 @@ class Evidences(object):
     def __bool__(self):
         
         return bool(len(self.evidences))
+    
+    
+    def __contains__(self, other):
+        """
+        :arg str,tuple,Reference other:
+            Either a reference or a database name, or a tuple of a database
+            name and an interaction type or a tuple of a database, interaction
+            type and a primary database (or None if the query should be
+            limited only to primary databases).
+        """
+        
+        if isinstance(other, refs.Reference):
+            
+            return self.contains_reference(other)
+        
+        # this makes possible to accept a NetworkResource or a
+        # NetworkResourceKey:
+        if (
+            hasattr(other, 'name') and
+            hasattr(other, 'interaction_type') and
+            hasattr(other, 'via')
+        ):
+            
+            other = (other.name, other.interaction_type, other.via)
+        
+        
+        other = other if isinstance(other, tuple) else (other,)
+        
+        return (
+            self.contains_database(other[0]) and
+            (
+                len(other) == 1 or
+                self.has_interaction_type(other[1], other[0])
+            ) and
+            (
+                len(other) <= 2 or
+                self.has_database_via(other[0], other[2])
+            )
+        )
+    
+    def contains_database(self, database):
+        
+        return any(ev.resource.name == database for ev in self)
+    
+    
+    def contains_reference(self, reference):
+        
+        return any(reference in ev.references for ev. in self)
+    
+    
+    def has_database_via(self, database, via):
+        
+        return any(
+            (
+                ev.resource.name == database and
+                ev.via = via
+            )
+            for ev in self
+        )
+    
+    
+    def has_interaction_type(
+            self,
+            interaction_type,
+            database = None,
+            via = False,
+        ):
+        """
+        If ``via`` is ``False`` then it will be ignored, otherwise if ``None``
+        only primary resources are considered.
+        """
+        
+        return any(
+            (
+                ev.resource.interaction_type == interaction_type and
+                (
+                    not database or
+                    ev.resource.name == database
+                ) and
+                (
+                    via == False or
+                    ev.resource.via == via
+                )
+            )
+            for ev in self
+        )
