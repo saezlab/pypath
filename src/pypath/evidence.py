@@ -237,6 +237,7 @@ class Evidence(object):
             resource = None,
             interaction_type = None,
             via = False,
+            references = None,
         ):
         
         resource = (
@@ -263,10 +264,15 @@ class Evidence(object):
             via
         )
         
+        references = common.to_set(references)
+        
         return (
             (
-                resource is None or
-                self.resource == resource
+                resource is None or (
+                    self.resource.name in resource
+                        if isinstance(resource, set) else
+                    self.resource == resource
+                )
             ) and
             (
                 interaction_type is None or
@@ -275,6 +281,10 @@ class Evidence(object):
             (
                 via == False or
                 self.resource.via == via
+            ) and
+            (
+                not references or
+                self.references & references
             )
         )
 
@@ -472,5 +482,24 @@ class Evidences(object):
                 resource = resource,
                 interaction_type = interaction_type,
                 via = via,
+            )
+        )
+    
+    
+    def filter(
+            self,
+            resource = None,
+            interaction_type = None,
+            via = False,
+            references = None,
+        ):
+        
+        return (
+            ev for ev in self
+            if ev.match(
+                resource = resource,
+                interaction_type = interaction_type,
+                via = via,
+                references = references,
             )
         )
