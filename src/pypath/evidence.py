@@ -316,6 +316,49 @@ class Evidences(object):
         return Evidence._contains(self, other)
     
     
+    def __and__(self, other):
+        
+        other = self._foreign_resources_set(other)
+        this = self._resident_resources_set(other)
+        
+        return this & other
+    
+    
+    def __or__(self, other):
+        
+        other = self._foreign_resources_set(other)
+        this = self._resident_resources_set(other)
+        
+        return this | other
+    
+    
+    @staticmethod
+    def _foreign_resources_set(resources):
+        
+        other = common.to_set(resources)
+        
+        return {
+            (
+                res.resource
+                    if hasattr(res, 'resource') else
+                res
+            )
+            for res in resources
+        }
+    
+    
+    def _resident_resources_set(self, other = None):
+        
+        return (
+            {ev.resource.name for ev in self}
+                if (
+                    hasattr(other, '__iter__') and
+                    all(isinstance(res, common.basestring) for res in other)
+                ) else
+            {ev.resource for ev in self}
+        )
+    
+    
     def contains_database(self, database):
         
         return any(ev.resource.name == database for ev in self)
