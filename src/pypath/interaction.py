@@ -314,7 +314,12 @@ class Interaction(object):
             self.id_b,
             self.evidences.__repr__().strip('<>'),
         )
-
+    
+    
+    def __contains__(self, other):
+        
+        return self.evidences.__contains__(other)
+    
     # ###
 
     def get_direction(self, direction, sources = False):
