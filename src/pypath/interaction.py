@@ -1019,46 +1019,58 @@ class Interaction(object):
         ))
 
 
-    def src_by_source(self, source):
+    def src_by_resource(self, resource):
         """
         Returns the name(s) of the source node(s) for each existing
-        direction on the interaction for a specific *source*.
+        direction on the interaction for a specific *resource*.
 
-        :arg str source:
-            Name of the source according to which the information is to
+        :arg str resource:
+            Name of the resource according to which the information is to
             be retrieved.
 
         :return:
             (*list*) -- Contains the name(s) for the source node(s)
-            according to the specified *source*. This means if the
+            according to the specified *resource*. This means if the
             interaction is bidirectional, the list will contain both
             identifiers on the edge. If the specified *source* is not
             found or invalid, an empty list will be returned.
         """
 
-        return [k[0] for k, v in iteritems(self.sources)
-                if k != 'undirected' and source in v]
+        return [
+            _dir[0]
+            for _dir, _evidences in iteritems(self.direction)
+            if (
+                _dir != 'undirected' and
+                resource in _evidences
+            )
+        ]
 
 
-    def tgt_by_source(self, source):
+    def tgt_by_resource(self, resource):
         """
         Returns the name(s) of the target node(s) for each existing
-        direction on the interaction for a specific *source*.
+        direction on the interaction for a specific *resource*.
 
-        :arg str source:
-            Name of the source according to which the information is to
+        :arg str resource:
+            Name of the resource according to which the information is to
             be retrieved.
 
         :return:
             (*list*) -- Contains the name(s) for the target node(s)
-            according to the specified *source*. This means if the
+            according to the specified *resource*. This means if the
             interaction is bidirectional, the list will contain both
             identifiers on the edge. If the specified *source* is not
             found or invalid, an empty list will be returned.
         """
 
-        return [k[1] for k, v in iteritems(self.sources)
-                if k != 'undirected' and source in v]
+        return [
+            _dir[0]
+            for _dir, _evidences in iteritems(self.direction)
+            if (
+                _dir != 'undirected' and
+                resource in _evidences
+            )
+        ]
 
 
     def sources_straight(self):
