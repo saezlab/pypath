@@ -913,7 +913,12 @@ class Interaction(object):
             )
 
 
-    def source(self, undirected = False, resources = None):
+    def source(
+            self,
+            undirected = False,
+            resources = None,
+            **kwargs
+        ):
         """
         Returns the name(s) of the source node(s) for each existing
         direction on the interaction.
@@ -932,6 +937,7 @@ class Interaction(object):
             source_target = 'source',
             undirected = undirected,
             resources = resources,
+            **kwargs
         )
 
 
@@ -939,7 +945,12 @@ class Interaction(object):
     src = source
 
 
-    def target(self, undirected = False, resources = None):
+    def target(
+            self,
+            undirected = False,
+            resources = None,
+            **kwargs
+        ):
         """
         Returns the name(s) of the target node(s) for each existing
         direction on the interaction.
@@ -958,6 +969,7 @@ class Interaction(object):
             source_target = 'target',
             undirected = undirected,
             resources = resources,
+            **kwargs
         )
 
 
@@ -965,23 +977,44 @@ class Interaction(object):
     tgt = target
 
 
-    def _partner(self, source_target, undirected = False, resources = None):
+    def _partner(
+            self,
+            source_target,
+            undirected = False,
+            resources = None,
+            **kwargs
+        ):
 
         resources = self._resources_set(resources)
         _slice = slice(0, 1) if source_target == 'source' else slice(1, 2)
 
         return tuple(itertools.chain(
             (
-                _dir[_slice]
-                    if _dir != 'undirected' else
+                _direction[_slice]
+                    if _direction != 'undirected' else
                 self.nodes
                     if undirected else
                 ()
             )
-            for _dir, _resources in iteritems(self.sources)
+            for _direction, _evidences in iteritems(self.direction)
             if (
-                (not resources and _resources) or
-                (resources & _resources)
+                (
+                    (
+                        not resources and
+                        not kwargs and
+                        _evidences
+                    ) or
+                    (
+                        any(
+                            ev.match(
+                                resource = res,
+                                **kwargs
+                            )
+                            for res in resources or (None,)
+                            for ev in self.evidences
+                        )
+                    )
+                )
             )
         ))
 

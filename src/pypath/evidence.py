@@ -234,7 +234,7 @@ class Evidence(object):
     
     def match(
             self,
-            resource,
+            resource = None,
             interaction_type = None,
             via = False,
         ):
