@@ -1326,7 +1326,13 @@ class Interaction(object):
         )
 
 
-    def majority_dir(self):
+    def majority_dir(
+            self,
+            only_interaction_type = None,
+            only_primary = False,
+            by_references = False,
+            by_reference_resource_pairs = False,
+        ):
         """
         Infers which is the major directionality of the edge by number
         of supporting sources.
@@ -1338,22 +1344,42 @@ class Interaction(object):
             directionality information, ``'undirected'``` will be
             returned.
         """
-
-        if self.is_directed():
-
-            if len(self.sources[self.straight]) == len(self.sources[
-                    self.reverse]):
-                return None
-
-            elif len(self.sources[self.straight]) > len(self.sources[
-                    self.reverse]):
-                return self.straight
-
-            else:
-                return self.reverse
-
-        else:
+        
+        
+        a_b = self.direction[self.a_b]
+        b_a = self.direction[self.b_a]
+        
+        if not a_b and not b_a:
+            
             return 'undirected'
+        
+        method = (
+            'numof_references'
+                if by_references else
+            'curation_effort'
+                if by_reference_resource_pairs else
+            'numof_resources'
+        )
+        
+        n_a_b = getattr(a_b, method)(
+            interaction_type = only_interaction_type,
+            via = not only_primary,
+        )
+        n_b_a = getattr(b_a, method)(
+            interaction_type = only_interaction_type,
+            via = not only_primary,
+        )
+        
+        return (
+            'undirected'
+                if n_a_b == 0 and n_b_a == 0 else
+            None
+                if n_a_b == n_b_a else
+            self.a_b
+                if n_a_b > n_b_a else
+            self.b_a
+        )
+
 
     def majority_sign(self):
         """
