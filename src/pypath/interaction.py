@@ -1073,29 +1073,69 @@ class Interaction(object):
         ]
 
 
-    def sources_straight(self):
+    def resources_a_b(
+            self,
+            resources = False,
+            evidences = False,
+            resource_names = False,
+            sources = False,
+        ):
         """
-        Retrieves the list of sources for the :py:attr:`straight`
+        Retrieves the list of resources for the :py:attr:`a_b`
         direction.
 
         :return:
             (*set*) -- Contains the names of the sources supporting the
-            :py:attr:`straight` directionality of the edge.
+            :py:attr:`a_b` directionality of the edge.
         """
 
-        return self.sources[self.straight]
+        answer_type_args = {
+            'resources': resources,
+            'evidences': evidences,
+            'resource_names': resource_names,
+            'sources': sources,
+        }
+
+        return self._select_answer_type(
+            self.direction[self.a_b],
+            **answer_type_args
+        )
 
 
-    def sources_reverse(self):
+    # synonym for old method name
+    sources_straight = resources_a_b
+
+
+    def resources_b_a(
+            self,
+            resources = False,
+            evidences = False,
+            resource_names = False,
+            sources = False,
+        ):
         """
-        Retrieves the list of sources for the :py:attr:`reverse` direction.
+        Retrieves the list of sources for the :py:attr:`b_a` direction.
 
         :return:
             (*set*) -- Contains the names of the sources supporting the
-            :py:attr:`reverse` directionality of the edge.
+            :py:attr:`b_a` directionality of the edge.
         """
 
-        return self.sources[self.reverse]
+        answer_type_args = {
+            'resources': resources,
+            'evidences': evidences,
+            'resource_names': resource_names,
+            'sources': sources,
+        }
+
+        return self._select_answer_type(
+            self.direction[self.b_a],
+            **answer_type_args
+        )
+
+
+    # synonym for old method name
+    sources_reverse = resources_b_a
 
 
     def sources_undirected(self):
