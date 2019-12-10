@@ -229,8 +229,17 @@ class Direction(object):
         (*id_a*, *id_b*).
     """
 
-    __slots__ = ['nodes', 'straight', 'reverse', 'dirs', 'sources', 'positive',
-                 'negative', 'positive_sources', 'negative_sources']
+    __slots__ = [
+        'nodes',
+        'straight',
+        'reverse',
+        'dirs',
+        'sources',
+        'positive',
+        'negative',
+        'positive_sources',
+        'negative_sources',
+    ]
 
     def __init__(self, id_a, id_b):
         """Initializes the edge object between the given nodes."""
@@ -239,20 +248,36 @@ class Direction(object):
         self.nodes.sort()
 
         self.straight = (self.nodes[0], self.nodes[1])
-        self.reverse = (self.nodes[1], self.nodes[0])
+        self.reverse  = (self.nodes[1], self.nodes[0])
 
-        self.dirs = {self.straight: False,
-                     self.reverse: False,
-                     'undirected': False}
-        self.sources = {self.straight: set([]),
-                        self.reverse: set([]),
-                        'undirected': set([])}
+        self.dirs = {
+            self.straight: False,
+            self.reverse:  False,
+            'undirected':  False,
+        }
+        self.sources = {
+            self.straight: set(),
+            self.reverse:  set(),
+            'undirected':  set(),
+        }
 
-        self.positive = {self.straight: False, self.reverse: False}
-        self.negative = {self.straight: False, self.reverse: False}
+        self.positive = {
+            self.straight: False,
+            self.reverse:  False,
+        }
+        self.negative = {
+            self.straight: False,
+            self.reverse:  False,
+        }
 
-        self.positive_sources = {self.straight: set([]), self.reverse: set([])}
-        self.negative_sources = {self.straight: set([]), self.reverse: set([])}
+        self.positive_sources = {
+            self.straight: set(),
+            self.reverse:  set(),
+        }
+        self.negative_sources = {
+            self.straight: set(),
+            self.reverse:  set(),
+        }
 
 
     def reload(self):
@@ -311,6 +336,7 @@ class Direction(object):
 
         return s
 
+
     def check_nodes(self, nodes):
         """Checks if *nodes* is contained in the edge.
 
@@ -323,6 +349,7 @@ class Direction(object):
         """
 
         return not bool(len(set(self.nodes) - set(nodes)))
+
 
     def check_param(self, di):
         """
@@ -340,6 +367,7 @@ class Direction(object):
 
         return (di == 'undirected' or (isinstance(di, tuple) and
                                        self.check_nodes(di)))
+
 
     def set_direction(self, direction, source):
         """

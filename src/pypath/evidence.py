@@ -164,11 +164,11 @@ class Evidences(object):
             
             if ev.key in self.evidences:
                 
-                self.evidences[ev.key] += ev
+                self.evidences[ev.key] = self.evidences[ev.key] + ev
                 
             else:
                 
-                self.evidences[ev.key] = ev
+                self.evidences[ev.key] = ev.__copy__()
         
         return self
     
