@@ -206,3 +206,8 @@ class Evidences(object):
     def __copy__(self):
         
         return Evidences((ev.__copy__() for ev in self.evidences))
+    
+    
+    def __bool__(self):
+        
+        return bool(len(self.evidences))
