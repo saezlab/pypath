@@ -627,7 +627,7 @@ class Interaction(object):
         """
 
         return (
-            self.dirs[self.straight] and self.dirs[self.reverse]
+            self.direction[self.a_b] and self.direction[self.b_a]
                 if not resources else
             self.is_mutual_by_resources(resources = resources)
         )
@@ -647,8 +647,8 @@ class Interaction(object):
         resources = self._resources_set(resources)
 
         return op(
-            self.sources_straight() & resources,
-            self.sources_reverse() & resources
+            self.direction[self.a_b] & resources,
+            self.direction[self.b_a] & resources,
         )
 
 
@@ -698,22 +698,18 @@ class Interaction(object):
 
     def _is_effect(self, sign, direction = None, resources = None):
 
-        _sign = (
-            self.negative_sources
-                if sign == 'negative' else
-            self.positive_sources
-        )
+        _sign = getattr(self, sign)
         _resources = self._resources_set(resources)
 
         return (
             any(
                 bool(
-                    val
+                    _evidences
                         if not _resources else
-                    val & _resources
+                    _evidences & _resources
                 )
-                for _dir, val in iteritems(_sign)
-                if not direction or direction == _dir
+                for _direction, _evidences in iteritems(_sign)
+                if not direction or direction == _direction
             )
         )
 
