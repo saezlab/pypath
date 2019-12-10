@@ -24,6 +24,7 @@ import collections
 import operator
 
 import pypath.evidence as pypath_evidence
+import pypath.resource as pypath_resource
 import pypath.session_mod as session_mod
 
 _logger = session_mod.Logger(name = 'interaction')
@@ -735,7 +736,16 @@ class Interaction(object):
         )
 
 
-    def set_sign(self, direction, sign, source):
+    def add_sign(
+            self,
+            direction,
+            sign,
+            resource = None,
+            resource_name = None,
+            interaction_type = 'PPI',
+            data_model = None,
+            **kwargs
+        ):
         """
         Sets sign and source information on a given direction of the
         edge. Modifies the attributes :py:attr:`positive` and
@@ -748,30 +758,53 @@ class Interaction(object):
             Pair of edge nodes specifying the direction from which the
             information is to be set/updated.
         :arg str sign:
-            Specifies the type of interaction. If ``'positive'``, is
-            considered activation, otherwise, is assumed to be negative
-            (inhibition).
-        :arg set source:
+            Specifies the type of interaction. Either ``'positive'`` or
+            ``'negative'``.
+        :arg set resource:
             Contains the name(s) of the source(s) from which the
             information was obtained.
+        :arg **kwargs:
+            Passed to ``pypath.resource.NetworkResource`` if ``resource``
+            is not already a ``NetworkResource`` or ``Evidence``
+            instance.
         """
+        
+        sign = self._effect_synonyms(sign)
+        
+        evidence = (
+            resource
+                if isinstance(resource, pypath_evidence.Evidence) else
+            pypath_evidence.Evidence(
+                resource = resource,
+                references = references,
+            )
+                if isinstance(resource, pypath_resource.NetworkResource) else
+            pypath_evidence.Evidence(
+                resource = pypath_resource.NetworkResource(
+                    name = resource_name,
+                    interaction_type = interaction_type,
+                    data_model = data_model,
+                    **kwargs,
+                )
+            )
+                if resource_name is not None else
+            None
+        )
+        
+        if self._check_direction_key(direction) and evidence is not None:
+            
+            getattr(self, sign) += evidence
 
-        if self.check_nodes(direction) and len(source):
-            self.set_dir(direction, source)
-            source = common.addToSet(set([]), source)
 
-            if sign == 'positive':
-                self.positive[direction] = True
-                self.positive_sources[direction] = \
-                    self.positive_sources[direction] | source
-
-            else:
-                self.negative[direction] = True
-                self.negative_sources[direction] = \
-                    self.negative_sources[direction] | source
-
-
-    def get_sign(self, direction, sign=None, sources=False):
+    def get_sign(
+            self,
+            direction,
+            sign = None,
+            evidences = False,
+            resources = False,
+            resource_names = False,
+            sources = False,
+        ):
         """
         Retrieves the sign information of the edge in the given
         diretion. If specified in *sign*, only that sign's information
@@ -784,9 +817,9 @@ class Interaction(object):
         :arg str sign:
             Optional, ``None`` by default. Denotes whether to retrieve
             the ``'positive'`` or ``'negative'`` specific information.
-        :arg bool sources:
+        :arg bool resources:
             Optional, ``False`` by default. Specifies whether to return
-            the sources instead of sign.
+            the resources instead of sign.
 
         :return:
             (*list*) -- If ``sign=None`` containing [bool] values
@@ -797,30 +830,39 @@ class Interaction(object):
             specific direction and sign.
         """
 
-        if self.check_nodes(direction):
+        sign = self._effect_synonyms(sign)
+        
+        answer_type_args = {
+            'resources': resources,
+            'evidences': evidences,
+            'resource_names': resource_names,
+            'sources': sources,
+        }
 
-            if sources:
+        if self._check_direction_key(direction):
 
-                if sign == 'positive':
-                    return self.positive_sources[direction]
+            return (
+                
+                self._select_answer_type(
+                    getattr(self, sign)[direction],
+                    **answer_type_args
+                )
+                
+                    if sign else
+                
+                [
+                    self._select_answer_type(
+                        self.positive[direction],
+                        **answer_type_args
+                    ),
+                    self._select_answer_type(
+                        self.negative[direction],
+                        **answer_type_args
+                    )
+                ]
+                
+            )
 
-                elif sign == 'negative':
-                    return self.negative_sources[direction]
-
-                else:
-                    return [self.positive_sources[direction],
-                            self.negative_sources[direction]]
-
-            else:
-
-                if sign == 'positive':
-                    return self.positive[direction]
-
-                elif sign == 'negative':
-                    return self.negative[direction]
-
-                else:
-                    return [self.positive[direction], self.negative[direction]]
 
     def unset_sign(self, direction, sign, source=None):
         """
