@@ -1381,7 +1381,13 @@ class Interaction(object):
         )
 
 
-    def majority_sign(self):
+    def majority_sign(
+            self,
+            only_interaction_type = None,
+            only_primary = False,
+            by_references = False,
+            by_reference_resource_pairs = False,
+        ):
         """
         Infers which is the major sign (activation/inhibition) of the
         edge by number of supporting sources on both directions.
@@ -1396,19 +1402,35 @@ class Interaction(object):
             supporting sources for both signs in that direction is
             equal.
         """
-
-        dirs = [self.straight, self.reverse]
-
-        result = dict((d, None) for d in dirs)
-
-        for d in dirs:
-            if self.has_sign(direction=d):
-                p, n = map(len, [self.positive_sources[d],
-                                 self.negative_sources[d]])
-
-                result[d] = [p >= n, p <= n]
-
+        
+        result = {}
+        
+        method = (
+            'numof_references'
+                if by_references else
+            'curation_effort'
+                if by_reference_resource_pairs else
+            'numof_resources'
+        )
+        
+        for _dir in (self.a_b, self.b_a):
+            
+            n_pos = getattr(self.positive[_dir], method)(
+                interaction_type = only_interaction_type,
+                via = not only_primary,
+            )
+            n_neg = getattr(self.negative[_dir], method)(
+                interaction_type = only_interaction_type,
+                via = not only_primary,
+            )
+            
+            result[_dir] = [
+                n_pos >= n_neg > 0,
+                n_neg >= n_pos > 0,
+            ]
+        
         return result
+
 
     def consensus_edges(self):
         """
