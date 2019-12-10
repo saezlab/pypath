@@ -1552,33 +1552,75 @@ class Interaction(object):
             getattr(self, attr)[_dir] += getattr(other, attr)[_dir]
 
 
-    def translate(self, ids):
+    def translate(self, ids, new_attrs = None):
         """
         Translates the node names/identifiers according to the
-        dictionary *ids*.
+        dictionary *ids*. Also is able to change attributes like `id_type`,
+        `taxon` and `entity_type`.
 
         :arg dict ids:
             Dictionary containing (at least) the current names of the
             nodes as keys and their translation as values.
+        :arg dict new_attrs:
+            Dictionary with new IDs as keys and their dicts of their new
+            attributes as values. For any attribute not provided here
+            the attributes from the original instance will be used.
+            E.g. you can provide `{'1956': {'id_type': 'entrez'}}' if the
+            new ID type for protein EGFR is Entrez Gene ID.
 
         :return:
             (*pypath.main.Direction*) -- The copy of current edge object
             with translated node names.
         """
 
-        # new Direction object
-        newd = Direction(ids[self.nodes[0]], ids[self.nodes[1]])
-
-        # copying directions
-        for k, v in iteritems(self.sources):
-            di = (ids[k[0]], ids[k[1]]) if type(k) is tuple else k
-            newd.set_dir(di, v)
-
-        # copying signs
-        for di in [self.straight, self.reverse]:
-            pos, neg = self.get_sign(di, sources = True)
-
-            newd.set_sign((ids[di[0]], ids[di[1]]), 'positive', pos)
-            newd.set_sign((ids[di[0]], ids[di[1]]), 'negative', neg)
-
-        return newd
+        new_a = ids[self.nodes[0]]
+        new_b = ids[self.nodes[1]]
+        new_ids = {'a': new_a, 'b': new_b}
+        to_old = common.swap_dict_simple(ids)
+        
+        all_new_attrs = dict(
+            (
+                '%s_%s' % (attr, label),
+                new_attrs[new_ids[label]][attr]
+                    if (
+                        new_ids[label] in new_attrs and
+                        attr in new_attrs[new_ids[label]]
+                    ) else
+                getattr(self, '%s_%s' % (attr, label))
+            )
+            for attr in ('id_type', 'entity_type', 'taxon')
+            for label in ('a', 'b')
+        )
+        
+        new = Interaction(
+            id_a = new_a,
+            id_b = new_b,
+            **all_new_attrs
+        )
+        
+        new.evidences += self.evidences
+        
+        for (old_dir, new_dir), attr in itertools.product(
+            zip(
+                (
+                    (to_old[new.id_a], to_old[new.id_b]),
+                    (to_old[new.id_b], to_old[new.id_a]),
+                    'undirected'
+                ),
+                (
+                    new.a_b,
+                    new.b_a,
+                    'undirected',
+                ),
+            ),
+            ('direction', 'positive', 'negative'),
+        ):
+            
+            if _dir == 'undirected' and attr != 'direction':
+                
+                continue
+            
+            
+            getattr(self, attr)[new_dir] += getattr(self, attr)[old_dir]
+        
+        return new
