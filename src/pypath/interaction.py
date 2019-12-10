@@ -320,6 +320,11 @@ class Interaction(object):
         
         return self.evidences.__contains__(other)
     
+    
+    def has_data_model(self, data_model):
+        
+        return self.evidences.has_data_model(data_model)
+    
     # ###
 
     def get_direction(self, direction, sources = False):

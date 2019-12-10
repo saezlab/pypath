@@ -225,6 +225,11 @@ class Evidence(object):
                 obj.has_database_via(other[0], other[2])
             )
         )
+    
+    
+    def has_data_model(self, data_model):
+        
+        return self.resource.data_model == data_model
 
 
 class Evidences(object):
@@ -344,3 +349,8 @@ class Evidences(object):
             ev.has_interaction_type(interaction_type, database, via)
             for ev in self
         )
+    
+    
+    def has_data_model(self, data_model):
+        
+        return any(ev.has_data_model(data_model) for ev in self)
