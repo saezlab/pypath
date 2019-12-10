@@ -1138,9 +1138,15 @@ class Interaction(object):
     sources_reverse = resources_b_a
 
 
-    def sources_undirected(self):
+    def resources_undirected(
+            self,
+            resources = False,
+            evidences = False,
+            resource_names = False,
+            sources = False,
+        ):
         """
-        Retrieves the list of sources without directed information.
+        Retrieves the list of resources without directed information.
 
         :return:
             (*set*) -- Contains the names of the sources supporting the
@@ -1148,63 +1154,88 @@ class Interaction(object):
             information.
         """
 
-        return self.sources['undirected']
+        answer_type_args = {
+            'resources': resources,
+            'evidences': evidences,
+            'resource_names': resource_names,
+            'sources': sources,
+        }
+
+        return self._select_answer_type(
+            self.direction['undirected'],
+            **answer_type_args
+        )
 
 
-    def positive_straight(self):
+    sources_undirected = resources_undirected
+
+
+    def positive_a_b(self):
         """
-        Checks if the :py:attr:`straight` directionality is a positive
+        Checks if the :py:attr:`a_b` directionality is a positive
         interaction.
 
         :return:
             (*bool*) -- ``True`` if there is supporting information on
-            the :py:attr:`straight` direction of the edge as activation.
+            the :py:attr:`a_b` direction of the edge as activation.
             ``False`` otherwise.
         """
 
-        return self.positive[self.straight]
+        return bool(self.positive[self.a_b])
 
 
-    def positive_reverse(self):
+    positive_straight = positive_a_b
+
+
+    def positive_b_a(self):
         """
-        Checks if the :py:attr:`reverse` directionality is a positive
+        Checks if the :py:attr:`b_a` directionality is a positive
         interaction.
 
         :return:
             (*bool*) -- ``True`` if there is supporting information on
-            the :py:attr:`reverse` direction of the edge as activation.
+            the :py:attr:`b_a` direction of the edge as activation.
             ``False`` otherwise.
         """
 
-        return self.positive[self.reverse]
+        return bool(self.positive[self.b_a])
 
 
-    def negative_straight(self):
+    positive_reverse = positive_b_a
+
+
+    def negative_a_b(self):
         """
-        Checks if the :py:attr:`straight` directionality is a negative
+        Checks if the :py:attr:`a_b` directionality is a negative
         interaction.
 
         :return:
             (*bool*) -- ``True`` if there is supporting information on
-            the :py:attr:`straight` direction of the edge as inhibition.
+            the :py:attr:`a_b` direction of the edge as inhibition.
             ``False`` otherwise.
         """
 
-        return self.negative[self.straight]
+        return bool(self.negative[self.a_b])
 
 
-    def negative_reverse(self):
+    negative_straight = negative_a_b
+
+
+    def negative_b_a(self):
         """
-        Checks if the :py:attr:`reverse` directionality is a negative
+        Checks if the :py:attr:`b_a` directionality is a negative
         interaction.
 
         :return:
             (*bool*) -- ``True`` if there is supporting information on
-            the :py:attr:`reverse` direction of the edge as inhibition.
+            the :py:attr:`b_a` direction of the edge as inhibition.
             ``False`` otherwise.
         """
 
-        return self.negative[self.reverse]
+        return bool(self.negative[self.b_a])
+
+
+    negative_reverse = negative_b_a
 
 
     def negative_sources_straight(self):
