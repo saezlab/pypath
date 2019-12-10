@@ -19,13 +19,17 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
 import importlib as imp
 import collections
 import operator
+import itertools
 
 import pypath.evidence as pypath_evidence
 import pypath.resource as pypath_resource
 import pypath.session_mod as session_mod
+import pypath.common as common
 
 _logger = session_mod.Logger(name = 'interaction')
 _log = _logger._log
@@ -410,7 +414,7 @@ class Interaction(object):
             'sources': sources,
         }
 
-        if self.check_nodes(query):
+        if self._check_direction_key(query):
             
             return [
                 self._select_answer_type(
@@ -447,7 +451,7 @@ class Interaction(object):
                 if resources else
             answer.get_resource_names()
                 if sources or resource_names else
-            bool(self.direction[direction])
+            bool(answer)
         )
 
 
@@ -677,7 +681,7 @@ class Interaction(object):
         """
 
         return (
-            self.direction[self.a_b] and self.direction[self.b_a]
+            bool(self.direction[self.a_b]) and bool(self.direction[self.b_a])
                 if not resources else
             self.is_mutual_by_resources(resources = resources)
         )
@@ -1003,7 +1007,7 @@ class Interaction(object):
                     (
                         not resources and
                         not kwargs and
-                        _evidences
+                        bool(_evidences)
                     ) or
                     (
                         any(
@@ -1012,7 +1016,7 @@ class Interaction(object):
                                 **kwargs
                             )
                             for res in resources or (None,)
-                            for ev in self.evidences
+                            for ev in _evidences
                         )
                     )
                 )
@@ -1065,7 +1069,7 @@ class Interaction(object):
         """
 
         return [
-            _dir[0]
+            _dir[1]
             for _dir, _evidences in iteritems(self.direction)
             if (
                 _dir != 'undirected' and
@@ -1355,20 +1359,20 @@ class Interaction(object):
             return 'undirected'
         
         method = (
-            'numof_references'
+            'count_references'
                 if by_references else
-            'curation_effort'
+            'count_curation_effort'
                 if by_reference_resource_pairs else
-            'numof_resources'
+            'count_resources'
         )
         
         n_a_b = getattr(a_b, method)(
             interaction_type = only_interaction_type,
-            via = not only_primary,
+            via = False if only_primary else None,
         )
         n_b_a = getattr(b_a, method)(
             interaction_type = only_interaction_type,
-            via = not only_primary,
+            via = False if only_primary else None,
         )
         
         return (
@@ -1407,27 +1411,27 @@ class Interaction(object):
         result = {}
         
         method = (
-            'numof_references'
+            'count_references'
                 if by_references else
-            'curation_effort'
+            'count_curation_effort'
                 if by_reference_resource_pairs else
-            'numof_resources'
+            'count_resources'
         )
         
         for _dir in (self.a_b, self.b_a):
             
             n_pos = getattr(self.positive[_dir], method)(
                 interaction_type = only_interaction_type,
-                via = not only_primary,
+                via = False if only_primary else None,
             )
             n_neg = getattr(self.negative[_dir], method)(
                 interaction_type = only_interaction_type,
-                via = not only_primary,
+                via = False if only_primary else None,
             )
             
             result[_dir] = [
-                n_pos >= n_neg > 0,
-                n_neg >= n_pos > 0,
+                0 < n_pos >= n_neg,
+                0 < n_neg >= n_pos,
             ]
         
         return result
