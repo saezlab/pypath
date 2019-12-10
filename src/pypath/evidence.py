@@ -407,3 +407,56 @@ class Evidences(object):
     def get_resource_names(self):
         
         return {ev.resource.name for ev in self}
+    
+    
+    def __isub__(self, other):
+        
+        self.remove(other)
+        
+        return self
+    
+    
+    def remove(self, resource = None, interaction_type = None, via = False):
+        
+        resource = (
+            resource.resource
+                if isinstance(resource, Evidence) else
+            resource
+        )
+        
+        interaction_type = (
+            resource.interaction_type
+                if (
+                    interaction_type is None and
+                    hasattr(resource, 'interaction_type')
+                ) else
+            interaction_type
+        )
+        
+        via = (
+            resource.via
+                if (
+                    via is None and
+                    hasattr(resource, 'via')
+                ) else
+            via
+        )
+        
+        self.evidences = dict(
+            (key, ev)
+            for key, ev in iteritems(self.evidences)
+            if not (
+                (
+                    resource is None or
+                    ev.resource == resource
+                ) and
+                (
+                    interaction_type is None or
+                    ev.resource.interaction_type == interaction_type
+                ) and
+                (
+                    via == False or
+                    ev.resource.via == via
+                )
+            )
+        )
