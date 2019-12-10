@@ -28,23 +28,54 @@ _logger = session_mod.Logger(name = 'interaction')
 _log = _logger._log
 
 
-class InteractionAttributes(object):
+class Interaction(object):
+    
+    
+    _key = collections.namedtuple(
+        'InteractionKey',
+        [
+            'id_a',
+            'id_b',
+            'id_type_a',
+            'id_type_b',
+            'entity_type_a',
+            'entity_type_b',
+            'taxon_a',
+            'taxon_b',
+        ],
+    )
     
     
     def __init__(
             self,
             id_a,
             id_b,
-            id_type_a,
-            id_type_b,
+            id_type_a = 'uniprot',
+            id_type_b = 'uniprot',
+            entity_type_a = 'protein',
+            entity_type_b = 'protein',
+            taxon_a = 9606,
+            taxon_b = 9606,
         ):
         
         self.nodes = tuple(sorted((id_a, id_b)))
+        self.id_a = nodes[0]
+        self.id_b = nodes[1]
         
         self.id_type_a, self.id_type_b = (
             (id_type_a, id_type_b)
                 if (id_a, id_b) == self.nodes else
             (id_type_b, id_type_a)
+        )
+        self.entity_type_a, self.entity_type_b = (
+            (entity_type_a, entity_type_b)
+                if (id_a, id_b) == self.nodes else
+            (entity_type_b, entity_type_a)
+        )
+        self.taxon_a, self.taxon_b = (
+            (taxon_a, taxon_b)
+                if (id_a, id_b) == self.nodes else
+            (taxon_b, taxon_a)
         )
         
         self.a_b = (self.nodes[0], self.nodes[1])
@@ -171,6 +202,81 @@ class InteractionAttributes(object):
             elif effect in {-1, 'negative', 'inhibition'}:
                 
                 self.negative[direction] += evidence
+    
+    
+    def __hash__(self):
+        
+        return hash(self.key)
+    
+    
+    def __eq__(self, other):
+        
+        return self.key == other.key
+    
+    
+    @property
+    def key(self):
+        
+        return self._key(
+            self.id_a,
+            self.id_b,
+            self.id_type_a,
+            self.id_type_b,
+            self.entity_type_a,
+            self.entity_type_b,
+            self.taxon_a,
+            self.taxon_b,
+        )
+
+
+    def __iadd__(self, other):
+        
+        if self != other:
+            
+            _log(
+                'Attempt to merge interactions with
+                non matching interaction partners.'
+            )
+            return self
+        
+        self._merge_evidences(self, other)
+        
+        return self
+    
+    
+    def __add__(self, other):
+        
+        new = self.__copy__()
+        
+        new += other
+        
+        return new
+    
+    
+    def __copy__(self):
+        
+        new = Interaction(*self.key)
+        new += self
+        
+        return new
+    
+    
+    @staticmethod
+    def _merge_evidences(one, other):
+        
+        one.evidences += other.evidences
+        
+        for dir_key in one.direction.keys():
+            
+            one.direction[dir_key] += other.direction[dir_key]
+        
+        for eff_key in one.positive.keys():
+            
+            one.positive[eff_key] += other.positive[eff_key]
+        
+        for eff_key in one.negative.keys():
+            
+            one.negative[eff_key] += other.negative[eff_key]
 
 
     def get_direction(self, direction, sources = False):
