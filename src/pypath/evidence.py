@@ -230,6 +230,53 @@ class Evidence(object):
     def has_data_model(self, data_model):
         
         return self.resource.data_model == data_model
+    
+    
+    def match(
+            self,
+            resource,
+            interaction_type = None,
+            via = False,
+        ):
+        
+        resource = (
+            resource.resource
+                if isinstance(resource, Evidence) else
+            resource
+        )
+        
+        interaction_type = (
+            resource.interaction_type
+                if (
+                    interaction_type is None and
+                    hasattr(resource, 'interaction_type')
+                ) else
+            interaction_type
+        )
+        
+        via = (
+            resource.via
+                if (
+                    via is None and
+                    hasattr(resource, 'via')
+                ) else
+            via
+        )
+        
+        return (
+            (
+                resource is None or
+                self.resource == resource
+            ) and
+            (
+                interaction_type is None or
+                self.resource.interaction_type == interaction_type
+            ) and
+            (
+                via == False or
+                self.resource.via == via
+            )
+        )
 
 
 class Evidences(object):
@@ -418,45 +465,12 @@ class Evidences(object):
     
     def remove(self, resource = None, interaction_type = None, via = False):
         
-        resource = (
-            resource.resource
-                if isinstance(resource, Evidence) else
-            resource
-        )
-        
-        interaction_type = (
-            resource.interaction_type
-                if (
-                    interaction_type is None and
-                    hasattr(resource, 'interaction_type')
-                ) else
-            interaction_type
-        )
-        
-        via = (
-            resource.via
-                if (
-                    via is None and
-                    hasattr(resource, 'via')
-                ) else
-            via
-        )
-        
         self.evidences = dict(
             (key, ev)
             for key, ev in iteritems(self.evidences)
-            if not (
-                (
-                    resource is None or
-                    ev.resource == resource
-                ) and
-                (
-                    interaction_type is None or
-                    ev.resource.interaction_type == interaction_type
-                ) and
-                (
-                    via == False or
-                    ev.resource.via == via
-                )
+            if not ev.match(
+                resource = resource,
+                interaction_type = interaction_type,
+                via = via,
             )
         )
