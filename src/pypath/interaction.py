@@ -530,7 +530,6 @@ class Interaction(object):
         )
 
 
-
     @staticmethod
     def _effect_synonyms(effect):
 
@@ -547,7 +546,19 @@ class Interaction(object):
             return 'negative'
 
 
-    def unset_direction(self, direction, source = None):
+    def _resources_set(self, resources = None):
+
+        return common.to_set(resources)
+
+
+    def unset_direction(
+            self,
+            direction,
+            source = None,
+            interaction_type = None,
+            via = False,
+            source = None,
+        ):
         """
         Removes directionality and/or source information of the
         specified *direction*. Modifies attribute :py:attr:`dirs` and
@@ -557,36 +568,30 @@ class Interaction(object):
             Or [str] (if ``'undirected'``) the pair of nodes specifying
             the directionality from which the information is to be
             removed.
-        :arg set source:
+        :arg set resource:
             Optional, ``None`` by default. If specified, determines
             which specific source(s) is(are) to be removed from
             :py:attr:`sources` attribute in the specified *direction*.
         """
 
-        if self.check_param(direction):
+        if self._check_direction_key(direction):
+            
+            resource = resource or source
+            
+            if resource is not None:
 
-            if source is not None:
-
-                try:
-                    self.sources[direction].remove(source)
-
-                except ValueError:
-                    pass
+                self.sources[direction].remove(
+                    resource = resource,
+                    interaction_type = interaction_type,
+                    via = via,
+                )
 
             else:
-                self.sources[direction] = []
-
-            if len(self.sources[direction]) == 0:
-                self.dirs[direction] = False
+                self.direction[direction] = pypath_evidence.Evidences()
 
 
     # synonym: old name
     unset_dir = unset_direction
-
-
-    def _resources_set(self, resources = None):
-
-        return common.to_set(resources)
 
 
     def is_directed(self):
@@ -599,7 +604,7 @@ class Interaction(object):
             ``False`` otherwise.
         """
 
-        return self.dirs[self.straight] or self.dirs[self.reverse]
+        return any(self.direction.values())
 
 
     def is_directed_by_resources(self, resources = None):
