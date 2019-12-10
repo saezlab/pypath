@@ -363,27 +363,27 @@ class Interaction(object):
 
         if self._check_direction_key(direction):
             
-            if evidences:
-                return self.direction[direction]
-            
-            elif resources:
-                return self.direction[direction].get_resources()
-            
-            elif sources or resource_names:
-                return self.direction[direction].get_resource_names()
-
-            else:
-                return bool(self.direction[direction])
+            return self._select_answer_type(
+                self.direction[direction],
+                resources = resources,
+                evidences = evidences,
+                resource_names = resource_names,
+                sources = sources,
+            )
 
         else:
             return None
 
 
-    # synonym: old name
-    get_dir = get_direction
-
-
-    def get_directions(self, src, tgt, sources=False):
+    def get_directions(
+            self,
+            src,
+            tgt,
+            resources = False,
+            evidences = False,
+            resource_names = False,
+            sources = False,
+        ):
         """
         Returns all directions with boolean values or list of sources.
 
@@ -391,43 +391,63 @@ class Interaction(object):
             Source node.
         :arg str tgt:
             Target node.
-        :arg bool sources:
+        :arg bool resources:
             Optional, ``False`` by default. Specifies whether to return
-            the :py:attr:`sources` attribute instead of :py:attr:`dirs`.
+            the :py:attr:`resources` attribute instead of :py:attr:`dirs`.
 
         :return:
-            Contains the :py:attr:`dirs` (or :py:attr:`sources` if
+            Contains the :py:attr:`dirs` (or :py:attr:`resources` if
             specified) of the given edge.
         """
 
-    # XXX: What's the point of using src and tgt if in the end straigth,
-    #      reverse and undirected are returned? Also, in such case:
-    #      `return self.sources/dirs.values()` is more straightforward.
-
         query = (src, tgt)
+        
+        answer_type_args = {
+            'resources': resources,
+            'evidences': evidences,
+            'resource_names': resource_names,
+            'sources': sources,
+        }
 
         if self.check_nodes(query):
-
-            if sources:
-                return [
-                    self.sources[query],
-                    self.sources[(query[1], query[0])],
-                    self.sources['undirected'],
-                ]
-
-            else:
-                return [
-                    self.dirs[query],
-                    self.dirs[(query[1], query[0])],
-                    self.dirs['undirected'],
-                ]
-
+            
+            return [
+                self._select_answer_type(
+                    self.direction[query],
+                    **answer_type_args
+                ),
+                self._select_answer_type(
+                    self.direction[tuple(reversed(query))],
+                    **answer_type_args
+                ),
+                self._select_answer_type(
+                    self.direction['undirected'],
+                    **answer_type_args
+                ),
+            ]
+            
         else:
             return None
 
 
-    # synonym: old name
-    get_dirs = get_directions
+    def _select_answer_type(
+            self,
+            answer,
+            resources = False,
+            evidences = False,
+            resource_names = False,
+            sources = False,
+        ):
+        
+        return (
+            answer
+                if evidences else
+            answer.get_resources()
+                if resources else
+            answer.get_resource_names()
+                if sources or resource_names else
+            bool(self.direction[direction])
+        )
 
 
     def which_directions(self, resources = None, effect = None):
