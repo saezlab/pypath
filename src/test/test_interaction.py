@@ -43,3 +43,14 @@ class TestInteraction(object):
             [sk in a for a in pa.graph.es['attrs']] ==
             [si in a for a in pa.graph.es['attrs']]
         )
+    
+    
+    def test_filter_via(self):
+        
+        pa = main.PyPath()
+        pa.init_network(netres.ptm_misc)
+        
+        assert any(
+            len(list(a.evidences.filter(via = 'MIMP')))
+            for a in pa.graph.es['attrs']
+        )
