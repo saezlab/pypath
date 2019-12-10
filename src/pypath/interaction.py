@@ -450,14 +450,18 @@ class Interaction(object):
         )
 
 
-    def which_directions(self, resources = None, effect = None):
+    def which_directions(
+            self,
+            resources = None,
+            effect = None,
+        ):
         """
         Returns the pair(s) of nodes for which there is information
         about their directionality.
 
-        :param str effect:
+        :arg str effect:
             Either *positive* or *negative*.
-        :param str,set resources:
+        :arg str,set resources:
             Limits the query to one or more resources. Optional.
 
         :return:
@@ -472,18 +476,18 @@ class Interaction(object):
 
         return tuple(
             _dir
-            for _dir, _resources in iteritems(self.sources)
+            for _dir, _evidences in iteritems(self.direction)
             if _dir != 'undirected' and
-            _resources and (
+            _evidences and (
                 not resources or
-                resources & _resources
+                _evidences & resources
             ) and (
                 not effect
                 or (
                     not resources and
-                    getattr(self, '%s_sources' % effect)
+                    getattr(self, effect)
                 ) or
-                getattr(self, '%s_sources' % effect) & resources
+                getattr(self, effect) & resources
             )
         )
 
@@ -518,11 +522,10 @@ class Interaction(object):
         return tuple(
             (_dir, _effect)
             for _effect in effects
-            for _dir, _resources
-            in iteritems(getattr(self, '%s_sources' % _effect))
-            if _resources and (
+            for _dir, _evidences in iteritems(getattr(self, _effect))
+            if _evidences and (
                 not resources or
-                resources & _resources
+                _evidences & resources
             )
         )
 

@@ -230,7 +230,7 @@ def to_set(var):
         
         return set()
         
-    elif isinstance(var, list):
+    elif hasattr(var, '__iter__'):
         
         return set(var)
         
