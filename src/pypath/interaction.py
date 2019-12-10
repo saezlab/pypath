@@ -285,7 +285,37 @@ class Interaction(object):
         for eff_key in one.negative.keys():
             
             one.negative[eff_key] += other.negative[eff_key]
+    
+    
+    def __repr__(self):
+        
+        return '<Interaction: %s %s=%s=%s=%s %s [%s]>' % (
+            self.id_a,
+            '<' if self.direction[self.b_a] else '=',
+            (
+                '(+-)' if (
+                    self.positive[self.b_a] and
+                    self.negative[self.b_a]
+                ) else
+                '(+)=' if self.positive[self.b_a] else
+                '(-)=' if self.negative[self.b_a] else
+                '===='
+            ),
+            (
+                '(+-)' if (
+                    self.positive[self.a_b] and
+                    self.negative[self.a_b]
+                ) else
+                '(+)=' if self.positive[self.a_b] else
+                '(-)=' if self.negative[self.a_b] else
+                '===='
+            ),
+            '>' if self.direction[self.a_b] else '=',
+            self.id_b,
+            self.evidences.__repr__().strip('<>'),
+        )
 
+    # ###
 
     def get_direction(self, direction, sources = False):
         """
