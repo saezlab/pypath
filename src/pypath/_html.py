@@ -2070,6 +2070,10 @@ def main_page():
 
     notebook_names = [
         ('pypath_guide.html', 'Comprehensive guide'),
+        (
+            'omnipathr_drug_targets_tutorial.html',
+            'Drug target lookup with OmnipathR',
+        ),
         #('pypath_build_networks.html', 'Quick start'),
         #('intro.html', 'Introduction (directions, enzyme-substrate, subnetworks)'),
         #('pypath_mapping.html', 'ID conversion'),

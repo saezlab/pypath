@@ -167,7 +167,7 @@ class Evidence(object):
         
         return (
             self.resource.name == database and
-            self.via = via
+            self.via == via
         )
     
     
