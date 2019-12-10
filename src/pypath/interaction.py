@@ -1331,7 +1331,7 @@ class Interaction(object):
             only_interaction_type = None,
             only_primary = False,
             by_references = False,
-            by_reference_resource_pairs = False,
+            by_reference_resource_pairs = True,
         ):
         """
         Infers which is the major directionality of the edge by number
@@ -1386,7 +1386,7 @@ class Interaction(object):
             only_interaction_type = None,
             only_primary = False,
             by_references = False,
-            by_reference_resource_pairs = False,
+            by_reference_resource_pairs = True,
         ):
         """
         Infers which is the major sign (activation/inhibition) of the
@@ -1432,7 +1432,13 @@ class Interaction(object):
         return result
 
 
-    def consensus_edges(self):
+    def consensus(
+            self,
+            only_interaction_type = None,
+            only_primary = False,
+            by_references = False,
+            by_reference_resource_pairs = True,
+        ):
         """
         Infers the consensus edge(s) according to the number of
         supporting sources. This includes direction and sign.
@@ -1445,32 +1451,73 @@ class Interaction(object):
         """
 
         result = []
-        d = self.majority_dir()
-        s = self.majority_sign()
+        
+        _dir = self.majority_dir(
+            only_interaction_type = only_interaction_type,
+            only_primary = only_primary,
+            by_references = by_references,
+            by_reference_resource_pairs = by_reference_resource_pairs,
+        )
+        _effect = self.majority_sign(
+            only_interaction_type = only_interaction_type,
+            only_primary = only_primary,
+            by_references = by_references,
+            by_reference_resource_pairs = by_reference_resource_pairs,
+        )
 
-        # XXX: This case could actually return directly, would save some time
-        if d == 'undirected':
-            result.append([self.straight[0], self.straight[1],
-                           'undirected', 'unknown'])
+        if _dir == 'undirected':
+            
+            result.append([
+                self.a_b[0],
+                self.a_b[1],
+                'undirected',
+                'unknown',
+            ])
 
         else:
-            dirs = [self.straight, self.reverse] if d is None else [d]
+            
+            dirs = (self.a_b, self.b_a) if _dir is None else (_dir,)
 
             for d in dirs:
 
-                if s[d] is not None:
-
-                    if s[d][0]:
-                        result.append([d[0], d[1], 'directed', 'positive'])
-
-    # XXX: Technically, if s[d] is not None, this could be an elif right?
-                    if s[d][1]:
-                        result.append([d[0], d[1], 'directed', 'negative'])
-
+                if _effect[d] is not None:
+                    
+                    # index #0 is positive
+                    if _effect[d][0]:
+                        
+                        result.append([
+                            d[0],
+                            d[1],
+                            'directed',
+                            'positive',
+                        ])
+                    
+                    # can not be elif bc of the case of equal weight of
+                    # evidences for both positive and negative
+                    if _effect[d][1]:
+                        
+                        result.append([
+                            d[0],
+                            d[1],
+                            'directed',
+                            'negative',
+                        ])
+                
+                # directed with unknown effect
                 else:
-                    result.append([d[0], d[1], 'directed', 'unknown'])
+                    
+                    result.append([
+                        d[0],
+                        d[1],
+                        'directed',
+                        'unknown',
+                    ])
 
         return result
+
+
+    consensus_edges = consensus
+
 
     def merge(self, other):
         """
