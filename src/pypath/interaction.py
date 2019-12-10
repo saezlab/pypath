@@ -1238,60 +1238,92 @@ class Interaction(object):
     negative_reverse = negative_b_a
 
 
-    def negative_sources_straight(self):
+    def negative_resources_a_b(self, **kwargs):
         """
-        Retrieves the list of sources for the :py:attr:`straight`
+        Retrieves the list of resources for the :py:attr:`a_b`
         direction and negative sign.
 
         :return:
-            (*set*) -- Contains the names of the sources supporting the
-            :py:attr:`straight` directionality of the edge with a
+            (*set*) -- Contains the names of the resources supporting the
+            :py:attr:`a_b` directionality of the edge with a
             negative sign.
         """
 
-        return self.negative_sources[self.straight]
+        answer_type_args = {
+            'resource_names': True
+        }
+        answer_type_args.update(kwargs)
+
+        return self._select_answer_type(
+            self.negative[self.a_b],
+            **answer_type_args
+        )
 
 
-    def negative_sources_reverse(self):
+    def negative_resources_b_a(self, **kwargs):
         """
-        Retrieves the list of sources for the :py:attr:`reverse`
+        Retrieves the list of resources for the :py:attr:`b_a`
         direction and negative sign.
 
         :return:
-            (*set*) -- Contains the names of the sources supporting the
-            :py:attr:`reverse` directionality of the edge with a
+            (*set*) -- Contains the names of the resources supporting the
+            :py:attr:`b_a` directionality of the edge with a
             negative sign.
         """
+        
+        answer_type_args = {
+            'resource_names': True
+        }
+        answer_type_args.update(kwargs)
 
-        return self.negative_sources[self.reverse]
+        return self._select_answer_type(
+            self.negative[self.b_a],
+            **answer_type_args
+        )
 
 
-    def positive_sources_straight(self):
+    def positive_resources_a_b(self, **kwargs):
         """
-        Retrieves the list of sources for the :py:attr:`straight`
+        Retrieves the list of resources for the :py:attr:`a_b`
         direction and positive sign.
 
         :return:
-            (*set*) -- Contains the names of the sources supporting the
-            :py:attr:`straight` directionality of the edge with a
+            (*set*) -- Contains the names of the resources supporting the
+            :py:attr:`a_b` directionality of the edge with a
             positive sign.
         """
 
-        return self.positive_sources[self.straight]
+        answer_type_args = {
+            'resource_names': True
+        }
+        answer_type_args.update(kwargs)
+
+        return self._select_answer_type(
+            self.positive[self.a_b],
+            **answer_type_args
+        )
 
 
-    def positive_sources_reverse(self):
+    def positive_resources_b_a(self, **kwargs):
         """
-        Retrieves the list of sources for the :py:attr:`reverse`
+        Retrieves the list of resources for the :py:attr:`b_a`
         direction and positive sign.
 
         :return:
-            (*set*) -- Contains the names of the sources supporting the
-            :py:attr:`reverse` directionality of the edge with a
+            (*set*) -- Contains the names of the resources supporting the
+            :py:attr:`b_a` directionality of the edge with a
             positive sign.
         """
 
-        return self.positive_sources[self.reverse]
+        answer_type_args = {
+            'resource_names': True
+        }
+        answer_type_args.update(kwargs)
+
+        return self._select_answer_type(
+            self.positive[self.b_a],
+            **answer_type_args
+        )
 
 
     def majority_dir(self):
