@@ -98,7 +98,7 @@ class Evidence(object):
         
         return Evidence(
             resource = self.resource,
-            references = self.references | oter.references,
+            references = self.references | other.references,
         )
     
     
@@ -184,7 +184,7 @@ class Evidences(object):
                 self.evidences[key] + other.evidences[key]
             )
             for key in
-            set(self.evidences.keys()) | set(other.evidences.keys()):
+            set(self.evidences.keys()) | set(other.evidences.keys())
         )
     
     

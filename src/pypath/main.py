@@ -122,6 +122,7 @@ import pypath.taxonomy as taxonomy
 import pypath.db_categories as db_categories
 import pypath.resources.network as network_resources
 import pypath.evidence as evidence
+import pypath.interaction as interaction
 
 # to make it accessible directly from the module
 omnipath = network_resources.omnipath
@@ -1765,6 +1766,7 @@ class PyPath(session_mod.Logger):
             g.vs['exp'] = [{}]
             g.es['sources'] = [set([]) for _ in xrange(self.graph.ecount())]
             g.es['evidences'] = [None]
+            g.es['attrs'] = [None]
             g.es['type'] = [[] for _ in xrange(self.graph.ecount())]
             g.es['references'] = [[] for _ in xrange(self.graph.ecount())]
             g.es['refs_by_source'] = [{} for _ in xrange(self.graph.ecount())]
@@ -4117,6 +4119,10 @@ class PyPath(session_mod.Logger):
             self,
             id_a,
             id_b,
+            id_type_a,
+            id_type_b,
+            entity_type_a,
+            entity_type_b,
             source,
             evidences,
             is_directed,
@@ -4207,6 +4213,17 @@ class PyPath(session_mod.Logger):
         evidences += g.es[edge]['evidences']
         g.es[edge]['evidences'] = evidences
         
+        attrs = interaction.Interaction(
+            id_a = id_a,
+            id_b = id_b,
+            id_type_a = id_type_a,
+            id_type_b = id_type_b,
+            entity_type_a = entity_type_a,
+            entity_type_b = entity_type_b,
+            taxon_a = taxon_a,
+            taxon_b = taxon_b,
+        )
+        
         # updating references-by-source dict:
         sources = (
             source
@@ -4233,6 +4250,10 @@ class PyPath(session_mod.Logger):
                 (id_a, id_b),
                 refs,
             )
+            attrs.add_evidence(
+                evidence = evidences,
+                direction = (id_a, id_b),
+            )
         else:
             g.es[edge]['dirs'].set_dir('undirected', source)
             self.add_grouped_set_eattr(
@@ -4241,14 +4262,39 @@ class PyPath(session_mod.Logger):
                 'undirected',
                 refs,
             )
+            attrs.add_evidence(
+                evidence = evidences,
+                direction = 'undirected',
+            )
 
         # setting signs:
         if stim:
             g.es[edge]['dirs'].set_sign((id_a, id_b), 'positive', source)
+            attrs.add_evidence(
+                evidence = evidences,
+                direction = (id_a, id_b),
+                effect = 1,
+            )
 
         if inh:
             g.es[edge]['dirs'].set_sign((id_a, id_b), 'negative', source)
-
+            attrs.add_evidence(
+                evidence = evidences,
+                direction = (id_a, id_b),
+                effect = -1,
+            )
+        
+        # adding interaction attributes (this new kind of object either will
+        # replace the igraph based network representation or is a temporary
+        # solution and something else will replace them):
+        if not isinstance(g.es[edge]['attrs'], interaction.Interaction):
+            
+            g.es[edge]['attrs'] = attrs
+            
+        else:
+            
+            g.es[edge]['attrs'] += attrs
+        
         # updating sources-by-type dict:
         self.add_grouped_set_eattr(edge, 'sources_by_type', typ, source)
         # adding type:
@@ -5043,6 +5089,10 @@ class PyPath(session_mod.Logger):
             self._add_update_edge(
                 e['default_name_a'],
                 e['default_name_b'],
+                e['default_name_type_a'],
+                e['default_name_type_b'],
+                e['entity_type_a'],
+                e['entity_type_b'],
                 e['source'],
                 e['evidences'],
                 e['is_directed'],

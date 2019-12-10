@@ -20,6 +20,8 @@
 #
 
 import importlib as imp
+import collections
+import operator
 
 import pypath.evidence as pypath_evidence
 import pypath.session_mod as session_mod
@@ -59,8 +61,8 @@ class Interaction(object):
         ):
         
         self.nodes = tuple(sorted((id_a, id_b)))
-        self.id_a = nodes[0]
-        self.id_b = nodes[1]
+        self.id_a = self.nodes[0]
+        self.id_b = self.nodes[1]
         
         self.id_type_a, self.id_type_b = (
             (id_type_a, id_type_b)
@@ -183,7 +185,13 @@ class Interaction(object):
         
         evidence = (
             evidence
-                if isinstance(evidence, pypath_evidence.Evidence) else
+                if isinstance(
+                    evidence,
+                    (
+                        pypath_evidence.Evidence,
+                        pypath_evidence.Evidences,
+                    )
+                ) else
             pypath_evidence.Evidence(
                 resource = evidence,
                 references = references,
@@ -234,8 +242,8 @@ class Interaction(object):
         if self != other:
             
             _log(
-                'Attempt to merge interactions with
-                non matching interaction partners.'
+                'Attempt to merge interactions with '
+                'non matching interaction partners.'
             )
             return self
         
