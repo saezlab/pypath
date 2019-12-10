@@ -20,6 +20,10 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
+import copy
+
 import pypath.refs as refs
 import pypath.common as common
 import pypath.session_mod as session_mod
@@ -90,6 +94,14 @@ class Evidence(object):
         return self
     
     
+    def __add__(self, other):
+        
+        return Evidence(
+            resource = self.resource,
+            references = self.references | oter.references,
+        )
+    
+    
     @property
     def key(self):
         
@@ -119,12 +131,20 @@ class Evidence(object):
             'via %s,' % self.resource.via if self.resource.via else '',
             len(self.references),
         )
+    
+    
+    def __copy__(self):
+        
+        return Evidence(
+            resource = self.resource,
+            references = copy.copy(self.references),
+        )
 
 
 class Evidences(object):
     
     
-    def __init__(self, evidences):
+    def __init__(self, evidences = ()):
         
         self.evidences = {}
         self.__iadd__(evidences)
@@ -153,6 +173,21 @@ class Evidences(object):
         return self
     
     
+    def __add__(self, other):
+        
+        return Evidences(
+            (
+                self.evidences[key].__copy__()
+                    if key not in other.evidences else
+                other.evidences[key].__copy__()
+                    if key not in self.evidences else
+                self.evidences[key] + other.evidences[key]
+            )
+            for key in
+            set(self.evidences.keys()) | set(other.evidences.keys()):
+        )
+    
+    
     def __iter__(self):
         
         for ev in self.evidences.values():
@@ -166,3 +201,8 @@ class Evidences(object):
             ', '.join(sorted(ev.resource.name for ev in self)),
             sum(len(ev.references) for ev in self),
         )
+    
+    
+    def __copy__(self):
+        
+        return Evidences((ev.__copy__() for ev in self.evidences))
