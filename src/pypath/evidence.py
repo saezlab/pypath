@@ -416,6 +416,56 @@ class Evidences(object):
         )
     
     
+    def __len__(self):
+        
+        return self.numof_resources()
+    
+    
+    def count_resources(self, **kwargs):
+        
+        return len(self.filter(**kwargs))
+    
+    
+    def get_resources(self, **kwargs):
+        
+        return {
+            ev.resource
+            for ev in self.filter(**kwargs)
+        }
+    
+    
+    def count_references(self, **kwargs):
+        
+        return len(self.get_references(**kwargs))
+    
+    
+    def get_references(self, **kwargs):
+        
+        evidences = self.filter(**kwargs)
+        
+        return {
+            ref
+            for ev in evidences
+            for ref in ev.references
+        }
+    
+    
+    def count_curation_effort(self, **kwargs):
+        
+        return len(self.get_curation_effort(**kwargs))
+    
+    
+    def get_curation_effort(self, **kwargs):
+        
+        evidences = self.filter(**kwargs)
+        
+        return {
+            (ev.resource, ref)
+            for ev in evidences
+            for ref in ev.references
+        }
+    
+    
     def contains_database(self, database):
         
         return any(ev.resource.name == database for ev in self)
