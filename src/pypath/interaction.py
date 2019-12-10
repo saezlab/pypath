@@ -555,6 +555,7 @@ class Interaction(object):
     def unset_direction(
             self,
             direction,
+            only_sign = False,
             source = None,
             interaction_type = None,
             via = False,
@@ -577,22 +578,70 @@ class Interaction(object):
 
         if self._check_direction_key(direction):
             
+            attrs = (
+                (self._effect_synonyms(only_sign),)
+                    if only_sign else
+                ('direction', 'positive', 'negative')
+            )
             resource = resource or source
             
-            if resource is not None:
-
-                self.sources[direction].remove(
-                    resource = resource,
-                    interaction_type = interaction_type,
-                    via = via,
-                )
-
-            else:
-                self.direction[direction] = pypath_evidence.Evidences()
+            for attr in attrs:
+                
+                if resource is not None:
+                    
+                    getattr(self, attr)[direction].remove(
+                        resource = resource,
+                        interaction_type = interaction_type,
+                        via = via,
+                    )
+                    
+                else:
+                    getattr(self, attr)[direction] = (
+                        pypath_evidence.Evidences()
+                    )
 
 
     # synonym: old name
     unset_dir = unset_direction
+
+
+    def unset_sign(
+            self,
+            direction,
+            sign,
+            source = None,
+            interaction_type = None,
+            via = False,
+            source = None,
+        ):
+        """
+        Removes sign and/or source information of the specified
+        *direction* and *sign*. Modifies attribute :py:attr:`positive`
+        and :py:attr:`positive_sources` or :py:attr:`negative` and
+        :py:attr:`negative_sources` (or
+        :py:attr:`positive_attributes`/:py:attr:`negative_sources`
+        only if ``source=True``).
+
+        :arg tuple direction:
+            The pair of nodes specifying the directionality from which
+            the information is to be removed.
+        :arg str sign:
+            Sign from which the information is to be removed. Must be
+            either ``'positive'`` or ``'negative'``.
+        :arg set source:
+            Optional, ``None`` by default. If specified, determines
+            which source(s) is(are) to be removed from the sources in
+            the specified *direction* and *sign*.
+        """
+        
+        self.unset_direction(
+            direction = direction,
+            only_sign = sign,
+            source = source,
+            interaction_type = interaction_type,
+            via = via,
+            source = source,
+        )
 
 
     def is_directed(self):
@@ -862,57 +911,6 @@ class Interaction(object):
                 ]
                 
             )
-
-
-    def unset_sign(self, direction, sign, source=None):
-        """
-        Removes sign and/or source information of the specified
-        *direction* and *sign*. Modifies attribute :py:attr:`positive`
-        and :py:attr:`positive_sources` or :py:attr:`negative` and
-        :py:attr:`negative_sources` (or
-        :py:attr:`positive_attributes`/:py:attr:`negative_sources`
-        only if ``source=True``).
-
-        :arg tuple direction:
-            The pair of nodes specifying the directionality from which
-            the information is to be removed.
-        :arg str sign:
-            Sign from which the information is to be removed. Must be
-            either ``'positive'`` or ``'negative'``.
-        :arg set source:
-            Optional, ``None`` by default. If specified, determines
-            which source(s) is(are) to be removed from the sources in
-            the specified *direction* and *sign*.
-        """
-
-        if self.check_nodes(direction):
-
-            if source is not None:
-
-                try:
-
-                    if sign == 'positive':
-                        self.positive_sources[direction].remove(source)
-
-                    if sign == 'negative':
-                        self.negative_sources[direction].remove(source)
-
-                except:
-                    pass
-
-            else:
-
-                if sign == 'positive':
-                    self.positive_sources[direction] = []
-
-                if sign == 'negative':
-                    self.negative_sources[direction] = []
-
-            if len(self.positive_sources[direction]) == 0:
-                self.positive[direction] = False
-
-            if len(self.negative_sources[direction]) == 0:
-                self.negative[direction] = False
 
 
     def source(self, undirected = False, resources = None):
