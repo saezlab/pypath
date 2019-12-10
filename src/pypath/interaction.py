@@ -326,36 +326,54 @@ class Interaction(object):
         return self.evidences.has_data_model(data_model)
     
     
-    
-    
-    # ###
+    @property
+    def data_models(self):
+        
+        return {
+            ev.data_model
+            for ev in self.evidences
+        }
 
-    def get_direction(self, direction, sources = False):
+
+    def get_direction(
+            self,
+            direction,
+            resources = False,
+            evidences = False,
+            sources = False,
+            resource_names = False,
+        ):
         """
-        Returns the state (or *sources* if specified) of the given
+        Returns the state (or *resources* if specified) of the given
         *direction*.
 
         :arg tuple direction:
             Or [str] (if ``'undirected'``). Pair of nodes from which
             direction information is to be retrieved.
-        :arg bool sources:
+        :arg bool resources:
             Optional, ``'False'`` by default. Specifies if the
-            :py:attr:`sources` information of the given direction is to
+            :py:attr:`resources` information of the given direction is to
             be retrieved instead.
 
         :return:
-            (*bool* or *set*) -- (if ``sources=True``). Presence/absence
-            of the requested direction (or the list of sources if
+            (*bool* or *set*) -- (if ``resources=True``). Presence/absence
+            of the requested direction (or the list of resources if
             specified). Returns ``None`` if *direction* is not valid.
         """
 
-        if self.check_param(direction):
-
-            if sources:
-                return self.sources[direction]
+        if self._check_direction_key(direction):
+            
+            if evidences:
+                return self.direction[direction]
+            
+            elif resources:
+                return self.direction[direction].get_resources()
+            
+            elif sources or resource_names:
+                return self.direction[direction].get_resource_names()
 
             else:
-                return self.dirs[direction]
+                return bool(self.direction[direction])
 
         else:
             return None

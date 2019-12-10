@@ -354,3 +354,13 @@ class Evidences(object):
     def has_data_model(self, data_model):
         
         return any(ev.has_data_model(data_model) for ev in self)
+    
+    
+    def get_resources(self):
+        
+        return {ev.resource for ev in self}
+    
+    
+    def get_resource_names(self):
+        
+        return {ev.resource.name for ev in self}
