@@ -1765,7 +1765,6 @@ class PyPath(session_mod.Logger):
             g.vs['ncbi_tax_id'] = []
             g.vs['exp'] = [{}]
             g.es['sources'] = [set([]) for _ in xrange(self.graph.ecount())]
-            g.es['evidences'] = [None]
             g.es['attrs'] = [None]
             g.es['type'] = [[] for _ in xrange(self.graph.ecount())]
             g.es['references'] = [[] for _ in xrange(self.graph.ecount())]
@@ -4206,12 +4205,6 @@ class PyPath(session_mod.Logger):
         # if len(refs) > 0:
         refs = [_refs.Reference(pmid) for pmid in refs]
         self.add_list_eattr(edge, 'references', refs)
-        
-        # adding evidences (this new kind of object either will replace
-        # all source and reference related attributes or is a temporary
-        # solution and something else will replace them):
-        evidences += g.es[edge]['evidences']
-        g.es[edge]['evidences'] = evidences
         
         attrs = interaction.Interaction(
             id_a = id_a,
