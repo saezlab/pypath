@@ -1521,33 +1521,36 @@ class Interaction(object):
 
     def merge(self, other):
         """
-        Merges current edge with another (if and only if they are the
+        Merges current Interaction with another (if and only if they are the
         same class and contain the same nodes). Updates the attributes
-        :py:attr:`dirs`, :py:attr:`sources`, :py:attr:`positive`,
-        :py:attr:`negative`, :py:attr:`positive_sources` and
-        :py:attr:`negative_sources`.
+        :py:attr:`direction`, :py:attr:`positive` and :py:attr:`negative`.
 
-        :arg pypath.main.Direction other:
-            The new edge object to be merged with the current one.
+        :arg pypath.interaction.Interaction other:
+            The new Interaction object to be merged with the current one.
         """
+        
+        
+        if not self._check_nodes_key(other.nodes):
+            
+            _log(
+                'Attempting to merge Interaction instances with different '
+                'interacting partners.'
+            )
+            return
+        
+        self.evidences += other.evidences
+        
+        for attr, _dir in itertools.product(
+            ('direction', 'positive', 'negative')
+            (self.a_b, self.b_a, 'undirected')
+        ):
+            
+            if attr != 'direction' and _dir == 'undirected':
+                
+                continue
+            
+            getattr(self, attr)[_dir] += getattr(other, attr)[_dir]
 
-        if other.__class__ == self.__class__ and self.check_nodes(other.nodes):
-            for k in [self.straight, self.reverse, 'undirected']:
-                self.dirs[k] = self.dirs[k] or other.dirs[k]
-
-                self.sources[k] = self.sources[k] | other.sources[k]
-
-    # XXX: Is there a reason to only update positive with straight and negative
-    #      only with reverse?
-                if k == self.straight:
-                    self.positive[k] = self.positive[k] or other.positive[k]
-                    self.positive_sources[k] = (self.positive_sources[k]
-                                                | other.positive_sources[k])
-
-                elif k == self.reverse:
-                    self.negative[k] = self.negative[k] or other.negative[k]
-                    self.negative_sources[k] = (self.negative_sources[k]
-                                                | other.negative_sources[k])
 
     def translate(self, ids):
         """
