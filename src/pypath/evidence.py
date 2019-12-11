@@ -418,7 +418,7 @@ class Evidences(object):
     
     def __len__(self):
         
-        return self.numof_resources()
+        return self.count_resources()
     
     
     def count_resources(self, **kwargs):

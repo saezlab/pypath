@@ -335,7 +335,7 @@ class Interaction(object):
     def data_models(self):
         
         return {
-            ev.data_model
+            ev.resource.data_model
             for ev in self.evidences
         }
 

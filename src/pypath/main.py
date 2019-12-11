@@ -1793,8 +1793,6 @@ class PyPath(session_mod.Logger):
             self.negatives = {}
             self.raw_data = None
             self.lists = {}
-            self.plots = {} # XXX: Not used anywhere
-            self.proteomicsdb = None
             self.exp_samples = set([])
             self.sources = []
             self.has_cats = set([])
@@ -14066,27 +14064,61 @@ class PyPath(session_mod.Logger):
         return self._by_category(self.curation_effort)
 
 
-    def iter_vertices(self, resources = None, entity_type = None):
+    def iter_vertices(
+            self,
+            resources = None,
+            categories = None,
+            entity_type = None,
+        ):
+            
+            for _id in self.iter_entities(
+                resources = resources,
+                categories = categories,
+                entity_type = entity_type,
+            ):
+                
+                yield self.graph.vs(self.nodDct[_id])
+
+
+    def iter_entities(
+            self,
+            resources = None,
+            categories = None,
+            entity_type = None,
+        ):
         """
         Iterates nodes optionally only for certain resources. Yields
         ``igraph.Vertex`` objects.
         """
 
         resources = common.to_set(resources)
+        categories = common.to_set(categories)
 
-        for v in self.graph.vs:
+        for iattr in self.graph.es['attrs']:
 
             if (
                 (
                     not resources or
-                    resources & v['sources']
+                    iattr.evidences & resources
                 ) and (
-                    not entity_type or
-                    self.get_entity_type(v) == entity_type
+                    not categories or
+                    iattr.data_models % categories
                 )
             ):
-
-                yield v
+                
+                if (
+                    not entity_type or
+                    iattr.entity_type_a == entity_type
+                ):
+                    
+                    yield iattr_id_a
+                
+                if (
+                    not entity_type or
+                    iattr.entity_type_b == entity_type
+                ):
+                    
+                    yield iattr_id_b
 
 
     def iter_entities(self, resources = None, entity_type = None):
