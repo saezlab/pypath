@@ -1105,6 +1105,11 @@ urls = {
             'evidences.csv',
         ],
     },
+    'lrdb': {
+        'label': 'Curated ligand-receptor interactions',
+        'url': 'https://raw.githubusercontent.com/SCA-IRCM/LRdb/'\
+            'master/LRdb_122019.txt',
+    },
 }
 
 

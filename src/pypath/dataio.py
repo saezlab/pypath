@@ -13489,3 +13489,73 @@ def msigdb_annotations(
                 annotations[uniprot].add(this_annot)
     
     return dict(annotations)
+
+
+def get_lrdb():
+    
+    
+    resource_names = {
+        'reactome': 'Reactome',
+        'fantom5': 'Fantom5',
+        'IUPHAR': 'Guide2Pharma',
+        'uniprot': 'UniProt',
+    }
+    
+    def remove(lst, to_remove):
+        
+        to_remove = common.to_set(to_remove)
+        
+        return [
+            it
+            for it in lst
+            if it not in to_remove
+        ]
+    
+    
+    LrdbRecord = collections.namedtuple(
+        'LrdbRecord',
+        [
+            'ligand_genesymbol',
+            'receptor_genesymbol',
+            'sources',
+            'references',
+            'ligand_cells',
+            'receptor_cells',
+        ]
+    )
+    
+    
+    url = urls.urls['lrdb']['url']
+    
+    c = curl.Curl(url, silent = False, large = True)
+    
+    reader = csv.DictReader(c.result, delimiter = '\t')
+    
+    result = []
+    
+    for rec in reader:
+        
+        result.append(
+            LrdbRecord(
+                ligand_genesymbol = rec['ligand'],
+                receptor_genesymbol = rec['receptor'],
+                sources = [
+                    resource_names[src] if src in resource_names else src
+                    for src in
+                    remove(
+                        rec['source'].split(','),
+                        {'literature', ''},
+                    )
+                ],
+                references = remove(rec['PMIDs'].split(','), ''),
+                ligand_cells = remove(rec['cells.L'].split(','), ''),
+                receptor_cells = remove(rec['cells.R'].split(','), ''),
+            )
+        )
+    
+    return result
+
+
+def lrdb_interactions():
+    
+    return get_lrdb()
