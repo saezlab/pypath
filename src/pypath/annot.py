@@ -2102,6 +2102,7 @@ class AnnotationBase(resource.AbstractResource):
             'label',
             'value',
             'record_id',
+            'cytoscape',
         ]
 
         has_fields = self.has_fields
@@ -3168,7 +3169,7 @@ class Locate(AnnotationBase):
 
         AnnotationBase.__init__(
             self,
-            name = 'Locate',
+            name = 'LOCATE',
             input_method = 'locate_localizations',
             ncbi_tax_id = ncbi_tax_id,
             input_args = input_args,

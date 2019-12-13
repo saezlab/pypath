@@ -455,6 +455,7 @@ class TableServer(BaseServer):
             },
             'databases': None,
             'fields': None,
+            'cytoscape': {'1', '0', 'no', 'yes'},
         },
         'intercell': {
             'header': None,
@@ -648,6 +649,61 @@ class TableServer(BaseServer):
         }
     )
     
+    # the annotation attributes served for the cytoscape app
+    cytoscape_attributes = {
+        ('Zhong2015', 'type'),
+        ('MatrixDB', 'mainclass'),
+        ('Matrisome', ('mainclass', 'subclass', 'subsubclass')),
+        ('TFcensis', 'in TFcensus'),
+        ('LOCATE', ('location', 'cls')),
+        ('Phosphatome', ('family', 'subfamily', 'has_protein_substrates')),
+        ('CancerSEA', 'state'),
+        ('GO_Intercell', 'mainclass'),
+        ('Adhesome', 'mainclass'),
+        ('SignaLink3', 'pathway'),
+        ('HPA_secretome', ('mainclass', 'secreted')),
+        ('OPM', ('membrane', 'family', 'transmembrane')),
+        ('KEGG', 'pathway'),
+        (
+            'CellPhoneDB',
+            (
+                'receptor',
+                'peripheral',
+                'secreted',
+                'transmembrane',
+                'receptor_class',
+                'secreted_class',
+            )
+        ),
+        ('kinase.com', ('group', 'family', 'subfamily')),
+        ('Membranome', ('membrane', 'side')),
+        ('CSPA', 'in CSPA'),
+        ('MSigDB', 'geneset'),
+        ('Integrins', 'in Integrins'),
+        ('HGNC', 'mainclass'),
+        ('CPAD', ('pathway', 'effect_on_cancer', 'cancer', )),
+        ('SIGNOR', 'pathway'),
+        ('Ramilowski2015', 'mainclass'),
+        ('HPA_subcellular', 'location'),
+        ('DisGeNet', 'disease'),
+        ('Surfaceome', ('mainclass', 'subclasses')),
+        ('IntOGen', 'role'),
+        ('HPMR', ('role', 'mainclass', 'subclass', 'subsubclass')),
+        ('CancerGeneCensus',
+            (
+                'hallmark',
+                'somatic',
+                'germline',
+                'tumour_types_somatic',
+                'tumour_types_germline',
+            )
+        ),
+        ('DGIdb', 'category'),
+        ('ComPPI', 'location'),
+        ('Exocarta', 'vesicle'),
+        ('Vesiclepedia', 'vesicle'),
+        ('Ramilowski_location', 'location'),
+    }
     
     def __init__(
             self,
@@ -928,23 +984,25 @@ class TableServer(BaseServer):
                 ))
             ))
             
-            intercell_databases = dict(
-                set(
-                    zip(
-                        self.data['intercell'].category,
-                        self.data['intercell'].database,
+            if query_type == 'intercell':
+                
+                intercell_databases = dict(
+                    set(
+                        zip(
+                            self.data['intercell'].category,
+                            self.data['intercell'].database,
+                        )
                     )
                 )
-            )
-            
-            intercell_main_classes = dict(
-                set(
-                    zip(
-                        self.data['intercell'].category,
-                        self.data['intercell'].mainclass,
+                
+                intercell_main_classes = dict(
+                    set(
+                        zip(
+                            self.data['intercell'].category,
+                            self.data['intercell'].mainclass,
+                        )
                     )
                 )
-            )
             
             for db in values:
                 
@@ -1627,7 +1685,32 @@ class TableServer(BaseServer):
             
             tbl = tbl[tbl.source.isin(databases)]
         
+        if (
+            b'cytoscape' in req.args and
+            self._parse_arg(req.args[b'cytoscape'])
+        ):
+            
+            cytoscape = True
+            
+        else:
+            
+            cytoscape = False
+        
         tbl = tbl.loc[:,hdr]
+        
+        if cytoscape:
+            
+            tbl = tbl.set_index(['source', 'label'], drop = False)
+            
+            cytoscape_keys = {
+                (source, label)
+                for source, labels in self.cytoscape_attributes
+                for label in (
+                    labels if isinstance(labels, tuple) else (labels,)
+                )
+            } & set(tbl.index)
+            
+            tbl = tbl.loc[list(cytoscape_keys)]
         
         return self._serve_dataframe(tbl, req)
     
