@@ -2059,6 +2059,28 @@ ligand_receptor = {
         positive_filters = [],
         data_model = 'ligand_receptor',
     ),
+    'lrdb': input_formats.NetworkInput(
+        name = 'LRdb',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "genesymbol",
+        id_type_b = "genesymbol",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = True,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'lrdb_interactions',
+        references = 3,
+        resource = 2,
+        must_have_references = False,
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+        data_model = 'ligand_receptor',
+    ),
 }
 
 small_molecule_protein = {
@@ -2114,6 +2136,10 @@ pathway['cellphonedb'].data_model = 'activity_flow'
 pathway['ramilowski2015'] = copy.deepcopy(ligand_receptor['ramilowski2015'])
 pathway['ramilowski2015'].must_have_references = True
 pathway['ramilowski2015'].data_model = 'activity_flow'
+pathway['lrdb'] = copy.deepcopy(ligand_receptor['lrdb'])
+pathway['lrdb'].data_model = 'activity_flow'
+pathway['lrdb'].must_have_references = True
+
 '''
 The default set of resources in OmniPath.
 '''

@@ -19,11 +19,11 @@ server.Rest(33333, serverclass = server.TableServer)
 
 #server.Rest(33333, serverclass = server.TableServer, only_tables = 'intercell')
 
-srv = server.Rest(
-    33333,
-    serverclass = server.TableServer,
-    only_tables = 'annotations',
-)
+#srv = server.Rest(
+    #33333,
+    #serverclass = server.TableServer,
+    #only_tables = 'annotations',
+#)
 
 # Examples:
 #
