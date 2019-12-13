@@ -13491,7 +13491,7 @@ def msigdb_annotations(
     return dict(annotations)
 
 
-def get_lrdb():
+def lrdb_interactions():
     
     
     resource_names = {
@@ -13556,6 +13556,43 @@ def get_lrdb():
     return result
 
 
-def lrdb_interactions():
+def lrdb_annotations():
     
-    return get_lrdb()
+    LrdbAnnotation = collections.namedtuple(
+        'LrdbAnnotation',
+        [
+            'role',
+            'cell_type',
+        ],
+    )
+    
+    
+    result = collections.defaultdict(set)
+    
+    
+    lrdb = lrdb_interactions()
+    
+    for rec in lrdb:
+        
+        for role in ('ligand', 'receptor'):
+            
+            uniprots = mapping.map_name(
+                getattr(rec, '%s_genesymbol' % role),
+                'genesymbol',
+                'uniprot',
+            )
+            
+            for uniprot in uniprots:
+                
+                cell_types = getattr(rec, '%s_cells' % role) or (None,)
+                
+                for cell_type in cell_types:
+                    
+                    result[uniprot].add(
+                        LrdbAnnotation(
+                            role = role,
+                            cell_type = cell_type,
+                        )
+                    )
+    
+    return dict(result)
