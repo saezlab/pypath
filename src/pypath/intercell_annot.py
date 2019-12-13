@@ -625,6 +625,7 @@ annot_combined_classes = (
                 'receptor_guide2pharma',
                 'receptor_hgnc',
                 'receptor_dgidb',
+                'receptor_lrdb',
             ),
             op = set.union,
         ),
@@ -702,6 +703,13 @@ annot_combined_classes = (
             'category': 'G PROTEIN COUPLED RECEPTOR',
         },
     ),
+    af.AnnotDef(
+        name = 'receptor_lrdb',
+        source = 'LRdb',
+        args = {
+            'role': 'receptor',
+        },
+    ),
     # ECM
     af.AnnotDef(
         name = 'ecm',
@@ -770,6 +778,7 @@ annot_combined_classes = (
                 'ligand_guide2pharma',
                 'ligand_hgnc',
                 'ligand_dgidb',
+                'ligand_lrdb',
             ),
             op = set.union,
         ),
@@ -857,6 +866,13 @@ annot_combined_classes = (
         source = 'DGIdb',
         args = {
             'category': {'GROWTH FACTOR', 'HORMONE ACTIVITY'},
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand_lrdb',
+        source = 'LRdb',
+        args = {
+            'role': 'ligand',
         },
     ),
     # intracellular
