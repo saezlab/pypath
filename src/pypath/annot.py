@@ -93,6 +93,7 @@ protein_sources_default = {
     'CancerGeneCensus',
     'Cancersea',
     'Msigdb',
+    'Lrdb',
 }
 
 #TODO this should be part of json files
@@ -2714,6 +2715,27 @@ class Integrins(AnnotationBase):
             input_method = 'get_integrins',
             **kwargs
         )
+
+
+class Lrdb(AnnotationBase):
+
+    _eq_fields = ('role',)
+
+
+    def __init__(self, **kwargs):
+
+        AnnotationBase.__init__(
+            self,
+            name = 'LRdb',
+            input_method = 'lrdb_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        self.annot = self.data
+        delattr(self, 'data')
 
 
 class HumanProteinAtlas(AnnotationBase):

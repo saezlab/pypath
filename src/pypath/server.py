@@ -723,6 +723,7 @@ class TableServer(BaseServer):
         ('Exocarta', 'vesicle'),
         ('Vesiclepedia', 'vesicle'),
         ('Ramilowski_location', 'location'),
+        ('LRdb', ('role', 'cell_type')),
     }
     
     def __init__(
