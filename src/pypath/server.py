@@ -909,26 +909,6 @@ class TableServer(BaseServer):
         renum = re.compile(r'[-\d\.]+')
         
         
-        def _agg_values(vals):
-            
-            result = (
-                '#'.join(sorted(set(str(ii) for ii in vals)))
-                if not all(
-                    isinstance(i, (int, float)) or (
-                        isinstance(i, str) and
-                        i and (
-                            i is None or
-                            renum.match(i)
-                        )
-                    )
-                    for i in vals
-                ) else
-                '<numeric>'
-            )
-            
-            return result
-        
-        
         self._log('Preprocessing annotations.')
         
         values_by_key = collections.defaultdict(set)
@@ -950,6 +930,15 @@ class TableServer(BaseServer):
             )
             
             values_by_key[(row.source, row.label)].add(value)
+        
+        for vals in values_by_key.values():
+            
+            if len(vals) > 1:
+                
+                vals.discard('<numeric>')
+            
+            vals.discard('')
+            vals.discard('nan')
         
         self.data['annotations_summary'] = pd.DataFrame(
             list(
