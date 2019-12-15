@@ -2103,7 +2103,6 @@ class AnnotationBase(resource.AbstractResource):
             'label',
             'value',
             'record_id',
-            'cytoscape',
         ]
 
         has_fields = self.has_fields
@@ -2325,7 +2324,7 @@ class Membranome(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'Membranome',
-            input_method = 'get_membranome',
+            input_method = 'membranome_annotations',
             **kwargs
         )
 
@@ -2463,7 +2462,7 @@ class Surfaceome(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'Surfaceome',
-            input_method = 'get_surfaceome',
+            input_method = 'surfaceome_annotations',
             **kwargs
         )
 
@@ -3494,9 +3493,9 @@ class LigandReceptor(AnnotationBase):
             self.ligand_id_type if typ == 'ligand' else self.receptor_id_type
         )
         original_id = record[i_id]
-        uniprot = mapping.map_name0(original_id, id_type, 'uniprot')
+        uniprots = mapping.map_names(original_id, id_type, 'uniprot')
 
-        if uniprot:
+        for uniprot in uniprots:
 
             annot[uniprot].add(
                 self.record(

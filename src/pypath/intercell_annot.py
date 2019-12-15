@@ -1556,6 +1556,7 @@ resource_labels = {
     'guide2pharma': 'Guide to Pharm',
     'dgidb': 'DGIdb',
     'hpa': 'HPA',
+    'lrdb': 'LRdb',
 }
 
 

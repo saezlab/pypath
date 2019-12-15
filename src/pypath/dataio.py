@@ -2236,13 +2236,18 @@ def comppi_interaction_locations(organism = 9606):
         if organism and (organism_a != organism or organism_b != organism):
 
             continue
-
-        yield ComppiInteraction(
-            id_a = l[0],
-            id_b = l[8],
-            loc_a = process_locations(l[2]),
-            loc_b = process_locations(l[10]),
-        )
+        
+        for uniprot1, uniprot2 in itertools.product(
+            mapping.map_name(l[0], 'uniprot', 'uniprot'),
+            mapping.map_name(l[8], 'uniprot', 'uniprot'),
+        ):
+            
+            yield ComppiInteraction(
+                id_a = uniprot1,
+                id_b = uniprot2,
+                loc_a = process_locations(l[2]),
+                loc_b = process_locations(l[10]),
+            )
 
 
 def comppi_locations(organism = 9606, score_threshold = .7):
@@ -2261,7 +2266,7 @@ def comppi_locations(organism = 9606, score_threshold = .7):
 
                 result[getattr(iloc, 'id_%s' % label)].add(loc)
 
-    return result
+    return dict(result)
 
 
 def ramilowski_locations(long_notes = False):
@@ -2346,16 +2351,22 @@ def ramilowski_locations(long_notes = False):
 
                 location, note = m.groups()
                 tmh = l[9].strip()
-
-                result[l[3]].add(
-                    RamilowskiLocation(
-                        location = location.lower().replace('=', '').strip(),
-                        source = source,
-                        tmh = int(tmh) if tmh.isdigit() else None,
-                        note = note,
-                        long_note = long_note if long_notes else None,
+                
+                uniprots = mapping.map_name(l[3], 'uniprot', 'uniprot')
+                
+                for uniprot in uniprots:
+                    
+                    result[uniprot].add(
+                        RamilowskiLocation(
+                            location = (
+                                location.lower().replace('=', '').strip()
+                            ),
+                            source = source,
+                            tmh = int(tmh) if tmh.isdigit() else None,
+                            note = note,
+                            long_note = long_note if long_notes else None,
+                        )
                     )
-                )
 
     return result
 
@@ -6126,7 +6137,7 @@ def get_integrins():
         cells = [td for td in tr.find_all('td')]
         integrins.append(cells[-1].text.split('}')[-1])
 
-    return set(integrins)
+    return mapping.map_names(integrins, 'uniprot', 'uniprot')
 
 
 def get_tfcensus(classes = ('a', 'b', 'other')):
@@ -6502,6 +6513,7 @@ def cellphonedb_protein_annotations():
         
         uniprot = rec['uniprot']
         uniprot = _cellphonedb_hla(uniprot)
+        uniprot = mapping.map_names(uniprot, 'uniprot', 'uniprot')
         
         return uniprot
     
@@ -6900,27 +6912,32 @@ def disgenet_annotations(dataset = 'curated'):
 
     for rec in reader:
 
-        uniprot = mapping.map_name0(
+        uniprots = mapping.map_name(
             rec['geneSymbol'],
             'genesymbol',
             'uniprot',
         )
 
-        if not uniprot:
+        if not uniprots:
 
             continue
-
-        data[uniprot].add(
-            DisGeNetAnnotation(
-                disease = rec['diseaseName'],
-                score = float(rec['score']),
-                dsi = float(rec['DSI']) if rec['DSI'] else None,
-                dpi = float(rec['DPI']) if rec['DPI'] else None,
-                nof_pmids = int(rec['NofPmids']),
-                nof_snps = int(rec['NofSnps']),
-                source = tuple(x.strip() for x in rec['source'].split(';')),
+        
+        for uniprot in uniprots:
+            
+            data[uniprot].add(
+                DisGeNetAnnotation(
+                    disease = rec['diseaseName'],
+                    score = float(rec['score']),
+                    dsi = float(rec['DSI']) if rec['DSI'] else None,
+                    dpi = float(rec['DPI']) if rec['DPI'] else None,
+                    nof_pmids = int(rec['NofPmids']),
+                    nof_snps = int(rec['NofSnps']),
+                    source = tuple(
+                        x.strip()
+                        for x in rec['source'].split(';')
+                    ),
+                )
             )
-        )
 
     return data
 
@@ -7536,10 +7553,13 @@ def kegg_pathways():
     pws = common.uniqList(map(lambda i: i[3], data))
     proteins_pws = dict(map(lambda pw: (pw, set([])), pws))
     interactions_pws = dict(map(lambda pw: (pw, set([])), pws))
+    
     for u1, u2, eff, pw in data:
+        
         proteins_pws[pw].add(u1)
         proteins_pws[pw].add(u2)
         interactions_pws[pw].add((u1, u2))
+    
     return proteins_pws, interactions_pws
 
 
@@ -7636,47 +7656,52 @@ def signor_pathways(**kwargs):
         )
 
         proteins_pathways[full] = set([])
+        
+        for uniprot1, uniprot2 in itertools.product(
+            mapping.map_name(l[4], 'uniprot', 'uniprot'),
+            mapping.map_name(l[8], 'uniprot', 'uniprot'),
+        ):
 
-        proteins_pathways[full] = (
-            proteins_pathways[full] | set(
-                map(
-                    lambda l:
-                        l[4],
-                    filter(
+            proteins_pathways[full] = (
+                proteins_pathways[full] | set(
+                    map(
                         lambda l:
-                            l[3].lower() == 'protein',
-                        data
+                            uniprot1,
+                        filter(
+                            lambda l:
+                                l[3].lower() == 'protein',
+                            data
+                        )
                     )
                 )
             )
-        )
 
-        proteins_pathways[full] = (
-            proteins_pathways[full] | set(
+            proteins_pathways[full] = (
+                proteins_pathways[full] | set(
+                    map(
+                        lambda l:
+                            uniprot2,
+                        filter(
+                            lambda l:
+                                l[7].lower() == 'protein',
+                            data
+                        )
+                    )
+                )
+            )
+
+            interactions_pathways[full] = set(
                 map(
                     lambda l:
-                        l[8],
+                        (uniprot1, uniprot2),
                     filter(
                         lambda l:
+                            l[3].lower() == 'protein' and
                             l[7].lower() == 'protein',
                         data
                     )
                 )
             )
-        )
-
-        interactions_pathways[full] = set(
-            map(
-                lambda l:
-                    (l[4], l[8]),
-                filter(
-                    lambda l:
-                        l[3].lower() == 'protein' and
-                        l[7].lower() == 'protein',
-                    data
-                )
-            )
-        )
 
     prg.terminate()
 
@@ -8207,22 +8232,22 @@ def phosphatome_annotations():
 
     for rec in tbl[2:]:
 
-        uniprot = mapping.map_name0(rec[0], 'genesymbol', 'uniprot')
-
-        if not uniprot:
-
-            continue
-
-        data[uniprot].add(
-            PhosphatomeAnnotation(
-                fold = rec[2],
-                family = rec[3],
-                subfamily = rec[4],
-                has_protein_substrates = rec[21].strip().lower() == 'yes',
-                has_non_protein_substrates = rec[22].strip().lower() == 'yes',
-                has_catalytic_activity = rec[23].strip().lower() == 'yes',
+        uniprots = mapping.map_name(rec[0], 'genesymbol', 'uniprot')
+        
+        for uniprot in uniprots:
+            
+            data[uniprot].add(
+                PhosphatomeAnnotation(
+                    fold = rec[2],
+                    family = rec[3],
+                    subfamily = rec[4],
+                    has_protein_substrates = rec[21].strip().lower() == 'yes',
+                    has_non_protein_substrates = (
+                        rec[22].strip().lower() == 'yes'
+                    ),
+                    has_catalytic_activity = rec[23].strip().lower() == 'yes',
+                )
             )
-        )
 
     return data
 
@@ -9255,24 +9280,21 @@ def signalink_pathway_annotations():
     interactions = signalink_interactions()
 
     for i in interactions:
-
-        for pathway in i[8].split(';'):
+        
+        for idx in (0, 1):
             
-            core = 'non-core' not in pathway
-            pathway = pathway.split('(')[0].strip().replace('/Wingless', '')
-            
-            result[i[0]].add(
-                SignalinkPathway(pathway = pathway, core = core)
-            )
-
-        for pathway in i[9].split(';'):
-            
-            core = 'non-core' not in pathway
-            pathway = pathway.split('(')[0].strip().replace('/Wingless', '')
-            
-            result[i[1]].add(
-                SignalinkPathway(pathway = pathway, core = core)
-            )
+            for pathway in i[idx + 8].split(';'):
+                
+                core = 'non-core' not in pathway
+                pathway = (
+                    pathway.split('(')[idx].strip().replace('/Wingless', '')
+                )
+                
+                for uniprot in mapping.map_name(i[idx], 'uniprot', 'uniprot'):
+                    
+                    result[uniprot].add(
+                        SignalinkPathway(pathway = pathway, core = core)
+                    )
 
     return result
 
@@ -11734,14 +11756,18 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
 
             for uniprot, ex in iteritems(gex):
 
-                result[uniprot].add(
-                    ProteinatlasAnnotation(
-                        organ = organ,
-                        tissue = tissue,
-                        level = ex[0],
-                        status = ex[1],
+                uniprots = mapping.map_name(uniprot, 'uniprot', 'uniprot')
+                
+                for _uniprot in uniprots:
+                    
+                    result[_uniprot].add(
+                        ProteinatlasAnnotation(
+                            organ = organ,
+                            tissue = tissue,
+                            level = ex[0],
+                            status = ex[1],
+                        )
                     )
-                )
 
     if pathology or cancer:
 
@@ -11759,27 +11785,31 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
                 except StopIteration:
 
                     prognostic, favourable, score = None, None, None
-
-                result[uniprot].add(
-                    ProteinatlasAnnotation(
-                        organ = condition,
-                        tissue = condition,
-                        level = max(
-                            (i for i in iteritems(ex) if i[0] in LEVELS),
-                            key = lambda i: i[1],
-                            default = (None,),
-                        )[0],
-                        status = None,
-                        n_not_detected = n_or_none(ex, 'Not detected'),
-                        n_low = n_or_none(ex, 'Low'),
-                        n_medium = n_or_none(ex, 'Medium'),
-                        n_high = n_or_none(ex, 'High'),
-                        prognostic = prognostic,
-                        favourable = favourable,
-                        score = score,
-                        pathology = True,
+                
+                uniprots = mapping.map_name(uniprot, 'uniprot', 'uniprot')
+                
+                for _uniprot in uniprots:
+                    
+                    result[_uniprot].add(
+                        ProteinatlasAnnotation(
+                            organ = condition,
+                            tissue = condition,
+                            level = max(
+                                (i for i in iteritems(ex) if i[0] in LEVELS),
+                                key = lambda i: i[1],
+                                default = (None,),
+                            )[0],
+                            status = None,
+                            n_not_detected = n_or_none(ex, 'Not detected'),
+                            n_low = n_or_none(ex, 'Low'),
+                            n_medium = n_or_none(ex, 'Medium'),
+                            n_high = n_or_none(ex, 'High'),
+                            prognostic = prognostic,
+                            favourable = favourable,
+                            score = score,
+                            pathology = True,
+                        )
                     )
-                )
 
     return result
 
@@ -12148,9 +12178,10 @@ def get_cspa(organism = 9606):
     del(c)
     raw = read_xls(xlsname, sheets[str_organism])[1:]
 
-    return set(r[1] for r in raw)
+    return mapping.map_names((r[1] for r in raw), 'uniprot', 'uniprot')
 
-def get_surfaceome():
+
+def surfaceome_annotations():
     """
     Downloads the "In silico human surfaceome".
     Dict with UniProt IDs as key and tuples of surface prediction score,
@@ -12165,7 +12196,7 @@ def get_surfaceome():
 
     return dict(
         (
-            r[1], # uniprot
+            uniprot, # uniprot
             (
                 float(r[13]), # score
                 r[18] if r[18] else None, # class
@@ -12173,6 +12204,7 @@ def get_surfaceome():
             )
         )
         for r in raw
+        for uniprot in mapping.map_name(r[1], 'uniprot', 'uniprot')
     )
 
 def matrisome_annotations(organism = 9606):
@@ -12205,6 +12237,8 @@ def matrisome_annotations(organism = 9606):
         uniprots = set(r[7].split(':'))
         uniprots.discard('')
         
+        uniprots = mapping.map_names(uniprots, 'uniprot', 'uniprot')
+        
         for uniprot in uniprots:
             
             result[uniprot].add(
@@ -12231,7 +12265,7 @@ def __matrisome_annotations_2():
 
     return set(r.split(',')[1] for r in c.result)
 
-def get_membranome():
+def membranome_annotations():
 
     membr_url = urls.urls['membranome']['baseurl'] % ('membranes', '')
     c = curl.Curl(membr_url, large = True, silent = False)
@@ -12267,14 +12301,18 @@ def get_membranome():
     prg.terminate()
 
     for p in prot_all:
-
-        yield (
-            p['uniprotcode'],
-            membr[p['membrane_id']]['name'],
-            membr[p['membrane_id']]['topology_in']
-                if p['topology_show_in'] else
-            membr[p['membrane_id']]['topology_out'],
-        )
+        
+        uniprots = mapping.map_name(p['uniprotcode'], 'uniprot', 'uniprot')
+        
+        for uniprot in uniprots:
+            
+            yield (
+                uniprot,
+                membr[p['membrane_id']]['name'],
+                membr[p['membrane_id']]['topology_in']
+                    if p['topology_show_in'] else
+                membr[p['membrane_id']]['topology_out'],
+            )
 
 
 def opm_annotations(organism = 9606):
@@ -12508,6 +12546,7 @@ def hgnc_genegroups():
         rec = rec.split('\t')
         uniprots = {u.strip() for u in rec[2].split(',')}
         uniprots.discard('')
+        uniprots = mapping.map_names(uniprots, 'uniprot', 'uniprot')
 
         if not uniprots:
 
@@ -12597,11 +12636,13 @@ def adhesome_annotations():
             if uniprot == 'null':
 
                 continue
+            
+            for _uniprot in mapping.map_name(uniprot, 'uniprot', 'uniprot'):
 
-            result[uniprot].add(AdhesomeAnnotation(
-                mainclass = rec['Functional Category'].strip(),
-                intrinsic = rec['FA'].strip() == 'Intrinsic Proteins',
-            ))
+                result[uniprot].add(AdhesomeAnnotation(
+                    mainclass = rec['Functional Category'].strip(),
+                    intrinsic = rec['FA'].strip() == 'Intrinsic Proteins',
+                ))
 
     return result
 
@@ -12734,6 +12775,8 @@ def _matrixdb_protein_list(category, organism = 9606):
         proteins.add(
             l.strip().replace('"', '').split('\t')[0]
         )
+    
+    proteins = mapping.map_names(proteins, 'uniprot', 'uniprot')
 
     if organism:
 
