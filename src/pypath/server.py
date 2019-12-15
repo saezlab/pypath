@@ -654,8 +654,8 @@ class TableServer(BaseServer):
         ('Zhong2015', 'type'),
         ('MatrixDB', 'mainclass'),
         ('Matrisome', ('mainclass', 'subclass', 'subsubclass')),
-        # ('TFcensis', 'in TFcensus'),
-        ('LOCATE', ('location', 'cls')),
+        # ('TFcensus', 'in TFcensus'),
+        ('Locate', ('location', 'cls')),
         (
             'Phosphatome',
             (
@@ -702,7 +702,7 @@ class TableServer(BaseServer):
         #('Integrins', 'in Integrins'),
         ('HGNC', 'mainclass'),
         ('CPAD', ('pathway', 'effect_on_cancer', 'cancer', )),
-        ('SIGNOR', 'pathway'),
+        ('Signor', 'pathway'),
         ('Ramilowski2015', 'mainclass'),
         ('HPA_subcellular', 'location'),
         #('DisGeNet', 'disease'),
