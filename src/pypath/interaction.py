@@ -30,6 +30,7 @@ import pypath.evidence as pypath_evidence
 import pypath.resource as pypath_resource
 import pypath.session_mod as session_mod
 import pypath.common as common
+import pypath.mapping as mapping
 
 _logger = session_mod.Logger(name = 'interaction')
 _log = _logger._log
@@ -102,6 +103,8 @@ class Interaction(object):
             self.a_b: pypath_evidence.Evidences(),
             self.b_a: pypath_evidence.Evidences(),
         }
+        
+        self.update_labels()
     
     
     def reload(self):
@@ -1629,3 +1632,17 @@ class Interaction(object):
             getattr(self, attr)[new_dir] += getattr(self, attr)[old_dir]
         
         return new
+    
+    
+    def update_labels(self):
+        
+        self.label_a = mapping.label(
+            name = self.id_a,
+            id_type = self.id_type_a,
+            ncbi_tax_id = self.taxon_a,
+        )
+        self.label_b = mapping.label(
+            name = self.id_b,
+            id_type = self.id_type_b,
+            ncbi_tax_id = self.taxon_b,
+        )
