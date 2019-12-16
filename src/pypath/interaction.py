@@ -113,9 +113,14 @@ class Interaction(object):
         """
 
         modname = self.__class__.__module__
+        evmodname = self.evidences.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        evmod = __import__(evmodname, fromlist = [evmodname.split('.')[0]])
         imp.reload(mod)
+        imp.reload(evmod)
         new = getattr(mod, self.__class__.__name__)
+        evsnew = getattr(evmod, 'Evidences')
+        evnew = getattr(evmod, 'Evidence')
         setattr(self, '__class__', new)
         
         for evs in itertools.chain(
@@ -125,7 +130,11 @@ class Interaction(object):
             self.negative.values(),
         ):
             
-            evs.reload()
+            evs.__class__ = evsnew
+            
+            for ev in evs:
+                
+                ev.__class__ = evnew
 
 
     def _check_nodes_key(self, nodes):
@@ -1666,7 +1675,10 @@ class Interaction(object):
             interaction_type = None,
         ):
         
-        pass
+        evidences = (
+            
+            self.evidences
+        )
     
     
     def get_references(self):

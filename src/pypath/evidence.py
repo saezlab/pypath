@@ -22,6 +22,7 @@
 
 from future.utils import iteritems
 
+import importlib as imp
 import copy
 
 import pypath.refs as refs
@@ -321,9 +322,11 @@ class Evidences(object):
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
         
+        new_ev_class = getattr(mod, 'Evidence')
+        
         for ev in self:
             
-            ev.reload()
+            ev.__class__ = new_ev_class
     
     
     def __iadd__(self, other):
@@ -332,7 +335,7 @@ class Evidences(object):
             other
                 if hasattr(other, '__iter__') else
             (other,)
-                if isinstance(other, Evidence) else
+                if isinstance(other, self.__class__) else
             ()
         )
         
@@ -351,6 +354,10 @@ class Evidences(object):
     
     def __add__(self, other):
         
+        if not isinstance(other, self.__class__):
+            
+            return self.__copy__()
+        
         return Evidences(
             (
                 self.evidences[key].__copy__()
@@ -362,6 +369,11 @@ class Evidences(object):
             for key in
             set(self.evidences.keys()) | set(other.evidences.keys())
         )
+    
+    
+    def __radd__(self, other):
+        
+        return self.__add__(other)
     
     
     def __iter__(self):
@@ -381,7 +393,7 @@ class Evidences(object):
     
     def __copy__(self):
         
-        return Evidences((ev.__copy__() for ev in self.evidences))
+        return Evidences((ev.__copy__() for ev in self))
     
     
     def __bool__(self):
@@ -442,6 +454,11 @@ class Evidences(object):
                 ) else
             {ev.resource for ev in self}
         )
+    
+    
+    def __eq__(self, other):
+        
+        return {ev.resource for ev in self} == {ev.resource for ev in other}
     
     
     def __len__(self):

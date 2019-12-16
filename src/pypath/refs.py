@@ -57,6 +57,10 @@ class Reference(object):
 
     def info(self):
         return dataio.get_pubmeds([self.pmid])
+    
+    def __repr__(self):
+        
+        return '<Reference: %s>' % self.pmid
 
 
 def open_pubmed(pmid):
