@@ -252,7 +252,12 @@ class Export(object):
                         label_b,
                     # sources, references
                         ';'.join(list(e['sources'])),
-                        ';'.join(map(lambda r: r.pmid, e['references'])),
+                        ';'.join(
+                            sorted(
+                                set(r.pmid for r in e['references']),
+                                key = int
+                            )
+                        ),
                     # directions
                         ';'.join(e['dirs'].get_dir(
                             'undirected', sources=True)),

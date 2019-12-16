@@ -825,6 +825,16 @@ class TableServer(BaseServer):
         tbl['set_sources'] = pd.Series(
             [set(s.split(';')) for s in tbl.sources]
         )
+        tbl['references'] = pd.Series(
+            [
+                ';'.join(
+                    sorted(
+                        set(r.split(';')),
+                        key = int,
+                    )
+                )
+                for r in tbl.references
+        )
         tbl['set_tfregulons_level'] = pd.Series(
             [
                 set(s.split(';'))
