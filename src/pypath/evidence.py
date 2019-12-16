@@ -41,6 +41,18 @@ class Evidence(object):
         self.references = self._process_references(references)
     
     
+    def reload(self):
+        """
+        Reloads the object from the module level.
+        """
+
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    
     @staticmethod
     def _process_references(references):
         
@@ -296,6 +308,22 @@ class Evidences(object):
         
         self.evidences = {}
         self.__iadd__(evidences)
+    
+    
+    def reload(self):
+        """
+        Reloads the object from the module level.
+        """
+
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+        
+        for ev in self:
+            
+            ev.reload()
     
     
     def __iadd__(self, other):

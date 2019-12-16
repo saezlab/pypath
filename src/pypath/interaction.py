@@ -117,6 +117,15 @@ class Interaction(object):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+        
+        for evs in itertools.chain(
+            (self.evidences,),
+            self.direction.values(),
+            self.positive.values(),
+            self.negative.values(),
+        ):
+            
+            evs.reload()
 
 
     def _check_nodes_key(self, nodes):
@@ -298,7 +307,7 @@ class Interaction(object):
     def __repr__(self):
         
         return '<Interaction: %s %s=%s=%s=%s %s [%s]>' % (
-            self.id_a,
+            self.label_a or self.id_a,
             '<' if self.direction[self.b_a] else '=',
             (
                 '(+-)' if (
@@ -319,7 +328,7 @@ class Interaction(object):
                 '===='
             ),
             '>' if self.direction[self.a_b] else '=',
-            self.id_b,
+            self.label_b or self.id_b,
             self.evidences.__repr__().strip('<>'),
         )
     
@@ -1646,3 +1655,20 @@ class Interaction(object):
             id_type = self.id_type_b,
             ncbi_tax_id = self.taxon_b,
         )
+    
+    
+    def get_evidences(
+            self,
+            direction = None,
+            effect = None,
+            resources = None,
+            data_model = None,
+            interaction_type = None,
+        ):
+        
+        pass
+    
+    
+    def get_references(self):
+        
+        pass
