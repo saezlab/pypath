@@ -248,6 +248,7 @@ class Evidence(object):
     def match(
             self,
             resource = None,
+            data_model = None,
             interaction_type = None,
             via = False,
             references = None,
@@ -277,6 +278,12 @@ class Evidence(object):
             via
         )
         
+        data_model = (
+            resource.data_model
+                if hasattr(resource, 'data_model') else
+            data_model
+        )
+        
         references = common.to_set(references)
         
         return (
@@ -298,6 +305,10 @@ class Evidence(object):
             (
                 not references or
                 self.references & references
+            ) and
+            (
+                not data_model or
+                self.resource.data_model == data_model
             )
         )
 
@@ -584,6 +595,7 @@ class Evidences(object):
     def filter(
             self,
             resource = None,
+            data_model = None,
             interaction_type = None,
             via = False,
             references = None,
@@ -593,6 +605,7 @@ class Evidences(object):
             ev for ev in self
             if ev.match(
                 resource = resource,
+                data_model = data_model,
                 interaction_type = interaction_type,
                 via = via,
                 references = references,

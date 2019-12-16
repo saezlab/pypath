@@ -1673,11 +1673,63 @@ class Interaction(object):
             resources = None,
             data_model = None,
             interaction_type = None,
+            via = None,
+            references = None,
         ):
         
         evidences = (
             
+            # any signed
+            sum(itertools.chain(
+                self.positive.values(),
+                self.negative.values(),
+            ))
+                
+                if effect == True else
+                
+            # only positive
+            (
+                self.positive[direction]
+                    if direction in self.positive else
+                sum(self.positive.values)
+            )
+                
+                if effect == 'positive' else
+                
+            # only negative
+            (
+                self.positive[direction]
+                    if direction in self.positive else
+                sum(self.positive.values)
+            )
+                
+                if effect == 'negative' else
+                
+            # any directed
+            sum(direction[_dir] for _dir in self.which_dirs())
+                
+                if direction == True else
+                
+            # one specific direction
+            self.direction[direction]
+                
+                if direction in self.direction else
+                
+            # all evidences (default)
             self.evidences
+            
+        )
+        
+        return (
+            pypath_evidence.Evidences(
+                evidences.filter(
+                    resource = resources,
+                    interaction_type = interaction_type,
+                    via = via,
+                    data_model = data_model,
+                    references = references,
+                )
+            )
         )
     
     
