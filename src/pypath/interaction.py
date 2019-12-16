@@ -25,6 +25,7 @@ import importlib as imp
 import collections
 import operator
 import itertools
+import functools
 
 import pypath.evidence as pypath_evidence
 import pypath.resource as pypath_resource
@@ -1691,7 +1692,7 @@ class Interaction(object):
             (
                 self.positive[direction]
                     if direction in self.positive else
-                sum(self.positive.values)
+                sum(self.positive.values())
             )
                 
                 if effect == 'positive' else
@@ -1700,13 +1701,13 @@ class Interaction(object):
             (
                 self.positive[direction]
                     if direction in self.positive else
-                sum(self.positive.values)
+                sum(self.positive.values())
             )
                 
                 if effect == 'negative' else
                 
             # any directed
-            sum(direction[_dir] for _dir in self.which_dirs())
+            sum(self.direction[_dir] for _dir in self.which_dirs())
                 
                 if direction == True else
                 
@@ -1733,6 +1734,35 @@ class Interaction(object):
         )
     
     
-    def get_references(self):
+    def get_references(
+            self,
+            direction = None,
+            effect = None,
+            resources = None,
+            data_model = None,
+            interaction_type = None,
+            via = None,
+        ):
+            
+            return self.get_evidences(
+                direction = direction,
+                effect = effect,
+                resources = resources,
+                data_model = data_model,
+                interaction_type = interaction_type,
+                via = via,
+            ).get_references()
+    
+    
+    @staticmethod
+    def _count(method):
         
-        pass
+        @functools.wraps(method)
+        def count_method(*args, **kwargs):
+            
+            return len(method(*args, **kwargs))
+        
+        return count_method
+    
+    
+    count_references = _count.__func__(get_references)
