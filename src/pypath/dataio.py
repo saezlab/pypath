@@ -13631,6 +13631,12 @@ def lrdb_annotations():
                 
                 for cell_type in cell_types:
                     
+                    cell_type = (
+                        'T lymphocyte'
+                            if cell_type == 'tymphocyte' else
+                        cell_type.replace('cells', 'cell')
+                    )
+                    
                     result[uniprot].add(
                         LrdbAnnotation(
                             role = role,

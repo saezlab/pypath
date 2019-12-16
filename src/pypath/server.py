@@ -684,17 +684,17 @@ class TableServer(BaseServer):
             )
         ),
         ('KEGG', 'pathway'),
-        (
-            'CellPhoneDB',
-            (
-                # 'receptor',
-                # 'peripheral',
-                # 'secreted',
-                # 'transmembrane',
-                'receptor_class',
-                'secreted_class',
-            )
-        ),
+        #(
+            #'CellPhoneDB',
+            #(
+                ## 'receptor',
+                ## 'peripheral',
+                ## 'secreted',
+                ## 'transmembrane',
+                ## 'receptor_class',
+                ## 'secreted_class',
+            #)
+        #),
         ('kinase.com', ('group', 'family', 'subfamily')),
         ('Membranome', ('membrane',)),
         #('CSPA', 'in CSPA'),
@@ -827,13 +827,18 @@ class TableServer(BaseServer):
         )
         tbl['references'] = pd.Series(
             [
-                ';'.join(
-                    sorted(
-                        set(r.split(';')),
-                        key = int,
+                (
+                    ';'.join(
+                        sorted(
+                            set(r.split(';')),
+                            key = int,
+                        )
                     )
+                        if isinstance(r, common.basestring) else
+                    ''
                 )
                 for r in tbl.references
+            ]
         )
         tbl['set_tfregulons_level'] = pd.Series(
             [
