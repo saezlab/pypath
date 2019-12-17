@@ -3070,7 +3070,7 @@ class SignorPathways(AnnotationBase):
 
         AnnotationBase.__init__(
             self,
-            name = 'Signor',
+            name = 'SIGNOR',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'signor_pathway_annotations',
             **kwargs

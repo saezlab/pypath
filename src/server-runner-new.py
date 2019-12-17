@@ -17,7 +17,7 @@ from pypath import server
 
 server.Rest(33333, serverclass = server.TableServer)
 
-#server.Rest(33333, serverclass = server.TableServer, only_tables = 'intercell')
+# server.Rest(33333, serverclass = server.TableServer, only_tables = {'annotations', 'intercell', 'interactions'})
 
 #srv = server.Rest(
     #33333,

@@ -44,14 +44,14 @@ import pypath.taxonomy as taxonomy
 builtin_inputs = [
     'PhosphoSite',
     'phosphoELM',
-    'Signor',
+    'SIGNOR',
     'dbPTM',
     'HPRD',
     'Li2012',
     'PhosphoNetworks',
     'MIMP',
     'DEPOD',
-    'ProtMapper'
+    'ProtMapper',
 ]
 
 

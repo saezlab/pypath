@@ -424,7 +424,7 @@ class Signor(AbstractComplexResource):
 
         AbstractComplexResource.__init__(
             self,
-            name = 'Signor',
+            name = 'SIGNOR',
             input_method = 'signor_complexes',
             input_args = input_args or {},
         )

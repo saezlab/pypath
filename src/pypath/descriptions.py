@@ -470,9 +470,9 @@ descriptions = {
             'ptm': ['pypath.pypath.PyPath().load_dbptm()']
         }
     },
-    'Signor': {
+    'SIGNOR': {
         'year': 2015,
-        'releases': [2015],
+        'releases': [2015,2019],
         'urls': {
             'webpages': ['http://signor.uniroma2.it/'],
             'articles': [
@@ -493,7 +493,7 @@ descriptions = {
             '''
         ],
         'authors': ['Cesareni Group'],
-        'label': 'Signor',
+        'label': 'SIGNOR',
         'color': '',
         'data_import': ['SignaLink3', 'PhosphoSite'],
         'type': 'literature curated',
