@@ -1759,6 +1759,19 @@ class Interaction(object):
             return self._get('resources', **locals())
     
     
+    def get_resource_names(
+            self,
+            direction = None,
+            effect = None,
+            resources = None,
+            data_model = None,
+            interaction_type = None,
+            via = None,
+        ):
+            
+            return self._get('resource_names', **locals())
+    
+    
     def get_curation_effort(
             self,
             direction = None,
@@ -1773,8 +1786,26 @@ class Interaction(object):
     
     
     def get_entities(self):
-            
-            return {self.id_a, self.id_b}
+        
+        return {self.a, self.b}
+    
+    
+    def get_identifiers(self):
+        
+        return {self.a.identifier, self.b.identifier}
+    
+    
+    def get_labels(self):
+        
+        return {self.a.label, self.b.label}
+    
+    
+    def get_interactions(
+            self,
+            directed = False,
+        ):
+        
+        
     
     
     @staticmethod
@@ -1803,3 +1834,7 @@ class Interaction(object):
     
     
     count_references = _count.__func__(get_references)
+    count_resources = _count.__func__(get_resources)
+    count_curation_effort = _count.__func__(get_curation_effort)
+    count_entities = _count.__func__(get_entities)
+    count_resource_names = _count.__func__(get_resource_names)
