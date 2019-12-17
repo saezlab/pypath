@@ -4204,15 +4204,22 @@ class PyPath(session_mod.Logger):
         refs = [_refs.Reference(pmid) for pmid in refs]
         self.add_list_eattr(edge, 'references', refs)
         
+        entity_a = entity_mod.Entity(
+            identifier = id_a,
+            id_type = id_type_a,
+            entity_type = entity_type_a,
+            taxon = taxon_a,
+        )
+        entity_b = entity_mod.Entity(
+            identifier = id_b,
+            id_type = id_type_b,
+            entity_type = entity_type_b,
+            taxon = taxon_b,
+        )
+        
         attrs = interaction.Interaction(
-            id_a = id_a,
-            id_b = id_b,
-            id_type_a = id_type_a,
-            id_type_b = id_type_b,
-            entity_type_a = entity_type_a,
-            entity_type_b = entity_type_b,
-            taxon_a = taxon_a,
-            taxon_b = taxon_b,
+            a = entity_a,
+            b = entity_b,
         )
         
         # updating references-by-source dict:
@@ -4243,7 +4250,7 @@ class PyPath(session_mod.Logger):
             )
             attrs.add_evidence(
                 evidence = evidences,
-                direction = (id_a, id_b),
+                direction = (entity_a, entity_b),
             )
         else:
             g.es[edge]['dirs'].set_dir('undirected', source)
@@ -4263,7 +4270,7 @@ class PyPath(session_mod.Logger):
             g.es[edge]['dirs'].set_sign((id_a, id_b), 'positive', source)
             attrs.add_evidence(
                 evidence = evidences,
-                direction = (id_a, id_b),
+                direction = (entity_a, entity_b),
                 effect = 1,
             )
 
@@ -4271,7 +4278,7 @@ class PyPath(session_mod.Logger):
             g.es[edge]['dirs'].set_sign((id_a, id_b), 'negative', source)
             attrs.add_evidence(
                 evidence = evidences,
-                direction = (id_a, id_b),
+                direction = (entity_a, entity_b),
                 effect = -1,
             )
         

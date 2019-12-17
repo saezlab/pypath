@@ -28,6 +28,7 @@ import copy
 import pypath.refs as refs
 import pypath.common as common
 import pypath.session_mod as session_mod
+import pypath.entity as entity
 
 _logger = session_mod.Logger(name = 'evidence')
 _log = _logger._log
@@ -397,8 +398,8 @@ class Evidences(object):
     def __repr__(self):
         
         return '<Evidences: %s (%u references)>' % (
-            ', '.join(sorted(ev.resource.name for ev in self)),
-            sum(len(ev.references) for ev in self),
+            ', '.join(sorted(set(ev.resource.name for ev in self))),
+            len(set.union(*(ev.references for ev in self))),
         )
     
     

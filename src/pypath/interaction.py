@@ -32,33 +32,28 @@ import pypath.resource as pypath_resource
 import pypath.session_mod as session_mod
 import pypath.common as common
 import pypath.mapping as mapping
+import pypath.entity as entity
 
 _logger = session_mod.Logger(name = 'interaction')
 _log = _logger._log
 
 
+InteractionKey = collections.namedtuple(
+    'InteractionKey',
+    [
+        'entity_a',
+        'entity_b',
+    ],
+)
+
+
 class Interaction(object):
-    
-    
-    _key = collections.namedtuple(
-        'InteractionKey',
-        [
-            'id_a',
-            'id_b',
-            'id_type_a',
-            'id_type_b',
-            'entity_type_a',
-            'entity_type_b',
-            'taxon_a',
-            'taxon_b',
-        ],
-    )
     
     
     def __init__(
             self,
-            id_a,
-            id_b,
+            a,
+            b,
             id_type_a = 'uniprot',
             id_type_b = 'uniprot',
             entity_type_a = 'protein',
@@ -67,25 +62,24 @@ class Interaction(object):
             taxon_b = 9606,
         ):
         
-        self.nodes = tuple(sorted((id_a, id_b)))
-        self.id_a = self.nodes[0]
-        self.id_b = self.nodes[1]
+        a = self._get_entity(
+            identifier = a,
+            id_type = id_type_a,
+            entity_type = entity_type_a,
+            taxon = taxon_a,
+        )
+        b = self._get_entity(
+            identifier = b,
+            id_type = id_type_b,
+            entity_type = entity_type_b,
+            taxon = taxon_b,
+        )
         
-        self.id_type_a, self.id_type_b = (
-            (id_type_a, id_type_b)
-                if (id_a, id_b) == self.nodes else
-            (id_type_b, id_type_a)
-        )
-        self.entity_type_a, self.entity_type_b = (
-            (entity_type_a, entity_type_b)
-                if (id_a, id_b) == self.nodes else
-            (entity_type_b, entity_type_a)
-        )
-        self.taxon_a, self.taxon_b = (
-            (taxon_a, taxon_b)
-                if (id_a, id_b) == self.nodes else
-            (taxon_b, taxon_a)
-        )
+        self.nodes = tuple(sorted((a, b)))
+        self.a = self.nodes[0]
+        self.b = self.nodes[1]
+        
+        self.key = self._key
         
         self.a_b = (self.nodes[0], self.nodes[1])
         self.b_a = (self.nodes[1], self.nodes[0])
@@ -104,8 +98,6 @@ class Interaction(object):
             self.a_b: pypath_evidence.Evidences(),
             self.b_a: pypath_evidence.Evidences(),
         }
-        
-        self.update_labels()
     
     
     def reload(self):
@@ -115,13 +107,17 @@ class Interaction(object):
 
         modname = self.__class__.__module__
         evmodname = self.evidences.__class__.__module__
+        enmodname = self.a.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
         evmod = __import__(evmodname, fromlist = [evmodname.split('.')[0]])
+        enmod = __import__(enmodname, fromlist = [enmodname.split('.')[0]])
         imp.reload(mod)
         imp.reload(evmod)
+        imp.reload(enmod)
         new = getattr(mod, self.__class__.__name__)
         evsnew = getattr(evmod, 'Evidences')
         evnew = getattr(evmod, 'Evidence')
+        ennew = getattr(enmod, 'Entity')
         setattr(self, '__class__', new)
         
         for evs in itertools.chain(
@@ -136,6 +132,29 @@ class Interaction(object):
             for ev in evs:
                 
                 ev.__class__ = evnew
+        
+        self.a.__class__ = ennew
+        self.b.__class__ = ennew
+
+
+    def _get_entity(
+            self,
+            identifier,
+            id_type = 'uniprot',
+            entity_type = 'protein',
+            taxon = 9606,
+        ):
+        
+        if not isinstance(identifier, entity.Entity):
+            
+            identifier = entity.Entity(
+                identifier = identifier,
+                id_type = id_type,
+                entity_type = entity_type,
+                taxon = taxon,
+            )
+        
+        return identifier
 
 
     def _check_nodes_key(self, nodes):
@@ -250,17 +269,11 @@ class Interaction(object):
     
     
     @property
-    def key(self):
+    def _key(self):
         
-        return self._key(
-            self.id_a,
-            self.id_b,
-            self.id_type_a,
-            self.id_type_b,
-            self.entity_type_a,
-            self.entity_type_b,
-            self.taxon_a,
-            self.taxon_b,
+        return InteractionKey(
+            self.a.key,
+            self.b.key,
         )
 
 
@@ -317,7 +330,7 @@ class Interaction(object):
     def __repr__(self):
         
         return '<Interaction: %s %s=%s=%s=%s %s [%s]>' % (
-            self.label_a or self.id_a,
+            self.a.label or self.a.identifier,
             '<' if self.direction[self.b_a] else '=',
             (
                 '(+-)' if (
@@ -338,7 +351,7 @@ class Interaction(object):
                 '===='
             ),
             '>' if self.direction[self.a_b] else '=',
-            self.label_b or self.id_b,
+            self.b.label or self.b.identifier,
             self.evidences.__repr__().strip('<>'),
         )
     
@@ -1653,20 +1666,6 @@ class Interaction(object):
         return new
     
     
-    def update_labels(self):
-        
-        self.label_a = mapping.label(
-            name = self.id_a,
-            id_type = self.id_type_a,
-            ncbi_tax_id = self.taxon_a,
-        )
-        self.label_b = mapping.label(
-            name = self.id_b,
-            id_type = self.id_type_b,
-            ncbi_tax_id = self.taxon_b,
-        )
-    
-    
     def get_evidences(
             self,
             direction = None,
@@ -1744,14 +1743,52 @@ class Interaction(object):
             via = None,
         ):
             
-            return self.get_evidences(
-                direction = direction,
-                effect = effect,
-                resources = resources,
-                data_model = data_model,
-                interaction_type = interaction_type,
-                via = via,
-            ).get_references()
+            return self._get('references', **locals())
+    
+    
+    def get_resources(
+            self,
+            direction = None,
+            effect = None,
+            resources = None,
+            data_model = None,
+            interaction_type = None,
+            via = None,
+        ):
+            
+            return self._get('resources', **locals())
+    
+    
+    def get_curation_effort(
+            self,
+            direction = None,
+            effect = None,
+            resources = None,
+            data_model = None,
+            interaction_type = None,
+            via = None,
+        ):
+            
+            return self._get('curation_effort', **locals())
+    
+    
+    def get_entities(self):
+            
+            return {self.id_a, self.id_b}
+    
+    
+    @staticmethod
+    def _get(method, *args, **kwargs):
+        
+        self = kwargs.pop('self')
+        
+        return getattr(
+            self.get_evidences(
+                *args,
+                **kwargs
+            ),
+            'get_%s' % method,
+        )()
     
     
     @staticmethod

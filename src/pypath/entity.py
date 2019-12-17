@@ -18,20 +18,54 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import importlib as imp
+import collections
 
 import pypath.common as common
 import pypath.intera as intera
 import pypath.session_mod as session_mod
+import pypath.mapping as mapping
+
+
+EntityKey = collections.namedtuple(
+    'EntityKey',
+    [
+        'identifier',
+        'id_type',
+        'entity_type',
+        'taxon',
+    ]
+)
 
 
 class Entity(session_mod.Logger):
     
     
-    def __init__(self, identifier, entity_type = None, id_type = None):
+    def __init__(
+            self,
+            identifier,
+            entity_type = 'protein',
+            id_type = 'uniprot',
+            taxon = 9606,
+        ):
         
         self.identifier = identifier
         self.entity_type = entity_type or self.get_entity_type()
         self.id_type = id_type
+        self.taxon = taxon
+        self.key = self._key
+        
+        self.set_label()
+    
+    
+    def reload(self):
+        
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        import importlib as imp
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
     
     
     @staticmethod
@@ -125,9 +159,58 @@ class Entity(session_mod.Logger):
         return self._get_entity_type(self.identifier)
     
     
+    @property
+    def _key(self):
+        
+        return EntityKey(
+            identifier = self.identifier,
+            id_type = self.id_type,
+            entity_type = self.entity_type,
+            taxon = self.taxon,
+        )
+    
+    
+    def __hash__(self):
+        
+        return hash(self.key)
+    
+    
     def __eq__(self, other):
         
         return (
-            hasattr(other, 'identifier') and
-            self.identifier == other.identifier
+            self.identifier == other
+                if isinstance(other, common.basestring) else
+            self.__hash__() == other.__hash__()
         )
+    
+    
+    def __lt__(self, other):
+        
+        return (
+            self.identifier < other
+                if isinstance(other, common.basestring) else
+            self.key < other.key
+        )
+    
+    
+    def __gt__(self, other):
+        
+        return (
+            self.identifier < other
+                if isinstance(other, common.basestring) else
+            self.key < other.key
+        )
+    
+    
+    def set_label(self):
+        
+        self.label = mapping.label(
+            name = self.identifier,
+            id_type = self.id_type,
+            ncbi_tax_id = self.taxon,
+        )
+    
+    
+    def __repr__(self):
+        
+        return '<Entity: %s>' % (self.label or self.identifier)
