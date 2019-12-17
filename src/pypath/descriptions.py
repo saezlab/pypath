@@ -2718,7 +2718,7 @@ descriptions = {
             'commercial_use': False
         }
     },
-    'Locate': {# PENDING
+    'LOCATE': {# PENDING
         #'license': {
         #    'name': '',
         #    'url': '',
@@ -2970,7 +2970,7 @@ descriptions = {
             'commercial_use': False
         }
     },
-    'kinase': {
+    'kinase.com': {
         'license': {
             'name': 'Custom license',
             'url': 'http://kinase.com/about/Disclaimer.html',
@@ -2991,12 +2991,28 @@ descriptions = {
         #    'commercial_use': False
         #}
     },
-    'protmapper': {
+    'ProtMapper': {
         'license': {
             'name': 'CC-Attribution-ShareAlike-NonCommercial 4.0',
             'url': 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
             'commercial_use': False
         }
+    },
+    'LRdb': {
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False,
+        },
+        'emails': [('jacques.colinge@inserm.fr', 'Jacques Colinge'),],
+    },
+    'MSigDB': {
+        'license': {
+            'name': 'CC-Attribution 4.0',
+            'url': 'http://creativecommons.org/licenses/by/4.0/',
+            'commercial_use': True,
+        },
+        'emails': [('gsea-team@broadinstitute.org', 'GSEA Team'),],
     },
 }
 
