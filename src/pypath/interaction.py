@@ -193,6 +193,37 @@ class Interaction(object):
         )
 
 
+    def id_to_entity(self, identifier):
+        
+        return (
+            self.a
+                if self.a == identifier else
+            self.b
+                if self.b == identifier else
+            None
+        )
+
+
+    def direction_key(self, direction):
+        
+        if direction == 'undirected':
+            
+            return direction
+        
+        direction = tuple(map(self.id_to_entity, direction))
+        
+        return (
+            direction
+                if direction == self.a_b or direction == self.b_a else
+            None
+        )
+    
+    
+    def _directed_key(self, direction):
+        
+        return direction is not None and direction != 'undirected'
+
+
     def add_evidence(
             self,
             evidence,
@@ -220,8 +251,10 @@ class Interaction(object):
             A set of references, used only if the resource have been provided
             as ``NetworkResource`` object.
         """
-
-        if not self._check_direction_key(direction):
+        
+        direction = self.direction_key(direction)
+        
+        if direction is None:
             
             _log(
                 'Attempting to add evidence with non matching '
@@ -400,8 +433,10 @@ class Interaction(object):
             of the requested direction (or the list of resources if
             specified). Returns ``None`` if *direction* is not valid.
         """
-
-        if self._check_direction_key(direction):
+        
+        direction = self.direction_key(direction)
+        
+        if direction is not None:
             
             return self._select_answer_type(
                 self.direction[direction],
@@ -448,8 +483,10 @@ class Interaction(object):
             'resource_names': resource_names,
             'sources': sources,
         }
-
-        if self._check_direction_key(query):
+        
+        query = self.direction_key(query)
+        
+        if query is not None:
             
             return [
                 self._select_answer_type(
@@ -614,8 +651,10 @@ class Interaction(object):
             which specific source(s) is(are) to be removed from
             :py:attr:`sources` attribute in the specified *direction*.
         """
-
-        if self._check_direction_key(direction):
+        
+        direction = self.direction_key(direction)
+        
+        if direction is not None:
             
             attrs = (
                 (self._effect_synonyms(only_sign),)
@@ -879,7 +918,9 @@ class Interaction(object):
             None
         )
         
-        if self._check_direction_key(direction) and evidence is not None:
+        direction = self.direction_key(direction)
+        
+        if self._directed_key(direction) and evidence is not None:
             
             ev_attr = getattr(self, sign)
             ev_attr += evidence
@@ -927,8 +968,10 @@ class Interaction(object):
             'resource_names': resource_names,
             'sources': sources,
         }
-
-        if self._check_direction_key(direction):
+        
+        direction = self.direction_key(direction)
+        
+        if self._directed_key(direction):
 
             return (
                 
