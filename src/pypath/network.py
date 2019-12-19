@@ -1601,3 +1601,11 @@ class Network(session_mod.Logger):
     def to_igraph(self):
         
         raise NotImplementedError
+    
+    
+    def __repr__(self):
+        
+        return '<Network: %u nodes, %u interactions>' % (
+            self.vcount,
+            self.ecount,
+        )
