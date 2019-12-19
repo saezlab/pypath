@@ -86,7 +86,6 @@ setup(
     include_package_data = True,
     # dependency_links = deplinks
     install_requires = [
-        'python-igraph',
         'beautifulsoup4',
         'configparser',
         'pyopenssl',
