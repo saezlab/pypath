@@ -1970,6 +1970,78 @@ class Interaction(object):
         ) # tuple
     
     
+    def get_interactions_directed(self, **kwargs):
+        """
+        **kwargs: see the docs of method ``get_interactions``.
+        """
+        
+        if 'direction' not in kwargs or kwargs['direction'] is None:
+            
+            kwargs['direction'] = True
+        
+        return self.get_interactions(**kwargs)
+    
+    
+    def get_interactions_signed(self, **kwargs):
+        """
+        **kwargs: see the docs of method ``get_interactions``.
+        """
+        
+        if 'effect' not in kwargs or kwargs['effect'] is None:
+            
+            kwargs['effect'] = True
+        
+        return self.get_interactions(**kwargs)
+    
+    
+    def get_interactions_positive(self, **kwargs):
+        """
+        **kwargs: see the docs of method ``get_interactions``.
+        """
+        
+        kwargs['effect'] = 'positive'
+        
+        return self.get_interactions(**kwargs)
+    
+    
+    def get_interactions_negative(self, **kwargs):
+        """
+        **kwargs: see the docs of method ``get_interactions``.
+        """
+        
+        kwargs['effect'] = 'negative'
+        
+        return self.get_interactions(**kwargs)
+    
+    
+    def get_interactions_mutual(self, **kwargs):
+        """
+        Note: undirected interactions does not count as mutual but only
+        interactions with explicit direction information for both directions.
+        
+        **kwargs: see the docs of method ``get_interactions``.
+        """
+        
+        if 'direction' not in kwargs or kwargs['direction'] is None:
+            
+            kwargs['direction'] = True
+        
+        interactions = self.get_interactions(**kwargs)
+        
+        return interactions if len(interactions) == 2 else ()
+    
+    
+    def is_mutual(self, **kwargs):
+        """
+        Note: undirected interactions does not count as mutual but only
+        interactions with explicit direction information for both directions.
+        
+        **kwargs: see the docs of method ``get_interactions``.
+        """
+        
+        return bool(self.get_interactions_mutual())
+    
+    
     @staticmethod
     def _get(method, *args, **kwargs):
         
@@ -2000,3 +2072,8 @@ class Interaction(object):
     count_curation_effort = _count.__func__(get_curation_effort)
     count_entities = _count.__func__(get_entities)
     count_resource_names = _count.__func__(get_resource_names)
+    count_interactions = _count.__func__(get_interactions)
+    count_interactions_directed = _count.__func__(get_interactions_directed)
+    count_interactions_signed = _count.__func__(get_interactions_signed)
+    count_interactions_positive = _count.__func__(get_interactions_positive)
+    count_interactions_negative = _count.__func__(get_interactions_negative)
