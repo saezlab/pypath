@@ -2067,6 +2067,32 @@ class Interaction(object):
         return count_method
     
     
+    @staticmethod
+    def _by_resource(method):
+        
+        @functools.wraps(method)
+        def by_resource_method(*args, name_keys = True, **kwargs):
+            
+            self = args[0]
+            _ = kwargs.pop('resouces', None)
+            
+            resources = (
+                self.get_resource_names()
+                    if name_keys else
+                self.get_resources()
+            )
+            
+            return dict(
+                (
+                    resource,
+                    method(*args, resources = resource, **kwargs)
+                )
+                for resource in resources
+            )
+        
+        return by_resource_method
+    
+    
     count_references = _count.__func__(get_references)
     count_resources = _count.__func__(get_resources)
     count_curation_effort = _count.__func__(get_curation_effort)
@@ -2077,3 +2103,20 @@ class Interaction(object):
     count_interactions_signed = _count.__func__(get_interactions_signed)
     count_interactions_positive = _count.__func__(get_interactions_positive)
     count_interactions_negative = _count.__func__(get_interactions_negative)
+    
+    references_by_resource = _by_resource.__func__(get_references)
+    evidences_by_resource = _by_resource.__func__(get_evidences)
+    curation_effort_by_resource = _by_resource.__func__(get_curation_effort)
+    interactions_by_resource = _by_resource.__func__(get_interactions)
+    interactions_directed_by_resource = _by_resource.__func__(
+        get_interactions_directed
+    )
+    interactions_signed_by_resource = _by_resource.__func__(
+        get_interactions_signed
+    )
+    interactions_positive_by_resource = _by_resource.__func__(
+        get_interactions_positive
+    )
+    interactions_negative_by_resource = _by_resource.__func__(
+        get_interactions_negative
+    )
