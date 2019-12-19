@@ -2136,6 +2136,12 @@ class Interaction(object):
         return cls._by(method, by = 'data_model')
     
     
+    @classmethod
+    def _by_interaction_type(cls, method):
+        
+        return cls._by(method, by = 'interaction_type')
+    
+    
     count_references = _count.__func__(get_references)
     count_resources = _count.__func__(get_resources)
     count_curation_effort = _count.__func__(get_curation_effort)
@@ -2187,4 +2193,29 @@ class Interaction(object):
     )
     interactions_negative_by_data_model = (
         Interaction._by_data_model(get_interactions_negative)
+    )
+    
+    references_by_interaction_type = (
+        Interaction._by_interaction_type(get_references)
+    )
+    evidences_by_interaction_type = (
+        Interaction._by_interaction_type(get_evidences)
+    )
+    curation_effort_by_interaction_type = (
+        Interaction._by_interaction_type(get_curation_effort)
+    )
+    interactions_by_interaction_type = (
+        Interaction._by_interaction_type(get_interactions)
+    )
+    interactions_directed_by_interaction_type = (
+        Interaction._by_interaction_type(get_interactions_directed)
+    )
+    interactions_signed_by_interaction_type = (
+        Interaction._by_interaction_type(get_interactions_signed)
+    )
+    interactions_positive_by_interaction_type = (
+        Interaction._by_interaction_type(get_interactions_positive)
+    )
+    interactions_negative_by_interaction_type = (
+        Interaction._by_interaction_type(get_interactions_negative)
     )
