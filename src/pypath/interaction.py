@@ -1815,6 +1815,32 @@ class Interaction(object):
             return self._get('resources', **locals())
     
     
+    def get_interaction_types(
+            self,
+            direction = None,
+            effect = None,
+            resources = None,
+            data_model = None,
+            interaction_type = None,
+            via = None,
+        ):
+            
+            return self._get('interaction_types', **locals())
+    
+    
+    def get_data_models(
+            self,
+            direction = None,
+            effect = None,
+            resources = None,
+            data_model = None,
+            interaction_type = None,
+            via = None,
+        ):
+            
+            return self._get('data_models', **locals())
+    
+    
     def get_resource_names(
             self,
             direction = None,

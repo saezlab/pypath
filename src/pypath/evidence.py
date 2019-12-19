@@ -573,6 +573,16 @@ class Evidences(object):
         return {ev.resource.name for ev in self}
     
     
+    def get_interaction_types(self):
+        
+        return {ev.resource.interaction_type for ev in self}
+    
+    
+    def get_data_models(self):
+        
+        return {ev.resource.data_model for ev in self}
+    
+    
     def __isub__(self, other):
         
         self.remove(other)
