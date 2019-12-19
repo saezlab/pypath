@@ -219,7 +219,18 @@ class Interaction(object):
         )
     
     
-    def _directed_key(self, direction):
+    @staticmethod
+    def direction_key_identifiers(direction):
+        
+        if direction == 'undirected':
+            
+            return direction
+        
+        return tuple(ent.identifier for ent in direction)
+    
+    
+    @staticmethod
+    def _directed_key(direction):
         
         return direction is not None and direction != 'undirected'
 
@@ -562,9 +573,9 @@ class Interaction(object):
                 not effect
                 or (
                     not resources and
-                    getattr(self, effect)
+                    getattr(self, effect)[_dir]
                 ) or
-                getattr(self, effect) & resources
+                getattr(self, effect)[_dir] & resources
             )
         )
 
@@ -610,9 +621,9 @@ class Interaction(object):
     @staticmethod
     def _effect_synonyms(effect):
 
-        if not effect:
+        if not effect or effect == True:
 
-            return
+            return effect
 
         if effect in {'positive', 'stimulation', 'stimulatory'}:
 
@@ -1720,6 +1731,8 @@ class Interaction(object):
             references = None,
         ):
         
+        effect = self._effect_synonyms(effect)
+        
         evidences = (
             
             # any signed
@@ -1845,10 +1858,116 @@ class Interaction(object):
     
     def get_interactions(
             self,
-            directed = False,
+            direction = None,
+            effect = None,
+            resources = None,
+            data_model = None,
+            interaction_type = None,
+            via = None,
+            references = None,
         ):
+        """
+        Returns one or two tuples of the interacting partners: one if only
+        one direction, two if both directions match the query criteria.
+        The tuple will be empty if no evidence matches the criteria.
         
+        :arg NontType,bool,tuple direction:
+            If `None` both undirected and directed, if `True` only directed,
+            if a *tuple* of entities only the interactions with that specific
+            direction will be considered. Unless you set this parameter to
+            `True` this method will return both directions if one or more
+            undirected resources present.
+        :arg NoneType,bool,str effect:
+            If `None` also interactions without effect, if `True` only
+            the ones with any effect, if a string naming an effect only the
+            interactions with that specific effect will be considered.
+        :arg NontType,str,set resources:
+            Optionally limit the query to one or more resources.
+        :arg NontType,str,set data_model:
+            Optionally limit the query to one or more data models e.g.
+            `activity_flow`.
+        :arg NontType,str,set interaction_type:
+            Optionally limit the query to one or more interaction types
+            e.g. `PPI`.
+        :arg NontType,bool,str,set via:
+            Optionally limit the query to certain secondary databases or
+            if `False` consider only data from primary databases.
+        """
         
+        effect = self._effect_synonyms(effect)
+        direction = (
+            self.direction_key(direction)
+                if isinstance(direction, tuple) else
+            direction
+        )
+        
+        return tuple(
+            
+            # direction key
+            _dir
+            
+            # possible directions
+            for _dir in (self.a_b, self.b_a)
+            
+            # conditions
+            if (
+                any(
+                    
+                    # evaluating this evidence collection
+                    evs.match(
+                        resource = resources,
+                        data_model = data_model,
+                        interaction_type = interaction_type,
+                        via = via,
+                        references = references,
+                    )
+                    
+                    for evs in (
+                        
+                        # getting the evidence dict and the key from it
+                        getattr(self, _eff)[evs_key]
+                        
+                        # evidence keys
+                        for evs_key in ('undirected', _dir)
+                        # evidence dicts
+                        for _eff in ('direction', 'positive', 'negative')
+                        
+                        if (
+                            # undirected
+                            (
+                                not direction and
+                                not effect and
+                                _eff == 'direction'
+                            ) or
+                            # directed
+                            (
+                                evs_key != 'undirected' and
+                                _eff == 'direction' and
+                                not effect and (
+                                    # any direction
+                                    direction == True or
+                                    # specific direction
+                                    direction == _dir
+                                )
+                            ) or
+                            # with effect
+                            (
+                                evs_key != 'undirected' and
+                                _eff != 'direction' and (
+                                    # any effect
+                                    effect == True or
+                                    # specific effect
+                                    effect == _eff
+                                )
+                            )
+                        ) # if
+                        
+                    ) # for
+                    
+                ) # any
+            ) # if
+            
+        ) # tuple
     
     
     @staticmethod

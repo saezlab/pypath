@@ -612,3 +612,25 @@ class Evidences(object):
                 references = references,
             )
         )
+    
+    
+    def match(
+            self,
+            resource = None,
+            data_model = None,
+            interaction_type = None,
+            via = False,
+            references = None,
+        ):
+        
+        return bool(
+            tuple(
+                self.filter(
+                    resource = resource,
+                    data_model = data_model,
+                    interaction_type = interaction_type,
+                    via = via,
+                    references = references,
+                )
+            )
+        )
