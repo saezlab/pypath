@@ -26,58 +26,64 @@ import itertools
 import pandas as pd
 
 import pypath.session_mod as session_mod
+import pypath.interaction as interaction_mod
+import pypath.evidence as evidence
+import pypath.entity as entity_mod
 import pypath.common as common
 
-Interaction = collections.namedtuple(
-    'Interaction',
-    [
-        'id_a',
-        'id_b',
-        'type_a',
-        'type_b',
-        'directed',
-        'effect',
-        'type',
-        'sources',
-        'references',
-    ],
-)
-Interaction.__new__.__defaults__ = (None,) * 7
+#Interaction = collections.namedtuple(
+    #'Interaction',
+    #[
+        #'id_a',
+        #'id_b',
+        #'type_a',
+        #'type_b',
+        #'directed',
+        #'effect',
+        #'type',
+        #'sources',
+        #'references',
+    #],
+#)
+#Interaction.__new__.__defaults__ = (None,) * 7
 
 
 class Network(session_mod.Logger):
+    """
+    Represents a molecular interaction network. Provides various methods to
+    query the network and its components. Optionally converts the network
+    to a ``pandas.DataFrame`` of interactions.
     
+    :arg list,dict resources:
+        One or more lists or dictionaries containing
+        ``pypath.resource.NetworkResource`` objects.
+    :arg bool make_df:
+        Create a ``pandas.DataFrame`` already when creating the instance.
+        If no network data loaded no data frame will be created.
+    """
     
-    def __init__(self, records, dtypes = None, **kwargs):
+    def __init__(
+            self,
+            resources = None,
+            make_df = False,
+            df_by_source = False,
+            df_with_references = False,
+            df_columns = None,
+            df_dtype = None,
+            **kwargs
+        ):
         
         session_mod.Logger.__init__(self, name = 'network')
         
-        self._log('Creating network object with interactions data frame.')
+        self._log('Creating network object.')
         
-        if isinstance(records, pd.DataFrame):
-            
-            self.records = records
-            
-        else:
-            
-            if not isinstance(records, (list, tuple, pd.np.ndarray)):
-                
-                records = list(records)
-            
-            if 'columns' not in kwargs and hasattr(records[0], '_fields'):
-                
-                kwargs['columns'] = records[0]._fields
-            
-            self.records = pd.DataFrame(records, **kwargs)
+        self.df_by_source = df_by_source
+        self.df_with_references = df_with_references
+        self.df_columns = df_columns
+        self.df_dtype = df_dtype
         
-        if dtypes:
-            
-            self.records = self.records.astype(dtypes)
-        
-        self._log(
-            'Created network data frame. '
-            'Memory usage: %s ' % common.df_memory_usage(self.records)
-        )
+        self.reset()
+        self.load(resources = resources, make_df = make_df)
     
     
     def reload(self):
@@ -92,18 +98,48 @@ class Network(session_mod.Logger):
         setattr(self, '__class__', new)
     
     
-    @classmethod
-    def from_igraph(cls, pa, by_source = False, with_references = False):
+    def reset(self):
         """
-        Creates an instance using a ``pypath.main.PyPath`` object.
+        Removes network data i.e. creates empty interaction and node
+        dictionaries.
         """
         
-        return cls(
-            records = pa.iter_interactions(
-                by_source = by_source,
-                with_references = with_references,
-            ),
-            dtypes = {
+        self.interactions = {}
+        self.nodes = {}
+        self.nodes_by_label = {}
+    
+    
+    def load(self, resources = None, make_df = False):
+        
+        pass
+    
+    
+    def make_df(
+            self,
+            records = None,
+            by_source = None,
+            with_references = None,
+            columns = None,
+            dtype = None,
+        ):
+        """
+        Creates a ``pandas.DataFrame`` from the interactions.
+        """
+        
+        self._log('Creating interactions data frame.')
+        
+        by_source = by_source if by_source is not None else self.df_by_source
+        with_references = (
+            with_references
+                if with_references is not None else
+            self.df_with_references
+        )
+        columns = columns or self.df_columns
+        dtype = dtype or self.df_dtype
+        
+        if not dtype:
+            
+            dtype = {
                 'id_a': 'category',
                 'id_b': 'category',
                 'type_a': 'category',
@@ -113,7 +149,83 @@ class Network(session_mod.Logger):
                 'sources': 'category' if by_source else 'object',
                 'references': 'object' if with_references else 'category',
             },
+        
+        if not records:
+            
+            records = self.iter_interactions(
+                by_source = by_source,
+                with_references = with_references,
+            )
+        
+        if not isinstance(records, (list, tuple, pd.np.ndarray)):
+            
+            records = list(records)
+        
+        if not columns and hasattr(records[0], '_fields'):
+            
+            columns = records[0]._fields
+        
+        self.df = pd.DataFrame(
+            records,
+            columns = columns,
+            dtype = dtypes,
         )
+        
+        ### why?
+        if dtype:
+            
+            self.df = self.df.astype(dtype)
+        
+        self._log(
+            'Interaction data frame ready. '
+            'Memory usage: %s ' % common.df_memory_usage(self.df)
+        )
+    
+    
+    def iter_interactions(self, by_source = False, with_references = False):
+        
+        pass
+    
+    
+    @classmethod
+    def from_igraph(cls, pa, **kwargs):
+        """
+        Creates an instance from an ``igraph.Graph`` based
+        ``pypath.main.PyPath`` object.
+        
+        :arg pypath.main.PyPath pa:
+            A ``pypath.main.PyPath`` object with network data loaded.
+        """
+        
+        obj = cls(**kwargs)
+        
+        for ia in pa.graph.es['attrs']:
+            
+            obj.add_interaction(ia)
+        
+        return obj
+    
+    
+    def add_interaction(self, interaction):
+        
+        key = (interaction.a, interaction.b)
+        
+        if key not in interactions:
+            
+            self.interactions[key] = interaction
+            
+        else:
+            
+            self.interactions[key] += interaction
+        
+        self.add_node(interaction.a)
+        self.add_node(interaction.b)
+    
+    
+    def add_node(self, entity):
+        
+        self.nodes[entity.identifier] = entity
+        self.nodes_by_label[entity.label] = entity
     
     
     @property
@@ -122,7 +234,7 @@ class Network(session_mod.Logger):
         Returns a set of all resources.
         """
         
-        return set.union(*self.records.sources)
+        return set.union(*self.df.sources)
     
     
     def entities_by_resource(self):
@@ -136,10 +248,10 @@ class Network(session_mod.Logger):
                 resource,
                 set(
                     itertools.chain(
-                        *self.records[
+                        *self.df[
                             [
                                 resource in resources
-                                for resources in self.records.sources
+                                for resources in self.df.sources
                             ]
                         ][['id_a', 'id_b']].values
                     )
@@ -147,3 +259,8 @@ class Network(session_mod.Logger):
             )
             for resource in self.resources
         )
+    
+    
+    def to_igraph(self):
+        
+        raise NotImplementedError
