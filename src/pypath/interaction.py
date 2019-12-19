@@ -2094,29 +2094,41 @@ class Interaction(object):
     
     
     @staticmethod
-    def _by_resource(method):
+    def _by(method, attr = 'resources'):
         
         @functools.wraps(method)
-        def by_resource_method(*args, name_keys = True, **kwargs):
+        def by_method(*args, name_keys = True, **kwargs):
             
             self = args[0]
-            _ = kwargs.pop('resouces', None)
+            attr_arg = attr if attr == 'resources' else attr[:-1]
+            _ = kwargs.pop(attr_arg, None)
             
-            resources = (
-                self.get_resource_names()
-                    if name_keys else
-                self.get_resources()
+            levels_method = 'get_%s%ss' % (
+                attr_arg,
+                '_name' if attr == 'resources' and name_keys else ''
             )
+            
+            levels = getattr(self, levels_method)()
             
             return dict(
                 (
-                    resource,
-                    method(*args, resources = resource, **kwargs)
+                    level,
+                    method(
+                        *args,
+                        **{attr_arg: level},
+                        **kwargs
+                    )
                 )
-                for resource in resources
+                for level in levels
             )
         
-        return by_resource_method
+        return by_method
+    
+    
+    @classmethod
+    def _by_resource(cls, method):
+        
+        return cls._by(method, attr = 'resources')
     
     
     count_references = _count.__func__(get_references)
@@ -2130,19 +2142,23 @@ class Interaction(object):
     count_interactions_positive = _count.__func__(get_interactions_positive)
     count_interactions_negative = _count.__func__(get_interactions_negative)
     
-    references_by_resource = _by_resource.__func__(get_references)
-    evidences_by_resource = _by_resource.__func__(get_evidences)
-    curation_effort_by_resource = _by_resource.__func__(get_curation_effort)
-    interactions_by_resource = _by_resource.__func__(get_interactions)
-    interactions_directed_by_resource = _by_resource.__func__(
-        get_interactions_directed
+    references_by_resource = Interaction._by_resource(get_references)
+    evidences_by_resource = Interaction._by_resource(get_evidences)
+    curation_effort_by_resource = (
+        Interaction._by_resource(get_curation_effort)
     )
-    interactions_signed_by_resource = _by_resource.__func__(
-        get_interactions_signed
+    interactions_by_resource = (
+        Interaction._by_resource(get_interactions)
     )
-    interactions_positive_by_resource = _by_resource.__func__(
-        get_interactions_positive
+    interactions_directed_by_resource = (
+        Interaction._by_resource(get_interactions_directed)
     )
-    interactions_negative_by_resource = _by_resource.__func__(
-        get_interactions_negative
+    interactions_signed_by_resource = (
+        Interaction._by_resource(get_interactions_signed)
+    )
+    interactions_positive_by_resource = (
+        Interaction._by_resource(get_interactions_positive)
+    )
+    interactions_negative_by_resource = (
+        Interaction._by_resource(get_interactions_negative)
     )
