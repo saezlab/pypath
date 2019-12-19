@@ -2102,29 +2102,40 @@ class Interaction(object):
     @staticmethod
     def _by(method, by = 'resources'):
         
+        by = (by,) if isinstance(by, common.basestring) else by
+        
         @functools.wraps(method)
         def by_method(*args, name_keys = True, **kwargs):
             
             self = args[0]
-            _ = kwargs.pop(by, None)
             
-            levels_method = 'get_%s%ss' % (
-                by[:-1] if by in {'resources', 'references'} else by,
-                '_name' if by == 'resources' and name_keys else ''
+            for _by in by:
+                
+                _ = kwargs.pop(_by, None)
+            
+            levels_methods = (
+                'get_%s%ss' % (
+                    _by[:-1] if _by in {'resources', 'references'} else _by,
+                    '_name' if _by == 'resources' and name_keys else ''
+                )
+                for _by in by
             )
             
-            levels = getattr(self, levels_method)()
+            levels = list(itertools.product(*(
+                getattr(self, levels_method)()
+                for levels_method in levels_methods
+            )))
             
             return dict(
                 (
-                    level,
+                    _levels if len(_levels) > 1 else _levels[0],
                     method(
                         *args,
-                        **{by: level},
+                        **dict(zip(by, _levels)),
                         **kwargs
                     )
                 )
-                for level in levels
+                for _levels in levels
             )
         
         return by_method
