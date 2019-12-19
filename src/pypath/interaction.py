@@ -2154,6 +2154,12 @@ class Interaction(object):
     
     
     @classmethod
+    def _by_interaction_type_and_data_model(cls, method):
+        
+        return cls._by(method, by = ('data_model', 'interaction_type'))
+    
+    
+    @classmethod
     def _by_interaction_type(cls, method):
         
         return cls._by(method, by = 'interaction_type')
@@ -2202,6 +2208,9 @@ class Interaction(object):
     interactions_negative_by_resource = (
         Interaction._by_resource(get_interactions_negative)
     )
+    interactions_mutual_by_resource = (
+        Interaction._by_resource(get_interactions_mutual)
+    )
     
     resource_names_by_data_model = (
         Interaction._by_data_model(get_resource_names)
@@ -2231,6 +2240,9 @@ class Interaction(object):
     )
     interactions_negative_by_data_model = (
         Interaction._by_data_model(get_interactions_negative)
+    )
+    interactions_mutual_by_data_model = (
+        Interaction._by_data_model(get_interactions_mutual)
     )
     
     resource_names_by_interaction_type = (
@@ -2265,6 +2277,54 @@ class Interaction(object):
     )
     interactions_negative_by_interaction_type = (
         Interaction._by_interaction_type(get_interactions_negative)
+    )
+    interactions_mutual_by_interaction_type = (
+        Interaction._by_interaction_type(get_interactions_mutual)
+    )
+    
+    
+    resource_names_by_interaction_type_and_data_model = (
+        Interaction._by_interaction_type_and_data_model(get_resource_names)
+    )
+    resources_by_interaction_type_and_data_model = (
+        Interaction._by_interaction_type_and_data_model(get_resources)
+    )
+    references_by_interaction_type_and_data_model = (
+        Interaction._by_interaction_type_and_data_model(get_references)
+    )
+    evidences_by_interaction_type_and_data_model = (
+        Interaction._by_interaction_type_and_data_model(get_evidences)
+    )
+    curation_effort_by_interaction_type_and_data_model = (
+        Interaction._by_interaction_type_and_data_model(get_curation_effort)
+    )
+    interactions_by_interaction_type_and_data_model = (
+        Interaction._by_interaction_type_and_data_model(get_interactions)
+    )
+    interactions_directed_by_interaction_type_and_data_model = (
+        Interaction._by_interaction_type_and_data_model(
+            get_interactions_directed
+        )
+    )
+    interactions_signed_by_interaction_type_and_data_model = (
+        Interaction._by_interaction_type_and_data_model(
+            get_interactions_signed
+        )
+    )
+    interactions_positive_by_interaction_type_and_data_model = (
+        Interaction._by_interaction_type_and_data_model(
+            get_interactions_positive
+        )
+    )
+    interactions_negative_by_interaction_type_and_data_model = (
+        Interaction._by_interaction_type_and_data_model(
+            get_interactions_negative
+        )
+    )
+    interactions_mutual_by_interaction_type_and_data_model = (
+        Interaction._by_interaction_type_and_data_model(
+            get_interactions_mutual
+        )
     )
     
     resource_names_by_reference = (
@@ -2302,4 +2362,7 @@ class Interaction(object):
     )
     interactions_negative_by_reference = (
         Interaction._by_reference(get_interactions_negative)
+    )
+    interactions_mutual_by_reference = (
+        Interaction._by_reference(get_interactions_mutual)
     )
