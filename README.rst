@@ -485,6 +485,12 @@ Main improvements in the past releases:
 * Many methods in `dataio` have been improved or fixed, docs and code style largely improved
 * Started to add tests especially for methods in `dataio`
 
+0.9
+---
+* The network database is not dependent any more on `python-igraph` hence it
+  has been removed from the mandatory dependencies
+* New API for the network, interactions, evidences, molecular entities
+
 Upcoming
 --------
 
