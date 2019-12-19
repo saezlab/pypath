@@ -2094,18 +2094,17 @@ class Interaction(object):
     
     
     @staticmethod
-    def _by(method, attr = 'resources'):
+    def _by(method, by = 'resources'):
         
         @functools.wraps(method)
         def by_method(*args, name_keys = True, **kwargs):
             
             self = args[0]
-            attr_arg = attr if attr == 'resources' else attr[:-1]
-            _ = kwargs.pop(attr_arg, None)
+            _ = kwargs.pop(by, None)
             
             levels_method = 'get_%s%ss' % (
-                attr_arg,
-                '_name' if attr == 'resources' and name_keys else ''
+                by[:-1] if by == 'resources' else by,
+                '_name' if by == 'resources' and name_keys else ''
             )
             
             levels = getattr(self, levels_method)()
@@ -2115,7 +2114,7 @@ class Interaction(object):
                     level,
                     method(
                         *args,
-                        **{attr_arg: level},
+                        **{by: level},
                         **kwargs
                     )
                 )
@@ -2128,7 +2127,13 @@ class Interaction(object):
     @classmethod
     def _by_resource(cls, method):
         
-        return cls._by(method, attr = 'resources')
+        return cls._by(method, by = 'resources')
+    
+    
+    @classmethod
+    def _by_data_model(cls, method):
+        
+        return cls._by(method, by = 'data_model')
     
     
     count_references = _count.__func__(get_references)
@@ -2161,4 +2166,25 @@ class Interaction(object):
     )
     interactions_negative_by_resource = (
         Interaction._by_resource(get_interactions_negative)
+    )
+    
+    references_by_data_model = Interaction._by_data_model(get_references)
+    evidences_by_data_model = Interaction._by_data_model(get_evidences)
+    curation_effort_by_data_model = (
+        Interaction._by_data_model(get_curation_effort)
+    )
+    interactions_by_data_model = (
+        Interaction._by_data_model(get_interactions)
+    )
+    interactions_directed_by_data_model = (
+        Interaction._by_data_model(get_interactions_directed)
+    )
+    interactions_signed_by_data_model = (
+        Interaction._by_data_model(get_interactions_signed)
+    )
+    interactions_positive_by_data_model = (
+        Interaction._by_data_model(get_interactions_positive)
+    )
+    interactions_negative_by_data_model = (
+        Interaction._by_data_model(get_interactions_negative)
     )
