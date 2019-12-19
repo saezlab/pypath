@@ -49,6 +49,29 @@ InteractionKey = collections.namedtuple(
 
 class Interaction(object):
     
+    _get_methods = (
+        'evidences',
+        'references',
+        'resource_names',
+        'resources',
+        'data_models',
+        'interaction_types',
+        'interactions',
+        'interactions_directed',
+        'interactions_signed',
+        'interactions_positive',
+        'interactions_negative',
+        'interactions_mutual',
+    )
+    
+    _by_methods = {
+        'resource',
+        'reference',
+        'data_model',
+        'interaction_type',
+        'interaction_type_and_data_model',
+    }
+    
     
     def __init__(
             self,
@@ -135,6 +158,8 @@ class Interaction(object):
         
         self.a.__class__ = ennew
         self.b.__class__ = ennew
+        
+        self._generate_by_methods()
 
 
     def _get_entity(
@@ -2182,187 +2207,27 @@ class Interaction(object):
     count_interactions_positive = _count.__func__(get_interactions_positive)
     count_interactions_negative = _count.__func__(get_interactions_negative)
     
-    data_models_by_resource = (
-        Interaction._by_interaction_type(get_data_models)
-    )
-    interaction_types_by_resource = (
-        Interaction._by_interaction_type(get_interaction_types)
-    )
-    references_by_resource = Interaction._by_resource(get_references)
-    evidences_by_resource = Interaction._by_resource(get_evidences)
-    curation_effort_by_resource = (
-        Interaction._by_resource(get_curation_effort)
-    )
-    interactions_by_resource = (
-        Interaction._by_resource(get_interactions)
-    )
-    interactions_directed_by_resource = (
-        Interaction._by_resource(get_interactions_directed)
-    )
-    interactions_signed_by_resource = (
-        Interaction._by_resource(get_interactions_signed)
-    )
-    interactions_positive_by_resource = (
-        Interaction._by_resource(get_interactions_positive)
-    )
-    interactions_negative_by_resource = (
-        Interaction._by_resource(get_interactions_negative)
-    )
-    interactions_mutual_by_resource = (
-        Interaction._by_resource(get_interactions_mutual)
-    )
     
-    resource_names_by_data_model = (
-        Interaction._by_data_model(get_resource_names)
-    )
-    resources_by_data_model = (
-        Interaction._by_data_model(get_resources)
-    )
-    interaction_types_by_data_model = (
-        Interaction._by_interaction_type(get_interaction_types)
-    )
-    references_by_data_model = Interaction._by_data_model(get_references)
-    evidences_by_data_model = Interaction._by_data_model(get_evidences)
-    curation_effort_by_data_model = (
-        Interaction._by_data_model(get_curation_effort)
-    )
-    interactions_by_data_model = (
-        Interaction._by_data_model(get_interactions)
-    )
-    interactions_directed_by_data_model = (
-        Interaction._by_data_model(get_interactions_directed)
-    )
-    interactions_signed_by_data_model = (
-        Interaction._by_data_model(get_interactions_signed)
-    )
-    interactions_positive_by_data_model = (
-        Interaction._by_data_model(get_interactions_positive)
-    )
-    interactions_negative_by_data_model = (
-        Interaction._by_data_model(get_interactions_negative)
-    )
-    interactions_mutual_by_data_model = (
-        Interaction._by_data_model(get_interactions_mutual)
-    )
+    @classmethod
+    def _generate_by_methods(cls):
+        
+        for _get, _by in itertools.product(
+            cls._get_methods,
+            cls._by_methods,
+        ):
+            
+            setattr(
+                cls,
+                '%s_by_%s' % (_get, _by),
+                getattr(
+                    cls,
+                    '_by_%s' % _by,
+                )(
+                    getattr(
+                        cls,
+                        'get_%s' % _get
+                    )
+                )
+            )
     
-    resource_names_by_interaction_type = (
-        Interaction._by_interaction_type(get_resource_names)
-    )
-    resources_by_interaction_type = (
-        Interaction._by_interaction_type(get_resources)
-    )
-    data_models_by_interaction_type = (
-        Interaction._by_interaction_type(get_data_models)
-    )
-    references_by_interaction_type = (
-        Interaction._by_interaction_type(get_references)
-    )
-    evidences_by_interaction_type = (
-        Interaction._by_interaction_type(get_evidences)
-    )
-    curation_effort_by_interaction_type = (
-        Interaction._by_interaction_type(get_curation_effort)
-    )
-    interactions_by_interaction_type = (
-        Interaction._by_interaction_type(get_interactions)
-    )
-    interactions_directed_by_interaction_type = (
-        Interaction._by_interaction_type(get_interactions_directed)
-    )
-    interactions_signed_by_interaction_type = (
-        Interaction._by_interaction_type(get_interactions_signed)
-    )
-    interactions_positive_by_interaction_type = (
-        Interaction._by_interaction_type(get_interactions_positive)
-    )
-    interactions_negative_by_interaction_type = (
-        Interaction._by_interaction_type(get_interactions_negative)
-    )
-    interactions_mutual_by_interaction_type = (
-        Interaction._by_interaction_type(get_interactions_mutual)
-    )
-    
-    
-    resource_names_by_interaction_type_and_data_model = (
-        Interaction._by_interaction_type_and_data_model(get_resource_names)
-    )
-    resources_by_interaction_type_and_data_model = (
-        Interaction._by_interaction_type_and_data_model(get_resources)
-    )
-    references_by_interaction_type_and_data_model = (
-        Interaction._by_interaction_type_and_data_model(get_references)
-    )
-    evidences_by_interaction_type_and_data_model = (
-        Interaction._by_interaction_type_and_data_model(get_evidences)
-    )
-    curation_effort_by_interaction_type_and_data_model = (
-        Interaction._by_interaction_type_and_data_model(get_curation_effort)
-    )
-    interactions_by_interaction_type_and_data_model = (
-        Interaction._by_interaction_type_and_data_model(get_interactions)
-    )
-    interactions_directed_by_interaction_type_and_data_model = (
-        Interaction._by_interaction_type_and_data_model(
-            get_interactions_directed
-        )
-    )
-    interactions_signed_by_interaction_type_and_data_model = (
-        Interaction._by_interaction_type_and_data_model(
-            get_interactions_signed
-        )
-    )
-    interactions_positive_by_interaction_type_and_data_model = (
-        Interaction._by_interaction_type_and_data_model(
-            get_interactions_positive
-        )
-    )
-    interactions_negative_by_interaction_type_and_data_model = (
-        Interaction._by_interaction_type_and_data_model(
-            get_interactions_negative
-        )
-    )
-    interactions_mutual_by_interaction_type_and_data_model = (
-        Interaction._by_interaction_type_and_data_model(
-            get_interactions_mutual
-        )
-    )
-    
-    resource_names_by_reference = (
-        Interaction._by_reference(get_resource_names)
-    )
-    resources_by_reference = (
-        Interaction._by_reference(get_resources)
-    )
-    data_models_by_reference = (
-        Interaction._by_interaction_type(get_data_models)
-    )
-    interaction_types_by_reference = (
-        Interaction._by_interaction_type(get_interaction_types)
-    )
-    references_by_reference = (
-        Interaction._by_reference(get_references)
-    )
-    evidences_by_reference = (
-        Interaction._by_reference(get_evidences)
-    )
-    curation_effort_by_reference = (
-        Interaction._by_reference(get_curation_effort)
-    )
-    interactions_by_reference = (
-        Interaction._by_reference(get_interactions)
-    )
-    interactions_directed_by_reference = (
-        Interaction._by_reference(get_interactions_directed)
-    )
-    interactions_signed_by_reference = (
-        Interaction._by_reference(get_interactions_signed)
-    )
-    interactions_positive_by_reference = (
-        Interaction._by_reference(get_interactions_positive)
-    )
-    interactions_negative_by_reference = (
-        Interaction._by_reference(get_interactions_negative)
-    )
-    interactions_mutual_by_reference = (
-        Interaction._by_reference(get_interactions_mutual)
-    )
+    Interaction._generate_by_methods()
