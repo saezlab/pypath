@@ -62,6 +62,8 @@ class Interaction(object):
         'interactions_positive',
         'interactions_negative',
         'interactions_mutual',
+        'resources_via',
+        'resource_names_via',
     )
     
     _by_methods = {
@@ -70,6 +72,7 @@ class Interaction(object):
         'data_model',
         'interaction_type',
         'interaction_type_and_data_model',
+        'interaction_type_and_data_model_and_resource',
     }
     
     
@@ -1842,6 +1845,34 @@ class Interaction(object):
             return self._get('resources', **locals())
     
     
+    def get_resources_via(
+            self,
+            direction = None,
+            effect = None,
+            resources = None,
+            data_model = None,
+            interaction_type = None,
+            via = None,
+            references = None,
+        ):
+            
+            return self._get('resources_via', **locals())
+    
+    
+    def get_resource_names_via(
+            self,
+            direction = None,
+            effect = None,
+            resources = None,
+            data_model = None,
+            interaction_type = None,
+            via = None,
+            references = None,
+        ):
+            
+            return self._get('resource_names_via', **locals())
+    
+    
     def get_interaction_types(
             self,
             direction = None,
@@ -2182,6 +2213,15 @@ class Interaction(object):
     def _by_interaction_type_and_data_model(cls, method):
         
         return cls._by(method, by = ('data_model', 'interaction_type'))
+    
+    
+    @classmethod
+    def _by_interaction_type_and_data_model_and_resource(cls, method):
+        
+        return cls._by(
+            method,
+            by = ('data_model', 'interaction_type', 'resources'),
+        )
     
     
     @classmethod

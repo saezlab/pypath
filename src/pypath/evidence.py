@@ -491,6 +491,22 @@ class Evidences(object):
         }
     
     
+    def get_resources_via(self, **kwargs):
+        
+        return {
+            (ev.resource, ev.resource.via)
+            for ev in self.filter(**kwargs)
+        }
+    
+    
+    def get_resource_names_via(self, **kwargs):
+        
+        return {
+            (ev.resource.name, ev.resource.via)
+            for ev in self.filter(**kwargs)
+        }
+    
+    
     def count_references(self, **kwargs):
         
         return len(self.get_references(**kwargs))
