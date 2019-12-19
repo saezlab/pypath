@@ -66,14 +66,42 @@ class Interaction(object):
         'resource_names_via',
     )
     
-    _by_methods = {
+    _get_methods_autogen = (
+        'references',
+        'resources',
+        'resources_via',
+        'resource_names',
+        'resource_names_via',
+        'data_models',
+        'curation_effort',
+        'interaction_types',
+    )
+    
+    _by_methods = (
         'resource',
         'reference',
         'data_model',
         'interaction_type',
         'interaction_type_and_data_model',
         'interaction_type_and_data_model_and_resource',
-    }
+    )
+    
+    _count_methods = (
+        'references',
+        'resources',
+        'resources_via',
+        'resource_names_via',
+        'resource_names',
+        'curation_effort',
+        'entities',
+        'interactions',
+        'interactions_directed',
+        'interactions_signed',
+        'interactions_positive',
+        'interactions_negative',
+        'data_models',
+        'interaction_types',
+    )
     
     
     def __init__(
@@ -162,6 +190,8 @@ class Interaction(object):
         self.a.__class__ = ennew
         self.b.__class__ = ennew
         
+        self._generate_get_methods()
+        self._generate_count_methods()
         self._generate_by_methods()
 
 
@@ -1817,118 +1847,6 @@ class Interaction(object):
         )
     
     
-    def get_references(
-            self,
-            direction = None,
-            effect = None,
-            resources = None,
-            data_model = None,
-            interaction_type = None,
-            via = None,
-            references = None,
-        ):
-            
-            return self._get('references', **locals())
-    
-    
-    def get_resources(
-            self,
-            direction = None,
-            effect = None,
-            resources = None,
-            data_model = None,
-            interaction_type = None,
-            via = None,
-            references = None,
-        ):
-            
-            return self._get('resources', **locals())
-    
-    
-    def get_resources_via(
-            self,
-            direction = None,
-            effect = None,
-            resources = None,
-            data_model = None,
-            interaction_type = None,
-            via = None,
-            references = None,
-        ):
-            
-            return self._get('resources_via', **locals())
-    
-    
-    def get_resource_names_via(
-            self,
-            direction = None,
-            effect = None,
-            resources = None,
-            data_model = None,
-            interaction_type = None,
-            via = None,
-            references = None,
-        ):
-            
-            return self._get('resource_names_via', **locals())
-    
-    
-    def get_interaction_types(
-            self,
-            direction = None,
-            effect = None,
-            resources = None,
-            data_model = None,
-            interaction_type = None,
-            via = None,
-            references = None,
-        ):
-            
-            return self._get('interaction_types', **locals())
-    
-    
-    def get_data_models(
-            self,
-            direction = None,
-            effect = None,
-            resources = None,
-            data_model = None,
-            interaction_type = None,
-            via = None,
-            references = None,
-        ):
-            
-            return self._get('data_models', **locals())
-    
-    
-    def get_resource_names(
-            self,
-            direction = None,
-            effect = None,
-            resources = None,
-            data_model = None,
-            interaction_type = None,
-            via = None,
-            references = None,
-        ):
-            
-            return self._get('resource_names', **locals())
-    
-    
-    def get_curation_effort(
-            self,
-            direction = None,
-            effect = None,
-            resources = None,
-            data_model = None,
-            interaction_type = None,
-            via = None,
-            references = None,
-        ):
-            
-            return self._get('curation_effort', **locals())
-    
-    
     def get_entities(self):
         
         return {self.a, self.b}
@@ -2131,13 +2049,10 @@ class Interaction(object):
     
     
     @staticmethod
-    def _get(method, *args, **kwargs):
-        
-        self = kwargs.pop('self')
+    def _get(self, method, **kwargs):
         
         return getattr(
             self.get_evidences(
-                *args,
                 **kwargs
             ),
             'get_%s' % method,
@@ -2236,16 +2151,37 @@ class Interaction(object):
         return cls._by(method, by = 'references')
     
     
-    count_references = _count.__func__(get_references)
-    count_resources = _count.__func__(get_resources)
-    count_curation_effort = _count.__func__(get_curation_effort)
-    count_entities = _count.__func__(get_entities)
-    count_resource_names = _count.__func__(get_resource_names)
-    count_interactions = _count.__func__(get_interactions)
-    count_interactions_directed = _count.__func__(get_interactions_directed)
-    count_interactions_signed = _count.__func__(get_interactions_signed)
-    count_interactions_positive = _count.__func__(get_interactions_positive)
-    count_interactions_negative = _count.__func__(get_interactions_negative)
+    @classmethod
+    def _generate_get_methods(cls):
+        
+        def _create_get_method(method):
+            
+            @functools.wraps(method)
+            def _get_method(*args, **kwargs):
+                
+                return cls._get(self = args[0], method = method, **kwargs)
+            
+            return _get_method
+        
+        for _get in cls._get_methods_autogen:
+            
+            setattr(
+                cls,
+                'get_%s' % _get,
+                _create_get_method(_get)
+            )
+    
+    
+    @classmethod
+    def _generate_count_methods(cls):
+        
+        for _get in cls._count_methods:
+            
+            setattr(
+                cls,
+                'count_%s' % _get,
+                cls._count(getattr(cls, 'get_%s' % _get))
+            )
     
     
     @classmethod
@@ -2270,4 +2206,6 @@ class Interaction(object):
                 )
             )
     
+    Interaction._generate_get_methods()
+    Interaction._generate_count_methods()
     Interaction._generate_by_methods()
