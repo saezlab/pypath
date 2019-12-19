@@ -2045,7 +2045,18 @@ class Interaction(object):
         **kwargs: see the docs of method ``get_interactions``.
         """
         
-        return bool(self.get_interactions_mutual())
+        return bool(self.get_interactions_mutual(**kwargs))
+    
+    
+    def count_interactions_mutual(self, **kwargs):
+        """
+        Note: undirected interactions does not count as mutual but only
+        interactions with explicit direction information for both directions.
+        
+        **kwargs: see the docs of method ``get_interactions``.
+        """
+        
+        return int(self.is_mutual(**kwargs))
     
     
     @staticmethod
