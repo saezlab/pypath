@@ -1506,7 +1506,6 @@ class Curl(FileOpener):
         self.use_cache = False
         
         if type(CACHE) is bool:
-            print('cache: ', CACHE)
             
             self.cache = CACHE
         

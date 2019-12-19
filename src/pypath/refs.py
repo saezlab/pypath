@@ -88,7 +88,7 @@ def only_pmids(idList, strict=True):
         Whether keep in the list those IDs which are not PMIDs,
         neither DOIs or PMC IDs or NIH manuscript IDs.
     """
-    if type(idList) in common.simpleTypes:
+    if type(idList) in common.simple_types:
         idList = [idList]
     pmids = set([i for i in idList if i.isdigit()])
     pmcids = [i for i in idList if i.startswith('PMC')]
@@ -110,7 +110,7 @@ def get_pmid(idList):
     For a list of doi or PMC IDs 
     fetches the corresponding PMIDs.
     """
-    if type(idList) in common.simpleTypes:
+    if type(idList) in common.simple_types:
         idList = [idList]
     url = urls.urls['pubmed-eutils']['conv'] % ','.join(str(i) for i in idList)
     c = curl.Curl(url, silent=True)

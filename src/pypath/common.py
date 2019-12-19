@@ -42,8 +42,8 @@ import numpy as np
 
 
 __all__ = [
-    'ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes',
-    'uniqList', 'addToList', 'addToSet', 'gen_session_id',
+    'ROOT', 'aacodes', 'aaletters', 'simple_types', 'numeric_types',
+    'uniqList', 'add_to_list', 'add_to_set', 'gen_session_id',
     'sorensen_index', 'simpson_index', 'simpson_index_counts',
     'jaccard_index', 'console', 'wcl', 'flatList', 'charTypes',
     'delEmpty', 'get_args', 'something', 'rotate', 'cleanDict',
@@ -179,8 +179,8 @@ if 'unicode' not in dir(__builtins__):
 aaletters = dict(zip(aacodes.values(), aacodes.keys()))
 
 # Type definitions
-simpleTypes = (int, long, float, str, unicode, bytes, bool, type(None))
-numTypes = (int, long, float)
+simple_types = (int, long, float, str, unicode, bytes, bool, type(None))
+numeric_types = (int, long, float)
 charTypes = (str, unicode, bytes)
 
 
@@ -409,7 +409,7 @@ def uniqOrdList(seq, idfun=None): # XXX: Only used in plot.py line: 510
     return result
 
 
-def addToList(lst, toadd):
+def add_to_list(lst, toadd):
     """ Adds elements to a list.
 
     Appends *toadd* to *lst*. Function differs from
@@ -432,17 +432,17 @@ def addToList(lst, toadd):
         :py:func:`common.uniqList`, does not preserve order of elements.
 
     **Examples:**
-        >>> addToList('ab', 'cd')
+        >>> add_to_list('ab', 'cd')
         ['ab', 'cd']
-        >>> addToList('ab', ['cd', None, 'ab', 'ef'])
+        >>> add_to_list('ab', ['cd', None, 'ab', 'ef'])
         ['ab', 'ef', 'cd']
-        >>> addToList((0, 1, 2), 4)
+        >>> add_to_list((0, 1, 2), 4)
         [0, 1, 2, 4]
     """
 
     if type(lst) is not list:
 
-        if type(lst) in simpleTypes:
+        if type(lst) in simple_types:
             lst = [lst]
 
         else:
@@ -451,7 +451,7 @@ def addToList(lst, toadd):
     if toadd is None:
         return lst
 
-    if type(toadd) in simpleTypes:
+    if type(toadd) in simple_types:
         lst.append(toadd)
 
     else:
@@ -467,7 +467,7 @@ def addToList(lst, toadd):
     return uniqList(lst)
 
 
-def addToSet(st, toadd):
+def add_to_set(st, toadd):
     """Adds elements to a set.
 
     Appends *toadd* to *st*. Function is capable to handle different
@@ -485,13 +485,13 @@ def addToSet(st, toadd):
 
     **Examples:**
         >>> st = set([0, 1, 2])
-        >>> addToSet(st, 3)
+        >>> add_to_set(st, 3)
         set([0, 1, 2, 3])
-        >>> addToSet(st, [4, 2, 5])
+        >>> add_to_set(st, [4, 2, 5])
         set([0, 1, 2, 4, 5])
     """
 
-    if type(toadd) in simpleTypes:
+    if type(toadd) in simple_types:
         st.add(toadd)
 
     if type(toadd) is list:
@@ -982,7 +982,7 @@ def swap_dict(d):
 
     for key, vals in iteritems(d):
         
-        vals = [vals] if type(vals) in simpleTypes else vals
+        vals = [vals] if type(vals) in simple_types else vals
         
         for val in vals:
             
@@ -1046,10 +1046,10 @@ def join_dicts(d1, d2, _from='keys', to='values'): # TODO
 
     for key1, val1 in iteritems(d1):
         sources = ([key1] if _from == 'keys'
-                          else [val1] if type(val1) in simpleTypes
+                          else [val1] if type(val1) in simple_types
                                       else val1)
         meds = ([key1] if _from == 'values'
-                       else [val1] if type(val1) in simpleTypes
+                       else [val1] if type(val1) in simple_types
                                    else val1)
         targets = set([])
 
@@ -1060,7 +1060,7 @@ def join_dicts(d1, d2, _from='keys', to='values'): # TODO
                 if type(targets) is list:
                     targets.append(d2[med])
 
-                elif type(d2[med]) in simpleTypes:
+                elif type(d2[med]) in simple_types:
                     targets.add(d2[med])
 
                 elif type(d2[med]) is list:
@@ -1473,3 +1473,127 @@ def sum_dicts(*args):
         )
         for key in set(itertools.chain(*(d.keys() for d in args)))
     )
+
+
+def combine_attrs(attrs, num_method = max):
+    """
+    Combines multiple attributes into one. This method attempts
+    to find out which is the best way to combine attributes.
+
+        * If there is only one value or one of them is None, then
+          returns the one available.
+        * Lists: concatenates unique values of lists.
+        * Numbers: returns the greater by default or calls
+          *num_method* if given.
+        * Sets: returns the union.
+        * Dictionaries: calls :py:func:`pypath.common.merge_dicts`.
+        * Direction: calls their special
+          :py:meth:`pypath.main.Direction.merge` method.
+
+    Works on more than 2 attributes recursively.
+
+    :arg list attrs:
+        List of one or more attribute values.
+    :arg function num_method:
+        Optional, ``max`` by default. Method to merge numeric attributes.
+    """
+
+    def list_or_set(one, two):
+
+        if ((isinstance(one, list) and isinstance(two, set))
+            or (isinstance(two, list) and isinstance(one, set))):
+
+            try:
+                return set(one), set(two)
+
+            except TypeError:
+                return list(one), list(two)
+
+        else:
+            return one, two
+
+
+    # recursion:
+    if len(attrs) > 2:
+        attrs = [attrs[0], combine_attrs(attrs[1:], num_method = num_method)]
+
+    # quick and simple cases:
+    if len(attrs) == 0:
+        return None
+
+    if len(attrs) == 1:
+        return attrs[0]
+
+    if attrs[0] == attrs[1]:
+        return attrs[0]
+
+    if attrs[0] is None:
+        return attrs[1]
+
+    if attrs[1] is None:
+        return attrs[0]
+
+    # merge numeric values
+    if type(attrs[0]) in numeric_types and type(attrs[1]) in numeric_types:
+        return num_method(attrs)
+    
+    attrs = list(attrs)
+    
+    # in case one is list other is set
+    attrs[0], attrs[1] = list_or_set(attrs[0], attrs[1])
+
+    # merge lists:
+    if isinstance(attrs[0], list) and isinstance(attrs[1], list):
+
+        try:
+            # lists of hashable elements only:
+            return list(set(itertools.chain(attrs[0], attrs[1])))
+
+        except TypeError:
+            # if contain non-hashable elements:
+            return list(itertools.chain(attrs[0], attrs[1]))
+
+    # merge sets:
+    if isinstance(attrs[0], set):
+        return add_to_set(attrs[0], attrs[1])
+
+    if isinstance(attrs[1], set):
+        return add_to_set(attrs[1], attrs[0])
+
+    # merge dicts:
+    if isinstance(attrs[0], dict) and isinstance(attrs[1], dict):
+        return merge_dicts(attrs[0], attrs[1])
+
+    # 2 different strings: return a set with both of them
+    if ((isinstance(attrs[0], str) or isinstance(attrs[0], unicode))
+        and (isinstance(attrs[1], str) or isinstance(attrs[1], unicode))):
+
+        if len(attrs[0]) == 0:
+            return attrs[1]
+
+        if len(attrs[1]) == 0:
+            return attrs[0]
+
+        return set([attrs[0], attrs[1]])
+
+    # one attr is list, the other is simple value:
+    if (isinstance(attrs[0], list) and type(attrs[1]) in simple_types):
+
+        if attrs[1] in numeric_types or len(attrs[1]) > 0:
+            return add_to_list(attrs[0], attrs[1])
+
+        else:
+            return attrs[0]
+
+    if (isinstance(attrs[1], list) and type(attrs[0]) in simple_types):
+
+        if attrs[0] in numeric_types or len(attrs[0]) > 0:
+            return add_to_list(attrs[1], attrs[0])
+
+        else:
+            return attrs[1]
+
+    # in case the objects have `__add__()` method:
+    if hasattr(attrs[0], '__add__'):
+        
+        return attrs[0] + attrs[1]

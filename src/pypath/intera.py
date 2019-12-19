@@ -522,7 +522,7 @@ class Domain(object):
     def add_chains(self, pdb, chain):
         if pdb not in self.pdbs:
             self.pdbs[pdb] = []
-        self.pdbs[pdb] = common.addToList(self.pdbs[pdb], chain)
+        self.pdbs[pdb] = common.add_to_list(self.pdbs[pdb], chain)
 
     def serialize(self):
         return '%s-%u:%s:%s:%u-%u' % (
@@ -606,10 +606,10 @@ class DomainDomain(object):
         self.sources.add(source)
 
     def add_refs(self, refs):
-        self.refs = common.addToSet(self.refs, refs)
+        self.refs = common.add_to_set(self.refs, refs)
 
     def add_pdbs(self, pdbs):
-        self.pdbs = common.addToSet(self.pdbs, pdbs)
+        self.pdbs = common.add_to_set(self.pdbs, pdbs)
 
     def serialize(self):
         return '|'.join([
@@ -710,10 +710,10 @@ class DomainMotif(object):
         self.sources.add(source)
 
     def add_refs(self, refs):
-        self.refs = common.addToSet(self.refs, refs)
+        self.refs = common.add_to_set(self.refs, refs)
 
     def add_pdbs(self, pdbs):
-        self.pdbs = common.addToSet(self.pdbs, pdbs)
+        self.pdbs = common.add_to_set(self.pdbs, pdbs)
 
     def serialize(self):
         return '|'.join([
@@ -790,7 +790,7 @@ class Regulation(object):
         self.sources.add(source)
 
     def add_refs(self, refs):
-        self.refs = common.addToSet(self.refs, refs)
+        self.refs = common.add_to_set(self.refs, refs)
 
     def serialize(self):
         return '|'.join([

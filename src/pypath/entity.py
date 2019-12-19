@@ -18,6 +18,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
 import importlib as imp
 import collections
 
@@ -54,6 +56,8 @@ class Entity(session_mod.Logger):
         self.id_type = id_type
         self.taxon = taxon
         self.key = self._key
+        
+        self.attrs = {}
         
         self.set_label()
     
@@ -214,3 +218,23 @@ class Entity(session_mod.Logger):
     def __repr__(self):
         
         return '<Entity: %s>' % (self.label or self.identifier)
+    
+    
+    def __iadd__(self, other):
+        
+        if self == other:
+            
+            self.update_attrs(**other.attrs)
+    
+    
+    def update_attrs(self, **kwargs):
+        
+        for key, val in iteritems(kwargs):
+            
+            if key in self.attrs:
+                
+                self.attrs[key] = common.combine_attrs((self.attrs[key], val))
+                
+            else:
+                
+                self.attrs[key] = val

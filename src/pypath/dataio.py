@@ -1499,7 +1499,7 @@ def get_3did_ddi(residues = False, ddi_flat = None, organism = 9606):
                     if uniprot1 != uniprot2:
                         if pdb not in pdblist:
                             pdblist[pdb] = []
-                        pdblist[pdb] = common.addToList(pdblist[pdb],
+                        pdblist[pdb] = common.add_to_list(pdblist[pdb],
                                                         (uniprot1, uniprot2))
                     if residues:
                         #res1 = [int(i) for i in l[2].split(':')[1].split('-')]
@@ -6751,7 +6751,7 @@ def only_pmids(idList, strict = True):
         Whether keep in the list those IDs which are not PMIDs,
         neither DOIs or PMC IDs or NIH manuscript IDs.
     """
-    if type(idList) in common.simpleTypes:
+    if type(idList) in common.simple_types:
         idList = [idList]
     pmids = {i for i in idList if isinstance(i, int) or i.isdigit()}
     pmcids = [i for i in idList if i.startswith('PMC')]
@@ -6771,7 +6771,7 @@ def get_pmid(idList):
     For a list of doi or PMC IDs
     fetches the corresponding PMIDs.
     """
-    if type(idList) in common.simpleTypes:
+    if type(idList) in common.simple_types:
         idList = [idList]
     url = urls.urls['pubmed-eutils']['conv'] % ','.join(str(i) for i in idList)
     c = curl.Curl(url, silent = True)

@@ -175,7 +175,7 @@ class FieldProcessor(object):
 
     def __iter__(self):
         fields = self.process()
-        if isinstance(fields, common.simpleTypes):
+        if isinstance(fields, common.simple_types):
             fields = (fields,)
         if self.single_value:
             for field in self.process():

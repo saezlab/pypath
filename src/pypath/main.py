@@ -386,7 +386,7 @@ class Direction(object):
 
         if self.check_param(direction) and len(source):
             self.dirs[direction] = True
-            source = common.addToSet(set([]), source)
+            source = common.add_to_set(set([]), source)
             self.sources[direction] = self.sources[direction] | source
 
 
@@ -780,7 +780,7 @@ class Direction(object):
 
         if self.check_nodes(direction) and len(source):
             self.set_dir(direction, source)
-            source = common.addToSet(set([]), source)
+            source = common.add_to_set(set([]), source)
 
             if sign == 'positive':
                 self.positive[direction] = True
@@ -1394,7 +1394,7 @@ class AttrHelper(object):
             sys.stdout.flush()
 
         # if value is constant:
-        elif type(self.value) in common.simpleTypes:
+        elif type(self.value) in common.simple_types:
             return self.value
 
         # if a dictionary given to map some igraph attribute to values:
@@ -2670,7 +2670,7 @@ class PyPath(session_mod.Logger):
                 dir_col = sign[0]
                 dir_val = sign[1:3]
                 dir_val = dir_val if type(dir_val[
-                    0]) in common.simpleTypes else common.flatList(dir_val)
+                    0]) in common.simple_types else common.flatList(dir_val)
                 dir_sep = sign[3] if len(sign) > 3 else None
 
             dir_val = common.to_set(dir_val)
@@ -3499,7 +3499,7 @@ class PyPath(session_mod.Logger):
             return lst[0]
 
         # merge numeric values
-        if type(lst[0]) in common.numTypes and type(lst[1]) in common.numTypes:
+        if type(lst[0]) in common.numeric_types and type(lst[1]) in common.numeric_types:
             return num_method(lst)
 
         # in case one is list other is set
@@ -3518,10 +3518,10 @@ class PyPath(session_mod.Logger):
 
         # merge sets:
         if isinstance(lst[0], set):
-            return common.addToSet(lst[0], lst[1])
+            return common.add_to_set(lst[0], lst[1])
 
         if isinstance(lst[1], set):
-            return common.addToSet(lst[1], lst[0])
+            return common.add_to_set(lst[1], lst[0])
 
         # merge dicts:
         if isinstance(lst[0], dict) and isinstance(lst[1], dict):
@@ -3540,18 +3540,18 @@ class PyPath(session_mod.Logger):
             return set([lst[0], lst[1]])
 
         # one attr is list, the other is simple value:
-        if (isinstance(lst[0], list) and type(lst[1]) in common.simpleTypes):
+        if (isinstance(lst[0], list) and type(lst[1]) in common.simple_types):
 
-            if lst[1] in common.numTypes or len(lst[1]) > 0:
-                return common.addToList(lst[0], lst[1])
+            if lst[1] in common.numeric_types or len(lst[1]) > 0:
+                return common.add_to_list(lst[0], lst[1])
 
             else:
                 return lst[0]
 
-        if (isinstance(lst[1], list) and type(lst[0]) in common.simpleTypes):
+        if (isinstance(lst[1], list) and type(lst[0]) in common.simple_types):
 
-            if lst[0] in common.numTypes or len(lst[0]) > 0:
-                return common.addToList(lst[1], lst[0])
+            if lst[0] in common.numeric_types or len(lst[0]) > 0:
+                return common.add_to_list(lst[1], lst[0])
 
             else:
                 return lst[1]
@@ -4917,7 +4917,7 @@ class PyPath(session_mod.Logger):
                 v[attr] = self.vertexAttrs[attr]()
 
             if self.vertexAttrs[attr] is list and type(v[
-                    attr]) in common.simpleTypes:
+                    attr]) in common.simple_types:
                 v[attr] = [v[attr]] if len(v[attr]) > 0 else []
 
     def init_edge_attr(self, attr):
@@ -4939,7 +4939,7 @@ class PyPath(session_mod.Logger):
 
             if (self.edgeAttrs[attr] is list or
                 self.edgeAttrs[attr] is set) and type(e[
-                    attr]) in common.simpleTypes:
+                    attr]) in common.simple_types:
 
                 e[attr] = [e[attr]] if (
                     type(e[attr]) not in common.charTypes or
@@ -9034,7 +9034,7 @@ class PyPath(session_mod.Logger):
         """
         """
 
-        if type(uniprots) in common.simpleTypes:
+        if type(uniprots) in common.simple_types:
             uniprots = [uniprots]
 
         vs = self.uniprots(uniprots)
@@ -9044,7 +9044,7 @@ class PyPath(session_mod.Logger):
         """
         """
 
-        if type(genesymbols) in common.simpleTypes:
+        if type(genesymbols) in common.simple_types:
             genesymbols = [genesymbols]
 
         vs = self.genesymbols(genesymbols)
@@ -9054,7 +9054,7 @@ class PyPath(session_mod.Logger):
         """
         """
 
-        if type(identifiers) in common.simpleTypes:
+        if type(identifiers) in common.simple_types:
             identifiers = [identifiers]
 
         vs = self.get_nodes(identifiers)

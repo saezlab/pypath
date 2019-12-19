@@ -156,6 +156,8 @@ class Interaction(object):
             self.a_b: pypath_evidence.Evidences(),
             self.b_a: pypath_evidence.Evidences(),
         }
+        
+        self.attrs = {}
     
     
     def reload(self):
@@ -394,8 +396,22 @@ class Interaction(object):
             return self
         
         self._merge_evidences(self, other)
+        self.update_attrs(**other.attrs)
         
         return self
+    
+    
+    def update_attrs(self, **kwargs):
+        
+        for key, val in iteritems(kwargs):
+            
+            if key in self.attrs:
+                
+                self.attrs[key] = common.combine_attrs((self.attrs[key], val))
+                
+            else:
+                
+                self.attrs[key] = val
     
     
     def __add__(self, other):
@@ -2320,7 +2336,8 @@ class Interaction(object):
                     )
                 )
             )
-    
-    Interaction._generate_get_methods()
-    Interaction._generate_count_methods()
-    Interaction._generate_by_methods()
+
+
+Interaction._generate_get_methods()
+Interaction._generate_count_methods()
+Interaction._generate_by_methods()

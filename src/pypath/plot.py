@@ -541,7 +541,7 @@ class MultiBarplot(Plot):
                 for ccols in self.colors:
                     getattr(self, colattr).extend(ccols)
                 setattr(self, colattr, np.array(getattr(self, colattr)))
-        if type(color) not in common.simpleTypes and \
+        if type(color) not in common.simple_types and \
                 len(color) == len(self.x):
             # color is a list of colors for each bar
             setattr(self, colattr, np.array(color))
@@ -1675,7 +1675,7 @@ class ScatterPlus(object):
         if self.size is None:
             self.size = self.min_size
 
-        if type(self.size) in common.numTypes:
+        if type(self.size) in common.numeric_types:
             self.size = [self.size] * len(self.x)
 
         self.size_values = np.array(self.size)
@@ -2078,7 +2078,7 @@ class Histogram(Plot):
                  kde_perc=12.0,
                  **kwargs):
         self.data = data
-        if type(self.data[0]) in common.numTypes:
+        if type(self.data[0]) in common.numeric_types:
             self.data = [data]
         for i, d in enumerate(self.data):
             if type(d) is list:
