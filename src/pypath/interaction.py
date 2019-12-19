@@ -58,6 +58,10 @@ class Interaction(object):
         'interaction_types',
         'interactions',
         'interactions_directed',
+        'interactions_undirected',
+        'interactions_non_directed',
+        'interactions_undirected_0',
+        'interactions_non_directed_0',
         'interactions_signed',
         'interactions_positive',
         'interactions_negative',
@@ -1883,6 +1887,11 @@ class Interaction(object):
             direction will be considered. Unless you set this parameter to
             `True` this method will return both directions if one or more
             undirected resources present.
+            If `False`, only the undirected interactions will be considered,
+            and if any resource annotates this interaction as undirected
+            both directions will be returned. However the
+            ``count_interactions_undirected`` method will return `1`
+            in this case.
         :arg NoneType,bool,str effect:
             If `None` also interactions without effect, if `True` only
             the ones with any effect, if a string naming an effect only the
@@ -1939,14 +1948,21 @@ class Interaction(object):
                         for _eff in ('direction', 'positive', 'negative')
                         
                         if (
+                            # only undirected
+                            (
+                                direction == False and
+                                evs_key == 'undirected' and
+                                _eff == 'direction'
+                            ) or
                             # undirected
                             (
-                                not direction and
+                                direction is None and
                                 not effect and
                                 _eff == 'direction'
                             ) or
                             # directed
                             (
+                                direction != False and
                                 evs_key != 'undirected' and
                                 _eff == 'direction' and
                                 not effect and (
@@ -1958,6 +1974,7 @@ class Interaction(object):
                             ) or
                             # with effect
                             (
+                                direction != False and
                                 evs_key != 'undirected' and
                                 _eff != 'direction' and (
                                     # any effect
@@ -1986,6 +2003,71 @@ class Interaction(object):
             kwargs['direction'] = True
         
         return self.get_interactions(**kwargs)
+    
+    
+    def get_interactions_undirected(self, **kwargs):
+        """
+        Only the undirected interactions will be considered, if any resource
+        annotates this interaction as undirected both directions will be
+        returned, no matter if certain resources provide direction. However
+        the ``count_interactions_undirected`` method will return `1` in this
+        case.
+        
+        **kwargs: see the docs of method ``get_interactions``.
+        """
+        
+        kwargs['direction'] = False
+        
+        return self.get_interactions(**kwargs)
+    
+    
+    def get_interactions_undirected_0(self, **kwargs):
+        """
+        Only the undirected interactions will be considered, if any resource
+        annotates this interaction as undirected the interacting pair as
+        a sorted tuple will be returned inside a one element tuple.
+        
+        **kwargs: see the docs of method ``get_interactions``.
+        """
+        
+        undir = self.get_interactions_undirected(**kwargs)
+        
+        return undir[:1] if undir else ()
+    
+    
+    def get_interactions_non_directed(self, **kwargs):
+        """
+        Only the undirected interactions will be considered, if any resource
+        annotates this interaction as undirected both directions will be
+        returned, but only if no resource provide direction. However
+        the ``count_interactions_non_directed`` method will return `1` in
+        this case.
+        
+        **kwargs: see the docs of method ``get_interactions``.
+        """
+        
+        kwargs['direction'] = True
+        
+        return (
+            self.get_interactions_undirected(**kwargs)
+                if not self.get_interactions(**kwargs) else
+            ()
+        )
+    
+    
+    def get_interactions_non_directed_0(self, **kwargs):
+        """
+        Only the undirected interactions will be considered, if any resource
+        annotates this interaction as undirected and none as directed, the
+        interacting pair as a sorted tuple will be returned inside a one
+        element tuple.
+        
+        **kwargs: see the docs of method ``get_interactions``.
+        """
+        
+        nondir = self.get_interactions_non_directed(**kwargs)
+        
+        return nondir[:1] if nondir else ()
     
     
     def get_interactions_signed(self, **kwargs):
@@ -2057,6 +2139,28 @@ class Interaction(object):
         """
         
         return int(self.is_mutual(**kwargs))
+    
+    
+    def count_interactions_undirected(self, **kwargs):
+        """
+        Returns `True` if any resource annotates this interaction without
+        direction.
+        
+        **kwargs: see the docs of method ``get_interactions``.
+        """
+        
+        return bool(self.get_interactions_undirected(**kwargs))
+    
+    
+    def count_interactions_non_directed(self, **kwargs):
+        """
+        Returns `True` if any resource annotates this interaction without
+        and no resource with direction.
+        
+        **kwargs: see the docs of method ``get_interactions``.
+        """
+        
+        return bool(self.get_interactions_non_directed(**kwargs))
     
     
     @staticmethod
