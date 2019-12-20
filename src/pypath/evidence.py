@@ -627,7 +627,17 @@ class Evidences(object):
     
     def __isub__(self, other):
         
-        self.remove(other)
+        if isinstance(other, self.__class__):
+            
+            self.evidences = dict(
+                (key, ev)
+                for key, ev in iteritems(self.evidences)
+                if key not in other.evidences or other.evidences[key] != ev
+            )
+            
+        else:
+            
+            self.remove(other)
         
         return self
     

@@ -2356,26 +2356,154 @@ class Interaction(object):
     
     
     def generate_df_records(self, by_source = False, with_references = False):
+        """
+        Yields interaction records. It is a generator because one edge can
+        be represented by one or more records depending on the signs and
+        directions and other parameters
+
+        :arg bool by_source:
+            Yield separate records by resources. This way the node pairs
+            will be redundant and you need to group later if you want
+            unique interacting pairs. By default is ``False`` because for
+            most applications unique interactions are preferred.
+            If ``False`` the *refrences* field will still be present
+            but with ``None`` values.
+        :arg bool with_references:
+            Include the literature references. By default is ``False``
+            because you rarely need these and they increase the data size
+            significantly.
+        """
         
-        for _dir in (self.a_b, self.b_a):
+        def source_add_via(source, via):
             
-            
-            
-            InteractionDataFrameRecord = collections.namedtuple(
-            'InteractionDataFrameRecord',
-            [
-                'id_a',
-                'id_b',
-                'type_a',
-                'type_b',
-                'directed',
-                'effect',
-                'type',
-                'sources',
-                'references',
-            ],
-        )
+            return '%s%s' % (source, '_%s' % via if via else '')
         
+        
+        def iter_sources(evs):
+            
+            sources = evs.get_resource_names_via()
+            
+            if by_source:
+                
+                for source, via in sources:
+                    
+                    refs = (
+                        {
+                            ref.pmid
+                            for ref in
+                            self.get_references(
+                                resources = source,
+                                interaction_type = interaction_type,
+                                via = via,
+                            )
+                        }
+                            if with_references else
+                        None
+                    )
+                    
+                    _source = source_add_via(source, via)
+                    
+                    yield _source, refs
+                    
+            else:
+                
+                _sources = {
+                    source_add_via(source, via)
+                    for source, via in sources
+                }
+                
+                refs = (
+                    {
+                        ref.pmid
+                        for ref in
+                        self.get_references(
+                            resources = {s[0] for s in sources},
+                            interaction_type = interaction_type,
+                        )
+                    }
+                        if with_references else
+                    None
+                )
+                
+                if _sources:
+                    
+                    yield _sources, refs
+        
+        
+        for interaction_type in self.get_interaction_types():
+            
+            evs_undirected = self.get_evidences(
+                direction = 'undirected',
+                interaction_type = interaction_type,
+            )
+            
+            for _dir in (self.a_b, self.b_a):
+                
+                evs_dir = self.get_evidences(
+                    direction = _dir,
+                    interaction_type = interaction_type,
+                )
+                evs_without_sign = evs_dir.__copy__()
+                
+                for _effect, effect in zip((1, -1), ('positive', 'negative')):
+                    
+                    evs_sign = self.get_evidences(
+                        direction = _dir,
+                        effect = effect,
+                        interaction_type = interaction_type,
+                    )
+                    # to make sure we keep all references:
+                    evs_sign += evs_sign.intersection(evs_dir)
+                    evs_without_sign -= evs_sign
+                    evs_undirected -= evs_sign
+                    
+                    for sources, refs in iter_sources(evs_sign):
+                        
+                        yield InteractionDataFrameRecord(
+                            id_a = _dir[0].identifier,
+                            id_b = _dir[1].identifier,
+                            type_a = _dir[0].entity_type,
+                            type_b = _dir[1].entity_type,
+                            directed = True,
+                            effect = _effect,
+                            type = interaction_type,
+                            sources = sources,
+                            references = refs,
+                        )
+                
+                if evs_without_sign:
+                    
+                    evs_undirected -= evs_without_sign
+                    
+                    for sources, refs in iter_sources(evs_without_sign):
+                        
+                        yield InteractionDataFrameRecord(
+                            id_a = _dir[0].identifier,
+                            id_b = _dir[1].identifier,
+                            type_a = _dir[0].entity_type,
+                            type_b = _dir[1].entity_type,
+                            directed = True,
+                            effect = 0,
+                            type = interaction_type,
+                            sources = sources,
+                            references = refs,
+                        )
+                
+            if evs_undirected:
+                
+                for sources, refs in iter_sources(evs_undirected):
+                    
+                    yield InteractionDataFrameRecord(
+                        id_a = self.a.identifier,
+                        id_b = self.b.identifier,
+                        type_a = self.a.entity_type,
+                        type_b = self.b.entity_type,
+                        directed = False,
+                        effect = 0,
+                        type = interaction_type,
+                        sources = sources,
+                        references = refs,
+                    )
 
 
 Interaction._generate_get_methods()
