@@ -1849,9 +1849,9 @@ class Interaction(object):
                 
             # only negative
             (
-                self.positive[direction]
-                    if direction in self.positive else
-                sum(self.positive.values())
+                self.negative[direction]
+                    if direction in self.negative else
+                sum(self.negative.values())
             )
                 
                 if effect == 'negative' else
