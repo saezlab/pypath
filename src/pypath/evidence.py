@@ -388,6 +388,24 @@ class Evidences(object):
         return self.__add__(other)
     
     
+    def __sub__(self, other):
+        
+        return Evidences(
+            ev
+            for ev in self
+            if ev not in other
+        )
+    
+    
+    def intersection(self, other):
+        
+        return Evidences(
+            self.evidences[key] + other.evidences[key]
+            for key in
+            set(self.evidences.keys()) & set(other.evidences.keys())
+        )
+    
+    
     def __iter__(self):
         
         for ev in self.evidences.values():
