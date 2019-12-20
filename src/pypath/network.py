@@ -43,23 +43,6 @@ import pypath.refs as refs_mod
 import pypath.resources.network as network_resources
 
 
-InteractionRecord = collections.namedtuple(
-    'InteractionRecord',
-    [
-        'id_a',
-        'id_b',
-        'type_a',
-        'type_b',
-        'directed',
-        'effect',
-        'type',
-        'sources',
-        'references',
-    ],
-)
-InteractionRecord.__new__.__defaults__ = (None,) * 7
-
-
 class Network(session_mod.Logger):
     """
     Represents a molecular interaction network. Provides various methods to
@@ -1519,7 +1502,14 @@ class Network(session_mod.Logger):
     
     def generate_df_records(self, by_source = False, with_references = False):
         
-        pass
+        for ia in self.interactions:
+            
+            for rec in ia.generate_df_records(
+                by_source = by_source,
+                with_references = with_references,
+            ):
+                
+                yield rec
     
     
     @classmethod
@@ -1596,6 +1586,49 @@ class Network(session_mod.Logger):
             )
             for resource in self.resources
         )
+    
+    
+    def entity_by_id(self, identifier):
+        
+        if identifier in self.nodes:
+            
+            return self.nodes[identifier]
+    
+    
+    def entity_by_label(self, label):
+        
+        if label in nodes_by_label:
+            
+            return self.nodes_by_label[label]
+    
+    
+    def _get_interaction(self, id_a, id_b, name_type = 'id'):
+        
+        method = 'entity_by_%s' % name_type
+        
+        entity_a = getattr(self, method)(id_a)
+        entity_b = getattr(self, method)(id_b)
+        
+        a_b = (entity_a, entity_b)
+        b_a = (entity_b, entity_a)
+        
+        if a_b in self.interactions:
+            
+            return self.interactions[a_b]
+            
+        elif b_a in self.interactions:
+            
+            return self.interactions[b_a]
+    
+    
+    def interaction_by_id(self, id_a, id_b):
+        
+        return self._get_interaction(id_a, id_b)
+    
+    
+    def interaction_by_label(self, label_a, label_b):
+        
+        return self._get_interaction(label_a, label_b, name_type = 'label')
     
     
     def to_igraph(self):
