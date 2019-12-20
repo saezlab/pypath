@@ -1366,17 +1366,23 @@ class Network(session_mod.Logger):
         
         refs = {refs_mod.Reference(pmid) for pmid in refs}
         
-        entity_a = entity_mod.Entity(
-            identifier = id_a,
-            id_type = id_type_a,
-            entity_type = entity_type_a,
-            taxon = taxon_a,
+        entity_a = (
+            self.entity_by_id(id_a) or
+            entity_mod.Entity(
+                identifier = id_a,
+                id_type = id_type_a,
+                entity_type = entity_type_a,
+                taxon = taxon_a,
+            )
         )
-        entity_b = entity_mod.Entity(
-            identifier = id_b,
-            id_type = id_type_b,
-            entity_type = entity_type_b,
-            taxon = taxon_b,
+        entity_b = (
+            self.entity_by_id(id_b) or
+            entity_mod.Entity(
+                identifier = id_b,
+                id_type = id_type_b,
+                entity_type = entity_type_b,
+                taxon = taxon_b,
+            )
         )
         
         interaction = interaction_mod.Interaction(
@@ -1597,7 +1603,7 @@ class Network(session_mod.Logger):
     
     def entity_by_label(self, label):
         
-        if label in nodes_by_label:
+        if label in self.nodes_by_label:
             
             return self.nodes_by_label[label]
     

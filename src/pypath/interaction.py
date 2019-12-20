@@ -47,6 +47,23 @@ InteractionKey = collections.namedtuple(
 )
 
 
+InteractionDataFrameRecord = collections.namedtuple(
+    'InteractionDataFrameRecord',
+    [
+        'id_a',
+        'id_b',
+        'type_a',
+        'type_b',
+        'directed',
+        'effect',
+        'type',
+        'sources',
+        'references',
+    ],
+)
+InteractionDataFrameRecord.__new__.__defaults__ = (None,) * 7
+
+
 class Interaction(object):
     
     _get_methods = (
@@ -2336,6 +2353,29 @@ class Interaction(object):
                     )
                 )
             )
+    
+    
+    def generate_df_records(self, by_source = False, with_references = False):
+        
+        for _dir in (self.a_b, self.b_a):
+            
+            
+            
+            InteractionDataFrameRecord = collections.namedtuple(
+            'InteractionDataFrameRecord',
+            [
+                'id_a',
+                'id_b',
+                'type_a',
+                'type_b',
+                'directed',
+                'effect',
+                'type',
+                'sources',
+                'references',
+            ],
+        )
+        
 
 
 Interaction._generate_get_methods()

@@ -413,7 +413,7 @@ Main improvements in the past releases:
 0.3.0
 -----
 
-* First version whith partial Python 3 support.
+* First version with partial Python 3 support.
 
 0.4.0
 -----
