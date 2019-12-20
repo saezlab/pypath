@@ -398,8 +398,16 @@ class Evidences(object):
     def __repr__(self):
         
         return '<Evidences: %s (%u references)>' % (
-            ', '.join(sorted(set(ev.resource.name for ev in self))),
-            len(set.union(*(ev.references for ev in self))),
+            (
+                ', '.join(sorted(set(ev.resource.name for ev in self)))
+                    if self else
+                'None'
+            ),
+            (
+                len(set.union(*(ev.references for ev in self)))
+                    if self else
+                0
+            ),
         )
     
     
