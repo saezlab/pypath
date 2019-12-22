@@ -26,6 +26,7 @@ import os
 import collections
 import itertools
 import copy as copy_mod
+import pickle
 
 import pandas as pd
 
@@ -1648,3 +1649,36 @@ class Network(session_mod.Logger):
             self.vcount,
             self.ecount,
         )
+    
+    
+    def save_to_pickle(self, pickle_file):
+        
+        self._log('Saving to pickle `%s`.' % pickle_file)
+        
+        with open(pickle_file, 'wb') as fp:
+
+            pickle.dump(
+                obj = (
+                    self.interactions,
+                    self.nodes,
+                    self.nodes_by_label,
+                ),
+                file = fp,
+            )
+        
+        self._log('Saved to pickle `%s`.' % pickle_file)
+    
+    
+    def load_from_pickle(self, pickle_file):
+        
+        self._log('Loading from pickle `%s`.' % pickle_file)
+        
+        with open(pickle_file, 'rb') as fp:
+
+            (
+                self.interactions,
+                self.nodes,
+                self.nodes_by_label,
+            ) = pickle.load(fp)
+        
+        self._log('Loaded from pickle `%s`.' % pickle_file)
