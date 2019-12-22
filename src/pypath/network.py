@@ -1659,6 +1659,16 @@ class Network(session_mod.Logger):
     
     
     def entity_by_id(self, identifier):
+        """
+        Returns a ``pypath.entity.Entity`` object representing a molecular
+        entity by looking it up by its identifier. If the molecule does not
+        present in the current network ``None`` will be returned.
+        
+        :arg str identifier:
+            The identifier of a molecular entity. Unless it's been set
+            otherwise for genes/proteins it is the UniProt ID.
+            E.g. ``'P00533'``.
+        """
         
         if identifier in self.nodes:
             
@@ -1666,6 +1676,15 @@ class Network(session_mod.Logger):
     
     
     def entity_by_label(self, label):
+        """
+        Returns a ``pypath.entity.Entity`` object representing a molecular
+        entity by looking it up by its label. If the molecule does not
+        present in the current network ``None`` will be returned.
+        
+        :arg str label:
+            The label of a molecular entity. Unless it's been set otherwise
+            for genes/proteins it is the Gene Symbol. E.g. ``'EGFR'``.
+        """
         
         if label in self.nodes_by_label:
             
@@ -1692,16 +1711,46 @@ class Network(session_mod.Logger):
     
     
     def interaction_by_id(self, id_a, id_b):
+        """
+        Returns a ``pypath.interaction.Interaction`` object by looking it up
+        based on a pair of identifiers. If the interaction does not exist
+        in the network ``None`` will be returned.
+        
+        :arg str id_a:
+            The identifier of one of the partners in the interaction. Unless
+            it's been set otherwise for genes/proteins it is the UniProt ID.
+            E.g. ``'P00533'``.
+        :arg str id_b:
+            The other partner, similarly to ``id_a``. The order of the
+            partners does not matter here.
+        """
         
         return self._get_interaction(id_a, id_b)
     
     
     def interaction_by_label(self, label_a, label_b):
+        """
+        Returns a ``pypath.interaction.Interaction`` object by looking it up
+        based on a pair of labels. If the interaction does not exist
+        in the network ``None`` will be returned.
+        
+        :arg str label_a:
+            The label of one of the partners in the interaction. Unless
+            it's been set otherwise for genes/proteins it is the Gene Symbol.
+            E.g. ``'EGFR'``.
+        :arg str label_b:
+            The other partner, similarly to ``label_a``. The order of the
+            partners does not matter here.
+        """
         
         return self._get_interaction(label_a, label_b, name_type = 'label')
     
     
     def to_igraph(self):
+        """
+        Converts the network to the legacy ``igraph.Graph`` based ``PyPath``
+        object.
+        """
         
         raise NotImplementedError
     
@@ -1715,6 +1764,12 @@ class Network(session_mod.Logger):
     
     
     def save_to_pickle(self, pickle_file):
+        """
+        Saves the network to a pickle file.
+        
+        :arg str pickle_file:
+            Path to the pickle file.
+        """
         
         self._log('Saving to pickle `%s`.' % pickle_file)
         
@@ -1733,6 +1788,12 @@ class Network(session_mod.Logger):
     
     
     def load_from_pickle(self, pickle_file):
+        """
+        Loads the network to a pickle file.
+        
+        :arg str pickle_file:
+            Path to the pickle file.
+        """
         
         self._log('Loading from pickle `%s`.' % pickle_file)
         
