@@ -1604,7 +1604,7 @@ class Network(session_mod.Logger):
         
         key = (interaction.a, interaction.b)
         
-        if key not in self.interactions
+        if key not in self.interactions:
             
             if only_directions:
                 
@@ -1624,9 +1624,8 @@ class Network(session_mod.Logger):
                 ):
                     
                     for itype_to_remove in (
-                            interaction.get_interaction_types() -
-                            self.interaction[key].get_interaction_types()
-                        )
+                        interaction.get_interaction_types() -
+                        self.interaction[key].get_interaction_types()
                     ):
                         
                         interaction.unset_interaction_type(itype_to_remove)
@@ -1642,8 +1641,8 @@ class Network(session_mod.Logger):
         self.add_node(interaction.a, add = not only_directions)
         self.add_node(interaction.b, add = not only_directions)
         
-        self.interactions_by_nodes[entity_a].add(key)
-        self.interactions_by_nodes[entity_b].add(key)
+        self.interactions_by_nodes[interaction.a].add(key)
+        self.interactions_by_nodes[interaction.b].add(key)
     
     
     def add_node(self, entity, attrs = None, add = True):
@@ -2051,12 +2050,14 @@ class Network(session_mod.Logger):
             self.extra_directions()
         
         if remove_htp:
+            
             self.remove_htp(
                 threshold = htp_threshold,
                 keep_directed = keep_directed,
             )
         
         if not keep_directed:
+            
             self.remove_undirected(min_refs = min_refs_undirected)
         
         self._log('Finished loading the `OmniPath` network.')
@@ -2068,7 +2069,7 @@ class Network(session_mod.Logger):
             'Removing high-throughput interactions above threshold %u'
             ' interactions per reference. Directed interactions %s.' % (
                 threshold,
-                'will be kept' if keep_directed 'also will be removed'
+                'will be kept' if keep_directed else 'also will be removed'
             )
         )
         

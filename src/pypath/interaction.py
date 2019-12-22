@@ -1992,60 +1992,71 @@ class Interaction(object):
                         references = references,
                     )
                     
-                    for evs in (
-                        
-                        # getting the evidence dict and the key from it
-                        getattr(self, _eff)[evs_key]
-                        
-                        # evidence keys
-                        for evs_key in ('undirected', _dir)
-                        # evidence dicts
-                        for _eff in ('direction', 'positive', 'negative')
-                        
-                        if (
-                            # only undirected
-                            (
-                                direction == False and
-                                evs_key == 'undirected' and
-                                _eff == 'direction'
-                            ) or
-                            # undirected
-                            (
-                                direction is None and
-                                not effect and
-                                _eff == 'direction'
-                            ) or
-                            # directed
-                            (
-                                direction != False and
-                                evs_key != 'undirected' and
-                                _eff == 'direction' and
-                                not effect and (
-                                    # any direction
-                                    direction == True or
-                                    # specific direction
-                                    direction == _dir
-                                )
-                            ) or
-                            # with effect
-                            (
-                                direction != False and
-                                evs_key != 'undirected' and
-                                _eff != 'direction' and (
-                                    # any effect
-                                    effect == True or
-                                    # specific effect
-                                    effect == _eff
-                                )
-                            )
-                        ) # if
-                        
-                    ) # for
+                    for evs in self.iter_evidences(
+                        this_direction = _dir,
+                        direction = direction,
+                        effect = effect,
+                    )
                     
                 ) # any
             ) # if
             
         ) # tuple
+    
+    
+    def iter_evidences(
+            self,
+            this_direction,
+            direction = None,
+            effect = None,
+        ):
+        
+        # evidence keys
+        for evs_key in ('undirected', this_direction):
+            
+            # evidence dicts
+            for this_effect in ('direction', 'positive', 'negative'):
+                
+                if (
+                    # only undirected
+                    (
+                        direction == False and
+                        evs_key == 'undirected' and
+                        this_effect == 'direction'
+                    ) or
+                    # undirected
+                    (
+                        direction is None and
+                        not effect and
+                        this_effect == 'direction'
+                    ) or
+                    # directed
+                    (
+                        direction != False and
+                        evs_key != 'undirected' and
+                        this_effect == 'direction' and
+                        not effect and (
+                            # any direction
+                            direction == True or
+                            # specific direction
+                            direction == this_direction
+                        )
+                    ) or
+                    # with effect
+                    (
+                        direction != False and
+                        evs_key != 'undirected' and
+                        this_effect != 'direction' and (
+                            # any effect
+                            effect == True or
+                            # specific effect
+                            effect == this_effect
+                        )
+                    )
+                ):
+                    
+                    # getting the evidence dict and the key from it
+                    yield getattr(self, this_effect)[evs_key]
     
     
     def get_interactions_directed(self, **kwargs):
@@ -2216,6 +2227,34 @@ class Interaction(object):
         """
         
         return bool(self.get_interactions_non_directed(**kwargs))
+    
+    
+    def _get_degrees(
+            self,
+            mode,
+            direction = None,
+            effect = None,
+            resources = None,
+            data_model = None,
+            interaction_type = None,
+            via = None,
+            references = None,
+        ):
+        
+        kwargs = locals()
+        
+        if (
+            direction == False and True
+            
+        ):
+            
+            raise NotImplementedError
+        
+        interactions = getattr(self, interaction_method)(**kwargs)
+        
+        if not direction and not effect:
+            
+            raise NotImplementedError
     
     
     @staticmethod

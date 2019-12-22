@@ -226,6 +226,8 @@ class Entity(session_mod.Logger):
         if self == other:
             
             self.update_attrs(**other.attrs)
+        
+        return self
     
     
     def update_attrs(self, **kwargs):

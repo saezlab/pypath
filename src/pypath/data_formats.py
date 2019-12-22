@@ -603,7 +603,6 @@ pathway_noref = {
 
 pathway_all = dict(copy.deepcopy(pathway), **copy.deepcopy(pathway_noref))
 
-acsn_ef
 
 pathway_bad = {
     'laudanna_effects': input_formats.NetworkInput(
@@ -1103,7 +1102,7 @@ ptm_all.update(ptm)
 
 extra_directions = copy.deepcopy(ptm_misc)
 extra_directions.update(copy.deepcopy(pathway_noref))
-extra_directions['acsn'] = copy.deepcopy(interaction_misc['acsn'])
+extra_directions['acsn'] = copy.deepcopy(reaction_pc['acsn'])
 '''
 Interaction databases not included in OmniPath.
 These were omitted because lack of references,
