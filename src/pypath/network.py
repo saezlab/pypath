@@ -195,6 +195,7 @@ class Network(session_mod.Logger):
             reread = None,
             redownload = None,
             keep_raw = False,
+            only_directions = False,
             **kwargs
         ):
         """
@@ -224,6 +225,9 @@ class Network(session_mod.Logger):
         :arg bool redownload:
             Optional, ``False`` by default. Specifies whether to
             re-download the data and ignore the cache.
+        :arg bool only_directions:
+            If ``True``, no new interactions will be created but direction
+            and effect sign evidences will be added to existing interactions.
         """
 
         self._log('Loading network data from resource `%s`.' % resource.name)
@@ -234,7 +238,7 @@ class Network(session_mod.Logger):
             redownload = redownload,
             keep_raw = keep_raw,
         )
-        self._add_edge_list()
+        self._add_edge_list(only_directions = only_directions)
         
         self._log(
             'Completed: loading network data from '
@@ -1221,7 +1225,12 @@ class Network(session_mod.Logger):
                 return None
     
     
-    def _add_edge_list(self, edge_list = False, regulator = False):
+    def _add_edge_list(
+            self,
+            edge_list = False,
+            regulator = False,
+            only_directions = False,
+        ):
         """
         Adds edges to the network from *edge_list* obtained from file or
         other input method. If none is passed, checks for such data in
@@ -1269,7 +1278,7 @@ class Network(session_mod.Logger):
 
         for e in edge_list:
             
-            self._add_update_edge(e)
+            self._add_update_edge(e, only_directions = only_directions)
 
         self._log(
             'New network resource added, current number '
@@ -1285,6 +1294,7 @@ class Network(session_mod.Logger):
     def _add_update_edge(
             self,
             edge,
+            only_directions = False,
         ):
         """
         Updates the attributes of one edge in the (undirected) network.
@@ -1422,7 +1432,11 @@ class Network(session_mod.Logger):
                 effect = -1,
             )
         
-        self.add_interaction(interaction, attrs = extra_attrs)
+        self.add_interaction(
+            interaction,
+            attrs = extra_attrs,
+            only_directions = only_directions,
+        )
         self.nodes[entity_a.identifier].update_attrs(**extra_attrs_a)
         self.nodes[entity_b.identifier].update_attrs(**extra_attrs_b)
     
@@ -1538,15 +1552,64 @@ class Network(session_mod.Logger):
         return obj
     
     
-    def add_interaction(self, interaction, attrs = None):
+    def add_interaction(
+            self,
+            interaction,
+            attrs = None,
+            only_directions = False,
+        ):
+        """
+        Adds a ready ``pypath.interaction.Interaction`` object to the network.
+        If an interaction between the two endpoints already exists, the
+        interactions will be merged: this stands for the directions, signs,
+        evidences and other attributes.
+        
+        :arg interaction.Interaction interaction:
+            A ``pypath.interaction.Interaction`` object.
+        :arg NoneType,dict attrs:
+            Optional, a dictionary of extra (usually resource specific)
+            attributes.
+        :arg bool only_directions:
+            If the interaction between the two endpoints does not exist it
+            won't be added to the network. Otherwise all attributes
+            (direction, effect sign, evidences, etc) will be merged to the
+            existing interaction. Apart from the endpoints also the
+            ``interaction_type`` of the existing interaction has to match the
+            interaction added here.
+        """
         
         key = (interaction.a, interaction.b)
         
-        if key not in self.interactions:
+        if key not in self.interactions
             
-            self.interactions[key] = interaction
+            if only_directions:
+                
+                return
+                
+            else:
+                
+                self.interactions[key] = interaction
             
         else:
+            
+            if only_directions:
+                
+                if (
+                    self.interaction[key].get_interaction_types() &
+                    interaction.get_interaction_types()
+                ):
+                    
+                    for itype_to_remove in (
+                            interaction.get_interaction_types() -
+                            self.interaction[key].get_interaction_types()
+                        )
+                    ):
+                        
+                        interaction.unset_interaction_type(itype_to_remove)
+                    
+                else:
+                    
+                    return
             
             self.interactions[key] += interaction
         

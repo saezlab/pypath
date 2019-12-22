@@ -826,6 +826,28 @@ class Interaction(object):
             via = via,
             source = source,
         )
+    
+    
+    def unset_interaction_type(self, interaction_type):
+        """
+        Removes all evidences with a certain ``interaction_type``.
+        """
+        
+        for ev in tuple(self.evidences):
+            
+            if ev.resource.interaction_type == interaction_type:
+                
+                self.evidences -= ev
+        
+        for attr in ('direction', 'positive', 'negative'):
+            
+            for key, evs in getattr(self, attr):
+                
+                for ev in tuple(evs):
+                    
+                    if ev.resource.interaction_type == interaction_type:
+                        
+                        evs -= ev
 
 
     def is_directed(self):
