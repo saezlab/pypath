@@ -1940,6 +1940,8 @@ class Network(session_mod.Logger):
                     res.networkinput.must_have_references = not release
         
         
+        self._log('Loading the `OmniPath` network.')
+        
         omnipath = omnipath or copy_mod.deepcopy(network_resources.omnipath)
         
         if old_omnipath_resources:
@@ -1971,13 +1973,19 @@ class Network(session_mod.Logger):
         
         if kinase_substrate_extra:
             
+            self._log('Loading extra enzyme-substrate interactions.')
+            
             self.load(network_resources.ptm_misc, exclude = exclude)
         
         if ligand_receptor_extra:
             
+            self._log('Loading extra ligand-receptor interactions.')
+            
             self.load(network_resources.ligand_receptor, exclude = exclude)
         
         if pathway_extra:
+            
+            self._log('Loading extra activity flow interactions.')
             
             self.load(network_resources.pathway_noref, exclude = exclude)
         
@@ -1993,14 +2001,29 @@ class Network(session_mod.Logger):
         
         if not keep_directed:
             self.remove_undirected(min_refs = min_refs_undirected)
+        
+        self._log('Finished loading the `OmniPath` network.')
     
     
     def remove_htp(self, threshold = 50, keep_directed = False):
+        
+        self._log(
+            'Removing high-throughput interactions above threshold %u'
+            ' interactions per reference. Directed interactions %s.' % (
+                threshold,
+                'will be kept' if keep_directed 'also will be removed'
+            )
+        )
         
         pass
     
     
     def remove_undirected(self, min_refs = None):
+        
+        self._log(
+            'Removing undirected interactions with less '
+            'than %u references.'
+        )
         
         pass
     
