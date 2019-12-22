@@ -66,6 +66,7 @@ class Network(session_mod.Logger):
             df_with_references = False,
             df_columns = None,
             df_dtype = None,
+            pickle_file = None,
             **kwargs
         ):
         
@@ -83,6 +84,12 @@ class Network(session_mod.Logger):
         self.default_name_types = settings.get('default_name_types')
         
         self.reset()
+        
+        if pickle_file and os.path.exists(pickle_file):
+            
+            self.load_from_pickle(pickle_file = pickle_file)
+            return
+        
         self.load(resources = resources, make_df = make_df, **kwargs)
     
     
@@ -1377,23 +1384,19 @@ class Network(session_mod.Logger):
         
         refs = {refs_mod.Reference(pmid) for pmid in refs}
         
-        entity_a = (
-            self.entity_by_id(id_a) or
-            entity_mod.Entity(
-                identifier = id_a,
-                id_type = id_type_a,
-                entity_type = entity_type_a,
-                taxon = taxon_a,
-            )
+        entity_a = entity_mod.Entity(
+            identifier = id_a,
+            id_type = id_type_a,
+            entity_type = entity_type_a,
+            taxon = taxon_a,
+            attrs = extra_attrs_a,
         )
-        entity_b = (
-            self.entity_by_id(id_b) or
-            entity_mod.Entity(
-                identifier = id_b,
-                id_type = id_type_b,
-                entity_type = entity_type_b,
-                taxon = taxon_b,
-            )
+        entity_b = entity_mod.Entity(
+            identifier = id_b,
+            id_type = id_type_b,
+            entity_type = entity_type_b,
+            taxon = taxon_b,
+            attrs = extra_attrs_b,
         )
         
         interaction = interaction_mod.Interaction(
@@ -1437,8 +1440,6 @@ class Network(session_mod.Logger):
             attrs = extra_attrs,
             only_directions = only_directions,
         )
-        self.nodes[entity_a.identifier].update_attrs(**extra_attrs_a)
-        self.nodes[entity_b.identifier].update_attrs(**extra_attrs_b)
     
     
     @property
@@ -1615,14 +1616,37 @@ class Network(session_mod.Logger):
         
         self.interactions[key].update_attrs(**attrs)
         
-        self.add_node(interaction.a)
-        self.add_node(interaction.b)
+        self.add_node(interaction.a, add = only_directions)
+        self.add_node(interaction.b, add = only_directions)
     
     
-    def add_node(self, entity, attrs = None):
+    def add_node(self, entity, attrs = None, add = True):
+        """
+        Adds a molecular entity to the py:attr:``nodes`` and
+        py:attr:``nodes_by_label`` dictionaries.
         
-        self.nodes[entity.identifier] = entity
-        self.nodes_by_label[entity.label] = entity
+        :arg entity.Entity entity:
+            An object representing a molecular entity.
+        :arg NoneType,dict attrs:
+            Optional extra attributes to be assigned to the entity.
+        :arg bool add:
+            Whether to add a new molecular entity to the network if it does
+            not exist yet. If ``False`` will only update attributes for
+            existing entities otherwise will do nothing.
+        """
+        
+        if attrs:
+            
+            entity.update_attrs(**attrs)
+        
+        if entity.identifier in self.nodes:
+            
+            self.nodes[entity.identifier] += entity
+            
+        elif add:
+            
+            self.nodes[entity.identifier] = entity
+            self.nodes_by_label[entity.label] = entity
     
     
     @property
@@ -1806,3 +1830,23 @@ class Network(session_mod.Logger):
             ) = pickle.load(fp)
         
         self._log('Loaded from pickle `%s`.' % pickle_file)
+    
+    
+    @classmethod
+    def from_pickle(cls, pickle_file, **kwargs):
+        """
+        Initializes a new ``Network`` object by loading it from a pickle
+        file. Returns a ``Network`` object.
+        
+        :arg str pickle_file:
+            Path to a pickle file.
+        **kwargs:
+            Passed to ``Network.__init__``.
+        """
+        
+        new = cls(
+            pickle_file = pickle_file,
+            **kwargs
+        )
+        
+        return new

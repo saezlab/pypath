@@ -49,6 +49,7 @@ class Entity(session_mod.Logger):
             entity_type = 'protein',
             id_type = 'uniprot',
             taxon = 9606,
+            attrs = None,
         ):
         
         self.identifier = identifier
@@ -57,7 +58,7 @@ class Entity(session_mod.Logger):
         self.taxon = taxon
         self.key = self._key
         
-        self.attrs = {}
+        self.attrs = attrs or {}
         
         self.set_label()
     
