@@ -1872,3 +1872,134 @@ class Network(session_mod.Logger):
         )
         
         return new
+    
+    
+    def extra_directions(
+            self,
+            resources = 'extra_directions',
+            use_laudanna = False,
+            use_string = False,
+        ):
+        """
+        Adds additional direction & effect information from resources having
+        no literature curated references, but giving sufficient evidence
+        about the directionality for interactions already supported by
+        literature evidences from other sources.
+        """
+        
+        resources = (
+            getattr(network_resources, resources)
+                if isinstance(resources, common.basestring) else
+            list(resources)
+        )
+        
+        if use_laudanna:
+            
+            resources.append(
+                network_resources.pathway_bad['laudanna_effects']
+            )
+            resources.append(
+                network_resources.pathway_bad['laudanna_directions']
+            )
+        
+        if use_string:
+            
+            pass
+        
+        self.load(resources = resources, only_directions = True)
+    
+    
+    def load_omnipath(
+            self,
+            omnipath = None,
+            kinase_substrate_extra = False,
+            ligand_receptor_extra = False,
+            pathway_extra = False,
+            extra_directions = True,
+            remove_htp = True,
+            htp_threshold = 1,
+            keep_directed = True,
+            min_refs_undirected = 2,
+            old_omnipath_resources = False,
+            exclude = None,
+        ):
+        
+        
+        def reference_constraints(resources, interaction_type, release):
+            
+            resources = (
+                resources.values()
+                    if isinstance(resources, dict) else
+                resources
+            )
+            
+            for res in resources:
+                
+                if res.resource.interaction_type == interaction_type:
+                    
+                    res.networkinput.must_have_references = not release
+        
+        
+        omnipath = omnipath or copy_mod.deepcopy(network_resources.omnipath)
+        
+        if old_omnipath_resources:
+            
+            omnipath = copy_mod.deepcopy(omnipath)
+            omnipath['biogrid'] = network_resources.interaction['biogrid']
+            omnipath['alz'] = network_resources.interaction['alz']
+            omnipath['netpath'] = network_resources.interaction['netpath']
+            exclude = exclude or []
+            exclude.extend(['IntAct', 'HPRD'])
+        
+        reference_constraints(
+            omnipath,
+            'pathway',
+            pathway_extra,
+        )
+        reference_constraints(
+            omnipath,
+            'ligand_receptor',
+            ligand_receptor_extra,
+        )
+        reference_constraints(
+            omnipath,
+            'enzyme_substrate',
+            kinase_substrate_extra,
+        )
+        
+        self.load(omnipath, exclude = exclude)
+        
+        if kinase_substrate_extra:
+            
+            self.load(network_resources.ptm_misc, exclude = exclude)
+        
+        if ligand_receptor_extra:
+            
+            self.load(network_resources.ligand_receptor, exclude = exclude)
+        
+        if pathway_extra:
+            
+            self.load(network_resources.pathway_noref, exclude = exclude)
+        
+        if extra_directions:
+            
+            self.extra_directions()
+        
+        if remove_htp:
+            self.remove_htp(
+                threshold = htp_threshold,
+                keep_directed = keep_directed,
+            )
+        
+        if not keep_directed:
+            self.remove_undirected(min_refs = min_refs_undirected)
+    
+    
+    def remove_htp(self, threshold = 50, keep_directed = False):
+        
+        pass
+    
+    
+    def remove_undirected(self, min_refs = None):
+        
+        pass
