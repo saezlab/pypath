@@ -115,6 +115,7 @@ class Network(session_mod.Logger):
         self.interactions = {}
         self.nodes = {}
         self.nodes_by_label = {}
+        self.interactions_by_nodes = collections.defaultdict(set)
     
     
     def load(
@@ -1640,6 +1641,9 @@ class Network(session_mod.Logger):
         
         self.add_node(interaction.a, add = not only_directions)
         self.add_node(interaction.b, add = not only_directions)
+        
+        self.interactions_by_nodes[entity_a].add(key)
+        self.interactions_by_nodes[entity_b].add(key)
     
     
     def add_node(self, entity, attrs = None, add = True):
@@ -1669,6 +1673,50 @@ class Network(session_mod.Logger):
             
             self.nodes[entity.identifier] = entity
             self.nodes_by_label[entity.label] = entity
+    
+    
+    def remove_node(self, entity):
+        
+        entity = self.entity(entity)
+        
+        if not entity:
+            
+            return
+        
+        _ = self.nodes.pop(entity.identifier, None)
+        _ = self.nodes_by_label.pop(entity.label, None)
+        
+        if entity in self.interactions_by_nodes:
+            
+            for i_key in self.interactions_by_nodes[entity]:
+                
+                _ = self.interactions.pop(i_key, None)
+            
+            del self.interactions_by_nodes[entity]
+    
+    
+    def remove_interaction(self, entity_a, entity_b):
+        
+        entity_a = self.entity(entity_a)
+        entity_b = self.entity(entity_b)
+        
+        key_ab = (entity_a, entity_b)
+        key_ba = (entity_b, entity_a)
+        
+        _ = self.interactions.pop(key_ab, None)
+        _ = self.interactions.pop(key_ba, None)
+        
+        keys = {key_ab, key_ba}
+        self.interactions_by_nodes[entity_a] -= keys
+        self.interactions_by_nodes[entity_b] -= keys
+        
+        if not self.interactions_by_nodes[entity_a]:
+            
+            self.remove_node(entity_a)
+        
+        if not self.interactions_by_nodes[entity_b]:
+            
+            self.remove_node(entity_b)
     
     
     @property
@@ -1754,6 +1802,15 @@ class Network(session_mod.Logger):
         elif b_a in self.interactions:
             
             return self.interactions[b_a]
+    
+    
+    def entity(self, entity):
+        
+        if not isinstance(entity, entity_mod.Entity):
+            
+            entity = self.entity_by_id(entity) or self.entity_by_label(entity)
+        
+        return entity
     
     
     def interaction_by_id(self, id_a, id_b):
@@ -2025,7 +2082,11 @@ class Network(session_mod.Logger):
             'than %u references.'
         )
         
-        pass
+        for key, ia in iteritems(self.interactions):
+            
+            if len(ia.get_references()) < min_refs and not ia.is_directed():
+                
+                self.remove_interaction(*key)
     
     
     @classmethod
