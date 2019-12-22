@@ -2072,20 +2072,47 @@ class Network(session_mod.Logger):
             )
         )
         
+        interactions_per_reference = self.numof_interactions_per_reference()
         interactions_by_reference = self.interactions_by_reference()
         
-        for ref, i_keys in iteritems(interactions_by_reference):
+        htp_refs = {
+            ref
+            for ref, cnt in iteritems(interactions_per_reference)
+            if cnt > threshold
+        }
+        
+        to_remove = set()
+        
+        ecount_before = self.ecount
+        vcount_before = self.vcount
+        
+        for key, ia in iteritems(self.interactions):
             
-            if len(i_keys) > threshold:
+            if (
+                not ia.get_references() - htp_refs and (
+                    not keep_directed or
+                    not ia.is_directed()
+                )
+            ):
                 
-                for i_key in i_keys:
-                    
-                    if (
-                        not keep_directed or
-                        not self.interactions[i_key].is_directed()
-                    ):
-                        
-                        self.remove_interaction(*i_key)
+                to_remove.add(key)
+        
+        for key in to_remove:
+            
+            self.remove_interaction(*key)
+        
+        self._log(
+            'Interactions with only high-throughput references '
+            'have been removed. %u interactions removed. '
+            'Number of edges decreased from %u to %u, '
+            'number of nodes from %u to %u.' % (
+                len(to_remove),
+                ecount_before,
+                self.ecount,
+                vcount_before,
+                self.vcount,
+            )
+        )
     
     
     def remove_undirected(self, min_refs = None):
@@ -2095,11 +2122,38 @@ class Network(session_mod.Logger):
             'than %u references.'
         )
         
+        ecount_before = self.ecount
+        vcount_before = self.vcount
+        
+        removed = 0
+        
         for key, ia in iteritems(self.interactions):
             
-            if len(ia.get_references()) < min_refs and not ia.is_directed():
+            if (
+                ia.is_directed() and (
+                    not min_refs or
+                    len(ia.get_references()) < min_refs
+                )
+            ):
                 
                 self.remove_interaction(*key)
+                removed += 1
+        
+        self._log(
+            'Undirected interactions %s have been removed. '
+            '%u interactions removed. Number of edges '
+            'decreased from %u to %u, number of vertices '
+            'from %u to %u.' % (
+                ''
+                    if min_refs is None else
+                'with less than %u references' % min_refs,
+                removed,
+                ecount_before,
+                self.ecount,
+                vcount_before,
+                self.vcount,
+            )
+        )
     
     
     def numof_interactions_per_reference(self):
