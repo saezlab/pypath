@@ -603,6 +603,48 @@ pathway_noref = {
 
 pathway_all = dict(copy.deepcopy(pathway), **copy.deepcopy(pathway_noref))
 
+pathway_bad = {
+    'laudanna_effects': input_formats.NetworkInput(
+        name = "Laudanna-effects",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "genesymbol",
+        id_type_b = "genesymbol",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        ncbi_tax_id = 9606,
+        is_directed = (2, ('activation', 'inhibition')),
+        sign = (2, 'activation', 'inhibition'),
+        input = 'get_laudanna_effects',
+        references = False,
+        must_have_references = False,
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
+    'laudanna_directions': input_formats.NetworkInput(
+        name = "Laudanna-directions",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "genesymbol",
+        id_type_b = "genesymbol",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        ncbi_tax_id = 9606,
+        is_directed = True,
+        input = 'get_laudanna_directions',
+        references = False,
+        must_have_references = False,
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
+}
+
 '''
 Interaction databases included in OmniPath.
 These are subsets of the named databases, having
@@ -773,7 +815,8 @@ ptm = {
         ncbi_tax_id = 9606,
         extra_edge_attrs = {"psite_evidences": (4, ";")},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'depod': input_formats.NetworkInput(
         name = "DEPOD",
         separator = ";",
@@ -1055,6 +1098,9 @@ ptm_noref = ptm_misc
 
 ptm_all = copy.deepcopy(ptm_misc)
 ptm_all.update(ptm)
+
+extra_directions = copy.deepcopy(ptm_misc)
+extra_directions.update(copy.deepcopy(pathway_noref))
 '''
 Interaction databases not included in OmniPath.
 These were omitted because lack of references,

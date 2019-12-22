@@ -9323,14 +9323,14 @@ def get_laudanna_directions():
     from Laudanna Lab.
     Returns list of directions.
     """
-    url = urls.urls['laudanna']['sigflow']
+    url = urls.urls['laudanna']['sigflow_rescued']
     c = curl.Curl(url, silent = False)
     data = c.result
     data = data.split('\n')[1:]
     directions = []
     for l in data:
         if len(l) > 0:
-            directions.append(l.split('=')[0].split(' (pp) '))
+            directions.append(l.split('=')[0].strip().split(' (pp) '))
     return directions
 
 
@@ -9340,7 +9340,7 @@ def get_laudanna_effects():
     from Laudanna Lab.
     Returns list of effects.
     """
-    url = urls.urls['laudanna']['sigdir']
+    url = urls.urls['laudanna']['sigdir_rescued']
     c = curl.Curl(url, silent = False)
     data = c.result
     data = data.split('\n')[1:]
@@ -9348,7 +9348,7 @@ def get_laudanna_effects():
     for l in data:
         if len(l) > 0:
             l = l.split('=')
-            effects.append(l[0].split(' (pp) ') + [l[1]])
+            effects.append(l[0].strip().split(' (pp) ') + [l[1].strip()])
     return effects
 
 
@@ -9959,6 +9959,11 @@ def phosphosite_directions(organism = 'human'):
     return [
         i[:2] for i in curated + noref if i[2] == organism and i[3] == organism
     ]
+
+
+def phosphosite_interactions_all():
+    
+    return get_phosphosite_curated() + get_phosphosite_noref()
 
 
 def lit_bm_13_interactions():

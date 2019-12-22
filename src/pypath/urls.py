@@ -689,7 +689,11 @@ urls = {
         'http://dp.univr.it/~laudanna/LCTST/downloads/files/SignalingFlow.EA',
         'sigdir':
         'http://dp.univr.it/~laudanna/LCTST/downloads/files/'\
-            'SignalingDirection.EA'
+            'SignalingDirection.EA',
+        'sigdir_rescued': 'http://rescued.omnipathdb.org/'\
+            'Laudanna_SignalingDirection.EA',
+        'sigflow_rescued': 'http://rescued.omnipathdb.org/'\
+            'Laudanna_SignalingFlow.EA',
     },
     'biogrid': {
         'label': 'BioGRID version 2 tab format',
