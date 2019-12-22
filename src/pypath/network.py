@@ -2072,7 +2072,20 @@ class Network(session_mod.Logger):
             )
         )
         
-        pass
+        interactions_by_reference = self.interactions_by_reference()
+        
+        for ref, i_keys in iteritems(interactions_by_reference):
+            
+            if len(i_keys) > threshold:
+                
+                for i_key in i_keys:
+                    
+                    if (
+                        not keep_directed or
+                        not self.interactions[i_key].is_directed()
+                    ):
+                        
+                        self.remove_interaction(*i_key)
     
     
     def remove_undirected(self, min_refs = None):
@@ -2087,6 +2100,29 @@ class Network(session_mod.Logger):
             if len(ia.get_references()) < min_refs and not ia.is_directed():
                 
                 self.remove_interaction(*key)
+    
+    
+    def numof_interactions_per_reference(self):
+        
+        return collections.Counter(
+            itertools.chain(
+                ia.get_references()
+                for ia in self.interactions
+            )
+        )
+    
+    
+    def interactions_by_reference(self):
+        
+        interactions_by_reference = collections.defaultdict(set)
+        
+        for i_key, ia in iteritems(self.interactions):
+            
+            for ref in ia.get_references():
+                
+                interactions_by_reference[ref].add(i_key)
+        
+        return interactions_by_reference
     
     
     @classmethod
