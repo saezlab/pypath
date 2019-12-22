@@ -128,6 +128,25 @@ class Network(session_mod.Logger):
             top_call = True,
             cache_files = None,
         ):
+        """
+        Loads data from a network resource or a collection of resources.
+        
+        :arg str,dict,list,resource.NetworkResource resources:
+            An object defining one or more network resources. If *str* it
+            will be looked up among the collections in the
+            ``pypath.resources.network`` module (e.g. ``'pathway'`` will load
+            all resources in the `pathway` collection). If *dict* or *list*
+            it will be processed recursively i.e. the ``load`` method will be
+            called for each element. If it is a
+            ``pypath.resource.NetworkResource`` object it will be processed
+            and added to the network.
+        :arg bool make_df:
+            Whether to create a ``pandas.DataFrame`` after loading all
+            resources.
+        :arg NoneType,set exclude:
+            A *set* of resource names to be ignored. It is useful if you want
+            to load a collection with the exception of a few resources.
+        """
         
         kwargs = {
             'reread': reread,
