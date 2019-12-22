@@ -2003,3 +2003,45 @@ class Network(session_mod.Logger):
     def remove_undirected(self, min_refs = None):
         
         pass
+    
+    
+    @classmethod
+    def omnipath(
+            cls,
+            omnipath = None,
+            kinase_substrate_extra = False,
+            ligand_receptor_extra = False,
+            pathway_extra = False,
+            extra_directions = True,
+            remove_htp = True,
+            htp_threshold = 1,
+            keep_directed = True,
+            min_refs_undirected = 2,
+            old_omnipath_resources = False,
+            exclude = None,
+            **kwargs
+        ):
+        
+        make_df = kwargs.pop('make_df', None)
+        
+        new = cls(**kwargs)
+        
+        new.load_omnipath(
+            omnipath = omnipath,
+            kinase_substrate_extra = kinase_substrate_extra,
+            ligand_receptor_extra = ligand_receptor_extra,
+            pathway_extra = pathway_extra,
+            extra_directions = extra_directions,
+            remove_htp = remove_htp,
+            htp_threshold = htp_threshold,
+            keep_directed = keep_directed,
+            min_refs_undirected = min_refs_undirected,
+            old_omnipath_resources = old_omnipath_resources,
+            exclude = exclude,
+        )
+        
+        if make_df:
+            
+            cls.make_df()
+        
+        return new
