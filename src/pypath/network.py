@@ -2118,8 +2118,12 @@ class Network(session_mod.Logger):
     def remove_undirected(self, min_refs = None):
         
         self._log(
-            'Removing undirected interactions with less '
-            'than %u references.'
+            'Removing undirected interactions%s.' % (
+                (
+                    'with less than %u references' % min_refs
+                )
+                if min_refs else ''
+            )
         )
         
         ecount_before = self.ecount
