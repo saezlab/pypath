@@ -1304,42 +1304,45 @@ class Network(session_mod.Logger):
             only_directions = False,
         ):
         """
-        Updates the attributes of one edge in the (undirected) network.
-        Optionally it creates a new edge and sets the attributes, but it
-        is not efficient as :py:mod:`igraph` needs to reindex edges
-        after this operation, so better to create new edges in batches.
-
-        :arg str id_a:
-            Name of the source node of the edge to be added/updated.
-        :arg str id_b:
-            Name of the source node of the edge to be added/updated.
-        :arg set source:
-            Or [list], contains the names [str] of the resources
-            supporting that edge.
-        :arg pypath.evidence.Evidence evidence:
-            A ``pypath.evidence.Evidence`` object.
-        :arg bool is_directed:
-            Whether if the edge is directed or not.
-        :arg set refs:
-            Or [list], contains the instances of the references
-            :py:class:`pypath.refs.Reference` for that edge.
-        :arg bool stim:
-            Whether the edge is stimulatory or not.
-        :arg bool inh:
-            Whether the edge is inhibitory or note
-        :arg int taxon_a:
-            NCBI Taxonomic identifier of the source molecule.
-        :arg int taxon_b:
-            NCBI Taxonomic identifier of the target molecule.
-        :arg str typ:
-            The type of interaction (e.g.: ``'PPI'``)
-        :arg dict extra_attrs:
-            Optional, ``{}`` by default. Contains any extra attributes
-            for the edge to be updated.
-        :arg bool add:
+        Adds a new interaction (edge) or updates the attributes of the edge
+        if it already exists.
+        
+        :arg dict edge:
+            A dictionary describing an edge (interaction) with the following
+            items:
+            :item str id_a:
+                Name of the source node of the edge to be added/updated.
+            :item str id_b:
+                Name of the source node of the edge to be added/updated.
+            :item set source:
+                Or [list], contains the names [str] of the resources
+                supporting that edge.
+            :item pypath.evidence.Evidence evidence:
+                A ``pypath.evidence.Evidence`` object.
+            :item bool is_directed:
+                Whether if the edge is directed or not.
+            :item set refs:
+                Or [list], contains the instances of the references
+                :py:class:`pypath.refs.Reference` for that edge.
+            :item bool stim:
+                Whether the edge is stimulatory or not.
+            :item bool inh:
+                Whether the edge is inhibitory or note
+            :item int taxon_a:
+                NCBI Taxonomic identifier of the source molecule.
+            :item int taxon_b:
+                NCBI Taxonomic identifier of the target molecule.
+            :item str typ:
+                The type of interaction (e.g.: ``'PPI'``)
+            :item dict extra_attrs:
+                Optional, ``{}`` by default. Contains any extra attributes
+                for the edge to be updated.
+        
+        :arg bool only_directions:
             Optional, ``False`` by default. If set to ``True`` and the
-            edge is not in the network, it will be created. Otherwise,
-            in such case it will raise an error message.
+            edge is not in the network, it won't be created. If it already
+            exists the attributes of the new edge will be added to the
+            existing one.
         """
         
         (
@@ -1616,8 +1619,8 @@ class Network(session_mod.Logger):
         
         self.interactions[key].update_attrs(**attrs)
         
-        self.add_node(interaction.a, add = only_directions)
-        self.add_node(interaction.b, add = only_directions)
+        self.add_node(interaction.a, add = not only_directions)
+        self.add_node(interaction.b, add = not only_directions)
     
     
     def add_node(self, entity, attrs = None, add = True):
