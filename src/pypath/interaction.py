@@ -66,7 +66,7 @@ InteractionDataFrameRecord.__new__.__defaults__ = (None,) * 7
 
 class Interaction(object):
     
-    _get_methods = (
+    _get_methods = {
         'evidences',
         'references',
         'resource_names',
@@ -85,7 +85,7 @@ class Interaction(object):
         'interactions_mutual',
         'resources_via',
         'resource_names_via',
-    )
+    }
     
     _get_methods_autogen = (
         'references',
@@ -132,7 +132,7 @@ class Interaction(object):
     
     _degree_directions = {
         'undirected': (None, None),
-        'undirected_0': (False, None),
+        'non_directed': (False, None),
         'directed': (True, None),
         'signed': (True, True),
         'positive': (True, 'positive'),
@@ -2508,12 +2508,17 @@ class Interaction(object):
             iteritems(cls._degree_directions)
         ):
             
+            if dir_label in {'undirected', 'non_directed'} and mode != 'ALL':
+                
+                continue
+            
             method_name = 'degrees_%s%s' % (
                 dir_label,
                 '_%s' % mode.lower() if mode != 'ALL' else ''
             )
             
             cls._count_methods.add(method_name)
+            cls._get_methods.add(method_name)
             
             setattr(
                 cls,
