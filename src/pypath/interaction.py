@@ -107,7 +107,7 @@ class Interaction(object):
         'interaction_type_and_data_model_and_resource',
     )
     
-    _count_methods = (
+    _count_methods = {
         'references',
         'resources',
         'resources_via',
@@ -122,7 +122,22 @@ class Interaction(object):
         'interactions_negative',
         'data_models',
         'interaction_types',
+    }
+    
+    _degree_modes = (
+        'ALL',
+        'IN',
+        'OUT',
     )
+    
+    _degree_directions = {
+        'undirected': (None, None),
+        'undirected_0': (False, None),
+        'directed': (True, None),
+        'signed': (True, True),
+        'positive': (True, 'positive'),
+        'negative': (True, 'negative'),
+    }
     
     
     def __init__(
@@ -2320,7 +2335,7 @@ class Interaction(object):
             
             mode = 'ALL'
         
-        if direction == None and not effect:
+        if direction is None and not effect:
             
             _ = kwargs.pop('direction')
             
@@ -2466,6 +2481,44 @@ class Interaction(object):
                 cls,
                 'get_%s' % _get,
                 _create_get_method(_get)
+            )
+    
+    
+    @classmethod
+    def _generate_degree_methods(cls):
+        
+        def _create_degree_method(mode, direction, effect):
+            
+            wrap_args = (mode, direction, effect)
+            
+            @functools.wraps(wrap_args)
+            def _degree_method(*args, **kwargs):
+                
+                mode, direction, effect = wrap_args
+                
+                kwargs['direction'] = direction
+                kwargs['effect'] = effect
+                
+                return cls.get_degrees(self = args[0], mode = mode, **kwargs)
+            
+            return _degree_method
+        
+        for mode, (dir_label, dir_args) in itertools.product(
+            cls._degree_modes,
+            iteritems(cls._degree_directions)
+        ):
+            
+            method_name = 'degrees_%s%s' % (
+                dir_label,
+                '_%s' % mode.lower() if mode != 'ALL' else ''
+            )
+            
+            cls._count_methods.add(method_name)
+            
+            setattr(
+                cls,
+                'get_%s' % method_name,
+                _create_degree_method(mode, *dir_args)
             )
     
     
@@ -2656,5 +2709,6 @@ class Interaction(object):
 
 
 Interaction._generate_get_methods()
+Interaction._generate_degree_methods()
 Interaction._generate_count_methods()
 Interaction._generate_by_methods()
