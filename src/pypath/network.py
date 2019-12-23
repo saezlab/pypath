@@ -25,6 +25,7 @@ import importlib as imp
 import os
 import collections
 import itertools
+import functools
 import copy as copy_mod
 import pickle
 
@@ -42,6 +43,27 @@ import pypath.dataio as dataio
 import pypath.curl as curl
 import pypath.refs as refs_mod
 import pypath.resources.network as network_resources
+
+
+NetworkEntityCollection = collections.namedtuple(
+    'NetworkEntityCollection',
+    [
+        'total',
+        'by_resource',
+        'by_category',
+        'shared',
+        'unique',
+        'shared_res_cat',
+        'unique_res_cat',
+        'shared_cat',
+        'unique_cat',
+        'resource_cat',
+        'cat_resource',
+        'method',
+        'label',
+    ],
+)
+NetworkEntityCollection.__new__.__defaults__ = (None,) * 8
 
 
 class Network(session_mod.Logger):
@@ -2399,12 +2421,7 @@ class Network(session_mod.Logger):
         
         result = set() if not by else collections.defaultdict(set)
         
-        method = '%s%s%s%s' % (
-            'get_' if not by else '',
-            what,
-            '_by_' if by else '',
-            by if by else '',
-        )
+        method = self._get_by_method_name(what, by)
         
         if not hasattr(interaction_mod.Interaction, method):
             
@@ -2431,3 +2448,98 @@ class Network(session_mod.Logger):
             result['total'] = set.union(*result.values())
         
         return dict(result) if by else result
+    
+    
+    @staticmethod
+    def _get_by_method_name(get, by):
+        
+        return (
+            ''.join(
+                (
+                    'get_' if not by else '',
+                    get,
+                    '_by_' if by else '',
+                    by if by else '',
+                )
+            )
+        )
+    
+    
+    @classmethod
+    def _generate_get_methods(cls):
+        
+        def _create_get_method(what, by):
+            
+            wrap_args = (what, by)
+            
+            @functools.wraps(wrap_args)
+            def _get_by_method(*args, **kwargs):
+                
+                what, by = wrap_args
+                
+                self = args[0]
+                kwargs['what'] = what
+                kwargs['by'] = by
+                
+                return self._collect(**kwargs)
+            
+            return _get_by_method
+        
+        
+        for _get, _by in itertools.product(
+            interaction_mod.Interaction._get_methods,
+            interaction_mod.Interaction._by_methods + (None,),
+        ):
+            
+            method_name = cls._get_by_method_name(_get, _by)
+            
+            setattr(
+                cls,
+                method_name,
+                _create_get_method(what = _get, by = _by),
+            )
+    
+    
+    @classmethod
+    def _generate_count_methods(cls):
+        
+        def _create_count_method(what, by):
+            
+            method_name = cls._get_by_method_name(what, by)
+            
+            @functools.wraps(method_name)
+            def _count_method(*args, **kwargs):
+                
+                self = args[0]
+                
+                collection = getattr(self, method_name)(**kwargs)
+                
+                return (
+                    len(collection)
+                        if isinstance(collection, set) else
+                    common.dict_counts(collection)
+                )
+            
+            return _count_method
+        
+        
+        for _get, _by in itertools.product(
+            interaction_mod.Interaction._get_methods,
+            interaction_mod.Interaction._by_methods + (None,),
+        ):
+            
+            method_name = (
+                'count_%s' % (
+                    cls._get_by_method_name(_get, _by).replace('get_', '')
+                )
+            )
+            
+            setattr(
+                cls,
+                method_name,
+                _create_count_method(what = _get, by = _by)
+            )
+
+
+Network._generate_get_methods()
+Network._generate_count_methods()
