@@ -512,7 +512,11 @@ class Interaction(object):
     
     def __contains__(self, other):
         
-        return self.evidences.__contains__(other)
+        return (
+            other == self.a or other == self.b
+                if isinstance(other, entity.Entity) else
+            self.evidences.__contains__(other)
+        )
     
     
     def has_data_model(self, data_model):

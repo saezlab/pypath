@@ -2324,3 +2324,38 @@ class Network(session_mod.Logger):
         new.load_transcription(**load_args)
         
         return new
+    
+    
+    def load_mirna_target(self, **kwargs):
+        
+        if 'resources' not in kwargs:
+            
+            kwargs['resources'] = network_resources.mirna_target
+        
+        self.load(**kwargs)
+    
+    
+    @classmethod
+    def mirna_target(
+            cls,
+            resources = None,
+            make_df = None,
+            reread = False,
+            redownload = False,
+            exclude = None,
+            **kwargs,
+        ):
+        
+        new = cls(**kwargs)
+        
+        new.mirna_target(
+            exclude = exclude,
+            make_df = make_df,
+            reread = reread,
+            redownload = redownload,
+        )
+        
+        return new
+    
+    
+    
