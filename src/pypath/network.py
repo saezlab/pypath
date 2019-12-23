@@ -2383,3 +2383,51 @@ class Network(session_mod.Logger):
         )
         
         return new
+    
+    
+    def _collect(
+            self,
+            what,
+            by = None,
+            add_total = False,
+            **kwargs
+        ):
+        """
+        Collects the values of an attribute over all interactions in the
+        network.
+        """
+        
+        result = set() if not by else collections.defaultdict(set)
+        
+        method = '%s%s%s%s' % (
+            'get_' if not by else '',
+            what,
+            '_by_' if by else '',
+            by if by else '',
+        )
+        
+        if not hasattr(interaction_mod.Interaction, method):
+            
+            self._log('Collecting attributes: no such method: `%s`.' % method)
+            
+        else:
+            
+            for ia in self:
+                
+                ia_attrs = getattr(ia, method)(**kwargs)
+                
+                if by:
+                    
+                    for grp, val in iteritems(ia_attrs):
+                        
+                        result[grp].update(val)
+                    
+                else:
+                    
+                    result.update(ia_attrs)
+        
+        if by and add_total:
+            
+            result['total'] = set.union(*result.values())
+        
+        return dict(result) if by else result
