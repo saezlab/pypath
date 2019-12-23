@@ -105,6 +105,18 @@ class Network(session_mod.Logger):
         setattr(self, '__class__', new)
     
     
+    def __len__(self):
+        
+        return len(self.interactions)
+    
+    
+    def __iter__(self):
+        
+        for ia in self.interactions.values():
+            
+            yield ia
+    
+    
     def reset(self):
         """
         Removes network data i.e. creates empty interaction and node
@@ -1724,7 +1736,16 @@ class Network(session_mod.Logger):
         Returns a set of all resources.
         """
         
-        return set.union(*self.df.sources)
+        return set.union(*(ia.get_resources() for ia in self))
+    
+    
+    @property
+    def resource_names(self):
+        """
+        Returns a set of all resource names.
+        """
+        
+        return set.union(*(ia.get_resource_names() for ia in self))
     
     
     def entities_by_resource(self):
@@ -2345,6 +2366,12 @@ class Network(session_mod.Logger):
             exclude = None,
             **kwargs,
         ):
+        """
+        Initializes a new ``Network`` object with loading a miRNA-mRNA
+        regulation network from all databases by default.
+        
+        **kwargs: passed to ``Network.__init__``.
+        """
         
         new = cls(**kwargs)
         
@@ -2356,6 +2383,3 @@ class Network(session_mod.Logger):
         )
         
         return new
-    
-    
-    
