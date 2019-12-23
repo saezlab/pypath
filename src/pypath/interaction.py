@@ -1981,7 +1981,7 @@ class Interaction(object):
             
             # conditions by selecting and evaluating evidence collections
             if self.evaluate_evidences(
-                this_direction = _dir
+                this_direction = _dir,
                 direction = direction,
                 effect = effect,
                 resources = resources,
@@ -2012,6 +2012,7 @@ class Interaction(object):
         """
         
         kwargs = locals()
+        _ = kwargs.pop('self')
         
         return any(self.iter_match_evidences(**kwargs))
     
@@ -2033,7 +2034,7 @@ class Interaction(object):
         """
         
         for evs in self.iter_evidences(
-            this_direction = _dir,
+            this_direction = this_direction,
             direction = direction,
             effect = effect,
         ):
@@ -2278,7 +2279,7 @@ class Interaction(object):
         return bool(self.get_interactions_non_directed(**kwargs))
     
     
-    def _get_degrees(
+    def get_degrees(
             self,
             mode,
             direction = None,
@@ -2289,22 +2290,54 @@ class Interaction(object):
             via = None,
             references = None,
         ):
+        """
+        :arg str mode:
+            The type of degrees to be considered. Three possible values are
+            ``'IN'``, `'OUT'`` and ``'ALL'`` for incoming, outgoing and all
+            connections, respectively. If the ``direction`` is ``False`` the
+            only possible mode is ``ALL``. If the ``direction`` is ``None``
+            and also directed evidence(s) match the criteria these will
+            overwrite the undirected evidences and only the directed result
+            will be returned.
+        """
         
         kwargs = locals()
+        _ = kwargs.pop('self')
+        mode = kwargs.pop('mode')
         
-        if (
-            direction == False and
-            not effect
-            
-        ):
-            
-            raise NotImplementedError
+        idx = {
+            'ALL': (0, 2),
+            'OUT': (0, 1),
+            'IN':  (1, 2),
+        }
         
-        interactions = getattr(self, interaction_method)(**kwargs)
-        
-        if not direction and not effect:
+        if direction == False:
             
-            raise NotImplementedError
+            mode = 'ALL'
+        
+        if direction == None and not effect:
+            
+            _ = kwargs.pop('direction')
+            
+            return (
+                self.get_degrees(mode = mode, direction = True, **kwargs) or
+                self.get_degrees(mode = mode, direction = False, **kwargs)
+            )
+        
+        result = set()
+        
+        node_pairs = self.get_interactions(**kwargs)
+        
+        for pair in node_pairs:
+            
+            result.update(
+                pair[
+                    idx[mode][0]:
+                    idx[mode][1]
+                ]
+            )
+        
+        return result
     
     
     @staticmethod
