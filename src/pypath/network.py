@@ -2224,3 +2224,103 @@ class Network(session_mod.Logger):
             cls.make_df()
         
         return new
+    
+    
+    def load_dorothea(self, levels = None, **kwargs):
+        
+        dorothea = copy_mod.deepcopy(network_resources.dorothea['dorothea'])
+        
+        if levels:
+            dorothea.networkinput.input_args['levels'] = levels
+        
+        self.load(dorothea, **kwargs)
+    
+    
+    @classmethod
+    def dorothea(cls, levels = None, **kwargs):
+        """
+        Initializes a new ``Network`` object with loading the transcriptional
+        regulation network from DoRothEA.
+        
+        :arg NontType,set levels:
+            The confidence levels to include.
+        """
+        
+        make_df = kwargs.pop('make_df', False)
+        
+        new = cls(**kwargs)
+        
+        new.load_dorothea(levels = levels, make_df = make_df)
+        
+        return new
+    
+    
+    def load_transcription(
+            self,
+            dorothea = True,
+            original_resources = True,
+            dorothea_levels = None,
+            exclude = None,
+            reread = False,
+            redownload = False,
+            **kwargs,
+        ):
+        
+        make_df = kwargs.pop('make_df', None)
+        
+        if dorothea:
+            
+            self.load_dorothea(
+                levels = dorothea_levels,
+                reread = reread,
+                redownload = redownload,
+            )
+        
+        if original_resources:
+            
+            transcription = (
+                original_resources
+                    if not isinstance(original_resources, bool) else
+                network_resources.transcription_onebyone
+            )
+            
+            self.load(
+                resources = transcription,
+                reread = reread,
+                redownload = redownload,
+                exclude = exclude,
+            )
+        
+        if make_df:
+            
+            self.make_df()
+    
+    
+    @classmethod
+    def transcription(
+            cls,
+            dorothea = True,
+            original_resources = True,
+            dorothea_levels = None,
+            exclude = None,
+            reread = False,
+            redownload = False,
+            make_df = False,
+            **kwargs,
+        ):
+        """
+        Initializes a new ``Network`` object with loading a transcriptional
+        regulation network from all databases by default.
+        
+        **kwargs: passed to ``Network.__init__``.
+        """
+        
+        load_args = locals()
+        kwargs = load_args.pop('kwargs')
+        cls = load_args.pop('cls')
+        
+        new = cls(**kwargs)
+        
+        new.load_transcription(**load_args)
+        
+        return new
