@@ -2291,6 +2291,11 @@ class Interaction(object):
             references = None,
         ):
         """
+        Returns a *set* of nodes with the connections matching the direction,
+        effect and evidence criteria. E.g. if the query concerns the incoming
+        degrees with positive effect and the matching evidences show A
+        activates B, but not the other way around, only "B" will be returned.
+        
         :arg str mode:
             The type of degrees to be considered. Three possible values are
             ``'IN'``, `'OUT'`` and ``'ALL'`` for incoming, outgoing and all
