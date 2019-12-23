@@ -1979,29 +1979,74 @@ class Interaction(object):
             # possible directions
             for _dir in (self.a_b, self.b_a)
             
-            # conditions
-            if (
-                any(
-                    
-                    # evaluating this evidence collection
-                    evs.match(
-                        resource = resources,
-                        data_model = data_model,
-                        interaction_type = interaction_type,
-                        via = via,
-                        references = references,
-                    )
-                    
-                    for evs in self.iter_evidences(
-                        this_direction = _dir,
-                        direction = direction,
-                        effect = effect,
-                    )
-                    
-                ) # any
-            ) # if
+            # conditions by selecting and evaluating evidence collections
+            if self.evaluate_evidences(
+                this_direction = _dir
+                direction = direction,
+                effect = effect,
+                resources = resources,
+                data_model = data_model,
+                interaction_type = interaction_type,
+                via = via,
+                references = references,
+            )
             
-        ) # tuple
+        )
+    
+    
+    def evaluate_evidences(
+            self,
+            this_direction,
+            direction = None,
+            effect = None,
+            resources = None,
+            data_model = None,
+            interaction_type = None,
+            via = None,
+            references = None,
+        ):
+        """
+        Selects the evidence collections matching the direction and effect
+        criteria and then evaluates if any of the evidences in these
+        collections match the evidence criteria.
+        """
+        
+        kwargs = locals()
+        
+        return any(self.iter_match_evidences(**kwargs))
+    
+    
+    def iter_match_evidences(
+            self,
+            this_direction,
+            direction = None,
+            effect = None,
+            resources = None,
+            data_model = None,
+            interaction_type = None,
+            via = None,
+            references = None,
+        ):
+        """
+        Selects the evidence collections matching the direction and effect
+        criteria and yields collections matching the evidence criteria.
+        """
+        
+        for evs in self.iter_evidences(
+            this_direction = _dir,
+            direction = direction,
+            effect = effect,
+        ):
+            
+            if evs.match(
+                resource = resources,
+                data_model = data_model,
+                interaction_type = interaction_type,
+                via = via,
+                references = references,
+            ):
+                
+                yield evs
     
     
     def iter_evidences(
@@ -2010,6 +2055,10 @@ class Interaction(object):
             direction = None,
             effect = None,
         ):
+        """
+        Selects and yields evidence collections matching the direction and
+        effect criteria.
+        """
         
         # evidence keys
         for evs_key in ('undirected', this_direction):
@@ -2244,7 +2293,8 @@ class Interaction(object):
         kwargs = locals()
         
         if (
-            direction == False and True
+            direction == False and
+            not effect
             
         ):
             
