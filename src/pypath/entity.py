@@ -213,7 +213,7 @@ class Entity(session_mod.Logger):
             name = self.identifier,
             id_type = self.id_type,
             ncbi_tax_id = self.taxon,
-        )
+        ) or self.identifier
     
     
     def __repr__(self):

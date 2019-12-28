@@ -32,6 +32,7 @@ import pickle
 import pandas as pd
 
 import pypath.session_mod as session_mod
+import pypath.progress as progress
 import pypath.interaction as interaction_mod
 import pypath.evidence as evidence
 import pypath.entity as entity_mod
@@ -1746,7 +1747,7 @@ class Network(session_mod.Logger):
         elif add:
             
             self.nodes[entity.identifier] = entity
-            self.nodes_by_label[entity.label] = entity
+            self.nodes_by_label[entity.label or entity.identifier] = entity
     
     
     def remove_node(self, entity):
@@ -2552,6 +2553,7 @@ class Network(session_mod.Logger):
         def _create_partners_method(method_args):
             
             count = method_args.pop('count')
+            method = 'count_partners' if count else 'partners'
             
             @functools.wraps(method_args)
             def _partners_method(*args, **kwargs):
@@ -2559,9 +2561,9 @@ class Network(session_mod.Logger):
                 self = args[0]
                 kwargs.update(method_args)
                 
-                method = 'count_partners' if count else 'partners'
-                
                 return getattr(self, method)(*args[1:], **kwargs)
+            
+            _partners_method.__doc__ = getattr(cls, method).__doc__
             
             return _partners_method
         
@@ -2581,14 +2583,158 @@ class Network(session_mod.Logger):
                     )
                 )
                 method_name = ''.join(name_parts)
+                method_name = (
+                    'count_%s' % method_name if count else method_name
+                )
                 method_args['count'] = count
+                method = _create_partners_method(method_args)
+                method.__name__ = method_name
                 
                 setattr(
                     cls,
-                    'count_%s' % method_name if count else method_name,
-                    _create_partners_method(method_args),
+                    method_name,
+                    method,
                 )
     
+    #
+    # Methods for selecting paths and motives in the network
+    #
+    
+    def find_paths(
+            self,
+            start,
+            end = None,
+            loops = False,
+            mode = 'OUT',
+            maxlen = 2,
+            minlen = 1,
+            direction = None,
+            effect = None,
+            resources = None,
+            interaction_type = None,
+            data_model = None,
+            via = None,
+            references = None,
+            silent = False,
+        ):
+        """
+        Finds all paths up to length ``maxlen`` between groups of nodes.
+        In addition is able to search for motifs or select the nodes of a
+        subnetwork around certain nodes.
+
+        :arg str,Entity,list,tuple,set,EntityList start:
+            Starting node(s) of the paths.
+        :arg str,Entity,list,tuple,set,EntityList,NoneType end:
+            Target node(s) of the paths. If ``None`` any target node will
+            be accepted and all paths from the starting nodes with length
+            ``maxlen`` will be returned.
+        :arg bool loops:
+            Search for loops, i.e. the start and end nodes of each path
+            should be the same.
+        :arg str mode:
+            Direction of the paths. ``'OUT'`` means from ``start`` to ``end``,
+            ``'IN'`` the opposite direction while ``'ALL'`` both directions.
+        :arg int maxlen:
+            Maximum length of paths in steps, i.e. if maxlen = 3, then
+            the longest path may consist of 3 edges and 4 nodes.
+        :arg bool silent:
+            Indicate progress by showing a progress bar.
+        """
+
+        def list_of_entities(entities):
+
+            entities = (
+                (entities,)
+                    if isinstance(
+                        entities,
+                        (common.basestring, entity_mod.Entity)
+                    ) else
+                entities
+            )
+
+            entities = [self.entity(en) for en in entities]
+
+            return entities
+
+
+        def find_all_paths_aux(start, end, path, maxlen = None):
+
+            path = path + [start]
+
+            if (
+                len(path) >= minlen + 1 and
+                (
+                    start == end or
+                    (
+                        end is None and
+                        not loops and
+                        len(path) == maxlen + 1
+                    ) or
+                    (
+                        loops and
+                        path[0] == path[-1]
+                    )
+                )
+            ):
+
+                return [path]
+
+            paths = []
+
+            if len(path) <= maxlen:
+
+                next_steps = set(
+                    self.partners(
+                        entity = start,
+                        mode = mode,
+                        direction = direction,
+                        effect = effect,
+                        resources = resources,
+                        interaction_type = interaction_type,
+                        data_model = data_model,
+                        via = via,
+                        references = references,
+                    )
+                )
+
+                next_steps = next_steps if loops else next_steps - set(path)
+
+                for node in next_steps:
+
+                    paths.extend(
+                        find_all_paths_aux(
+                            node,
+                            end,
+                            path, maxlen
+                        )
+                    )
+
+            return paths
+
+
+        start = list_of_entities(start)
+        end = list_of_entities(end) if end else (None,)
+
+        all_paths = []
+
+        if not silent:
+            prg = progress.Progress(
+                len(start) * len(end),
+                'Looking up all paths up to length %u' % maxlen, 1)
+
+        for s in start:
+
+            for e in end:
+
+                if not silent:
+                    prg.step()
+
+                all_paths.extend(find_all_paths_aux(s, e, [], maxlen))
+
+        if not silent:
+            prg.terminate()
+
+        return all_paths
     
     #
     # Methods for collecting interaction attributes across the network
