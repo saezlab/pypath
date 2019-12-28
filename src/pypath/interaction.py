@@ -917,6 +917,16 @@ class Interaction(object):
         return self._by_resource(resources, op = operator.and_)
 
 
+    def is_loop(self):
+        """
+        :returns:
+        ``True`` if the interaction is a loop edge i.e. its endpoints are the
+        same node.
+        """
+        
+        return self.a == self.b
+
+
     def _by_resource(self, resources = None, op = operator.or_):
 
         resources = self._resources_set(resources)

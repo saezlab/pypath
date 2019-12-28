@@ -66,6 +66,88 @@ NetworkEntityCollection = collections.namedtuple(
 NetworkEntityCollection.__new__.__defaults__ = (None,) * 8
 
 
+class EntityList(object):
+    
+    
+    def __init__(self, entities):
+        
+        self._entities = (
+            entities
+                if isinstance(entities, (list, tuple, set)) else
+            list(entities)
+        )
+    
+    
+    def __iter__(self):
+        
+        for e in self._entities:
+            
+            yield e
+    
+    
+    def __len__(self):
+        
+        return len(self._entities)
+    
+    
+    def __repr__(self):
+        
+        return '<EntityList (%u elements)>' % len(self)
+    
+    
+    @property
+    def labels(self):
+        
+        for e in self:
+            
+            yield e.label
+    
+    
+    @property
+    def ids(self):
+        
+        for e in self:
+            
+            yield e.identifier
+    
+    
+    identifiers = ids
+    
+    
+    @property
+    def entities(self):
+        
+        for e in self:
+            
+            yield e
+    
+    
+    @property
+    def list_ids(self):
+        
+        return list(self.ids)
+    
+    
+    @property
+    def list_labels(self):
+        
+        return list(self.labels)
+    
+    
+    @property
+    def list_entities(self):
+        
+        return list(self.entities)
+    
+    
+    l = labels
+    i = ids
+    e = entities
+    ll = list_labels
+    li = list_ids
+    le = list_entities
+
+
 class Network(session_mod.Logger):
     """
     Represents a molecular interaction network. Provides various methods to
@@ -2226,6 +2308,10 @@ class Network(session_mod.Logger):
         
         return interactions_by_reference
     
+    #
+    # Methods for loading specific datasets or initializing the object
+    # with loading datasets
+    #
     
     @classmethod
     def omnipath(
@@ -2406,6 +2492,75 @@ class Network(session_mod.Logger):
         
         return new
     
+    #
+    # Methods for querying partners by node
+    #
+    
+    def partners(
+            self,
+            entity,
+            mode = 'ALL',
+            direction = None,
+            effect = None,
+            resources = None,
+            interaction_type = None,
+            data_model = None,
+            via = None,
+            references = None,
+        ):
+        """
+        :arg str,pypath.entity.Entity entity:
+            An identifier or label of a molecular entity or an
+            :py:class:`Entity` object.
+        :arg str mode:
+            Mode of counting the interactions: `IN`, `OUT` or `ALL` , whether
+            to consider incoming, outgoing or all edges, respectively,
+            respective to the `node defined in `entity``.
+        
+        :returns:
+            :py:class:`EntityList` object containing the partners having
+            interactions to the queried node matching all the criteria.
+            If ``entity`` doesn't present in the network the returned
+            ``EntityList`` will be empty just like if no interaction matches
+            the criteria.
+        """
+        
+        entity = self.entity(entity)
+        
+        # we need to swap it to make it work relative to the queried entity
+        _mode = (
+            'IN'
+                if mode == 'OUT' else
+            'OUT'
+                if mode == 'IN' else
+            'ALL'
+        )
+        
+        return (
+            EntityList(
+                {
+                    partner
+                    for ia in self.interactions_by_nodes[entity]
+                    for partner in self.interactions[ia].get_degrees(
+                        mode = _mode,
+                        direction = direction,
+                        effect = effect,
+                        resources = resources,
+                        interaction_type = interaction_type,
+                        data_model = data_model,
+                        via = via,
+                        references = references,
+                    )
+                    if partner != entity or self.interactions[ia].is_loop()
+                }
+                if entity in self.interactions_by_nodes else
+                ()
+            )
+        )
+    
+    #
+    # Methods for collecting interaction attributes across the network
+    #
     
     def _collect(
             self,
