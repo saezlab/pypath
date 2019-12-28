@@ -252,7 +252,7 @@ class NetworkInput:
             taxon_a = 9606,
             taxon_b = 9606,
             ncbi_tax_id = 9606,
-            interaction_type = 'PPI',
+            interaction_type = 'post_translational',
             positive_filters = None,
             negative_filters = None,
             mark_source  =  None,
