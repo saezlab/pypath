@@ -501,7 +501,7 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
     def input_is(self, i, op = '__eq__'):
 
         return (
-            type(self.input_method) in common.charTypes and
+            type(self.input_method) in common.char_types and
             getattr(i, op)(self.input_method.lower())
         )
 

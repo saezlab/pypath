@@ -699,7 +699,7 @@ class MapReader(session_mod.Logger):
 
         names = [name.split('(')[0]]
         names += rebr.findall(name)
-        others = common.flatList([x.split(';') for x in resq.findall(name)])
+        others = common.flat_list([x.split(';') for x in resq.findall(name)])
         others = [x.split(':')[1] if ':' in x else x for x in others]
         others = [x.split('(')[1] if '(' in x else x for x in others]
         names += others

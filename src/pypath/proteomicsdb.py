@@ -290,7 +290,7 @@ class ProteomicsDB(object):
                 self.get_expression(normalized)
                 if tis not in self.samples:
                     self.samples[tis] = []
-                self.samples[tis] = uniqList(self.samples[tis] + list(
+                self.samples[tis] = uniq_list(self.samples[tis] + list(
                     self.current_samples))
                 self.current_samples = set([])
         prg.terminate()

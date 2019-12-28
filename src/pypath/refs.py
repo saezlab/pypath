@@ -169,8 +169,8 @@ def get_pubmed_data(
     if htp_threshold is not None:
         pp.htp_stats()
 
-    pubmeds = common.uniqList(
-        common.flatList([[r.pmid for r in e['references']]
+    pubmeds = common.uniq_list(
+        common.flat_list([[r.pmid for r in e['references']]
                          for e in pp.graph.es]))
 
     if htp_threshold is not None:
@@ -221,8 +221,8 @@ def get_pubmed_data(
                     points.append((s, pm, int(pmdata[pm]['pubdate'][:4]),
                                    pmdata[pm]['source'], e.index))
 
-    points = common.uniqList(points)
-    earliest = common.uniqList(earliest)
+    points = common.uniq_list(points)
+    earliest = common.uniq_list(earliest)
 
     points = pd.DataFrame.from_records(points)
     earliest = pd.DataFrame.from_records(earliest)

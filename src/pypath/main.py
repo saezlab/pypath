@@ -2670,7 +2670,7 @@ class PyPath(session_mod.Logger):
                 dir_col = sign[0]
                 dir_val = sign[1:3]
                 dir_val = dir_val if type(dir_val[
-                    0]) in common.simple_types else common.flatList(dir_val)
+                    0]) in common.simple_types else common.flat_list(dir_val)
                 dir_sep = sign[3] if len(sign) > 3 else None
 
             dir_val = common.to_set(dir_val)
@@ -2800,7 +2800,7 @@ class PyPath(session_mod.Logger):
 
                             refs = line[refCol].split(refSep)
 
-                        refs = common.delEmpty(list(set(refs)))
+                        refs = common.del_empty(list(set(refs)))
 
                     refs = dataio.only_pmids([str(r).strip() for r in refs])
 
@@ -3213,7 +3213,7 @@ class PyPath(session_mod.Logger):
         default_name_type = self.default_name_type[settings.entity_type]
         mapTbl = ''.join([original_name_type, "_", default_name_type])
 
-        if type(_input) in common.charTypes and os.path.isfile(_input):
+        if type(_input) in common.char_types and os.path.isfile(_input):
 
             _input = curl.Curl(_input, large = True).result
 
@@ -3240,7 +3240,7 @@ class PyPath(session_mod.Logger):
                 lnum += 1
                 continue
 
-            if type(line) in common.charTypes:
+            if type(line) in common.char_types:
                 line = line.rstrip().split(settings.separator)
 
             # in case line has less fields than needed
@@ -4336,7 +4336,7 @@ class PyPath(session_mod.Logger):
         elif not isinstance(e[attr], list):
             e[attr] = [e[attr]]
 
-        e[attr] = common.uniqList(e[attr] + value)
+        e[attr] = common.uniq_list(e[attr] + value)
 
     def add_set_eattr(self, edge, attr, value):
         """
@@ -4408,7 +4408,7 @@ class PyPath(session_mod.Logger):
         elif not isinstance(e[attr][group], list):
             e[attr][group] = [e[attr][group]]
 
-        e[attr][group] = common.uniqList(e[attr][group] + value)
+        e[attr][group] = common.uniq_list(e[attr][group] + value)
 
     def add_grouped_set_eattr(self, edge, attr, group, value):
         """
@@ -4942,7 +4942,7 @@ class PyPath(session_mod.Logger):
                     attr]) in common.simple_types:
 
                 e[attr] = [e[attr]] if (
-                    type(e[attr]) not in common.charTypes or
+                    type(e[attr]) not in common.char_types or
                     len(e[attr]) > 0) else []
 
             if self.edgeAttrs[attr] is set and type(e[attr]) is list:
@@ -7556,17 +7556,17 @@ class PyPath(session_mod.Logger):
                     )
                 )
                 f.write('\t<data key="DirectionAB">%s</data>\n' %
-                        (';'.join(common.uniqList(e['dirs_by_source'][1]))))
+                        (';'.join(common.uniq_list(e['dirs_by_source'][1]))))
                 f.write('\t<data key="DirectionBA">%s</data>\n' %
-                        (';'.join(common.uniqList(e['dirs_by_source'][2]))))
+                        (';'.join(common.uniq_list(e['dirs_by_source'][2]))))
                 f.write('\t<data key="StimulatoryAB">%s</data>\n' %
-                        (';'.join(common.uniqList(e['signs'][0][0]))))
+                        (';'.join(common.uniq_list(e['signs'][0][0]))))
                 f.write('\t<data key="InhibitoryAB">%s</data>\n' %
-                        (';'.join(common.uniqList(e['signs'][0][1]))))
+                        (';'.join(common.uniq_list(e['signs'][0][1]))))
                 f.write('\t<data key="StimulatoryBA">%s</data>\n' %
-                        (';'.join(common.uniqList(e['signs'][1][0]))))
+                        (';'.join(common.uniq_list(e['signs'][1][0]))))
                 f.write('\t<data key="InhibitoryBA">%s</data>\n' %
-                        (';'.join(common.uniqList(e['signs'][1][1]))))
+                        (';'.join(common.uniq_list(e['signs'][1][1]))))
                 f.write('\t<data key="InhibitoryBA">%s</data>\n' % (e['type']))
                 f.write('</edge>\n')
                 prg.step()
@@ -7675,8 +7675,8 @@ class PyPath(session_mod.Logger):
                     node['compounds_chembl'].append(comp['chembl'])
                     node['compounds_names'] += comp['compound_names']
 
-                node['compounds_chembl'] = common.uniqList(node['compounds_chembl'])
-                node['compounds_names'] = common.uniqList(node['compounds_names'])
+                node['compounds_chembl'] = common.uniq_list(node['compounds_chembl'])
+                node['compounds_names'] = common.uniq_list(node['compounds_names'])
 
         prg.terminate()
         percent = hascomp / float(self.graph.vcount())
@@ -10377,7 +10377,7 @@ class PyPath(session_mod.Logger):
                 if source == 'HPRD':
                     substrate_ups_all = mapping.map_name(
                         p['substrate_refseqp'], 'refseqp', 'uniprot')
-                    substrate_ups_all = common.uniqList(substrate_ups_all)
+                    substrate_ups_all = common.uniq_list(substrate_ups_all)
 
                 for k in p['kinase']:
 
@@ -12076,7 +12076,7 @@ class PyPath(session_mod.Logger):
         """
         """
 
-        return common.uniqList([
+        return common.uniq_list([
             j
             for ssl in [
                 i for sl in [[
@@ -12971,7 +12971,7 @@ class PyPath(session_mod.Logger):
         result = {}
         all_refs = len(
             set(
-                common.flatList([[r.pmid for r in e['references']]
+                common.flat_list([[r.pmid for r in e['references']]
                                  for e in self.graph.es])))
 
         cats = list(
@@ -13024,16 +13024,16 @@ class PyPath(session_mod.Logger):
             ])
 
             src_refs = set(
-                common.uniqList([
+                common.uniq_list([
                     r.pmid
-                    for r in common.flatList(
+                    for r in common.flat_list(
                         [e[rattr][s] for e in self.graph.es if s in e[rattr]])
                 ]))
 
             other_refs = set(
-                common.flatList([[
+                common.flat_list([[
                     r.pmid
-                    for r in common.flatList([
+                    for r in common.flat_list([
                         rr for sr, rr in iteritems(e[rattr])
                         if sr != s and sr in catmembers
                     ])
@@ -13050,7 +13050,7 @@ class PyPath(session_mod.Logger):
                 len(x)
                 for x in [
                     set(
-                        common.flatList([[(r.pmid, e.index) for r in rr]
+                        common.flat_list([[(r.pmid, e.index) for r in rr]
                                          for sr, rr in iteritems(e[rattr])
                                          if sr != s and sr in catmembers])) &
                     set([(rl.pmid, e.index) for rl in e[rattr][s]])
@@ -13062,7 +13062,7 @@ class PyPath(session_mod.Logger):
                 len(x)
                 for x in [
                     set([(rl.pmid, e.index) for rl in e[rattr][s]]) - set(
-                        common.flatList([[(r.pmid, e.index) for r in rr]
+                        common.flat_list([[(r.pmid, e.index) for r in rr]
                                          for sr, rr in iteritems(e[rattr])
                                          if sr != s if sr in catmembers]))
                     for e in self.graph.es if s in e[rattr]
@@ -13485,7 +13485,7 @@ class PyPath(session_mod.Logger):
 
         htdata = {}
         refc = Counter(
-            common.flatList((r.pmid for r in e['references'])
+            common.flat_list((r.pmid for r in e['references'])
                             for e in self.graph.es))
 
         for htlim in reversed(xrange(1, 201)):
@@ -13494,8 +13494,8 @@ class PyPath(session_mod.Logger):
                 e.index for e in self.graph.es
                 if len(set([r.pmid for r in e['references']]) - htrefs) == 0
             ]
-            htsrcs = common.uniqList(
-                common.flatList([self.graph.es[e]['sources'] for e in htedgs]))
+            htsrcs = common.uniq_list(
+                common.flat_list([self.graph.es[e]['sources'] for e in htedgs]))
             htdata[htlim] = {'rnum': len(htrefs), 'enum': len(htedgs),
                              'snum': len(htsrcs), 'htrefs': htrefs}
 
@@ -13838,7 +13838,7 @@ class PyPath(session_mod.Logger):
             interaction.
         """
 
-        return len(common.uniqList(common.flatList(
+        return len(common.uniq_list(common.flat_list(
             list(map(lambda e:
                      list(map(lambda r:
                               (e.index, r), e['references'])),
@@ -15037,7 +15037,7 @@ class PyPath(session_mod.Logger):
         for gattr, fun in iteritems(_attrs['graph_callbacks']):
             attrs[gattr] = fun(g)
 
-        attrs = common.cleanDict(attrs)
+        attrs = common.clean_dict(attrs)
 
         for gattr, value in iteritems(attrs):
             dot.graph_attr[gattr] = value
@@ -15052,7 +15052,7 @@ class PyPath(session_mod.Logger):
             if vid in hide_nodes:
                 attrs['style'] = 'invis'
 
-            attrs = common.cleanDict(attrs)
+            attrs = common.clean_dict(attrs)
             dot.add_node(node, **attrs)
 
         # edges
@@ -15130,7 +15130,7 @@ class PyPath(session_mod.Logger):
                             else:
                                 attrs['style'] = 'invis'
                                 drawn_directed = False
-                            attrs = common.cleanDict(attrs)
+                            attrs = common.clean_dict(attrs)
                             dot.add_edge(sl, tl, **attrs)
 
                     if d.get_dir((tn, sn)):
@@ -15181,7 +15181,7 @@ class PyPath(session_mod.Logger):
                             else:
                                 attrs['style'] = 'invis'
                                 drawn_directed = False
-                            attrs = common.cleanDict(attrs)
+                            attrs = common.clean_dict(attrs)
                             dot.add_edge(tl, sl, **attrs)
 
                 if not directed or d.get_dir('undirected'):
@@ -15204,7 +15204,7 @@ class PyPath(session_mod.Logger):
                             dot.delete_edge(sl, tl)
 
                     if not dot.has_neighbor(sl, tl):
-                        attrs = common.cleanDict(attrs)
+                        attrs = common.clean_dict(attrs)
                         dot.add_edge((sl, tl), **attrs)
 
         if type(save_dot) in set([str, unicode]):

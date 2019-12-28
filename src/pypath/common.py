@@ -42,13 +42,15 @@ import numpy as np
 
 
 __all__ = [
-    'ROOT', 'aacodes', 'aaletters', 'simple_types', 'numeric_types',
-    'uniqList', 'add_to_list', 'add_to_set', 'gen_session_id',
+    'ROOT',
+    'aacodes', 'aaletters',
+    'simple_types', 'numeric_types', 'list_like',
+    'uniq_list', 'add_to_list', 'add_to_set', 'gen_session_id',
     'sorensen_index', 'simpson_index', 'simpson_index_counts',
-    'jaccard_index', 'console', 'wcl', 'flatList', 'charTypes',
-    'delEmpty', 'get_args', 'something', 'rotate', 'cleanDict',
+    'jaccard_index', 'console', 'wcl', 'flat_list', 'char_types',
+    'del_empty', 'get_args', 'something', 'rotate', 'clean_dict',
     'igraph_graphics_attrs', 'md5', 'mod_keywords',
-    'uniqOrdList', 'dict_diff', 'to_set', 'to_list',
+    'uniq_ord_list', 'dict_diff', 'to_set', 'to_list',
     'unique_list', 'basestring', 'amino_acids', 'aminoa_1_to_3_letter',
     'aminoa_3_to_1_letter', 'pmod_bel', 'pmod_other_to_bel',
     'pmod_bel_to_other', 'refloat', 'reint', 'is_float', 'is_int',
@@ -181,7 +183,8 @@ aaletters = dict(zip(aacodes.values(), aacodes.keys()))
 # Type definitions
 simple_types = (int, long, float, str, unicode, bytes, bool, type(None))
 numeric_types = (int, long, float)
-charTypes = (str, unicode, bytes)
+char_types = (str, unicode, bytes)
+list_like = (tuple, set, list)
 
 
 refloat = re.compile(r'\s*-?\s*[\s\.\d]+\s*')
@@ -273,9 +276,9 @@ def unique_list(seq):
         (*list*) -- List of unique elements in the sequence *seq*.
 
     **Examples:**
-        >>> uniqList('aba')
+        >>> uniq_list('aba')
         ['a', 'b']
-        >>> uniqList([0, 1, 2, 1, 0])
+        >>> uniq_list([0, 1, 2, 1, 0])
         [0, 1, 2]
     """
 
@@ -283,10 +286,10 @@ def unique_list(seq):
 
 
 # old ugly name
-uniqList = unique_list
+uniq_list = unique_list
 
 
-def uniqList1(seq): # XXX: Not used
+def uniq_list1(seq): # XXX: Not used
     """
     Not order preserving
     From http://www.peterbe.com/plog/uniqifiers-benchmark
@@ -295,7 +298,7 @@ def uniqList1(seq): # XXX: Not used
     return list(set(seq))
 
 
-def uniqList2(seq): # XXX: Not used
+def uniq_list2(seq): # XXX: Not used
     """
     Not order preserving
     From http://www.peterbe.com/plog/uniqifiers-benchmark
@@ -309,7 +312,7 @@ def uniqList2(seq): # XXX: Not used
     return list(keys.keys())
 
 
-def flatList(lst):
+def flat_list(lst):
     """Coerces the elements of a list of iterables into a single list.
 
     :arg lsit lst:
@@ -320,16 +323,16 @@ def flatList(lst):
         (*list*) -- Flattened list of *lst*.
 
     **Examples:**
-        >>> flatList([(0, 1), (1, 1), (2, 1)])
+        >>> flat_list([(0, 1), (1, 1), (2, 1)])
         [0, 1, 1, 1, 2, 1]
-        >> flatList(['abc', 'def'])
+        >> flat_list(['abc', 'def'])
         ['a', 'b', 'c', 'd', 'e', 'f']
     """
 
     return [it for sl in lst for it in sl]
 
 
-def delEmpty(lst): # XXX: Only used in main.py line: 1278
+def del_empty(lst): # XXX: Only used in main.py line: 1278
     """Removes empty entries of a list.
 
     It is assumed that elemenst of *lst* are iterables (e.g. [str] or
@@ -343,7 +346,7 @@ def delEmpty(lst): # XXX: Only used in main.py line: 1278
         zero.
 
     **Example:**
-        >>> delEmpty(['a', '', 'b', 'c'])
+        >>> del_empty(['a', '', 'b', 'c'])
         ['a', 'b', 'c']
     """
 
@@ -352,7 +355,7 @@ def delEmpty(lst): # XXX: Only used in main.py line: 1278
 
 # Order preserving
 # From http://www.peterbe.com/plog/uniqifiers-benchmark
-def uniqOrdList(seq, idfun=None): # XXX: Only used in plot.py line: 510
+def uniq_ord_list(seq, idfun=None): # XXX: Only used in plot.py line: 510
     """Reduces a list to its unique elements keeping their order.
 
     Returns a copy of *seq* without repeated elements. Preserves the
@@ -372,20 +375,20 @@ def uniqOrdList(seq, idfun=None): # XXX: Only used in plot.py line: 510
         (according to *idfun*).
 
     **Examples:**
-        >>> uniqOrdList([0, 1, 2, 1, 5])
+        >>> uniq_ord_list([0, 1, 2, 1, 5])
         [0, 1, 2, 5]
-        >>> uniqOrdList('abracadabra')
+        >>> uniq_ord_list('abracadabra')
         ['a', 'b', 'r', 'c', 'd']
         >>> def f(x):
         ...     if x > 0:
         ...             return 0
         ...     else:
         ...             return 1
-        >>> uniqOrdList([-32, -42, 1, 15, -12], idfun=f)
+        >>> uniq_ord_list([-32, -42, 1, 15, -12], idfun=f)
         [-32, 1]
         >>> def g(x): # Given a file name, return it without extension
         ...    return x.split('.')[0]
-        >>> uniqOrdList(['a.png', 'a.txt', 'b.pdf'], idfun=g)
+        >>> uniq_ord_list(['a.png', 'a.txt', 'b.pdf'], idfun=g)
         ['a.png', 'b.pdf']
     """
 
@@ -429,7 +432,7 @@ def add_to_list(lst, toadd):
     :return:
         (*list*) -- Contains the unique element(s) from the union of
         *lst* and *toadd*. **NOTE:** Makes use of
-        :py:func:`common.uniqList`, does not preserve order of elements.
+        :py:func:`common.uniq_list`, does not preserve order of elements.
 
     **Examples:**
         >>> add_to_list('ab', 'cd')
@@ -464,7 +467,7 @@ def add_to_list(lst, toadd):
     if None in lst:
         lst.remove(None)
 
-    return uniqList(lst)
+    return uniq_list(lst)
 
 
 def add_to_set(st, toadd):
@@ -733,7 +736,7 @@ def rotate(point, angle, center=(0.0, 0.0)): # XXX: Not used? Wrote the docs bef
     return temp_point
 
 
-def cleanDict(dct):
+def clean_dict(dct):
     """Cleans a dictionary of ``None`` values.
 
     Removes ``None`` values from  a dictionary *dct* and casts all other

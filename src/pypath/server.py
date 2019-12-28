@@ -52,7 +52,7 @@ import pypath.urls as urls
 import pypath.common as common
 import pypath.db_categories as db_categories
 import pypath.intercell_annot as intercell_annot
-from pypath.common import flatList
+from pypath.common import flat_list
 from pypath._version import __version__
 
 if 'unicode' not in __builtins__:
@@ -2031,7 +2031,7 @@ class PypathServer(BaseServer):
                     if 'references' in hdr:
                         thisEdge.append([
                             r.pmid
-                            for r in flatList([
+                            for r in flat_list([
                                 rs for s, rs in iteritems(e['refs_by_source'])
                                 if s in dsources
                             ])

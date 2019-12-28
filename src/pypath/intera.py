@@ -252,7 +252,7 @@ class Ptm(object):
     def add_source(self, source):
         if source is None:
             return None
-        elif type(source) in common.charTypes:
+        elif type(source) in common.char_types:
             self._add_source(source)
         else:
             for s in source:
@@ -384,7 +384,7 @@ class Motif(object):
     def add_source(self, source):
         if source is None:
             return None
-        elif type(source) in common.charTypes:
+        elif type(source) in common.char_types:
             self._add_source(source)
         else:
             for s in source:
@@ -596,7 +596,7 @@ class DomainDomain(object):
     def add_sources(self, source):
         if source is None:
             return None
-        elif type(source) in common.charTypes:
+        elif type(source) in common.char_types:
             self._add_source(source)
         else:
             for s in source:
@@ -700,7 +700,7 @@ class DomainMotif(object):
     def add_sources(self, source):
         if source is None:
             return None
-        elif type(source) in common.charTypes:
+        elif type(source) in common.char_types:
             self._add_source(source)
         else:
             for s in source:
@@ -780,7 +780,7 @@ class Regulation(object):
     def add_sources(self, source):
         if source is None:
             return None
-        elif type(source) in common.charTypes:
+        elif type(source) in common.char_types:
             self._add_source(source)
         else:
             for s in source:

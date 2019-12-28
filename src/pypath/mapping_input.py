@@ -72,7 +72,7 @@ def get_mirbase_aliases(organism = 9606):
     Downloads and processes mapping tables from miRBase.
     """
     
-    if type(organism) in common.charTypes:
+    if type(organism) in common.char_types:
         mborganism = organism
     elif organism not in taxonomy.mirbase_taxids:
         

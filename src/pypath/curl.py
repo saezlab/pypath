@@ -584,9 +584,9 @@ class FileOpener(session_mod.Logger):
         if not hasattr(self, 'large'):
             self.large = large
         self.fname = file_param \
-            if type(file_param) in common.charTypes else file_param.name
+            if type(file_param) in common.char_types else file_param.name
         self.fileobj = None \
-            if type(file_param) in common.charTypes else file_param
+            if type(file_param) in common.char_types else file_param
         if not hasattr(self, 'type'):
             self.get_type()
         if _open:

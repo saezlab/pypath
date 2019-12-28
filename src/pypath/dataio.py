@@ -5544,7 +5544,7 @@ def get_hpmr_old():
         if len(row) > 1 and not row[1].text.lower().startswith('similar')
     ]
 
-    return common.uniqList(gnames)
+    return common.uniq_list(gnames)
 
 
 def hpmr_interactions_old():
@@ -7053,7 +7053,7 @@ def li2012_interactions():
         result.append((tk_protein, subs_protein, route, 'phosphorylation'))
         result.append((subs_protein, reader_protein, route,
                        'phosphomotif_binding'))
-    return [list(l) for l in common.uniqList(result)]
+    return [list(l) for l in common.uniq_list(result)]
 
 
 def li2012_phospho():
@@ -7094,7 +7094,7 @@ def li2012_phospho():
                 list(l)
             )
         )
-        for l in common.uniqList(result)
+        for l in common.uniq_list(result)
     ]
     
     return result
@@ -7204,7 +7204,7 @@ def take_a_trip(cachefile = None):
     c = curl.Curl(base_url)
     mainhtml = c.result
     mainsoup = bs4.BeautifulSoup(mainhtml, 'html.parser')
-    trppages = common.flatList(
+    trppages = common.flat_list(
         [[a.attrs['href'] for a in ul.find_all('a')]
          for ul in mainsoup.find(
              'div', id = 'trp_selector').find('ul').find_all('ul')])
@@ -7336,8 +7336,8 @@ def trip_process(exclude_methods = ['Inference', 'Speculation'],
     spec.add(species)
     result = {}
     data = take_a_trip()
-    for uniprots in common.uniqList(
-            common.flatList([v.keys() for v in data.values()])):
+    for uniprots in common.uniq_list(
+            common.flat_list([v.keys() for v in data.values()])):
         to_process = False
         refs = set([])
         mets = set([])
@@ -7522,8 +7522,8 @@ def kegg_interactions():
                     for n in gr.attrs['name'].replace('...', '').split(',')
                 ]
 
-        uentries = dict([(eid, common.uniqList(
-            common.flatList([
+        uentries = dict([(eid, common.uniq_list(
+            common.flat_list([
                 mapping.map_name(
                     gn, 'genesymbol', 'uniprot', strict = True) for gn in gns
             ]))) for eid, gns in iteritems(entries)])
@@ -7544,13 +7544,13 @@ def kegg_interactions():
                         interactions.append((u1, u2, st.attrs['name'], pw))
 
     prg.terminate()
-    return common.uniqList(interactions)
+    return common.uniq_list(interactions)
 
 
 def kegg_pathways():
 
     data = kegg_interactions()
-    pws = common.uniqList(map(lambda i: i[3], data))
+    pws = common.uniq_list(map(lambda i: i[3], data))
     proteins_pws = dict(map(lambda pw: (pw, set([])), pws))
     interactions_pws = dict(map(lambda pw: (pw, set([])), pws))
     
@@ -8937,7 +8937,7 @@ def process_controls(controls, mandatory_refs = True):
         if len(c['refs']) > 0 or not mandatory_refs:
             if c['controller'] is not None and len(c['controller']) > 0:
                 for ctr in c['controller']:
-                    if len(common.uniqList(ctr['members'])) == 1:
+                    if len(common.uniq_list(ctr['members'])) == 1:
                         this_ctr = ctr['members'][0].split('-')[0]
                         ctd = c['controlled']
                         if ctd is not None:
@@ -8946,8 +8946,8 @@ def process_controls(controls, mandatory_refs = True):
                             for leftInst in itertools.product(*ctd['left']):
                                 for rightInst in itertools.product(
                                         *ctd['right']):
-                                    lr = common.uniqList(
-                                        common.flatList([
+                                    lr = common.uniq_list(
+                                        common.flat_list([
                                             l['members'] for l in leftInst
                                         ] + [r['members'] for r in rightInst]))
                                     if len(lr) == 1:
@@ -8970,7 +8970,7 @@ def process_controls(controls, mandatory_refs = True):
                                              for ptms in r['ptms'].items()
                                              for ptm in ptms[1]])
                                         ptmsDiff = ptmsLeft ^ ptmsRight
-                                        diffUniProts = common.uniqList(
+                                        diffUniProts = common.uniq_list(
                                             [ptm[0] for ptm in ptmsDiff])
                                         if len(diffUniProts) == 1:
                                             this_ctd = diffUniProts[0].split(
@@ -9004,8 +9004,8 @@ def process_controls(controls, mandatory_refs = True):
                                                     if len(diff) == 1:
                                                         diffs.append(
                                                             list(diff))
-                                            diffs = common.uniqList(
-                                                common.flatList(diffs))
+                                            diffs = common.uniq_list(
+                                                common.flat_list(diffs))
                                             if len(diffs) == 1:
                                                 this_ctd = diffs[0].split('-')[
                                                     0]
@@ -9025,8 +9025,8 @@ def process_controls(controls, mandatory_refs = True):
                 if ctd is not None:
                     for leftInst in itertools.product(*ctd['left']):
                         for rightInst in itertools.product(*ctd['right']):
-                            lr = common.uniqList(
-                                common.flatList([
+                            lr = common.uniq_list(
+                                common.flat_list([
                                     l['members'] for l in leftInst
                                 ] + [r['members'] for r in rightInst]))
                             if len(lr) == 2:
@@ -9070,22 +9070,22 @@ def _reactome_reactions():
         ids = []
         for i in sp.find('bqbiol:haspart').find_all('rdf:li'):
             ids.append(_reactome_res(i))
-        ids = sorted(common.uniqList(ids))
+        ids = sorted(common.uniq_list(ids))
         species[si] = {'name': nm, 'comp': cp, 'ids': ids}
     for rea in m.find('listofreactions').find_all('reaction'):
         ri = _reactome_id(rea, 'id')
         refs = []
         for r in rea.find('bqbiol:isdescribedby').find_all('rdf:li'):
             refs.append(_reactome_res(r))
-        refs = sorted(common.uniqList(refs))
+        refs = sorted(common.uniq_list(refs))
         reas = []
         for r in rea.find('listofreactants').find_all('speciesreference'):
             reas.append(_reactome_id(r, 'species'))
-        reas = sorted(common.uniqList(reas))
+        reas = sorted(common.uniq_list(reas))
         prds = []
         for p in rea.find('listofproducts').find_all('speciesreference'):
             prds.append(_reactome_id(p, 'species'))
-        prds = sorted(common.uniqList(prds))
+        prds = sorted(common.uniq_list(prds))
         note = rea.find('notes').text
         reactions[ri] = {
             'refs': refs,
@@ -9137,7 +9137,7 @@ def _reactome_species(elem):
     cp = _reactome_extract_id(elem.get('compartment'))
     nm = elem.get('name')
     ids = sorted(
-        common.uniqList(_reactome_collect_resources(elem, hasPartStr)))
+        common.uniq_list(_reactome_collect_resources(elem, hasPartStr)))
     return si, {'name': nm, 'comp': cp, 'ids': ids}
 
 
@@ -10395,7 +10395,7 @@ def get_innatedb(organism = 9606):
 
 
 def mitab_field_list(field):
-    return common.uniqList(
+    return common.uniq_list(
         map(lambda x: x.split('(')[1][:-1], field.split('|')))
 
 
@@ -11098,8 +11098,8 @@ def deathdomain_interactions():
             for p2, v2 in iteritems(v1):
                 if p1 != p2:
                     result.append([
-                        p1, p2, ';'.join(common.uniqList(v2['met'])),
-                        ';'.join(common.uniqList(v2['ref']))
+                        p1, p2, ';'.join(common.uniq_list(v2['met'])),
+                        ';'.join(common.uniq_list(v2['ref']))
                     ])
 
     return result

@@ -455,7 +455,7 @@ class PtmHomology(ProteinHomology, SequenceContainer):
             
             result = self.translate_site(*x, **kwargs)
         
-        elif type(x) in common.charTypes:
+        elif type(x) in common.char_types:
             
             ptm = self.reptm.match(x)
             

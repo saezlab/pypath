@@ -639,7 +639,7 @@ class AttributeHandler(object):
         pass
 
     def add_source(self, source):
-        if type(source) in common.charTypes:
+        if type(source) in common.char_types:
             self._add_source(source)
         else:
             for s in source:
@@ -765,7 +765,7 @@ class EntitySet(AttributeHandler):
     def __init__(self, members, sources=[], sep=';', parent=None):
         super(EntitySet, self).__init__()
         self.parent = parent
-        self.members = sorted(common.uniqList(members))
+        self.members = sorted(common.uniq_list(members))
         self.set = set(self.members)
         self.sources = set([])
         self.attrs = {}
@@ -1456,7 +1456,7 @@ class PyReact(session_mod.Logger):
                 uxrefs = self.pref_correction(self.parser.prefs[pref][
                     'uxrefs'])
                 pids = \
-                    common.uniqList(
+                    common.uniq_list(
                         map(
                             lambda uxref:
                                 self.parser.ids[uxref],
@@ -1469,7 +1469,7 @@ class PyReact(session_mod.Logger):
                     )
                 refids = self.pref_refs(self.parser.prefs[pref]['uxrefs'])
                 refs = \
-                    common.uniqList(
+                    common.uniq_list(
                         map(
                             lambda refid:
                                 self.parser.ids[refid],
@@ -1509,7 +1509,7 @@ class PyReact(session_mod.Logger):
                     self.ncbi_tax_id
                 ),
                 target_ids)
-            target_ids = common.uniqList(target_ids)
+            target_ids = common.uniq_list(target_ids)
             if len(target_ids) > 1:
                 if not self.ambiguous_ids_permitted:
                     sys.stdout.write('\t:: Ambiguous ID '
@@ -1749,7 +1749,7 @@ class PyReact(session_mod.Logger):
         if self.source not in self.rpfamilies:
             self.rpfamilies[self.source] = {}
 
-        members = sorted(common.uniqList(map(lambda p: p[0], proteins)))
+        members = sorted(common.uniq_list(map(lambda p: p[0], proteins)))
 
         # this necessary if we add protein family because of
         # ambiguous id mapping; we want to make sure protein
@@ -1924,7 +1924,7 @@ class PyReact(session_mod.Logger):
                                 proteins + list(pfamily) + list(subc)
 
                             members = sorted(
-                                common.uniqList(
+                                common.uniq_list(
                                     map(lambda p: p[0], this_proteins)))
                             if not len(members):
                                 continue
