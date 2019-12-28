@@ -95,6 +95,18 @@ class EntityList(object):
         return '<EntityList (%u elements)>' % len(self)
     
     
+    def __add__(self, other):
+        
+        return EntityList(set(itertools.chain(self._entities, list(other))))
+    
+    
+    def __iadd__(self, other):
+        
+        self._entities = set(itertools.chain(self._entities, list(other)))
+        
+        return self
+    
+    
     @property
     def labels(self):
         
@@ -161,6 +173,34 @@ class Network(session_mod.Logger):
         Create a ``pandas.DataFrame`` already when creating the instance.
         If no network data loaded no data frame will be created.
     """
+    
+    _partners_methods = {
+        'affected_by': {
+            'mode': 'OUT',
+            'direction': True,
+        },
+        'affects': {
+            'mode': 'IN',
+            'direction': True,
+        },
+        'stimulated_by': {
+            'mode': 'OUT',
+            'effect': 'positive',
+        },
+        'stimulates': {
+            'mode': 'IN',
+            'effect': 'positive',
+        },
+        'inhibited_by': {
+            'mode': 'OUT',
+            'effect': 'negative',
+        },
+        'inhibits': {
+            'mode': 'IN',
+            'effect': 'negative',
+        }
+    }
+    
     
     def __init__(
             self,
@@ -2509,9 +2549,11 @@ class Network(session_mod.Logger):
             references = None,
         ):
         """
-        :arg str,pypath.entity.Entity entity:
+        :arg str,Entity,list,set,tuple,EntityList entity:
             An identifier or label of a molecular entity or an
-            :py:class:`Entity` object.
+            :py:class:`Entity` object. Alternatively an iterator with the
+            elements of any of the types valid for a single entity argument,
+            e.g. a list of gene symbols.
         :arg str mode:
             Mode of counting the interactions: `IN`, `OUT` or `ALL` , whether
             to consider incoming, outgoing or all edges, respectively,
@@ -2519,11 +2561,27 @@ class Network(session_mod.Logger):
         
         :returns:
             :py:class:`EntityList` object containing the partners having
-            interactions to the queried node matching all the criteria.
+            interactions to the queried node(s) matching all the criteria.
             If ``entity`` doesn't present in the network the returned
             ``EntityList`` will be empty just like if no interaction matches
             the criteria.
         """
+        
+        if (
+            not isinstance(entity, common.basestring) and
+            hasattr(entity, '__iter__')
+        ):
+            
+            kwargs = locals()
+            _ = kwargs.pop('self')
+            _ = kwargs.pop('entity')
+            
+            return EntityList(
+                set(itertools.chain(*(
+                    self.partners(_entity, **kwargs)
+                    for _entity in entity
+                )))
+            )
         
         entity = self.entity(entity)
         
@@ -2557,6 +2615,32 @@ class Network(session_mod.Logger):
                 ()
             )
         )
+    
+    
+    @classmethod
+    def _generate_partners_methods(cls):
+        
+        def _create_partners_method(method_args):
+            
+            @functools.wraps(method_args)
+            def _partners_method(*args, **kwargs):
+                
+                self = args[0]
+                
+                kwargs.update(method_args)
+                
+                return self.partners(*args[1:], **kwargs)
+            
+            return _partners_method
+        
+        for method_name, method_args in iteritems(cls._partners_methods):
+            
+            setattr(
+                cls,
+                method_name,
+                _create_partners_method(method_args),
+            )
+    
     
     #
     # Methods for collecting interaction attributes across the network
@@ -2697,4 +2781,5 @@ class Network(session_mod.Logger):
 
 
 Network._generate_get_methods()
+Network._generate_partners_methods()
 Network._generate_count_methods()
