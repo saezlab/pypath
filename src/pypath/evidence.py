@@ -255,6 +255,15 @@ class Evidence(object):
             references = None,
         ):
         
+        def _match(attr, value):
+            
+            return (
+                getattr(self.resource, attr) in value
+                    if isinstance(value, common.list_like) else
+                getattr(self.resource, attr) == value
+            )
+        
+        
         resource = (
             resource.resource
                 if isinstance(resource, Evidence) else
@@ -297,11 +306,11 @@ class Evidence(object):
             ) and
             (
                 interaction_type is None or
-                self.resource.interaction_type == interaction_type
+                _match('interaction_type', interaction_type)
             ) and
             (
                 via == False or
-                self.resource.via == via
+                _match('via', via)
             ) and
             (
                 not references or
@@ -309,7 +318,7 @@ class Evidence(object):
             ) and
             (
                 not data_model or
-                self.resource.data_model == data_model
+                _match('data_model', data_model)
             )
         )
 
