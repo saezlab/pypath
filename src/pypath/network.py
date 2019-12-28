@@ -66,100 +66,6 @@ NetworkEntityCollection = collections.namedtuple(
 NetworkEntityCollection.__new__.__defaults__ = (None,) * 8
 
 
-class EntityList(object):
-    
-    
-    def __init__(self, entities):
-        
-        self._entities = (
-            entities
-                if isinstance(entities, (list, tuple, set)) else
-            list(entities)
-        )
-    
-    
-    def __iter__(self):
-        
-        for e in self._entities:
-            
-            yield e
-    
-    
-    def __len__(self):
-        
-        return len(self._entities)
-    
-    
-    def __repr__(self):
-        
-        return '<EntityList (%u elements)>' % len(self)
-    
-    
-    def __add__(self, other):
-        
-        return EntityList(set(itertools.chain(self._entities, list(other))))
-    
-    
-    def __iadd__(self, other):
-        
-        self._entities = set(itertools.chain(self._entities, list(other)))
-        
-        return self
-    
-    
-    @property
-    def labels(self):
-        
-        for e in self:
-            
-            yield e.label
-    
-    
-    @property
-    def ids(self):
-        
-        for e in self:
-            
-            yield e.identifier
-    
-    
-    identifiers = ids
-    
-    
-    @property
-    def entities(self):
-        
-        for e in self:
-            
-            yield e
-    
-    
-    @property
-    def list_ids(self):
-        
-        return list(self.ids)
-    
-    
-    @property
-    def list_labels(self):
-        
-        return list(self.labels)
-    
-    
-    @property
-    def list_entities(self):
-        
-        return list(self.entities)
-    
-    
-    l = labels
-    i = ids
-    e = entities
-    ll = list_labels
-    li = list_ids
-    le = list_entities
-
-
 class Network(session_mod.Logger):
     """
     Represents a molecular interaction network. Provides various methods to
@@ -2576,7 +2482,7 @@ class Network(session_mod.Logger):
             _ = kwargs.pop('self')
             _ = kwargs.pop('entity')
             
-            return EntityList(
+            return entity_mod.EntityList(
                 set(itertools.chain(*(
                     self.partners(_entity, **kwargs)
                     for _entity in entity
@@ -2595,7 +2501,7 @@ class Network(session_mod.Logger):
         )
         
         return (
-            EntityList(
+            entity_mod.EntityList(
                 {
                     partner
                     for ia in self.interactions_by_nodes[entity]
