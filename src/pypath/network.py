@@ -80,32 +80,45 @@ class Network(session_mod.Logger):
         If no network data loaded no data frame will be created.
     """
     
-    _partners_methods = {
-        'affected_by': {
-            'mode': 'OUT',
-            'direction': True,
+    _partners_methods = (
+        {
+            '': {},
+            'transcriptionally_': {
+                'interaction_type': {
+                    'transcriptional',
+                    'mirna_transcriptional',
+                },
+            },
+            'post_transcriptionally_': {
+                'interaction_type': {
+                    'post_transcriptional',
+                    'lncrna_post_transcriptional',
+                },
+            },
+            'post_translationally_': {
+                'interaction_type': 'post_translational',
+            },
         },
-        'affects': {
-            'mode': 'IN',
-            'direction': True,
+        {
+            'regulat': {
+                'direction': True,
+            },
+            'activat': {
+                'effect': 'positive',
+            },
+            'suppress': {
+                'effect': 'negative',
+            },
         },
-        'stimulated_by': {
-            'mode': 'OUT',
-            'effect': 'positive',
+        {
+            'es': {
+                'mode': 'IN',
+            },
+            'ed_by': {
+                'mode': 'OUT',
+            }
         },
-        'stimulates': {
-            'mode': 'IN',
-            'effect': 'positive',
-        },
-        'inhibited_by': {
-            'mode': 'OUT',
-            'effect': 'negative',
-        },
-        'inhibits': {
-            'mode': 'IN',
-            'effect': 'negative',
-        }
-    }
+    )
     
     
     def __init__(
@@ -632,7 +645,7 @@ class Network(session_mod.Logger):
                 dir_col = sign[0]
                 dir_val = sign[1:3]
                 dir_val = dir_val if type(dir_val[
-                    0]) in common.simple_types else common.flatList(dir_val)
+                    0]) in common.simple_types else common.flat_list(dir_val)
                 dir_sep = sign[3] if len(sign) > 3 else None
 
             dir_val = common.to_set(dir_val)
@@ -729,7 +742,7 @@ class Network(session_mod.Logger):
 
                         refs = line[ref_col].split(ref_sep)
 
-                    refs = common.delEmpty(list(set(refs)))
+                    refs = common.del_empty(list(set(refs)))
 
                 refs = dataio.only_pmids([str(r).strip() for r in refs])
 
@@ -1415,7 +1428,7 @@ class Network(session_mod.Logger):
             :item int taxon_b:
                 NCBI Taxonomic identifier of the target molecule.
             :item str typ:
-                The type of interaction (e.g.: ``'PPI'``)
+                The type of interaction (e.g.: ``'trascriptional'``)
             :item dict extra_attrs:
                 Optional, ``{}`` by default. Contains any extra attributes
                 for the edge to be updated.
@@ -2552,10 +2565,22 @@ class Network(session_mod.Logger):
             
             return _partners_method
         
-        for method_name, method_args in iteritems(cls._partners_methods):
+        for name_parts, arg_parts in (
+            zip(*param)
+            for param in
+            itertools.product(
+                *(iteritems(variety) for variety in  cls._partners_methods)
+            )
+        ):
             
             for count in (False, True):
                 
+                method_args = dict(
+                    itertools.chain(
+                        *(iteritems(part) for part in arg_parts)
+                    )
+                )
+                method_name = ''.join(name_parts)
                 method_args['count'] = count
                 
                 setattr(
