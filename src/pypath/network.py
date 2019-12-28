@@ -2637,8 +2637,46 @@ class Network(session_mod.Logger):
         :arg int maxlen:
             Maximum length of paths in steps, i.e. if maxlen = 3, then
             the longest path may consist of 3 edges and 4 nodes.
+        :arg int minlen:
+            Minimum length of the path.
         :arg bool silent:
             Indicate progress by showing a progress bar.
+        
+        :details:
+        The arguments: ``direction``, ``effect``, ``resources``,
+        ``interaction_type``, ``data_model``, ``via`` and ``references``
+        will be passed to the ``partners`` method of this object and from
+        there to the relevant methods of the ``Interaction`` and ``Evidence``
+        objects. By these arguments it is possible to filter the interactions
+        in the paths according to custom criteria. If any of these arguments
+        is a ``tuple`` or ``list``, its first value will be used to match the
+        first interaction in the path, the second for the second one and so
+        on. If the list or tuple is shorter then ``maxlen``, its last
+        element will be used for all interactions. If it's longer than
+        ``maxlen``, the remaining elements will be discarded. This way the
+        method is able to search for custom motives.
+        For example, let's say you want to find the motives where the
+        estrogen receptor transcription factor *ESR1* transcriptionally
+        regulates a gene encoding a protein which then has some effect
+        post-translationally on *ESR1*:
+        
+        >>> n.find_paths(
+        ...     'ESR1',
+        ...     loops = True,
+        ...     minlen = 2,
+        ...     interaction_type = ('transcriptional', 'post_translational'),
+        ... )
+        
+        Or if you are interested only in the -/+ feedback loops i.e.
+        *ESR1 --(-)--> X --(+)--> ESR1*:
+        
+        >>> n.find_paths(
+        ...     'ESR1',
+        ...     loops = True,
+        ...     minlen = 2,
+        ...     interaction_type = ('transcriptional', 'post_translational'),
+        ...     effect = ('negative', 'positive'),
+        ... )
         """
 
         def list_of_entities(entities):
@@ -2655,6 +2693,20 @@ class Network(session_mod.Logger):
             entities = [self.entity(en) for en in entities]
 
             return entities
+
+
+        def interaction_arg(value):
+
+            value = (
+                tuple(value)
+                    if isinstance(value, (tuple, list)) else
+                (value,)
+            )
+
+            value = value + (value[-1],) * (maxlen - len(value))
+            value = value[:maxlen]
+
+            return value
 
 
         def find_all_paths_aux(start, end, path, maxlen = None):
@@ -2686,14 +2738,7 @@ class Network(session_mod.Logger):
                 next_steps = set(
                     self.partners(
                         entity = start,
-                        mode = mode,
-                        direction = direction,
-                        effect = effect,
-                        resources = resources,
-                        interaction_type = interaction_type,
-                        data_model = data_model,
-                        via = via,
-                        references = references,
+                        **interaction_args[len(path) - 1]
                     )
                 )
 
@@ -2712,8 +2757,27 @@ class Network(session_mod.Logger):
             return paths
 
 
+        minlen = max(1, minlen)
         start = list_of_entities(start)
         end = list_of_entities(end) if end else (None,)
+
+        interaction_args = {
+            'mode': interaction_arg(mode),
+            'direction': interaction_arg(direction),
+            'effect': interaction_arg(effect),
+            'resources': interaction_arg(resources),
+            'interaction_type': interaction_arg(interaction_type),
+            'data_model': interaction_arg(data_model),
+            'via': interaction_arg(via),
+            'references': interaction_arg(references),
+        }
+        interaction_args = tuple(
+            dict(
+                (key, interaction_args[key][i])
+                for key in interaction_args.keys()
+            )
+            for i in range(maxlen)
+        )
 
         all_paths = []
 
