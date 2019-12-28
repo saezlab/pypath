@@ -2617,29 +2617,46 @@ class Network(session_mod.Logger):
         )
     
     
+    def count_partners(self, entity, **kwargs):
+        """
+        Returns the count of the interacting partners for one or more
+        entities according to the specified criteria.
+        Please refer to the docs of the ``partners`` method.
+        """
+        
+        return len(self.partners(entity = entity, **kwargs))
+    
+    
     @classmethod
     def _generate_partners_methods(cls):
         
         def _create_partners_method(method_args):
             
+            count = method_args.pop('count')
+            
             @functools.wraps(method_args)
             def _partners_method(*args, **kwargs):
                 
                 self = args[0]
-                
                 kwargs.update(method_args)
                 
-                return self.partners(*args[1:], **kwargs)
+                method = 'count_partners' if count else 'partners'
+                
+                return getattr(self, method)(*args[1:], **kwargs)
             
             return _partners_method
         
         for method_name, method_args in iteritems(cls._partners_methods):
             
-            setattr(
-                cls,
-                method_name,
-                _create_partners_method(method_args),
-            )
+            for count in (False, True):
+                
+                method_args['count'] = count
+                
+                setattr(
+                    cls,
+                    'count_%s' % method_name if count else method_name,
+                    _create_partners_method(method_args),
+                )
     
     
     #
