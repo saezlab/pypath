@@ -1500,7 +1500,7 @@ class Mapper(session_mod.Logger):
                     id_type or 'mirbase',
                     'mir-mat-name',
                     ncbi_tax_id = ncbi_tax_id,
-                )
+                ) or name
                 
             elif name.startswith('MI'):
                 
@@ -1509,7 +1509,7 @@ class Mapper(session_mod.Logger):
                     id_type or 'mir-pre',
                     'mir-name',
                     ncbi_tax_id = ncbi_tax_id,
-                )
+                ) or name
                 
             else:
                 
@@ -1518,7 +1518,7 @@ class Mapper(session_mod.Logger):
                     id_type or 'uniprot',
                     'genesymbol',
                     ncbi_tax_id = ncbi_tax_id,
-                )
+                ) or name
 
 
     def primary_uniprot(self, uniprots):
