@@ -13666,7 +13666,7 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
         
         if ncbi_tax_id != 10090:
             
-            uniports = set(
+            uniprots = set(
                 itertools.chain(*(
                     homology.translate(uniprot)
                     for uniprot in uniprots
@@ -13733,8 +13733,8 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
     if ncbi_tax_id != 10090:
         
         homology = homology_mod.ProteinHomology(
-            source = 10090,
             target = ncbi_tax_id,
+            source = 10090,
         )
     
     for rec in data[3:]:
@@ -13784,3 +13784,41 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
             )
     
     return result
+
+
+def baccin2019_annotations(ncbi_tax_id = 9606):
+    
+    Baccin2019Annotation = collections.namedtuple(
+        'Baccin2019Annotation',
+        [
+            'mainclass',
+            'subclass',
+        ]
+    )
+    
+    
+    ia = baccin2019_interactions(ncbi_tax_id = ncbi_tax_id)
+    
+    result = collections.defaultdict(set)
+    
+    for ia in ia:
+        
+        result[ia.ligand].add(
+            Baccin2019Annotation(
+                mainclass = 'ligand',
+                subclass = ia.ligand_category,
+            )
+        )
+        
+        result[ia.receptor].add(
+            Baccin2019Annotation(
+                mainclass = 'receptor',
+                subclass = (
+                    '%sReceptor' % is.ligand
+                        if ia.ligand_category != 'Other' else
+                    None
+                ),
+            )
+        )
+    
+    return dict(result)

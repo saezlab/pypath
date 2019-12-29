@@ -94,6 +94,7 @@ protein_sources_default = {
     'Cancersea',
     'Msigdb',
     'Lrdb',
+    'Baccin2019',
 }
 
 #TODO this should be part of json files
@@ -102,7 +103,6 @@ complex_sources_default = {
     'CorumFuncat',
     'CorumGO',
     'HpmrComplex',
-    #'PypathInferred',
 }
 
 #TODO this should be part of json files
@@ -2427,9 +2427,32 @@ class Vesiclepedia(Exocarta):
         )
 
 
+class Baccin2019(AnnotationBase):
+
+    _eq_fields = ('mainclass',)
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+
+        AnnotationBase.__init__(
+            self,
+            name = 'Baccin2019',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'baccin2019_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        self.annot = self.data
+        delattr(self, 'data')
+
+
 class Matrisome(AnnotationBase):
 
     _eq_fields = ('mainclass', 'subclass')
+
 
     def __init__(self, ncbi_tax_id = 9606, **kwargs):
 
