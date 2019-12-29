@@ -32,22 +32,10 @@ import sys
 import re
 import importlib as imp
 import math
-from functools import reduce
-
-try:
-    import cairo
-
-except ImportError: # XXX: Catching any exception like this is bad practice
-    _logger._log(
-        'Module `cairo` not available. '
-        'Some plotting functionalities won\'t work.'
-    ) # XXX: Single/double quotes are not consistent throughout the code
-
-import igraph
 import codecs
-import random # XXX: This and other Python built-in modules shoud be up
+import random
 import textwrap
-import copy as modcopy
+import copy as copy_mod
 import json
 import operator
 import locale
@@ -55,13 +43,10 @@ import heapq
 import threading
 import traceback
 import itertools
-from itertools import chain
 import collections
-from collections import Counter
+
 from scipy import stats
 import numpy as np
-
-# XXX: Put together all import tries
 
 try:
     basestring
@@ -90,6 +75,26 @@ try:
 except ImportError:
     _logger._log('Module `pandas` not available.')
 
+try:
+    import igraph
+
+except ImportError:
+    _logger._log(
+        'Module `igraph` not available. '
+        'The legacy `pypath.main.PyPath` class requires `igraph`.'
+    )
+
+# importing cairo here only to test if the module is available
+try:
+    import cairo
+
+except ImportError: # XXX: Catching any exception like this is bad practice
+                    # YYY: Why? We only want to send a log message so one can
+                    # find out if this causes any trouble later.
+    _logger._log(
+        'Module `cairo` not available. '
+        'Some plotting functionalities won\'t work.'
+    )
 
 # from this module:
 import pypath
@@ -135,7 +140,7 @@ if 'long' not in dir(__builtins__):
 if 'unicode' not in dir(__builtins__):
     unicode = str
 
-__all__ = ['PyPath', 'Direction', 'AttrHelper', 'omnipath']
+__all__ = ['PyPath', 'Direction', '_AttrHelper', 'omnipath']
 
 
 NetworkEntityCollection = collections.namedtuple(
@@ -185,6 +190,14 @@ NetworkStatsRecord.__new__.__defaults__ = (None,) * 11
 
 class Direction(object):
     """
+    This is a *legacy* object for handling directionality information
+    associated with unique pairs of interacting molecular entities.
+    The py:class:`pypath.interaction.Interaction` available in the ``attrs``
+    edge attribute of the legacy :py:class:`pypath.main.PyPath`` object
+    provides a clearer and much more versatile interface. This object will
+    be removed at some point, we don't recommend to build applications by
+    using it.
+    
     Object storing directionality information of an edge. Also includes
     information about the reverse direction, mode of regulation and
     sources of that information.
@@ -1320,10 +1333,10 @@ class Direction(object):
         return newd
 
 
-# TODO: Ask Dénes about this and finish docstrings
-class AttrHelper(object):
+class _AttrHelper(object):
     """
-    Attribute helper class.
+    *Legacy* object for internal use. Will be removed.
+    Assists in assigning visual attributes for plotting and export methods.
 
     * Initialization arguments:
         - *value* [dict/str]?:
@@ -1342,9 +1355,6 @@ class AttrHelper(object):
         - *thisSign* []: Optional, ``None`` by default.
         - *this_directedSources* []: Optional, ``None`` by default.
         - *thisSources* []: Optional, ``None`` by default.
-
-    * Returns:
-        -
     """
 
     def __init__(self, value, name=None, defaults={}):
@@ -1424,6 +1434,9 @@ class AttrHelper(object):
 
 class _NamedVertexSeq(object):
     """
+    *Legacy* object, will be removed.
+    A more versatile replacement in the new API is
+    :py:class:`pypath.entity.EntityList`.
     Vertex sequence object. Combines the list of vertex objects, their
     UniProt IDs and corresponding GeneSymbols.
 
@@ -1507,12 +1520,27 @@ class _NamedVertexSeq(object):
     up = uniprot
     vs = __iter__
 
-# TODO: Ask:
-#       - Which/how many organisms are accepted/available?
-#       - MySQL
+
 class PyPath(session_mod.Logger):
     """
-    Main network object.
+    This is the a *legacy* object representing a molecular interaction
+    network. At some point it will be removed, we don't recommend to rely
+    on it when you build your applications.
+    The :py:class:`pypath.network.Network` object offers a much clearer and
+    more versatile API. As of end of 2019 not all functionalities have been
+    migrated to the new API. For this reason we offer an intermediate
+    solution: in this `igraph` based object the `attrs` edge attribute
+    holds instances of :py:class:`pypath.interaction.Interaction` objects,
+    the same type of object we use to represent interactions in the new
+    :py:class:`pypath.network.Network`.
+    At the same time we will keep supporting `igraph` with a method for
+    converting :py:class:`pypath.network.Network` to a
+    :py:class:`igraph.Graph` object, however this won't provide all the
+    methods available here but will serve only the purpose to make it
+    possible to use the graph theory methods from the `igraph` library
+    on networks built with `pypath`.
+
+    An object representing a molecular interaction network.
 
     :arg int ncbi_tax_id:
         Optional, ``9606`` (Homo sapiens) by default. NCBI Taxonomic
@@ -1528,14 +1556,6 @@ class PyPath(session_mod.Logger):
         Optional, ``None`` by default. Other
         :py:class:`pypath.main.PyPath` instance from which the data will
         be copied.
-    :arg tuple mysql:
-        DEPRECATED Optional, ``(None, 'mapping')`` by default. Contains the MySQL
-        parameters used by the :py:mod:`pypath.mapping` module to load
-        the ID conversion tables.
-    :arg tuple chembl_mysql:
-        DEPRECATED Optional, ``(None, 'chembl')`` by default. Contains the MySQL
-        parameters used by the :py:mod:`pypath.mapping` module to load
-        the ChEMBL ID conversion tables.
     :arg str name:
         Optional, ``'unnamed'`` by default. Session or project name
         (custom).
@@ -1835,7 +1855,7 @@ class PyPath(session_mod.Logger):
             The instance to be copied from.
         """
 
-        self.__dict__ = modcopy.deepcopy(other.__dict__)
+        self.__dict__ = copy_mod.deepcopy(other.__dict__)
         self.update_vname()
         self._log('PyPath object has been copied and reinitialized.')
 
@@ -2085,7 +2105,7 @@ class PyPath(session_mod.Logger):
         """
 
         g = graph if graph is not None else self.graph
-        gg = g if replace else modcopy.deepcopy(g)
+        gg = g if replace else copy_mod.deepcopy(g)
 
         cl = gg.components(mode='WEAK')
         cl_sizes = cl.sizes()
@@ -3425,7 +3445,7 @@ class PyPath(session_mod.Logger):
         # in case of proteins this does not happen too often
         for id_a, id_b in itertools.product(default_id_a, default_id_b):
 
-            this_edge = modcopy.copy(edge)
+            this_edge = copy_mod.copy(edge)
             this_edge['default_name_a'] = id_a
             this_edge['default_name_type_a'] = (
                 self.default_name_type[edge['entity_type_a']]
@@ -3606,7 +3626,7 @@ class PyPath(session_mod.Logger):
 
         graph = self.graph if graph is None else graph
 
-        multiple = Counter(graph.vs['name'])
+        multiple = collections.Counter(graph.vs['name'])
 
         for name, count in iteritems(multiple):
 
@@ -6106,8 +6126,8 @@ class PyPath(session_mod.Logger):
                 random_pathlen = []
 
                 for i in xrange(0, 100):
-                    f.vs[groupA_random] = modcopy.copy(f.vs[groupA])
-                    f.vs[groupB_random] = modcopy.copy(f.vs[groupB])
+                    f.vs[groupA_random] = copy_mod.copy(f.vs[groupA])
+                    f.vs[groupB_random] = copy_mod.copy(f.vs[groupB])
                     random.shuffle(f.vs[groupA_random])
                     random.shuffle(f.vs[groupB_random])
                     paths = []
@@ -6679,7 +6699,7 @@ class PyPath(session_mod.Logger):
             literature curated interactions or not.
         """
 
-        settings = modcopy.deepcopy(
+        settings = copy_mod.deepcopy(
             network_resources.transcription['dorothea']
         )
         settings.networkinput.input_args = {
@@ -11538,7 +11558,7 @@ class PyPath(session_mod.Logger):
 
         if copy:
 
-            graph_original = modcopy.deepcopy(self.graph)
+            graph_original = copy_mod.deepcopy(self.graph)
 
         vselections = dict(
             (
@@ -11763,7 +11783,7 @@ class PyPath(session_mod.Logger):
 
         if lig_rec_resources:
             
-            datasets = modcopy.deepcopy(network_resources.ligand_receptor)
+            datasets = copy_mod.deepcopy(network_resources.ligand_receptor)
             datasets['cellphonedb'].networkinput.input_args = {
                 'ligand_ligand':     keep_lig_lig,
                 'receptor_receptor': keep_rec_rec,
@@ -12137,10 +12157,14 @@ class PyPath(session_mod.Logger):
 
         proteins_present = set([
             uniprot
-            for uniprot, cnt in iteritems(Counter(itertools.chain(*[
+            for uniprot, cnt in iteritems(
+                collections.Counter(
+                    itertools.chain(*(
                         prdb.expression[sample].keys()
                         for sample in samples
-                    ])))
+                    ))
+                )
+            )
             if cnt >= occurrence
         ]) & set(graph.vs['name'])
 
@@ -13347,7 +13371,7 @@ class PyPath(session_mod.Logger):
 
             for name, fmt in iteritems(formats):
 
-                fmt_noref = modcopy.deepcopy(fmt)
+                fmt_noref = copy_mod.deepcopy(fmt)
 
                 if fmt.name in getattr(db_categories, cat):
 
@@ -13363,7 +13387,7 @@ class PyPath(session_mod.Logger):
         if omnipath is None:
 
             if old_omnipath_resources:
-                omnipath = modcopy.deepcopy(network_resources.omnipath)
+                omnipath = copy_mod.deepcopy(network_resources.omnipath)
                 omnipath['biogrid'] = network_resources.interaction['biogrid']
                 omnipath['alz'] = network_resources.interaction['alz']
                 omnipath['netpath'] = network_resources.interaction['netpath']
@@ -13484,7 +13508,7 @@ class PyPath(session_mod.Logger):
         """
 
         htdata = {}
-        refc = Counter(
+        refc = collections.Counter(
             common.flat_list((r.pmid for r in e['references'])
                             for e in self.graph.es))
 
@@ -15007,15 +15031,15 @@ class PyPath(session_mod.Logger):
                         and 'edge_color' not in _custom_attrs \
                         and 'edge_arrowhead' not in _custom_attrs:
                     callbacks['color'] = \
-                        AttrHelper(auto_edges, 'edge_color', _defaults)
+                        _AttrHelper(auto_edges, 'edge_color', _defaults)
 
                     if auto_edges == 'DIRECTIONS':
                         callbacks['arrowhead'] = \
-                            AttrHelper(auto_edges, 'edge_arrowhead', _defaults)
+                            _AttrHelper(auto_edges, 'edge_arrowhead', _defaults)
 
                     else:
                         callbacks['arrowhead'] = \
-                            AttrHelper('none', 'edge_arrowhead', _defaults)
+                            _AttrHelper('none', 'edge_arrowhead', _defaults)
 
             for attr in locals()['%s_attrs' % _entity].keys():
                 callback_name = '%s_%s' % (_entity, attr)
@@ -15027,7 +15051,7 @@ class PyPath(session_mod.Logger):
 
                         if '_name' not in callback_value:
                             callback_value['_name'] = 'index'
-                    callbacks[attr] = AttrHelper(
+                    callbacks[attr] = _AttrHelper(
                         value=callback_value, name=attr, defaults=_defaults)
 
         # graph
@@ -15671,7 +15695,7 @@ class PyPath(session_mod.Logger):
             )
         )
 
-        graph.vs['old_name'] = modcopy.deepcopy(graph.vs['name'])
+        graph.vs['old_name'] = copy_mod.deepcopy(graph.vs['name'])
 
         del delete_vids
         del name_old__vid_old
@@ -15958,7 +15982,7 @@ class PyPath(session_mod.Logger):
                                 {'dirs', 'refs_by_dir', 'evidence'}
                             ):
 
-                                new_edge[eattr] = modcopy.deepcopy(e[eattr])
+                                new_edge[eattr] = copy_mod.deepcopy(e[eattr])
 
         prg.terminate()
 
@@ -16003,7 +16027,7 @@ class PyPath(session_mod.Logger):
 
                     if vattr != 'name':
 
-                        v_new[vattr] = modcopy.deepcopy(v_orig[vattr])
+                        v_new[vattr] = copy_mod.deepcopy(v_orig[vattr])
 
         self._log(
             'Copying node attributes from original nodes finished.'
@@ -16115,7 +16139,7 @@ class PyPath(session_mod.Logger):
         # vector of probabilities;
         # this will be subject of iteration
         # and its final state will be the result
-        _p = modcopy.copy(_q)
+        _p = copy_mod.copy(_q)
 
         # transition matrix
         __A = np.array(list(graph.get_adjacency()), dtype=np.float64).T
