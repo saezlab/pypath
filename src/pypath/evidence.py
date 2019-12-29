@@ -20,6 +20,14 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+"""
+Provides classes for representing and processing evidences supporting
+relationships. The evidences hold information about the databases and
+literature references, they can be organized into collections. A number
+of operations are available on evidences and their collections, for
+example they can be combined or filtered.
+"""
+
 from future.utils import iteritems
 
 import importlib as imp
@@ -35,6 +43,24 @@ _log = _logger._log
 
 
 class Evidence(object):
+    """
+    Represents an evidence supporting a relationship such as molecular
+    interaction, molecular complex, enzyme-PTM interaction, annotation, etc.
+    
+    The evidence consists of two main parts: the database and the literature
+    references. If a relationship is supprted by multiple databases, for
+    each one `Evidence` object should be created and 
+    
+    :arg pypath.resource.ResourceAttributes resource:
+        An object derived from :py:class:`pypath.resource.ResourceAttributes`.
+    :arg str,list,set,NoneType references:
+        Optional, one or more literature references (preferably PubMed IDs).
+    """
+    
+    __slots__ = [
+        'resource',
+        'references',
+    ]
     
     
     def __init__(self, resource, references = None):
@@ -324,6 +350,21 @@ class Evidence(object):
 
 
 class Evidences(object):
+    """
+    A collection of evidences. All evidences supporting a relationship such
+    as molecular interaction, molecular complex, enzyme-PTM interaction,
+    annotation, etc should be collected in one `Evidences` object. This way
+    the set of evidences can be queried a comprehensive way.
+    
+    :arg tuple,list,set,Evidences evidences:
+        An iterable providing :py:class:`Evidence` instances. It is possible
+        to create an empty evidence collection and populate it later or to
+        show this way that certain relationship has no supporting evidences.
+    """
+    
+    __slots__ = [
+        'evidences',
+    ]
     
     
     def __init__(self, evidences = ()):
