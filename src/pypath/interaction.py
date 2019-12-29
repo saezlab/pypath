@@ -19,6 +19,14 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+"""
+Here we define one class, the :py:class:`Interaction`` which provides a
+rich API for representing and querying molecular interactions. The
+interactions serve as the building elements of the network and the
+:py:class:`pypath.network.Network` object largely relies on methods
+of the :py:class:`Interaction`` objects.
+"""
+
 from future.utils import iteritems
 
 import importlib as imp
@@ -65,6 +73,45 @@ InteractionDataFrameRecord.__new__.__defaults__ = (None,) * 7
 
 
 class Interaction(object):
+    """
+    Represents a unique pair of molecular entities interacting with each
+    other. One :py:class:`Interaction` object might represent multiple
+    interactions i.e. with different direction or effect or type (e.g.
+    transcriptional regulation and post-translational regulation),
+    each supported by different evidences.
+    
+    :arg str,pypath.entity.Entity a,b:
+        The two interacting partners. If an :py:class:`pypath.entity.Entity`
+        objects provided the other attributes (entity_type, id_type, taxon)
+        will be ignored.
+    :arg str id_type_a,id_type_b:
+        The identifier types for partner ``a`` and ``b`` e.g. ``'uniprot'``.
+    :arg str entity_type_a,entity_type_b:
+        The types of the molecular entities ``a`` and ``b``
+        e.g. ``'protein'``.
+    :arg int taxon_a,taxon_b:
+        The NCBI Taxonomy Identifiers of partner ``a`` and ``b``
+        e.g. ``9606`` for human.
+    
+    :details:
+        The arguments ``a`` and ``b`` will be assigned to the attribute ``a``
+        and ``b`` in an alphabetical order, hence it's possible that
+        argument ``a`` becomes attribute ``b``.
+    """
+    
+    __slots__ = [
+        'a',
+        'b',
+        'a_b',
+        'b_a',
+        'nodes',
+        'key',
+        'evidences',
+        'direction',
+        'positive',
+        'negative',
+        'attrs',
+    ]
     
     _get_methods = {
         'evidences',
