@@ -2129,6 +2129,34 @@ ligand_receptor = {
         extra_node_attrs_b = {},
         data_model = 'ligand_receptor',
     ),
+    'baccin2019': input_formats.NetworkInput(
+        name = 'Baccin2019',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = True,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'baccin2019_interactions',
+        references = 6,
+        resource = 5,
+        must_have_references = False,
+        header = False,
+        negative_filters = [
+            (2, 'Incorrect'),
+        ],
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {
+            'baccin_category': 4,
+            'baccin_location': 3,
+        },
+        data_model = 'ligand_receptor',
+    ),
 }
 
 small_molecule_protein = {
@@ -2187,6 +2215,9 @@ pathway['ramilowski2015'].data_model = 'activity_flow'
 pathway['lrdb'] = copy.deepcopy(ligand_receptor['lrdb'])
 pathway['lrdb'].data_model = 'activity_flow'
 pathway['lrdb'].must_have_references = True
+pathway['baccin2019'] = copy.deepcopy(ligand_receptor['baccin2019'])
+pathway['baccin2019'].data_model = 'activity_flow'
+pathway['baccin2019'].must_have_references = True
 
 '''
 The default set of resources in OmniPath.
