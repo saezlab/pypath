@@ -67,6 +67,30 @@ NetworkEntityCollection = collections.namedtuple(
 NetworkEntityCollection.__new__.__defaults__ = (None,) * 8
 
 
+NetworkStatsRecord = collections.namedtuple(
+    'NetworkStatsRecord',
+    [
+        'total',
+        'by_resource',
+        'by_category',
+        'shared',
+        'unique',
+        'percent',
+        'shared_res_cat',
+        'unique_res_cat',
+        'percent_res_cat',
+        'shared_cat',
+        'unique_cat',
+        'percent_cat',
+        'resource_cat',
+        'cat_resource',
+        'method',
+        'label',
+    ],
+)
+NetworkStatsRecord.__new__.__defaults__ = (None,) * 11
+
+
 class Network(session_mod.Logger):
     """
     Represents a molecular interaction network. Provides various methods to
