@@ -626,6 +626,7 @@ annot_combined_classes = (
                 'receptor_hgnc',
                 'receptor_dgidb',
                 'receptor_lrdb',
+                'receptor_baccin',
             ),
             op = set.union,
         ),
@@ -710,6 +711,13 @@ annot_combined_classes = (
             'role': 'receptor',
         },
     ),
+    af.AnnotDef(
+        name = 'receptor_baccin',
+        source = 'Baccin2019',
+        args = {
+            'mainclass': 'receptor',
+        },
+    ),
     # ECM
     af.AnnotDef(
         name = 'ecm',
@@ -779,6 +787,7 @@ annot_combined_classes = (
                 'ligand_hgnc',
                 'ligand_dgidb',
                 'ligand_lrdb',
+                'ligand_baccin',
             ),
             op = set.union,
         ),
@@ -873,6 +882,13 @@ annot_combined_classes = (
         source = 'LRdb',
         args = {
             'role': 'ligand',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand_baccin',
+        source = 'Baccin2019',
+        args = {
+            'mainclass': 'ligand',
         },
     ),
     # intracellular
