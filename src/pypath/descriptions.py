@@ -52,7 +52,7 @@ descriptions = {
         'urls': {
             'articles':
             ['http://www.cell.com/cell/abstract/S0092-8674(14)01422-6'],
-            'webpages': ['http://interactome.dfci.harvard.edu/H_sapiens/']
+            'webpages': ['http://interactomedfci.harvard.edu/H_sapiens/']
         },
         'pubmeds': [25416956],
         'emails':
@@ -3013,6 +3013,18 @@ descriptions = {
             'commercial_use': True,
         },
         'emails': [('gsea-team@broadinstitute.org', 'GSEA Team'),],
+    },
+    'Baccin2019': {
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False,
+        },
+        'emails': [
+            ('lars.velten@embl.de', 'Lars Velten'),
+            ('a.trumpp@dkfz-heidelberg.de', 'Andreas Trumpp'),
+            ('s.haas@dkfz-heidelberg.de', 'Simon Haas'),
+        ],
     },
 }
 
