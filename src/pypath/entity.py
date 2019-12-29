@@ -18,6 +18,11 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+"""
+Provides classes for representing molecular entities and their collections.
+A molecular entity is defined by its identifier, type and taxon.
+"""
+
 from future.utils import iteritems
 
 import importlib as imp
@@ -41,6 +46,35 @@ EntityKey = collections.namedtuple(
 
 
 class Entity(session_mod.Logger):
+    """
+    Represents a molecular entity such as protein, miRNA, lncRNA or small
+    molecule.
+    
+    :arg str identifier:
+        An identifier from the reference database e.g. UniProt ID for
+        proteins.
+    :arg str entity_type:
+        The type of the molecular entity, defaults to ``'protein'``.
+    :arg str id_type:
+        The type of the identifier (the reference database), default is
+        ``'uniprot'``.
+    :arg int taxon:
+        The NCBI Taxonomy Identifier of the molecular entity, e.g. ``9606``
+        for human. Use ``0`` for non taxon specific molecules e.g. metabolites
+        or drug compounds.
+    :arg NoneType,dict attrs:
+        A dictionary of additional attributes.
+    """
+    
+    __slots__ = [
+        'identifier',
+        'entity_type',
+        'id_type',
+        'taxon',
+        'attrs',
+        'label',
+        'key',
+    ]
     
     
     def __init__(
