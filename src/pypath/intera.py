@@ -983,7 +983,9 @@ class Complex(object):
         
         if isinstance(ids, set) and source:
             
-            ids = {source: ids}
+            source = common.to_set(source)
+            
+            ids = dict((s, ids) for s in source)
         
         if isinstance(ids, dict):
             

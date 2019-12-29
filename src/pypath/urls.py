@@ -1114,6 +1114,13 @@ urls = {
         'url': 'https://raw.githubusercontent.com/SCA-IRCM/LRdb/'\
             'master/LRdb_122019.txt',
     },
+    'baccin2019': {
+        'label': 'Ligand receptor pairs in Supplementary Table 3 from'\
+            'Baccin 2019',
+        'url': r'https://static-content.springer.com/esm/'\
+            r'art%3A10.1038%2Fs41556-019-0439-6/MediaObjects/'\
+            r'41556_2019_439_MOESM3_ESM.xlsx',
+    },
 }
 
 

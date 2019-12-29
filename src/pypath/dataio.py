@@ -119,6 +119,7 @@ import pypath.intera as intera
 import pypath.residues as residues
 import pypath.settings as settings
 import pypath.taxonomy as taxonomy
+import pypath.homology as homology_mod
 
 if 'long' not in __builtins__:
     long = int
@@ -13650,3 +13651,136 @@ def lrdb_annotations():
                     )
     
     return dict(result)
+
+
+def baccin2019_interactions(ncbi_tax_id = 9606):
+    
+    def id_translate(mouse_gs):
+        
+        uniprots = mapping.map_name(
+            mouse_gs,
+            'genesymbol',
+            'uniprot',
+            10090,
+        )
+        
+        if ncbi_tax_id != 10090:
+            
+            uniports = set(
+                itertools.chain(*(
+                    homology.translate(uniprot)
+                    for uniprot in uniprots
+                ))
+            )
+        
+        return uniprots
+    
+    
+    def raw_to_uniprots(raw):
+        
+        components = raw.split('&')
+        
+        return set(
+            itertools.product(
+                *(id_translate(comp) for comp in components)
+            )
+        )
+    
+    
+    def get_partners(components, sources, references):
+        
+        return {
+            (
+                comp[0]
+                    if len(comp) == 1 else
+                intera.Complex(
+                    components = comp,
+                    sources = sources,
+                    references = references,
+                )
+            )
+            for comp in components
+        }
+    
+    
+    Baccin2019Interaction = collections.namedtuple(
+        'Baccin2019Interaction',
+        [
+            'ligand',
+            'receptor',
+            'correct',
+            'ligand_location',
+            'ligand_category',
+            'resources',
+            'references',
+        ]
+    )
+    
+    
+    source_names = {
+        'Baccin': 'Baccin2019',
+        'Ramilowski': 'Ramilowski2015',
+    }
+    
+    url = urls.urls['baccin2019']['url']
+    
+    c = curl.Curl(url, silent = False, large = True)
+    
+    data = read_xls(c.fileobj.name, sheet = 'SuppTable3')
+    
+    result = []
+    
+    if ncbi_tax_id != 10090:
+        
+        homology = homology_mod.ProteinHomology(
+            source = 10090,
+            target = ncbi_tax_id,
+        )
+    
+    for rec in data[3:]:
+        
+        ligand_components = raw_to_uniprots(rec[1])
+        
+        if not ligand_components:
+            
+            continue
+        
+        receptor_components = raw_to_uniprots(rec[2])
+        
+        if not receptor_components:
+            
+            continue
+        
+        sources = {'Baccin2019', rec[3].strip()}
+        sources = {
+            source_names[s] if s in source_names else s
+            for s in sources
+        }
+        
+        references = {
+            _ref for _ref in
+            (
+                ref.strip().replace('.0', '')
+                for ref in rec[7].split(',')
+            )
+            if _ref.isdigit()
+        }
+        
+        ligands = get_partners(ligand_components, sources, references)
+        receptors = get_partners(receptor_components, sources, references)
+        
+        for ligand, receptor in itertools.product(ligands, receptors):
+            
+            result.append(
+                Baccin2019Interaction(
+                    ligand = ligand,
+                    receptor = receptor,
+                    correct = rec[4].strip(),
+                    ligand_location = rec[5].strip(),
+                    ligand_category = rec[6].strip(),
+                    resources = sources,
+                    references = references,
+                )
+            )
+    
+    return result
