@@ -34,6 +34,7 @@ import collections
 import operator
 import itertools
 import functools
+import inspect
 
 import pypath.evidence as pypath_evidence
 import pypath.resource as pypath_resource
@@ -171,6 +172,16 @@ class Interaction(object):
         'data_models',
         'interaction_types',
     }
+    
+    _get_method_signature = [
+        ('direction', None),
+        ('effect', None),
+        ('resources', None),
+        ('data_model', None),
+        ('interaction_type', None),
+        ('via', None),
+        ('references', None),
+    ]
     
     _degree_modes = (
         'ALL',
@@ -2001,7 +2012,7 @@ class Interaction(object):
         kind of interactions across a series of `Interaction` objects.
         """
         
-        # TODO: this method could be made slightly more efficient if by using
+        # TODO: this method could be made slightly more efficient by using
         # not ``get_interactions`` but a simpler logic as here we don't need
         # to handle the directions separately; however this is not very
         # important and for the time being it's good as it is.
@@ -2569,10 +2580,16 @@ class Interaction(object):
         
         for _get in cls._get_methods_autogen:
             
-            setattr(
-                cls,
-                'get_%s' % _get,
-                _create_get_method(_get)
+            cls._add_method(
+                method_name = 'get_%s' % _get,
+                method = _create_get_method(_get),
+                # this is not always correct, to be fixed later
+                signature = cls._get_method_signature,
+                doc = (
+                    'Retrieves %s matching the criteria.' % (
+                        _get.replace('_', ' ')
+                    )
+                ),
             )
     
     
@@ -2612,10 +2629,14 @@ class Interaction(object):
             cls._count_methods.add(method_name)
             cls._get_methods.add(method_name)
             
-            setattr(
-                cls,
-                'get_%s' % method_name,
-                _create_degree_method(mode, *dir_args)
+            method = _create_degree_method(mode, *dir_args)
+            _method_name = 'get_%s' % method_name
+            
+            cls._add_method(
+                method_name = _method_name,
+                method = method,
+                signature = ['mode'] + cls._get_method_signature,
+                doc = cls.get_degrees.__doc__,
             )
     
     
@@ -2624,10 +2645,13 @@ class Interaction(object):
         
         for _get in cls._count_methods:
             
-            setattr(
-                cls,
-                'count_%s' % _get,
-                cls._count(getattr(cls, 'get_%s' % _get))
+            _get_method = getattr(cls, 'get_%s' % _get)
+            
+            cls._add_method(
+                method_name = 'count_%s' % _get,
+                method = cls._count(_get_method),
+                signature = cls._get_method_signature,
+                doc = _get_method.__doc__,
             )
     
     
@@ -2639,19 +2663,47 @@ class Interaction(object):
             cls._by_methods,
         ):
             
-            setattr(
-                cls,
-                '%s_by_%s' % (_get, _by),
-                getattr(
-                    cls,
-                    '_by_%s' % _by,
-                )(
-                    getattr(
-                        cls,
-                        'get_%s' % _get
-                    )
-                )
+            _get_method = getattr(cls, 'get_%s' % _get)
+            method_name = '%s_by_%s' % (_get, _by)
+            method = getattr(cls, '_by_%s' % _by)(_get_method)
+            
+            cls._add_method(
+                method_name = method_name,
+                method = method,
+                signature = cls._get_method_signature,
+                doc = _get_method.__doc__,
             )
+    
+    
+    @classmethod
+    def _add_method(cls, method_name, method, signature = None, doc = None):
+        
+        method.__name__ = method_name
+        
+        if signature and hasattr(inspect, 'Signature'): # Py2
+            
+            if not isinstance(signature, inspect.Signature):
+                
+                signature = inspect.Signature([
+                    inspect.Parameter(
+                        name = param[0],
+                        kind = inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                        default = (
+                            param[1]
+                                if len(param) > 1 else
+                            inspect.Parameter.empty
+                        )
+                    )
+                    for param in signature
+                ])
+            
+            method.__signature__ = signature
+        
+        if doc:
+            
+            method.__doc__ = doc
+        
+        setattr(cls, method_name, method)
     
     
     def generate_df_records(self, by_source = False, with_references = False):
