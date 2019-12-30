@@ -114,6 +114,7 @@ class Interaction(object):
     ]
     
     _get_methods = {
+        'entities',
         'evidences',
         'references',
         'resource_names',
@@ -1982,9 +1983,39 @@ class Interaction(object):
         )
     
     
-    def get_entities(self):
+    def get_entities(
+            self,
+            direction = None,
+            effect = None,
+            resources = None,
+            data_model = None,
+            interaction_type = None,
+            via = None,
+            references = None,
+        ):
+        """
+        Retrieves the entities involved in interactions matching the criteria.
+        It either returns both interacting entities in a *set* or an empty
+        *set*. This may not sound so useful at the level of this object but
+        becomes more useful once we want to collect entities having certain
+        kind of interactions across a series of `Interaction` objects.
+        """
         
-        return {self.a, self.b}
+        # TODO: this method could be made slightly more efficient if by using
+        # not ``get_interactions`` but a simpler logic as here we don't need
+        # to handle the directions separately; however this is not very
+        # important and for the time being it's good as it is.
+        
+        kwargs = locals()
+        _ = kwargs.pop('self')
+        
+        return (
+            set(
+                itertools.chain(
+                    *self.get_interactions(**kwargs)
+                )
+            )
+        )
     
     
     def get_identifiers(self):
