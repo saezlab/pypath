@@ -1384,9 +1384,21 @@ def dict_counts(dict_of_sets):
     """
     For a *dict* of *set*s or other values with ``__len__`` returns a
     *dict* of numbers with the length of each value in the original *dict*.
+    
+    This function is recursively works on dicts of dicts.
     """
     
-    return dict((key, len(val)) for key, val in iteritems(dict_of_sets))
+    return dict(
+        (
+            key,
+            (
+                dict_counts(val)
+                    if isinstance(val, dict) else
+                len(val)
+            )
+        )
+        for key, val in iteritems(dict_of_sets)
+    )
 
 
 def shared_unique_total(by_group, op = 'shared'):
