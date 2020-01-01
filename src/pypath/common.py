@@ -1401,6 +1401,60 @@ def dict_counts(dict_of_sets):
     )
 
 
+def dict_expand_keys(dct, depth = 1, front = True):
+    """
+    From a *dict* with *tuple* keys builds a dict of dicts.
+    
+    :arg dict dct:
+        A *dict* with tuple keys (if keys are not tuples ``dct`` will be
+        returned unchanged).
+    :arg int depth:
+        Expand the keys up to this depth. If 0 *dct* will be returned
+        unchanged, if 1 dict of dicts, if 2 dict of dict of dicts will be
+        returned, and so on.
+    :arg bool front:
+        If ``True`` the tuple keys will be chopped from the front, otherwise
+        from their ends.
+    """
+    
+    if depth == 0:
+        
+        return dct
+    
+    new = {}
+    
+    for key, val in iteritems(dct):
+        
+        if not isinstance(key, tuple):
+            
+            new[key] = val
+        
+        elif len(key) == 1:
+            
+            new[key[0]] = val
+        
+        else:
+            
+            outer_key = key[0] if front else key[:-1]
+            inner_key = key[1:] if front else key[-1]
+            
+            sub_dct = new.setdefault(outer_key, {})
+            sub_dct[inner_key] = val
+    
+    if depth > 1:
+        
+        new = (
+            dict(
+                (key, dict_expand_keys(sub_dct, depth = depth - 1))
+                for key, sub_dct in iteritems(new)
+            )
+                if front else
+            dict_expand_keys(new, depth = depth -1, front = False)
+        )
+    
+    return new
+
+
 def shared_unique_total(by_group, op = 'shared'):
     
     counts = collections.Counter(itertools.chain(*by_group.values()))
