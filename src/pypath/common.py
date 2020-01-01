@@ -1438,6 +1438,10 @@ def dict_expand_keys(dct, depth = 1, front = True):
             outer_key = key[0] if front else key[:-1]
             inner_key = key[1:] if front else key[-1]
             
+            if len(inner_key) == 1:
+                
+                inner_key = inner_key[0]
+            
             sub_dct = new.setdefault(outer_key, {})
             sub_dct[inner_key] = val
     
@@ -1445,12 +1449,73 @@ def dict_expand_keys(dct, depth = 1, front = True):
         
         new = (
             dict(
-                (key, dict_expand_keys(sub_dct, depth = depth - 1))
+                (
+                    key,
+                    dict_expand_keys(sub_dct, depth = depth - 1)
+                )
                 for key, sub_dct in iteritems(new)
             )
                 if front else
-            dict_expand_keys(new, depth = depth -1, front = False)
+            dict_expand_keys(new, depth = depth - 1, front = False)
         )
+    
+    return new
+
+
+def dict_collapse_keys(dct, depth = 1, front = True):
+    """
+    From a dict of dicts builds a dict with tuple keys.
+    
+    :arg dict dct:
+        A dict of dicts (if values are not dicts it will be returned
+        unchanged).
+    :arg int depth:
+        Collapse the keys up to this depth. If 0 *dct* will be returned
+        unchanged, if 1 tuple keys will have 2 elements, if 2 then
+        2 elements, and so on.
+    :arg bool front:
+        If ``True`` the tuple keys will be collapsed first from the
+        outermost dict going towards the innermost one until depth allows.
+        Otherwise the method will start from the innermost ones.
+    """
+    
+    if not front:
+        
+        # this is difficult to implement because we have no idea about
+        # the depth; this version ensures an even key length for the
+        # tuple keys; another alterntive would be to iterate recursively
+        # over the dictionary tree
+        dct = dict_collapse_keys(dct, depth = 9999999)
+        maxdepth = max(
+            len(k for k in dct.keys() if isinstance(k, tuple)),
+            default = 0
+        )
+        return dict_expand_keys(dct, depth = maxdepth - depth, front = True)
+    
+    if not any(isinstance(val, dict) for val in dct.values()):
+        
+        return dct
+    
+    new = {}
+    
+    for key, val in iteritems(dct):
+        
+        key = key if isinstance(key, tuple) else (key,)
+        
+        if isinstance(val, dict):
+            
+            for key1, val1 in iteritems(val):
+                
+                _key = key + (key1,)
+                new[_key] = val1
+            
+        else:
+            
+            new[key] = val
+    
+    if depth > 1:
+        
+        new = dict_collapse_keys(new, depth = depth - 1)
     
     return new
 
