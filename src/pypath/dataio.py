@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -13814,7 +13814,7 @@ def baccin2019_annotations(ncbi_tax_id = 9606):
             Baccin2019Annotation(
                 mainclass = 'receptor',
                 subclass = (
-                    '%sReceptor' % is.ligand
+                    '%sReceptor' % ia.ligand
                         if ia.ligand_category != 'Other' else
                     None
                 ),

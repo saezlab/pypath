@@ -6,7 +6,7 @@
 #  Annotation information for intercell.py
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)

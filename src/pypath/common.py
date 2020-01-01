@@ -6,7 +6,7 @@
 #  Contains helper functions shared by different modules.
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -1239,7 +1239,7 @@ def shared_unique(by_group, group, op = 'shared'):
     This method can be used among other things to find the shared and
     unique entities across resources.
     
-    :param str op:
+    :arg str op:
         Either `shared` or `unique`.
     """
     
