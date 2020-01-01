@@ -66,6 +66,104 @@ NetworkEntityCollection = collections.namedtuple(
 )
 NetworkEntityCollection.__new__.__defaults__ = (None,) * 8
 
+class NetworkEntityCollection(object):
+    
+    
+    def __init__(self, collection, label):
+        
+        self.collection = collection
+        self.label = label
+    
+    
+    def main(self):
+        
+        self.setup()
+    
+    
+    def setup(self):
+        
+        self.collection = self.expand_keys(self.collection)
+        self.add_shared_unique()
+    
+    
+    def add_shared_unique(self):
+        
+        self.shared, self.unique = self._shared_unique(self.collection)
+        
+        for key0, val0 in iteritems(self.collection):
+            
+            totals = dict(
+                (
+                    key1,
+                    val1['Total']
+                )
+                for key1, val1 in iteritems(val0)
+            )
+            
+            shared, unique = self._shared_unique(totals)
+            
+            val0['Total'] = totals['Total']
+            
+            for attr, vals1 in zip(('shared', 'unique'), (shared, unique)):
+                
+                getattr(self, attr)[key0]['Total'] = vals1['Total']
+                
+                for key1, val1 in iteritems(vals1):
+                    
+                    if key1 == 'Total':
+                        
+                        continue
+                    
+                    getattr(self, attr)[key0][key1]['ItypeTotal'] = val1
+    
+    
+    @classmethod
+    def _shared_unique(cls, dct):
+        
+        if not all(isinstance(set) val for val in dct.values()):
+            
+            shared, unique = tuple(
+                map(
+                    dict,
+                    zip(*(
+                        zip(
+                            (key, key),
+                            cls._shared_unique(val)
+                        )
+                        for key, val in iteritems(dct)
+                    ))
+                )
+            )
+            
+            return shared, unique
+        
+        shared = common.shared_foreach(dct)
+        unique = common.unique_foreach(dct)
+        
+        for d in (dct, shared, unique):
+            
+            d['Total'] = common.dict_union(d)
+        
+        return shared, unique
+    
+    
+    @staticmethod
+    def expand_keys(dct):
+        
+        dct_exp = {}
+        
+        for key, val in iteritems(dct):
+            
+            sub_dct = dct_exp
+            
+            for k in key:
+                
+                sub_dct = sub_dct.setdefault(k, {})
+            
+            sub_dct[k] = val
+        
+        return dct_exp
+
 
 NetworkStatsRecord = collections.namedtuple(
     'NetworkStatsRecord',
@@ -2491,6 +2589,7 @@ class Network(session_mod.Logger):
             data_model = None,
             via = None,
             references = None,
+            return_interactions = False,
         ):
         """
         :arg str,Entity,list,set,tuple,EntityList entity:
@@ -2519,6 +2618,7 @@ class Network(session_mod.Logger):
             kwargs = locals()
             _ = kwargs.pop('self')
             _ = kwargs.pop('entity')
+            _ = kwargs.pop('return_interactions')
             
             return entity_mod.EntityList(
                 set(itertools.chain(*(
@@ -2838,6 +2938,9 @@ class Network(session_mod.Logger):
         """
         Collects the values of an attribute over all interactions in the
         network.
+        
+        **kwargs: passed to methods of
+        :py:class:`pypath.interaction.Interaction`.
         """
         
         result = set() if not by else collections.defaultdict(set)
@@ -2872,6 +2975,58 @@ class Network(session_mod.Logger):
     
     
     @staticmethod
+    def _generate_collect_methods(cls):
+        
+        def _create_collect_method(what):
+            
+            
+            
+            
+            @functools.wraps(what)
+            def _collect_method(**kwargs):
+                
+                self = args[0]
+                kwargs['what'] = what
+                
+                by_resource = self._collect(
+                    by = 'interaction_type_and_data_model_and_resource',
+                    **kwargs
+                )
+                by_resource = expand_keys(by_resource)
+                
+                
+                
+                return (
+                    NetworkEntityCollection(
+                        #total = total,
+                        #by_resource = by_resource,
+                        #by_category = by_category,
+                        #shared,
+                        #unique,
+                        #shared_res_cat,
+                        #unique_res_cat,
+                        #shared_cat,
+                        #unique_cat,
+                        #resource_cat,
+                        #cat_resource,
+                        #method,
+                        #label,
+                    )
+                )
+            
+            return _collect_method
+        
+        
+        for _get in interaction_mod.Interaction._get_methods:
+            
+            setattr(
+                cls,
+                'collect_%s' % _get,
+                _create_collect_method(_get),
+            )
+    
+    
+    @staticmethod
     def _get_by_method_name(get, by):
         
         return (
@@ -2880,11 +3035,21 @@ class Network(session_mod.Logger):
                     'get_' if not by else '',
                     get,
                     '_by_' if by else '',
-                    by if by else '',
+                    by or '',
                 )
             )
         )
     
+    
+    @staticmethod
+    def _iter_get_by_methods():
+        
+        return (
+            itertools.product(
+                interaction_mod.Interaction._get_methods | {'entities'},
+                interaction_mod.Interaction._by_methods + (None,),
+            )
+        )
     
     @classmethod
     def _generate_get_methods(cls):
@@ -2907,10 +3072,7 @@ class Network(session_mod.Logger):
             return _get_by_method
         
         
-        for _get, _by in itertools.product(
-            interaction_mod.Interaction._get_methods,
-            interaction_mod.Interaction._by_methods + (None,),
-        ):
+        for _get, _by in cls._iter_get_by_methods():
             
             method_name = cls._get_by_method_name(_get, _by)
             
@@ -2944,10 +3106,7 @@ class Network(session_mod.Logger):
             return _count_method
         
         
-        for _get, _by in itertools.product(
-            interaction_mod.Interaction._get_methods,
-            interaction_mod.Interaction._by_methods + (None,),
-        ):
+        for _get, _by in cls._iter_get_by_methods():
             
             method_name = (
                 'count_%s' % (
