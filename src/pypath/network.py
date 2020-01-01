@@ -66,7 +66,17 @@ NetworkEntityCollection = collections.namedtuple(
 )
 NetworkEntityCollection.__new__.__defaults__ = (None,) * 8
 
+
 class NetworkEntityCollection(object):
+    
+    __slots__ = [
+        'collection',
+        'label',
+        'shared_within_data_model',
+        'unique_within_data_model',
+        'shared_within_interaction_type',
+        'unique_within_interaction_type',
+    ]
     
     
     def __init__(self, collection, label):
@@ -120,7 +130,7 @@ class NetworkEntityCollection(object):
     @classmethod
     def _shared_unique(cls, dct):
         
-        if not all(isinstance(set) val for val in dct.values()):
+        if not all(isinstance(val, set) for val in dct.values()):
             
             shared, unique = tuple(
                 map(
@@ -289,6 +299,17 @@ class Network(session_mod.Logger):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+        
+        imp.reload(entity_mod)
+        imp.reload(interaction_mod)
+        
+        for entity in self.nodes.values():
+            
+            entity.__class__ = entity_mod.Entity
+        
+        for interaction in self.interactions.values():
+            
+            interaction.__class__ = interaction_mod.Interaction
     
     
     def __len__(self):
