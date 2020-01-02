@@ -37,6 +37,7 @@ import itertools
 import warnings
 import textwrap
 import hashlib
+import inspect
 
 import numpy as np
 
@@ -1754,3 +1755,33 @@ def combine_attrs(attrs, num_method = max):
     if hasattr(attrs[0], '__add__'):
         
         return attrs[0] + attrs[1]
+
+
+def _add_method(cls, method_name, method, signature = None, doc = None):
+    
+    method.__name__ = method_name
+    
+    if signature and hasattr(inspect, 'Signature'): # Py2
+        
+        if not isinstance(signature, inspect.Signature):
+            
+            signature = inspect.Signature([
+                inspect.Parameter(
+                    name = param[0],
+                    kind = inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                    default = (
+                        param[1]
+                            if len(param) > 1 else
+                        inspect.Parameter.empty
+                    )
+                )
+                for param in signature
+            ])
+        
+        method.__signature__ = signature
+    
+    if doc:
+        
+        method.__doc__ = doc
+    
+    setattr(cls, method_name, method)

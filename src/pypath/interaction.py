@@ -34,7 +34,6 @@ import collections
 import operator
 import itertools
 import functools
-import inspect
 
 import pypath.evidence as pypath_evidence
 import pypath.resource as pypath_resource
@@ -118,6 +117,7 @@ class Interaction(object):
         'entities',
         'evidences',
         'references',
+        'curation_effort',
         'resource_names',
         'resources',
         'data_models',
@@ -2678,32 +2678,13 @@ class Interaction(object):
     @classmethod
     def _add_method(cls, method_name, method, signature = None, doc = None):
         
-        method.__name__ = method_name
-        
-        if signature and hasattr(inspect, 'Signature'): # Py2
-            
-            if not isinstance(signature, inspect.Signature):
-                
-                signature = inspect.Signature([
-                    inspect.Parameter(
-                        name = param[0],
-                        kind = inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                        default = (
-                            param[1]
-                                if len(param) > 1 else
-                            inspect.Parameter.empty
-                        )
-                    )
-                    for param in signature
-                ])
-            
-            method.__signature__ = signature
-        
-        if doc:
-            
-            method.__doc__ = doc
-        
-        setattr(cls, method_name, method)
+        common._add_method(
+            cls,
+            method_name,
+            method,
+            signature = signature,
+            doc = doc,
+        )
     
     
     def generate_df_records(self, by_source = False, with_references = False):

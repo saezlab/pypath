@@ -3122,43 +3122,25 @@ class Network(session_mod.Logger):
         return dict(result) if by else result
     
     
-    @staticmethod
+    @classmethod
     def _generate_collect_methods(cls):
         
         def _create_collect_method(what):
             
-            
-            
-            
             @functools.wraps(what)
-            def _collect_method(**kwargs):
+            def _collect_method(self, **kwargs):
                 
-                self = args[0]
                 kwargs['what'] = what
                 
-                by_resource = self._collect(
+                collection = self._collect(
                     by = 'interaction_type_and_data_model_and_resource',
                     **kwargs
                 )
-                by_resource = expand_keys(by_resource)
-                
-                
                 
                 return (
                     NetworkEntityCollection(
-                        #total = total,
-                        #by_resource = by_resource,
-                        #by_category = by_category,
-                        #shared,
-                        #unique,
-                        #shared_res_cat,
-                        #unique_res_cat,
-                        #shared_cat,
-                        #unique_cat,
-                        #resource_cat,
-                        #cat_resource,
-                        #method,
-                        #label,
+                        collection = collection,
+                        label = what,
                     )
                 )
             
@@ -3167,10 +3149,24 @@ class Network(session_mod.Logger):
         
         for _get in interaction_mod.Interaction._get_methods:
             
-            setattr(
-                cls,
-                'collect_%s' % _get,
-                _create_collect_method(_get),
+            method = _create_collect_method(_get)
+            method_name = 'collect_%s' % _get
+            doc = (
+                'Builds a comprehensive collection of `%s` entities '
+                'across the network, counts unique and shared objects '
+                'by resource, data model and interaction types.' % _get
+            )
+            signature = interaction_mod.Interaction._get_method_signature
+            
+            if 'degree' in _get:
+                
+                signature = [('mode',)] + signature
+            
+            cls._add_method(
+                method_name,
+                method,
+                signature = signature,
+                doc = doc,
             )
     
     
@@ -3267,8 +3263,21 @@ class Network(session_mod.Logger):
                 method_name,
                 _create_count_method(what = _get, by = _by)
             )
+    
+    
+    @classmethod
+    def _add_method(cls, method_name, method, signature = None, doc = None):
+        
+        common._add_method(
+            cls,
+            method_name,
+            method,
+            signature = signature,
+            doc = doc,
+        )
 
 
 Network._generate_get_methods()
 Network._generate_partners_methods()
 Network._generate_count_methods()
+Network._generate_collect_methods()
