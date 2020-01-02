@@ -76,10 +76,15 @@ class NetworkEntityCollection(object):
         'unique_within_data_model',
         'shared_within_interaction_type',
         'unique_within_interaction_type',
+        'n_collection',
+        'n_shared_within_data_model',
+        'n_unique_within_data_model',
+        'n_shared_within_interaction_type',
+        'n_unique_within_interaction_type',
     ]
     
     
-    def __init__(self, collection, label):
+    def __init__(self, collection, label = None):
         
         self.collection = collection
         self.label = label
@@ -92,87 +97,62 @@ class NetworkEntityCollection(object):
     
     def setup(self):
         
-        self.collection = self.expand_keys(self.collection)
-        self.add_shared_unique()
+        self.update_collection_counts()
+        self.update_within_data_model()
+        self.update_within_interaction_type()
+        
+    
+    def update_collection_counts(self):
+        
+        self.n_collection = common.dict_counts(self.collection)
     
     
-    def add_shared_unique(self):
+    def update_within_data_model(self):
         
-        self.shared, self.unique = self._shared_unique(self.collection)
+        self._update(within = 'data_model')
+    
+    
+    def update_within_interaction_type(self):
         
-        for key0, val0 in iteritems(self.collection):
+        self._update(within = 'interaction_type')
+    
+    
+    def _update(self, within):
+        
+        collection = common.dict_expand_keys(
+            self.collection,
+            depth = 1,
+            front = within == 'interaction_type',
+        )
+        
+        for method in ('shared', 'unique'):
             
-            totals = dict(
-                (
-                    key1,
-                    val1['Total']
-                )
-                for key1, val1 in iteritems(val0)
+            shared_unique = common.dict_collapse_keys(
+                self._shared_unique(collection, method)
             )
             
-            shared, unique = self._shared_unique(totals)
-            
-            val0['Total'] = totals['Total']
-            
-            for attr, vals1 in zip(('shared', 'unique'), (shared, unique)):
-                
-                getattr(self, attr)[key0]['Total'] = vals1['Total']
-                
-                for key1, val1 in iteritems(vals1):
-                    
-                    if key1 == 'Total':
-                        
-                        continue
-                    
-                    getattr(self, attr)[key0][key1]['ItypeTotal'] = val1
-    
-    
-    @classmethod
-    def _shared_unique(cls, dct):
-        
-        if not all(isinstance(val, set) for val in dct.values()):
-            
-            shared, unique = tuple(
-                map(
-                    dict,
-                    zip(*(
-                        zip(
-                            (key, key),
-                            cls._shared_unique(val)
-                        )
-                        for key, val in iteritems(dct)
-                    ))
-                )
+            setattr(
+                self,
+                '%s_within_%s' % (method, within),
+                shared_unique
             )
-            
-            return shared, unique
-        
-        shared = common.shared_foreach(dct)
-        unique = common.unique_foreach(dct)
-        
-        for d in (dct, shared, unique):
-            
-            d['Total'] = common.dict_union(d)
-        
-        return shared, unique
+            setattr(
+                self,
+                'n_%s_within_%s' % (method, within),
+                common.dict_counts(shared_unique)
+            )
     
     
     @staticmethod
-    def expand_keys(dct):
+    def _shared_unique(dct, method):
         
-        dct_exp = {}
-        
-        for key, val in iteritems(dct):
-            
-            sub_dct = dct_exp
-            
-            for k in key:
-                
-                sub_dct = sub_dct.setdefault(k, {})
-            
-            sub_dct[k] = val
-        
-        return dct_exp
+        return dict(
+            (
+                key,
+                common.shared_unique_foreach(val, op = method)
+            )
+            for key, val in iteritems(collection)
+        )
 
 
 NetworkStatsRecord = collections.namedtuple(
