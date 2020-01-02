@@ -2542,7 +2542,7 @@ class Interaction(object):
     @classmethod
     def _by_interaction_type_and_data_model(cls, method):
         
-        return cls._by(method, by = ('data_model', 'interaction_type'))
+        return cls._by(method, by = ('interaction_type', 'data_model'))
     
     
     @classmethod
@@ -2550,7 +2550,7 @@ class Interaction(object):
         
         return cls._by(
             method,
-            by = ('data_model', 'interaction_type', 'resources'),
+            by = ('interaction_type', 'data_model', 'resources'),
         )
     
     
