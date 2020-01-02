@@ -217,27 +217,27 @@ class Entity(session_mod.Logger):
     def __eq__(self, other):
         
         return (
-            self.identifier == other
-                if isinstance(other, common.basestring) else
             self.__hash__() == other.__hash__()
+                if hasattr(other, 'key') else
+            self.identifier == other
         )
     
     
     def __lt__(self, other):
         
         return (
-            self.identifier < other
-                if isinstance(other, common.basestring) else
             self.key < other.key
+                if hasattr(other, 'key') else
+            self.identifier < other
         )
     
     
     def __gt__(self, other):
         
         return (
-            self.identifier < other
-                if isinstance(other, common.basestring) else
             self.key < other.key
+                if hasattr(other, 'key') else
+            self.identifier < other
         )
     
     

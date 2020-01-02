@@ -143,7 +143,6 @@ class Interaction(object):
         'resource_names',
         'resource_names_via',
         'data_models',
-        'curation_effort',
         'interaction_types',
     )
     
@@ -2461,6 +2460,13 @@ class Interaction(object):
             )
         
         return result
+    
+    
+    def get_curation_effort(self, **kwargs):
+        
+        for ref in self.get_references():
+            
+            return (self.a, self.b, ref)
     
     
     @staticmethod
