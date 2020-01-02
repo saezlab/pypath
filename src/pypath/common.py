@@ -1548,6 +1548,21 @@ def n_unique_total(by_group):
     return len(unique_total(by_group))
 
 
+def dict_subtotals(dct):
+    """
+    For a dict of dicts of sets returns a dict with keys of the outer dict
+    and values the union of the sets in each of the inner dicts.
+    """
+    
+    return dict(
+        (
+            key,
+            dict_union(sub_dct)
+        )
+        for key, sub_dct in iteritems(dct)
+    )
+
+
 def dict_percent(dict_of_counts, total):
     """
     For a *dict* of counts and a total count creates a *dict* of percentages.
@@ -1557,6 +1572,14 @@ def dict_percent(dict_of_counts, total):
         (key, (val / total if total != 0 else 0) * 100)
         for key, val in iteritems(dict_of_counts)
     )
+
+
+def dict_set_percent(dict_of_sets):
+    
+    total = len(dict_union(dict_of_sets))
+    counts = dict_counts(dict_of_sets)
+    
+    return dict_percent(counts, total)
 
 
 def df_memory_usage(df, deep = True):

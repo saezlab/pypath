@@ -72,22 +72,56 @@ class NetworkEntityCollection(object):
     __slots__ = [
         'collection',
         'label',
+        
         'shared_within_data_model',
         'unique_within_data_model',
         'shared_within_interaction_type',
         'unique_within_interaction_type',
+        
         'n_collection',
         'n_shared_within_data_model',
         'n_unique_within_data_model',
         'n_shared_within_interaction_type',
         'n_unique_within_interaction_type',
+        
+        'pct_collection',
+        'pct_within_data_model',
+        'pct_within_interaction_type',
+        'pct_shared_within_data_model',
+        'pct_unique_within_data_model',
+        'pct_shared_within_interaction_type',
+        'pct_unique_within_interaction_type',
+        
+        'by_data_model',
+        'by_interaction_type',
+        'unique_by_data_model',
+        'shared_by_data_model',
+        'unique_by_interaction_type',
+        'shared_by_interaction_type',
+        
+        'n_by_data_model',
+        'n_by_interaction_type',
+        'n_unique_by_data_model',
+        'n_shared_by_data_model',
+        'n_unique_by_interaction_type',
+        'n_shared_by_interaction_type',
+        
+        'pct_by_data_model',
+        'pct_by_interaction_type',
+        'pct_unique_by_data_model',
+        'pct_shared_by_data_model',
+        'pct_unique_by_interaction_type',
+        'pct_shared_by_interaction_type',
+        
     ]
     
     
     def __init__(self, collection, label = None):
         
-        self.collection = collection
+        self.collection = collection.copy()
         self.label = label
+        
+        self.main()
     
     
     def main(self):
@@ -97,61 +131,174 @@ class NetworkEntityCollection(object):
     
     def setup(self):
         
+        self.update()
+        self.collection_add_total()
         self.update_collection_counts()
-        self.update_within_data_model()
-        self.update_within_interaction_type()
         
     
     def update_collection_counts(self):
         
         self.n_collection = common.dict_counts(self.collection)
+        self.pct_collection = common.dict_set_percent(self.collection)
     
     
-    def update_within_data_model(self):
+    def collection_add_total(self):
         
-        self._update(within = 'data_model')
-    
-    
-    def update_within_interaction_type(self):
-        
-        self._update(within = 'interaction_type')
-    
-    
-    def _update(self, within):
-        
-        collection = common.dict_expand_keys(
+        self.collection = self._add_total(
             self.collection,
-            depth = 1,
-            front = within == 'interaction_type',
+            key = ('All', 'All', 'Total')
+        )
+    
+    
+    def update(self):
+        
+        for level in ('interaction_type', 'data_model'):
+            
+            self._update(level = level)
+            self._update(level = level, summarize_groups = True)
+    
+    
+    def _update(self, level, summarize_groups = False):
+        
+        midpart = '_by_' if summarize_groups else '_within_'
+        
+        if summarize_groups:
+            
+            collection = common.dict_subtotals(
+                self._expand_keys(level = level)
+            )
+            
+            setattr(
+                self,
+                'by_%s' % level,
+                collection
+            )
+            setattr(
+                self,
+                'n%s%s' % (midpart, level),
+                common.dict_counts(collection)
+            )
+            
+        else:
+            
+            collection = self._expand_keys(level = level)
+        
+        setattr(
+            self,
+            'pct%s%s' % (midpart, level),
+            (
+                common.dict_set_percent(collection)
+                    if summarize_groups else
+                self._percent_and_collapse(collection)
+            )
         )
         
         for method in ('shared', 'unique'):
             
-            shared_unique = common.dict_collapse_keys(
-                self._shared_unique(collection, method)
+            shared_unique = (
+                common.shared_unique_foreach(collection, op = method)
+                    if summarize_groups else
+                self._shared_unique(
+                    dct = collection,
+                    method = method,
+                    total_key = (
+                        (lambda k: (k[0], 'Total'))
+                            if level == 'interaction_type' else
+                        None
+                    ),
+                )
             )
+            
+            if not summarize_groups:
+                
+                shared_unique_flat = common.dict_collapse_keys(shared_unique)
             
             setattr(
                 self,
-                '%s_within_%s' % (method, within),
+                '%s%s%s' % (method, midpart, level),
                 shared_unique
             )
             setattr(
                 self,
-                'n_%s_within_%s' % (method, within),
+                'n_%s%s%s' % (method, midpart, level),
                 common.dict_counts(shared_unique)
+            )
+            setattr(
+                self,
+                'pct_%s%s%s' % (method, midpart, level),
+                (
+                    common.dict_set_percent(shared_unique)
+                        if summarize_groups else
+                    self._percent_and_collapse(shared_unique)
+                )
             )
     
     
-    @staticmethod
-    def _shared_unique(dct, method):
+    def _expand_keys(self, level):
+        
+        return common.dict_expand_keys(
+            self.collection,
+            depth = 1,
+            front = level == 'interaction_type',
+        )
+    
+    
+    @classmethod
+    def _shared_unique(cls, dct, method, total_key = None):
         
         return dict(
             (
                 key,
-                common.shared_unique_foreach(val, op = method)
+                cls._add_total(
+                    common.shared_unique_foreach(val, op = method),
+                    key = total_key
+                )
             )
-            for key, val in iteritems(collection)
+            for key, val in iteritems(dct)
+        )
+    
+    
+    @staticmethod
+    def _add_total(dct, key = None):
+        
+        if isinstance(key, (common.basestring, tuple)):
+            
+            _key = key
+            
+        else:
+            
+            first_key = next(dct.keys().__iter__())
+            
+            if callable(key):
+                
+                _key = key(first_key)
+                
+            else:
+                
+                _key = (
+                    'Total'
+                        if isinstance(first_key, common.basestring) else
+                    first_key[:-1] + ('Total',)
+                )
+        
+        dct[_key] = common.dict_union(dct)
+        
+        return dct
+    
+    
+    @classmethod
+    def _percent_and_collapse(cls, dct):
+        
+        return (
+            common.dict_collapse_keys(
+                dict(
+                    (
+                        key,
+                        common.dict_set_percent(val)
+                    )
+                    for key, val in iteritems(dct)
+                )
+            )
         )
 
 
