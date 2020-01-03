@@ -115,6 +115,8 @@ class Interaction(object):
     
     _get_methods = {
         'entities',
+        'proteins',
+        'mirnas',
         'evidences',
         'references',
         'curation_effort',
@@ -163,6 +165,8 @@ class Interaction(object):
         'resource_names',
         'curation_effort',
         'entities',
+        'proteins',
+        'mirnas',
         'interactions',
         'interactions_directed',
         'interactions_signed',
@@ -1995,6 +1999,7 @@ class Interaction(object):
     
     def get_entities(
             self,
+            entity_type = None,
             direction = None,
             effect = None,
             resources = None,
@@ -2018,14 +2023,32 @@ class Interaction(object):
         
         kwargs = locals()
         _ = kwargs.pop('self')
+        entity_type = common.to_set(kwargs.pop('entity_type'))
         
         return (
             set(
+                en
+                for en in
                 itertools.chain(
                     *self.get_interactions(**kwargs)
                 )
+                if not entity_type or en.entity_type in entity_type
             )
         )
+    
+    
+    def get_proteins(self, **kwargs):
+        
+        kwargs['entity_type'] = 'protein'
+        
+        return self.get_entities(**kwargs)
+    
+    
+    def get_mirnas(self, **kwargs):
+        
+        kwargs['entity_type'] = 'mirna'
+        
+        return self.get_entities(**kwargs)
     
     
     def get_identifiers(self):
