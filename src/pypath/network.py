@@ -3172,9 +3172,181 @@ class Network(session_mod.Logger):
     
     def update_summaries(self):
         
+        
+        def get_labels(lab, segments):
+            
+            return (lab,) + tuple(
+                '%s %s' % (lab, seg)
+                for seg in segments
+            )
+        
+        
+        def add_resource_segments(rec, res, key, lab, segments, coll):
+            
+            values = (
+                coll[key].n_collection[res],
+                coll[key].n_shared_within_data_model[res[:2]][res[2]],
+                coll[key].n_unique_within_data_model[res[:2]][res[2]],
+                coll[key].n_shared_within_interaction_type[res[0]][res[1:]],
+                coll[key].n_unique_within_interaction_type[res[0]][res[1:]],
+            )
+            
+            labels = get_labels(lab, segments)
+            
+            rec.extend(list(zip(labels, values)))
+            
+            return rec
+        
+        
+        def add_dmodel_segments(rec, itype, dmodel, key, lab, segments, coll):
+            
+            it_dm_key = (itype, dmodel)
+            
+            values = (
+                coll[key].n_by_data_model[it_dm_key],
+                coll[key].n_shared_within_data_model[it_dm_key]['Total'],
+                coll[key].n_unique_within_data_model[it_dm_key]['Total'],
+                coll[key].n_shared_by_data_model[it_dm_key],
+                coll[key].n_unique_by_data_model[it_dm_key],
+            )
+            
+            labels = get_labels(lab, segments)
+            
+            rec.extend(list(zip(labels, values)))
+            
+            return rec
+        
+        
+        def add_itype_segments(rec, itype, key, lab, segments, coll):
+            
+            values = (
+                coll[key].n_by_interaction_type[itype],
+                coll[key].n_shared_within_interaction_type[itype]['Total'],
+                coll[key].n_unique_within_interaction_type[itype]['Total'],
+                coll[key].n_shared_by_data_model[it_dm_key],
+                coll[key].n_unique_by_data_model[it_dm_key],
+            )
+            
+            labels = get_labels(lab, segments)
+            
+            rec.extend(list(zip(labels, values)))
+            
+            return rec
+        
+        
+        required = collections.OrderedDict(
+            entities = 'Entities',
+            proteins = 'Proteins',
+            mirnas = 'miRNAs',
+            interactions_0 = 'Edges',
+            references = 'References',
+            curation_effort = 'Curation effort',
+            interactions_non_directed_0 = 'Undirected interactions',
+            interactions_directed = 'Directed interactions',
+            interactions_positive = 'Stimulatory interactions',
+            interactions_negative = 'Inhibitory interactions',
+            interactions_mutual = 'Mutual interactions',
+        )
+        
+        segments = (
+            '',
+            'shared within database category',
+            'unique within database category',
+            'shared within interaction type',
+            'shared within interaction_type',
+        )
+        
         self.summaries = []
         
+        coll = {}
         
+        for method in required.keys():
+            
+            coll[method] = getattr(self, 'collect_%s' % method)()
+        
+        for itype in self.get_interaction_types():
+            
+            for dmodel in self.get_data_models(interaction_type = itype):
+                
+                for res in sorted(
+                    self.get_resource_names(
+                        interaction_type = itype,
+                        data_model = dmodel,
+                    ),
+                    key = lambda r: r.lower()
+                ):
+                    
+                    # compiling a record for each resource
+                    # within the data model
+                    
+                    rec = []
+                    
+                    _res = (itype, dmodel, res)
+                    
+                    for key, lab in iteritems(required):
+                        
+                        rec = add_resource_segments(
+                            rec, _res, key, lab, segments, coll,
+                        )
+                    
+                    self.summaries.append(rec)
+                
+                # compiling a summary record for the data model
+                
+                rec = []
+                
+                for key, lab in iteritems(required):
+                    
+                    rec = add_dmodel_segments(
+                        rec, itype, dmodel, key, lab, segments, coll,
+                    )
+                
+                self.summaries.append(rec)
+            
+            # compiling a summary record for the interaction type
+            
+            rec = []
+            
+            for key, lab in iteritems(required):
+                
+                rec = add_itype_segments(rec, itype, key, lab, segments, coll)
+            
+            self.summaries.append(rec)
+        
+        # maybe we could compile a summary record for the entire network
+        
+        self.summaries = [OrderedDict(rec) for rec in self.summaries]
+    
+    
+    def summaries_tab(self, outfile = None, return_table = False):
+        """
+        Creates a table from resource vs. entity counts and optionally
+        writes it to ``outfile`` and returns it.
+        """
+
+        tab = []
+        tab.append(self.summaries_labels.values())
+
+        tab.extend([
+            [
+                str(value)
+                for value in self.summaries[resource].values()
+            ]
+            for resource in sorted(
+                self.summaries.keys(),
+                key = lambda s: (1 if s == 'Total' else 0, s.lower())
+            )
+        ])
+
+        if outfile:
+
+            with open(outfile, 'w') as fp:
+
+                fp.write('\n'.join('\t'.join(row) for row in tab))
+
+        if return_table:
+
+            return tab
     
     
     @staticmethod
