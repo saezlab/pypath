@@ -125,6 +125,7 @@ class Interaction(object):
         'data_models',
         'interaction_types',
         'interactions',
+        'interactions_0',
         'interactions_directed',
         'interactions_undirected',
         'interactions_non_directed',
@@ -168,6 +169,7 @@ class Interaction(object):
         'proteins',
         'mirnas',
         'interactions',
+        'interactions_0',
         'interactions_directed',
         'interactions_signed',
         'interactions_positive',
@@ -2247,6 +2249,19 @@ class Interaction(object):
                     
                     # getting the evidence dict and the key from it
                     yield getattr(self, this_effect)[evs_key]
+    
+    
+    def get_interactions_0(self, **kwargs):
+        """
+        Returns unique interacting pairs without being aware of the direction.
+        """
+        
+        kwargs['direction'] = None
+        kwargs['effect'] = None
+        
+        result = self.get_interactions(**kwargs)
+        
+        return result[:1] if result else ()
     
     
     def get_interactions_directed(self, **kwargs):

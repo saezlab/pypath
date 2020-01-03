@@ -3170,6 +3170,13 @@ class Network(session_mod.Logger):
             )
     
     
+    def update_summaries(self):
+        
+        self.summaries = []
+        
+        
+    
+    
     @staticmethod
     def _get_by_method_name(get, by):
         
