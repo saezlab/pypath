@@ -1463,7 +1463,12 @@ def dict_expand_keys(dct, depth = 1, front = True):
     return new
 
 
-def dict_collapse_keys(dct, depth = 1, front = True):
+def dict_collapse_keys(
+        dct,
+        depth = 1,
+        front = True,
+        expand_tuple_keys = True,
+    ):
     """
     From a dict of dicts builds a dict with tuple keys.
     
@@ -1478,6 +1483,10 @@ def dict_collapse_keys(dct, depth = 1, front = True):
         If ``True`` the tuple keys will be collapsed first from the
         outermost dict going towards the innermost one until depth allows.
         Otherwise the method will start from the innermost ones.
+    :arg bool expand_tuple_keys:
+        If ``True`` the tuple keys of inner dicts will be concatenated with
+        the outer key tuples. If ``False`` the inner tuple keys will be added
+        as an element of the tuple key i.e. tuple in tuple.
     """
     
     if not front:
@@ -1507,7 +1516,14 @@ def dict_collapse_keys(dct, depth = 1, front = True):
             
             for key1, val1 in iteritems(val):
                 
-                _key = key + (key1,)
+                _key = key + (
+                    key1
+                        if (
+                            isinstance(key1, tuple) and
+                            expand_tuple_keys
+                        ) else
+                    (key1,)
+                )
                 new[_key] = val1
             
         else:

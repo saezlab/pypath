@@ -146,7 +146,7 @@ class NetworkEntityCollection(object):
         
         self.collection = self._add_total(
             self.collection,
-            key = ('All', 'All', 'Total')
+            key = ('all', 'all', 'Total')
         )
     
     
@@ -196,13 +196,20 @@ class NetworkEntityCollection(object):
         for method in ('shared', 'unique'):
             
             shared_unique = (
-                common.shared_unique_foreach(collection, op = method)
+                self._add_total(
+                    common.shared_unique_foreach(collection, op = method),
+                    key = (
+                        'all'
+                            if level == 'interaction_type' else
+                        ('all', 'all')
+                    )
+                )
                     if summarize_groups else
                 self._shared_unique(
                     dct = collection,
                     method = method,
                     total_key = (
-                        (lambda k: (k[0], 'Total'))
+                        ('all', 'Total')
                             if level == 'interaction_type' else
                         None
                     ),
@@ -221,12 +228,14 @@ class NetworkEntityCollection(object):
             setattr(
                 self,
                 'n_%s%s%s' % (method, midpart, level),
-                common.dict_counts(shared_unique)
+                common.dict_collapse_keys(
+                    common.dict_counts(shared_unique)
+                )
             )
             setattr(
                 self,
                 'pct_%s%s%s' % (method, midpart, level),
-                (
+                common.dict_collapse_keys(
                     common.dict_set_percent(shared_unique)
                         if summarize_groups else
                     self._percent_and_collapse(shared_unique)
@@ -3176,20 +3185,34 @@ class Network(session_mod.Logger):
         def get_labels(lab, segments):
             
             return (lab,) + tuple(
-                '%s %s' % (lab, seg)
+                '%s %s%s' % (lab, seg, pct)
                 for seg in segments
+                for pct in ('', r'[%]')
             )
         
         
         def add_resource_segments(rec, res, key, lab, segments, coll):
             
-            values = (
-                coll[key].n_collection[res],
-                coll[key].n_shared_within_data_model[res[:2]][res[2]],
-                coll[key].n_unique_within_data_model[res[:2]][res[2]],
-                coll[key].n_shared_within_interaction_type[res[0]][res[1:]],
-                coll[key].n_unique_within_interaction_type[res[0]][res[1:]],
-            )
+            get = coll[key].__getattribute__
+            
+            values = tuple(zip(*(
+                (
+                    get('%s_collection' % n_pct)[res],
+                    get(
+                        '%s_shared_within_data_model' % n_pct
+                    )[res[:2]][res[2]],
+                    get(
+                        '%s_unique_within_data_model' % n_pct
+                    )[res[:2]][res[2]],
+                    get(
+                        '%s_shared_within_interaction_type'
+                    )[res[0]][res[1:]],
+                    get(
+                        '%s_unique_within_interaction_type'
+                    )[res[0]][res[1:]],
+                )
+                for n_pct in ('n', 'pct')
+            )))
             
             labels = get_labels(lab, segments)
             
@@ -3253,7 +3276,7 @@ class Network(session_mod.Logger):
             'shared within database category',
             'unique within database category',
             'shared within interaction type',
-            'shared within interaction_type',
+            'shared within interaction type',
         )
         
         self.summaries = []
