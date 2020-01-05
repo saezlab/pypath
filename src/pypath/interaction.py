@@ -2556,7 +2556,7 @@ class Interaction(object):
                 for levels_method in levels_methods
             )))
             
-            return dict(
+            result = dict(
                 (
                     _levels if len(_levels) > 1 else _levels[0],
                     method(
@@ -2567,6 +2567,8 @@ class Interaction(object):
                 )
                 for _levels in levels
             )
+            
+            return dict((k, v) for k, v in iteritems(result) if v)
         
         return by_method
     
