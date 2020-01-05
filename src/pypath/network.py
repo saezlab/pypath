@@ -3234,7 +3234,7 @@ class Network(session_mod.Logger):
             
             get = coll[key].__getattribute__
             
-            values = tuple(zip(*(
+            values = tuple(itertools.chain(*zip(*(
                 (
                     get('%s_by_data_model' % n_pct).get(it_dm_key, 0),
                     get(
@@ -3247,7 +3247,7 @@ class Network(session_mod.Logger):
                     get('%s_unique_by_data_model' % n_pct).get(it_dm_key, 0),
                 )
                 for n_pct in ('n', 'pct')
-            )))
+            ))))
             
             labels = get_labels(lab, key, segments)
             
@@ -3261,9 +3261,9 @@ class Network(session_mod.Logger):
             get = coll[key].__getattribute__
             total_key = (itype, 'all', 'Total')
             
-            values = tuple(zip(*(
+            values = tuple(itertools.chain(*zip(*(
                 (
-                    get('%s_by_data_model' % n_pct).get(itype, 0),
+                    get('%s_by_interaction_type' % n_pct).get(itype, 0),
                     get(
                         '%s_shared_within_interaction_type' % n_pct
                     ).get(total_key, 0),
@@ -3274,7 +3274,7 @@ class Network(session_mod.Logger):
                     get('%s_unique_by_data_model' % n_pct).get(total_key, 0),
                 )
                 for n_pct in ('n', 'pct')
-            )))
+            ))))
             
             labels = get_labels(lab, key, segments)
             
@@ -3387,18 +3387,12 @@ class Network(session_mod.Logger):
         """
 
         tab = []
-        tab.append(self.summaries_labels.values())
-
-        tab.extend([
-            [
-                str(value)
-                for value in self.summaries[resource].values()
-            ]
-            for resource in sorted(
-                self.summaries.keys(),
-                key = lambda s: (1 if s == 'Total' else 0, s.lower())
-            )
-        ])
+        
+        tab.append(key[1] for key in self.summaries[0].keys())
+        
+        for rec in self.summaries:
+            
+            tab.append([str(val) for val in rec.values()])
 
         if outfile:
 
