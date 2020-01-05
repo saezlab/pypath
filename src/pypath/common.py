@@ -1378,7 +1378,7 @@ def dict_union(dict_of_sets):
     For a *dict* of *set*s returns the union of the values.
     """
     
-    return set.union(*dict_of_sets.values())
+    return set.union(*dict_of_sets.values()) if dict_of_sets else set()
 
 
 def dict_counts(dict_of_sets):

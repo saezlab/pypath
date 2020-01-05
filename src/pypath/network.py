@@ -3141,6 +3141,8 @@ class Network(session_mod.Logger):
                 
                 kwargs['what'] = what
                 
+                self._log('Collecting `%s`.' % what)
+                
                 collection = self._collect(
                     by = 'interaction_type_and_data_model_and_resource',
                     **kwargs
@@ -3182,12 +3184,20 @@ class Network(session_mod.Logger):
     def update_summaries(self):
         
         
-        def get_labels(lab, segments):
+        def get_labels(lab, key, segments):
             
-            return (lab,) + tuple(
-                '%s %s%s' % (lab, seg, pct)
+            return tuple(
+                (
+                    '%s%s%s%s' % (
+                        key,
+                        '_' if seg else '',
+                        seg.replace(' ', '_'),
+                        '_pct' if pct else '_n',
+                    ),
+                    '%s%s%s%s' % (lab, ' ' if seg else '', seg, pct)
+                )
                 for seg in segments
-                for pct in ('', r'[%]')
+                for pct in ('', r' [%]')
             )
         
         
@@ -3195,26 +3205,22 @@ class Network(session_mod.Logger):
             
             get = coll[key].__getattribute__
             
-            values = tuple(zip(*(
+            values = tuple(itertools.chain(*zip(*(
                 (
-                    get('%s_collection' % n_pct)[res],
+                    get('%s_collection' % n_pct).get(res, 0),
+                    get('%s_shared_within_data_model' % n_pct).get(res, 0),
+                    get('%s_unique_within_data_model' % n_pct).get(res, 0),
                     get(
-                        '%s_shared_within_data_model' % n_pct
-                    )[res[:2]][res[2]],
+                        '%s_shared_within_interaction_type' % n_pct
+                    ).get(res, 0),
                     get(
-                        '%s_unique_within_data_model' % n_pct
-                    )[res[:2]][res[2]],
-                    get(
-                        '%s_shared_within_interaction_type'
-                    )[res[0]][res[1:]],
-                    get(
-                        '%s_unique_within_interaction_type'
-                    )[res[0]][res[1:]],
+                        '%s_unique_within_interaction_type' % n_pct
+                    ).get(res, 0),
                 )
                 for n_pct in ('n', 'pct')
-            )))
+            ))))
             
-            labels = get_labels(lab, segments)
+            labels = get_labels(lab, key, segments)
             
             rec.extend(list(zip(labels, values)))
             
@@ -3224,16 +3230,26 @@ class Network(session_mod.Logger):
         def add_dmodel_segments(rec, itype, dmodel, key, lab, segments, coll):
             
             it_dm_key = (itype, dmodel)
+            total_key = it_dm_key + ('Total',)
             
-            values = (
-                coll[key].n_by_data_model[it_dm_key],
-                coll[key].n_shared_within_data_model[it_dm_key]['Total'],
-                coll[key].n_unique_within_data_model[it_dm_key]['Total'],
-                coll[key].n_shared_by_data_model[it_dm_key],
-                coll[key].n_unique_by_data_model[it_dm_key],
-            )
+            get = coll[key].__getattribute__
             
-            labels = get_labels(lab, segments)
+            values = tuple(zip(*(
+                (
+                    get('%s_by_data_model' % n_pct).get(it_dm_key, 0),
+                    get(
+                        '%s_shared_within_data_model' % n_pct
+                    ).get(total_key, 0),
+                    get(
+                        '%s_unique_within_data_model' % n_pct
+                    ).get(total_key, 0),
+                    get('%s_shared_by_data_model' % n_pct).get(it_dm_key, 0),
+                    get('%s_unique_by_data_model' % n_pct).get(it_dm_key, 0),
+                )
+                for n_pct in ('n', 'pct')
+            )))
+            
+            labels = get_labels(lab, key, segments)
             
             rec.extend(list(zip(labels, values)))
             
@@ -3242,15 +3258,25 @@ class Network(session_mod.Logger):
         
         def add_itype_segments(rec, itype, key, lab, segments, coll):
             
-            values = (
-                coll[key].n_by_interaction_type[itype],
-                coll[key].n_shared_within_interaction_type[itype]['Total'],
-                coll[key].n_unique_within_interaction_type[itype]['Total'],
-                coll[key].n_shared_by_data_model[it_dm_key],
-                coll[key].n_unique_by_data_model[it_dm_key],
-            )
+            get = coll[key].__getattribute__
+            total_key = (itype, 'all', 'Total')
             
-            labels = get_labels(lab, segments)
+            values = tuple(zip(*(
+                (
+                    get('%s_by_data_model' % n_pct).get(itype, 0),
+                    get(
+                        '%s_shared_within_interaction_type' % n_pct
+                    ).get(total_key, 0),
+                    get(
+                        '%s_unique_within_interaction_type' % n_pct
+                    ).get(total_key, 0),
+                    get('%s_shared_by_data_model' % n_pct).get(total_key, 0),
+                    get('%s_unique_by_data_model' % n_pct).get(total_key, 0),
+                )
+                for n_pct in ('n', 'pct')
+            )))
+            
+            labels = get_labels(lab, key, segments)
             
             rec.extend(list(zip(labels, values)))
             
@@ -3276,12 +3302,14 @@ class Network(session_mod.Logger):
             'shared within database category',
             'unique within database category',
             'shared within interaction type',
-            'shared within interaction type',
+            'unique within interaction type',
         )
         
         self.summaries = []
         
         coll = {}
+        
+        self._log('Updating summaries.')
         
         for method in required.keys():
             
@@ -3302,7 +3330,7 @@ class Network(session_mod.Logger):
                     # compiling a record for each resource
                     # within the data model
                     
-                    rec = []
+                    rec = [(('resource', 'Resource'), res)]
                     
                     _res = (itype, dmodel, res)
                     
@@ -3316,7 +3344,10 @@ class Network(session_mod.Logger):
                 
                 # compiling a summary record for the data model
                 
-                rec = []
+                rec = [(
+                    ('resource', 'Resource'),
+                    '%s total' % dmodel.replace('_', ' ').capitalize()
+                )]
                 
                 for key, lab in iteritems(required):
                     
@@ -3328,7 +3359,10 @@ class Network(session_mod.Logger):
             
             # compiling a summary record for the interaction type
             
-            rec = []
+            rec = [(
+                ('resource', 'Resource'),
+                '%s total' % itype.replace('_', ' ').capitalize()
+            )]
             
             for key, lab in iteritems(required):
                 
@@ -3338,7 +3372,12 @@ class Network(session_mod.Logger):
         
         # maybe we could compile a summary record for the entire network
         
-        self.summaries = [OrderedDict(rec) for rec in self.summaries]
+        self.summaries = [
+            collections.OrderedDict(rec)
+            for rec in self.summaries
+        ]
+        
+        self._log('Finished updating summaries.')
     
     
     def summaries_tab(self, outfile = None, return_table = False):
