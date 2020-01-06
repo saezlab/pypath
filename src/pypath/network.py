@@ -1864,9 +1864,10 @@ class Network(session_mod.Logger):
                 'type_b': 'category',
                 'effect': 'int8',
                 'type': 'category',
+                'dmodel': 'category' if by_source else 'object',
                 'sources': 'category' if by_source else 'object',
                 'references': 'object' if with_references else 'category',
-            },
+            }
         
         if not records:
             
@@ -1883,10 +1884,12 @@ class Network(session_mod.Logger):
             
             columns = records[0]._fields
         
+        self.records = records
+        self.dtype = dtype
+        
         self.df = pd.DataFrame(
             records,
             columns = columns,
-            dtype = dtype,
         )
         
         ### why?
@@ -1902,7 +1905,7 @@ class Network(session_mod.Logger):
     
     def generate_df_records(self, by_source = False, with_references = False):
         
-        for ia in self.interactions:
+        for ia in self.interactions.values():
             
             for rec in ia.generate_df_records(
                 by_source = by_source,

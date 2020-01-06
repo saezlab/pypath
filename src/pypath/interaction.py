@@ -65,11 +65,12 @@ InteractionDataFrameRecord = collections.namedtuple(
         'directed',
         'effect',
         'type',
+        'dmodel',
         'sources',
         'references',
     ],
 )
-InteractionDataFrameRecord.__new__.__defaults__ = (None,) * 7
+InteractionDataFrameRecord.__new__.__defaults__ = (None,) * 8
 
 
 class Interaction(object):
@@ -2810,78 +2811,94 @@ class Interaction(object):
         
         for interaction_type in self.get_interaction_types():
             
-            evs_undirected = self.get_evidences(
-                direction = 'undirected',
-                interaction_type = interaction_type,
+            dmodels = (
+                self.get_data_models(interaction_type = interaction_type)
             )
+            dmodels = dmodels if by_source else (dmodels,)
             
-            for _dir in (self.a_b, self.b_a):
+            for data_model in dmodels:
                 
-                evs_dir = self.get_evidences(
-                    direction = _dir,
+                evs_undirected = self.get_evidences(
+                    direction = 'undirected',
                     interaction_type = interaction_type,
+                    data_model = data_model,
                 )
-                evs_without_sign = evs_dir.__copy__()
                 
-                for _effect, effect in zip((1, -1), ('positive', 'negative')):
+                for _dir in (self.a_b, self.b_a):
                     
-                    evs_sign = self.get_evidences(
+                    evs_dir = self.get_evidences(
                         direction = _dir,
-                        effect = effect,
                         interaction_type = interaction_type,
+                        data_model = data_model,
                     )
-                    # to make sure we keep all references:
-                    evs_sign += evs_sign.intersection(evs_dir)
-                    evs_without_sign -= evs_sign
-                    evs_undirected -= evs_sign
+                    evs_without_sign = evs_dir.__copy__()
                     
-                    for sources, refs in iter_sources(evs_sign):
+                    for _effect, effect in zip(
+                        (1, -1),
+                        ('positive', 'negative')
+                    ):
                         
-                        yield InteractionDataFrameRecord(
-                            id_a = _dir[0].identifier,
-                            id_b = _dir[1].identifier,
-                            type_a = _dir[0].entity_type,
-                            type_b = _dir[1].entity_type,
-                            directed = True,
-                            effect = _effect,
-                            type = interaction_type,
-                            sources = sources,
-                            references = refs,
+                        evs_sign = self.get_evidences(
+                            direction = _dir,
+                            effect = effect,
+                            interaction_type = interaction_type,
+                            data_model = data_model,
                         )
-                
-                if evs_without_sign:
+                        # to make sure we keep all references:
+                        evs_sign += evs_sign.intersection(evs_dir)
+                        evs_without_sign -= evs_sign
+                        evs_undirected -= evs_sign
+                        
+                        for sources, refs in iter_sources(evs_sign):
+                            
+                            yield InteractionDataFrameRecord(
+                                id_a = _dir[0].identifier,
+                                id_b = _dir[1].identifier,
+                                type_a = _dir[0].entity_type,
+                                type_b = _dir[1].entity_type,
+                                directed = True,
+                                effect = _effect,
+                                type = interaction_type,
+                                dmodel = data_model,
+                                sources = sources,
+                                references = refs,
+                            )
                     
-                    evs_undirected -= evs_without_sign
+                    if evs_without_sign:
+                        
+                        evs_undirected -= evs_without_sign
+                        
+                        for sources, refs in iter_sources(evs_without_sign):
+                            
+                            yield InteractionDataFrameRecord(
+                                id_a = _dir[0].identifier,
+                                id_b = _dir[1].identifier,
+                                type_a = _dir[0].entity_type,
+                                type_b = _dir[1].entity_type,
+                                directed = True,
+                                effect = 0,
+                                type = interaction_type,
+                                dmodel = data_model,
+                                sources = sources,
+                                references = refs,
+                            )
                     
-                    for sources, refs in iter_sources(evs_without_sign):
+                if evs_undirected:
+                    
+                    for sources, refs in iter_sources(evs_undirected):
                         
                         yield InteractionDataFrameRecord(
-                            id_a = _dir[0].identifier,
-                            id_b = _dir[1].identifier,
-                            type_a = _dir[0].entity_type,
-                            type_b = _dir[1].entity_type,
-                            directed = True,
+                            id_a = self.a.identifier,
+                            id_b = self.b.identifier,
+                            type_a = self.a.entity_type,
+                            type_b = self.b.entity_type,
+                            directed = False,
                             effect = 0,
                             type = interaction_type,
+                            dmodel = data_model,
                             sources = sources,
                             references = refs,
                         )
-                
-            if evs_undirected:
-                
-                for sources, refs in iter_sources(evs_undirected):
-                    
-                    yield InteractionDataFrameRecord(
-                        id_a = self.a.identifier,
-                        id_b = self.b.identifier,
-                        type_a = self.a.entity_type,
-                        type_b = self.b.entity_type,
-                        directed = False,
-                        effect = 0,
-                        type = interaction_type,
-                        sources = sources,
-                        references = refs,
-                    )
 
 
 Interaction._generate_get_methods()
