@@ -117,6 +117,7 @@ class Interaction(object):
     _get_methods = {
         'entities',
         'proteins',
+        'complexes',
         'mirnas',
         'evidences',
         'references',
@@ -168,6 +169,7 @@ class Interaction(object):
         'curation_effort',
         'entities',
         'proteins',
+        'complexes',
         'mirnas',
         'interactions',
         'interactions_0',
@@ -2010,6 +2012,7 @@ class Interaction(object):
             interaction_type = None,
             via = None,
             references = None,
+            return_type = None,
         ):
         """
         Retrieves the entities involved in interactions matching the criteria.
@@ -2017,6 +2020,14 @@ class Interaction(object):
         *set*. This may not sound so useful at the level of this object but
         becomes more useful once we want to collect entities having certain
         kind of interactions across a series of `Interaction` objects.
+        
+        :arg str entity_type:
+            The type of the molecular entity. Possible values: `protein`,
+            `complex`, `mirna`, `small_molecule`.
+        :arg str return_type:
+            The type of values to return. Default is
+            py:class:``pypath.entity.Entity`` objects, alternatives are
+            ``labels``  ``identifiers``.
         """
         
         # TODO: this method could be made slightly more efficient by using
@@ -2028,9 +2039,36 @@ class Interaction(object):
         _ = kwargs.pop('self')
         entity_type = common.to_set(kwargs.pop('entity_type'))
         
+        return_types = {
+            'entity': None,
+            'entities': None,
+            'id': 'identifier',
+            'name': 'identifier',
+        }
+        
+        # allow plurals
+        return_type = (
+            return_type[:-1]
+                if (
+                    isinstance(return_type, common.basestring) and
+                    return_type[-1] == 's'
+                ) else
+            return_type
+        )
+        # allow some synonyms
+        return_type = (
+            return_types[return_type]
+                if return_type in return_types else
+            return_type
+        )
+        
         return (
             set(
-                en
+                (
+                    getattr(en, return_type)
+                        if return_type and hasattr(en, return_type) else
+                    en
+                )
                 for en in
                 itertools.chain(
                     *self.get_interactions(**kwargs)
@@ -2041,13 +2079,29 @@ class Interaction(object):
     
     
     def get_proteins(self, **kwargs):
+        """
+        See arguments at ``get_entities``.
+        """
         
         kwargs['entity_type'] = 'protein'
         
         return self.get_entities(**kwargs)
     
     
+    def get_complexes(self):
+        """
+        See arguments at ``get_entities``.
+        """
+        
+        kwargs['entity_type'] = 'complex'
+        
+        return self.get_entities(**kwargs)
+    
+    
     def get_mirnas(self, **kwargs):
+        """
+        See arguments at ``get_entities``.
+        """
         
         kwargs['entity_type'] = 'mirna'
         
@@ -2055,13 +2109,19 @@ class Interaction(object):
     
     
     def get_identifiers(self):
+        """
+        See arguments at ``get_entities``.
+        """
         
         return {self.a.identifier, self.b.identifier}
     
     
-    def get_labels(self):
+    def get_labels(self, **kwargs):
+        """
+        See arguments at ``get_entities``.
+        """
         
-        return {self.a.label, self.b.label}
+        return {en.label for en in self.get_entities(**kwargs)}
     
     
     def get_interactions(

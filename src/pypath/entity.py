@@ -88,6 +88,8 @@ class Entity(session_mod.Logger):
         
         self.identifier = identifier
         self.entity_type = entity_type or self.get_entity_type()
+        # override `protein` in case this is a `complex`
+        self.entity_type = 'complex' if self.is_complex() else entity_type
         self.id_type = id_type
         self.taxon = taxon
         self.key = self._key
