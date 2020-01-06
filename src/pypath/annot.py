@@ -1306,8 +1306,8 @@ class CustomAnnotation(session_mod.Logger):
     def _network_df(network):
 
         return (
-            network.records
-                if hasattr(network, 'records') else
+            network.df
+                if hasattr(network, 'df') else
             network
         )
 
