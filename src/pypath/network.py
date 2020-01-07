@@ -220,27 +220,48 @@ class NetworkEntityCollection(object):
                 
                 shared_unique_flat = common.dict_collapse_keys(shared_unique)
             
+            attr = '%s%s%s' % (method, midpart, level)
+            n_attr = 'n_%s' % attr
+            pct_attr = 'pct_%s' % attr
+            
             setattr(
                 self,
-                '%s%s%s' % (method, midpart, level),
+                attr,
                 shared_unique
             )
             setattr(
                 self,
-                'n_%s%s%s' % (method, midpart, level),
+                n_attr,
                 common.dict_collapse_keys(
                     common.dict_counts(shared_unique)
                 )
             )
             setattr(
                 self,
-                'pct_%s%s%s' % (method, midpart, level),
+                pct_attr,
                 common.dict_collapse_keys(
                     common.dict_set_percent(shared_unique)
                         if summarize_groups else
                     self._percent_and_collapse(shared_unique)
                 )
             )
+            
+            for _attr, prfx in zip(
+                (attr, n_attr, pct_attr),
+                ('', 'n_', 'pct_'),
+            ):
+                
+                coll_attr = '%s_collection' % prfx
+                
+                for k, v in iteritems(getattr(self, _attr)):
+                    
+                    if len(k) == 1:
+                        
+                        k += ('all',)
+                    
+                    k += ('Total',)
+                    
+                    getattr(self, coll_attr)[k] = v
     
     
     def _expand_keys(self, level):
