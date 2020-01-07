@@ -116,9 +116,6 @@ class Interaction(object):
     
     _get_methods = {
         'entities',
-        'proteins',
-        'complexes',
-        'mirnas',
         'evidences',
         'references',
         'curation_effort',
@@ -204,6 +201,20 @@ class Interaction(object):
         'signed': (True, True),
         'positive': (True, 'positive'),
         'negative': (True, 'negative'),
+    }
+    
+    _entity_types = {
+        'protein',
+        ('complex', 'complexes'),
+        'mirna',
+        'small_molecule',
+        None,
+    }
+    
+    _entity_values = {
+        'identifiers',
+        'labels',
+        None,
     }
     
     
@@ -2038,6 +2049,7 @@ class Interaction(object):
         kwargs = locals()
         _ = kwargs.pop('self')
         entity_type = common.to_set(kwargs.pop('entity_type'))
+        return_type = kwargs.pop('return_type')
         
         return_types = {
             'entity': None,
@@ -2078,50 +2090,70 @@ class Interaction(object):
         )
     
     
-    def get_proteins(self, **kwargs):
-        """
-        See arguments at ``get_entities``.
-        """
+    @classmethod
+    def _generate_entity_methods(cls):
         
-        kwargs['entity_type'] = 'protein'
+        def _create_entity_method(entity_type, return_type):
+            
+            
+            def _entity_method(*args, **kwargs):
+                
+                self = args[0]
+                kwargs['entity_type'] = entity_type
+                kwargs['return_type'] = return_type
+                
+                return self.get_entities(*args[1:], **kwargs)
+            
+            
+            return _entity_method
         
-        return self.get_entities(**kwargs)
-    
-    
-    def get_complexes(self):
-        """
-        See arguments at ``get_entities``.
-        """
         
-        kwargs['entity_type'] = 'complex'
-        
-        return self.get_entities(**kwargs)
-    
-    
-    def get_mirnas(self, **kwargs):
-        """
-        See arguments at ``get_entities``.
-        """
-        
-        kwargs['entity_type'] = 'mirna'
-        
-        return self.get_entities(**kwargs)
-    
-    
-    def get_identifiers(self):
-        """
-        See arguments at ``get_entities``.
-        """
-        
-        return {self.a.identifier, self.b.identifier}
-    
-    
-    def get_labels(self, **kwargs):
-        """
-        See arguments at ``get_entities``.
-        """
-        
-        return {en.label for en in self.get_entities(**kwargs)}
+        for etype, vtype in itertools.product(
+            cls._entity_types,
+            cls._entity_values,
+        ):
+            
+            if etype is None and vtype is None:
+                
+                continue
+            
+            entity_type = etype[0] if isinstance(etype, tuple) else etype
+            return_type = vtype
+            
+            etype_part = (
+                ''
+                    if not entity_type else
+                entity_type
+                    if vtype else
+                etype[1]
+                    if isinstance(etype, tuple) else
+                '%ss' % entity_type
+            )
+            vtype_part = '%s' % vtype if vtype else ''
+            
+            _method_name = '%s%s%s' % (
+                etype_part,
+                '_' if etype_part and vtype_part else '',
+                vtype_part,
+            )
+            method_name = 'get_%s' % _method_name
+            method = _create_entity_method(
+                entity_type = entity_type,
+                return_type = return_type,
+            )
+            
+            cls._add_method(
+                method_name,
+                method,
+                signature = (
+                    ['self', ('entity_type', None)] +
+                    cls._get_method_signature +
+                    [('return_type', None)]
+                ),
+                doc = cls.get_entities.__doc__,
+            )
+            cls._get_methods.add(_method_name)
+            cls._count_methods.add(_method_name)
     
     
     def get_interactions(
@@ -2961,6 +2993,7 @@ class Interaction(object):
                         )
 
 
+Interaction._generate_entity_methods()
 Interaction._generate_get_methods()
 Interaction._generate_degree_methods()
 Interaction._generate_count_methods()
