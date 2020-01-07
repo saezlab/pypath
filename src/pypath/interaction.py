@@ -2165,6 +2165,9 @@ class Interaction(object):
             interaction_type = None,
             via = None,
             references = None,
+            entity_type = None,
+            source_entity_type = None,
+            target_entity_type = None,
         ):
         """
         Returns one or two tuples of the interacting partners: one if only
@@ -2197,6 +2200,12 @@ class Interaction(object):
         :arg NontType,bool,str,set via:
             Optionally limit the query to certain secondary databases or
             if `False` consider only data from primary databases.
+        :arg str entity_type:
+            Molecule type for both of the entities.
+        :arg str source_entity_type:
+            Molecule type for the source entity.
+        :arg str target_entity_type:
+            Molecule type for the target entity.
         """
         
         effect = self._effect_synonyms(effect)
@@ -2205,6 +2214,10 @@ class Interaction(object):
                 if isinstance(direction, tuple) else
             direction
         )
+        
+        entity_type = common.to_set(entity_type)
+        source_entity_type = common.to_set(source_entity_type) or entity_type
+        target_entity_type = common.to_set(target_entity_type) or entity_type
         
         return tuple(
             
@@ -2215,15 +2228,28 @@ class Interaction(object):
             for _dir in (self.a_b, self.b_a)
             
             # conditions by selecting and evaluating evidence collections
-            if self.evaluate_evidences(
-                this_direction = _dir,
-                direction = direction,
-                effect = effect,
-                resources = resources,
-                data_model = data_model,
-                interaction_type = interaction_type,
-                via = via,
-                references = references,
+            if (
+                (
+                    not source_entity_type or
+                    _dir[0].entity_type in source_entity_type
+                ) and
+                (
+                    not target_entity_type or
+                    _dir[1].entity_type in target_entity_type
+                )
+            )
+            and
+            (
+                self.evaluate_evidences(
+                    this_direction = _dir,
+                    direction = direction,
+                    effect = effect,
+                    resources = resources,
+                    data_model = data_model,
+                    interaction_type = interaction_type,
+                    via = via,
+                    references = references,
+                )
             )
             
         )
@@ -2719,11 +2745,15 @@ class Interaction(object):
         
         for _get in cls._get_methods_autogen:
             
+            method_name = 'get_%s' % _get
+            
+            signature = cls._update_get_method_signature(method_name)
+            
             cls._add_method(
-                method_name = 'get_%s' % _get,
+                method_name = method_name,
                 method = _create_get_method(_get),
                 # this is not always correct, to be fixed later
-                signature = cls._get_method_signature,
+                signature = signature,
                 doc = (
                     'Retrieves %s matching the criteria.' % (
                         _get.replace('_', ' ')
@@ -2737,9 +2767,6 @@ class Interaction(object):
         
         def _create_degree_method(mode, direction, effect):
             
-            wrap_args = (mode, direction, effect)
-            
-            @functools.wraps(wrap_args)
             def _degree_method(*args, **kwargs):
                 
                 mode, direction, effect = wrap_args
@@ -2786,12 +2813,32 @@ class Interaction(object):
             
             _get_method = getattr(cls, 'get_%s' % _get)
             
+            method_name = 'count_%s' % _get
+            
+            signature = cls._update_get_method_signature(method_name)
+            
             cls._add_method(
-                method_name = 'count_%s' % _get,
+                method_name = method_name,
                 method = cls._count(_get_method),
                 signature = cls._get_method_signature,
                 doc = _get_method.__doc__,
             )
+    
+    
+    @classmethod
+    def _update_get_method_signature(cls, method_name):
+        
+        signature = cls._get_method_signature
+        
+        if 'interaction' in method_name:
+            
+            signature = signature + [
+                ('entity_type', None),
+                ('source_entity_type', None),
+                ('target_entity_type', None),
+            ]
+        
+        return signature
     
     
     @classmethod
