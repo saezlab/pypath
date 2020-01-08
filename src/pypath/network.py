@@ -502,6 +502,7 @@ class Network(session_mod.Logger):
             top_call = True,
             cache_files = None,
             only_directions = False,
+            pickle_file = None,
         ):
         """
         Loads data from a network resource or a collection of resources.
@@ -522,6 +523,11 @@ class Network(session_mod.Logger):
             A *set* of resource names to be ignored. It is useful if you want
             to load a collection with the exception of a few resources.
         """
+        
+        if pickle_file:
+            
+            self.load_from_pickle(pickle_file = pickle_file)
+            return
         
         kwargs = {
             'reread': reread,
@@ -1654,32 +1660,37 @@ class Network(session_mod.Logger):
 
         if not edge_list:
 
-            if self.edge_list_mapped is not None:
+            if (
+                hasattr(self, 'edge_list_mapped') and
+                self.edge_list_mapped is not None
+            ):
+
                 edge_list = self.edge_list_mapped
 
             else:
+
                 self._log('_add_edge_list(): No data, nothing to do.')
                 return True
 
         if isinstance(edge_list, str):
 
             if edge_list in self.raw_data:
-                
+
                 edge_list = self.raw_data[edge_list]
 
             else:
-                
+
                 self._log(
                     '`%s` looks like a source name, but no data '
                     'available under this name.' % edge_list
                 )
 
                 return False
-        
+
         edges = []
 
         for e in edge_list:
-            
+
             self._add_update_edge(e, only_directions = only_directions)
 
         self._log(
@@ -1689,7 +1700,7 @@ class Network(session_mod.Logger):
                 self.ecount
             )
         )
-        
+
         self.raw_data = None
     
     

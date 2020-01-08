@@ -209,19 +209,22 @@ class ResourceAttributes(object):
         return self.name
 
 
+NetworkResourceKey = collections.namedtuple(
+    'NetworkResourceKey',
+    [
+        'name',
+        'data_type',
+        'interaction_type',
+        'data_model',
+        'via',
+    ]
+)
+
+
 class NetworkResource(ResourceAttributes):
     
     
-    _key = collections.namedtuple(
-        'NetworkResourceKey',
-        [
-            'name',
-            'data_type',
-            'interaction_type',
-            'data_model',
-            'via',
-        ]
-    )
+    _key = NetworkResourceKey
     
     
     def __init__(
