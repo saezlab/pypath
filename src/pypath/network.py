@@ -71,6 +71,7 @@ class NetworkEntityCollection(object):
     
     __slots__ = [
         'collection',
+        '_collection',
         'label',
         
         'shared_within_data_model',
@@ -119,6 +120,9 @@ class NetworkEntityCollection(object):
     def __init__(self, collection, label = None):
         
         self.collection = collection.copy()
+        # we need a copy where we don't add the totals
+        # so these don't bother the shared and unique methods
+        self._collection = collection.copy()
         self.label = label
         
         self.main()
@@ -134,7 +138,7 @@ class NetworkEntityCollection(object):
         self.update()
         self.collection_add_total()
         self.update_collection_counts()
-        
+    
     
     def update_collection_counts(self):
         
@@ -168,9 +172,11 @@ class NetworkEntityCollection(object):
                 self._expand_keys(level = level)
             )
             
+            by = 'by_%s' % level
+            
             setattr(
                 self,
-                'by_%s' % level,
+                by,
                 collection
             )
             setattr(
@@ -178,6 +184,14 @@ class NetworkEntityCollection(object):
                 'n%s%s' % (midpart, level),
                 common.dict_counts(collection)
             )
+            
+            for k, v in iteritems(getattr(self, by)):
+                
+                k = k if isinstance(k, tuple) else (k, 'all')
+                
+                k += ('Total',)
+                
+                self.collection[k] = v
             
         else:
             
@@ -245,29 +259,12 @@ class NetworkEntityCollection(object):
                     self._percent_and_collapse(shared_unique)
                 )
             )
-            
-            if summarize_groups:
-                
-                for _attr, prfx in zip(
-                    (attr, n_attr, pct_attr),
-                    ('', 'n_', 'pct_'),
-                ):
-                    
-                    coll_attr = '%scollection' % prfx
-                    
-                    for k, v in iteritems(getattr(self, _attr)):
-                        
-                        k = k if isinstance(k, tuple) else (k, 'all')
-                        
-                        k += ('Total',)
-                        
-                        getattr(self, coll_attr)[k] = v
     
     
     def _expand_keys(self, level):
         
         return common.dict_expand_keys(
-            self.collection,
+            self._collection,
             depth = 1,
             front = level == 'interaction_type',
         )
