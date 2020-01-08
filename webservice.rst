@@ -164,7 +164,7 @@ annotations from SignaLink:
 
 Or the tissue expression of BMP7 from Human Protein Atlas:
 
-    http://omnipathdb.org/annotations?databases=HPA&proteins=BMP7
+     http://omnipathdb.org/annotations?databases=HPA_tissue&proteins=BMP7
 
 
 Roles in inter-cellular communication
