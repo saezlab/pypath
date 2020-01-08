@@ -207,6 +207,7 @@ class Interaction(object):
         'protein',
         ('complex', 'complexes'),
         'mirna',
+        'lncrna',
         'small_molecule',
         None,
     }
