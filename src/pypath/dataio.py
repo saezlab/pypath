@@ -8888,7 +8888,7 @@ def reactome_interactions(cacheFile = None, **kwargs):
                 return []
 
 
-def acsn_interactions(**kwargs):
+def acsn_interactions_2(**kwargs):
     return get_interactions('acsn', **kwargs)
 
 

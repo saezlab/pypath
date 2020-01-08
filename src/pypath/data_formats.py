@@ -237,36 +237,74 @@ reaction_misc = {
 
 reaction_pc = {
     'acsn': input_formats.NetworkInput(
-        name = "ACSN",
+        name = 'ACSN',
         separator = None,
         id_col_a = 0,
         id_col_b = 1,
-        id_type_a = "genesymbol",
-        id_type_b = "genesymbol",
-        entity_type_a = "protein",
-        entity_type_b = "protein",
-        is_directed = (2, [
-            'UNKNOWN_TRANSITION', 'INTERACTION_TYPE',
-            'KNOWN_TRANSITION_OMITTED', 'INHIBITION',
-            'UNKNOWN_POSITIVE_INFLUENCE', 'PROTEIN_INTERACTION',
-            'UNKNOWN_CATALYSIS', 'POSITIVE_INFLUENCE', 'STATE_TRANSITION',
-            'TRANSLATION', 'UNKNOWN_NEGATIVE_INFLUENCE', 'NEGATIVE_INFLUENCE',
-            'MODULATION', 'TRANSCRIPTION', 'COMPLEX_EXPANSION', 'TRIGGER',
-            'CATALYSIS', 'PHYSICAL_STIMULATION', 'UNKNOWN_INHIBITION',
-            'TRANSPORT'
-        ], ';'),
-        sign = (2,
-              ['TRIGGER', 'UNKNOWN_POSITIVE_INFLUENCE', 'POSITIVE_INFLUENCE'],
-              ['UNKNOWN_NEGATIVE_INFLUENCE', 'NEGATIVE_INFLUENCE'], ';'),
+        id_type_a = 'genesymbol',
+        id_type_b = 'genesymbol',
+        entity_type_a = 'protein',
+        entity_type_b = 'protein',
+        is_directed = (
+            2,
+            [
+                'UNKNOWN_TRANSITION',
+                'INTERACTION_TYPE',
+                'KNOWN_TRANSITION_OMITTED',
+                'INHIBITION',
+                'UNKNOWN_POSITIVE_INFLUENCE',
+                'UNKNOWN_CATALYSIS',
+                'POSITIVE_INFLUENCE',
+                'STATE_TRANSITION',
+                'TRANSLATION',
+                'UNKNOWN_NEGATIVE_INFLUENCE',
+                'NEGATIVE_INFLUENCE',
+                'MODULATION',
+                'TRANSCRIPTION',
+                'COMPLEX_EXPANSION',
+                'TRIGGER',
+                'CATALYSIS',
+                'PHYSICAL_STIMULATION',
+                'UNKNOWN_INHIBITION',
+                'TRANSPORT',
+                'inhibits',
+                'activates',
+            ],
+            ';',
+        ),
+        sign = (
+            2,
+            [
+                'TRIGGER',
+                'UNKNOWN_POSITIVE_INFLUENCE',
+                'POSITIVE_INFLUENCE',
+                'PHYSICAL_STIMULATION',
+                'activates',
+            ],
+            [
+                'INHIBITION',
+                'UNKNOWN_NEGATIVE_INFLUENCE',
+                'NEGATIVE_INFLUENCE',
+                'inhibits',
+            ],
+            ';',
+        ),
         ncbi_tax_id = 9606,
-        negative_filters = [(2, ['COMPLEX_EXPANSION', 'TRANSCRIPTION'], ';'),
-                         (3, 'N/A')],
+        negative_filters = [
+            (
+                2,
+                [
+                    'COMPLEX_EXPANSION',
+                    'TRANSCRIPTION',
+                ],
+                ';'
+            ),
+        ],
         positive_filters = [],
-        references = False,
-        input = 'acsn_ppi',
+        references = (3, ';'),
+        input = 'acsn_interactions',
         header = False,
-        extra_edge_attrs = {'acsn_effect': (2, ';'),
-                        'acsn_refs': (3, ';')},
+        extra_edge_attrs = {'acsn_effect': (2, ';')},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
 }
@@ -1180,31 +1218,6 @@ interaction_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'acsn': input_formats.NetworkInput(
-        name = "ACSN",
-        separator = None,
-        id_col_a = 0,
-        id_col_b = 2,
-        id_type_a = "genesymbol",
-        id_type_b = "genesymbol",
-        entity_type_a = "protein",
-        entity_type_b = "protein",
-        is_directed = (1, [
-            'CATALYSIS', 'UNKNOWN_CATALYSIS', 'INHIBITION',
-            'PHYSICAL_STIMULATION', 'TRIGGER', 'activates',
-            'UNKNOWN_POSITIVE_INFLUENCE', 'inhibits', 'MODULATION'
-        ]),
-        sign = (1, [
-            'PHYSICAL_STIMULATION', 'TRIGGER', 'activates',
-            'UNKNOWN_POSITIVE_INFLUENCE'
-        ], ['INHIBITION', 'inhibits']),
-        ncbi_tax_id = 9606,
-        input = 'acsn_interactions',
-        references = False,
-        header = False,
-        extra_edge_attrs = {'acsn_effect': 1},
-        extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
     'hi2': input_formats.NetworkInput(
         name = "HI-II",
         separator = None,
@@ -1301,6 +1314,8 @@ interaction_misc = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
 }
+
+interaction_misc['acsn'] = copy.deepcopy(reaction_pc['acsn'])
 
 
 interaction_deprecated = {
