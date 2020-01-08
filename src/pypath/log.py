@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -177,7 +177,7 @@ class Logger(object):
 
     def _console(self, msg):
 
-        sys.stdout.write('%s\n' % msg)
+        sys.stdout.write(msg)
         sys.stdout.flush()
 
 

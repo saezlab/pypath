@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -28,12 +28,17 @@ import copy
 import collections
 import itertools
 
+import pypath.session_mod as session_mod
+
+_logger = session_mod.Logger(name = 'server')
+_log = _logger._log
+
 try:
     import twisted.web.resource
     import twisted.web.server
     import twisted.internet
 except:
-    self._log('\t:: No `twisted` available.\n')
+    _log('No module `twisted` available.', -1)
 
 import urllib
 import json
@@ -44,9 +49,10 @@ import numpy as np
 import pypath.descriptions as descriptions
 import pypath._html as _html
 import pypath.urls as urls
-import pypath.session_mod as session_mod
 import pypath.common as common
-from pypath.common import flatList
+import pypath.db_categories as db_categories
+import pypath.intercell_annot as intercell_annot
+from pypath.common import flat_list
 from pypath._version import __version__
 
 if 'unicode' not in __builtins__:
@@ -255,6 +261,14 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
     
     def info(self, req):
         
+        if (
+            b'format' in req.args and
+            req.args[b'format'][0] == b'json' and
+            hasattr(self, 'resources')
+        ):
+            
+            return self.resources(req)
+        
         return descriptions.gen_html()
     
     
@@ -441,6 +455,7 @@ class TableServer(BaseServer):
             },
             'databases': None,
             'fields': None,
+            'cytoscape': {'1', '0', 'no', 'yes'},
         },
         'intercell': {
             'header': None,
@@ -497,8 +512,44 @@ class TableServer(BaseServer):
             'proteins': None,
             'fields': None,
         },
+        'resources': {
+            'format': {
+                'json',
+            },
+            'datasets': {
+                'interactions',
+                'interaction',
+                'network',
+                'enz_sub',
+                'enzyme-substrate',
+                'annotations',
+                'annotation',
+                'annot',
+                'intercell',
+                'complex',
+                'complexes',
+            },
+            'subtypes': None,
+        },
     }
     
+    
+    query_type_synonyms = {
+        'interactions': 'interactions',
+        'interaction': 'interactions',
+        'network': 'interactions',
+        'enz_sub': 'enzsub',
+        'ptms': 'enzsub',
+        'ptm': 'enzsub',
+        'enzyme-substrate': 'enzsub',
+        'enzyme_substrate': 'enzsub',
+        'annotations': 'annotations',
+        'annotation': 'annotations',
+        'annot': 'annotations',
+        'intercell': 'intercell',
+        'complex': 'complexes',
+        'complexes': 'complexes',
+    }
     datasets_ = {
         'omnipath',
         'tfregulons',
@@ -589,6 +640,7 @@ class TableServer(BaseServer):
         },
         intercell = {
             'category': 'category',
+            'database': 'category',
             'uniprot': 'category',
             'genesymbol': 'category',
             'mainclass': 'category',
@@ -597,10 +649,88 @@ class TableServer(BaseServer):
         }
     )
     
+    # the annotation attributes served for the cytoscape app
+    cytoscape_attributes = {
+        ('Zhong2015', 'type'),
+        ('MatrixDB', 'mainclass'),
+        ('Matrisome', ('mainclass', 'subclass', 'subsubclass')),
+        # ('TFcensus', 'in TFcensus'),
+        ('Locate', ('location', 'cls')),
+        (
+            'Phosphatome',
+            (
+                'family',
+                'subfamily',
+                #'has_protein_substrates',
+            )
+        ),
+        ('CancerSEA', 'state'),
+        ('GO_Intercell', 'mainclass'),
+        ('Adhesome', 'mainclass'),
+        ('SignaLink3', 'pathway'),
+        (
+            'HPA_secretome',
+            (
+                'mainclass',
+                #'secreted',
+            )
+        ),
+        (
+            'OPM',
+            (
+                'membrane',
+                'family',
+                #'transmembrane',
+            )
+        ),
+        ('KEGG', 'pathway'),
+        #(
+            #'CellPhoneDB',
+            #(
+                ## 'receptor',
+                ## 'peripheral',
+                ## 'secreted',
+                ## 'transmembrane',
+                ## 'receptor_class',
+                ## 'secreted_class',
+            #)
+        #),
+        ('kinase.com', ('group', 'family', 'subfamily')),
+        ('Membranome', ('membrane',)),
+        #('CSPA', 'in CSPA'),
+        #('MSigDB', 'geneset'),
+        #('Integrins', 'in Integrins'),
+        ('HGNC', 'mainclass'),
+        ('CPAD', ('pathway', 'effect_on_cancer', 'cancer', )),
+        ('Signor', 'pathway'),
+        ('Ramilowski2015', 'mainclass'),
+        ('HPA_subcellular', 'location'),
+        #('DisGeNet', 'disease'),
+        ('Surfaceome', ('mainclass', 'subclasses')),
+        ('IntOGen', 'role'),
+        ('HPMR', ('role', 'mainclass', 'subclass', 'subsubclass')),
+        #('CancerGeneCensus',
+            #(
+                ##'hallmark',
+                ##'somatic',
+                ##'germline',
+                #'tumour_types_somatic',
+                #'tumour_types_germline',
+            #)
+        #),
+        #('DGIdb', 'category'),
+        ('ComPPI', 'location'),
+        ('Exocarta', 'vesicle'),
+        ('Vesiclepedia', 'vesicle'),
+        ('Ramilowski_location', 'location'),
+        ('LRdb', ('role', 'cell_type')),
+    }
     
     def __init__(
             self,
             input_files = None,
+            only_tables = None,
+            exclude_tables = None,
         ):
         """
         Server based on ``pandas`` data frames.
@@ -616,7 +746,17 @@ class TableServer(BaseServer):
         self.input_files = copy.deepcopy(self.default_input_files)
         self.input_files.update(input_files or {})
         self.data = {}
+        
+        self.to_load = (
+            self.data_query_types - common.to_set(exclude_tables)
+                if only_tables is None else
+            common.to_set(only_tables)
+        )
+        
+        self._log('Datasets to load: %s.' % (', '.join(sorted(self.to_load))))
+        
         self._read_tables()
+        
         self._preprocess_interactions()
         self._preprocess_enzsub()
         self._preprocess_annotations()
@@ -633,6 +773,12 @@ class TableServer(BaseServer):
         self._log('Loading data tables.')
         
         for name, fname in iteritems(self.input_files):
+            
+            if name not in self.to_load:
+                
+                continue
+            
+            self._log('Loading dataset `%s` from file `%s`.' % (name, fname))
             
             if not os.path.exists(fname):
                 
@@ -670,10 +816,29 @@ class TableServer(BaseServer):
     
     def _preprocess_interactions(self):
         
+        if 'interactions' not in self.data:
+            
+            return
+        
         self._log('Preprocessing interactions.')
         tbl = self.data['interactions']
         tbl['set_sources'] = pd.Series(
             [set(s.split(';')) for s in tbl.sources]
+        )
+        tbl['references'] = pd.Series(
+            [
+                (
+                    ';'.join(
+                        sorted(
+                            set(r.split(';')),
+                            key = int,
+                        )
+                    )
+                        if isinstance(r, common.basestring) else
+                    ''
+                )
+                for r in tbl.references
+            ]
         )
         tbl['set_tfregulons_level'] = pd.Series(
             [
@@ -687,6 +852,10 @@ class TableServer(BaseServer):
     
     def _preprocess_enzsub(self):
         
+        if 'enzsub' not in self.data:
+            
+            return
+        
         self._log('Preprocessing enzyme-substrate relationships.')
         tbl = self.data['enzsub']
         tbl['set_sources'] = pd.Series(
@@ -696,17 +865,25 @@ class TableServer(BaseServer):
     
     def _preprocess_complexes(self):
         
+        if 'complexes' not in self.data:
+            
+            return
+        
         self._log('Preprocessing complexes.')
         tbl = self.data['complexes']
         tbl['set_sources'] = pd.Series(
             [set(s.split(';')) for s in tbl.sources]
         )
         tbl['set_proteins'] = pd.Series(
-            [set(c.split('-')) for c in tbl.components]
+            [set(c.split('_')) for c in tbl.components]
         )
     
     
-    def _preprocess_annotations(self):
+    def _preprocess_annotations_old(self):
+        
+        if 'annotations' not in self.data:
+            
+            return
         
         renum = re.compile(r'[-\d\.]+')
         
@@ -738,7 +915,60 @@ class TableServer(BaseServer):
         ).agg({'value': _agg_values}).reset_index(drop = False)
     
     
+    def _preprocess_annotations(self):
+        
+        if 'annotations' not in self.data:
+            
+            return
+        
+        renum = re.compile(r'[-\d\.]+')
+        
+        
+        self._log('Preprocessing annotations.')
+        
+        values_by_key = collections.defaultdict(set)
+        
+        # we need to do it this way as we are memory limited on the server
+        # and pandas groupby is very memory intensive
+        for row in self.data['annotations'].itertuples():
+            
+            value = (
+                '<numeric>'
+                if (
+                    (
+                        not isinstance(row.value, bool) and
+                        isinstance(row.value, (int, float))
+                    ) or
+                    renum.match(row.value)
+                ) else
+                str(row.value)
+            )
+            
+            values_by_key[(row.source, row.label)].add(value)
+        
+        for vals in values_by_key.values():
+            
+            if len(vals) > 1:
+                
+                vals.discard('<numeric>')
+            
+            vals.discard('')
+            vals.discard('nan')
+        
+        self.data['annotations_summary'] = pd.DataFrame(
+            list(
+                (source, label, '#'.join(sorted(values)))
+                for (source, label), values in iteritems(values_by_key)
+            ),
+            columns = ['source', 'label', 'value'],
+        )
+    
+    
     def _preprocess_intercell(self):
+        
+        if 'intercell' not in self.data:
+            
+            return
         
         self._log('Preprocessing intercell data.')
         tbl = self.data['intercell']
@@ -753,7 +983,13 @@ class TableServer(BaseServer):
     
     def _update_databases(self):
         
+        self._databases_dict = collections.defaultdict(dict)
+        
         for query_type in self.data_query_types:
+            
+            if query_type not in self.data:
+                
+                continue
             
             tbl = self.data[query_type]
             
@@ -773,7 +1009,71 @@ class TableServer(BaseServer):
                 ))
             ))
             
+            if query_type == 'intercell':
+                
+                intercell_databases = dict(
+                    set(
+                        zip(
+                            self.data['intercell'].category,
+                            self.data['intercell'].database,
+                        )
+                    )
+                )
+                
+                intercell_main_classes = dict(
+                    set(
+                        zip(
+                            self.data['intercell'].category,
+                            self.data['intercell'].mainclass,
+                        )
+                    )
+                )
+            
+            for db in values:
+                
+                if query_type == 'intercell':
+                    
+                    if any(
+                        db in dbs
+                        for dbs in intercell_annot.class_types.values()
+                    ):
+                        
+                        continue
+                    
+                    db_class = db
+                    db = intercell_databases[db_class]
+                    class_label = intercell_annot.get_class_label(
+                        intercell_main_classes[db_class]
+                    )
+                
+                if 'datasets' not in self._databases_dict[db]:
+                    
+                    self._databases_dict[db]['datasets'] = {}
+                
+                if query_type not in self._databases_dict[db]['datasets']:
+                    
+                    self._databases_dict[db]['datasets'][query_type] = (
+                        
+                        {'classes': {}}
+                        
+                            if query_type == 'intercell' else
+                        
+                        sorted(db_categories.get_categories(db, names = True))
+                        
+                            if query_type == 'interactions' else
+                        
+                        []
+                        
+                    )
+                
+                if query_type == 'intercell':
+                    
+                    qt = self._databases_dict[db]['datasets'][query_type]
+                    qt['classes'][db_class] = class_label
+            
             self.args_reference[query_type][argname] = values
+        
+        self._databases_dict = dict(self._databases_dict)
     
     
     def _check_args(self, req):
@@ -828,6 +1128,15 @@ class TableServer(BaseServer):
             )
     
     
+    def _query_type(self, query_type):
+        
+        return (
+            self.query_type_synonyms[query_type]
+                if query_type in self.query_type_synonyms else
+            query_type
+        )
+    
+    
     def queries(self, req):
         
         query_type = (
@@ -836,7 +1145,7 @@ class TableServer(BaseServer):
             'interactions'
         )
         
-        query_type = 'enzsub' if query_type == 'ptms' else query_type
+        query_type = self._query_type(query_type)
         
         query_param = (
             req.postpath[2]
@@ -888,7 +1197,7 @@ class TableServer(BaseServer):
             'interactions'
         )
         
-        query_type = 'enzsub' if query_type == 'ptms' else query_type
+        query_type = self._query_type(query_type)
         
         datasets = (
             set(req.postpath[2].split(','))
@@ -1401,7 +1710,32 @@ class TableServer(BaseServer):
             
             tbl = tbl[tbl.source.isin(databases)]
         
+        if (
+            b'cytoscape' in req.args and
+            self._parse_arg(req.args[b'cytoscape'])
+        ):
+            
+            cytoscape = True
+            
+        else:
+            
+            cytoscape = False
+        
         tbl = tbl.loc[:,hdr]
+        
+        if cytoscape:
+            
+            tbl = tbl.set_index(['source', 'label'], drop = False)
+            
+            cytoscape_keys = {
+                (source, label)
+                for source, labels in self.cytoscape_attributes
+                for label in (
+                    labels if isinstance(labels, tuple) else (labels,)
+                )
+            } & set(tbl.index)
+            
+            tbl = tbl.loc[list(cytoscape_keys)]
         
         return self._serve_dataframe(tbl, req)
     
@@ -1533,6 +1867,30 @@ class TableServer(BaseServer):
         return self._serve_dataframe(tbl, req)
     
     
+    def resources(self, req):
+        
+        datasets = (
+            
+            {
+                self._query_type(dataset.decode('ascii'))
+                for dataset in req.args[b'datasets']
+            }
+            
+            if b'datasets' in req.args else
+            
+            None
+            
+        )
+        
+        return json.dumps(
+            dict(
+                (k, v)
+                for k, v in iteritems(self._databases_dict)
+                if not datasets or datasets & set(v['datasets'].keys())
+            )
+        )
+    
+    
     @classmethod
     def _serve_dataframe(cls, tbl, req):
         
@@ -1599,6 +1957,7 @@ class PypathServer(BaseServer):
         BaseServer.__init__(self)
     
     def network(self, req):
+        
         hdr = ['nodes', 'edges', 'is_directed', 'sources']
         val = [
             self.g.vcount(), self.g.ecount(), int(self.g.is_directed()),
@@ -1672,7 +2031,7 @@ class PypathServer(BaseServer):
                     if 'references' in hdr:
                         thisEdge.append([
                             r.pmid
-                            for r in flatList([
+                            for r in flat_list([
                                 rs for s, rs in iteritems(e['refs_by_source'])
                                 if s in dsources
                             ])
@@ -1869,7 +2228,7 @@ class Rest(object):
     def __init__(
             self,
             port,
-            serverclass = PypathServer,
+            serverclass = TableServer,
             start = True,
             **kwargs
         ):
@@ -1888,14 +2247,19 @@ class Rest(object):
         """
         
         self.port = port
+        _log('Creating the server class.')
         self.server = serverclass(**kwargs)
+        _log('Server class ready.')
         
         if start:
             
+            _log('Starting the twisted server.')
             self.start()
     
     def start(self):
         
         self.site = twisted.web.server.Site(self.server)
+        _log('Site created.')
         twisted.internet.reactor.listenTCP(self.port, self.site)
+        _log('Server going to listen on port %u from now.' % self.port)
         twisted.internet.reactor.run()

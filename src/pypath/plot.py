@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -498,7 +498,7 @@ class MultiBarplot(Plot):
             else:
                 self.cnames = dict(
                     map(lambda c: ('#%u' % c, c),
-                        sorted(common.uniqList(self.cats))))
+                        sorted(common.uniq_list(self.cats))))
                 if len(self.cnames) == 1:
                     self.cnames = {self.xlab: 0}
         
@@ -541,7 +541,7 @@ class MultiBarplot(Plot):
                 for ccols in self.colors:
                     getattr(self, colattr).extend(ccols)
                 setattr(self, colattr, np.array(getattr(self, colattr)))
-        if type(color) not in common.simpleTypes and \
+        if type(color) not in common.simple_types and \
                 len(color) == len(self.x):
             # color is a list of colors for each bar
             setattr(self, colattr, np.array(color))
@@ -565,11 +565,11 @@ class MultiBarplot(Plot):
         
         if self.cat_ordr is None and self.cat_names is not None:
             
-            self.cat_ordr = common.uniqOrdList(sorted(self.cat_names))
+            self.cat_ordr = common.uniq_ord_list(sorted(self.cat_names))
         
         elif self.cat_ordr is None:
             
-            self.cat_ordr = common.uniqList(sorted(self.cnames.keys()))
+            self.cat_ordr = common.uniq_list(sorted(self.cnames.keys()))
 
     def by_plot(self):
         """
@@ -1675,7 +1675,7 @@ class ScatterPlus(object):
         if self.size is None:
             self.size = self.min_size
 
-        if type(self.size) in common.numTypes:
+        if type(self.size) in common.numeric_types:
             self.size = [self.size] * len(self.x)
 
         self.size_values = np.array(self.size)
@@ -2078,13 +2078,13 @@ class Histogram(Plot):
                  kde_perc=12.0,
                  **kwargs):
         self.data = data
-        if type(self.data[0]) in common.numTypes:
+        if type(self.data[0]) in common.numeric_types:
             self.data = [data]
         for i, d in enumerate(self.data):
             if type(d) is list:
                 self.data[i] = np.array(d)
         self.labels = labels
-        if type(self.labels) in common.charTypes:
+        if type(self.labels) in common.char_types:
             self.labels = [labels]
         for k, v in iteritems(locals()):
             setattr(self, k, v)
@@ -2367,13 +2367,13 @@ class SimilarityGraph(object):
     def refs_sim(self):
         self.edges = [(s1, s2, pypath.common.simpson_index([
             r.pmid
-            for r in common.uniqList(
-                common.flatList([[] if s1 not in e['refs_by_source'] else e[
+            for r in common.uniq_list(
+                common.flat_list([[] if s1 not in e['refs_by_source'] else e[
                     'refs_by_source'][s1] for e in self.graph.es]))
         ], [
             r.pmid
-            for r in common.uniqList(
-                common.flatList([[] if s2 not in e['refs_by_source'] else e[
+            for r in common.uniq_list(
+                common.flat_list([[] if s2 not in e['refs_by_source'] else e[
                     'refs_by_source'][s2] for e in self.graph.es]))
         ])) for s1 in self.pp.sources for s2 in self.pp.sources]
 
@@ -2459,8 +2459,8 @@ class SimilarityGraph(object):
     def sizes_refs(self):
         self.sgraph.vs['size'] = \
             [len(
-                common.uniqList(
-                    common.flatList([
+                common.uniq_list(
+                    common.flat_list([
                         e['refs_by_source'][v['name']]
                         for e in self.graph.es
                         if v['name'] in e['refs_by_source']
@@ -2473,8 +2473,8 @@ class SimilarityGraph(object):
         for v in self.sgraph.vs:
             allrefs = \
                 len(
-                    common.uniqList(
-                        common.flatList(
+                    common.uniq_list(
+                        common.flat_list(
                             [[r.pmid for r in e1['refs_by_source'][v['name']]]
                                 for e1 in self.graph.es
                                 if v['name'] in e1['refs_by_source']
@@ -2652,7 +2652,7 @@ class HistoryTree(object):
     def get_years(self):
         self.d = pypath.descriptions.descriptions
         self.firstyear = min(
-            common.flatList([
+            common.flat_list([
                 [r['year']] for r in self.d.values() if 'year' in r
             ] + [r['releases'] for r in self.d.values() if 'releases' in r]))
         self.lastyear = self.lastyear if hasattr(
@@ -3028,8 +3028,8 @@ class HtpCharacteristics(object):
                     set(self.graph.incident(
                         v.index, mode='ALL')) - htedgs) == 0
             ]
-            htsrcs = common.uniqList(
-                common.flatList([self.graph.es[e]['sources'] for e in htedgs]))
+            htsrcs = common.uniq_list(
+                common.flat_list([self.graph.es[e]['sources'] for e in htedgs]))
             self.htdata[htlim] = {
                 'rnum': len(htrefs),
                 'enum': len(htedgs),
@@ -3043,7 +3043,7 @@ class HtpCharacteristics(object):
     def htp_calculations(self):
         if not len(self.htdata):
             self.refc = collections.Counter(
-                common.flatList((r.pmid for r in e['references'])
+                common.flat_list((r.pmid for r in e['references'])
                                 for e in self.pp.graph.es))
 
             # percentage of high throughput interactions

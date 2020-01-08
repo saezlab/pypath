@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -699,7 +699,7 @@ class MapReader(session_mod.Logger):
 
         names = [name.split('(')[0]]
         names += rebr.findall(name)
-        others = common.flatList([x.split(';') for x in resq.findall(name)])
+        others = common.flat_list([x.split(';') for x in resq.findall(name)])
         others = [x.split(':')[1] if ':' in x else x for x in others]
         others = [x.split('(')[1] if '(' in x else x for x in others]
         names += others
@@ -1471,6 +1471,54 @@ class Mapper(session_mod.Logger):
         )
 
         return tbl[name] if tbl else set()
+    
+    #
+    # ID specific translation methods
+    #
+    
+    
+    def label(self, name, id_type = None, ncbi_tax_id = None):
+        """
+        For any kind of entity, either protein, miRNA or protein complex,
+        returns the preferred human readable label. For proteins this means
+        Gene Symbols, for miRNAs miRNA names, for complexes a series of
+        Gene Symbols.
+        """
+        
+        if hasattr(name, 'genesymbol_str'):
+            
+            return name.genesymbol_str
+            
+        elif isinstance(name, common.basestring):
+            
+            ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+            
+            if name.startswith('MIMAT'):
+                
+                return map_name0(
+                    name,
+                    id_type or 'mirbase',
+                    'mir-mat-name',
+                    ncbi_tax_id = ncbi_tax_id,
+                ) or name
+                
+            elif name.startswith('MI'):
+                
+                return self.map_name0(
+                    name,
+                    id_type or 'mir-pre',
+                    'mir-name',
+                    ncbi_tax_id = ncbi_tax_id,
+                ) or name
+                
+            else:
+                
+                return self.map_name0(
+                    name,
+                    id_type or 'uniprot',
+                    'genesymbol',
+                    ncbi_tax_id = ncbi_tax_id,
+                ) or name
 
 
     def primary_uniprot(self, uniprots):
@@ -1540,6 +1588,9 @@ class Mapper(session_mod.Logger):
         
         return swissprots
 
+    #
+    # Mapping table management methods
+    #
 
     def has_mapping_table(
             self,
@@ -1945,7 +1996,7 @@ def map_names(
     )
 
 
-def label(name):
+def label(name, id_type = None, ncbi_tax_id = 9606):
     """
     For any kind of entity, either protein, miRNA or protein complex,
     returns the preferred human readable label. For proteins this means
@@ -1953,20 +2004,10 @@ def label(name):
     Gene Symbols.
     """
     
-    if hasattr(name, 'genesymbol_str'):
-        
-        return name.genesymbol_str
-        
-    elif isinstance(name, common.basestring):
-        
-        if name.startswith('MIMAT'):
-            
-            return map_name0(name, 'mirbase', 'mir-mat-name')
-            
-        elif name.startswith('MI'):
-            
-            return map_name0(name, 'mir-pre', 'mir-name')
-            
-        else:
-            
-            return map_name0(name, 'uniprot', 'genesymbol')
+    mapper = get_mapper()
+    
+    return mapper.label(
+        name = name,
+        id_type = id_type,
+        ncbi_tax_id = ncbi_tax_id,
+    )

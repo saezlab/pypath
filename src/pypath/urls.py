@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -407,14 +407,16 @@ urls = {
     },
     'pazar': {
         'label': 'TF-target gene lists from PAZAR',
-        'url': 'http://www.pazar.info/tftargets/tftargets.zip'
+        'url': 'http://www.pazar.info/tftargets/tftargets.zip',
+        'url_rescued': 'http://rescued.omnipathdb.org/pazar_tftargets.zip',
     },
     'htri': {
         'label': 'TF-target gene lists from HTRI',
-        'url':
-        'http://www.lbbc.ibb.unesp.br/htri/consulta?type=1&all=true&down=3'
-        '&iconss1.x=57&iconss1.y=48',
-        'init_url': 'http://www.lbbc.ibb.unesp.br/htri/pagdown.jsp'
+        'url': 'http://www.lbbc.ibb.unesp.br/htri/datasHTRIdb?down=3',
+        'url_old': 'http://www.lbbc.ibb.unesp.br/htri/consulta?'\
+            'type=1&all=true&down=3&iconss1.x=57&iconss1.y=48',
+        'init_url': 'http://www.lbbc.ibb.unesp.br/htri/consulta?'\
+            'type=1&all=true&down=3',
     },
     'oreganno_old': {
         'label': 'TF-target gene lists from ORegAnno, previous version',
@@ -423,8 +425,10 @@ urls = {
     },
     'oreganno': {
         'label': 'TF-target gene lists from ORegAnno',
-        'url': 'http://py-gi1.stanford.edu:8080/oregano/htdocs/'
-        'downloads/ORegAnno_Combined_2015.09.16.tsv'
+        'url_old': 'http://py-gi1.stanford.edu:8080/oregano/htdocs/'
+        'downloads/ORegAnno_Combined_2015.09.16.tsv',
+        'url': 'http://www.oreganno.org/dump/'\
+            'ORegAnno_Combined_2016.01.19.tsv',
     },
     'cpdb': {
         'label': 'All human interactions from ConsensusPathDB',
@@ -524,6 +528,10 @@ urls = {
         'pathology': 'http://www.proteinatlas.org/download/pathology.tsv.zip',
         'subcell': 'https://www.proteinatlas.org/download/'\
             'subcellular_location.tsv.zip',
+        'secretome': 'https://stke.sciencemag.org/highwire/filestream/'\
+            '216463/field_highwire_adjunct_files/1/aaz0274_Data_file_S2.xlsx',
+        'ig_genes': 'https://stke.sciencemag.org/highwire/filestream/'\
+            '216463/field_highwire_adjunct_files/0/aaz0274_Data_file_S1.xlsx',
 
     },
     'lincs-compounds': {
@@ -577,13 +585,16 @@ urls = {
         'login1': 'http://software.broadinstitute.org/gsea/login.jsp',
         'login2':
         'http://software.broadinstitute.org/gsea/j_spring_security_check',
-        'url': 'http://www.broadinstitute.org/gsea/msigdb/download_file.jsp?'
-        'filePath=/resources/msigdb/5.0/%s.all.v5.0.%s.gmt',
+        'url': 'http://software.broadinstitute.org/gsea/msigdb/'
+        'download_file.jsp?filePath=/resources/msigdb/7.0/%s.v7.0.%s.gmt',
         'coll': 'http://www.broadinstitute.org/gsea/msigdb/collections.jsp',
         'url_stem': 'http://www.broadinstitute.org/gsea/%s',
         'one_set':
         'http://www.broadinstitute.org/gsea/msigdb/download_geneset.jsp?'
-        'geneSetName=%s&fileType=txt'
+        'geneSetName=%s&fileType=txt',
+        'url_all': 'http://software.broadinstitute.org/gsea/msigdb/'\
+            'download_file.jsp?filePath=/resources/msigdb/7.0/'\
+            'msigdb_v7.0_files_to_download_locally.zip',
     },
     'disgenet': {
         'label': 'Disease-gene associations',
@@ -678,7 +689,11 @@ urls = {
         'http://dp.univr.it/~laudanna/LCTST/downloads/files/SignalingFlow.EA',
         'sigdir':
         'http://dp.univr.it/~laudanna/LCTST/downloads/files/'\
-            'SignalingDirection.EA'
+            'SignalingDirection.EA',
+        'sigdir_rescued': 'http://rescued.omnipathdb.org/'\
+            'Laudanna_SignalingDirection.EA',
+        'sigflow_rescued': 'http://rescued.omnipathdb.org/'\
+            'Laudanna_SignalingFlow.EA',
     },
     'biogrid': {
         'label': 'BioGRID version 2 tab format',
@@ -800,8 +815,8 @@ urls = {
     },
     'string': {
         'label': 'STRING',
-        'actions': 'http://string-db.org/download/'
-        'protein.actions.v10.5/%u.protein.actions.v10.5.txt.gz',
+        'actions': 'https://stringdb-static.org/download/'
+            'protein.actions.v11.0/%u.protein.actions.v11.0.txt.gz',
         'links': 'http://string-db.org/download/protein.links.detailed.v10/%u'
         '.protein.links.detailed.v10.txt.gz'
     },
@@ -829,13 +844,21 @@ urls = {
         'label': 'miR2Disease experimentally validated'\
             'miRNA-target interactions',
         'url': 'http://watson.compbio.iupui.edu:8080'\
-            '/miR2Disease/download/miRtar.txt'
+            '/miR2Disease/download/miRtar.txt',
+        'url_rescued': 'http://rescued.omnipathdb.org/miR2Disease_miRtar.txt',
     },
     'mirdeathdb': {
         'label': 'miRDeathDB experimentally verified'\
             'miRNA-target interactions',
         'url': 'http://www.rna-world.org/mirdeathdb/data'\
-            '/miRDeathDB_all_data.txt'
+            '/miRDeathDB_all_data.txt',
+        'url_rescued': 'http://rescued.omnipathdb.org/miRDeathDB_all_data.txt'
+    },
+    'ncrdeathdb': {
+        'label': 'Successor of miRDeathDB. Apoptosis related non-coding RNA'\
+            ' literature curated regulatory interactions',
+        'url': 'http://www.rna-society.org/ncrdeathdb/data/'\
+            'allNcRNACelldeathData.txt',
     },
     'mirecords': {
         'label': 'miRecords experimentally validated'\
@@ -853,16 +876,21 @@ urls = {
     'lncdisease': {
         'label': 'lncRNA and disease database: experimentally '\
             'verified lncRNA interactions',
-        'url': 'http://210.73.221.6/files/images/ldd/data2.txt'
+        'url': 'http://210.73.221.6/files/images/ldd/data2.txt',
+        'url_rescued': 'http://rescued.omnipathdb.org/LncRNADisease_data2.txt'
     },
     'lncrnadb': {
         'label': 'Literature curated lncRNA interactions',
-        'url': 'http://lncrna.com/rest/all/nomenclature/species/association'
+        'url': 'http://lncrna.com/rest/all/nomenclature/species/association',
+        'url_rescued': 'http://rescued.omnipathdb.org/'\
+            'lncrnadb_association.xml',
     },
     'transmir': {
         'label': 'Literature curated TF-miRNA interactions',
-        'url': 'http://www.cuilab.cn/files/images/transmir/'\
-            'transmir_v1.2.txt'
+        'url_old': 'http://www.cuilab.cn/files/images/transmir/'\
+            'transmir_v1.2.txt',
+        'url': 'http://www.cuilab.cn/files/images/transmir2/'
+            'download/literature/hsa.tsv.gz',
     },
     'encode': {
         'label': 'Interaction data from the Nature ENCODE project',
@@ -1080,6 +1108,18 @@ urls = {
             'export.csv',
             'evidences.csv',
         ],
+    },
+    'lrdb': {
+        'label': 'Curated ligand-receptor interactions',
+        'url': 'https://raw.githubusercontent.com/SCA-IRCM/LRdb/'\
+            'master/LRdb_122019.txt',
+    },
+    'baccin2019': {
+        'label': 'Ligand receptor pairs in Supplementary Table 3 from'\
+            'Baccin 2019',
+        'url': r'https://static-content.springer.com/esm/'\
+            r'art%3A10.1038%2Fs41556-019-0439-6/MediaObjects/'\
+            r'41556_2019_439_MOESM3_ESM.xlsx',
     },
 }
 

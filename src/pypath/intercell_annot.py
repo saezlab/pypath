@@ -6,7 +6,7 @@
 #  Annotation information for intercell.py
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -625,6 +625,8 @@ annot_combined_classes = (
                 'receptor_guide2pharma',
                 'receptor_hgnc',
                 'receptor_dgidb',
+                'receptor_lrdb',
+                'receptor_baccin',
             ),
             op = set.union,
         ),
@@ -702,6 +704,20 @@ annot_combined_classes = (
             'category': 'G PROTEIN COUPLED RECEPTOR',
         },
     ),
+    af.AnnotDef(
+        name = 'receptor_lrdb',
+        source = 'LRdb',
+        args = {
+            'role': 'receptor',
+        },
+    ),
+    af.AnnotDef(
+        name = 'receptor_baccin',
+        source = 'Baccin2019',
+        args = {
+            'mainclass': 'receptor',
+        },
+    ),
     # ECM
     af.AnnotDef(
         name = 'ecm',
@@ -770,6 +786,8 @@ annot_combined_classes = (
                 'ligand_guide2pharma',
                 'ligand_hgnc',
                 'ligand_dgidb',
+                'ligand_lrdb',
+                'ligand_baccin',
             ),
             op = set.union,
         ),
@@ -857,6 +875,20 @@ annot_combined_classes = (
         source = 'DGIdb',
         args = {
             'category': {'GROWTH FACTOR', 'HORMONE ACTIVITY'},
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand_lrdb',
+        source = 'LRdb',
+        args = {
+            'role': 'ligand',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand_baccin',
+        source = 'Baccin2019',
+        args = {
+            'mainclass': 'ligand',
         },
     ),
     # intracellular
@@ -961,6 +993,7 @@ annot_combined_classes = (
                 'extracellular_cspa',
                 'extracellular_hpmr',
                 'extracellular_cellphonedb',
+                'extracellular_hpa',
                 #'extracellular_comppi',
             ),
             op = set.union,
@@ -1035,6 +1068,13 @@ annot_combined_classes = (
         args = {
             'membrane': 'Plasma membrane',
             'side': 'extracellular side',
+        },
+    ),
+    af.AnnotDef(
+        name = 'extracellular_hpa',
+        source = 'HPA_secretome',
+        args = {
+            'secreted': bool,
         },
     ),
     # cell surface
@@ -1531,6 +1571,8 @@ resource_labels = {
     'ramilowski': 'Ramilowski 2015',
     'guide2pharma': 'Guide to Pharm',
     'dgidb': 'DGIdb',
+    'hpa': 'HPA',
+    'lrdb': 'LRdb',
 }
 
 

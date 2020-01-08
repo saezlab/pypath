@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -44,14 +44,14 @@ import pypath.taxonomy as taxonomy
 builtin_inputs = [
     'PhosphoSite',
     'phosphoELM',
-    'Signor',
+    'SIGNOR',
     'dbPTM',
     'HPRD',
     'Li2012',
     'PhosphoNetworks',
     'MIMP',
     'DEPOD',
-    'ProtMapper'
+    'ProtMapper',
 ]
 
 
@@ -480,19 +480,19 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
                 )
                 
 
-                if self.input_is('mimp'):
-                    dommot.mimp_sources = ';'.split(p['databases'])
+                if self.input_is('mimp') and p['databases']:
+                    dommot.mimp_sources = p['databases'].split(';')
                     dommot.add_sources(dommot.mimp_sources)
                     dommot.npmid = p['npmid']
                 
-                if self.input_is('protmapper'):
+                if self.input_is('protmapper') and p['databases']:
                     dommot.protmapper_sources = p['databases']
                     dommot.add_sources(p['databases'])
 
                 elif self.input_is('phosphonetworks'):
                     dommot.pnetw_score = p['score']
 
-                elif self.input_is('dbptm'):
+                elif self.input_is('dbptm') and p['source']:
                     dommot.dbptm_sources = ['%s_dbPTM' % p['source']]
                     dommot.add_sources(dommot.dbptm_sources)
 
@@ -501,7 +501,7 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
     def input_is(self, i, op = '__eq__'):
 
         return (
-            type(self.input_method) in common.charTypes and
+            type(self.input_method) in common.char_types and
             getattr(i, op)(self.input_method.lower())
         )
 

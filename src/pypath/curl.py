@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -87,8 +87,9 @@ except:
     _logger.msg(
         'Module `pysftp` not available. '
         'Only downloading of a small number of resources '
-        'relies on this module.'
+        'relies on this module. '
         'Please install by PIP if it is necessary for you.',
+        'curl',
         -1,
     )
 import codecs
@@ -103,7 +104,7 @@ try:
     from fabric.network import connect, HostConnectionCache
     from fabric.state import env
 except:
-    _logger.msg('Module `fabric` not available.', -1)
+    _logger.msg('Module `fabric` not available.', 'curl', -1)
 
 from contextlib import closing
 
@@ -162,9 +163,7 @@ class _global_context(object):
 
     def __enter__(self):
         self._store_value = getattr(self.module, self.name)
-        print(self.name, self.on_off)
         setattr(self.module, self.name, self.on_off)
-        print('in global_context: ', CACHE)
 
     def __exit__(self, exception_type, exception_value, traceback):
         if exception_type is not None:
@@ -585,9 +584,9 @@ class FileOpener(session_mod.Logger):
         if not hasattr(self, 'large'):
             self.large = large
         self.fname = file_param \
-            if type(file_param) in common.charTypes else file_param.name
+            if type(file_param) in common.char_types else file_param.name
         self.fileobj = None \
-            if type(file_param) in common.charTypes else file_param
+            if type(file_param) in common.char_types else file_param
         if not hasattr(self, 'type'):
             self.get_type()
         if _open:
@@ -834,6 +833,7 @@ class Curl(FileOpener):
             retries = 3,
             cache_dir = None,
             bypass_url_encoding = False,
+            empty_attempt_again = True,
         ):
         
         if not hasattr(self, '_logger'):
@@ -853,6 +853,7 @@ class Curl(FileOpener):
         self.get = get
         self.force_quote = force_quote
         self.bypass_url_encoding = bypass_url_encoding
+        self.empty_attempt_again = empty_attempt_again
         
         self._log(
             'Creating Curl object to retrieve '
@@ -1145,6 +1146,15 @@ class Curl(FileOpener):
         self.curl = pycurl.Curl()
         self.set_url(url = url)
         self.curl.setopt(self.curl.SSL_VERIFYPEER, False)
+        
+        if DEBUG:
+            
+            self._log(
+                'Following HTTP redirects: %s' % (
+                    str(self.follow_http_redirect)
+                )
+            )
+        
         self.curl.setopt(self.curl.FOLLOWLOCATION, self.follow_http_redirect)
         self.curl.setopt(self.curl.CONNECTTIMEOUT, self.connect_timeout)
         self.curl.setopt(self.curl.TIMEOUT, self.timeout)
@@ -1170,6 +1180,9 @@ class Curl(FileOpener):
         self.curl.setopt(self.curl.WRITEFUNCTION, self.target.write)
 
     def set_req_headers(self):
+        
+        self.init_request()
+        
         if self.override_post:
             self._log('Overriding HTTP method.')
             
@@ -1180,6 +1193,7 @@ class Curl(FileOpener):
         )
 
     def set_resp_headers(self):
+        
         self.resp_headers = []
         self.curl.setopt(self.curl.HEADERFUNCTION, self.resp_headers.append)
 
@@ -1219,7 +1233,10 @@ class Curl(FileOpener):
                 
                 self.target.flush()
                 
-                if os.stat(self.cache_file_name).st_size == 0:
+                if (
+                    os.stat(self.cache_file_name).st_size == 0 and
+                    self.empty_attempt_again
+                ):
                     
                     self._log(
                         'Empty file retrieved, attempting downlad again'
@@ -1365,12 +1382,18 @@ class Curl(FileOpener):
             self.type = 'plain'
 
     def get_jsessionid(self):
+        
         self.jsessionid = [u'']
-        rejsess = re.compile(r'.*(JSESSIONID = [A-Z0-9]*)')
-        for hdr in self.resp_headers_dict.values():
-            jsess = rejsess.findall(hdr)
+        rejsess = re.compile(r'.*(JSESSIONID\s?=\s?\w*)')
+        
+        for hdr in self.resp_headers:
+            
+            jsess = rejsess.findall(hdr.decode('utf-8'))
+            
             if len(jsess) > 0:
+                
                 self.jsessionid = [u'Cookie: %s' % jsess[0]]
+        
         return self.jsessionid
 
     def update_progress(self, download_total, downloaded, upload_total,
@@ -1392,11 +1415,21 @@ class Curl(FileOpener):
     
     
     def init_request(self):
+        
         if self.init_url is not None:
+            
             if self.progress is not None:
+                
                 self.progress.set_status('requesting cookie')
-            self.init_curl = Curl(self.init_url, silent = True, debug = self.debug,
-                                  use_cache = self.init_use_cache)
+            
+            self.init_curl = Curl(
+                self.init_url,
+                silent = True,
+                debug = self.debug,
+                cache = self.init_use_cache,
+                req_headers = self.req_headers,
+                follow = False,
+            )
             headers = getattr(self.init_curl, self.init_fun)()
             self.req_headers.extend(headers)
     
@@ -1473,7 +1506,6 @@ class Curl(FileOpener):
         self.use_cache = False
         
         if type(CACHE) is bool:
-            print('cache: ', CACHE)
             
             self.cache = CACHE
         

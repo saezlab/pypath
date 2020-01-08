@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -252,7 +252,7 @@ class Ptm(object):
     def add_source(self, source):
         if source is None:
             return None
-        elif type(source) in common.charTypes:
+        elif type(source) in common.char_types:
             self._add_source(source)
         else:
             for s in source:
@@ -384,7 +384,7 @@ class Motif(object):
     def add_source(self, source):
         if source is None:
             return None
-        elif type(source) in common.charTypes:
+        elif type(source) in common.char_types:
             self._add_source(source)
         else:
             for s in source:
@@ -522,7 +522,7 @@ class Domain(object):
     def add_chains(self, pdb, chain):
         if pdb not in self.pdbs:
             self.pdbs[pdb] = []
-        self.pdbs[pdb] = common.addToList(self.pdbs[pdb], chain)
+        self.pdbs[pdb] = common.add_to_list(self.pdbs[pdb], chain)
 
     def serialize(self):
         return '%s-%u:%s:%s:%u-%u' % (
@@ -596,7 +596,7 @@ class DomainDomain(object):
     def add_sources(self, source):
         if source is None:
             return None
-        elif type(source) in common.charTypes:
+        elif type(source) in common.char_types:
             self._add_source(source)
         else:
             for s in source:
@@ -606,10 +606,10 @@ class DomainDomain(object):
         self.sources.add(source)
 
     def add_refs(self, refs):
-        self.refs = common.addToSet(self.refs, refs)
+        self.refs = common.add_to_set(self.refs, refs)
 
     def add_pdbs(self, pdbs):
-        self.pdbs = common.addToSet(self.pdbs, pdbs)
+        self.pdbs = common.add_to_set(self.pdbs, pdbs)
 
     def serialize(self):
         return '|'.join([
@@ -700,7 +700,7 @@ class DomainMotif(object):
     def add_sources(self, source):
         if source is None:
             return None
-        elif type(source) in common.charTypes:
+        elif type(source) in common.char_types:
             self._add_source(source)
         else:
             for s in source:
@@ -710,10 +710,10 @@ class DomainMotif(object):
         self.sources.add(source)
 
     def add_refs(self, refs):
-        self.refs = common.addToSet(self.refs, refs)
+        self.refs = common.add_to_set(self.refs, refs)
 
     def add_pdbs(self, pdbs):
-        self.pdbs = common.addToSet(self.pdbs, pdbs)
+        self.pdbs = common.add_to_set(self.pdbs, pdbs)
 
     def serialize(self):
         return '|'.join([
@@ -780,7 +780,7 @@ class Regulation(object):
     def add_sources(self, source):
         if source is None:
             return None
-        elif type(source) in common.charTypes:
+        elif type(source) in common.char_types:
             self._add_source(source)
         else:
             for s in source:
@@ -790,7 +790,7 @@ class Regulation(object):
         self.sources.add(source)
 
     def add_refs(self, refs):
-        self.refs = common.addToSet(self.refs, refs)
+        self.refs = common.add_to_set(self.refs, refs)
 
     def serialize(self):
         return '|'.join([
@@ -983,7 +983,9 @@ class Complex(object):
         
         if isinstance(ids, set) and source:
             
-            ids = {source: ids}
+            source = common.to_set(source)
+            
+            ids = dict((s, ids) for s in source)
         
         if isinstance(ids, dict):
             

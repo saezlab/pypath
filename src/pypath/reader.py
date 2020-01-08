@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -100,12 +100,12 @@ class ReaderBase(object):
 class Reader(ReaderBase):
     """
     Reads network data from an iterable according to
-    an :py:class:``pypath.input_formats.ReadSettings`` object.
+    an :py:class:``pypath.input_formats.NetworkInput`` object.
     """
     def __init__(self, settings):
         """
-        :arg input_formats.ReadSettings settings:
-            ReadSettings instance
+        :arg input_formats.NetworkInput settings:
+            NetworkInput instance
         """
         ReaderBase.__init__(self, settings)
 
@@ -175,7 +175,7 @@ class FieldProcessor(object):
 
     def __iter__(self):
         fields = self.process()
-        if isinstance(fields, common.simpleTypes):
+        if isinstance(fields, common.simple_types):
             fields = (fields,)
         if self.single_value:
             for field in self.process():

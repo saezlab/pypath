@@ -51,9 +51,9 @@ ENTRY_POINTS = {
 setup(
     name = 'pypath',
     version = __version__,
-    maintainer = 'Dénes Türei, Nicolas Palacio',
+    maintainer = 'Dénes Türei, Nicolas Palacio, Olga Ivanova',
     maintainer_email = 'turei.denes@gmail.com',
-    author = 'Dénes Türei, Nicolas Palacio',
+    author = 'Dénes Türei, Nicolas Palacio, Olga Ivanova',
     author_email = 'turei.denes@gmail.com',
     long_description = readme + '\n\n' + history,
     keywords = [
@@ -86,7 +86,6 @@ setup(
     include_package_data = True,
     # dependency_links = deplinks
     install_requires = [
-        'python-igraph',
         'beautifulsoup4',
         'configparser',
         'pyopenssl',

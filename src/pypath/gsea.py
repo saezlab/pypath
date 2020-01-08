@@ -6,7 +6,7 @@
 #  Enables interaction (IO) for GSEA database.
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -148,7 +148,7 @@ class GSEA(object):
                         if len(j) > 0), setname, 'symbol', map_ids)
 
     def write_set(self, id_list, setname, id_type, map_ids=True):
-        self.sets[setname] = set(common.uniqList(common.flatList(
+        self.sets[setname] = set(common.uniq_list(common.flat_list(
             self.mapper.map_name(n, self.ids[id_type], self.target_id)
             for n in id_list))) if map_ids \
             else set(id_list)
@@ -251,7 +251,7 @@ class GSEABinaryEnrichmentSet(
         if groups is None:
             groups = self.gsea.groups.keys()  # all by default
         sets = set(
-            common.flatList(s for g, s in iteritems(self.gsea.groups)
+            common.flat_list(s for g, s in iteritems(self.gsea.groups)
                             if g in groups))
         return super(GSEABinaryEnrichmentSet, self).toplist(
             filtr=lambda x: x[0] in sets and filtr(x), **args)

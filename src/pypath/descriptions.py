@@ -6,7 +6,7 @@
 #  Contains descriptions for all resources: e.g. their URLs
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -23,6 +23,7 @@
 # http://www.ijbs.com/v06p0051.htm
 # http://www.nature.com/cddis/journal/v4/n8/full/cddis2013292a.html
 
+import sys
 from future.utils import iteritems
 
 import codecs
@@ -51,7 +52,7 @@ descriptions = {
         'urls': {
             'articles':
             ['http://www.cell.com/cell/abstract/S0092-8674(14)01422-6'],
-            'webpages': ['http://interactome.dfci.harvard.edu/H_sapiens/']
+            'webpages': ['http://interactomedfci.harvard.edu/H_sapiens/']
         },
         'pubmeds': [25416956],
         'emails':
@@ -469,9 +470,9 @@ descriptions = {
             'ptm': ['pypath.pypath.PyPath().load_dbptm()']
         }
     },
-    'Signor': {
+    'SIGNOR': {
         'year': 2015,
-        'releases': [2015],
+        'releases': [2015,2019],
         'urls': {
             'webpages': ['http://signor.uniroma2.it/'],
             'articles': [
@@ -492,7 +493,7 @@ descriptions = {
             '''
         ],
         'authors': ['Cesareni Group'],
-        'label': 'Signor',
+        'label': 'SIGNOR',
         'color': '',
         'data_import': ['SignaLink3', 'PhosphoSite'],
         'type': 'literature curated',
@@ -2717,7 +2718,7 @@ descriptions = {
             'commercial_use': False
         }
     },
-    'Locate': {# PENDING
+    'LOCATE': {# PENDING
         #'license': {
         #    'name': '',
         #    'url': '',
@@ -2969,7 +2970,7 @@ descriptions = {
             'commercial_use': False
         }
     },
-    'kinase': {
+    'kinase.com': {
         'license': {
             'name': 'Custom license',
             'url': 'http://kinase.com/about/Disclaimer.html',
@@ -2990,12 +2991,40 @@ descriptions = {
         #    'commercial_use': False
         #}
     },
-    'protmapper': {
+    'ProtMapper': {
         'license': {
             'name': 'CC-Attribution-ShareAlike-NonCommercial 4.0',
             'url': 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
             'commercial_use': False
         }
+    },
+    'LRdb': {
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False,
+        },
+        'emails': [('jacques.colinge@inserm.fr', 'Jacques Colinge'),],
+    },
+    'MSigDB': {
+        'license': {
+            'name': 'CC-Attribution 4.0',
+            'url': 'http://creativecommons.org/licenses/by/4.0/',
+            'commercial_use': True,
+        },
+        'emails': [('gsea-team@broadinstitute.org', 'GSEA Team'),],
+    },
+    'Baccin2019': {
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
+            'commercial_use': False,
+        },
+        'emails': [
+            ('lars.velten@embl.de', 'Lars Velten'),
+            ('a.trumpp@dkfz-heidelberg.de', 'Andreas Trumpp'),
+            ('s.haas@dkfz-heidelberg.de', 'Simon Haas'),
+        ],
     },
 }
 
@@ -3101,18 +3130,23 @@ def gen_html():
             except KeyError:
                 sys.stdout.write('Wrong license format for %s\n' % k)
                 sys.stdout.flush()
-        for uk, uv in iteritems(v['urls']):
-            if len(uv) > 0 and uk != 'omictools':
-                try:
-                    doc += '\t\t\t<h3>%s</h3>\n' % (uk.capitalize())
-                    doc += '\t\t\t<ul>\n'
-                    for a in uv:
-                        doc += '\t\t\t\t<li><a href="%s" target="_blank">%s</a></li>\n' % (
-                            a, a)
-                    doc += '\t\t\t</ul>\n'
-                except UnicodeDecodeError:
-                    sys.stdout.write('UnicdeDecodeError at %s\n' % k)
-                    sys.stdout.flush()
+        if 'urls' in v:
+            for uk, uv in iteritems(v['urls']):
+                if len(uv) > 0 and uk != 'omictools':
+                    try:
+                        doc += '\t\t\t<h3>%s</h3>\n' % (uk.capitalize())
+                        doc += '\t\t\t<ul>\n'
+                        for a in uv:
+                            doc += (
+                                '\t\t\t\t<li><a href="%s" '
+                                'target="_blank">%s</a></li>\n' % (
+                                    a, a
+                                )
+                            )
+                        doc += '\t\t\t</ul>\n'
+                    except UnicodeDecodeError:
+                        sys.stdout.write('UnicdeDecodeError at %s\n' % k)
+                        sys.stdout.flush()
         if 'pubmeds' in v:
             doc += '\t\t\t<h3>PubMed</h3>\n'
             doc += '\t\t\t<ul>\n'
@@ -3123,7 +3157,7 @@ def gen_html():
                         'http://www.ncbi.nlm.nih.gov/pubmed/%u' % pmid
                     )
             doc += '\t\t\t</ul>\n'
-        if 'omictools' in v['urls'] or 'pathguide' in v:
+        if ('urls' in v and 'omictools' in v['urls']) or 'pathguide' in v:
             doc += '\t\t\t<h3>Collections</h3>\n\t\t\t<ul>'
             if 'omictools' in v['urls']:
                 doc += '\t\t\t<li><a href="%s" target="_blank">OmicTools</a></li>\n' % \
@@ -3181,6 +3215,7 @@ def gen_html():
                             '</span></li>\n' % met
                     doc += '\t\t\t\t\t</ul>\n'
             doc += '\t\t\t\t</div>\n'
+
     return _html.default_template(doc, title, title)
 
 

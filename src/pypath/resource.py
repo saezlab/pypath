@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -19,7 +19,10 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
 import os
+import collections
 
 try:
     import cPickle as pickle
@@ -170,3 +173,127 @@ class AbstractResource(session_mod.Logger):
                 obj = getattr(self, self._data_attr_name),
                 file = fp,
             )
+
+
+class ResourceAttributes(object):
+    
+    
+    def __init__(
+            self,
+            name,
+            data_type,
+            evidence_types = None,
+            **kwargs
+        ):
+        
+        self.name = name
+        self.data_type = data_type
+        self.evidence_types = evidence_types or set()
+        
+        for attr, value in iteritems(kwargs):
+            
+            setattr(self, attr, value)
+    
+    
+    def __eq__(self, other):
+        
+        return (
+            self.name == other.name and self.data_type == other.data_type
+                if isinstance(other, self.__class__) else
+            self.name == other
+        )
+    
+    
+    def __str__(self):
+        
+        return self.name
+
+
+NetworkResourceKey = collections.namedtuple(
+    'NetworkResourceKey',
+    [
+        'name',
+        'data_type',
+        'interaction_type',
+        'data_model',
+        'via',
+    ]
+)
+
+
+class NetworkResource(ResourceAttributes):
+    
+    
+    _key = NetworkResourceKey
+    
+    
+    def __init__(
+            self,
+            name,
+            interaction_type = 'PPI',
+            data_model = None,
+            evidence_types = None,
+            via = None,
+            **kwargs,
+        ):
+        
+        ResourceAttributes.__init__(
+            self,
+            name = name,
+            data_type = 'network',
+            interaction_type = interaction_type,
+            evidence_types = evidence_types,
+            data_model = data_model,
+            via = via,
+            **kwargs,
+        )
+    
+    
+    def __hash__(self):
+        
+        return hash(self.key)
+    
+    
+    @property
+    def key(self):
+        
+        return self._key(
+            name = self.name,
+            data_type = self.data_type,
+            interaction_type = self.interaction_type,
+            data_model = self.data_model,
+            via = self.via,
+        )
+    
+    
+    def __eq__(self, other):
+        
+        return (
+            self.name == other
+                if isinstance(other, common.basestring) else
+            self.__hash__() == other.__hash__()
+        )
+    
+    
+    def __repr__(self):
+        
+        return '<NetworkResource: %s (%s, %s)>' % (
+            self.name,
+            self.interaction_type,
+            self.data_model,
+        )
+    
+    
+    def is_primary(self):
+        
+        return self.via is None
+    
+    
+    @property
+    def data_model_label(self):
+        
+        return (
+            self.data_model.capitalize().replace('_', ' ')
+                if self.data_model else
+            'Unknown'
+        )

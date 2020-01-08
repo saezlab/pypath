@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -2007,7 +2007,7 @@ _footer = u'''
                 Nicolàs Palacio,</a>
             <a href="http://saezlab.org/person/olga-ivanova/">
                 Olga Ivanova,</a>
-            <a href="http://saezlab.org/">Saez Lab</a> 2016-2019. 
+            <a href="http://saezlab.org/">Saez Lab</a> 2016-2020. 
             Feedback: omnipathdb@gmail.com </p>
         <p>
             <a href="https://validator.w3.org/check/referer">
@@ -2070,6 +2070,10 @@ def main_page():
 
     notebook_names = [
         ('pypath_guide.html', 'Comprehensive guide'),
+        (
+            'omnipathr_drug_targets_tutorial.html',
+            'Drug target lookup with OmnipathR',
+        ),
         #('pypath_build_networks.html', 'Quick start'),
         #('intro.html', 'Introduction (directions, enzyme-substrate, subnetworks)'),
         #('pypath_mapping.html', 'ID conversion'),

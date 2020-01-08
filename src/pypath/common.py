@@ -6,7 +6,7 @@
 #  Contains helper functions shared by different modules.
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -37,18 +37,21 @@ import itertools
 import warnings
 import textwrap
 import hashlib
+import inspect
 
 import numpy as np
 
 
 __all__ = [
-    'ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes',
-    'uniqList', 'addToList', 'addToSet', 'gen_session_id',
+    'ROOT',
+    'aacodes', 'aaletters',
+    'simple_types', 'numeric_types', 'list_like',
+    'uniq_list', 'add_to_list', 'add_to_set', 'gen_session_id',
     'sorensen_index', 'simpson_index', 'simpson_index_counts',
-    'jaccard_index', 'console', 'wcl', 'flatList', 'charTypes',
-    'delEmpty', 'get_args', 'something', 'rotate', 'cleanDict',
+    'jaccard_index', 'console', 'wcl', 'flat_list', 'char_types',
+    'del_empty', 'get_args', 'something', 'rotate', 'clean_dict',
     'igraph_graphics_attrs', 'md5', 'mod_keywords',
-    'uniqOrdList', 'dict_diff', 'to_set', 'to_list',
+    'uniq_ord_list', 'dict_diff', 'to_set', 'to_list',
     'unique_list', 'basestring', 'amino_acids', 'aminoa_1_to_3_letter',
     'aminoa_3_to_1_letter', 'pmod_bel', 'pmod_other_to_bel',
     'pmod_bel_to_other', 'refloat', 'reint', 'is_float', 'is_int',
@@ -179,9 +182,10 @@ if 'unicode' not in dir(__builtins__):
 aaletters = dict(zip(aacodes.values(), aacodes.keys()))
 
 # Type definitions
-simpleTypes = (int, long, float, str, unicode, bytes, bool, type(None))
-numTypes = (int, long, float)
-charTypes = (str, unicode, bytes)
+simple_types = (int, long, float, str, unicode, bytes, bool, type(None))
+numeric_types = (int, long, float)
+char_types = (str, unicode, bytes)
+list_like = (tuple, set, list)
 
 
 refloat = re.compile(r'\s*-?\s*[\s\.\d]+\s*')
@@ -230,7 +234,7 @@ def to_set(var):
         
         return set()
         
-    elif isinstance(var, list):
+    elif not isinstance(var, basestring) and hasattr(var, '__iter__'):
         
         return set(var)
         
@@ -273,9 +277,9 @@ def unique_list(seq):
         (*list*) -- List of unique elements in the sequence *seq*.
 
     **Examples:**
-        >>> uniqList('aba')
+        >>> uniq_list('aba')
         ['a', 'b']
-        >>> uniqList([0, 1, 2, 1, 0])
+        >>> uniq_list([0, 1, 2, 1, 0])
         [0, 1, 2]
     """
 
@@ -283,10 +287,10 @@ def unique_list(seq):
 
 
 # old ugly name
-uniqList = unique_list
+uniq_list = unique_list
 
 
-def uniqList1(seq): # XXX: Not used
+def uniq_list1(seq): # XXX: Not used
     """
     Not order preserving
     From http://www.peterbe.com/plog/uniqifiers-benchmark
@@ -295,7 +299,7 @@ def uniqList1(seq): # XXX: Not used
     return list(set(seq))
 
 
-def uniqList2(seq): # XXX: Not used
+def uniq_list2(seq): # XXX: Not used
     """
     Not order preserving
     From http://www.peterbe.com/plog/uniqifiers-benchmark
@@ -309,7 +313,7 @@ def uniqList2(seq): # XXX: Not used
     return list(keys.keys())
 
 
-def flatList(lst):
+def flat_list(lst):
     """Coerces the elements of a list of iterables into a single list.
 
     :arg lsit lst:
@@ -320,16 +324,16 @@ def flatList(lst):
         (*list*) -- Flattened list of *lst*.
 
     **Examples:**
-        >>> flatList([(0, 1), (1, 1), (2, 1)])
+        >>> flat_list([(0, 1), (1, 1), (2, 1)])
         [0, 1, 1, 1, 2, 1]
-        >> flatList(['abc', 'def'])
+        >> flat_list(['abc', 'def'])
         ['a', 'b', 'c', 'd', 'e', 'f']
     """
 
     return [it for sl in lst for it in sl]
 
 
-def delEmpty(lst): # XXX: Only used in main.py line: 1278
+def del_empty(lst): # XXX: Only used in main.py line: 1278
     """Removes empty entries of a list.
 
     It is assumed that elemenst of *lst* are iterables (e.g. [str] or
@@ -343,7 +347,7 @@ def delEmpty(lst): # XXX: Only used in main.py line: 1278
         zero.
 
     **Example:**
-        >>> delEmpty(['a', '', 'b', 'c'])
+        >>> del_empty(['a', '', 'b', 'c'])
         ['a', 'b', 'c']
     """
 
@@ -352,7 +356,7 @@ def delEmpty(lst): # XXX: Only used in main.py line: 1278
 
 # Order preserving
 # From http://www.peterbe.com/plog/uniqifiers-benchmark
-def uniqOrdList(seq, idfun=None): # XXX: Only used in plot.py line: 510
+def uniq_ord_list(seq, idfun=None): # XXX: Only used in plot.py line: 510
     """Reduces a list to its unique elements keeping their order.
 
     Returns a copy of *seq* without repeated elements. Preserves the
@@ -372,20 +376,20 @@ def uniqOrdList(seq, idfun=None): # XXX: Only used in plot.py line: 510
         (according to *idfun*).
 
     **Examples:**
-        >>> uniqOrdList([0, 1, 2, 1, 5])
+        >>> uniq_ord_list([0, 1, 2, 1, 5])
         [0, 1, 2, 5]
-        >>> uniqOrdList('abracadabra')
+        >>> uniq_ord_list('abracadabra')
         ['a', 'b', 'r', 'c', 'd']
         >>> def f(x):
         ...     if x > 0:
         ...             return 0
         ...     else:
         ...             return 1
-        >>> uniqOrdList([-32, -42, 1, 15, -12], idfun=f)
+        >>> uniq_ord_list([-32, -42, 1, 15, -12], idfun=f)
         [-32, 1]
         >>> def g(x): # Given a file name, return it without extension
         ...    return x.split('.')[0]
-        >>> uniqOrdList(['a.png', 'a.txt', 'b.pdf'], idfun=g)
+        >>> uniq_ord_list(['a.png', 'a.txt', 'b.pdf'], idfun=g)
         ['a.png', 'b.pdf']
     """
 
@@ -409,7 +413,7 @@ def uniqOrdList(seq, idfun=None): # XXX: Only used in plot.py line: 510
     return result
 
 
-def addToList(lst, toadd):
+def add_to_list(lst, toadd):
     """ Adds elements to a list.
 
     Appends *toadd* to *lst*. Function differs from
@@ -429,20 +433,20 @@ def addToList(lst, toadd):
     :return:
         (*list*) -- Contains the unique element(s) from the union of
         *lst* and *toadd*. **NOTE:** Makes use of
-        :py:func:`common.uniqList`, does not preserve order of elements.
+        :py:func:`common.uniq_list`, does not preserve order of elements.
 
     **Examples:**
-        >>> addToList('ab', 'cd')
+        >>> add_to_list('ab', 'cd')
         ['ab', 'cd']
-        >>> addToList('ab', ['cd', None, 'ab', 'ef'])
+        >>> add_to_list('ab', ['cd', None, 'ab', 'ef'])
         ['ab', 'ef', 'cd']
-        >>> addToList((0, 1, 2), 4)
+        >>> add_to_list((0, 1, 2), 4)
         [0, 1, 2, 4]
     """
 
     if type(lst) is not list:
 
-        if type(lst) in simpleTypes:
+        if type(lst) in simple_types:
             lst = [lst]
 
         else:
@@ -451,7 +455,7 @@ def addToList(lst, toadd):
     if toadd is None:
         return lst
 
-    if type(toadd) in simpleTypes:
+    if type(toadd) in simple_types:
         lst.append(toadd)
 
     else:
@@ -464,10 +468,10 @@ def addToList(lst, toadd):
     if None in lst:
         lst.remove(None)
 
-    return uniqList(lst)
+    return uniq_list(lst)
 
 
-def addToSet(st, toadd):
+def add_to_set(st, toadd):
     """Adds elements to a set.
 
     Appends *toadd* to *st*. Function is capable to handle different
@@ -485,13 +489,13 @@ def addToSet(st, toadd):
 
     **Examples:**
         >>> st = set([0, 1, 2])
-        >>> addToSet(st, 3)
+        >>> add_to_set(st, 3)
         set([0, 1, 2, 3])
-        >>> addToSet(st, [4, 2, 5])
+        >>> add_to_set(st, [4, 2, 5])
         set([0, 1, 2, 4, 5])
     """
 
-    if type(toadd) in simpleTypes:
+    if type(toadd) in simple_types:
         st.add(toadd)
 
     if type(toadd) is list:
@@ -733,7 +737,7 @@ def rotate(point, angle, center=(0.0, 0.0)): # XXX: Not used? Wrote the docs bef
     return temp_point
 
 
-def cleanDict(dct):
+def clean_dict(dct):
     """Cleans a dictionary of ``None`` values.
 
     Removes ``None`` values from  a dictionary *dct* and casts all other
@@ -982,7 +986,7 @@ def swap_dict(d):
 
     for key, vals in iteritems(d):
         
-        vals = [vals] if type(vals) in simpleTypes else vals
+        vals = [vals] if type(vals) in simple_types else vals
         
         for val in vals:
             
@@ -1046,10 +1050,10 @@ def join_dicts(d1, d2, _from='keys', to='values'): # TODO
 
     for key1, val1 in iteritems(d1):
         sources = ([key1] if _from == 'keys'
-                          else [val1] if type(val1) in simpleTypes
+                          else [val1] if type(val1) in simple_types
                                       else val1)
         meds = ([key1] if _from == 'values'
-                       else [val1] if type(val1) in simpleTypes
+                       else [val1] if type(val1) in simple_types
                                    else val1)
         targets = set([])
 
@@ -1060,7 +1064,7 @@ def join_dicts(d1, d2, _from='keys', to='values'): # TODO
                 if type(targets) is list:
                     targets.append(d2[med])
 
-                elif type(d2[med]) in simpleTypes:
+                elif type(d2[med]) in simple_types:
                     targets.add(d2[med])
 
                 elif type(d2[med]) is list:
@@ -1236,7 +1240,7 @@ def shared_unique(by_group, group, op = 'shared'):
     This method can be used among other things to find the shared and
     unique entities across resources.
     
-    :param str op:
+    :arg str op:
         Either `shared` or `unique`.
     """
     
@@ -1374,16 +1378,163 @@ def dict_union(dict_of_sets):
     For a *dict* of *set*s returns the union of the values.
     """
     
-    return set.union(*dict_of_sets.values())
+    return set.union(*dict_of_sets.values()) if dict_of_sets else set()
 
 
 def dict_counts(dict_of_sets):
     """
     For a *dict* of *set*s or other values with ``__len__`` returns a
     *dict* of numbers with the length of each value in the original *dict*.
+    
+    This function is recursively works on dicts of dicts.
     """
     
-    return dict((key, len(val)) for key, val in iteritems(dict_of_sets))
+    return dict(
+        (
+            key,
+            (
+                dict_counts(val)
+                    if isinstance(val, dict) else
+                len(val)
+            )
+        )
+        for key, val in iteritems(dict_of_sets)
+    )
+
+
+def dict_expand_keys(dct, depth = 1, front = True):
+    """
+    From a *dict* with *tuple* keys builds a dict of dicts.
+    
+    :arg dict dct:
+        A *dict* with tuple keys (if keys are not tuples ``dct`` will be
+        returned unchanged).
+    :arg int depth:
+        Expand the keys up to this depth. If 0 *dct* will be returned
+        unchanged, if 1 dict of dicts, if 2 dict of dict of dicts will be
+        returned, and so on.
+    :arg bool front:
+        If ``True`` the tuple keys will be chopped from the front, otherwise
+        from their ends.
+    """
+    
+    if depth == 0:
+        
+        return dct
+    
+    new = {}
+    
+    for key, val in iteritems(dct):
+        
+        if not isinstance(key, tuple):
+            
+            new[key] = val
+        
+        elif len(key) == 1:
+            
+            new[key[0]] = val
+        
+        else:
+            
+            outer_key = key[0] if front else key[:-1]
+            inner_key = key[1:] if front else key[-1]
+            
+            if len(inner_key) == 1:
+                
+                inner_key = inner_key[0]
+            
+            sub_dct = new.setdefault(outer_key, {})
+            sub_dct[inner_key] = val
+    
+    if depth > 1:
+        
+        new = (
+            dict(
+                (
+                    key,
+                    dict_expand_keys(sub_dct, depth = depth - 1)
+                )
+                for key, sub_dct in iteritems(new)
+            )
+                if front else
+            dict_expand_keys(new, depth = depth - 1, front = False)
+        )
+    
+    return new
+
+
+def dict_collapse_keys(
+        dct,
+        depth = 1,
+        front = True,
+        expand_tuple_keys = True,
+    ):
+    """
+    From a dict of dicts builds a dict with tuple keys.
+    
+    :arg dict dct:
+        A dict of dicts (if values are not dicts it will be returned
+        unchanged).
+    :arg int depth:
+        Collapse the keys up to this depth. If 0 *dct* will be returned
+        unchanged, if 1 tuple keys will have 2 elements, if 2 then
+        2 elements, and so on.
+    :arg bool front:
+        If ``True`` the tuple keys will be collapsed first from the
+        outermost dict going towards the innermost one until depth allows.
+        Otherwise the method will start from the innermost ones.
+    :arg bool expand_tuple_keys:
+        If ``True`` the tuple keys of inner dicts will be concatenated with
+        the outer key tuples. If ``False`` the inner tuple keys will be added
+        as an element of the tuple key i.e. tuple in tuple.
+    """
+    
+    if not front:
+        
+        # this is difficult to implement because we have no idea about
+        # the depth; this version ensures an even key length for the
+        # tuple keys; another alterntive would be to iterate recursively
+        # over the dictionary tree
+        dct = dict_collapse_keys(dct, depth = 9999999)
+        maxdepth = max(
+            len(k for k in dct.keys() if isinstance(k, tuple)),
+            default = 0
+        )
+        return dict_expand_keys(dct, depth = maxdepth - depth, front = True)
+    
+    if not any(isinstance(val, dict) for val in dct.values()):
+        
+        return dct
+    
+    new = {}
+    
+    for key, val in iteritems(dct):
+        
+        key = key if isinstance(key, tuple) else (key,)
+        
+        if isinstance(val, dict):
+            
+            for key1, val1 in iteritems(val):
+                
+                _key = key + (
+                    key1
+                        if (
+                            isinstance(key1, tuple) and
+                            expand_tuple_keys
+                        ) else
+                    (key1,)
+                )
+                new[_key] = val1
+            
+        else:
+            
+            new[key] = val
+    
+    if depth > 1:
+        
+        new = dict_collapse_keys(new, depth = depth - 1)
+    
+    return new
 
 
 def shared_unique_total(by_group, op = 'shared'):
@@ -1414,6 +1565,21 @@ def n_unique_total(by_group):
     return len(unique_total(by_group))
 
 
+def dict_subtotals(dct):
+    """
+    For a dict of dicts of sets returns a dict with keys of the outer dict
+    and values the union of the sets in each of the inner dicts.
+    """
+    
+    return dict(
+        (
+            key,
+            dict_union(sub_dct)
+        )
+        for key, sub_dct in iteritems(dct)
+    )
+
+
 def dict_percent(dict_of_counts, total):
     """
     For a *dict* of counts and a total count creates a *dict* of percentages.
@@ -1423,6 +1589,14 @@ def dict_percent(dict_of_counts, total):
         (key, (val / total if total != 0 else 0) * 100)
         for key, val in iteritems(dict_of_counts)
     )
+
+
+def dict_set_percent(dict_of_sets):
+    
+    total = len(dict_union(dict_of_sets))
+    counts = dict_counts(dict_of_sets)
+    
+    return dict_percent(counts, total)
 
 
 def df_memory_usage(df, deep = True):
@@ -1473,3 +1647,157 @@ def sum_dicts(*args):
         )
         for key in set(itertools.chain(*(d.keys() for d in args)))
     )
+
+
+def combine_attrs(attrs, num_method = max):
+    """
+    Combines multiple attributes into one. This method attempts
+    to find out which is the best way to combine attributes.
+
+        * If there is only one value or one of them is None, then
+          returns the one available.
+        * Lists: concatenates unique values of lists.
+        * Numbers: returns the greater by default or calls
+          *num_method* if given.
+        * Sets: returns the union.
+        * Dictionaries: calls :py:func:`pypath.common.merge_dicts`.
+        * Direction: calls their special
+          :py:meth:`pypath.main.Direction.merge` method.
+
+    Works on more than 2 attributes recursively.
+
+    :arg list attrs:
+        List of one or more attribute values.
+    :arg function num_method:
+        Optional, ``max`` by default. Method to merge numeric attributes.
+    """
+
+    def list_or_set(one, two):
+
+        if ((isinstance(one, list) and isinstance(two, set))
+            or (isinstance(two, list) and isinstance(one, set))):
+
+            try:
+                return set(one), set(two)
+
+            except TypeError:
+                return list(one), list(two)
+
+        else:
+            return one, two
+
+
+    # recursion:
+    if len(attrs) > 2:
+        attrs = [attrs[0], combine_attrs(attrs[1:], num_method = num_method)]
+
+    # quick and simple cases:
+    if len(attrs) == 0:
+        return None
+
+    if len(attrs) == 1:
+        return attrs[0]
+
+    if attrs[0] == attrs[1]:
+        return attrs[0]
+
+    if attrs[0] is None:
+        return attrs[1]
+
+    if attrs[1] is None:
+        return attrs[0]
+
+    # merge numeric values
+    if type(attrs[0]) in numeric_types and type(attrs[1]) in numeric_types:
+        return num_method(attrs)
+    
+    attrs = list(attrs)
+    
+    # in case one is list other is set
+    attrs[0], attrs[1] = list_or_set(attrs[0], attrs[1])
+
+    # merge lists:
+    if isinstance(attrs[0], list) and isinstance(attrs[1], list):
+
+        try:
+            # lists of hashable elements only:
+            return list(set(itertools.chain(attrs[0], attrs[1])))
+
+        except TypeError:
+            # if contain non-hashable elements:
+            return list(itertools.chain(attrs[0], attrs[1]))
+
+    # merge sets:
+    if isinstance(attrs[0], set):
+        return add_to_set(attrs[0], attrs[1])
+
+    if isinstance(attrs[1], set):
+        return add_to_set(attrs[1], attrs[0])
+
+    # merge dicts:
+    if isinstance(attrs[0], dict) and isinstance(attrs[1], dict):
+        return merge_dicts(attrs[0], attrs[1])
+
+    # 2 different strings: return a set with both of them
+    if ((isinstance(attrs[0], str) or isinstance(attrs[0], unicode))
+        and (isinstance(attrs[1], str) or isinstance(attrs[1], unicode))):
+
+        if len(attrs[0]) == 0:
+            return attrs[1]
+
+        if len(attrs[1]) == 0:
+            return attrs[0]
+
+        return set([attrs[0], attrs[1]])
+
+    # one attr is list, the other is simple value:
+    if (isinstance(attrs[0], list) and type(attrs[1]) in simple_types):
+
+        if attrs[1] in numeric_types or len(attrs[1]) > 0:
+            return add_to_list(attrs[0], attrs[1])
+
+        else:
+            return attrs[0]
+
+    if (isinstance(attrs[1], list) and type(attrs[0]) in simple_types):
+
+        if attrs[0] in numeric_types or len(attrs[0]) > 0:
+            return add_to_list(attrs[1], attrs[0])
+
+        else:
+            return attrs[1]
+
+    # in case the objects have `__add__()` method:
+    if hasattr(attrs[0], '__add__'):
+        
+        return attrs[0] + attrs[1]
+
+
+def _add_method(cls, method_name, method, signature = None, doc = None):
+    
+    method.__name__ = method_name
+    
+    if signature and hasattr(inspect, 'Signature'): # Py2
+        
+        if not isinstance(signature, inspect.Signature):
+            
+            signature = inspect.Signature([
+                inspect.Parameter(
+                    name = param[0],
+                    kind = inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                    default = (
+                        param[1]
+                            if len(param) > 1 else
+                        inspect.Parameter.empty
+                    )
+                )
+                for param in signature
+            ])
+        
+        method.__signature__ = signature
+    
+    if doc:
+        
+        method.__doc__ = doc
+    
+    setattr(cls, method_name, method)

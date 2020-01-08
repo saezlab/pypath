@@ -4,7 +4,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2019 - EMBL
+#  Copyright (c) 2014-2020 - EMBL
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
 #                  Nicolàs Palacio
@@ -97,24 +97,38 @@ class WebserviceTables(session_mod.Logger):
         self._log('Building `interactions` data frame.')
         dataframes = []
         
-        tfregulons = copy.deepcopy(data_formats.transcription)
-        tfregulons['tfregulons'].input_args['levels'] = {
+        tf_target = copy.deepcopy(data_formats.transcription)
+        tf_target['dorothea'].input_args['levels'] = {
             'A', 'B', 'C', 'D',
         }
-        tfregulons['tfregulons'].must_have_references = False
+        tf_target['dorothea'].must_have_references = False
         
-        param = (
-            ('load_omnipath', {
+        param = {
+            'PPI': (
+                'load_omnipath',
+                {
                     'kinase_substrate_extra': True,
                     'ligand_receptor_extra': True,
                     'pathway_extra': True,
-                }
+                },
             ),
-            ('init_network',  {'lst': tfregulons}),
-            ('init_network',  {'lst': data_formats.mirna_target})
-        )
+            'TF-target': (
+                'init_network',
+                {'lst': tf_target},
+            ),
+            'miRNA-target': (
+                'init_network',
+                {'lst': data_formats.mirna_target},
+            ),
+            'lncRNA-target': (
+                'init_network',
+                {'lst': data_formats.lncrna_target},
+            )
+        }
         
-        for to_call, kwargs in param:
+        for name, (to_call, kwargs) in iteritems(param):
+            
+            self._log('Building %s interactions.' % name)
             
             pa = main.PyPath()
             getattr(pa, to_call)(**kwargs)
@@ -123,11 +137,18 @@ class WebserviceTables(session_mod.Logger):
             e.webservice_interactions_df()
             dataframes.append(e.df)
             
-            if not self.only_human:
+            if not self.only_human and name != 'lncRNA-target':
                 
                 graph_human = None
                 
                 for rodent in (10090, 10116):
+                    
+                    self._log(
+                        'Translating %s interactions to organism `%u`' % (
+                            name,
+                            rodent,
+                        )
+                    )
                     
                     if pa.ncbi_tax_id == 9606:
                         

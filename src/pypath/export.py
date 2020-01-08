@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #  Exports tables for webservice.
 #
-#  Copyright (c) 2014-2019 - EMBL
+#  Copyright (c) 2014-2020 - EMBL
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
 #                  Nicolàs Palacio
@@ -90,20 +90,22 @@ class Export(object):
 
     def __init__(
             self,
-            pa,
+            network = None,
             only_sources = None,
             extra_node_attrs = None,
             extra_edge_attrs = None,
             outfile = None,
             default_vertex_attr_processor = None,
             default_edge_attr_processor = None,
+            pa = None,
         ):
 
         self.extra_node_attrs = extra_node_attrs or {}
         self.extra_edge_attrs = extra_edge_attrs or {}
         self.outfile = outfile
-        self.pa    = pa
-        self.graph = pa._get_undirected()
+        self.network = network or pa
+        self.pa      = self.network
+        self._set_graph()
         self.only_sources = only_sources
 
         if isinstance(self.only_sources, list):
@@ -126,7 +128,17 @@ class Export(object):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-
+    
+    
+    def _set_graph(self):
+        
+        self.graph = (
+            self.pa._get_undirected()
+                if hasattr(self.pa, '_get_undirected') else
+            None
+        )
+    
+    
     def make_df(
             self,
             unique_pairs = True,
@@ -165,6 +177,41 @@ class Export(object):
             Name of the output file. If `None` a file name
             "netrowk-<session id>.tab" is used.
         """
+        
+        kwargs = locals()
+        _ = kwargs.pop('self')
+        
+        if self.graph:
+            
+            self._make_df_igraph(**kwargs)
+            
+        else:
+            
+            self._make_df_network(**kwargs)
+    
+    
+    def _make_df_network(
+            self,
+            unique_pairs = True,
+            extra_node_attrs = None,
+            extra_edge_attrs = None,
+        ):
+        """
+        See docs at method ``make_df``.
+        """
+        
+        raise NotImplementedError
+    
+    
+    def _make_df_igraph(
+            self,
+            unique_pairs = True,
+            extra_node_attrs = None,
+            extra_edge_attrs = None,
+        ):
+        """
+        See docs at method ``make_df``.
+        """
 
         result = []
 
@@ -199,16 +246,16 @@ class Export(object):
         prg = progress.Progress(
             total = self.graph.ecount(),
             name = 'Creating table',
-            interval=31
+            interval = 31
         )
 
         for e in self.graph.es:
 
             # adding default fields
             lines = (
-                self.process_edge_uniquepairs(e)
+                self._process_edge_uniquepairs_igraph(e)
                     if unique_pairs else
-                self.process_edge_bydirection(e)
+                self._process_edge_bydirection_igraph(e)
             )
 
             result.extend(lines)
@@ -220,7 +267,8 @@ class Export(object):
         self.df = pd.DataFrame(result, columns = header)
         self.df = self.df.astype(dtypes)
 
-    def process_edge_uniquepairs(self, e):
+
+    def _process_edge_uniquepairs_igraph(self, e):
         """
         Returns a table row representing a network edge with covering all
         annotations in a single row: directionality represented by fields
@@ -252,7 +300,12 @@ class Export(object):
                         label_b,
                     # sources, references
                         ';'.join(list(e['sources'])),
-                        ';'.join(map(lambda r: r.pmid, e['references'])),
+                        ';'.join(
+                            sorted(
+                                set(r.pmid for r in e['references']),
+                                key = int
+                            )
+                        ),
                     # directions
                         ';'.join(e['dirs'].get_dir(
                             'undirected', sources=True)),
@@ -276,7 +329,7 @@ class Export(object):
             ))
         ]
 
-    def process_edge_bydirection(self, e):
+    def _process_edge_bydirection_igraph(self, e):
         """
         Returns one or more table rows representing a network edge a way
         that opposite direction connections contained in separate rows.

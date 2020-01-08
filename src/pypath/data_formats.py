@@ -6,7 +6,7 @@
 #  Contains meta-information on all databases/resources.
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -52,7 +52,7 @@ ROOT = common.ROOT
 Old input definitions, should not be used.
 '''
 obsolate = {
-    'signalink2': input_formats.ReadSettings(
+    'signalink2': input_formats.NetworkInput(
         name = "SignaLink2",
         separator = ",",
         id_col_a = 0,
@@ -75,7 +75,7 @@ obsolate = {
                          "gene_name": 2},
         extra_node_attrs_b = {"slk_pathways": (5, ":"),
                          "gene_name": 3}),
-    'nci_pid': input_formats.ReadSettings(
+    'nci_pid': input_formats.NetworkInput(
         name = "NCI-PID",
         separator = "\t",
         id_col_a = 0,
@@ -105,7 +105,7 @@ references.
 '''
 
 reaction = {
-    'Reaction resources': input_formats.ReadSettings(
+    'Reaction resources': input_formats.NetworkInput(
         name = "reaction resources",
         separator = None,
         id_col_a = 0,
@@ -127,7 +127,7 @@ reaction = {
 }
 
 pathwaycommons = {
-    'PathwayCommons': input_formats.ReadSettings(
+    'PathwayCommons': input_formats.NetworkInput(
         name = "PathwayCommons",
         separator = None,
         id_col_a = 0,
@@ -156,7 +156,7 @@ pathwaycommons = {
 }
 
 pathwaycommons1 = {
-    'PathwayCommons': input_formats.ReadSettings(
+    'PathwayCommons': input_formats.NetworkInput(
         name = "PathwayCommons",
         separator = None,
         id_col_a = 0,
@@ -178,7 +178,7 @@ pathwaycommons1 = {
 }
 
 reaction_misc = {
-    'nci_pid': input_formats.ReadSettings(
+    'nci_pid': input_formats.NetworkInput(
         name = "NCI-PID",
         separator = None,
         id_col_a = 0,
@@ -196,7 +196,7 @@ reaction_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'acsn': input_formats.ReadSettings(
+    'acsn': input_formats.NetworkInput(
         name = "ACSN",
         separator = None,
         id_col_a = 0,
@@ -214,7 +214,7 @@ reaction_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'reactome': input_formats.ReadSettings(
+    'reactome': input_formats.NetworkInput(
         name = "Reactome",
         separator = None,
         id_col_a = 0,
@@ -236,37 +236,75 @@ reaction_misc = {
 }
 
 reaction_pc = {
-    'acsn': input_formats.ReadSettings(
-        name = "ACSN",
+    'acsn': input_formats.NetworkInput(
+        name = 'ACSN',
         separator = None,
         id_col_a = 0,
         id_col_b = 1,
-        id_type_a = "genesymbol",
-        id_type_b = "genesymbol",
-        entity_type_a = "protein",
-        entity_type_b = "protein",
-        is_directed = (2, [
-            'UNKNOWN_TRANSITION', 'INTERACTION_TYPE',
-            'KNOWN_TRANSITION_OMITTED', 'INHIBITION',
-            'UNKNOWN_POSITIVE_INFLUENCE', 'PROTEIN_INTERACTION',
-            'UNKNOWN_CATALYSIS', 'POSITIVE_INFLUENCE', 'STATE_TRANSITION',
-            'TRANSLATION', 'UNKNOWN_NEGATIVE_INFLUENCE', 'NEGATIVE_INFLUENCE',
-            'MODULATION', 'TRANSCRIPTION', 'COMPLEX_EXPANSION', 'TRIGGER',
-            'CATALYSIS', 'PHYSICAL_STIMULATION', 'UNKNOWN_INHIBITION',
-            'TRANSPORT'
-        ], ';'),
-        sign = (2,
-              ['TRIGGER', 'UNKNOWN_POSITIVE_INFLUENCE', 'POSITIVE_INFLUENCE'],
-              ['UNKNOWN_NEGATIVE_INFLUENCE', 'NEGATIVE_INFLUENCE'], ';'),
+        id_type_a = 'genesymbol',
+        id_type_b = 'genesymbol',
+        entity_type_a = 'protein',
+        entity_type_b = 'protein',
+        is_directed = (
+            2,
+            [
+                'UNKNOWN_TRANSITION',
+                'INTERACTION_TYPE',
+                'KNOWN_TRANSITION_OMITTED',
+                'INHIBITION',
+                'UNKNOWN_POSITIVE_INFLUENCE',
+                'UNKNOWN_CATALYSIS',
+                'POSITIVE_INFLUENCE',
+                'STATE_TRANSITION',
+                'TRANSLATION',
+                'UNKNOWN_NEGATIVE_INFLUENCE',
+                'NEGATIVE_INFLUENCE',
+                'MODULATION',
+                'TRANSCRIPTION',
+                'COMPLEX_EXPANSION',
+                'TRIGGER',
+                'CATALYSIS',
+                'PHYSICAL_STIMULATION',
+                'UNKNOWN_INHIBITION',
+                'TRANSPORT',
+                'inhibits',
+                'activates',
+            ],
+            ';',
+        ),
+        sign = (
+            2,
+            [
+                'TRIGGER',
+                'UNKNOWN_POSITIVE_INFLUENCE',
+                'POSITIVE_INFLUENCE',
+                'PHYSICAL_STIMULATION',
+                'activates',
+            ],
+            [
+                'INHIBITION',
+                'UNKNOWN_NEGATIVE_INFLUENCE',
+                'NEGATIVE_INFLUENCE',
+                'inhibits',
+            ],
+            ';',
+        ),
         ncbi_tax_id = 9606,
-        negative_filters = [(2, ['COMPLEX_EXPANSION', 'TRANSCRIPTION'], ';'),
-                         (3, 'N/A')],
+        negative_filters = [
+            (
+                2,
+                [
+                    'COMPLEX_EXPANSION',
+                    'TRANSCRIPTION',
+                ],
+                ';'
+            ),
+        ],
         positive_filters = [],
-        references = False,
-        input = 'acsn_ppi',
+        references = (3, ';'),
+        input = 'acsn_interactions',
         header = False,
-        extra_edge_attrs = {'acsn_effect': (2, ';'),
-                        'acsn_refs': (3, ';')},
+        extra_edge_attrs = {'acsn_effect': (2, ';')},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
 }
@@ -276,7 +314,7 @@ These are manually curated, directed, and in most
 of the cases signed interactions, with literature references.
 '''
 pathway = {
-    'trip': input_formats.ReadSettings(
+    'trip': input_formats.NetworkInput(
         name = "TRIP",
         separator = None,
         id_col_a = 1,
@@ -294,7 +332,7 @@ pathway = {
         extra_edge_attrs = {'trip_methods': (3, ';')},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'spike': input_formats.ReadSettings(
+    'spike': input_formats.NetworkInput(
         name = "SPIKE",
         separator = "\t",
         id_col_a = 1,
@@ -312,7 +350,7 @@ pathway = {
                         'spike_mechanism': 11},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'signalink3': input_formats.ReadSettings(
+    'signalink3': input_formats.NetworkInput(
         name = "SignaLink3",
         separator = None,
         id_col_a = 0,
@@ -334,7 +372,7 @@ pathway = {
         },
         extra_node_attrs_a = {"slk_pathways": (8, ";")},
         extra_node_attrs_b = {"slk_pathways": (9, ";")}),
-    'guide2pharma': input_formats.ReadSettings(
+    'guide2pharma': input_formats.NetworkInput(
         name = "Guide2Pharma",
         separator = None,
         id_col_a = 0,
@@ -350,8 +388,9 @@ pathway = {
         ncbi_tax_id = 9606,
         extra_edge_attrs = {},
         extra_node_attrs_a = {'g2p_ligand_location': 8},
-        extra_node_attrs_b = {'g2p_target_type': 9}),
-    'ca1': input_formats.ReadSettings(
+        extra_node_attrs_b = {'g2p_target_type': 9},
+    ),
+    'ca1': input_formats.NetworkInput(
         name = "CA1",
         id_col_a = 1,
         id_col_b = 6,
@@ -371,7 +410,7 @@ pathway = {
                          "ca1_function": 3},
         extra_node_attrs_b = {"ca1_location": 9,
                          "ca1_function": 8}),
-    'arn': input_formats.ReadSettings(
+    'arn': input_formats.NetworkInput(
         name = "ARN",
         separator = None,
         id_col_a = 0,
@@ -392,7 +431,7 @@ pathway = {
         },
         extra_node_attrs_a = {"atg": 5},
         extra_node_attrs_b = {"atg": 6}),
-    'nrf2': input_formats.ReadSettings(
+    'nrf2': input_formats.NetworkInput(
         name = "NRF2ome",
         separator = None,
         id_col_a = 0,
@@ -413,7 +452,7 @@ pathway = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'macrophage': input_formats.ReadSettings(
+    'macrophage': input_formats.NetworkInput(
         name = "Macrophage",
         separator = ";",
         id_col_a = 0,
@@ -433,7 +472,7 @@ pathway = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'death': input_formats.ReadSettings(
+    'death': input_formats.NetworkInput(
         name = "DeathDomain",
         separator = "\t",
         id_col_a = 0,
@@ -450,7 +489,7 @@ pathway = {
         extra_edge_attrs = {"dd_methods": (2, ';')},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'pdz': input_formats.ReadSettings(
+    'pdz': input_formats.NetworkInput(
         name = 'PDZBase',
         separator = None,
         id_col_a = 0,
@@ -472,8 +511,8 @@ pathway = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}
     ),
-    'signor': input_formats.ReadSettings(
-        name = "Signor",
+    'signor': input_formats.NetworkInput(
+        name = 'SIGNOR',
         separator = None,
         id_col_a = 0,
         id_col_b = 1,
@@ -490,19 +529,38 @@ pathway = {
                        '9606;9606': 9606,
                        '9606': 9606
                    }},
-        is_directed = (6, [
-            'up-regulates', 'up-regulates activity',
-            'up-regulates quantity by stabilization', 'down-regulates',
-            'down-regulates activity',
-            'down-regulates quantity by destabilization'
-        ]),
-        sign = (6, [
-            'up-regulates', 'up-regulates activity',
-            'up-regulates quantity by stabilization'
-        ], [
-            'down-regulates', 'down-regulates activity',
-            'down-regulates quantity by destabilization'
-        ]),
+        is_directed = (
+            6,
+            {
+                'up-regulates',
+                'up-regulates activity',
+                'up-regulates quantity',
+                'up-regulates quantity by stabilization',
+                'up-regulates quantity by expression',
+                'down-regulates',
+                'down-regulates activity',
+                'down-regulates quantity by destabilization',
+                'down-regulates quantity',
+                'down-regulates quantity by repression',
+            }
+        ),
+        sign = (
+            6,
+            {
+                'up-regulates',
+                'up-regulates activity',
+                'up-regulates quantity',
+                'up-regulates quantity by stabilization',
+                'up-regulates quantity by expression',
+            },
+            {
+                'down-regulates',
+                'down-regulates activity',
+                'down-regulates quantity by destabilization',
+                'down-regulates quantity',
+                'down-regulates quantity by repression',
+            }
+        ),
         input = 'signor_interactions',
         references = (9, ";"),
         header = False,
@@ -510,7 +568,7 @@ pathway = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
     ),
-    'adhesome': input_formats.ReadSettings(
+    'adhesome': input_formats.NetworkInput(
         name = "Adhesome",
         separator = None,
         id_col_a = 0,
@@ -538,7 +596,7 @@ activity_flow = pathway
 Pathway (activity flow) resources without literature references.
 """
 pathway_noref = {
-    'kegg': input_formats.ReadSettings(
+    'kegg': input_formats.NetworkInput(
         name = "KEGG",
         separator = None,
         id_col_a = 0,
@@ -558,7 +616,7 @@ pathway_noref = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
     ),
-    'wang': input_formats.ReadSettings(
+    'wang': input_formats.NetworkInput(
         name = "Wang",
         separator = None,
         id_col_a = 0,
@@ -583,6 +641,49 @@ pathway_noref = {
 
 pathway_all = dict(copy.deepcopy(pathway), **copy.deepcopy(pathway_noref))
 
+
+pathway_bad = {
+    'laudanna_effects': input_formats.NetworkInput(
+        name = "Laudanna-effects",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "genesymbol",
+        id_type_b = "genesymbol",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        ncbi_tax_id = 9606,
+        is_directed = (2, ('activation', 'inhibition')),
+        sign = (2, 'activation', 'inhibition'),
+        input = 'get_laudanna_effects',
+        references = False,
+        must_have_references = False,
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
+    'laudanna_directions': input_formats.NetworkInput(
+        name = "Laudanna-directions",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "genesymbol",
+        id_type_b = "genesymbol",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        ncbi_tax_id = 9606,
+        is_directed = True,
+        input = 'get_laudanna_directions',
+        references = False,
+        must_have_references = False,
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
+}
+
 '''
 Interaction databases included in OmniPath.
 These are subsets of the named databases, having
@@ -590,7 +691,7 @@ only low throughput, manually curated, undirected
 interactions with literature references.
 '''
 interaction = {
-    'biogrid': input_formats.ReadSettings(
+    'biogrid': input_formats.NetworkInput(
         name = "BioGRID",
         separator = None,
         id_col_a = 0,
@@ -608,7 +709,7 @@ interaction = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'ccmap': input_formats.ReadSettings(
+    'ccmap': input_formats.NetworkInput(
         name = "CancerCellMap",
         id_col_a = 0,
         id_col_b = 1,
@@ -624,7 +725,7 @@ interaction = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'mppi': input_formats.ReadSettings(
+    'mppi': input_formats.NetworkInput(
         name = "MPPI",
         separator = "|",
         id_col_a = 2,
@@ -641,7 +742,7 @@ interaction = {
         extra_edge_attrs = {"mppi_evidences": (1, ";")},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'dip': input_formats.ReadSettings(
+    'dip': input_formats.NetworkInput(
         name = "DIP",
         id_col_a = 0,
         id_col_b = 1,
@@ -661,7 +762,7 @@ interaction = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'netpath': input_formats.ReadSettings(
+    'netpath': input_formats.NetworkInput(
         name = "NetPath",
         separator = None,
         id_col_a = 1,
@@ -682,7 +783,7 @@ interaction = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'innatedb': input_formats.ReadSettings(
+    'innatedb': input_formats.NetworkInput(
         name = "InnateDB",
         id_col_a = 0,
         id_col_b = 2,
@@ -698,7 +799,7 @@ interaction = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'alz': input_formats.ReadSettings(
+    'alz': input_formats.NetworkInput(
         name = '\t',
         separator = None,
         id_col_a = 0,
@@ -715,7 +816,7 @@ interaction = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'matrixdb': input_formats.ReadSettings(
+    'matrixdb': input_formats.NetworkInput(
         name = "MatrixDB",
         id_col_a = 0,
         id_col_b = 1,
@@ -737,7 +838,7 @@ PTM databases included in OmniPath.
 These supply large sets of directed interactions.
 '''
 ptm = {
-    'psite': input_formats.ReadSettings(
+    'psite': input_formats.NetworkInput(
         name = "PhosphoSite",
         separator = None,
         id_col_a = 0,
@@ -753,8 +854,9 @@ ptm = {
         ncbi_tax_id = 9606,
         extra_edge_attrs = {"psite_evidences": (4, ";")},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
-    'depod': input_formats.ReadSettings(
+        extra_node_attrs_b = {}
+    ),
+    'depod': input_formats.NetworkInput(
         name = "DEPOD",
         separator = ";",
         id_col_a = 0,
@@ -771,7 +873,7 @@ ptm = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'lmpid': input_formats.ReadSettings(
+    'lmpid': input_formats.NetworkInput(
         name = "LMPID",
         separator = None,
         id_col_a = 0,
@@ -789,7 +891,7 @@ ptm = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'phelm': input_formats.ReadSettings(
+    'phelm': input_formats.NetworkInput(
         name = "phosphoELM",
         separator = None,
         id_col_a = 0,
@@ -810,7 +912,7 @@ ptm = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'elm': input_formats.ReadSettings(
+    'elm': input_formats.NetworkInput(
         name = "ELM",
         separator = None,
         id_col_a = 2,
@@ -832,7 +934,7 @@ ptm = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}
     ),
-    'domino': input_formats.ReadSettings(
+    'domino': input_formats.NetworkInput(
         name = "DOMINO",
         separator = None,
         id_col_a = 0,
@@ -863,7 +965,7 @@ ptm = {
         extra_edge_attrs = {'domino_methods': (4, ';')},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'dbptm': input_formats.ReadSettings(
+    'dbptm': input_formats.NetworkInput(
         name = "dbPTM",
         separator = None,
         id_col_a = 0,
@@ -883,7 +985,7 @@ ptm = {
         extra_node_attrs_b = {},
         must_have_references = True
     ),
-    'hprd_p': input_formats.ReadSettings(
+    'hprd_p': input_formats.NetworkInput(
         name = "HPRD-phos",
         separator = None,
         id_col_a = 6,
@@ -902,7 +1004,7 @@ ptm = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}
     ),
-    'protmapper': input_formats.ReadSettings(
+    'protmapper': input_formats.NetworkInput(
         name = "ProtMapper",
         separator = None,
         id_col_a = 0,
@@ -933,7 +1035,7 @@ Other PTM datasets which are not used because the lack of
 references.
 '''
 ptm_misc = {
-    'psite_noref': input_formats.ReadSettings(
+    'psite_noref': input_formats.NetworkInput(
         name = "PhosphoSite_noref",
         separator = None,
         id_col_a = 0,
@@ -950,7 +1052,7 @@ ptm_misc = {
         extra_edge_attrs = {"psite_evidences": (4, ";")},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'ppoint': input_formats.ReadSettings(
+    'ppoint': input_formats.NetworkInput(
         name = "PhosphoPoint",
         separator = ";",
         id_col_a = 0,
@@ -968,7 +1070,7 @@ ptm_misc = {
         extra_edge_attrs = {"phosphopoint_category": 4},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'pnetworks': input_formats.ReadSettings(
+    'pnetworks': input_formats.NetworkInput(
         name = "PhosphoNetworks",
         separator = None,
         id_col_a = 0,
@@ -986,7 +1088,7 @@ ptm_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'mimp': input_formats.ReadSettings(
+    'mimp': input_formats.NetworkInput(
         name = "MIMP",
         separator = None,
         id_col_a = 0,
@@ -1005,7 +1107,7 @@ ptm_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'li2012': input_formats.ReadSettings(
+    'li2012': input_formats.NetworkInput(
         name = "Li2012",
         separator = False,
         id_col_a = 0,
@@ -1035,6 +1137,10 @@ ptm_noref = ptm_misc
 
 ptm_all = copy.deepcopy(ptm_misc)
 ptm_all.update(ptm)
+
+extra_directions = copy.deepcopy(ptm_misc)
+extra_directions.update(copy.deepcopy(pathway_noref))
+extra_directions['acsn'] = copy.deepcopy(reaction_pc['acsn'])
 '''
 Interaction databases not included in OmniPath.
 These were omitted because lack of references,
@@ -1042,7 +1148,7 @@ or because we could not separate the low throughput,
 manually curated interactions.
 '''
 interaction_misc = {
-    'intact': input_formats.ReadSettings(
+    'intact': input_formats.NetworkInput(
         name = "IntAct",
         separator = ",",
         id_col_a = 0,
@@ -1060,7 +1166,7 @@ interaction_misc = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
     ),
-    'hippie': input_formats.ReadSettings(
+    'hippie': input_formats.NetworkInput(
         name = "HIPPIE",
         separator = None,
         id_col_a = 0,
@@ -1077,7 +1183,7 @@ interaction_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'biogrid': input_formats.ReadSettings(
+    'biogrid': input_formats.NetworkInput(
         name = "BioGRID",
         separator = None,
         id_col_a = 0,
@@ -1095,7 +1201,7 @@ interaction_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'hsn': input_formats.ReadSettings(
+    'hsn': input_formats.NetworkInput(
         name = "Wang",
         separator = ",",
         id_col_a = 0,
@@ -1112,32 +1218,7 @@ interaction_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'acsn': input_formats.ReadSettings(
-        name = "ACSN",
-        separator = None,
-        id_col_a = 0,
-        id_col_b = 2,
-        id_type_a = "genesymbol",
-        id_type_b = "genesymbol",
-        entity_type_a = "protein",
-        entity_type_b = "protein",
-        is_directed = (1, [
-            'CATALYSIS', 'UNKNOWN_CATALYSIS', 'INHIBITION',
-            'PHYSICAL_STIMULATION', 'TRIGGER', 'activates',
-            'UNKNOWN_POSITIVE_INFLUENCE', 'inhibits', 'MODULATION'
-        ]),
-        sign = (1, [
-            'PHYSICAL_STIMULATION', 'TRIGGER', 'activates',
-            'UNKNOWN_POSITIVE_INFLUENCE'
-        ], ['INHIBITION', 'inhibits']),
-        ncbi_tax_id = 9606,
-        input = 'acsn_interactions',
-        references = False,
-        header = False,
-        extra_edge_attrs = {'acsn_effect': 1},
-        extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
-    'hi2': input_formats.ReadSettings(
+    'hi2': input_formats.NetworkInput(
         name = "HI-II",
         separator = None,
         id_col_a = 2,
@@ -1155,7 +1236,7 @@ interaction_misc = {
         extra_edge_attrs = {'hi2_numof_screens': 4},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'hi3': input_formats.ReadSettings(
+    'hi3': input_formats.NetworkInput(
         name = "HI-III",
         separator = None,
         id_col_a = 0,
@@ -1176,7 +1257,7 @@ interaction_misc = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
     ),
-    'lit13': input_formats.ReadSettings(
+    'lit13': input_formats.NetworkInput(
         name = "Lit-BM-13",
         separator = None,
         id_col_a = 1,
@@ -1194,7 +1275,7 @@ interaction_misc = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'lit17': input_formats.ReadSettings(
+    'lit17': input_formats.NetworkInput(
         name = "Lit-BM-17",
         separator = None,
         id_col_a = 0,
@@ -1214,7 +1295,7 @@ interaction_misc = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'cpdb': input_formats.ReadSettings(
+    'cpdb': input_formats.NetworkInput(
         name = "CPDB",
         separator = None,
         id_col_a = 0,
@@ -1234,9 +1315,11 @@ interaction_misc = {
         extra_node_attrs_b = {}),
 }
 
+interaction_misc['acsn'] = copy.deepcopy(reaction_pc['acsn'])
+
 
 interaction_deprecated = {
-    'hi3': input_formats.ReadSettings(
+    'hi3': input_formats.NetworkInput(
         name = "HI-III",
         separator = None,
         id_col_a = 1,
@@ -1259,7 +1342,7 @@ interaction_deprecated = {
 }
 
 interaction_htp = {
-    'intact': input_formats.ReadSettings(
+    'intact': input_formats.NetworkInput(
         name = "IntAct",
         id_col_a = 0,
         id_col_b = 1,
@@ -1277,7 +1360,7 @@ interaction_htp = {
         extra_node_attrs_b = {},
         input_args = {'miscore': 0.0}
     ),
-    'biogrid': input_formats.ReadSettings(
+    'biogrid': input_formats.NetworkInput(
         name = "BioGRID",
         separator = None,
         id_col_a = 0,
@@ -1297,7 +1380,7 @@ interaction_htp = {
         extra_node_attrs_b = {},
         input_args = {'htp_limit': None,
                    'ltp': False}),
-    'dip': input_formats.ReadSettings(
+    'dip': input_formats.NetworkInput(
         name = "DIP",
         id_col_a = 0,
         id_col_b = 1,
@@ -1319,7 +1402,7 @@ interaction_htp = {
         extra_node_attrs_b = {},
         input_args = {'core_only': False,
                    'small_scale_only': False}),
-    'ccmap': input_formats.ReadSettings(
+    'ccmap': input_formats.NetworkInput(
         name = "CancerCellMap",
         id_col_a = 0,
         id_col_b = 1,
@@ -1335,7 +1418,7 @@ interaction_htp = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'innatedb': input_formats.ReadSettings(
+    'innatedb': input_formats.NetworkInput(
         name = "InnateDB",
         id_col_a = 0,
         id_col_b = 2,
@@ -1351,7 +1434,7 @@ interaction_htp = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'matrixdb': input_formats.ReadSettings(
+    'matrixdb': input_formats.NetworkInput(
         name = "MatrixDB",
         id_col_a = 0,
         id_col_b = 1,
@@ -1367,7 +1450,7 @@ interaction_htp = {
         extra_edge_attrs = {"matrixdb_methods": (3, '|')},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'hprd': input_formats.ReadSettings(
+    'hprd': input_formats.NetworkInput(
         name = "HPRD",
         separator = None,
         id_col_a = 0,
@@ -1385,7 +1468,7 @@ interaction_htp = {
         extra_edge_attrs = {'hprd_methods': (6, ';')},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'hi3': input_formats.ReadSettings(
+    'hi3': input_formats.NetworkInput(
         name = "Vidal HI-III",
         separator = None,
         id_col_a = 1,
@@ -1404,7 +1487,7 @@ interaction_htp = {
         extra_node_attrs_b = {},
         must_have_references = False,
         input_args = {'fname': '/home/denes/Documents/pw/data/hi3-2.3.tsv'}),
-    'mppi': input_formats.ReadSettings(
+    'mppi': input_formats.NetworkInput(
         name = "MPPI",
         separator = "|",
         id_col_a = 2,
@@ -1426,7 +1509,7 @@ interaction_htp = {
 Transcriptional regulatory interactions.
 '''
 transcription_onebyone = {
-    'abs': input_formats.ReadSettings(
+    'abs': input_formats.NetworkInput(
         name = "ABS",
         separator = None,
         id_col_a = 0,
@@ -1439,15 +1522,15 @@ transcription_onebyone = {
         sign = False,
         ncbi_tax_id = 9606,
         input = 'get_abs',
-        interaction_type = 'TF',
+        interaction_type = 'transcriptional',
         references = False,
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
     ),
-    'encode_dist': input_formats.ReadSettings(
-        name = "ENCODE_distal",
+    'encode_dist': input_formats.NetworkInput(
+        name = "ENCODE-distal",
         separator = None,
         id_col_a = 0,
         id_col_b = 2,
@@ -1459,15 +1542,15 @@ transcription_onebyone = {
         sign = False,
         ncbi_tax_id = 9606,
         input = 'http://encodenets.gersteinlab.org/enets3.Distal.txt',
-        interaction_type = 'TF',
+        interaction_type = 'transcriptional',
         references = False,
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
     ),
-    'encode_prox': input_formats.ReadSettings(
-        name = "ENCODE_proximal",
+    'encode_prox': input_formats.NetworkInput(
+        name = "ENCODE-proximal",
         separator = None,
         id_col_a = 0,
         id_col_b = 2,
@@ -1479,14 +1562,14 @@ transcription_onebyone = {
         sign = False,
         ncbi_tax_id = 9606,
         input = 'http://encodenets.gersteinlab.org/enets2.Proximal_filtered.txt',
-        interaction_type = 'TF',
+        interaction_type = 'transcriptional',
         references = False,
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
     ),
-    'pazar': input_formats.ReadSettings(
+    'pazar': input_formats.NetworkInput(
         name = "PAZAR",
         separator = None,
         id_col_a = 0,
@@ -1499,34 +1582,34 @@ transcription_onebyone = {
         sign = False,
         ncbi_tax_id = 9606,
         input = 'get_pazar',
-        interaction_type = 'TF',
+        interaction_type = 'transcriptional',
         references = 2,
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
     ),
-    'htri': input_formats.ReadSettings(
-        name = "HTRI",
+    'htri': input_formats.NetworkInput(
+        name = "HTRIdb",
         separator = None,
-        id_col_a = 0,
-        id_col_b = 1,
-        id_type_a = "entrez",
-        id_type_b = "entrez",
+        id_col_a = 1,
+        id_col_b = 3,
+        id_type_a = "genesymbol",
+        id_type_b = "genesymbol",
         entity_type_a = "protein",
         entity_type_b = "protein",
         is_directed = True,
         sign = False,
         ncbi_tax_id = 9606,
         input = 'get_htri',
-        interaction_type = 'TF',
-        references = 2,
+        interaction_type = 'transcriptional',
+        references = 4,
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
     ),
-    'oreganno': input_formats.ReadSettings(
+    'oreganno': input_formats.NetworkInput(
         name = "ORegAnno",
         separator = None,
         id_col_a = 0,
@@ -1539,22 +1622,31 @@ transcription_onebyone = {
         sign = False,
         ncbi_tax_id = 9606,
         input = 'get_oreganno',
-        interaction_type = 'TF',
+        interaction_type = 'transcriptional',
         references = 2,
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
     ),
-    'signor': input_formats.ReadSettings(
-        name = "Signor",
+    'signor': input_formats.NetworkInput(
+        name = "SIGNOR",
         separator = None,
         id_col_a = 0,
         id_col_b = 1,
         id_type_a = "uniprot",
         id_type_b = "uniprot",
         # only direct TF-target interactions
-        positive_filters = [(10, True), (7, 'transcriptional regulation')],
+        positive_filters = [
+            (
+                7,
+                {
+                    'transcriptional regulation',
+                    'transcriptional activation',
+                    'transcriptional repression',
+                }
+            )
+        ],
         entity_type_a = "protein",
         entity_type_b = "protein",
         ncbi_tax_id = {'col': 8,
@@ -1563,19 +1655,30 @@ transcription_onebyone = {
                        '9606': 9606
                    }},
         is_directed = True,
-        sign = (6, [
-            'up-regulates', 'up-regulates activity',
-            'up-regulates quantity by stabilization'
-        ], [
-            'down-regulates', 'down-regulates activity',
-            'down-regulates quantity by destabilization'
-        ]),
+        sign = (
+            6,
+            {
+                'up-regulates',
+                'up-regulates activity',
+                'up-regulates quantity',
+                'up-regulates quantity by stabilization',
+                'up-regulates quantity by expression',
+            },
+            {
+                'down-regulates',
+                'down-regulates activity',
+                'down-regulates quantity by destabilization',
+                'down-regulates quantity',
+                'down-regulates quantity by repression',
+            }
+        ),
         input = 'signor_interactions',
         references = (9, ";"),
         header = True,
         extra_edge_attrs = {"signor_mechanism": (7, ';')},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        interaction_type = 'transcriptional',
     ),
 }
 
@@ -1600,8 +1703,8 @@ pa = pypath.PyPath()
 pa.init_network(pypath.data_formats.transcription)
 
 """
-transcription = {
-    'dorothea': input_formats.ReadSettings(
+transcription_dorothea = {
+    'dorothea': input_formats.NetworkInput(
         name = "DoRothEA",
         separator = None,
         id_col_a = 0,
@@ -1614,7 +1717,7 @@ transcription = {
         sign = (2, '1', '-1'),
         ncbi_tax_id = 9606,
         input = 'get_tfregulons',
-        interaction_type = 'TF',
+        interaction_type = 'transcriptional',
         resource = (12, ','),
         references = (13, ','),
         header = False,
@@ -1633,16 +1736,20 @@ transcription = {
 }
 
 # synonyms
-dorothea = transcription
-tfregulons = transcription
+dorothea = transcription_dorothea
+tfregulons = transcription_dorothea
 
+# all transcriptional regulation resources
+transcription = {}
+transcription.update(copy.deepcopy(transcription_onebyone))
+transcription.update(copy.deepcopy(transcription_dorothea))
 
 '''
 Old transctiptional regulation input formats.
 Should not be used.
 '''
 transcription_deprecated = {
-    'oreganno_old': input_formats.ReadSettings(
+    'oreganno_old': input_formats.NetworkInput(
         name = "ORegAnno",
         separator = None,
         id_col_a = 0,
@@ -1655,7 +1762,7 @@ transcription_deprecated = {
         sign = False,
         ncbi_tax_id = 9606,
         input = 'get_oreganno_old',
-        interaction_type = 'TF',
+        interaction_type = 'transcriptional',
         references = 2,
         header = False,
         extra_edge_attrs = {},
@@ -1667,7 +1774,7 @@ transcription_deprecated = {
 miRNA-target resources
 '''
 mirna_target = {
-    'mir2dis': input_formats.ReadSettings(
+    'mir2dis': input_formats.NetworkInput(
         name = "miR2Disease",
         separator = None,
         id_col_a = 0,
@@ -1680,13 +1787,13 @@ mirna_target = {
         sign = False,
         ncbi_tax_id = 9606,
         input = 'mir2disease_interactions',
-        interaction_type = 'MTI',
+        interaction_type = 'post_transcriptional',
         references = None,
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'mirdeath': input_formats.ReadSettings(
+    'mirdeath': input_formats.NetworkInput(
         name = "miRDeathDB",
         separator = None,
         id_col_a = 0,
@@ -1700,13 +1807,45 @@ mirna_target = {
         ncbi_tax_id = {'col': 2,
                    'include': set([9606])},
         input = 'mirdeathdb_interactions',
-        interaction_type = 'MTI',
+        interaction_type = 'post_transcriptional',
         references = 3,
         header = False,
         extra_edge_attrs = {'mirdeathdb_function': 4},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'mirecords': input_formats.ReadSettings(
+    'ncrdeath': input_formats.NetworkInput(
+        name = "ncRDeathDB",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "mirbase",
+        id_type_b = "genesymbol",
+        entity_type_a = "mirna",
+        entity_type_b = "protein",
+        is_directed = True,
+        sign = False,
+        ncbi_tax_id = {
+            'col': 6,
+            'include': {9606},
+        },
+        input = 'ncrdeathdb_interactions',
+        interaction_type = 'post_transcriptional',
+        references = 5,
+        header = False,
+        positive_filters = [(2, 'miRNA')],
+        negative_filters = [
+            (5, 'prediction'),
+            (1, {None}),
+            (0, {None}),
+        ],
+        extra_edge_attrs = {
+            'ncrdeathdb_pathway': 3,
+            'ncrdeathdb_effect': 4,
+        },
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
+    'mirecords': input_formats.NetworkInput(
         name = "miRecords",
         separator = None,
         id_col_a = 0,
@@ -1728,13 +1867,13 @@ mirna_target = {
                 'include': set([9606])
             }},
         input = 'mirecords_interactions',
-        interaction_type = 'MTI',
+        interaction_type = 'post_transcriptional',
         references = 5,
         header = False,
         extra_edge_attrs = {'mirdeathdb_function': 4},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'mirtarbase': input_formats.ReadSettings(
+    'mirtarbase': input_formats.NetworkInput(
         name = "miRTarBase",
         separator = None,
         id_col_a = 1,
@@ -1757,7 +1896,7 @@ mirna_target = {
             }},
         positive_filters = [(7, 'Functional MTI')],
         input = 'mirtarbase_interactions',
-        interaction_type = 'MTI',
+        interaction_type = 'post_transcriptional',
         references = 8,
         header = False,
         extra_edge_attrs = {'mirtarbase_evidence': (6, '//')},
@@ -1766,30 +1905,27 @@ mirna_target = {
 }
 
 tf_mirna = {
-    'transmir': input_formats.ReadSettings(
+    'transmir': input_formats.NetworkInput(
         name = "TransmiR",
         separator = None,
         id_col_a = 0,
-        id_col_b = 2,
+        id_col_b = 1,
         id_type_a = "genesymbol",
         id_type_b = "mir-mat-name",
         entity_type_a = "protein",
         entity_type_b = "mirna",
         is_directed = True,
-        sign = (4, 'activation', 'repression'),
-        ncbi_tax_id= {
-                'col': 6,
-                'dict': common.swap_dict(taxonomy.taxids),
-                'include': set([9606])
-            },
+        sign = (2, 'Activation', 'Repression'),
+        ncbi_tax_id = 9606,
         input = 'transmir_interactions',
-        interaction_type = 'TFMIRNA',
-        references = 5,
+        interaction_type = 'mirna_transcriptional',
+        references = 3,
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
-    'encode': input_formats.ReadSettings(
+        extra_node_attrs_b = {}
+    ),
+    'encode': input_formats.NetworkInput(
         name = "ENCODE_tf-mirna",
         separator = None,
         id_col_a = 0,
@@ -1802,7 +1938,7 @@ tf_mirna = {
         sign = False,
         ncbi_tax_id = 9606,
         input = 'encode_tf_mirna_interactions',
-        interaction_type = 'TFMIRNA',
+        interaction_type = 'mirna_transcriptional',
         references = None,
         header = False,
         extra_edge_attrs = {},
@@ -1810,8 +1946,8 @@ tf_mirna = {
         extra_node_attrs_b = {})
 }
 
-lncrna_protein = {
-    'lncdisease': input_formats.ReadSettings(
+lncrna_target = {
+    'lncdisease': input_formats.NetworkInput(
         name = "LncRNADisease",
         separator = None,
         id_col_a = 0,
@@ -1829,13 +1965,13 @@ lncrna_protein = {
             },
         positive_filters = [(2, 'RNA'), (3, 'Protein')],
         input = 'lncdisease_interactions',
-        interaction_type = 'LNCRP',
+        interaction_type = 'lncrna_post_transcriptional',
         references = 6,
         header = False,
         extra_edge_attrs = {'lncrnadisease_mechanism': 4},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'lncrnadb': input_formats.ReadSettings(
+    'lncrnadb': input_formats.NetworkInput(
         name = "lncrnadb",
         separator = None,
         id_col_a = 0,
@@ -1853,16 +1989,49 @@ lncrna_protein = {
             },
         positive_filters = [(2, 'protein')],
         input = 'lncrnadb_interactions',
-        interaction_type = 'LNCRP',
+        interaction_type = 'lncrna_post_transcriptional',
         references = 4,
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {})
+        extra_node_attrs_b = {}
+    ),
+    'ncrdeath': input_formats.NetworkInput(
+        name = "ncRDeathDB",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "lncrna-genesymbol",
+        id_type_b = "genesymbol",
+        entity_type_a = "lncrna",
+        entity_type_b = "protein",
+        is_directed = True,
+        sign = False,
+        ncbi_tax_id = {
+            'col': 6,
+            'include': {9606},
+        },
+        input = 'ncrdeathdb_interactions',
+        interaction_type = 'lncrna_post_transcriptional',
+        references = 5,
+        header = False,
+        positive_filters = [(2, 'lncRNA')],
+        negative_filters = [
+            (5, 'prediction'),
+            (1, {None}),
+            (0, {None}),
+        ],
+        extra_edge_attrs = {
+            'ncrdeathdb_pathway': 3,
+            'ncrdeathdb_effect': 4,
+        },
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
 }
 
 ligand_receptor = {
-    'ramilowski2015': input_formats.ReadSettings(
+    'ramilowski2015': input_formats.NetworkInput(
         name = "Ramilowski2015",
         separator = None,
         id_col_a = 0,
@@ -1885,8 +2054,9 @@ ligand_receptor = {
         input_args = {
             'putative': False
         },
+        data_model = 'ligand_receptor',
     ),
-    'kirouac2010': input_formats.ReadSettings(
+    'kirouac2010': input_formats.NetworkInput(
         name = "Kirouac2010",
         separator = None,
         id_col_a = 0,
@@ -1906,8 +2076,9 @@ ligand_receptor = {
         extra_node_attrs_b = {},
         mark_source = 'kirouac_ligand',
         mark_target = 'kirouac_receptor',
+        data_model = 'ligand_receptor',
     ),
-    'hpmr': input_formats.ReadSettings(
+    'hpmr': input_formats.NetworkInput(
         name = 'HPMR',
         separator = None,
         id_col_a = 2,
@@ -1926,8 +2097,9 @@ ligand_receptor = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'ligand_receptor',
     ),
-    'cellphonedb': input_formats.ReadSettings(
+    'cellphonedb': input_formats.NetworkInput(
         name = "CellPhoneDB",
         separator = None,
         id_col_a = 0,
@@ -1948,12 +2120,63 @@ ligand_receptor = {
         extra_node_attrs_a = {'cellphonedb_type': 5},
         extra_node_attrs_b = {'cellphonedb_type': 6},
         positive_filters = [],
+        data_model = 'ligand_receptor',
+    ),
+    'lrdb': input_formats.NetworkInput(
+        name = 'LRdb',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "genesymbol",
+        id_type_b = "genesymbol",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = True,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'lrdb_interactions',
+        references = 3,
+        resource = 2,
+        must_have_references = False,
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+        data_model = 'ligand_receptor',
+    ),
+    'baccin2019': input_formats.NetworkInput(
+        name = 'Baccin2019',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = True,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'baccin2019_interactions',
+        references = 6,
+        resource = 5,
+        must_have_references = False,
+        header = False,
+        negative_filters = [
+            (2, 'Incorrect'),
+        ],
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {
+            'baccin_category': 4,
+            'baccin_location': 3,
+        },
+        data_model = 'ligand_receptor',
     ),
 }
 
 small_molecule_protein = {
-        'signor': input_formats.ReadSettings(
-        name = "Signor",
+        'signor': input_formats.NetworkInput(
+        name = "SIGNOR",
         separator = None,
         id_col_a = 0,
         id_col_b = 1,
@@ -1992,14 +2215,25 @@ small_molecule_protein = {
     ),
 }
 
-ligand_receptor['guide2pharma'] = pathway['guide2pharma']
+ligand_receptor['guide2pharma'] = copy.deepcopy(pathway['guide2pharma'])
+ligand_receptor['guide2pharma'].data_model = 'ligand_receptor'
 pathway['hpmr'] = copy.deepcopy(ligand_receptor['hpmr'])
+pathway['hpmr'].data_model = 'activity_flow'
 pathway['hpmr'].must_have_references = True
 pathway['hpmr'].positive_filters = []
 pathway['cellphonedb'] = copy.deepcopy(ligand_receptor['cellphonedb'])
 pathway['cellphonedb'].must_have_references = True
+pathway['cellphonedb'].data_model = 'activity_flow'
 pathway['ramilowski2015'] = copy.deepcopy(ligand_receptor['ramilowski2015'])
 pathway['ramilowski2015'].must_have_references = True
+pathway['ramilowski2015'].data_model = 'activity_flow'
+pathway['lrdb'] = copy.deepcopy(ligand_receptor['lrdb'])
+pathway['lrdb'].data_model = 'activity_flow'
+pathway['lrdb'].must_have_references = True
+pathway['baccin2019'] = copy.deepcopy(ligand_receptor['baccin2019'])
+pathway['baccin2019'].data_model = 'activity_flow'
+pathway['baccin2019'].must_have_references = True
+
 '''
 The default set of resources in OmniPath.
 '''
@@ -2021,7 +2255,7 @@ proteins proved in experiments to not interact with
 each other.
 '''
 negative = {
-    'negatome': input_formats.ReadSettings(
+    'negatome': input_formats.NetworkInput(
         name = "Negatome",
         separator = "\t",
         id_col_a = 0,
@@ -2039,7 +2273,7 @@ negative = {
         extra_node_attrs_b = {})
 }
 
-biocarta = input_formats.ReadSettings(
+biocarta = input_formats.NetworkInput(
     name = "BioCarta",
     separator = ";",
     id_col_a = 0,
@@ -2054,7 +2288,7 @@ biocarta = input_formats.ReadSettings(
     extra_node_attrs_a = {"biocarta_pathways": (4, ",")},
     extra_node_attrs_b = {"biocarta_pathways": (4, ",")})
 
-nci_pid = input_formats.ReadSettings(
+nci_pid = input_formats.NetworkInput(
     name = "NCI-PID",
     separator = ";",
     id_col_a = 0,
@@ -2069,7 +2303,7 @@ nci_pid = input_formats.ReadSettings(
     extra_node_attrs_a = {"nci_pid_pathways": (2, ",")},
     extra_node_attrs_b = {"nci_pid_pathways": (2, ",")})
 
-reactome = input_formats.ReadSettings(
+reactome = input_formats.NetworkInput(
     name = "Reactome",
     separator = ";",
     id_col_a = 0,
@@ -2084,7 +2318,7 @@ reactome = input_formats.ReadSettings(
     extra_node_attrs_a = {"reactome_pathways": (2, ",")},
     extra_node_attrs_b = {"reactome_pathways": (2, ",")})
 
-gdsc_comp_target = input_formats.ReadSettings(
+gdsc_comp_target = input_formats.NetworkInput(
     name = "GDSC",
     separator = ";",
     id_col_a = 1,

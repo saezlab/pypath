@@ -6,7 +6,7 @@
 #  Helps to translate from the mouse data to human data
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -455,7 +455,7 @@ class PtmHomology(ProteinHomology, SequenceContainer):
             
             result = self.translate_site(*x, **kwargs)
         
-        elif type(x) in common.charTypes:
+        elif type(x) in common.char_types:
             
             ptm = self.reptm.match(x)
             

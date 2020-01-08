@@ -6,7 +6,7 @@
 #  Settings for PyPath
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -102,6 +102,7 @@ _defaults = {
         'HPRD-phos',
     },
     'keep_noref': False,
+    'msigdb_email': 'omnipathdb@gmail.com',
 }
 
 in_datadir = {
@@ -197,7 +198,7 @@ def get_default(param):
 
 def reset(param):
     
-    setup(param, get_default(param))
+    setup(**{param: get_default(param)})
 
 
 defaults = Defaults(**_defaults)

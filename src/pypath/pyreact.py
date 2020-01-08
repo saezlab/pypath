@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -113,9 +113,9 @@ class BioPaxReader(session_mod.Logger):
         files, better to set False, in case of one large file, True.
         The default is *False*.
         """
-        
+
         session_mod.Logger.__init__(self, name = 'biopax')
-        
+
         self.biopax = biopax
         self.source = source
         self.file_from_archive = file_from_archive
@@ -231,7 +231,7 @@ class BioPaxReader(session_mod.Logger):
         }
 
     def reload(self):
-        
+
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
@@ -251,12 +251,12 @@ class BioPaxReader(session_mod.Logger):
         self.set_progress()
         self.init_etree()
         if self.bp is not None:
-            
+
             self.iterate()
             self.close_biopax()
-            
+
             if len(self.interactions_not2):
-                
+
                 self._log(
                     '%u interactions have not exactly 2 '
                     'participants (%s).' % (
@@ -264,9 +264,9 @@ class BioPaxReader(session_mod.Logger):
                         self.source,
                     )
                 )
-            
+
         else:
-            
+
             self._log(
                 'XML syntax error or empty file encountered. '
                 'Skipping to next file or resource.'
@@ -287,7 +287,7 @@ class BioPaxReader(session_mod.Logger):
             }
         )
         if type(self.biopax) is curl.FileOpener:
-            self.opener = biopax
+            self.opener = self.biopax
         else:
             self.opener = curl.FileOpener(self.biopax, **opener_args)
         if type(self.opener.result) is dict:
@@ -318,30 +318,30 @@ class BioPaxReader(session_mod.Logger):
         This method should not be called directly,
         ``BioPaxReader.process()`` calls it.
         """
-        
+
         if self.opener.type != 'plain':
-            
+
             self.biopax_tmp_file = os.path.join(
                 self.cachedir,
                 'biopax.processing.tmp.owl',
             )
-            
+
             self._log(
                 'Extracting %s from %s compressed file.' % (
                     self.file_from_archive,
                     self.opener.type
                 )
             )
-                
+
             if not self.silent:
                 prg = progress.Progress(
                     self.bp_filesize, 'Extracting %s from %s compressed file' %
                     (self.file_from_archive, self.opener.type), 1000000)
-            
+
             with open(self.biopax_tmp_file, 'wb') as tmpf:
-                
+
                 while True:
-                    
+
                     chunk = self._biopax.read(100000)
                     if not self.silent:
                         prg.step(len(chunk))
@@ -350,9 +350,9 @@ class BioPaxReader(session_mod.Logger):
                     if hasattr(chunk, 'encode'):
                         chunk = chunk.encode('utf8')
                     tmpf.write(chunk)
-            
+
             self._biopax = open(self.biopax_tmp_file, 'rb')
-            
+
             if not self.silent:
                 prg.terminate()
 
@@ -363,14 +363,14 @@ class BioPaxReader(session_mod.Logger):
         ``BioPaxReader.process()`` calls it.
         """
         try:
-            
+
             self.bp = etree.iterparse(self._biopax, events=('start', 'end'))
             _, self.root = next(self.bp)
-            
+
         except etree.XMLSyntaxError:
-            
+
             self.bp = None
-        
+
         self.used_elements = []
 
     def set_progress(self):
@@ -639,7 +639,7 @@ class AttributeHandler(object):
         pass
 
     def add_source(self, source):
-        if type(source) in common.charTypes:
+        if type(source) in common.char_types:
             self._add_source(source)
         else:
             for s in source:
@@ -765,7 +765,7 @@ class EntitySet(AttributeHandler):
     def __init__(self, members, sources=[], sep=';', parent=None):
         super(EntitySet, self).__init__()
         self.parent = parent
-        self.members = sorted(common.uniqList(members))
+        self.members = sorted(common.uniq_list(members))
         self.set = set(self.members)
         self.sources = set([])
         self.attrs = {}
@@ -845,12 +845,12 @@ class Complex(EntitySet):
                 )
 
     def expand(self):
-        for i, m1in in enumerate(self.members):
+        for i, m1 in enumerate(self.members):
             for m2 in self.members[i + 1:]:
                 yield m1, m2
 
     def itermembers(self):
-        for m in members:
+        for m in self.members:
             return self.parent.proteins[m]
 
     def key(self):
@@ -889,12 +889,14 @@ class ProteinFamily(Intersecting, EntitySet):
         """
         Iterates protein family, yields proteins.
         """
-        for m in members:
+        for m in self.members:
             if m in self.parent.proteins:
                 yield self.parent.proteins[m]
             else:
                 this_attrs = dict(map(lambda s:
-                                      (s, {'pids': {}, 'prefs': {}, 'originals': {}}),
+                                      (s, {'pids': {},
+                                           'prefs': {},
+                                           'originals': {}}),
                                       self.source))
                 for s, a in iteritems(self.attrs):
                     for pfid, aa in iteritems(a):
@@ -1020,7 +1022,7 @@ class ComplexVariations(Intersecting, EntitySet):
 
 
 class PyReact(session_mod.Logger):
-    
+
     def __init__(
         self,
         ncbi_tax_id=9606,
@@ -1031,10 +1033,10 @@ class PyReact(session_mod.Logger):
         max_complex_combinations=100,
         max_reaction_combinations=100,
     ):
-        
-        
+
+
         self.cachedir = cache.get_cachedir()
-        
+
         self.ncbi_tax_id = ncbi_tax_id
         self.modifications = modifications
         self.parsers = {}
@@ -1071,7 +1073,7 @@ class PyReact(session_mod.Logger):
         self.id_types = {}
         self.default_id_types = {'protein': 'uniprot'}
         self.default_id_types.update(default_id_types)
-        
+
         session_mod.Logger.__init__(self, name = 'pyreact')
 
     def reload(self):
@@ -1082,9 +1084,9 @@ class PyReact(session_mod.Logger):
         setattr(self, '__class__', new)
 
     def load_reactome(self):
-        
+
         self._log('Loading Reactome.')
-        
+
         def reactome_id_proc(_id):
             _id = _id.split('-')
             return {
@@ -1109,9 +1111,9 @@ class PyReact(session_mod.Logger):
             process_id=reactome_id_proc)
 
     def load_acsn(self):
-        
+
         self._log('Loading ACSN.')
-        
+
         biopax = curl.Curl(
             urls.urls['acsn']['biopax_l3'],
             large=True,
@@ -1126,9 +1128,9 @@ class PyReact(session_mod.Logger):
         del self.parser
 
     def load_kegg(self):
-        
+
         self._log('Loading KEGG.')
-        
+
         biopax = curl.Curl(
             urls.urls['kegg_pws']['biopax_l3'],
             large=True,
@@ -1141,9 +1143,9 @@ class PyReact(session_mod.Logger):
         self.add_dataset(parser, {'uniprot knowledgebase': 'uniprot'})
 
     def load_pid(self):
-        
+
         self._log('Loading NCI-PID.')
-        
+
         biopax = curl.Curl(
             urls.urls['nci-pid']['biopax_l3'],
             large=True,
@@ -1157,15 +1159,15 @@ class PyReact(session_mod.Logger):
 
 
     def load_wikipathways(self):
-        
+
         self._log('Loading WikiPathways.')
-        
+
         biopaxes = curl.Curl(
             urls.urls['wikipw']['biopax_l3'],
             large=True,
             silent=self.silent
         )
-        
+
         if not self.silent:
             prg = progress.Progress(
                 len(biopaxes.result),
@@ -1199,9 +1201,9 @@ class PyReact(session_mod.Logger):
 
 
     def load_panther(self):
-        
+
         self._log('Loading PANTHER.')
-        
+
         biopaxes = curl.Curl(
             urls.urls['panther']['biopax_l3'], large=True, silent=self.silent)
         if not self.silent:
@@ -1236,7 +1238,7 @@ class PyReact(session_mod.Logger):
 
 
     def load_netpath(self):
-        
+
         self._log('Loading NetPath.')
 
         names = self.netpath_names()
@@ -1273,7 +1275,7 @@ class PyReact(session_mod.Logger):
 
 
     def netpath_names(self):
-        
+
         repwnum = re.compile(r'_([0-9]+)$')
         result = {}
         url = urls.urls['netpath_names']['url']
@@ -1289,9 +1291,9 @@ class PyReact(session_mod.Logger):
 
 
     def load_all(self):
-        
+
         self._log('Loading all databases.')
-        
+
         self.load_wikipathways()
         self.load_netpath()
         self.load_panther()
@@ -1301,7 +1303,7 @@ class PyReact(session_mod.Logger):
 
 
     def add_dataset(self, parser, id_types={}, process_id=lambda x: {'id': x}):
-        
+
         self.id_types.update(id_types)
         self.source = parser.source
         self.parser = parser
@@ -1454,7 +1456,7 @@ class PyReact(session_mod.Logger):
                 uxrefs = self.pref_correction(self.parser.prefs[pref][
                     'uxrefs'])
                 pids = \
-                    common.uniqList(
+                    common.uniq_list(
                         map(
                             lambda uxref:
                                 self.parser.ids[uxref],
@@ -1467,7 +1469,7 @@ class PyReact(session_mod.Logger):
                     )
                 refids = self.pref_refs(self.parser.prefs[pref]['uxrefs'])
                 refs = \
-                    common.uniqList(
+                    common.uniq_list(
                         map(
                             lambda refid:
                                 self.parser.ids[refid],
@@ -1507,7 +1509,7 @@ class PyReact(session_mod.Logger):
                     self.ncbi_tax_id
                 ),
                 target_ids)
-            target_ids = common.uniqList(target_ids)
+            target_ids = common.uniq_list(target_ids)
             if len(target_ids) > 1:
                 if not self.ambiguous_ids_permitted:
                     sys.stdout.write('\t:: Ambiguous ID '
@@ -1747,7 +1749,7 @@ class PyReact(session_mod.Logger):
         if self.source not in self.rpfamilies:
             self.rpfamilies[self.source] = {}
 
-        members = sorted(common.uniqList(map(lambda p: p[0], proteins)))
+        members = sorted(common.uniq_list(map(lambda p: p[0], proteins)))
 
         # this necessary if we add protein family because of
         # ambiguous id mapping; we want to make sure protein
@@ -1922,7 +1924,7 @@ class PyReact(session_mod.Logger):
                                 proteins + list(pfamily) + list(subc)
 
                             members = sorted(
-                                common.uniqList(
+                                common.uniq_list(
                                     map(lambda p: p[0], this_proteins)))
                             if not len(members):
                                 continue
@@ -2326,7 +2328,7 @@ class PyReact(session_mod.Logger):
     # interaction iterators from here
 
     def expand(self):
-        
+
         def add_interactions(gen):
             for i in gen:
                 key = (i[0], i[1])
@@ -2347,7 +2349,7 @@ class PyReact(session_mod.Logger):
         self.interactions = list(aggregate.values())
 
     def expand_by_source(self):
-        
+
         def add_interactions(gen):
             for i in gen:
                 key = (i[0], i[1], i[4])

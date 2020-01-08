@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -92,7 +92,7 @@ class GOEnrichmentSet(enrich.EnrichmentSet):
 
     def count(self, data):
         
-        return Counter(flatList(list(vals) for vals in data.values()))
+        return Counter(flat_list(list(vals) for vals in data.values()))
         # return dict((name, count/float(len(data))) for name, count in
         # cnt.iteritems())
 

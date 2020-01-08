@@ -7,7 +7,7 @@
 #  or Omnipath.
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -42,7 +42,7 @@ categories = {
     'dbPTM': 'm',
     'MatrixDB': 'i',
     'DOMINO': 'm',
-    'Signor': 'p',
+    'SIGNOR': 'p',
     'Macrophage': 'p',
     'Adhesome': 'p',
     'NetPath': 'r',
@@ -92,17 +92,17 @@ categories = {
     'RLIMS-P': 'm',
     'REACH': 'm',
     # TF-target
-    'ENCODE_distal': 't',
+    'ENCODE-distal': 't',
     'PAZAR': 't',
-    'ENCODE_proximal': 't',
+    'ENCODE-proximal': 't',
     'ORegAnno': 't',
     'HTRI': 't',
     'ARACNe-GTEx': 't',
     'DoRothEA_reviews': 't',
     'FANTOM4': 't',
-    'HOCOMOCO_v11': 't',
+    'HOCOMOCO-v11': 't',
     'HTRIdb': 't',
-    'JASPAR_v2018': 't',
+    'JASPAR-v2018': 't',
     'NFIRegulomeDB': 't',
     'ReMap': 't',
     'RegNetwork': 't',
@@ -111,14 +111,19 @@ categories = {
     'TRED': 't',
     'TRRD': 't',
     'TRRUST': 't',
+    'DoRothEA': 't',
     # miRNA-mRNA
     'miR2Disease': 'n',
     'miRDeathDB': 'n',
     'miRecords': 'n',
     'miRTarBase': 'n',
+    'ncRDeathDB': 'nw',
     # TF-miRNA
     'TransmiR': 'u',
     'ENCODE_tf-mirna': 'u',
+    # lncRNA-mRNA
+    'LncRNADisease': 'w',
+    'lncrnadb': 'w',
 }
 
 p = set()
@@ -129,6 +134,7 @@ t = set()
 l = set()
 n = set() # miRNA-target
 u = set() # TF-mirna
+w = set() # lncRNA-target
 
 for db, cats in iteritems(categories):
     
@@ -145,6 +151,9 @@ catnames = {
     'l': 'Ligand-receptor',
     'n': 'miRNA-mRNA',
     'u': 'TF-miRNA',
+    'w': 'lncRNA-mRNA',
+    '':  'No category',
+    None: 'No category',
 }
 
 catletters = dict(map(reversed, iteritems(catnames)))
@@ -157,25 +166,46 @@ transctiption_resources = t
 ligand_receptor_resources = l
 
 
-def get_categories(database):
+def get_categories(database, names = False, top = True):
     
     result = (
         {letter for letter in categories[database]}
             if database in categories else
-        get_categories(
-            '_'.join(
-                reversed(tuple(reversed(database.split('_')))[:-1])
+        (
+            (
+                get_categories(
+                    '_'.join(
+                        reversed(tuple(reversed(database.split('_')))[:-1])
+                    ),
+                    top = False,
+                )
+            ) or (
+                get_categories(
+                    '_'.join(database.split('_')[:-1]),
+                    top = False,
+                )
             )
         )
             if '_' in database else
         set()
     )
     
-    if not result:
+    if not result and top:
         
         _log(
             'Could not find database `%s` in any '
             'of the categories.' % database
         )
     
+    if names:
+        
+        result = {catnames[cat] for cat in result}
+    
     return result
+
+
+def get_category(database):
+    
+    db_categories = get_categories(database)
+    
+    return list(db_categories)[0] if db_categories else None

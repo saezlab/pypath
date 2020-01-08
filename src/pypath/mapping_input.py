@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -72,7 +72,7 @@ def get_mirbase_aliases(organism = 9606):
     Downloads and processes mapping tables from miRBase.
     """
     
-    if type(organism) in common.charTypes:
+    if type(organism) in common.char_types:
         mborganism = organism
     elif organism not in taxonomy.mirbase_taxids:
         
@@ -195,7 +195,7 @@ def mirbase_ids(organism = 9606):
     
     for ma, mis in iteritems(mat_mir):
         
-        for mi in (mis if type(mis) not in common.simpleTypes else [mis]):
+        for mi in (mis if type(mis) not in common.simple_types else [mis]):
             
             yield ma, mi
 

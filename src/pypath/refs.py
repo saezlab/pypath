@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -57,6 +57,10 @@ class Reference(object):
 
     def info(self):
         return dataio.get_pubmeds([self.pmid])
+    
+    def __repr__(self):
+        
+        return '<Reference: %s>' % self.pmid
 
 
 def open_pubmed(pmid):
@@ -84,7 +88,7 @@ def only_pmids(idList, strict=True):
         Whether keep in the list those IDs which are not PMIDs,
         neither DOIs or PMC IDs or NIH manuscript IDs.
     """
-    if type(idList) in common.simpleTypes:
+    if type(idList) in common.simple_types:
         idList = [idList]
     pmids = set([i for i in idList if i.isdigit()])
     pmcids = [i for i in idList if i.startswith('PMC')]
@@ -106,7 +110,7 @@ def get_pmid(idList):
     For a list of doi or PMC IDs 
     fetches the corresponding PMIDs.
     """
-    if type(idList) in common.simpleTypes:
+    if type(idList) in common.simple_types:
         idList = [idList]
     url = urls.urls['pubmed-eutils']['conv'] % ','.join(str(i) for i in idList)
     c = curl.Curl(url, silent=True)
@@ -165,8 +169,8 @@ def get_pubmed_data(
     if htp_threshold is not None:
         pp.htp_stats()
 
-    pubmeds = common.uniqList(
-        common.flatList([[r.pmid for r in e['references']]
+    pubmeds = common.uniq_list(
+        common.flat_list([[r.pmid for r in e['references']]
                          for e in pp.graph.es]))
 
     if htp_threshold is not None:
@@ -217,8 +221,8 @@ def get_pubmed_data(
                     points.append((s, pm, int(pmdata[pm]['pubdate'][:4]),
                                    pmdata[pm]['source'], e.index))
 
-    points = common.uniqList(points)
-    earliest = common.uniqList(earliest)
+    points = common.uniq_list(points)
+    earliest = common.uniq_list(earliest)
 
     points = pd.DataFrame.from_records(points)
     earliest = pd.DataFrame.from_records(earliest)

@@ -6,7 +6,7 @@
 #  Enables ID translations and mapping
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -27,7 +27,7 @@ import copy
 import pypath.settings as settings
 
 __all__ = [
-    'FileMapping', 'PickleMapping', 'ReadSettings', 'ReadList',
+    'FileMapping', 'PickleMapping', 'NetworkInput', 'ReadList',
     'Reference', 'UniprotListMapping',
 ]
 
@@ -228,7 +228,7 @@ class PickleMapping(MappingInput):
         self.fname = fname
 
 
-class ReadSettings:
+class NetworkInput:
 
 
     def __init__(
@@ -252,7 +252,7 @@ class ReadSettings:
             taxon_a = 9606,
             taxon_b = 9606,
             ncbi_tax_id = 9606,
-            interaction_type = 'PPI',
+            interaction_type = 'post_translational',
             positive_filters = None,
             negative_filters = None,
             mark_source  =  None,
@@ -264,6 +264,7 @@ class ReadSettings:
             resource = None,
             unique_fields = None,
             expand_complexes = None,
+            data_model = None,
         ):
         """
         :param str mark_source:
@@ -305,6 +306,7 @@ class ReadSettings:
         self.mark_target = mark_target
         self.unique_fields = unique_fields or set()
         self.expand_complexes = expand_complexes
+        self.data_model = data_model
 
 
 class ReadList:
