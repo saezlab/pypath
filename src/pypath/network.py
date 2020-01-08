@@ -501,6 +501,7 @@ class Network(session_mod.Logger):
             keep_raw = False,
             top_call = True,
             cache_files = None,
+            only_directions = False,
         ):
         """
         Loads data from a network resource or a collection of resources.
@@ -527,6 +528,7 @@ class Network(session_mod.Logger):
             'redownload': redownload,
             'keep_raw': keep_raw,
             'top_call': False,
+            'only_directions': only_directions,
         }
         
         exclude = common.to_set(exclude)
@@ -1995,13 +1997,13 @@ class Network(session_mod.Logger):
             if only_directions:
                 
                 if (
-                    self.interaction[key].get_interaction_types() &
+                    self.interactions[key].get_interaction_types() &
                     interaction.get_interaction_types()
                 ):
                     
                     for itype_to_remove in (
                         interaction.get_interaction_types() -
-                        self.interaction[key].get_interaction_types()
+                        self.interactions[key].get_interaction_types()
                     ):
                         
                         interaction.unset_interaction_type(itype_to_remove)
@@ -2376,7 +2378,7 @@ class Network(session_mod.Logger):
             
             for res in resources:
                 
-                if res.resource.interaction_type == interaction_type:
+                if res.networkinput.interaction_type == interaction_type:
                     
                     res.networkinput.must_have_references = not release
         
@@ -2547,16 +2549,26 @@ class Network(session_mod.Logger):
     
     
     def numof_interactions_per_reference(self):
+        """
+        Counts the number of interactions for each literature reference.
+        Returns a ``collections.Counter`` object (similar to ``dict``).
+        """
         
         return collections.Counter(
             itertools.chain(
-                ia.get_references()
-                for ia in self.interactions
+                *(
+                    ia.get_references()
+                    for ia in self
+                )
             )
         )
     
     
     def interactions_by_reference(self):
+        """
+        Creates a ``dict`` with literature references as keys and interactions
+        described by each reference as values.
+        """
         
         interactions_by_reference = collections.defaultdict(set)
         
@@ -2566,7 +2578,7 @@ class Network(session_mod.Logger):
                 
                 interactions_by_reference[ref].add(i_key)
         
-        return interactions_by_reference
+        return dict(interactions_by_reference)
     
     #
     # Methods for loading specific datasets or initializing the object
@@ -3543,7 +3555,7 @@ def init_db(use_omnipath = False, **kwargs):
 
     n = Network()
     getattr(
-        pa,
+        n,
         'load_omnipath' if use_omnipath else 'init_network'
     )(**kwargs)
 
