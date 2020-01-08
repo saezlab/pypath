@@ -143,18 +143,8 @@
     </a>
 </h2>
 
-<a href="http://rdcu.be/m53B" target="_blank"
-    title="Access the paper via readcube">
-    <span class="paper-link">click here for the paper</span>
-    <p>
-        See our new paper (Dec 2019) about the Cytoscape app
-        <a href="https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btz968/5689817?guestAccessKey=c47f593a-0017-43c9-b980-962003c5c318" target="_blank">
-            here.
-        </a>
-    </p>
-</a>
-
-<p>D Turei, T Korcsmaros and J Saez-Rodriguez (2016) OmniPath: guidelines
+<p>
+    D Turei, T Korcsmaros and J Saez-Rodriguez (2016) OmniPath: guidelines
     and gateway for literature-curated signaling pathway resources.
     <em>Nature Methods</em> 13(12)
 </p>
@@ -164,6 +154,20 @@
         PMID: 27898060
     </a>
 </p>
+
+<a href="http://rdcu.be/m53B" target="_blank"
+    title="Access the paper via readcube">
+    <span class="paper-link">click here for the paper</span>
+</a>
+    <p>
+        See our new paper (Dec 2019) about the Cytoscape app
+        <a href="https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btz968/5689817?guestAccessKey=c47f593a-0017-43c9-b980-962003c5c318" target="_blank">
+            here.
+        </a>
+        (<a href="https://www.ncbi.nlm.nih.gov/pubmed/31886476"
+            target="_blank">PMID: 31886476</a>)
+    </p>
+</a>
 
 <h2 id="data"><a class="omnipath"
     href="https://github.com/saezlab/pypath/blob/master/webservice.rst" 
@@ -263,11 +267,9 @@
     a lot of flexibility. Just pop up a Python shell, and type:
 </p>
 <div class="codebox box">
-    from pypath import main<br>
+    from pypath import network<br>
     <br>
-    pa = main.PyPath()<br>
-    <br>
-    pa.load_omnipath()
+    op = network.Network.omnipath()<br>
 </div>
 
 <!--TUTORIALS-->

@@ -246,22 +246,22 @@ class NetworkEntityCollection(object):
                 )
             )
             
-            for _attr, prfx in zip(
-                (attr, n_attr, pct_attr),
-                ('', 'n_', 'pct_'),
-            ):
+            if summarize_groups:
                 
-                coll_attr = '%s_collection' % prfx
-                
-                for k, v in iteritems(getattr(self, _attr)):
+                for _attr, prfx in zip(
+                    (attr, n_attr, pct_attr),
+                    ('', 'n_', 'pct_'),
+                ):
                     
-                    if len(k) == 1:
+                    coll_attr = '%scollection' % prfx
+                    
+                    for k, v in iteritems(getattr(self, _attr)):
                         
-                        k += ('all',)
-                    
-                    k += ('Total',)
-                    
-                    getattr(self, coll_attr)[k] = v
+                        k = k if isinstance(k, tuple) else (k, 'all')
+                        
+                        k += ('Total',)
+                        
+                        getattr(self, coll_attr)[k] = v
     
     
     def _expand_keys(self, level):
