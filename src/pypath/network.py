@@ -3537,3 +3537,23 @@ Network._generate_get_methods()
 Network._generate_partners_methods()
 Network._generate_count_methods()
 Network._generate_collect_methods()
+
+
+def init_db(use_omnipath = False, **kwargs):
+
+    n = Network()
+    getattr(
+        pa,
+        'load_omnipath' if use_omnipath else 'init_network'
+    )(**kwargs)
+
+    globals()['db'] = n
+
+
+def get_db(**kwargs):
+
+    if 'db' not in globals():
+
+        init_db(**kwargs)
+
+    return globals()['db']
