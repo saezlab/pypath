@@ -800,7 +800,7 @@ interaction = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
     'alz': input_formats.NetworkInput(
-        name = '\t',
+        name = 'AlzPathway',
         separator = None,
         id_col_a = 0,
         id_col_b = 1,
