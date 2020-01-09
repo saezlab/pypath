@@ -22,9 +22,14 @@
 
 from future.utils import iteritems
 
+import copy
+
 import pypath.resource as resource
 import pypath.data_formats as data_formats
+import pypath.session_mod as session_mod
 
+_logger = session_mod.Logger(name = 'network_resources')
+_log = _logger._log
 
 _data_models = {
     'interaction': 'interaction',
@@ -89,6 +94,19 @@ for resource_set_label in dir(data_formats):
             )
         )
         
+        if (
+            data_model == 'unknown' and
+            resource_set_label not in {'omnipath', 'extra_directions'}
+        ):
+            
+            _log(
+                'Could not find data model for '
+                'resource `%s` in set `%s`.' % (
+                    input_def.name,
+                    resource_set_label,
+                )
+            )
+        
         new_resource_set[resource_label] = _networkinput_to_networkresource(
             networkinput = input_def,
             data_model = data_model,
@@ -97,3 +115,14 @@ for resource_set_label in dir(data_formats):
     if new_resource_set:
         
         globals()[resource_set_label] = new_resource_set
+
+
+# these we need to re-create to have the data models set correctly
+extra_directions = copy.deepcopy(ptm_misc)
+extra_directions.update(copy.deepcopy(pathway_noref))
+extra_directions['acsn'] = copy.deepcopy(reaction_pc['acsn'])
+extra_directions['acsn'].data_model = 'activity_flow'
+omnipath = {}
+omnipath.update(pathway)
+omnipath.update(ptm)
+omnipath.update(interaction)

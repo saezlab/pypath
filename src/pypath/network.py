@@ -2376,6 +2376,7 @@ class Network(session_mod.Logger):
             min_refs_undirected = 2,
             old_omnipath_resources = False,
             exclude = None,
+            pickle_file = None,
         ):
         
         
@@ -2395,6 +2396,11 @@ class Network(session_mod.Logger):
         
         
         self._log('Loading the `OmniPath` network.')
+        
+        if pickle_file:
+            
+            self.load(pickle_file = pickle_file)
+            return
         
         omnipath = omnipath or copy_mod.deepcopy(network_resources.omnipath)
         

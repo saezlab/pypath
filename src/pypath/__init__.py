@@ -55,7 +55,7 @@ class pypath(object):
         '\tresults. To find out more about data sources please\n'
         '\tlook at `pypath.descriptions` or\n'
         '\thttp://omnipathdb.org/info and \n'
-        '\t`pypath.data_formats.urls`.\n\n'
+        '\t`pypath.urls.urls`.\n\n'
     )
     
     def __init__(self):
