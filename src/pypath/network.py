@@ -1922,7 +1922,9 @@ class Network(session_mod.Logger):
         
         self._log(
             'Finished checking organisms. '
+            '%u nodes have been removed, '
             '%u nodes and %u interactions remained.' % (
+                len(to_remove),
                 self.vcount,
                 self.ecount,
             )
@@ -2214,6 +2216,42 @@ class Network(session_mod.Logger):
         ):
             
             self.remove_node(entity_b)
+    
+    
+    def remove_zero_degree(self):
+        """
+        Removes all nodes with no interaction.
+        """
+        
+        self._log(
+            'Removing zero degree nodes. '
+            '%u nodes and %u interactions before.' % (
+                self.vcount,
+                self.ecount,
+            )
+        )
+        
+        to_remove = set()
+        
+        for node, interactions in iteritems(self.interactions_by_nodes):
+            
+            if not interactions:
+                
+                to_remove.add(node)
+        
+        for node in to_remove:
+            
+            self.remove_node(node)
+        
+        self._log(
+            'Finished removing zero degree nodes. '
+            '%u nodes have been removed, '
+            '%u nodes and %u interactions remained.' % (
+                len(to_remove),
+                self.vcount,
+                self.ecount,
+            )
+        )
     
     
     @property
