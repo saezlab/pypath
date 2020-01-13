@@ -104,6 +104,7 @@ import pypath.mapping as mapping
 import pypath.descriptions as descriptions
 import pypath.dataio as dataio
 import pypath.network as network
+import pypath.homology as homology
 import pypath.uniprot_input as uniprot_input
 import pypath.curl as curl
 import pypath.intera as intera
@@ -15628,7 +15629,7 @@ class PyPath(session_mod.Logger):
             'from taxon `%u` to taxon `%u`.' % (source, target)
         )
 
-        name_old__name_new = dataio.homologene_uniprot_dict(
+        name_old__name_new = homology.homologene_uniprot_dict(
             source = source,
             target = target,
             only_swissprot = only_swissprot,

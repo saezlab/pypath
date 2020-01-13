@@ -29,7 +29,6 @@ import importlib as imp
 import re
 
 import pypath.mapping as mapping
-import pypath.dataio as dataio
 import pypath.common as common
 import pypath.intera as intera
 import pypath.urls as urls
@@ -38,6 +37,146 @@ import pypath.uniprot_input as uniprot_input
 import pypath.seq as _se
 import pypath.session_mod as session_mod
 import pypath.taxonomy as taxonomy
+
+_logger = session_mod.Logger(name = 'homology')
+_log = _logger._log
+
+
+def get_homologene():
+    """
+    Downloads the recent release of the NCBI HomoloGene database.
+    Returns file pointer.
+    """
+
+    url = urls.urls['homologene']['url']
+
+    c = curl.Curl(
+        url = url,
+        silent = False,
+        large = True,
+        timeout = 1800,
+        ignore_content_length = True,
+    )
+
+    return c.result
+
+
+def homologene_dict(source, target, id_type):
+    """
+    Returns orthology translation table as dict, obtained
+    from NCBI HomoloGene data.
+
+    :param int source: NCBI Taxonomy ID of the source species (keys).
+    :param int target: NCBI Taxonomy ID of the target species (values).
+    :param str id_type: ID type to be used in the dict. Possible values:
+        'RefSeq', 'Entrez', 'GI', 'GeneSymbol'.
+    """
+    ids = {
+        'refseq': 5,
+        'refseqp': 5,
+        'genesymbol': 3,
+        'gi': 4,
+        'entrez': 2
+    }
+
+    try:
+        id_col = ids[id_type.lower()]
+    except KeyError:
+        _log(
+            'Unknown ID type: `%s`. Please use RefSeq, '
+            'Entrez, GI or GeneSymbol.' % id_type
+        )
+        raise
+
+    hg = get_homologene()
+    hgroup = None
+    result = {}
+
+    for l in hg:
+
+        l = l.strip().split('\t')
+        this_hgroup = l[0].strip()
+
+        if this_hgroup != hgroup:
+            this_source = None
+            this_target = None
+            hgroup = this_hgroup
+
+        this_taxon = int(l[1].strip())
+        if this_taxon == source:
+            this_source = l[id_col]
+        elif this_taxon == target:
+            this_target = l[id_col]
+
+        if this_source is not None and this_target is not None \
+            and len(this_source) and len(this_target):
+            if this_source not in result:
+                result[this_source] = set([])
+            result[this_source].add(this_target)
+
+    return result
+
+
+def homologene_uniprot_dict(source, target, only_swissprot = True):
+    """
+    Returns orthology translation table as dict from UniProt to Uniprot,
+    obtained from NCBI HomoloGene data. Uses RefSeq and Entrez IDs for
+    translation.
+
+    :param int source: NCBI Taxonomy ID of the source species (keys).
+    :param int target: NCBI Taxonomy ID of the target species (values).
+    :param bool only_swissprot: Translate only SwissProt IDs.
+    """
+    result = {}
+
+    hge = homologene_dict(source, target, 'entrez')
+    hgr = homologene_dict(source, target, 'refseq')
+
+    all_source = set(all_uniprots(organism = source, swissprot = 'YES'))
+
+    if not only_swissprot:
+        all_source_trembl = all_uniprots(organism = source, swissprot = 'NO')
+        all_source.update(set(all_source_trembl))
+
+    for u in all_source:
+
+        source_e = mapping.map_name(u, 'uniprot', 'entrez', source)
+        source_r = mapping.map_name(u, 'uniprot', 'refseqp', source)
+        target_u = set([])
+        target_r = set([])
+        target_e = set([])
+
+        for e in source_e:
+            if e in hge:
+                target_e.update(hge[e])
+
+        for r in source_r:
+            if r in hgr:
+                target_r.update(hgr[r])
+
+        for e in target_e:
+            target_u.update(
+                mapping.map_name(e, 'entrez', 'uniprot', target)
+            )
+
+        for r in target_r:
+            target_u.update(
+                mapping.map_name(e, 'refseqp', 'uniprot', target)
+            )
+
+
+        target_u = \
+            itertools.chain(
+                *map(
+                    lambda tu:
+                        mapping.map_name(tu, 'uniprot', 'uniprot', target),
+                    target_u
+                )
+            )
+
+        result[u] = sorted(list(target_u))
+
+    return result
 
 
 class SequenceContainer(session_mod.Logger):
@@ -183,6 +322,7 @@ class ProteinHomology(Proteomes):
         
         self.source = source or self.source
     
+    
     def get_source(self, source = None):
         
         source = source or self.source
@@ -191,6 +331,7 @@ class ProteinHomology(Proteomes):
             raise ValueError('No source NCBI Taxonomy ID provided.')
         else:
             return source
+    
     
     def translate(self, protein, source = None):
         """
@@ -215,6 +356,7 @@ class ProteinHomology(Proteomes):
             
             return []
     
+    
     def homologene_uniprot_dict(self, source):
         """
         Builds orthology translation table as dict from UniProt to Uniprot,
@@ -226,8 +368,8 @@ class ProteinHomology(Proteomes):
         
         self.homo[source] = {}
         
-        hge = dataio.homologene_dict(source, self.target, 'entrez')
-        hgr = dataio.homologene_dict(source, self.target, 'refseq')
+        hge = homologene_dict(source, self.target, 'entrez')
+        hgr = homologene_dict(source, self.target, 'refseq')
         
         self.load_proteome(source, self.only_swissprot)
         

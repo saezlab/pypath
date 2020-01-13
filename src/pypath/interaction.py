@@ -1147,7 +1147,7 @@ class Interaction(object):
                     name = resource_name,
                     interaction_type = interaction_type,
                     data_model = data_model,
-                    **kwargs,
+                    **kwargs
                 )
             )
                 if resource_name is not None else

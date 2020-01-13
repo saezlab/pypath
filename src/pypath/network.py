@@ -2681,7 +2681,7 @@ class Network(session_mod.Logger):
             exclude = None,
             reread = False,
             redownload = False,
-            **kwargs,
+            **kwargs
         ):
         
         make_df = kwargs.pop('make_df', None)
@@ -2724,7 +2724,7 @@ class Network(session_mod.Logger):
             reread = False,
             redownload = False,
             make_df = False,
-            **kwargs,
+            **kwargs
         ):
         """
         Initializes a new ``Network`` object with loading a transcriptional
@@ -2761,7 +2761,7 @@ class Network(session_mod.Logger):
             reread = False,
             redownload = False,
             exclude = None,
-            **kwargs,
+            **kwargs
         ):
         """
         Initializes a new ``Network`` object with loading a miRNA-mRNA
