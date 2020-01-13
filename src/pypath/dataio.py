@@ -9552,18 +9552,24 @@ def get_graphviz_attrs():
     return graph_attrs, vertex_attrs, edge_attrs
 
 
-def get_phosphosite(cache = True):
+def get_phosphosite(cache = True, ncbi_tax_id = 9606):
     """
     Downloads curated and HTP data from Phosphosite,
     from preprocessed cache file if available.
     Processes BioPAX format.
     Returns list of interactions.
     """
+    
     curated_cache = urls.files['phosphosite']['curated']
     noref_cache = urls.files['phosphosite']['noref']
+    
     if cache and os.path.exists(curated_cache) and os.path.exists(noref_cache):
-        return (pickle.load(open(curated_cache, 'rb')),
-                pickle.load(open(noref_cache, 'rb')))
+        
+        return (
+            pickle.load(open(curated_cache, 'rb')),
+            pickle.load(open(noref_cache, 'rb')),
+        )
+    
     result_curated = []
     result_noref = []
     url = urls.urls['psite_bp']['url']
@@ -9678,15 +9684,35 @@ def get_phosphosite(cache = True):
                 norefs.append(c)
             if len(evs) == 0 and len(pmids) == 0:
                 noth.append(c)
+    
+    if ncbi_tax_id:
+        
+        all_uniprots = uniprot_input.all_uniprots(organism = ncbi_tax_id)
+    
     for e in edges:
+        
+        if (
+            ncbi_tax_id and (
+                e['src']['id'] not in all_uniprots or
+                e['tgt']['id'] not in all_uniprots
+            )
+        ):
+            
+            continue
+        
         this_iaction = [
             e['src']['id'], e['tgt']['id'], e['src']['species'],
             e['tgt']['species'], ';'.join(e['evs']), ';'.join(e['pmids'])
         ]
+        
         if len(this_iaction[-1]) > 0:
+            
             result_curated.append(this_iaction)
+            
         else:
+            
             result_noref.append(this_iaction)
+    
     pickle.dump(result_curated, open(curated_cache, 'wb'))
     pickle.dump(result_noref, open(noref_cache, 'wb'))
     return result_curated, result_noref
@@ -9808,9 +9834,6 @@ def get_phosphosite_new(cache = True):
         )
         
         return feature_id, (site, modification)
-    
-    
-    
     
     
     result_curated = []
@@ -9946,33 +9969,49 @@ def get_phosphosite_new(cache = True):
     return result_curated, result_noref
 
 
+def _phosphosite_filter_organism(psite_data, ncbi_tax_id = 9606):
+    
+    all_uniprots = uniprot_input.all_uniprots(organism = ncbi_tax_id)
+    
+    return [
+        rec
+        for rec in psite_data
+        if rec[0] in all_uniprots and rec[1] in all_uniprots
+    ]
 
-def get_phosphosite_curated():
+
+def get_phosphosite_curated(ncbi_tax_id = 9606):
     """
     Loads literature curated PhosphoSite data,
     from preprocessed cache file if available.
     Returns list of interactions.
     """
+    
     curated_cache = urls.files['phosphosite']['curated']
     if not os.path.exists(curated_cache):
-        curated, noref = get_phosphosite()
-        return curated
+        curated, noref = get_phosphosite(ncbi_tax_id = ncbi_tax_id)
+        result = curated
     else:
-        return pickle.load(open(curated_cache, 'rb'))
+        result = pickle.load(open(curated_cache, 'rb'))
+    
+    return _phosphosite_filter_organism(result, ncbi_tax_id)
 
 
-def get_phosphosite_noref():
+def get_phosphosite_noref(ncbi_tax_id = 9606):
     """
     Loads HTP PhosphoSite data,
     from preprocessed cache file if available.
     Returns list of interactions.
     """
+    
     noref_cache = urls.files['phosphosite']['noref']
     if not os.path.exists(noref_cache):
-        curated, noref = get_phosphosite()
-        return noref
+        curated, noref = get_phosphosite(ncbi_tax_id = ncbi_tax_id)
+        result = noref
     else:
-        return pickle.load(open(noref_cache, 'rb'))
+        result = pickle.load(open(noref_cache, 'rb'))
+    
+    return _phosphosite_filter_organism(result, ncbi_tax_id)
 
 
 def phosphosite_directions(organism = 'human'):
