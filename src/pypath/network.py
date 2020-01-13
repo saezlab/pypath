@@ -655,6 +655,7 @@ class Network(session_mod.Logger):
         self._add_edge_list(only_directions = only_directions)
         
         self.organisms_check()
+        self.remove_zero_degree()
         
         self._log(
             'Completed: loading network data from '
@@ -1903,6 +1904,7 @@ class Network(session_mod.Logger):
             if (
                 (
                     remove_mismatches and
+                    not node.entity_type == 'complex' and
                     not reflists.check(
                         name = node.identifier,
                         id_type = node.id_type,
