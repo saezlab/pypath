@@ -320,9 +320,9 @@ annotation_categories = [
     ('MatrixDB_Membrane',),
     ('Membranome', 'Plasma membrane', 'extracellular side'),
     ('CSPA',),
-    ('Locate', 'extracellular'),
-    ('Locate', 'extracellular region'),
-    ('Locate', 'plasma membrane'),
+    ('LOCATE', 'extracellular'),
+    ('LOCATE', 'extracellular region'),
+    ('LOCATE', 'plasma membrane'),
     ('Matrisome', 'Core matrisome'),
     ('Matrisome', 'Matrisome-associated'),
     ('Matrisome', 'Core matrisome', 'Collagens'),
@@ -909,7 +909,7 @@ annot_combined_classes = (
             annots = (
                 af.AnnotDef(
                     name = 'locate_intracellular',
-                    source = 'Locate',
+                    source = 'LOCATE',
                     args = {
                         'location': {
                             'centrosome',
@@ -954,7 +954,7 @@ annot_combined_classes = (
                 ),
                 af.AnnotDef(
                     name = 'locate_cytoplasmic',
-                    source = 'Locate',
+                    source = 'LOCATE',
                     args = {
                         'cls': 'cytoplasmic',
                     },
@@ -1005,7 +1005,7 @@ annot_combined_classes = (
             annots = (
                 af.AnnotDef(
                     name = 'locate_extracellular',
-                    source = 'Locate',
+                    source = 'LOCATE',
                     args = {
                         'location': {
                             'extracellular',
@@ -1181,7 +1181,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'transmembrane_locate',
-        source = 'Locate',
+        source = 'LOCATE',
         args = {
             'cls': {
                 'typeI',
@@ -1475,7 +1475,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'secreted_locate',
-        source = 'Locate',
+        source = 'LOCATE',
         args = {
             'cls': 'secretome',
         },

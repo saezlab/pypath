@@ -1905,6 +1905,7 @@ class Network(session_mod.Logger):
                 (
                     remove_mismatches and
                     not node.entity_type == 'complex' and
+                    not node.entity_type == 'lncrna' and
                     not reflists.check(
                         name = node.identifier,
                         id_type = node.id_type,

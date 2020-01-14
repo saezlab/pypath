@@ -115,7 +115,6 @@ import pypath.urls as urls
 import pypath.progress as progress
 import pypath.common as common
 import pypath.intera as intera
-# from pypath import reaction
 import pypath.residues as residues
 import pypath.settings as settings
 import pypath.taxonomy as taxonomy
