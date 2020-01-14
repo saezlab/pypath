@@ -43,16 +43,20 @@ if 'unicode' not in __builtins__:
     unicode = str
 
 descriptions = {
-    'Vidal HI-III': {
+    'HuRI': {
         'year': 2016,
         'releases': [2012, 2014, 2016],
         'recommend':
         'very large, quality controlled, unbiased yeast-2-hybrid screening',
-        'label': 'Vidal HI-III',
+        'label': 'HuRI HI-III',
+        'full_name': 'Human Reference Interactome',
         'urls': {
             'articles':
             ['http://www.cell.com/cell/abstract/S0092-8674(14)01422-6'],
-            'webpages': ['http://interactomedfci.harvard.edu/H_sapiens/']
+            'webpages': [
+                'http://interactome.dfci.harvard.edu/H_sapiens/',
+                'http://www.interactome-atlas.org/',
+            ],
         },
         'pubmeds': [25416956],
         'emails':
@@ -67,13 +71,18 @@ descriptions = {
             'commercial_use': False
         }
     },
-    'Lit13': {
-        'year': 2013,
-        'label': 'Lit-BM-13',
+    'HuRI Lit-BM': {
+        'year': 2017,
+        'releases': [2013, 2017],
+        'label': 'HuRI Lit-BM-17',
+        'full_name': 'Human Reference Interactome Literature Benchmark',
         'urls': {
             'articles':
             ['http://www.cell.com/cell/abstract/S0092-8674(14)01422-6'],
-            'webpages': ['http://interactome.dfci.harvard.edu/H_sapiens/']
+            'webpages': [
+                'http://interactome.dfci.harvard.edu/H_sapiens/',
+                'http://www.interactome-atlas.org/',
+            ],
         },
         'authors': ['CCSB'],
         'pubmeds': [25416956],
