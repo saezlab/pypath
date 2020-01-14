@@ -12258,8 +12258,8 @@ def topdb_annotations(ncbi_tax_id = 9606):
             organism = elem.find('Organism').text
 
             if (
-                organism not in common.latin_name_to_ncbi_tax_id or
-                common.latin_name_to_ncbi_tax_id[organism] != ncbi_tax_id
+                organism not in taxonomy.latin_name_to_ncbi_tax_id or
+                taxonomy.latin_name_to_ncbi_tax_id[organism] != ncbi_tax_id
             ):
 
                 continue
