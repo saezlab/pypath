@@ -47,7 +47,7 @@ import pypath.progress as progress
 import pypath.curl as curl
 import pypath.intera as intera
 import pypath.refs as refs
-import pypath.uniprot_input as uniprot_input
+import pypath.inputs.uniprot as uniprot_input
 import pypath.urls as urls
 import pypath.seq as seq
 import pypath.session_mod as session_mod

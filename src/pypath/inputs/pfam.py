@@ -26,7 +26,7 @@ from past.builtins import xrange, range
 import gzip
 import re
 
-import pypath.uniprot_input as uniprot_input
+import pypath.inputs.uniprot as uniprot_input
 import pypath.progress as progress
 import pypath.curl as curl
 import pypath.common as common

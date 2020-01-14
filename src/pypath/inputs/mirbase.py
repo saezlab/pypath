@@ -26,13 +26,14 @@ from future.utils import iteritems
 import re
 import collections
 
-import pypath.uniprot_input as uniprot_input
+import pypath.inputs.uniprot as uniprot_input
 import pypath.curl as curl
 import pypath.urls as urls
 import pypath.common as common
 import pypath.taxonomy as taxonomy
 
 
+# this function to be moved to pypath.inputs.uniprot
 def get_uniprot_sec(organism=9606):
     """
     Downloads and processes the mapping between secondary and

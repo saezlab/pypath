@@ -109,7 +109,7 @@ from xlrd.biffh import XLRDError
 
 import pypath.mapping as mapping
 import pypath.reflists as reflists
-import pypath.uniprot_input as uniprot_input
+import pypath.inputs.uniprot as uniprot_input
 import pypath.curl as curl
 import pypath.urls as urls
 import pypath.progress as progress

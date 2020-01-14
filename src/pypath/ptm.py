@@ -34,7 +34,7 @@ import pypath.dataio as dataio
 import pypath.common as common
 import pypath.mapping as mapping
 import pypath.homology as homology
-import pypath.uniprot_input as uniprot_input
+import pypath.inputs.uniprot as uniprot_input
 import pypath.intera as intera
 import pypath.progress as progress
 import pypath.session_mod as session_mod

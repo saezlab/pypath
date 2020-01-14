@@ -665,7 +665,7 @@ def get_db(**kwargs):
 def all_complexes():
     """
     Returns a set of all complexes in the database which serves as a
-    reference set for many methods, just like ``uniprot_input.all_uniprots``
+    reference set for many methods, just like ``inputs.uniprot.all_uniprots``
     represents the proteome.
     """
 

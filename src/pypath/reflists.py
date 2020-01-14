@@ -37,8 +37,8 @@ except ImportError:
 # and don't want engage another logger
 timeloop.app.logging.disable(level = 9999)
 
-import pypath.uniprot_input as uniprot_input
-import pypath.mapping_input as mapping_input
+import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.mirbase as mirbase_input
 import pypath.common as common
 import pypath.session_mod as session_mod
 import pypath.settings as settings
@@ -147,9 +147,9 @@ class ReferenceListManager(session_mod.Logger):
                 
                 input_func = getattr(uniprot_input, input_method)
                 
-            elif hasattr(mapping_input, input_method):
+            elif hasattr(mirbase_input, input_method):
                 
-                input_func = getattr(mapping_input, input_method)
+                input_func = getattr(mirbase_input, input_method)
             
             data = set(input_func())
             self._log(

@@ -59,8 +59,8 @@ import pypath.cache as cache_mod
 import pypath.maps as maps
 import pypath.urls as urls
 import pypath.curl as curl
-import pypath.mapping_input as mapping_input
-import pypath.uniprot_input as uniprot_input
+import pypath.inputs.mirbase as mirbase_input
+import pypath.inputs.uniprot as uniprot_input
 import pypath.input_formats as input_formats
 import pypath.settings as settings
 import pypath.session_mod as session_mod
@@ -430,14 +430,14 @@ class MapReader(session_mod.Logger):
 
         if (
             not os.path.exists(self.param.input) and
-            not hasattr(mapping_input, self.param.input)
+            not hasattr(mirbase_input, self.param.input)
         ):
 
             return {}
 
-        if hasattr(mapping_input, self.param.input):
+        if hasattr(mirbase_input, self.param.input):
 
-            to_call = getattr(mapping_input, self.param.input)
+            to_call = getattr(mirbase_input, self.param.input)
             input_args = (
                 self.param.input_args
                     if hasattr(self.param, 'input_args') else
@@ -1628,7 +1628,7 @@ class Mapper(session_mod.Logger):
             resource.type in {'file', 'pickle'} and
             not (
                 os.path.exists(resource.input) or
-                hasattr(mapping_input, resource.input)
+                hasattr(mirbase_input, resource.input)
             )
         ):
 

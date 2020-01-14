@@ -105,7 +105,7 @@ import pypath.descriptions as descriptions
 import pypath.dataio as dataio
 import pypath.network as network
 import pypath.homology as homology
-import pypath.uniprot_input as uniprot_input
+import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.pfam as pfam_input
 import pypath.curl as curl
 import pypath.intera as intera
