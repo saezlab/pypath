@@ -106,6 +106,7 @@ import pypath.dataio as dataio
 import pypath.network as network
 import pypath.homology as homology
 import pypath.uniprot_input as uniprot_input
+import pypath.inputs.pfam as pfam_input
 import pypath.curl as curl
 import pypath.intera as intera
 import pypath.seq as se
@@ -7873,7 +7874,7 @@ class PyPath(session_mod.Logger):
         """
 
         graph = graph if graph is not None else self.graph
-        u_pfam, pfam_u = dataio.get_pfam(graph.vs['name'])
+        u_pfam, pfam_u = pfam_input.get_pfam(graph.vs['name'])
 
         if u_pfam is None:
             self._log('Failed to download Pfam data from UniProt')
@@ -9321,8 +9322,12 @@ class PyPath(session_mod.Logger):
         """
 
         if self.u_pfam is None:
-            self.u_pfam = dataio.get_pfam_regions(
-                uniprots=self.graph.vs['name'], dicts='uniprot', keepfile=True)
+            
+            self.u_pfam = pfam_input.get_pfam_regions(
+                uniprots = self.graph.vs['name'],
+                dicts = 'uniprot',
+                keepfile = True,
+            )
 
     def complexes(self, methods=['3dcomplexes', 'havugimana', 'corum',
                                  'complexportal', 'compleat']):

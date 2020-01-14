@@ -120,6 +120,7 @@ import pypath.residues as residues
 import pypath.settings as settings
 import pypath.taxonomy as taxonomy
 import pypath.homology as homology_mod
+import pypath.inputs.pfam as pfam_input
 
 if 'long' not in __builtins__:
     long = int
@@ -302,193 +303,6 @@ def pdb_complexes(organism = None):
             complexes[cplex.__str__()] = cplex
 
     return complexes
-
-
-def get_pfam(uniprots = None, organism = 9606):
-
-    if uniprots is None:
-
-        uniprots = all_uniprots(organism = organism, swissprot = True)
-
-    u_pfam = {}
-    pfam_u = {}
-    if uniprots is not None:
-        prg = progress.Progress(
-            len(uniprots) / 30, 'Downloading data from UniProt', 1)
-        data_all = []
-        for i in xrange(0, len(uniprots), 30):
-            to = i + 30
-            thisPart = uniprots[i:to]
-            thisPart = ' OR '.join(['accession:%s' % u for u in thisPart])
-            get = {
-                'query': thisPart,
-                'format': 'tab',
-                'columns': 'id,database(Pfam)'
-            }
-            for j in xrange(3):
-                c = curl.Curl(urls.urls['uniprot_basic']['url'], get = get)
-                data = c.result
-                if data is not None:
-                    break
-            if data is None:
-                return None, None
-            data = data.split('\n')
-            del data[0]
-            del data[-1]
-            data_all += data
-            prg.step()
-        prg.terminate()
-    else:
-        if type(organism) is not int:
-            try:
-                organism = int(organism)
-            except:
-                return None, None
-        organismQuery = 'organism:%u AND reviewed:yes' % organism
-        get = {
-            'query': organismQuery,
-            'format': 'tab',
-            'columns': 'id,database(Pfam)'
-        }
-        for j in xrange(3):
-            c = curl.Curl(
-                urls.urls['uniprot_basic']['url'],
-                get = get,
-                silent = False,
-                outf = 'uniprot-pfam-%u.tab' % organism)
-            data_all = c.result
-            if data_all is not None:
-                break
-        if data_all is None:
-            return None
-        data_all = data_all.split('\n')
-        del data_all[0]
-    for l in data_all:
-        l = l.split('\t')
-        pfams = [] if len(l) < 2 else re.sub(';$', '', l[1]).split(';')
-        if l[0] not in u_pfam:
-            u_pfam[l[0]] = []
-        u_pfam[l[0]] += pfams
-        for pfam in pfams:
-            if pfam not in pfam_u:
-                pfam_u[pfam] = []
-            pfam_u[pfam].append(l[0])
-    return u_pfam, pfam_u
-
-
-def get_pfam_regions(uniprots = [], pfams = [], keepfile = False, dicts = 'both'):
-    url = urls.urls['pfam_up']['url']
-    outf = url.split('/')[-1]
-    urlmd5 = common.md5(url)
-    if not os.path.exists(settings.get('cachedir')):
-        os.makedirs(settings.get('cachedir'))
-    cachefile = os.path.join(settings.get('cachedir'), urlmd5 + '-' + outf)
-    u_pfam = {}
-    pfam_u = {}
-    uniprots = set(uniprots)
-    pfams = set(pfams)
-    if not os.path.exists(cachefile):
-        sys.stdout.write(
-            '\t:: Downloading data from %s' %
-            url.replace('http://', '').replace('ftp://', '').split('/')[0])
-        sys.stdout.flush()
-        if hasattr(urllib, 'urlretrieve'):
-            urllib.urlretrieve(url, cachefile)
-        else:
-            urllib.request.urlretrieve(url, cachefile)
-        sys.stdout.write('\n')
-    with open(cachefile, 'rb') as f:
-        f.seek(-4, 2)
-        gzsize = struct.unpack('<I', f.read())[0]
-        prg = progress.Progress(gzsize, 'Processing Pfam domains', 11)
-    with gzip.open(cachefile, 'r') as f: # FIXME: Something went wrong here
-        for l in f:
-            prg.step(len(l))
-            l = l.strip().split()
-            if l[0] in uniprots or l[4] in pfams:
-                if dicts in ['uniprot', 'both']:
-                    if l[0] not in u_pfam:
-                        u_pfam[l[0]] = {}
-                    if l[4] not in u_pfam[l[0]]:
-                        u_pfam[l[0]][l[4]] = []
-                    u_pfam[l[0]][l[4]].append({
-                        'isoform': int(l[1]),
-                        'start': int(l[5]),
-                        'end': int(l[6])
-                    })
-                if dicts in ['pfam', 'both']:
-                    if l[4] not in pfam_u:
-                        pfam_u[l[4]] = {}
-                    if l[0] not in pfam_u[l[4]]:
-                        pfam_u[l[4]][l[0]] = []
-                    pfam_u[l[4]][l[0]].append({
-                        'isoform': int(l[1]),
-                        'start': int(l[5]),
-                        'end': int(l[6])
-                    })
-    prg.terminate()
-    if not keepfile:
-        os.remove(cachefile)
-    if dicts == 'uniprot':
-        return u_pfam
-    elif dicts == 'pfam':
-        return pfam_u
-    else:
-        return u_pfam, pfam_u
-
-
-def get_pfam_names():
-    c = curl.Curl(urls.urls['pfam_pdb']['url'], silent = False)
-    data = c.result
-    if data is None:
-        return None, None
-    dname_pfam = {}
-    pfam_dname = {}
-    data = data.replace('\r', '').split('\n')
-    del data[0]
-    for l in data:
-        l = l.split('\t')
-        if len(l) > 5:
-            pfam = l[4].split('.')[0]
-            name = l[5]
-            if pfam not in pfam_dname:
-                pfam_dname[pfam] = []
-            if name not in dname_pfam:
-                dname_pfam[name] = []
-            pfam_dname[pfam].append(name)
-            dname_pfam[name].append(pfam)
-    for k, v in iteritems(pfam_dname):
-        pfam_dname[k] = list(set(v))
-    for k, v in iteritems(dname_pfam):
-        dname_pfam[k] = list(set(v))
-    return dname_pfam, pfam_dname
-
-
-def get_pfam_pdb():
-    non_digit = re.compile(r'[^\d.-]+')
-    c = curl.Curl(urls.urls['pfam_pdb']['url'], silent = False)
-    data = c.result
-    if data is None:
-        return None, None
-    pdb_pfam = {}
-    pfam_pdb = {}
-    data = data.replace('\r', '').split('\n')
-    del data[0]
-    for l in data:
-        l = l.split('\t')
-        if len(l) > 4:
-            pfam = l[4].split('.')[0]
-            pdb = l[0].lower()
-            chain = l[1]
-            start = int(non_digit.sub('', l[2]))
-            end = int(non_digit.sub('', l[3]))
-            if pdb not in pdb_pfam:
-                pdb_pfam[pdb] = {}
-            if pfam not in pfam_pdb:
-                pfam_pdb[pfam] = {}
-            pdb_pfam[pdb][pfam] = [chain, start, end]
-            pfam_pdb[pfam][pdb] = [chain, start, end]
-    return pdb_pfam, pfam_pdb
 
 
 def corum_complexes(organism = 9606):
@@ -1208,6 +1022,7 @@ def get_domino_ptms():
 
 
 def get_3dc_ddi():
+    
     c = curl.Curl(urls.urls['3dcomplexes_contact']['url'], silent = False)
     contact = c.result
     c = curl.Curl(urls.urls['3dcomplexes_correspondancy']['url'], silent = False)
@@ -1246,7 +1061,7 @@ def get_3dc_ddi():
                     uniprots += [up1, up2]
     prg.terminate()
     uniprots = list(set(uniprots))
-    u_pfam = get_pfam_regions(uniprots, dicts = 'uniprot')
+    u_pfam = pfam_input.get_pfam_regions(uniprots, dicts = 'uniprot')
     prg = progress.Progress(len(contact), 'Processing contact information', 9)
     for l in contact:
         prg.step()
@@ -1287,22 +1102,27 @@ def get_3dc_ddi():
                                                 start = pfam1_d['start'],
                                                 end = pfam1_d['end'],
                                                 isoform = pfam1_d['isoform'],
-                                                chains = {pdb: ch1})
+                                                chains = {pdb: ch1},
+                                            )
                                             dom2 = intera.Domain(
                                                 protein = up2,
                                                 domain = pfam2,
                                                 start = pfam2_d['start'],
                                                 end = pfam2_d['end'],
                                                 isoform = pfam2_d['isoform'],
-                                                chains = {pdb: ch2})
+                                                chains = {pdb: ch2},
+                                            )
                                             dd = intera.DomainDomain(
                                                 dom1,
                                                 dom2,
                                                 pdbs = pdb,
                                                 sources = '3DComplex',
-                                                contact_residues = float(l[3]))
+                                                contact_residues = float(l[3])
+                                            )
                                             ddi.append(dd)
+    
     prg.terminate()
+    
     return ddi
 
 
@@ -1335,7 +1155,7 @@ def pisa_bonds(lst, chains):
 
 
 def get_pisa(pdblist):
-    non_digit = re.compile(r'[^\d.-]+')
+    
     bond_types = {
         'hbonds': 'h-bonds',
         'sbridges': 'salt-bridges',
@@ -1345,85 +1165,141 @@ def get_pisa(pdblist):
     interfaces = {}
     cachefile = os.path.join(settings.get('cachedir'), 'pisa.pickle')
     u_pdb, pdb_u = get_pdb_chains()
+    
     if os.path.exists(cachefile):
         try:
             interfaces = pickle.load(open(cachefile, 'rb'))
         except:
             pass
+    
     errors = []
     p = 5
     pdblist = list(set(pdblist) - set(interfaces.keys()))
     prg = progress.Progress(
-        len(pdblist) / p, 'Downloading data from PDBe PISA', 1)
+        len(pdblist) / p,
+        'Downloading data from PDBe PISA',
+        1,
+    )
+    
     for i in xrange(0, len(pdblist), p):
+        
         to = i + p
         thisPart = pdblist[i:to]
         url = urls.urls['pisa_interfaces']['url'] + ','.join(thisPart)
         c = curl.Curl(url, cache = False)
         data = c.result
+        
         if data is None:
             msg = 'Could not download: \n\t\t%s' % url
             errors.append(msg)
             continue
+        
         soup = bs4.BeautifulSoup(data, 'html.parser')
         unmapped_residues = []
+        
         for pdb in soup.find_all('pdb_entry'):
+            
             pdb_id = pdb.find('pdb_code').text.lower()
             interfaces[pdb_id] = {}
             chains = {}
             resconv = ResidueMapper()
+            
             if pdb_id in pdb_u:
+                
                 for chain, chain_data in iteritems(pdb_u[pdb_id]):
+                    
                     chains[chain] = chain_data['uniprot']
+                
                 for interface in pdb.find_all('interface'):
+                    
                     for b, t in iteritems(bond_types):
+                        
                         lst = interface.find(t)
+                        
                         if lst is not None:
+                            
                             bonds = pisa_bonds(lst, chains)
+                            
                             for bond in bonds:
-                                uniprots = (bond['uniprot_1'],
-                                            bond['uniprot_2'])
+                                
+                                uniprots = (
+                                    bond['uniprot_1'],
+                                    bond['uniprot_2'],
+                                )
+                                
                                 if uniprots not in interfaces[pdb_id]:
-                                    css = non_digit.sub(
+                                    css = common.non_digit.sub(
                                         '', interface.find('css').text)
-                                    css = None if len(css) == 0 else float(css)
-                                    area = non_digit.sub(
+                                    css = (
+                                        None if len(css) == 0 else float(css)
+                                    )
+                                    area = common.non_digit.sub(
                                         '', interface.find('int_area').text)
                                     area = None if len(area) == 0 else float(
                                         area)
-                                    solv_en = non_digit.sub(
-                                        '', interface.find('int_solv_en').text)
-                                    solv_en = None if len(
-                                        solv_en) == 0 else float(solv_en)
-                                    stab_en = non_digit.sub(
-                                        '', interface.find('stab_en').text)
-                                    stab_en = None if len(
-                                        stab_en) == 0 else float(stab_en)
-                                    interfaces[pdb_id][uniprots] = \
-                                        intera.Interface(uniprots[0],
-                                                         uniprots[1], source = 'PISA', pdb = pdb_id,
-                                                         css = css,
-                                                         solv_en = solv_en,
-                                                         area = area,
-                                                         stab_en = stab_en)
-                                res1 = resconv.get_residue(pdb_id,
-                                                           bond['seqnum_1'])
-                                res2 = resconv.get_residue(pdb_id,
-                                                           bond['seqnum_2'])
-                                if res1 is not None and res2 is not None and \
-                                        res1['uniprot'] == uniprots[0] and \
-                                        res2['uniprot'] == uniprots[1]:
+                                    solv_en = common.non_digit.sub(
+                                        '',
+                                        interface.find('int_solv_en').text
+                                    )
+                                    solv_en = (
+                                        None
+                                            if len(solv_en) == 0 else
+                                        float(solv_en)
+                                    )
+                                    stab_en = common.non_digit.sub(
+                                        '',
+                                        interface.find('stab_en').text
+                                    )
+                                    stab_en = (
+                                        None
+                                            if len(stab_en) == 0 else
+                                        float(stab_en)
+                                    )
+                                    interfaces[pdb_id][uniprots] = (
+                                        intera.Interface(
+                                            uniprots[0],
+                                            uniprots[1],
+                                            source = 'PISA',
+                                            pdb = pdb_id,
+                                            css = css,
+                                            solv_en = solv_en,
+                                            area = area,
+                                            stab_en = stab_en,
+                                        )
+                                    )
+                                
+                                res1 = resconv.get_residue(
+                                    pdb_id,
+                                    bond['seqnum_1'],
+                                )
+                                res2 = resconv.get_residue(
+                                    pdb_id,
+                                    bond['seqnum_2'],
+                                )
+                                
+                                if (
+                                    res1 is not None and
+                                    res2 is not None and
+                                    res1['uniprot'] == uniprots[0] and
+                                    res2['uniprot'] == uniprots[1]
+                                ):
                                     interfaces[pdb_id][uniprots].add_residues(
                                         (res1['resnum'], bond['res_1'],
                                          uniprots[0]),
                                         (res2['resnum'], bond['res_2'],
                                          uniprots[1]),
-                                        typ = b)
+                                        typ = b,
+                                    )
                                 else:
                                     unmapped_residues.append(
-                                        (pdb_id, bond['seqnum_1'],
-                                         bond['seqnum_2'], uniprots[0],
-                                         uniprots[1]))
+                                        (
+                                            pdb_id,
+                                            bond['seqnum_1'],
+                                            bond['seqnum_2'],
+                                            uniprots[0],
+                                            uniprots[1],
+                                        )
+                                    )
         pickle.dump(interfaces, open(cachefile, 'wb'), 2)
         prg.step()
     prg.terminate()
@@ -1449,7 +1325,7 @@ def get_3did_ddi(residues = False, ddi_flat = None, organism = 9606):
         del data
     else:
         tmpfile = ddi_flat
-    u_pfam, pfam_u = get_pfam(organism = organism)
+    u_pfam, pfam_u = pfam_input.get_pfam(organism = organism)
     u_pdb, pdb_u = get_pdb_chains()
     if pfam_u is None or pdb_u is None:
         return None
@@ -1751,7 +1627,7 @@ def process_3did_dmi():
     dmi = get_3did_dmi()
     if dmi is None:
         return None
-    dname_pfam, pfam_dname = get_pfam_names()
+    dname_pfam, pfam_dname = pfam_input.get_pfam_names()
     dname_re = re.compile(r'(.*)(_[A-Z]{3}_)(.*)')
     dmi2 = {}
     prg = progress.Progress(len(dmi), 'Processing data', 11)
@@ -1877,7 +1753,7 @@ def get_i3d():
     numbers valid for UniProt sequences. Offsets can be obtained from
     Instruct, or from the Pfam PDB-chain-UniProt mapping table.
     """
-    dname_pfam, pfam_dname = get_pfam_names()
+    dname_pfam, pfam_dname = pfam_input.get_pfam_names()
     if dname_pfam is None:
         sys.stdout.write('\n\t:: Could not get Pfam domain names\n\n')
     non_digit = re.compile(r'[^\d.-]+')

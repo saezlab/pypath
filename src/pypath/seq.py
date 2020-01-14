@@ -27,14 +27,14 @@ import re
 import collections
 
 import pypath.common as common
-import pypath.dataio as dataio
+import pypath.inputs.pfam as pfam_input
 import pypath.uniprot_input as uniprot_input
 import pypath.urls as urls
 import pypath.curl as curl
 import pypath.taxonomy as taxonomy
 
 
-def swissprot_seq(organism=9606, isoforms=False):
+def swissprot_seq(organism = 9606, isoforms = False):
     """
     Loads all sequences for an organism, optionally
     for all isoforms, by default only first isoform.
@@ -74,7 +74,7 @@ def swissprot_seq(organism=9606, isoforms=False):
     return result
 
 
-def get_isoforms(organism=9606):
+def get_isoforms(organism = 9606):
     """
     Loads UniProt sequences for all isoforms.
     """
@@ -88,15 +88,22 @@ def get_isoforms(organism=9606):
     c = curl.Curl(url, silent=False)
     data = c.result
     data = read_fasta(data)
+    
     for header, seq in iteritems(data):
+        
         org = reorg.findall(header)
+        
         if len(org) > 0 and org[0] == organism:
+            
             prot = header.split('|')[1].split('-')
             unip = prot[0]
             isof = int(prot[1])
+            
             if unip not in result:
                 result[unip] = {}
+            
             result[unip][isof] = seq
+    
     return result
 
 
@@ -108,14 +115,19 @@ def read_fasta(fasta):
     
     result = {}
     fasta = re.split(r'\n>', fasta)
+    
     for section in fasta:
+        
         section = section.strip().split('\n')
         label = section.pop(0)
         seq = ''.join(section)
         result[label] = seq
+    
     return result
 
+
 class Resource(object):
+    
     
     def __init__(self, loader, name = None):
         """
@@ -128,6 +140,7 @@ class Resource(object):
         self.db = {}
         self.name = name
     
+    
     def load(self, ncbi_tax_id = 9606):
         """
         Loads the data from the resource for a given organism.
@@ -138,6 +151,7 @@ class Resource(object):
             self.db[ncbi_tax_id] = list(
                 self.processor(self.loader(ncbi_tax_id = ncbi_tax_id))
             )
+    
     
     def unload(self, ncbi_tax_id = None):
         """
@@ -187,6 +201,7 @@ class Resource(object):
                 
                 yield (uniprot, feature)
 
+
 class Pfam(Resource):
     
     def __init__(self):
@@ -201,14 +216,18 @@ class Pfam(Resource):
             all_up = uniprot_input.all_uniprots(organism = ncbi_tax_id)
             
             return (
-                dataio.get_pfam_regions(uniprots = all_up,
-                                        dicts = 'uniprot',
-                                        keepfile = True)
+                pfam_input.get_pfam_regions(
+                    uniprots = all_up,
+                    dicts = 'uniprot',
+                    keepfile = True,
+                )
             )
         
         self.loader = loader
 
+
 class Seq(object):
+    
     
     def __init__(self, protein, sequence, isoform=1):
         """
@@ -222,29 +241,35 @@ class Seq(object):
         self.protein = protein
         self.canonical = isoform
         self.add_seq(sequence, isoform)
-
+    
+    
     def add_seq(self, sequence, isoform):
         self.isof[isoform] = sequence
-
+    
+    
     def match(self, pattern, start, end=None, isoform=None):
         
         instance = self.get(start, end, isoform)
         pattern = pattern.upper()
         
         return instance == pattern
-
+    
+    
     def get(self, start, end=None, isoform=None):
         isoform = isoform if isoform is not None else self.canonical
         end = end if end is not None else start
         return None if len(self.isof[isoform]) < max(start, end) or min(start, end) < 1 \
             else self.isof[isoform][start - 1:end]
-
+    
+    
     def isoforms(self):
         return list(self.isof.keys())
-
+    
+    
     def has_isoform(self, isoform):
         return isoform in self.isof
-
+    
+    
     def get_region(self,
                    residue=None,
                    start=None,
@@ -261,6 +286,7 @@ class Seq(object):
         start = max(start, 1)
         end = min(end, len(self.isof[isoform]))
         return (start, end, self.isof[isoform][start - 1:end])
+    
     
     def findall(self, fragment):
         """
@@ -317,6 +343,7 @@ class Seq(object):
                 'could not be imported.\n')
             sys.stdout.flush()
     
+    
     def export_fasta(self, fname = None, sequences = None):
         
         sequences = sequences or [self]
@@ -332,6 +359,7 @@ class Seq(object):
             sys.stdout.write('\t:: Module `Bio` (biopython)'\
                 'could not be imported.\n')
             sys.stdout.flush()
+    
     
     def multiple_alignment(self, sequences, outfile = None,
                            method = 'ClustalW', param = {}):

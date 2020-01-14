@@ -55,7 +55,7 @@ __all__ = [
     'unique_list', 'basestring', 'amino_acids', 'aminoa_1_to_3_letter',
     'aminoa_3_to_1_letter', 'pmod_bel', 'pmod_other_to_bel',
     'pmod_bel_to_other', 'refloat', 'reint', 'is_float', 'is_int',
-    'float_or_nan',
+    'float_or_nan', 'non_digit',
 ]
 
 # get the location
@@ -67,6 +67,8 @@ try:
     basestring
 except NameError:
     basestring = str
+
+non_digit = re.compile(r'[^\d.-]+')
 
 
 default_name_type = {"protein": "uniprot",
