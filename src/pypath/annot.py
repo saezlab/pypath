@@ -3516,8 +3516,8 @@ class LigandReceptor(AnnotationBase):
             self.ligand_id_type if typ == 'ligand' else self.receptor_id_type
         )
         original_id = record[i_id]
-        uniprots = mapping.map_names(original_id, id_type, 'uniprot')
-
+        uniprots = mapping.map_name(original_id, id_type, 'uniprot')
+        
         for uniprot in uniprots:
 
             annot[uniprot].add(
