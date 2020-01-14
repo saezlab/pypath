@@ -12049,6 +12049,10 @@ def matrisome_annotations(organism = 9606):
         uniprots = set(r[7].split(':'))
         uniprots.discard('')
         
+        if not uniprots:
+            
+            continue
+        
         uniprots = mapping.map_names(uniprots, 'uniprot', 'uniprot')
         
         for uniprot in uniprots:
