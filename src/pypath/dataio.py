@@ -12362,6 +12362,11 @@ def hgnc_genegroups():
         rec = rec.split('\t')
         uniprots = {u.strip() for u in rec[2].split(',')}
         uniprots.discard('')
+        
+        if not uniprots:
+            
+            continue
+        
         uniprots = mapping.map_names(uniprots, 'uniprot', 'uniprot')
 
         if not uniprots:
@@ -13451,6 +13456,8 @@ def lrdb_annotations():
                         'T lymphocyte'
                             if cell_type == 'tymphocyte' else
                         cell_type.replace('cells', 'cell')
+                            if cell_type else
+                        None
                     )
                     
                     result[uniprot].add(
