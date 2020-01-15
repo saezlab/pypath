@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#  !!!THIS FILE IS NOW OBSOLETE AND WILL BE REMOVED FROM THE NEXT RELEASE!!!
 #
 #  This file is part of the `pypath` python module.
 #  Contains descriptions for all resources: e.g. their URLs

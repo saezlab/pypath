@@ -46,7 +46,8 @@ import json
 import pandas as pd
 import numpy as np
 
-import pypath.descriptions as descriptions
+import pypath.resource_controller as resource_controller
+from pypath.webservice_related import generate_about_page
 import pypath._html as _html
 import pypath.urls as urls
 import pypath.common as common
@@ -83,7 +84,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         ) % __version__
         
         self.isLeaf = True
-        
+
         twisted.web.resource.Resource.__init__(self)
         self._log('Twisted resource initialized.')
     
@@ -268,8 +269,11 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         ):
             
             return self.resources(req)
-        
-        return descriptions.gen_html()
+
+        rc = resource_controller.ResourcesController(use_package_path=True)
+        resources_info = rc.get_info_all_resources()
+
+        return generate_about_page.generate_about_html(resources_info)
     
     
     def _root(self, req):

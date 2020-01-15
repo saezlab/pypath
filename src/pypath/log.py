@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 #
 #  This file is part of the `pypath` python module
@@ -28,7 +28,7 @@ import datetime
 import timeloop
 # we use this for simple little tasks only
 # and don't want engage another logger
-timeloop.app.logging.disable(level = 9999)
+timeloop.app.logging.disable(level=9999)
 
 import pypath.settings as settings
 
@@ -73,7 +73,6 @@ def new_logger(name = None, logdir = None, verbosity = None, **kwargs):
 
 
 class Logger(object):
-
 
     strftime = time.strftime
 
@@ -132,8 +131,7 @@ class Logger(object):
         self.msg('Welcome!')
         self.msg('Logger started, logging into `%s`.' % self.fname)
 
-
-    def msg(self, msg = '', label = None, level = 0, wrap = True):
+    def msg(self, msg='', label=None, level=0, wrap=True):
         """
         Writes a message into the log file.
 
@@ -146,16 +144,13 @@ class Logger(object):
         """
 
         if level <= self.verbosity:
-
-            msg = self.label_message(msg, label = label)
+            msg = self.label_message(msg, label=label)
             msg = self.wrapper.fill(msg) if wrap else msg
             msg = self.timestamp_message(msg)
             self.fp.write(msg.encode('utf8', errors='replace'))
 
         if level <= self.console_level:
-
             self._console(msg)
-
 
     def label_message(self, msg, label = None):
         """
