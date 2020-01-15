@@ -6388,6 +6388,10 @@ def _cellphonedb_annotations(url, name_method):
         
         for name in names:
             
+            if name == 'O00182':
+                
+                print(rec)
+            
             annot[name] = record(
                 receptor = get_bool(rec, 'receptor'),
                 receptor_class = (
@@ -6415,6 +6419,11 @@ def cellphonedb_protein_annotations():
         uniprot = _cellphonedb_hla(uniprot)
         uniprot = mapping.map_names(uniprot, 'uniprot', 'uniprot')
         
+        if rec['uniprot'] == 'O00182':
+            
+            print('182')
+            print(uniprot)
+        
         return uniprot
     
     
@@ -6425,15 +6434,20 @@ def cellphonedb_protein_annotations():
 
 
 def _cellphonedb_hla(uniprot):
+    """
+    Returns *set*.
+    """
     
     uniprots = None
     
+    # for HLA genes in the uniprot column we have "HLA..." gene symbols
+    # but not always in the standard format (with dash)
     if uniprot.startswith('HLA') and '-' not in uniprot:
         
         genesymbol = 'HLA-%s' % uniprot[3:]
         uniprots = mapping.map_name(genesymbol, 'genesymbol', 'uniprot')
     
-    return uniprots or uniprot
+    return uniprots or {uniprot}
 
 
 def cellphonedb_complex_annotations():
