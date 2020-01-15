@@ -2,6 +2,7 @@ include HISTORY.rst
 include pyproject.toml
 include requirements.txt
 recursive-include src/pypath *.py
+recursive-include src/pypath *.json
 recursive-include src/pypath/data *
 recursive-include src/pypath/mysql_config *
 include src/log

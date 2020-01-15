@@ -2033,7 +2033,8 @@ def default_template(content,
                      page_title,
                      title='',
                      logos_bottom=False,
-                     above_title=''):
+                     above_title='',
+                     format='b'):
 
     logos = u'\t<div id="logos">\n\t\t'\
             '<img class="align-middle logo" src="%s" alt="EMBL-EBI, Hinxton"/>\n\t\t'\
@@ -2060,8 +2061,17 @@ def default_template(content,
             _footer
         )
 
-    return bs4.BeautifulSoup(page, 'lxml', from_encoding='utf-8')\
-        .prettify().encode('utf-8')
+    ready_page = bs4.BeautifulSoup(page, 'lxml', from_encoding='utf-8') \
+        .prettify()
+
+    if format == 'b':
+        ready_page = ready_page.encode('utf-8')
+
+    return ready_page
+
+    ##TODO @denes to check, the generating of html didn't work with encode function.
+    #return bs4.BeautifulSoup(page, 'lxml', from_encoding='utf-8')\
+     #   .prettify().encode('utf-8')
 
 
 def main_page():

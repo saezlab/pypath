@@ -20,7 +20,6 @@
 #
 
 import random
-import os
 import sys
 
 import pypath.log as log
@@ -28,8 +27,7 @@ import pypath.log as log
 
 class Session(object):
     
-    
-    def __init__(self, label = None, log_verbosity = 0):
+    def __init__(self, label=None, log_verbosity=0):
         
         self.label = label or self.gen_session_id()
         self.log_verbosity = log_verbosity
@@ -38,14 +36,13 @@ class Session(object):
     
     
     @staticmethod
-    def gen_session_id(length = 5):
+    def gen_session_id(length=5):
         """
         Returns a 5 alphanumeric characters random identifier.
         """
-        
+
         abc = '0123456789abcdefghijklmnopqrstuvwxyz'
         return ''.join(random.choice(abc) for i in range(length))
-    
     
     def start_logger(self):
         """
@@ -54,37 +51,36 @@ class Session(object):
         """
         
         self.logfile = 'pypath-%s.log' % self.label
-        self.log = log.Logger(self.logfile, verbosity = self.log_verbosity)
-    
-    
+        self.log = log.Logger(self.logfile, verbosity=self.log_verbosity)
+
+    def finish_logger(self):
+        self.log.close_logfile()
+        self.log.msg('Session `%s` finished.' % self.label)
+
     def __del__(self):
-        
         self.log.msg('Session `%s` finished.' % self.label)
 
 
 class Logger(object):
-    
-    
-    def __init__(self, name = None):
+
+    def __init__(self, name=None):
         
         self._log_name = name or self.__class__.__name__
         self._logger = get_log()
     
-    
-    def _log(self, msg = '', level = 0):
+    def _log(self, msg='', level=0):
         """
         Writes a message into the logfile.
         """
         
-        self._logger.msg(msg = msg, label = self._log_name, level = level)
+        self._logger.msg(msg=msg, label=self._log_name, level=level)
     
-    
-    def _console(self, msg = ''):
+    def _console(self, msg=''):
         """
         Writes a message to the console and also to the logfile.
         """
         
-        self._logger.console(msg = msg, label = self._log_name)
+        self._logger.console(msg=msg, label=self._log_name)
 
 
 def get_session():
