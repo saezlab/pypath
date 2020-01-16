@@ -6388,10 +6388,6 @@ def _cellphonedb_annotations(url, name_method):
         
         for name in names:
             
-            if name == 'O00182':
-                
-                print(rec)
-            
             annot[name] = record(
                 receptor = get_bool(rec, 'receptor'),
                 receptor_class = (
@@ -6418,11 +6414,6 @@ def cellphonedb_protein_annotations():
         uniprot = rec['uniprot']
         uniprot = _cellphonedb_hla(uniprot)
         uniprot = mapping.map_names(uniprot, 'uniprot', 'uniprot')
-        
-        if rec['uniprot'] == 'O00182':
-            
-            print('182')
-            print(uniprot)
         
         return uniprot
     

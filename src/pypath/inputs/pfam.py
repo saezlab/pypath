@@ -31,6 +31,7 @@ import pypath.progress as progress
 import pypath.curl as curl
 import pypath.common as common
 import pypath.urls as urls
+import pypath.taxonomy as taxonomy
 
 
 def get_pfam(uniprots = None, organism = 9606):
@@ -81,11 +82,11 @@ def get_pfam(uniprots = None, organism = 9606):
         
     else:
         
-        if type(organism) is not int:
-            try:
-                organism = int(organism)
-            except:
-                return None, None
+        organism = taxonomy.ensure_ncbi_tax_id(organism)
+        
+        if not organism:
+            
+            return None, None
         
         organismQuery = 'organism:%u AND reviewed:yes' % organism
         get = {
