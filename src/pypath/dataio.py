@@ -6407,7 +6407,11 @@ def _cellphonedb_annotations(url, name_method):
     return annot
 
 
-def cellphonedb_protein_annotations():
+def cellphonedb_protein_annotations(add_complex_annotations = True):
+    """
+    :arg bool add_complex_annotations:
+        Copy the annotations of complexes to each of their member proteins.
+    """
     
     def name_method(rec):
         
@@ -6418,10 +6422,37 @@ def cellphonedb_protein_annotations():
         return uniprot
     
     
-    return _cellphonedb_annotations(
+    protein_annotations = _cellphonedb_annotations(
         url = urls.urls['cellphonedb_git']['proteins'],
         name_method = name_method,
     )
+    
+    if add_complex_annotations:
+        
+        complex_annotations = cellphonedb_complex_annotations()
+        
+        for cplex, a_cplex in iteritems(complex_annotations):
+            
+            for uniprot in cplex.components.keys():
+                
+                if uniprot in protein_annotations:
+                    
+                    protein_annotations[uniprot] = CellPhoneDBAnnotation(
+                        *(
+                            p or c if isinstance(p, bool) else p
+                            for p, c in
+                            zip(
+                                protein_annotations[uniprot],
+                                a_cplex
+                            )
+                        )
+                    )
+                    
+                else:
+                    
+                    protein_annotations[uniprot].add(a_cplex)
+    
+    return protein_annotations
 
 
 def _cellphonedb_hla(uniprot):
