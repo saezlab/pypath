@@ -1569,6 +1569,7 @@ resource_labels = {
     'cspa': 'CSPA',
     'comppi': 'ComPPI',
     'ramilowski': 'Ramilowski 2015',
+    'baccin': 'Baccin 2019',
     'guide2pharma': 'Guide to Pharm',
     'dgidb': 'DGIdb',
     'hpa': 'HPA',
