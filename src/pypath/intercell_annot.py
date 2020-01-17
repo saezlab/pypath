@@ -1387,6 +1387,10 @@ annot_combined_classes = (
     # extracellular enzyme
     af.AnnotDef(
         name = 'extracellular_enzyme',
+        source = 'extracellular_enzyme_go',
+    ),
+    af.AnnotDef(
+        name = 'extracellular_enzyme_go',
         source = af.AnnotOp(
             annots = (
                 af.AnnotOp(
