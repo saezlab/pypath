@@ -2307,6 +2307,8 @@ class AnnotationBase(resource.AbstractResource):
                 self.numof_protein_records() / self.numof_proteins()
                     if self.numof_proteins() else
                 self.numof_records() / self.numof_entities()
+                    if self.numof_entities() else
+                0
             ),
             'complex_annotations_inferred': bool(self.numof_proteins()),
             'fields': ', '.join(self.get_names()),
