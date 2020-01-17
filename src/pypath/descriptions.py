@@ -34,6 +34,7 @@ import textwrap
 import pypath._html as _html
 import pypath.data_formats as data_formats
 import pypath.urls as urls
+import pypath.session_mod as session_mod
 
 __all__ = ['descriptions', 'gen_html', 'write_html']
 
@@ -42,6 +43,11 @@ if 'long' not in __builtins__:
 
 if 'unicode' not in __builtins__:
     unicode = str
+
+
+_logger = session_mod.Logger(name = 'descriptions')
+_log = _logger._log
+
 
 descriptions = {
     'HuRI': {
@@ -3138,8 +3144,7 @@ def gen_html():
                     'url' in v['license'] else '', v['license']['name'], '</a>'
                     if 'url' in v['license'] else '')
             except KeyError:
-                sys.stdout.write('Wrong license format for %s\n' % k)
-                sys.stdout.flush()
+                _log('Wrong license format for `%s`.' % k)
         if 'urls' in v:
             for uk, uv in iteritems(v['urls']):
                 if len(uv) > 0 and uk != 'omictools':
