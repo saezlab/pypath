@@ -32,7 +32,7 @@ import pandas as pd
 
 import pypath.dataio as dataio
 import pypath.common as common
-import pypath.mapping as mapping
+import pypath.utils.mapping as mapping
 import pypath.homology as homology
 import pypath.inputs.uniprot as uniprot_input
 import pypath.intera as intera

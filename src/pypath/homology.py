@@ -28,7 +28,7 @@ import itertools
 import importlib as imp
 import re
 
-import pypath.mapping as mapping
+import pypath.utils.mapping as mapping
 import pypath.common as common
 import pypath.intera as intera
 import pypath.urls as urls

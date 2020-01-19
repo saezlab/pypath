@@ -39,7 +39,7 @@ import pypath.entity as entity_mod
 import pypath.common as common
 import pypath.settings as settings
 import pypath.cache as cache_mod
-import pypath.mapping as mapping
+import pypath.utils.mapping as mapping
 import pypath.dataio as dataio
 import pypath.curl as curl
 import pypath.refs as refs_mod

@@ -107,7 +107,7 @@ from xlrd.biffh import XLRDError
 
 # from this module
 
-import pypath.mapping as mapping
+import pypath.utils.mapping as mapping
 import pypath.reflists as reflists
 import pypath.inputs.uniprot as uniprot_input
 import pypath.curl as curl

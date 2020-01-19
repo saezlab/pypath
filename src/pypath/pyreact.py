@@ -40,7 +40,7 @@ try:
 except:
     import pickle
 
-import pypath.mapping as mapping
+import pypath.utils.mapping as mapping
 import pypath.reflists as reflists
 import pypath.common as common
 import pypath.progress as progress

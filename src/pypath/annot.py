@@ -41,7 +41,7 @@ import pandas as pd
 
 import pypath.dataio as dataio
 import pypath.common as common
-import pypath.mapping as mapping
+import pypath.utils.mapping as mapping
 import pypath.reflists as reflists
 import pypath.resource as resource
 import pypath.utils.go as go

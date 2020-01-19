@@ -38,7 +38,7 @@ from collections import OrderedDict
 # from this module:
 import pypath.dataio as dataio
 import pypath.data_formats as data_formats
-import pypath.mapping as mapping
+import pypath.utils.mapping as mapping
 import pypath.progress as progress
 import pypath.common as common
 

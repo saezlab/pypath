@@ -28,7 +28,7 @@ import copy
 
 import pandas as pd
 
-import pypath.mapping as mapping
+import pypath.utils.mapping as mapping
 import pypath.session_mod as session_mod
 import pypath.main as main_mod
 import pypath.network as network_mod

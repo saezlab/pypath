@@ -31,7 +31,7 @@ import collections
 import pypath.common as common
 import pypath.intera as intera
 import pypath.session_mod as session_mod
-import pypath.mapping as mapping
+import pypath.utils.mapping as mapping
 
 
 EntityKey = collections.namedtuple(

@@ -100,7 +100,7 @@ except ImportError: # XXX: Catching any exception like this is bad practice
 import pypath
 import pypath.cache as cache_mod
 import pypath.data_formats as data_formats
-import pypath.mapping as mapping
+import pypath.utils.mapping as mapping
 import pypath.descriptions as descriptions
 import pypath.dataio as dataio
 import pypath.network as network

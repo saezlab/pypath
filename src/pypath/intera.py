@@ -39,7 +39,7 @@ from collections import Counter
 
 # from pypath:
 import pypath.common as common
-import pypath.mapping as mapping
+import pypath.utils.mapping as mapping
 
 __all__ = [
     'Residue', 'Ptm', 'Motif', 'Domain', 'DomainDomain', 'DomainMotif',

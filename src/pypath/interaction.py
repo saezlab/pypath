@@ -39,7 +39,7 @@ import pypath.evidence as pypath_evidence
 import pypath.resource as pypath_resource
 import pypath.session_mod as session_mod
 import pypath.common as common
-import pypath.mapping as mapping
+import pypath.utils.mapping as mapping
 import pypath.entity as entity
 
 _logger = session_mod.Logger(name = 'interaction')
