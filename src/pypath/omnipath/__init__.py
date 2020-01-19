@@ -24,26 +24,19 @@
 import os
 import copy
 
+from pypath import session_mod as _session_mod
 from pypath import settings as _settings_mod
-from pypath.omnipath import database as _database_mod
+from pypath.omnipath import app as _app_mod
 
 
-_logger = session_mod.Logger(name = 'omnipath.init')
+_logger = _session_mod.Logger(name = 'omnipath.init')
 _log = _logger._log
 
 
-_log('Welcome to the OmniPath analysis and figures suite.')
+_log('Welcome to the OmniPath database manager app.')
 
 
-def setup(environment):
-    """
-    environment: either nico or denes
-    """
-
-    _settings_mod.setup(**getattr(_settings_mod, environment))
-
-
-def init(environment = None, **kwargs):
+def init(**kwargs):
 
     param = (
         copy.deepcopy(globals()['OP_DB_ARGS'])
@@ -60,11 +53,7 @@ def init(environment = None, **kwargs):
 
     param.update(kwargs)
 
-    environment = environment or os.path.split(os.path.expanduser('~'))[-1]
-
-    setup(environment)
-
-    globals()['data'] = _database_mod.Database(**param)
+    globals()['data'] = _app_mod.Database(**param)
 
 
 init()
