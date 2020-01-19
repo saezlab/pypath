@@ -42,7 +42,7 @@ import pandas as pd
 import pypath.dataio as dataio
 import pypath.common as common
 import pypath.utils.mapping as mapping
-import pypath.reflists as reflists
+import pypath.utils.reflists as reflists
 import pypath.resource as resource
 import pypath.utils.go as go
 import pypath.intercell_annot as intercell_annot

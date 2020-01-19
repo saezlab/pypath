@@ -31,7 +31,7 @@ import pypath.inputs.pfam as pfam_input
 import pypath.inputs.uniprot as uniprot_input
 import pypath.urls as urls
 import pypath.curl as curl
-import pypath.taxonomy as taxonomy
+import pypath.utils.taxonomy as taxonomy
 
 
 def swissprot_seq(organism = 9606, isoforms = False):

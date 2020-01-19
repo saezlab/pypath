@@ -41,7 +41,7 @@ except:
     import pickle
 
 import pypath.utils.mapping as mapping
-import pypath.reflists as reflists
+import pypath.utils.reflists as reflists
 import pypath.common as common
 import pypath.progress as progress
 import pypath.curl as curl
@@ -49,7 +49,7 @@ import pypath.intera as intera
 import pypath.refs as refs
 import pypath.inputs.uniprot as uniprot_input
 import pypath.urls as urls
-import pypath.seq as seq
+import pypath.utils.seq as seq
 import pypath.session_mod as session_mod
 import pypath.cache as cache
 

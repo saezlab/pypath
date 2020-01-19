@@ -34,9 +34,9 @@ import pypath.intera as intera
 import pypath.urls as urls
 import pypath.curl as curl
 import pypath.inputs.uniprot as uniprot_input
-import pypath.seq as _se
+import pypath.utils.seq as _se
 import pypath.session_mod as session_mod
-import pypath.taxonomy as taxonomy
+import pypath.utils.taxonomy as taxonomy
 
 _logger = session_mod.Logger(name = 'homology')
 _log = _logger._log

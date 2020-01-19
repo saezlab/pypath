@@ -32,7 +32,7 @@ import copy
 import pypath.input_formats as input_formats
 import pypath.urls as urls
 import pypath.common as common
-import pypath.taxonomy as taxonomy
+import pypath.utils.taxonomy as taxonomy
 
 
 __all__ = [

@@ -108,7 +108,7 @@ from xlrd.biffh import XLRDError
 # from this module
 
 import pypath.utils.mapping as mapping
-import pypath.reflists as reflists
+import pypath.utils.reflists as reflists
 import pypath.inputs.uniprot as uniprot_input
 import pypath.curl as curl
 import pypath.urls as urls
@@ -117,8 +117,8 @@ import pypath.common as common
 import pypath.intera as intera
 import pypath.residues as residues
 import pypath.settings as settings
-import pypath.taxonomy as taxonomy
-import pypath.homology as homology_mod
+import pypath.utils.taxonomy as taxonomy
+import pypath.utils.homology as homology_mod
 import pypath.inputs.pfam as pfam_input
 
 if 'long' not in __builtins__:
@@ -11140,7 +11140,7 @@ def get_reactions(types = None, sources = None):
     if os.path.exists(cachefile):
         interactions = pickle.load(open(cachefile, 'rb'))
     else:
-        import pypath.pyreact as pyreact
+        import pypath.utils.pyreact as pyreact
         rea = pyreact.PyReact()
         rea.load_all()
         rea.expand_by_source()

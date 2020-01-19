@@ -33,12 +33,12 @@ import pandas as pd
 import pypath.dataio as dataio
 import pypath.common as common
 import pypath.utils.mapping as mapping
-import pypath.homology as homology
+import pypath.utils.homology as homology
 import pypath.inputs.uniprot as uniprot_input
 import pypath.intera as intera
 import pypath.progress as progress
 import pypath.session_mod as session_mod
-import pypath.taxonomy as taxonomy
+import pypath.utils.taxonomy as taxonomy
 
 
 builtin_inputs = [

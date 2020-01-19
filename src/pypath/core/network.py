@@ -43,7 +43,7 @@ import pypath.utils.mapping as mapping
 import pypath.dataio as dataio
 import pypath.curl as curl
 import pypath.refs as refs_mod
-import pypath.reflists as reflists
+import pypath.utils.reflists as reflists
 import pypath.resources.network as network_resources
 
 
