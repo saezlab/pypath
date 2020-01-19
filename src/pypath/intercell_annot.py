@@ -22,7 +22,7 @@
 
 import importlib as imp
 
-import pypath.go as go
+import pypath.utils.go as go
 import pypath.dataio as dataio
 import pypath.annot_formats as af
 

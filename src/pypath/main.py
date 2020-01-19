@@ -110,7 +110,7 @@ import pypath.inputs.pfam as pfam_input
 import pypath.curl as curl
 import pypath.intera as intera
 import pypath.seq as se
-import pypath.go as go
+import pypath.utils.go as go
 import pypath.drawing as bdrawing
 import pypath.proteomicsdb as proteomicsdb
 import pypath.reflists as reflists

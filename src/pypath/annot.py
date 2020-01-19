@@ -44,7 +44,7 @@ import pypath.common as common
 import pypath.mapping as mapping
 import pypath.reflists as reflists
 import pypath.resource as resource
-import pypath.go as go
+import pypath.utils.go as go
 import pypath.intercell_annot as intercell_annot
 import pypath.session_mod as session_mod
 import pypath.annot_formats as annot_formats
