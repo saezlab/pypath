@@ -20,3 +20,523 @@
 #
 #  Website: http://pypath.omnipathdb.org/
 
+
+import os
+import sys
+import importlib as imp
+import time
+import pprint
+import copy
+import collections
+import itertools
+
+import pypath.resources.network as netres
+from pypath import annot
+from pypath import intercell
+from pypath import complex
+from pypath import ptm
+from pypath import session_mod
+from pypath import network
+
+import pypath.settings as settings
+
+
+class Database(session_mod.Logger):
+    """
+    Builds and serves the databases in OmniPath such as various networks,
+    enzyme-substrate interactions, protein complexes, annotations and
+    inter-cellular communication roles. Saves the databases to and loads
+    them from pickle dumps on demand.
+    """
+
+
+    def __init__(self, rebuild = False, **kwargs):
+
+        session_mod.Logger.__init__(self, name = 'omnipath.database')
+
+        self.timestamp = time.strftime(settings.get('timestamp_format'))
+        self.param = kwargs
+        self.rebuild = rebuild
+        self.datasets = self.get_param('datasets')
+        self.ensure_dirs()
+        self.network_dfs = {}
+
+        self._log('The OmniPath database builder has been initialized.')
+
+
+    def reload(self):
+        """
+        Reloads the object from the module level.
+        """
+
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+        self.foreach_dataset(method = self.reload_module)
+
+
+    def build(self):
+        """
+        Builds all built-in datasets.
+        """
+
+        self._log(
+            'Building databases. Rebuild forced: %s.' % str(self.rebuild)
+        )
+
+        self.foreach_dataset(method = self.ensure_dataset)
+
+
+    def ensure_dataset(
+            self,
+            dataset,
+            force_reload = False,
+            force_rebuild = False,
+        ):
+        """
+        Makes sure a dataset is loaded. It loads only if it's not loaded
+        yet or :py:arg:`force_reload` is ``True``. It only builds if it's
+        not availabe as a pickle dump or :py:arg:`force_rebuild` is ``True``.
+        
+        :arg str dataset:
+            The name of the dataset.
+        """
+
+        for dep_dataset in self.dataset_dependencies(dataset):
+
+            self.ensure_dataset(dep_dataset)
+
+        rebuild_dataset = self.get_param('rebuild_%s' % dataset)
+
+        if force_reload or force_rebuild or not hasattr(self, dataset):
+
+            if (
+                force_rebuild or
+                self.rebuild or
+                rebuild_dataset or
+                not self.pickle_exists(dataset)
+            ):
+
+                self.remove_db(dataset)
+                self.build_dataset(dataset)
+
+            elif not hasattr(self, dataset) or force_reload:
+
+                self.load_dataset(dataset)
+
+
+    def dataset_dependencies(self, dataset):
+        """
+        Returns the dependencies of a dataset. E.g. to build `annotations`
+        `complexes` must be loaded hence the former is dependent on the
+        latter.
+        """
+
+        deps = self.get_param('dependencies')
+
+        return deps[dataset] if dataset in deps else ()
+
+
+    def ensure_dirs(self):
+        """
+        Checks if the directories for tables, figures and pickles exist and
+        creates them if necessary.
+        """
+
+        if self.get_param('timestamp_dirs'):
+
+            self.tables_dir = os.path.join(
+                self.get_param('tables_dir'),
+                self.timestamp
+            )
+            self.figures_dir = os.path.join(
+                self.get_param('figures_dir'),
+                self.timestamp,
+            )
+            settings.setup(
+                tables_dir = self.tables_dir,
+                figures_dir = self.figures_dir,
+            )
+
+        os.makedirs(self.get_param('pickle_dir'), exist_ok = True)
+
+        for _dir in ('pickle', 'tables', 'figures'):
+
+            path = self.get_param('%s_dir' % _dir)
+            self._log(
+                '%s directory: `%s` (exists: %s).' % (
+                    _dir.capitalize(),
+                    path,
+                    'yes' if os.path.exists(path) else 'no',
+                )
+            )
+
+
+    def pickle_path(self, dataset):
+        """
+        Returns the path of the pickle dump for a dataset according to
+        the current settings.
+        """
+
+        pickle_fname = self.get_param('%s_pickle' % dataset)
+
+        return os.path.join(
+            self.get_param('pickle_dir'),
+            pickle_fname,
+        )
+
+
+    def pickle_exists(self, dataset):
+        """
+        Tells if a pickle dump of a particular dataset exists.
+        """
+
+        return os.path.exists(self.pickle_path(dataset))
+
+
+    def table_path(self, dataset):
+        """
+        Returns the full path for a table (to be exported or imported).
+        """
+
+        return os.path.join(
+            self.get_param('tables_dir'),
+            self.get_param('%s_tsv' % dataset),
+        )
+
+
+    def build_dataset(self, dataset):
+        """
+        Builds a dataset.
+        """
+
+        self._log('Building dataset `%s`.' % dataset)
+
+        args = self.get_build_args(dataset)
+
+        mod = self.ensure_module(dataset)
+
+        db = mod.get_db(**args)
+
+        pickle_path = self.pickle_path(dataset)
+        old_pickle_path = '%s.old' % pickle_path
+        
+        if os.path.exists(pickle_path):
+            
+            shutil.moce(pickle_path, old_pickle_path)
+        
+        self._log('Saving dataset `%s` to `%s`.' % (dataset, pickle_path))
+        
+        try:
+            db.save_to_pickle(pickle_file = pickle_path)
+            
+            if os.path.exists(old_pickle_path):
+                
+                os.remove(old_pickle_path)
+            
+            self._log(
+                'Saved dataset `%s` to `%s`.' % (
+                    dataset,
+                    pickle_path
+                )
+            )
+            
+        except:
+            
+            os.remove(pickle_path)
+            
+            self._log(
+                'Failed to save dataset `%s` to `%s`. '
+                'The dataset is currently loaded. '
+                'Try restart Python and re-build the dataset. '
+                'If the issue persists please report it.' % (
+                    dataset,
+                    pickle_path,
+                )
+            )
+            
+            if os.path.exists(old_pickle_path):
+                
+                self._log('Restoring the old version of `%s`.' % pickle_path)
+                shutil.move(old_pickle_path, pickle_path)
+
+        self._log('Successfully built dataset `%s`.' % dataset)
+
+        setattr(self, dataset, db)
+
+        self._add_network_df(dataset)
+
+
+    def ensure_module(self, dataset, reset = True):
+        """
+        Makes sure the module providing a particular dataset is available
+        and has no default database loaded yet (:py:attr:`db` attribute
+        of the module).
+        """
+
+        mod_str = self.get_param('%s_mod' % dataset)
+        mod = sys.modules['pypath.%s' % mod_str]
+
+        if reset and hasattr(mod, 'db'):
+
+            delattr(mod, 'db')
+
+        return mod
+
+
+    def reload_module(self, dataset):
+        """
+        Reloads the module of the database object of a particular dataset.
+        E.g. in case of network datasets the ``pypath.network`` module
+        will be reloaded.
+        """
+
+        mod = self.ensure_module(dataset, reset = False)
+        imp.reload(mod)
+
+        if hasattr(mod, 'db'):
+
+            mod.db.reload()
+
+
+    def get_build_args(self, dataset):
+        """
+        Retrieves the default database build parameters for a dataset.
+        """
+
+        args = self.get_param('%s_args' % dataset) or {}
+
+        if hasattr(self, 'get_args_%s' % dataset):
+
+            args.update(getattr(self, 'get_args_%s' % dataset)())
+
+        return args
+
+
+    def load_dataset(self, dataset):
+        """
+        Loads a dataset, builds it if no pickle dump is available.
+        """
+
+        pickle_path = self.pickle_path(dataset)
+
+        self._log('Loading dataset `%s` from `%s`.' % (dataset, pickle_path))
+
+        mod = self.ensure_module(dataset)
+
+        setattr(self, dataset, mod.get_db(pickle_file = pickle_path))
+
+        self._log('Loaded dataset `%s` from `%s`.' % (dataset, pickle_path))
+
+        self._add_network_df(dataset)
+
+
+    def get_args_curated(self):
+        """
+        Returns the arguments for building the curated PPI network dataset.
+        """
+
+        resources = copy.deepcopy(netres.pathway)
+        resources.update(copy.deepcopy(netres.enzyme_substrate))
+
+        return {'resources': resources}
+
+
+    def get_args_tf_target(self):
+        """
+        Returns the arguments for building the TF-target network dataset.
+        """
+
+        transcription = copy.deepcopy(netres.transcription)
+        dorothea = {}
+        
+        for level in self.get_param('tfregulons_levels'):
+            
+            dorothea['dorothea_%s' % level] = copy.deepcopy(
+                transcription['dorothea']
+            )
+            dorothea['dorothea_%s' % level].name = 'DoRothEA_%s' % level
+            dorothea['dorothea_%s' % level].input_args = {'levels': {level}}
+        
+        del transcription['dorothea']
+        transcription.update(dorothea)
+
+        return {'resources': transcription}
+
+
+    def get_args_tf_mirna(self):
+        """
+        Returns the arguments for building the TF-miRNA network dataset.
+        """
+
+        return {'resources': netres.tf_mirna}
+
+
+    def get_args_mirna_mrna(self):
+        """
+        Returns the arguments for building the miRNA-mRNA network dataset.
+        """
+
+        return {'resources': netres.mirna_target}
+
+
+    def get_args_lncrna_mrna(self):
+        """
+        Returns the arguments for building the lncRNA-mRNA network dataset.
+        """
+
+        return {'resources': netres.lncrna_target}
+
+
+    def compile_tables(self):
+        """
+        Compiles the `summaries` table for all datasets. These tables contain
+        various quantitative descriptions of the data contents.
+        """
+
+        self.foreach_dataset(method = self.compile_table)
+
+
+    def compile_table(self, dataset):
+        """
+        Compiles the `summaries` table for a dataset. These tables contain
+        various quantitative descriptions of the data contents.
+        """
+
+        table_path = self.table_path(dataset)
+        db = self.get_db(dataset)
+        db.update_summaries()
+        db.summaries_tab(outfile = table_path)
+
+
+    def foreach_dataset(self, method):
+        """
+        Applies a method for each dataset.
+        """
+
+        for dataset in self.datasets:
+
+            _ = method(dataset)
+
+
+    def get_db(self, dataset):
+        """
+        Returns a dataset object. Loads and builds the dataset if necessary.
+        """
+
+        self.ensure_dataset(dataset)
+
+        return getattr(self, dataset)
+
+
+    def remove_db(self, dataset):
+        """
+        Removes a dataset. Deletes the references to the object
+        in the module, however if you have references elsewhere in your
+        code it remains in the memory.
+        """
+
+        if hasattr(self, dataset):
+
+            delattr(self, dataset)
+
+
+    def remove_all(self):
+        """
+        Removes all loaded datasets. Deletes the references to the objects
+        in the module, however if you have references elsewhere in your
+        code they remain in the memory.
+        """
+
+        self.foreach_dataset(method = self.ensure_module)
+        self.foreach_dataset(method = self.remove_db)
+
+
+    def get_param(self, key):
+        """
+        Retrieves a parameter from the :py:attr:`param` dict of the current
+        object or from the module settings.
+        """
+
+        if key in self.param:
+
+            return self.param[key]
+
+        return settings.get(key)
+
+
+    def _create_network_df(self, dataset = 'omnipath', **kwargs):
+
+        graph = self.get_db(dataset)
+
+        return self._network_df(graph, **kwargs)
+
+    def network_df(self, dataset, by_source = False):
+        """
+        Creates a data frame of a network dataset where rows aggregate
+        information from all resources describing an interaction.
+        """
+
+        self.ensure_dataset(dataset)
+
+        by_source_str = 'by_source' if by_source else 'plain'
+
+        return self.network_dfs[dataset][by_source_str]
+
+
+    def network_df_by_source(self, dataset = 'omnipath'):
+        """
+        Creates a data frame of a network dataset where each row contains
+        information from one resource.
+        """
+
+        self.ensure_dataset(dataset)
+
+        return self.network_dfs[dataset]['by_source']
+
+
+    def _network_df(self, obj, **kwargs):
+        
+        if not isinstance(obj, network.Network):
+            
+            obj = network.Network.from_igraph(obj)
+        
+        obj.make_df(**kwargs)
+        
+        return obj.df
+
+
+    def _add_network_df(self, dataset):
+
+        obj = getattr(self, dataset)
+
+        if (
+            (
+                hasattr(obj, 'graph') and
+                isinstance(obj.graph, main.igraph.Graph)
+            ) or
+            isinstance(obj, network.Network)
+        ):
+
+            network_df = self._network_df(obj, by_source = False)
+            network_df_by_source = self._network_df(obj, by_source = True)
+
+            self.network_dfs[dataset] = {}
+            self.network_dfs[dataset]['plain'] = network_df
+            self.network_dfs[dataset]['by_source'] = network_df_by_source
+
+            self._log('Created network data frames for `%s`.' % dataset)
+
+
+    def set_network(self, dataset, by_source = False, **kwargs):
+        """
+        Sets dataset as the default
+        """
+
+        network_df = self.network_df(dataset, by_source = by_source, **kwargs)
+
+        self.ensure_dataset('intercell')
+
+        self.intercell.register_network(network_df)

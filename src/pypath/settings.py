@@ -103,6 +103,74 @@ _defaults = {
     },
     'keep_noref': False,
     'msigdb_email': 'omnipathdb@gmail.com',
+    
+    # parameters for pypath.omnipath
+    'timestamp_format': '%Y%m%d',
+    
+    # tfregulons levels
+    'tfregulons_levels': {'A', 'B', 'C', 'D'},
+
+    # datasets
+    'datasets': [
+       'omnipath',
+       'curated',
+       'complex',
+       'annotations',
+       'intercell',
+       'tf_target',
+       'tf_mirna',
+       'mirna_mrna',
+       'lncrna_mrna',
+       'enz_sub',
+    ],
+    
+    'omnipath_mod': 'network',
+    'curated_mod': 'network',
+    'complex_mod': 'complex',
+    'annotations_mod': 'annot',
+    'intercell_mod': 'intercell',
+    'enz_sub_mod': 'ptm',
+    'tf_target_mod': 'network',
+    'tf_mirna_mod': 'network',
+    'mirna_mrna_mod': 'network',
+    'lncrna_mrna_mod': 'network',
+    
+    'omnipath_args': {
+        'use_omnipath': True,
+        'kinase_substrate_extra': True,
+        'ligand_receptor_extra': True,
+        'pathway_extra': True,
+    },
+    
+    'dependencies': {
+        'intercell': ('annotations',),
+        'annotations': ('complex',),
+    },
+    
+    'omnipath_pickle': 'network_omnipath.pickle',
+    'curated_pickle': 'network_curated.pickle',
+    'complex_pickle': 'complexes.pickle',
+    'annotations_pickle': 'annotations.pickle',
+    'intercell_pickle': 'intercell.pickle',
+    'enz_sub_pickle': 'ptms.pickle',
+    'tf_target_pickle': 'tftarget.pickle',
+    'tf_mirna_pickle': 'tfmirna.pickle',
+    'mirna_mrna_pickle': 'mirna_mrna.pickle',
+    'lncrna_mrna_pickle': 'lncrna_mrna.pickle',
+    
+    'pickle_dir': None,
+    
+    # directory for exported tables
+    'tables_dir': 'omnipath_tables',
+    
+    # directory for figures
+    'figures_dir': 'omnipath_figures',
+    
+    # directory for LaTeX
+    'latex_dir': 'omnipath_latex',
+    
+    'timestamp_dirs': True,
+    
 }
 
 in_datadir = {
@@ -160,13 +228,20 @@ def reset_all():
         
         setattr(settings, k, val)
     
-    if settings.cachedir is None:
+    # special director with built in default at user level
+    for _key, _dir in (('cachedir', 'cache'), ('pickle_dir', 'pickles')):
         
-        settings.cachedir = os.path.join(
-            os.path.expanduser('~'),
-            '.pypath',
-            'cache',
-        )
+        if getattr(settings, _key) is None:
+            
+            setattr(
+                settings,
+                _key,
+                os.path.join(
+                    os.path.expanduser('~'),
+                    '.pypath',
+                    _dir,
+                )
+            )
     
     for k in in_cachedir:
         
