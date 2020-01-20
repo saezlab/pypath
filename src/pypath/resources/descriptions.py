@@ -658,7 +658,7 @@ descriptions = {
         'color': '',
         'pubmeds': [25635527],
         'urls': {
-            'webpages': ['http://autophagy-regulation.org/'],
+            'webpages': ['http://autophagyregulation.org/'],
             'articles': [
                 'http://www.tandfonline.com/doi/full/10.4161/15548627.2014.994346'
             ]
