@@ -1995,6 +1995,17 @@ class AnnotationBase(resource.AbstractResource):
         return self._numof_entities(entity_types = {'complex'})
 
 
+    def __repr__(self):
+
+        return (
+            '<%s annotations: %u records about %u entities>' % (
+                self.name,
+                self.numof_records(),
+                self.numof_entities(),
+            )
+        )
+
+
     def to_array(self, reference_set = None, use_fields = None):
 
         use_fields = (
@@ -4129,7 +4140,7 @@ class AnnotationTable(session_mod.Logger):
         )
 
 
-    def all_annotations(self, protein):
+    def all_annotations(self, entity):
         """
         Returns all annotation records for one protein in a single list.
         """
@@ -4137,8 +4148,8 @@ class AnnotationTable(session_mod.Logger):
         return [
             aa
             for a in self.annots.values()
-            if protein in a.annot
-            for aa in a.annot[protein]
+            if entity in a.annot
+            for aa in a.annot[entity]
         ]
 
 
@@ -4206,6 +4217,41 @@ class AnnotationTable(session_mod.Logger):
         if return_table:
 
             return tab
+    
+    
+    def get_entities(self):
+        
+        return set.union(*(
+            set(an.annot.keys())
+            for an in self.annots.values()
+        ))
+    
+    
+    def numof_entities(self):
+        
+        return len(self.get_entities())
+    
+    
+    def numof_records(self):
+        
+        return sum(an.numof_records() for an in self.annots.values())
+    
+    
+    def numof_resources(self):
+        
+        return len(self.annots)
+    
+    
+    def __repr__(self):
+
+        return (
+            '<Annotation database: %u records about %u '
+            'entities from %u resources>' % (
+                self.numof_records(),
+                self.numof_entities(),
+                self.numof_resources(),
+            )
+        )
 
 
 def init_db(
