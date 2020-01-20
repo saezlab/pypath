@@ -7591,53 +7591,20 @@ def signor_pathways(**kwargs):
             )
         )
 
-        proteins_pathways[full] = set([])
+        proteins_pathways[full] = set()
+        interactions_pathways[full] = set()
         
-        for uniprot1, uniprot2 in itertools.product(
-            mapping.map_name(l[4], 'uniprot', 'uniprot'),
-            mapping.map_name(l[8], 'uniprot', 'uniprot'),
-        ):
+        for row in data:
+            
+            for uniprot1, uniprot2 in itertools.product(
+                mapping.map_name(row[4], 'uniprot', 'uniprot'),
+                mapping.map_name(row[8], 'uniprot', 'uniprot'),
+            ):
 
-            proteins_pathways[full] = (
-                proteins_pathways[full] | set(
-                    map(
-                        lambda l:
-                            uniprot1,
-                        filter(
-                            lambda l:
-                                l[3].lower() == 'protein',
-                            data
-                        )
-                    )
-                )
-            )
+                proteins_pathways[full].add(uniprot1)
+                proteins_pathways[full].add(uniprot2)
 
-            proteins_pathways[full] = (
-                proteins_pathways[full] | set(
-                    map(
-                        lambda l:
-                            uniprot2,
-                        filter(
-                            lambda l:
-                                l[7].lower() == 'protein',
-                            data
-                        )
-                    )
-                )
-            )
-
-            interactions_pathways[full] = set(
-                map(
-                    lambda l:
-                        (uniprot1, uniprot2),
-                    filter(
-                        lambda l:
-                            l[3].lower() == 'protein' and
-                            l[7].lower() == 'protein',
-                        data
-                    )
-                )
-            )
+                interactions_pathways[full].add((uniprot1, uniprot2))
 
     prg.terminate()
 
