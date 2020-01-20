@@ -9190,7 +9190,7 @@ def signalink_pathway_annotations():
                 
                 core = 'non-core' not in pathway
                 pathway = (
-                    pathway.split('(')[idx].strip().replace('/Wingless', '')
+                    pathway.split('(')[0].strip().replace('/Wingless', '')
                 )
                 
                 for uniprot in mapping.map_name(i[idx], 'uniprot', 'uniprot'):
