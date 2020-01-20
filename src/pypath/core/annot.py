@@ -47,7 +47,7 @@ import pypath.internals.resource as resource
 import pypath.utils.go as go
 import pypath.core.intercell_annot as intercell_annot
 import pypath.share.session as session_mod
-import pypath.core.annot_formats as annot_formats
+import pypath.internals.annot_formats as annot_formats
 import pypath.core.complex as complex
 import pypath.internals.intera as intera
 import pypath.core.entity as entity

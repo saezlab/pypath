@@ -28,7 +28,7 @@ import copy
 import collections
 import itertools
 
-import pypath.session_mod as session_mod
+from pypath.share import session as session_mod
 
 _logger = session_mod.Logger(name = 'server')
 _log = _logger._log
@@ -80,7 +80,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         self.welcome_message = (
             'Hello, this is the REST service of pypath %s. Welcome!\n'
             'For the descriptions of pathway resources go to `/info`.\n'
-            'Available query types: '
+            'Available query types: ?'
         ) % __version__
         
         self.isLeaf = True

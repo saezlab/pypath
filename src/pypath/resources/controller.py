@@ -40,7 +40,6 @@ class ResourcesController:
     def __init__(
             self,
             list_resources_path = (
-                'resources',
                 'data',
                 'resources_descriptions.json',
             ),

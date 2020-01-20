@@ -20,14 +20,14 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-import sys
 from future.utils import iteritems
 
 import pypath.omnipath.server._html as _html
 import pypath.resources.urls as urls
 
 import pypath.share.session as session_mod
-_logger = session_mod.Logger(name='generate_about_page')
+_logger = session_mod.Logger(name = 'generate_about_page')
+_log = _logger._log
 
 __all__ = ['generate_about_html', 'write_html']
 
@@ -45,11 +45,11 @@ pypath_methods = {
     'ptm': 'Enzyme-substrate relationships and PTMs',
     'dmi': 'Domain-motif interactions',
     'ddi': 'Domain-domain interactions',
-    'misc': 'Miscellaneous'
+    'misc': 'Miscellaneous',
 }
 
 
-def generate_about_html(descriptions, format='b'):
+def generate_about_html(descriptions, format = 'b'):
     """
     Generates a HTML page from the `descriptions` array.
     This HTML is provided by the webservice under `/info`,
@@ -151,8 +151,11 @@ def generate_about_html(descriptions, format='b'):
                         if 'comment' in v['license'] else ''
 
             except KeyError:
-                sys.stdout.write('Wrong license format or incomplete information for %s\n' % k)
-                sys.stdout.flush()
+                _log(
+                    'Wrong license format or incomplete '
+                    'information for `%s`.' % k
+                )
+
         if 'urls' in v:
             for uk, uv in iteritems(v['urls']):
                 if len(uv) > 0 and uk != 'omictools':
@@ -168,8 +171,8 @@ def generate_about_html(descriptions, format='b'):
                             )
                         doc += '\t\t\t</ul>\n'
                     except UnicodeDecodeError:
-                        sys.stdout.write('UnicodeDecodeError at %s\n' % k)
-                        sys.stdout.flush()
+                        _log('UnicodeDecodeError at %s' % k)
+
         if 'pubmeds' in v:
             doc += '\t\t\t<h3>PubMed</h3>\n'
             doc += '\t\t\t<ul>\n'

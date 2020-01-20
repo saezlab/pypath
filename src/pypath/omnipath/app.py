@@ -36,8 +36,8 @@ from pypath.core import annot
 from pypath.core import intercell
 from pypath.core import complex
 from pypath.core import ptm
-from pypath.core import session_mod
 from pypath.core import network
+from pypath.share import session as session_mod
 
 import pypath.share.settings as settings
 

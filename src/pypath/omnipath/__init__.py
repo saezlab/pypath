@@ -24,8 +24,8 @@
 import os
 import copy
 
-from pypath import session_mod as _session_mod
-from pypath import settings as _settings_mod
+from pypath.share import session as _session_mod
+from pypath.share import settings as _settings_mod
 from pypath.omnipath import app as _app_mod
 
 

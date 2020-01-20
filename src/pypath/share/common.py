@@ -59,7 +59,11 @@ __all__ = [
 ]
 
 # get the location
-ROOT = os.path.abspath(os.path.dirname(__file__))
+ROOT = os.path.join(
+    *os.path.split(
+        os.path.abspath(os.path.dirname(__file__))
+    )[:-1]
+)
 DATA = os.path.join(ROOT, 'data')
 
 

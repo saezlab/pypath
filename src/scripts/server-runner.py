@@ -13,11 +13,11 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
-from pypath import server
+from pypath.omnipath.server import run
 
-server.Rest(33333, serverclass = server.TableServer)
+run.Rest(33333, serverclass = run.TableServer)
 
-# server.Rest(33333, serverclass = server.TableServer, only_tables = {'annotations', 'intercell', 'interactions'})
+# run.Rest(33333, serverclass = run.TableServer, only_tables = {'annotations', 'intercell', 'interactions'})
 
 #srv = server.Rest(
     #33333,
