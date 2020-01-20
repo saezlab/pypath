@@ -37,7 +37,7 @@ class pypath(object):
     
     
     __version__ = _version_mod.__version__
-    __author__ = _version.__author__
+    __author__ = _version_mod.__author__
     
     _session_mod.new_session()
     session = _session_mod.get_session()
@@ -96,9 +96,9 @@ _session_mod.get_log().msg(
         '\t- working directory: `%s`\n'
         '\t- logfile: `%s`\n'
         '\t- pypath version: %s' % (
-            session_mod.get_session().label,
+            _session_mod.get_session().label,
             os.getcwd(),
-            session_mod.get_log().fname,
+            _session_mod.get_log().fname,
             pypath.__version__
         )
     ),
