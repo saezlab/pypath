@@ -38,9 +38,9 @@ except:
 
 import pypath.share.cache as cache
 import pypath.inputs.main as dataio
-import pypath.progress as progress
+import pypath.share.progress as progress
 import pypath.share.common as common
-from pypath.common import *
+from pypath.share.common import *
 import pypath.share.session as session_mod
 import pypath.share.settings as settings
 

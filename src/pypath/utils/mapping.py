@@ -53,7 +53,7 @@ import timeloop
 timeloop.app.logging.disable(level = 9999)
 
 # from pypath:
-import pypath.progress as progress
+import pypath.share.progress as progress
 import pypath.share.common as common
 import pypath.share.cache as cache_mod
 import pypath.internals.maps as maps

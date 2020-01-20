@@ -45,7 +45,7 @@ except ModuleNotFoundError:
 
 from collections import OrderedDict
 
-from pypath.common import get_args
+from pypath.share.common import get_args
 
 
 class Enrichment(object):

@@ -112,7 +112,7 @@ import pypath.utils.reflists as reflists
 import pypath.inputs.uniprot as uniprot_input
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
-import pypath.progress as progress
+import pypath.share.progress as progress
 import pypath.share.common as common
 import pypath.internals.intera as intera
 import pypath.utils.residues as residues

@@ -27,7 +27,7 @@ import gzip
 import re
 
 import pypath.inputs.uniprot as uniprot_input
-import pypath.progress as progress
+import pypath.share.progress as progress
 import pypath.share.curl as curl
 import pypath.share.common as common
 import pypath.resources.urls as urls

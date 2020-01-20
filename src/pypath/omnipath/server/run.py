@@ -53,7 +53,7 @@ import pypath.resources.urls as urls
 import pypath.share.common as common
 import pypath.db_categories as db_categories
 import pypath.core.intercell_annot as intercell_annot
-from pypath.common import flat_list
+from pypath.share.common import flat_list
 from pypath._version import __version__
 
 if 'unicode' not in __builtins__:

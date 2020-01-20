@@ -43,7 +43,7 @@ except:
 import pypath.utils.mapping as mapping
 import pypath.utils.reflists as reflists
 import pypath.share.common as common
-import pypath.progress as progress
+import pypath.share.progress as progress
 import pypath.share.curl as curl
 import pypath.internals.intera as intera
 import pypath.internals.refs as refs

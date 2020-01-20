@@ -31,7 +31,7 @@ from typing import Optional, Set, Union
 
 import click
 
-import pypath.progress as progress
+import pypath.share.progress as progress
 import pypath.share.common as common
 import pypath.share.session as session_mod
 

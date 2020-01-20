@@ -30,7 +30,7 @@ import copy
 import pandas as pd
 import itertools
 
-import pypath.progress as progress
+import pypath.share.progress as progress
 import pypath.resources.urls as urls
 import pypath.resources.data_formats as data_formats
 import pypath.share.settings as settings

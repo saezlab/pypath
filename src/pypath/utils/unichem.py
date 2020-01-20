@@ -26,7 +26,7 @@ import json
 import sys
 import bs4
 
-import pypath.progress as progress
+import pypath.share.progress as progress
 import pypath.share.curl as curl
 
 

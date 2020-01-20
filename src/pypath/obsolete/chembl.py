@@ -37,7 +37,7 @@ except:
     sys.stdout.flush()
 
 import pypath.mapping as mapping
-import pypath.progress as progress
+import pypath.share.progress as progress
 import pypath.share.common as common
 
 class Chembl(object):

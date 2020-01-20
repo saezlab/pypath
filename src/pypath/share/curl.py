@@ -108,7 +108,7 @@ except:
 
 from contextlib import closing
 
-import pypath.progress as progress
+import pypath.share.progress as progress
 import pypath.share.common as common
 import pypath.share.settings as settings
 

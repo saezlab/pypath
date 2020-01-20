@@ -39,7 +39,7 @@ from collections import OrderedDict
 import pypath.inputs.main as dataio
 import pypath.resources.data_formats as data_formats
 import pypath.utils.mapping as mapping
-import pypath.progress as progress
+import pypath.share.progress as progress
 import pypath.share.common as common
 
 

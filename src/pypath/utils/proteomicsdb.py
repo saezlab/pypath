@@ -46,8 +46,8 @@ except ImportError:
 
 # from this module:
 import pypath.share.curl as curl
-import pypath.progress as progress
-from pypath.common import *
+import pypath.share.progress as progress
+from pypath.share.common import *
 
 
 class ProteomicsDB(object):

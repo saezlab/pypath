@@ -55,7 +55,7 @@ from scipy import stats
 import pypath.share.common as common
 from pypath.ig_drawing import DefaultGraphDrawerFFsupport
 import pypath.resources.descriptions
-import pypath.progress as progress
+import pypath.share.progress as progress
 import pypath.internals.refs as _refs
 
 

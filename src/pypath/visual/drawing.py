@@ -35,7 +35,7 @@ import math
 import igraph
 import time
 
-from pypath.common import *
+from pypath.share.common import *
 from pypath.ig_drawing import *
 import pypath.share.session as session_mod
 

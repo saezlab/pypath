@@ -32,7 +32,7 @@ import pickle
 import pandas as pd
 
 import pypath.share.session as session_mod
-import pypath.progress as progress
+import pypath.share.progress as progress
 import pypath.core.interaction as interaction_mod
 import pypath.core.evidence as evidence
 import pypath.core.entity as entity_mod

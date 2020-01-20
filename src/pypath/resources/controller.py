@@ -23,6 +23,8 @@ import json
 import os
 
 import pypath.share.session as session_mod
+
+
 _logger = session_mod.Logger(name='resource_controller')
 
 
@@ -32,24 +34,47 @@ class ResourcesController:
     14.01.2020: the initial step for resource controller development: used for /info page generating for the server.
     """
 
-    def __init__(self, list_resources_path="resources_jsons/resources_descriptions.json", use_package_path=False):
-        if use_package_path:
-            abs_path = os.path.dirname(os.path.abspath(__file__))
-            self.list_resources_path = abs_path + "/" + list_resources_path
-        else:
-            self.list_resources_path = list_resources_path
+    def __init__(
+            self,
+            list_resources_path = (
+                'resources',
+                'data',
+                'resources_descriptions.json',
+            ),
+            use_package_path = False,
+        ):
 
-        _logger._log("Resources list reference to this json: %s" % self.list_resources_path)
+        if use_package_path:
+
+            list_resources_path = (
+                (
+                    os.path.dirname(os.path.abspath(__file__)),
+                ) +
+                list_resources_path
+            )
+
+        self.list_resources_path = os.path.join(*list_resources_path)
+
+        _logger._log(
+            'Loading resource information from '
+            'JSON file: %s' % self.list_resources_path
+        )
+
 
     def get_info_all_resources(self):
         """
         :return: list of of available resources in pypath
         """
+
         resources_data = []
+
         try:
             with open(self.list_resources_path) as json_file:
                 resources_data = json.load(json_file)
         except IOError:
-            _logger._console("File %s with resources information cannot be accessed. Check the name of the file." %
-                                str(self.list_resources_path))
+            _logger._console(
+                'File %s with resources information cannot be accessed. '
+                'Check the name of the file.' % self.list_resources_path
+            )
+
         return resources_data

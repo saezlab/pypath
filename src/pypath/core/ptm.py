@@ -36,7 +36,7 @@ import pypath.utils.mapping as mapping
 import pypath.utils.homology as homology
 import pypath.inputs.uniprot as uniprot_input
 import pypath.internals.intera as intera
-import pypath.progress as progress
+import pypath.share.progress as progress
 import pypath.share.session as session_mod
 import pypath.utils.taxonomy as taxonomy
 
