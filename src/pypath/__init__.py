@@ -53,9 +53,9 @@ class pypath(object):
         '\tyou use in your analysis, and please give appropriate\n'
         '\tcredits for the original sources when you publish your\n'
         '\tresults. To find out more about data sources please\n'
-        '\tlook at `pypath.descriptions` or\n'
+        '\tlook at `pypath.resources.descriptions` or\n'
         '\thttp://omnipathdb.org/info and \n'
-        '\t`pypath.urls.urls`.\n\n'
+        '\t`pypath.resources.urls.urls`.\n\n'
     )
     
     def __init__(self):
