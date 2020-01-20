@@ -122,11 +122,11 @@ import pypath.omnipath.legacy.export as export
 import pypath.ig_drawing as ig_drawing
 import pypath.share.common as common
 import pypath._version as _version
-from pypath.progress import *
+from pypath.share.progress import *
 import pypath.share.settings as settings
 import pypath.core.entity as entity_mod
 import pypath.utils.taxonomy as taxonomy
-import pypath.db_categories as db_categories
+import pypath.legacy.db_categories as db_categories
 import pypath.resources.network as network_resources
 import pypath.core.evidence as evidence
 import pypath.core.interaction as interaction
