@@ -3014,6 +3014,13 @@ descriptions = {
             'commercial_use': False
         }
     },
+    'ABS': {
+        'license': {
+            'name': 'GNU-GPLv2',
+            'url': 'http://genome.crg.es/main/GNU-GPL.html',
+            'commercial_use': True
+        }
+    },
     'LRdb': {
         'license': {
             'name': 'No license',
