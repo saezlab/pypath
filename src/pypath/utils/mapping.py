@@ -57,7 +57,7 @@ import pypath.progress as progress
 import pypath.share.common as common
 import pypath.share.cache as cache_mod
 import pypath.internals.maps as maps
-import pypath.urls as urls
+import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.inputs.mirbase as mirbase_input
 import pypath.inputs.uniprot as uniprot_input

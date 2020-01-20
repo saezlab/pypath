@@ -46,10 +46,10 @@ import json
 import pandas as pd
 import numpy as np
 
-import pypath.resource_controller as resource_controller
+import pypath.resources.controller as resource_controller
 from pypath.webservice_related import generate_about_page
 import pypath._html as _html
-import pypath.urls as urls
+import pypath.resources.urls as urls
 import pypath.share.common as common
 import pypath.db_categories as db_categories
 import pypath.core.intercell_annot as intercell_annot

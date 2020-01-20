@@ -99,9 +99,9 @@ except ImportError: # XXX: Catching any exception like this is bad practice
 # from this module:
 import pypath
 import pypath.share.cache as cache_mod
-import pypath.data_formats as data_formats
+import pypath.resources.data_formats as data_formats
 import pypath.utils.mapping as mapping
-import pypath.descriptions as descriptions
+import pypath.resources.descriptions as descriptions
 import pypath.inputs.main as dataio
 import pypath.core.network as network
 import pypath.utils.homology as homology

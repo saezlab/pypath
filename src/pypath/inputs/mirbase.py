@@ -28,7 +28,7 @@ import collections
 
 import pypath.inputs.uniprot as uniprot_input
 import pypath.share.curl as curl
-import pypath.urls as urls
+import pypath.resources.urls as urls
 import pypath.share.common as common
 import pypath.utils.taxonomy as taxonomy
 

@@ -25,7 +25,7 @@ from future.utils import iteritems
 import copy
 
 import pypath.internals.resource as resource
-import pypath.data_formats as data_formats
+import pypath.resources.data_formats as data_formats
 import pypath.share.session as session_mod
 
 _logger = session_mod.Logger(name = 'network_resources')

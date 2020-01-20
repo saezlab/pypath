@@ -27,7 +27,7 @@ try:
 except:
     import urllib.request as urllib2
 
-import pypath.data_formats as data_formats
+import pypath.resources.data_formats as data_formats
 
 
 class ResidueMapper(object):

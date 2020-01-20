@@ -48,7 +48,7 @@ import pypath.share.curl as curl
 import pypath.internals.intera as intera
 import pypath.internals.refs as refs
 import pypath.inputs.uniprot as uniprot_input
-import pypath.urls as urls
+import pypath.resources.urls as urls
 import pypath.utils.seq as seq
 import pypath.share.session as session_mod
 import pypath.share.cache as cache

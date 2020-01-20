@@ -31,7 +31,7 @@ import re
 import pypath.utils.mapping as mapping
 import pypath.share.common as common
 import pypath.internals.intera as intera
-import pypath.urls as urls
+import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.inputs.uniprot as uniprot_input
 import pypath.utils.seq as _se

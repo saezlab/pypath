@@ -31,8 +31,8 @@ import pandas as pd
 import itertools
 
 import pypath.progress as progress
-import pypath.urls as urls
-import pypath.data_formats as data_formats
+import pypath.resources.urls as urls
+import pypath.resources.data_formats as data_formats
 import pypath.share.settings as settings
 import pypath.core.entity as entity
 

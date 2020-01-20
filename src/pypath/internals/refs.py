@@ -31,7 +31,7 @@ except:
 
 import pypath.share.curl as curl
 import pypath.share.common as common
-import pypath.urls as urls
+import pypath.resources.urls as urls
 import pypath.inputs.main as dataio
 import pypath.share.settings as settings
 

@@ -34,9 +34,9 @@ import collections
 
 import pypath.main as main
 import pypath.plot as plot
-import pypath.data_formats as data_formats
+import pypath.resources.data_formats as data_formats
 import pypath.inputs.main as dataio
-import pypath.descriptions as descriptions
+import pypath.resources.descriptions as descriptions
 from pypath.common import *
 import pypath.internals.refs as _refs
 import pypath.omnipath as omnipath

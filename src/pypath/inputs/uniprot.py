@@ -28,7 +28,7 @@ import datetime
 import timeloop
 timeloop.app.logging.disable(level = 9999)
 
-import pypath.urls as urls
+import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.share.session as session_mod
 import pypath.share.settings as settings

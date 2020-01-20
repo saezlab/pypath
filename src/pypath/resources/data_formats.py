@@ -30,7 +30,7 @@ import copy
 
 # from pypath:
 import pypath.internals.input_formats as input_formats
-import pypath.urls as urls
+import pypath.resources.urls as urls
 import pypath.share.common as common
 import pypath.utils.taxonomy as taxonomy
 

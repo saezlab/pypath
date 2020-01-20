@@ -24,7 +24,7 @@ import sys
 from future.utils import iteritems
 
 import pypath._html as _html
-import pypath.urls as urls
+import pypath.resources.urls as urls
 
 import pypath.share.session as session_mod
 _logger = session_mod.Logger(name='generate_about_page')

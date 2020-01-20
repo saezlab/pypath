@@ -32,7 +32,7 @@ import pypath.utils.mapping as mapping
 import pypath.share.session as session_mod
 import pypath.main as main_mod
 import pypath.core.network as network_mod
-import pypath.data_formats as data_formats
+import pypath.resources.data_formats as data_formats
 import pypath.core.annot as annot
 import pypath.core.intercell as intercell
 import pypath.omnipath.legacy as omnipath

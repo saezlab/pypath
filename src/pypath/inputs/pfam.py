@@ -30,7 +30,7 @@ import pypath.inputs.uniprot as uniprot_input
 import pypath.progress as progress
 import pypath.share.curl as curl
 import pypath.share.common as common
-import pypath.urls as urls
+import pypath.resources.urls as urls
 import pypath.utils.taxonomy as taxonomy
 
 

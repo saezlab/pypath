@@ -29,7 +29,7 @@ import collections
 import pypath.share.common as common
 import pypath.inputs.pfam as pfam_input
 import pypath.inputs.uniprot as uniprot_input
-import pypath.urls as urls
+import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.utils.taxonomy as taxonomy
 

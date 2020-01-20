@@ -35,7 +35,7 @@ import pypath.core.annot as annot
 import pypath.core.intercell as intercell
 import pypath.export as export
 import pypath.main as main
-import pypath.data_formats as data_formats
+import pypath.resources.data_formats as data_formats
 import pypath.share.session as session_mod
 
 

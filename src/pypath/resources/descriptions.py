@@ -32,8 +32,8 @@ import bs4
 import textwrap
 
 import pypath._html as _html
-import pypath.data_formats as data_formats
-import pypath.urls as urls
+import pypath.resources.data_formats as data_formats
+import pypath.resources.urls as urls
 import pypath.share.session as session_mod
 
 __all__ = ['descriptions', 'gen_html', 'write_html']
