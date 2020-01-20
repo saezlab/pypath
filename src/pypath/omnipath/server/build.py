@@ -33,7 +33,7 @@ import pypath.core.ptm as ptm
 import pypath.core.complex as complex
 import pypath.core.annot as annot
 import pypath.core.intercell as intercell
-import pypath.export as export
+import pypath.omnipath.legacy.export as export
 import pypath.main as main
 import pypath.resources.data_formats as data_formats
 import pypath.share.session as session_mod

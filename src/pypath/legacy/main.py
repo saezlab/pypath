@@ -111,14 +111,14 @@ import pypath.share.curl as curl
 import pypath.internals.intera as intera
 import pypath.utils.seq as se
 import pypath.utils.go as go
-import pypath.drawing as bdrawing
+import pypath.visual.drawing as bdrawing
 import pypath.utils.proteomicsdb as proteomicsdb
 import pypath.utils.reflists as reflists
 import pypath.internals.input_formats as input_formats
 import pypath.internals.refs as _refs
-import pypath.plot as plot
+import pypath.visual.plot as plot
 import pypath.core.ptm
-import pypath.export as export
+import pypath.omnipath.legacy.export as export
 import pypath.ig_drawing as ig_drawing
 import pypath.share.common as common
 import pypath._version as _version

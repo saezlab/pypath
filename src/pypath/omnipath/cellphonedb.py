@@ -35,7 +35,7 @@ import pypath.core.network as network_mod
 import pypath.resources.data_formats as data_formats
 import pypath.core.annot as annot
 import pypath.core.intercell as intercell
-import pypath.omnipath.legacy as omnipath
+import pypath.omnipath.legacy.legacy as omnipath
 
 
 CellPhoneDBGene = collections.namedtuple(

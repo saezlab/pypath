@@ -33,13 +33,13 @@ import pandas as pd
 import collections
 
 import pypath.main as main
-import pypath.plot as plot
+import pypath.visual.plot as plot
 import pypath.resources.data_formats as data_formats
 import pypath.inputs.main as dataio
 import pypath.resources.descriptions as descriptions
 from pypath.common import *
 import pypath.internals.refs as _refs
-import pypath.omnipath as omnipath
+import pypath.omnipath.legacy as omnipath
 import pypath.share.session as session_mod
 import pypath.utils.go as go
 import pypath.db_categories as db_categories
