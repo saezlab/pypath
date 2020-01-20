@@ -2509,8 +2509,8 @@
       "David Eisenberg"
     ],
     "license": {
-      "name": "CC-Attribution-3.0",
-      "url": "http://creativecommons.org/licenses/by/3.0/",
+      "name": "CC-Attribution-NoDerivs-3.0",
+      "url": "https://creativecommons.org/licenses/by-nd/3.0/",
       "commercial_use": true
     },
     "pypath": {
