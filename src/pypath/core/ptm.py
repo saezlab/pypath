@@ -715,6 +715,11 @@ class PtmAggregator(session_mod.Logger):
         return sum([len(esub) for esub in self.enz_sub.values()])
     
     
+    def __repr__(self):
+        
+        return '<Enzyme-substrate database: %s relationships>' % len(self)
+    
+    
     def set_inputs(self):
 
         if self.input_methods is None:

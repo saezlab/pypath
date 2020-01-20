@@ -170,6 +170,11 @@ class AbstractComplexResource(resource.AbstractResource):
         return len(self.complexes)
     
     
+    def __repr__(self):
+        
+        return '<Complex database: %u complexes>' % len(self)
+    
+    
     @property
     def numof_references(self):
         
