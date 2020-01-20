@@ -31,18 +31,18 @@ import pickle
 
 import pandas as pd
 
-import pypath.session_mod as session_mod
+import pypath.share.session as session_mod
 import pypath.progress as progress
-import pypath.interaction as interaction_mod
-import pypath.evidence as evidence
-import pypath.entity as entity_mod
-import pypath.common as common
-import pypath.settings as settings
-import pypath.cache as cache_mod
+import pypath.core.interaction as interaction_mod
+import pypath.core.evidence as evidence
+import pypath.core.entity as entity_mod
+import pypath.share.common as common
+import pypath.share.settings as settings
+import pypath.share.cache as cache_mod
 import pypath.utils.mapping as mapping
-import pypath.dataio as dataio
-import pypath.curl as curl
-import pypath.refs as refs_mod
+import pypath.inputs.main as dataio
+import pypath.share.curl as curl
+import pypath.internals.refs as refs_mod
 import pypath.utils.reflists as reflists
 import pypath.resources.network as network_resources
 

@@ -38,7 +38,7 @@ except:
 
 import pypath.mapping as mapping
 import pypath.progress as progress
-import pypath.common as common
+import pypath.share.common as common
 
 class Chembl(object):
     def __init__(self,

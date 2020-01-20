@@ -45,7 +45,7 @@ except ImportError:
     sys.stdout.flush()
 
 # from this module:
-import pypath.curl as curl
+import pypath.share.curl as curl
 import pypath.progress as progress
 from pypath.common import *
 

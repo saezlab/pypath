@@ -39,10 +39,10 @@ timeloop.app.logging.disable(level = 9999)
 
 import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.mirbase as mirbase_input
-import pypath.common as common
-import pypath.session_mod as session_mod
-import pypath.settings as settings
-import pypath.cache as cache_mod
+import pypath.share.common as common
+import pypath.share.session as session_mod
+import pypath.share.settings as settings
+import pypath.share.cache as cache_mod
 
 
 # method names for ID types

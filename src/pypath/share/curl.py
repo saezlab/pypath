@@ -39,7 +39,7 @@ import io
 import shutil
 import struct
 
-import pypath.session_mod as session_mod
+import pypath.share.session as session_mod
 _logger = session_mod.get_log()
 
 import pycurl
@@ -109,8 +109,8 @@ except:
 from contextlib import closing
 
 import pypath.progress as progress
-import pypath.common as common
-import pypath.settings as settings
+import pypath.share.common as common
+import pypath.share.settings as settings
 
 try:
     basestring

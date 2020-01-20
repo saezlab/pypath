@@ -32,8 +32,8 @@ from typing import Optional, Set, Union
 import click
 
 import pypath.progress as progress
-import pypath.common as common
-import pypath.session_mod as session_mod
+import pypath.share.common as common
+import pypath.share.session as session_mod
 
 _logger = session_mod.Logger(name = 'bel')
 

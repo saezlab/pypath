@@ -29,11 +29,11 @@ try:
 except:
     import pickle
 
-import pypath.curl as curl
-import pypath.common as common
+import pypath.share.curl as curl
+import pypath.share.common as common
 import pypath.urls as urls
-import pypath.dataio as dataio
-import pypath.settings as settings
+import pypath.inputs.main as dataio
+import pypath.share.settings as settings
 
 
 class Reference(object):

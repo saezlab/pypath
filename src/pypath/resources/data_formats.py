@@ -29,9 +29,9 @@ import os
 import copy
 
 # from pypath:
-import pypath.input_formats as input_formats
+import pypath.internals.input_formats as input_formats
 import pypath.urls as urls
-import pypath.common as common
+import pypath.share.common as common
 import pypath.utils.taxonomy as taxonomy
 
 

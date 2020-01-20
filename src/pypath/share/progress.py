@@ -25,7 +25,7 @@ import importlib as imp
 
 import tqdm
 
-import pypath.settings as settings
+import pypath.share.settings as settings
 
 __all__ = ['Progress']
 

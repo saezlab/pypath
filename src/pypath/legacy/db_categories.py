@@ -23,7 +23,7 @@
 
 from future.utils import iteritems
 
-import pypath.session_mod as session_mod
+import pypath.share.session as session_mod
 
 _logger = session_mod.Logger(name = 'db_categories')
 _log = _logger._log

@@ -28,10 +28,10 @@ import re
 
 import pypath.inputs.uniprot as uniprot_input
 import pypath.progress as progress
-import pypath.curl as curl
-import pypath.common as common
+import pypath.share.curl as curl
+import pypath.share.common as common
 import pypath.urls as urls
-import pypath.taxonomy as taxonomy
+import pypath.utils.taxonomy as taxonomy
 
 
 def get_pfam(uniprots = None, organism = 9606):

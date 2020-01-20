@@ -39,18 +39,18 @@ except:
 import numpy as np
 import pandas as pd
 
-import pypath.dataio as dataio
-import pypath.common as common
+import pypath.inputs.main as dataio
+import pypath.share.common as common
 import pypath.utils.mapping as mapping
 import pypath.utils.reflists as reflists
-import pypath.resource as resource
+import pypath.internals.resource as resource
 import pypath.utils.go as go
-import pypath.intercell_annot as intercell_annot
-import pypath.session_mod as session_mod
-import pypath.annot_formats as annot_formats
-import pypath.complex as complex
-import pypath.intera as intera
-import pypath.entity as entity
+import pypath.core.intercell_annot as intercell_annot
+import pypath.share.session as session_mod
+import pypath.core.annot_formats as annot_formats
+import pypath.core.complex as complex
+import pypath.internals.intera as intera
+import pypath.core.entity as entity
 
 #TODO this should be part of json files
 protein_sources_default = {
@@ -1585,7 +1585,7 @@ class AnnotationBase(resource.AbstractResource):
 
         if not complexes:
 
-            import pypath.complex as complex
+            import pypath.core.complex as complex
 
             complexdb = complex.get_db()
 
@@ -1709,7 +1709,7 @@ class AnnotationBase(resource.AbstractResource):
 
         if use_complexes:
 
-            import pypath.complex as complex
+            import pypath.core.complex as complex
 
             complexes = (
                 complexes or

@@ -29,14 +29,14 @@ import copy
 
 import pandas as pd
 
-import pypath.ptm as ptm
-import pypath.complex as complex
-import pypath.annot as annot
-import pypath.intercell as intercell
+import pypath.core.ptm as ptm
+import pypath.core.complex as complex
+import pypath.core.annot as annot
+import pypath.core.intercell as intercell
 import pypath.export as export
 import pypath.main as main
 import pypath.data_formats as data_formats
-import pypath.session_mod as session_mod
+import pypath.share.session as session_mod
 
 
 class WebserviceTables(session_mod.Logger):

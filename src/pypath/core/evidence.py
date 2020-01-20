@@ -33,10 +33,10 @@ from future.utils import iteritems
 import importlib as imp
 import copy
 
-import pypath.refs as refs
-import pypath.common as common
-import pypath.session_mod as session_mod
-import pypath.entity as entity
+import pypath.internals.refs as refs
+import pypath.share.common as common
+import pypath.share.session as session_mod
+import pypath.core.entity as entity
 
 _logger = session_mod.Logger(name = 'evidence')
 _log = _logger._log

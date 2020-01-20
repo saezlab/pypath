@@ -42,16 +42,16 @@ except:
 
 import pypath.utils.mapping as mapping
 import pypath.utils.reflists as reflists
-import pypath.common as common
+import pypath.share.common as common
 import pypath.progress as progress
-import pypath.curl as curl
-import pypath.intera as intera
-import pypath.refs as refs
+import pypath.share.curl as curl
+import pypath.internals.intera as intera
+import pypath.internals.refs as refs
 import pypath.inputs.uniprot as uniprot_input
 import pypath.urls as urls
 import pypath.utils.seq as seq
-import pypath.session_mod as session_mod
-import pypath.cache as cache
+import pypath.share.session as session_mod
+import pypath.share.cache as cache
 
 
 class BioPaxReader(session_mod.Logger):

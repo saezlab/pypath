@@ -24,7 +24,7 @@ import codecs
 import sys
 import copy
 
-import pypath.settings as settings
+import pypath.share.settings as settings
 
 __all__ = [
     'FileMapping', 'PickleMapping', 'NetworkInput', 'ReadList',

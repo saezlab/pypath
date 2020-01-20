@@ -33,8 +33,8 @@ import itertools
 import pypath.progress as progress
 import pypath.urls as urls
 import pypath.data_formats as data_formats
-import pypath.settings as settings
-import pypath.entity as entity
+import pypath.share.settings as settings
+import pypath.core.entity as entity
 
 strip_json = re.compile(r'[\[\]{}\"]')
 simple_types = {bool, int, float, type(None)}

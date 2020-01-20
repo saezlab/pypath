@@ -27,10 +27,10 @@ import re
 import collections
 
 import pypath.inputs.uniprot as uniprot_input
-import pypath.curl as curl
+import pypath.share.curl as curl
 import pypath.urls as urls
-import pypath.common as common
-import pypath.taxonomy as taxonomy
+import pypath.share.common as common
+import pypath.utils.taxonomy as taxonomy
 
 
 # this function to be moved to pypath.inputs.uniprot

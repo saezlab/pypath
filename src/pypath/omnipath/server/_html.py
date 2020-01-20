@@ -30,7 +30,7 @@
 import bs4
 import os
 
-import pypath.common as common
+import pypath.share.common as common
 
 _fonts = open('fonts.css', 'rb').read().decode('utf-8') \
     if os.path.exists('fonts.css') else ''

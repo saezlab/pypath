@@ -26,11 +26,11 @@ import sys
 import re
 import collections
 
-import pypath.common as common
+import pypath.share.common as common
 import pypath.inputs.pfam as pfam_input
 import pypath.inputs.uniprot as uniprot_input
 import pypath.urls as urls
-import pypath.curl as curl
+import pypath.share.curl as curl
 import pypath.utils.taxonomy as taxonomy
 
 

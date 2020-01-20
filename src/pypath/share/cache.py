@@ -22,7 +22,7 @@
 
 import os
 
-import pypath.settings as settings
+import pypath.share.settings as settings
 
 
 def get_cachedir(cachedir = None):

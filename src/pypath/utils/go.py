@@ -36,13 +36,13 @@ try:
 except:
     import pickle
 
-import pypath.cache as cache
-import pypath.dataio as dataio
+import pypath.share.cache as cache
+import pypath.inputs.main as dataio
 import pypath.progress as progress
-import pypath.common as common
+import pypath.share.common as common
 from pypath.common import *
-import pypath.session_mod as session_mod
-import pypath.settings as settings
+import pypath.share.session as session_mod
+import pypath.share.settings as settings
 
 
 #TODO may be separate this module from pypath?

@@ -36,12 +36,12 @@ except:
 import numpy as np
 import pandas as pd
 
-import pypath.dataio as dataio
-import pypath.intera as intera
-import pypath.resource as resource
-import pypath.settings as settings
-import pypath.session_mod as session_mod
-import pypath.common as common
+import pypath.inputs.main as dataio
+import pypath.internals.intera as intera
+import pypath.internals.resource as resource
+import pypath.share.settings as settings
+import pypath.share.session as session_mod
+import pypath.share.common as common
 
 
 complex_resources = (

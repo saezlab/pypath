@@ -35,12 +35,12 @@ import operator
 import itertools
 import functools
 
-import pypath.evidence as pypath_evidence
-import pypath.resource as pypath_resource
-import pypath.session_mod as session_mod
-import pypath.common as common
+import pypath.core.evidence as pypath_evidence
+import pypath.internals.resource as pypath_resource
+import pypath.share.session as session_mod
+import pypath.share.common as common
 import pypath.utils.mapping as mapping
-import pypath.entity as entity
+import pypath.core.entity as entity
 
 _logger = session_mod.Logger(name = 'interaction')
 _log = _logger._log

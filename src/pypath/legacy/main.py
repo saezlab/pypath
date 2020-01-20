@@ -22,7 +22,7 @@
 from future.utils import iteritems
 from past.builtins import xrange, range, reduce
 
-import pypath.session_mod as session_mod
+import pypath.share.session as session_mod
 
 _logger = session_mod.Logger(name = 'main')
 
@@ -98,38 +98,38 @@ except ImportError: # XXX: Catching any exception like this is bad practice
 
 # from this module:
 import pypath
-import pypath.cache as cache_mod
+import pypath.share.cache as cache_mod
 import pypath.data_formats as data_formats
 import pypath.utils.mapping as mapping
 import pypath.descriptions as descriptions
-import pypath.dataio as dataio
-import pypath.network as network
+import pypath.inputs.main as dataio
+import pypath.core.network as network
 import pypath.utils.homology as homology
 import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.pfam as pfam_input
-import pypath.curl as curl
-import pypath.intera as intera
+import pypath.share.curl as curl
+import pypath.internals.intera as intera
 import pypath.utils.seq as se
 import pypath.utils.go as go
 import pypath.drawing as bdrawing
-import pypath.proteomicsdb as proteomicsdb
+import pypath.utils.proteomicsdb as proteomicsdb
 import pypath.utils.reflists as reflists
-import pypath.input_formats as input_formats
-import pypath.refs as _refs
+import pypath.internals.input_formats as input_formats
+import pypath.internals.refs as _refs
 import pypath.plot as plot
-import pypath.ptm
+import pypath.core.ptm
 import pypath.export as export
 import pypath.ig_drawing as ig_drawing
-import pypath.common as common
+import pypath.share.common as common
 import pypath._version as _version
 from pypath.progress import *
-import pypath.settings as settings
-import pypath.entity as entity_mod
+import pypath.share.settings as settings
+import pypath.core.entity as entity_mod
 import pypath.utils.taxonomy as taxonomy
 import pypath.db_categories as db_categories
 import pypath.resources.network as network_resources
-import pypath.evidence as evidence
-import pypath.interaction as interaction
+import pypath.core.evidence as evidence
+import pypath.core.interaction as interaction
 
 # to make it accessible directly from the module
 omnipath = network_resources.omnipath

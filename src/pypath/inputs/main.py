@@ -34,7 +34,7 @@ from __future__ import print_function
 from future.utils import iteritems
 from past.builtins import xrange, range
 
-import pypath.session_mod as session_mod
+import pypath.share.session as session_mod
 
 _logger = session_mod.Logger(name = 'dataio')
 _log = _logger._log
@@ -110,13 +110,13 @@ from xlrd.biffh import XLRDError
 import pypath.utils.mapping as mapping
 import pypath.utils.reflists as reflists
 import pypath.inputs.uniprot as uniprot_input
-import pypath.curl as curl
+import pypath.share.curl as curl
 import pypath.urls as urls
 import pypath.progress as progress
-import pypath.common as common
-import pypath.intera as intera
-import pypath.residues as residues
-import pypath.settings as settings
+import pypath.share.common as common
+import pypath.internals.intera as intera
+import pypath.utils.residues as residues
+import pypath.share.settings as settings
 import pypath.utils.taxonomy as taxonomy
 import pypath.utils.homology as homology_mod
 import pypath.inputs.pfam as pfam_input

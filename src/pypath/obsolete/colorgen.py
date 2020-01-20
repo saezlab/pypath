@@ -31,7 +31,7 @@ import itertools
 import math
 from fractions import Fraction
 
-import pypath.common as common
+import pypath.share.common as common
 
 
 def zenos_dichotomy():

@@ -35,13 +35,13 @@ import collections
 import pypath.main as main
 import pypath.plot as plot
 import pypath.data_formats as data_formats
-import pypath.dataio as dataio
+import pypath.inputs.main as dataio
 import pypath.descriptions as descriptions
 from pypath.common import *
-import pypath.refs as _refs
+import pypath.internals.refs as _refs
 import pypath.omnipath as omnipath
-import pypath.session_mod as session_mod
-import pypath.go as go
+import pypath.share.session as session_mod
+import pypath.utils.go as go
 import pypath.db_categories as db_categories
 
 

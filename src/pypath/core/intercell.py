@@ -29,10 +29,10 @@ import itertools
 import numpy as np
 import pandas as pd
 
-import pypath.session_mod as session_mod
-import pypath.annot as annot
-import pypath.intercell_annot as intercell_annot
-import pypath.network as network_mod
+import pypath.share.session as session_mod
+import pypath.core.annot as annot
+import pypath.core.intercell_annot as intercell_annot
+import pypath.core.network as network_mod
 import pypath.main as main_mod
 
 

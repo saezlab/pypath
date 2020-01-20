@@ -21,8 +21,8 @@
 
 import os
 
-import pypath.common as common
-import pypath.settings as settings
+import pypath.share.common as common
+import pypath.share.settings as settings
 
 urls = {
     'uniprot_pdb': {

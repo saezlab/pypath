@@ -22,7 +22,7 @@
 import random
 import sys
 
-import pypath.log as log
+import pypath.share.log as log
 
 
 class Session(object):

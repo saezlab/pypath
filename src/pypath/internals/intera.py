@@ -38,7 +38,7 @@ import itertools
 from collections import Counter
 
 # from pypath:
-import pypath.common as common
+import pypath.share.common as common
 import pypath.utils.mapping as mapping
 
 __all__ = [

@@ -27,7 +27,7 @@ import sys
 import bs4
 
 import pypath.progress as progress
-import pypath.curl as curl
+import pypath.share.curl as curl
 
 
 class Unichem(object):

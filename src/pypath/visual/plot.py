@@ -52,11 +52,11 @@ import matplotlib.backends.backend_pdf
 from matplotlib import ticker
 from scipy import stats
 
-import pypath.common as common
+import pypath.share.common as common
 from pypath.ig_drawing import DefaultGraphDrawerFFsupport
 import pypath.descriptions
 import pypath.progress as progress
-import pypath.refs as _refs
+import pypath.internals.refs as _refs
 
 
 def is_opentype_cff_font(filename):

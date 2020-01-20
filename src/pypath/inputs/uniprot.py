@@ -29,9 +29,9 @@ import timeloop
 timeloop.app.logging.disable(level = 9999)
 
 import pypath.urls as urls
-import pypath.curl as curl
-import pypath.session_mod as session_mod
-import pypath.settings as settings
+import pypath.share.curl as curl
+import pypath.share.session as session_mod
+import pypath.share.settings as settings
 
 _logger = session_mod.Logger(name = 'uniprot_input')
 

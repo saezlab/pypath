@@ -37,7 +37,7 @@ import time
 
 from pypath.common import *
 from pypath.ig_drawing import *
-import pypath.session_mod as session_mod
+import pypath.share.session as session_mod
 
 __all__ = ['Plot', 'InterSet']
 

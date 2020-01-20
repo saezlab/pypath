@@ -28,9 +28,9 @@ from future.utils import iteritems
 import importlib as imp
 import collections
 
-import pypath.common as common
-import pypath.intera as intera
-import pypath.session_mod as session_mod
+import pypath.share.common as common
+import pypath.internals.intera as intera
+import pypath.share.session as session_mod
 import pypath.utils.mapping as mapping
 
 

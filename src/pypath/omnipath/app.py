@@ -39,7 +39,7 @@ from pypath import ptm
 from pypath import session_mod
 from pypath import network
 
-import pypath.settings as settings
+import pypath.share.settings as settings
 
 
 class Database(session_mod.Logger):

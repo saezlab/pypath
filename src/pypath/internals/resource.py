@@ -30,9 +30,9 @@ except:
     import pickle
 
 
-import pypath.dataio as dataio
-import pypath.common as common
-import pypath.session_mod as session_mod
+import pypath.inputs.main as dataio
+import pypath.share.common as common
+import pypath.share.session as session_mod
 
 
 class AbstractResource(session_mod.Logger):

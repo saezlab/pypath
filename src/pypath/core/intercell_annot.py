@@ -23,8 +23,8 @@
 import importlib as imp
 
 import pypath.utils.go as go
-import pypath.dataio as dataio
-import pypath.annot_formats as af
+import pypath.inputs.main as dataio
+import pypath.core.annot_formats as af
 
 
 #TODO should go to jsons

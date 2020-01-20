@@ -24,7 +24,7 @@ from future.utils import iteritems
 from past.builtins import xrange, range
 
 import pypath.enrich as enrich
-import pypath.dataio as dataio
+import pypath.inputs.main as dataio
 
 
 class GOEnrichmentSet(enrich.EnrichmentSet):

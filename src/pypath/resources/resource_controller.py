@@ -22,7 +22,7 @@
 import json
 import os
 
-import pypath.session_mod as session_mod
+import pypath.share.session as session_mod
 _logger = session_mod.Logger(name='resource_controller')
 
 

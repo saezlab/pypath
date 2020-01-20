@@ -29,13 +29,13 @@ import importlib as imp
 import re
 
 import pypath.utils.mapping as mapping
-import pypath.common as common
-import pypath.intera as intera
+import pypath.share.common as common
+import pypath.internals.intera as intera
 import pypath.urls as urls
-import pypath.curl as curl
+import pypath.share.curl as curl
 import pypath.inputs.uniprot as uniprot_input
 import pypath.utils.seq as _se
-import pypath.session_mod as session_mod
+import pypath.share.session as session_mod
 import pypath.utils.taxonomy as taxonomy
 
 _logger = session_mod.Logger(name = 'homology')

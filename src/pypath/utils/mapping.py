@@ -54,16 +54,16 @@ timeloop.app.logging.disable(level = 9999)
 
 # from pypath:
 import pypath.progress as progress
-import pypath.common as common
-import pypath.cache as cache_mod
-import pypath.maps as maps
+import pypath.share.common as common
+import pypath.share.cache as cache_mod
+import pypath.internals.maps as maps
 import pypath.urls as urls
-import pypath.curl as curl
+import pypath.share.curl as curl
 import pypath.inputs.mirbase as mirbase_input
 import pypath.inputs.uniprot as uniprot_input
-import pypath.input_formats as input_formats
-import pypath.settings as settings
-import pypath.session_mod as session_mod
+import pypath.internals.input_formats as input_formats
+import pypath.share.settings as settings
+import pypath.share.session as session_mod
 _logger = session_mod.get_log()
 
 

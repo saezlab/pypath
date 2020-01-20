@@ -30,7 +30,7 @@ import os
 import importlib as importlib
 
 import pypath._version as _version_mod
-import pypath.session_mod as _session_mod
+import pypath.share.session as _session_mod
 
 
 class pypath(object):
