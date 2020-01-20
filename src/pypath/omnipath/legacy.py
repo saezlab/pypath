@@ -23,14 +23,14 @@
 import os
 import copy
 
-from pypath import main
-from pypath import data_formats
-from pypath import annot
-from pypath import intercell
-from pypath import complex
-from pypath import ptm
-from pypath import settings
-from pypath import session_mod
+from pypath.legacy import main
+from pypath.resources import data_formats
+from pypath.core import annot
+from pypath.core import intercell
+from pypath.core import complex
+from pypath.core import ptm
+from pypath.share import settings
+from pypath.share import session as session_mod
 
 
 class OmniPath(session_mod.Logger):

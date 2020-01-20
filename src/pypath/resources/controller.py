@@ -25,13 +25,16 @@ import os
 import pypath.share.session as session_mod
 
 
-_logger = session_mod.Logger(name='resource_controller')
+_logger = session_mod.Logger(name = 'resources.controller')
 
 
 class ResourcesController:
     """
-    Resource controller is aimed to be the central part of pypath communication with resources.
-    14.01.2020: the initial step for resource controller development: used for /info page generating for the server.
+    Resource controller is aimed to be the central part of pypath
+    communication with resources.
+
+    14.01.2020: the initial step for resource controller development:
+        used for /info page generating for the server.
     """
 
     def __init__(

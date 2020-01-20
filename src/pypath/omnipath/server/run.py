@@ -28,7 +28,7 @@ import copy
 import collections
 import itertools
 
-import pypath.share.session as session_mod
+import pypath.session_mod as session_mod
 
 _logger = session_mod.Logger(name = 'server')
 _log = _logger._log
@@ -47,11 +47,11 @@ import pandas as pd
 import numpy as np
 
 import pypath.resources.controller as resource_controller
-from pypath.webservice_related import generate_about_page
-import pypath._html as _html
+from pypath.omnipath.server import generate_about_page
+import pypath.omnipath.server._html as _html
 import pypath.resources.urls as urls
 import pypath.share.common as common
-import pypath.db_categories as db_categories
+import pypath.legacy.db_categories as db_categories
 import pypath.core.intercell_annot as intercell_annot
 from pypath.share.common import flat_list
 from pypath._version import __version__

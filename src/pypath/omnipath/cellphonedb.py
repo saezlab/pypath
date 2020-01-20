@@ -30,7 +30,7 @@ import pandas as pd
 
 import pypath.utils.mapping as mapping
 import pypath.share.session as session_mod
-import pypath.main as main_mod
+import pypath.legacy.main as main_mod
 import pypath.core.network as network_mod
 import pypath.resources.data_formats as data_formats
 import pypath.core.annot as annot

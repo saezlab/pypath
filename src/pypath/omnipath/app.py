@@ -32,12 +32,12 @@ import collections
 import itertools
 
 import pypath.resources.network as netres
-from pypath import annot
-from pypath import intercell
-from pypath import complex
-from pypath import ptm
-from pypath import session_mod
-from pypath import network
+from pypath.core import annot
+from pypath.core import intercell
+from pypath.core import complex
+from pypath.core import ptm
+from pypath.core import session_mod
+from pypath.core import network
 
 import pypath.share.settings as settings
 

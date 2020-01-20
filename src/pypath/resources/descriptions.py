@@ -31,7 +31,7 @@ import codecs
 import bs4
 import textwrap
 
-import pypath._html as _html
+import pypath.omnipath.server._html as _html
 import pypath.resources.data_formats as data_formats
 import pypath.resources.urls as urls
 import pypath.share.session as session_mod

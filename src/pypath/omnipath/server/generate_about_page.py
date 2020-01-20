@@ -23,7 +23,7 @@
 import sys
 from future.utils import iteritems
 
-import pypath._html as _html
+import pypath.omnipath.server._html as _html
 import pypath.resources.urls as urls
 
 import pypath.share.session as session_mod
