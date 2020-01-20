@@ -2538,7 +2538,7 @@
         "http://stke.sciencemag.org/content/6/275/rs10.long",
         "http://nar.oxfordjournals.org/content/43/D1/D531.long"
       ],
-      "webpages": ["http://www.koehn.embl.de/depod/index.php"],
+      "webpages": ["http://depod.bioss.uni-freiburg.de/"],
       "omictools": ["http://omictools.com/dephosphorylation-database-tool"]
     },
     "pubmeds": [
