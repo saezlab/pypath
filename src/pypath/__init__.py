@@ -86,9 +86,6 @@ class pypath(object):
             return object.__getattribute__(self, attr)
 
 
-#sys.modules['pypath'] = pypath()
-
-
 # from now on we print this at import
 # not at creation of PyPath object:
 pypath._disclaimer()
@@ -109,23 +106,3 @@ _session_mod.get_log().msg(
     level = -9,
     wrap = False,
 )
-
-
-#def __getattr__(attr):
-    
-    #try:
-        
-        #return importlib.import_module('pypath.%s' % attr)
-        
-    #except ImportError:
-        
-        #return __import__(__name__).__getattribute__(attr)
-
-
-#def __dir__():
-    
-    #return object.__dir__(__import__(__name__)) + [
-        #py[:-3]
-        #for py in os.listdir(os.path.abspath(os.path.dirname(__file__)))
-        #if py.endswith('.py')
-    #]
