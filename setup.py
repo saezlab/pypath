@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2019
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -41,19 +41,19 @@ with open('HISTORY.rst') as f:
 
 ENTRY_POINTS = {
     'console_scripts': [
-        'bio2bel_omnipath = pypath.bel:main',
+        'bio2bel_omnipath = pypath.omnipath.bel:main',
     ],
     'bio2bel': [
-        'omnipath = pypath.bel',
+        'omnipath = pypath.omnipath.bel',
     ],
 }
 
 setup(
     name = 'pypath',
     version = __version__,
-    maintainer = 'Dénes Türei, Nicolas Palacio, Olga Ivanova',
+    maintainer = 'Dénes Türei, Nicolàs Palacio, Olga Ivanova',
     maintainer_email = 'turei.denes@gmail.com',
-    author = 'Dénes Türei, Nicolas Palacio, Olga Ivanova',
+    author = 'Dénes Türei, Nicolàs Palacio, Olga Ivanova',
     author_email = 'turei.denes@gmail.com',
     long_description = readme + '\n\n' + history,
     keywords = [
@@ -63,15 +63,16 @@ setup(
         'PhosphoSite', 'PhosphoPoint', 'DEPOD', 'SPIKE', 'KEGG',
         'Autophagy', 'ARN', 'NRF2', 'NRF2ome', 'Guide to Pharmacology',
         'regulation', 'phosphorylation', 'kinase', 'phosphatase',
-        'dephosphorylation', 'directed graph',
+        'dephosphorylation', 'directed graph', 'annotations',
+        'complexes', 'inter-cellular communication',
     ],
-    description = 'Molecular networks in Python',
+    description = 'Molecular signaling prior knowledge in Python',
     license = 'GPLv3',
     platforms = ['Linux', 'Unix', 'MacOSX', 'Windows'],
     url = ['http://pypath.omnipathdb.org/'],
     download_url = ['http://pypath.omnipathdb.org/releases/'],
     classifiers = [
-        'Development Status :: 5 - Production/Stable',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
@@ -116,6 +117,9 @@ setup(
             'pybel',
             'bio2bel',
             'click',
+        ],
+        'graph': [
+            'igraph',
         ],
     },
     entry_points=ENTRY_POINTS,
