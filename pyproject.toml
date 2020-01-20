@@ -1,8 +1,8 @@
 [package]
 name = "pypath"
-summary = """A module for working with molecular interaction networks."""
+summary = """A module for molecular signaling prior knowledge processing."""
 url = "http://pypath.omnipathdb.org/"
-author = "Dénes Türei"
+author = "Dénes Türei and Nicolàs Palacio and Olga Ivanova"
 author-email = "turei.denes@gmail.com"
 license = "GPLv3"
 classifiers = [
