@@ -631,6 +631,33 @@ class ComplexAggregator(AbstractComplexResource):
             return tab
 
 
+    def _update_complex_attribute_classes(self):
+
+        self._update_complex_attribute_classes_static(self.complexes)
+
+
+    @staticmethod
+    def _update_complex_attribute_classes_static(cplexes, mod = None):
+
+        mod = mod or sys.modules[__name__]
+
+        for key in cplexes:
+
+            if hasattr(key, 'attrs'):
+
+                for attr, val in iteritems(key.attrs):
+
+                    cls = val.__class__.__name__
+
+                    if hasattr(dataio, cls):
+
+                        val.__class__ = getattr(dataio, cls)
+
+                    elif hasattr(mod, cls):
+
+                        val.__class__ = getattr(mod, cls)
+
+
     def save_to_pickle(self, pickle_file):
         
         self._log('Saving to pickle `%s`.' % pickle_file)

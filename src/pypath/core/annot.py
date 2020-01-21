@@ -246,7 +246,10 @@ class CustomAnnotation(session_mod.Logger):
 
     def _update_complex_attribute_classes(self):
 
-        AnnotationBase._update_complex_attribute_classes_static(self.classes)
+        complex.ComplexAggregator._update_complex_attribute_classes_static(
+            self.classes.keys(),
+            mod = sys.modules[__name__],
+        )
 
 
     def create_class(self, classdef):
@@ -1690,27 +1693,10 @@ class AnnotationBase(resource.AbstractResource):
 
     def _update_complex_attribute_classes(self):
 
-        self._update_complex_attribute_classes_static(self.annot)
-
-
-    @staticmethod
-    def _update_complex_attribute_classes_static(dct):
-
-        for key in dct.keys():
-
-            if hasattr(key, 'attrs'):
-
-                for attr, val in iteritems(key.attrs):
-
-                    cls = val.__class__.__name__
-
-                    if hasattr(dataio, cls):
-
-                        val.__class__ = getattr(dataio, cls)
-
-                    elif hasattr(sys.modules[__name__], cls):
-
-                        val.__class__ = getattr(sys.modules[__name__], cls)
+        complex.ComplexAggregator._update_complex_attribute_classes_static(
+            self.annot.keys(),
+            mod = sys.modules[__name__],
+        )
 
 
     def load_proteins(self):
