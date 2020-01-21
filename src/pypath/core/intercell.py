@@ -201,6 +201,16 @@ class IntercellAnnotation(annot.CustomAnnotation):
         self.set_classes()
         self.add_classes_to_df()
         self.collect_classes()
+    
+    
+    def __repr__(self):
+        
+        return (
+            '<Intercell annotations: %s records about %s entities>' % (
+                self.numof_records(),
+                self.numof_entities(),
+            )
+        )
 
 
 def init_db(**kwargs):

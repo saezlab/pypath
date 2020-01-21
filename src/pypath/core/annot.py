@@ -1398,6 +1398,26 @@ class CustomAnnotation(session_mod.Logger):
                 self.entities_by_resource(entity_types = entity_types)
             )
         )
+    
+    
+    def get_entities(self):
+        
+        return set.union(*self.classes.values())
+    
+    
+    def numof_entities(self):
+        
+        return len(self.get_entities())
+    
+    
+    def numof_classes(self):
+        
+        return len(self.classes)
+    
+    
+    def numof_records(self):
+        
+        return sum(map(len, self.classes.values()))
 
 
     def update_summaries(self):
