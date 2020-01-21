@@ -230,6 +230,8 @@ class CustomAnnotation(session_mod.Logger):
 
         self._log('Saving to pickle `%s`.' % pickle_file)
 
+        self._update_complex_attribute_classes()
+
         with open(pickle_file, 'wb') as fp:
 
             pickle.dump(
@@ -238,6 +240,25 @@ class CustomAnnotation(session_mod.Logger):
             )
 
         self._log('Saved to pickle `%s`.' % pickle_file)
+
+
+    def _update_complex_attribute_classes(key):
+
+        for key in self.classes.keys():
+
+            if hasattr(key, 'attrs'):
+
+                for attr, val in iteritems(key.attrs):
+
+                    cls = val.__class__.__name__
+
+                    if hasattr(dataio, cls):
+
+                        val.__class__ = getattr(dataio, cls)
+
+                    elif hasattr(sys.modules[__name__], cls):
+
+                        val.__class__ = getattr(sys.modules[__name__], cls)
 
 
     def create_class(self, classdef):
