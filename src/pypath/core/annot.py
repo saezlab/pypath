@@ -223,6 +223,8 @@ class CustomAnnotation(session_mod.Logger):
 
             self.classes = pickle.load(fp)
 
+        self._update_complex_attribute_classes()
+
         self._log('Loaded from pickle `%s`.' % pickle_file)
 
 
@@ -242,23 +244,9 @@ class CustomAnnotation(session_mod.Logger):
         self._log('Saved to pickle `%s`.' % pickle_file)
 
 
-    def _update_complex_attribute_classes(key):
+    def _update_complex_attribute_classes(self):
 
-        for key in self.classes.keys():
-
-            if hasattr(key, 'attrs'):
-
-                for attr, val in iteritems(key.attrs):
-
-                    cls = val.__class__.__name__
-
-                    if hasattr(dataio, cls):
-
-                        val.__class__ = getattr(dataio, cls)
-
-                    elif hasattr(sys.modules[__name__], cls):
-
-                        val.__class__ = getattr(sys.modules[__name__], cls)
+        AnnotationBase._update_complex_attribute_classes_static(self.classes)
 
 
     def create_class(self, classdef):
@@ -1698,6 +1686,31 @@ class AnnotationBase(resource.AbstractResource):
                 # and accepting the ones covering all members of the complex
                 if group == components
             ) or None
+
+
+    def _update_complex_attribute_classes(self):
+
+        self._update_complex_attribute_classes_static(self.annot)
+
+
+    @staticmethod
+    def _update_complex_attribute_classes_static(dct):
+
+        for key in dct.keys():
+
+            if hasattr(key, 'attrs'):
+
+                for attr, val in iteritems(key.attrs):
+
+                    cls = val.__class__.__name__
+
+                    if hasattr(dataio, cls):
+
+                        val.__class__ = getattr(dataio, cls)
+
+                    elif hasattr(sys.modules[__name__], cls):
+
+                        val.__class__ = getattr(sys.modules[__name__], cls)
 
 
     def load_proteins(self):
@@ -3831,26 +3844,11 @@ class AnnotationTable(session_mod.Logger):
                     return elem.__class__
 
 
-        def update_key(key):
-
-            if hasattr(key, 'attrs'):
-
-                for attr, val in iteritems(key.attrs):
-
-                    cls = val.__class__.__name__
-
-                    if hasattr(dataio, cls):
-
-                        val.__class__ = getattr(dataio, cls)
-
-                    elif hasattr(sys.modules[__name__], cls):
-
-                        val.__class__ = getattr(sys.modules[__name__], cls)
-
-            return key
-
-
         self._log('Saving to pickle `%s`.' % pickle_file)
+
+        for annot in self.annots.values():
+
+            annot._update_complex_attribute_classes()
 
         with open(pickle_file, 'wb') as fp:
 
@@ -3869,7 +3867,7 @@ class AnnotationTable(session_mod.Logger):
                         annot.__class__.__name__,
                         dict(
                             (
-                                update_key(key),
+                                key,
                                 set(
                                     tuple(this_annot)
                                     for this_annot in these_annots
