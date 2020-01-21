@@ -3810,6 +3810,25 @@ class AnnotationTable(session_mod.Logger):
                     return elem.__class__
 
 
+        def update_key(key):
+
+            if hasattr(key, 'attrs'):
+
+                for attr, val in iteritems(key.attrs):
+
+                    cls = val.__class__.__name__
+
+                    if hasattr(dataio, cls):
+
+                        val.__class__ = getattr(dataio, cls)
+
+                    elif hasattr(sys.modules[__name__], cls):
+
+                        val.__class__ = getattr(sys.modules[__name__], cls)
+
+            return key
+
+
         self._log('Saving to pickle `%s`.' % pickle_file)
 
         with open(pickle_file, 'wb') as fp:
@@ -3829,7 +3848,7 @@ class AnnotationTable(session_mod.Logger):
                         annot.__class__.__name__,
                         dict(
                             (
-                                key,
+                                update_key(key),
                                 set(
                                     tuple(this_annot)
                                     for this_annot in these_annots
