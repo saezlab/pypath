@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-#  Copyright (c) 2014-2018 - EMBL
+#  Copyright (c) 2014-2020 - EMBL
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
 #
@@ -10,7 +10,7 @@
 #  Please do not redistribute.
 #  For permission please contact me.
 #
-#  Website: http://www.ebi.ac.uk/~denes
+#  Website: http://omnipathdb.org/
 #
 
 from pypath.omnipath.server import run

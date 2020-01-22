@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2018
+#  2014-2020
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)

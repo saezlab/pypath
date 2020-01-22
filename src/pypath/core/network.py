@@ -3585,7 +3585,12 @@ class Network(session_mod.Logger):
         self._log('Finished updating summaries.')
     
     
-    def summaries_tab(self, outfile = None, return_table = False):
+    def summaries_tab(
+            self,
+            outfile = None,
+            return_table = False,
+            label_type = 1,
+        ):
         """
         Creates a table from resource vs. entity counts and optionally
         writes it to ``outfile`` and returns it.
@@ -3593,7 +3598,7 @@ class Network(session_mod.Logger):
 
         tab = []
         
-        tab.append(key[1] for key in self.summaries[0].keys())
+        tab.append(key[label_type] for key in self.summaries[0].keys())
         
         for rec in self.summaries:
             

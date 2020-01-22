@@ -662,6 +662,8 @@ class ComplexAggregator(AbstractComplexResource):
         
         self._log('Saving to pickle `%s`.' % pickle_file)
         
+        self._update_complex_attribute_classes()
+        
         with open(pickle_file, 'wb') as fp:
 
             pickle.dump(
