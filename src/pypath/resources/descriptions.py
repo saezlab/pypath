@@ -658,7 +658,7 @@ descriptions = {
         'color': '',
         'pubmeds': [25635527],
         'urls': {
-            'webpages': ['http://autophagy-regulation.org/'],
+            'webpages': ['http://autophagyregulation.org/'],
             'articles': [
                 'http://www.tandfonline.com/doi/full/10.4161/15548627.2014.994346'
             ]
@@ -3012,6 +3012,13 @@ descriptions = {
             'name': 'CC-Attribution-ShareAlike-NonCommercial 4.0',
             'url': 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
             'commercial_use': False
+        }
+    },
+    'ABS': {
+        'license': {
+            'name': 'GNU-GPLv2',
+            'url': 'http://genome.crg.es/main/GNU-GPL.html',
+            'commercial_use': True
         }
     },
     'LRdb': {

@@ -885,7 +885,7 @@
     "label": "ARN",
     "pubmeds": [25635527],
     "urls": {
-      "webpages": ["http://autophagy-regulation.org/"],
+      "webpages": ["http://autophagyregulation.org/"],
       "articles": [
         "http://www.tandfonline.com/doi/full/10.4161/15548627.2014.994346"
       ]
@@ -2509,8 +2509,8 @@
       "David Eisenberg"
     ],
     "license": {
-      "name": "CC-Attribution-3.0",
-      "url": "http://creativecommons.org/licenses/by/3.0/",
+      "name": "CC-Attribution-NoDerivs-3.0",
+      "url": "https://creativecommons.org/licenses/by-nd/3.0/",
       "commercial_use": true
     },
     "pypath": {
@@ -2538,7 +2538,7 @@
         "http://stke.sciencemag.org/content/6/275/rs10.long",
         "http://nar.oxfordjournals.org/content/43/D1/D531.long"
       ],
-      "webpages": ["http://www.koehn.embl.de/depod/index.php"],
+      "webpages": ["http://depod.bioss.uni-freiburg.de/"],
       "omictools": ["http://omictools.com/dephosphorylation-database-tool"]
     },
     "pubmeds": [
@@ -4055,7 +4055,7 @@
   "CPAD": {
     "license": {
       "name": "Custom license",
-      "url": "https://www.iitm.ac.in/bioinfo/CPAD/",
+      "url": "https://www.iitm.ac.in/bioinfo/CPAD/Amy-copyright.html",
       "commercial_use": false
     }
   },
@@ -4130,13 +4130,29 @@
     "Baccin2019": {
         "license": {
             "name": "No license.",
-            "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",	
+            "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
             "commercial_use": false
-        },	
-        "emails": [	
-            "lars.velten@embl.de", "Lars Velten",	
-            "a.trumpp@dkfz-heidelberg.de", "Andreas Trumpp",	
+        },
+        "emails": [
+            "lars.velten@embl.de", "Lars Velten",
+            "a.trumpp@dkfz-heidelberg.de", "Andreas Trumpp",
             "s.haas@dkfz-heidelberg.de", "Simon Haas"
         ]
+    },
+    "ABS": {
+        "license": {
+            "name": "GNU-GPLv2",
+            "url": "http://genome.crg.es/datasets/abs2005/index.html",
+            "commercial_use": true
+        },
+        "emails": ["eblanco@imim.es", "Enrique Blanco"]
+    },
+    "CacncerSEA": {
+        "license": {
+            "name": "No license.",
+            "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
+            "commercial_use": false
+        },
+        "emails": ["xiaoyun@ems.hrbmu.edu.cn", "Yun Xiao"]
     }
 }
