@@ -1121,6 +1121,14 @@ urls = {
             r'art%3A10.1038%2Fs41556-019-0439-6/MediaObjects/'\
             r'41556_2019_439_MOESM3_ESM.xlsx',
     },
+    'kea': {
+        'label': (
+            'Kinase enrichment analysis, contains many kinase related '
+            'datasets compiled from various databases and the literature'
+        ),
+        'kinase_substrate': 'https://www.maayanlab.net/KEA2/gsl/'
+            'kinase_substrate_phospho-site_level_pmid_resource_database.txt',
+    },
 }
 
 
