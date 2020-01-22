@@ -39,7 +39,7 @@ _resources = {
 }
 
 
-def get_kea():
+def kea_interactions():
     
     
     KeaRecord = collections.namedtuple(

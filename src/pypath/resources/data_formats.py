@@ -1025,6 +1025,27 @@ ptm = {
         extra_node_attrs_b = {},
         must_have_references = True,
     ),
+    'kea': input_formats.NetworkInput(
+        name = "KEA",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = 'uniprot',
+        id_type_b = 'uniprot',
+        entity_type_a = 'protein',
+        entity_type_b = 'protein',
+        is_directed = 1,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'kea_interactions',
+        references = 4,
+        resource = 5,
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+        must_have_references = True,
+    ),
 }
 
 # synonym
