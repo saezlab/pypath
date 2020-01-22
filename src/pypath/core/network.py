@@ -2434,7 +2434,19 @@ class Network(session_mod.Logger):
                 file = fp,
             )
         
+        self._update_interactions_by_nodes()
+        
         self._log('Saved to pickle `%s`.' % pickle_file)
+    
+    
+    def _update_interactions_by_nodes(self):
+        
+        self.interactions_by_nodes = collections.defaultdict(set)
+        
+        for key, ia in iteritems(self.interactions):
+            
+            self.interactions_by_nodes[ia.a].add(key)
+            self.interactions_by_nodes[ia.b].add(key)
     
     
     def load_from_pickle(self, pickle_file):
