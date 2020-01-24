@@ -91,3 +91,21 @@ def kea_interactions():
             )
     
     return result
+
+
+def kea_enzyme_substrate():
+    
+    return [
+        {
+            'start': None,
+            'end': None,
+            'instance': None,
+            'substrate': rec.substrate,
+            'kinase': rec.enzyme,
+            'resaa': rec.residue_type,
+            'resnum': rec.residue_offset,
+            'references': {rec.pmid},
+            'typ': 'phosphorylation',
+        }
+        for rec in kea_interactions()
+    ]

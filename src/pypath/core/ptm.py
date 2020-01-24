@@ -39,6 +39,7 @@ import pypath.internals.intera as intera
 import pypath.share.progress as progress
 import pypath.share.session as session_mod
 import pypath.utils.taxonomy as taxonomy
+import pypath.inputs as inputs
 
 
 builtin_inputs = [
@@ -52,6 +53,7 @@ builtin_inputs = [
     'MIMP',
     'DEPOD',
     'ProtMapper',
+    'KEA',
 ]
 
 
@@ -68,6 +70,7 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         'li2012': 'li2012_phospho',
         'depod': 'get_depod',
         'protmapper': 'protmapper_ptms',
+        'kea': 'kea.kea_enzyme_substrate',
     }
 
     organisms_supported = set([
@@ -84,6 +87,7 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         'signor',
         'depod',
         'protmapper',
+        'kea',
     ])
 
     substrate_id_types = {
@@ -97,6 +101,7 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         'hprd': [('refseqp', 'substrate_refseqp')],
         'depod': ['uniprot'],
         'protmapper': ['uniprot'],
+        'kea': ['uniprot'],
     }
     
     resource_names = dict(
@@ -206,17 +211,20 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         Selects the input method.
         """
 
-        def f(**kwargs): return []
+        def empty_input(*args, **kwargs): return []
 
+        
+        # a method provided
         if hasattr(self.input_method, '__call__'):
+            
             self.inputm = self.input_method
             self.name = self.name or self.input_method.__name__
-        elif hasattr(dataio, self.input_method):
-            self.inputm = getattr(dataio, self.input_method)
-            self.name = self.name or self.inputm.__name__
+            
+        # the method is associated to a resource name
+        # in the list of built in resources
         elif self.input_is(self.methods, '__contains__'):
-            self.inputm = getattr(
-                dataio,
+            
+            self.inputm = inputs.get_method(
                 self.methods[self.input_method.lower()]
             )
             self.name = (
@@ -227,9 +235,12 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
                     self.input_method
                 )
             )
+            
+        # attempting to look up the method in the inputs module
         else:
-            self.inputm = f
-            self.name = self.name or 'Unknown'
+            
+            self.inputm = inputs.get_method(self.input_method) or empty_input
+            self.name = self.name or self.inputm.__name__
 
 
     def set_inputargs(self, **inputargs):
@@ -519,6 +530,16 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
                 yield ptm
 
         #prg.terminate()
+    
+    
+    def __len__(self):
+        
+        return len(self.data)
+    
+    
+    def __repr__(self):
+        
+        return '<Enzyme-substrate processor: %u records>' % len(self)
 
 
 class PtmHomologyProcessor(
@@ -1073,7 +1094,7 @@ class PtmAggregator(session_mod.Logger):
                 'n_substrates': substrates,
                 'references': references,
                 'references_unique': references_unique,
-                'reference_shared': references_shared,
+                'references_shared': references_shared,
                 'curation_effort': curation_effort,
                 'curation_effort_unique': curation_effort_shared,
                 'curation_effort_shared': curation_effort_shared,
