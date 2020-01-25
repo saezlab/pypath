@@ -45,6 +45,7 @@ import pypath.share.curl as curl
 import pypath.internals.refs as refs_mod
 import pypath.utils.reflists as reflists
 import pypath.resources.network as network_resources
+import pypath.inputs as inputs
 
 
 NetworkEntityCollection = collections.namedtuple(
@@ -829,11 +830,8 @@ class Network(session_mod.Logger):
                                 '\n\tPlease answer `y` or `n`:\n\t')
                             sys.stdout.flush()
 
-                input_func = (
-                    getattr(dataio, networkinput.input)
-                        if hasattr(dataio, networkinput.input) else
-                    None
-                )
+                # if no method available it gonna be None
+                input_func = inputs.get_method(networkinput.input)
 
                 # reading from remote or local file, or executing import
                 # function:
@@ -877,8 +875,10 @@ class Network(session_mod.Logger):
                 # elif hasattr(dataio, networkinput.input):
                 elif input_func is not None:
 
-                    self._log("Retrieving data by dataio.%s() ..." %
-                                    input_func.__name__)
+                    self._log(
+                        'Retrieving data by method `%s` of the '
+                        'pypath.inputs module...' % input_func.__name__
+                    )
 
                     _store_cache = curl.CACHE
 
@@ -894,7 +894,8 @@ class Network(session_mod.Logger):
 
                     except Exception as e:
                         self._log(
-                            'Error in `pypath.dataio.%s()`. '
+                            'Error in method `%s` of the '
+                            'pypath.inputs module. '
                             'Skipping to next resource. '
                             'See below the traceback.' % input_func.__name__
                         )
@@ -923,7 +924,7 @@ class Network(session_mod.Logger):
                 if infile is None:
 
                     self._log(
-                        '`%s`: Could not find file or dataio function '
+                        '`%s`: Could not find file or input function '
                         'or failed preprocessing.' %
                         networkinput.input,
                         -5,
