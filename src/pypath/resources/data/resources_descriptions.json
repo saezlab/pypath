@@ -3517,9 +3517,9 @@
       "Sylvie Ricard-Blum"
     ],
     "license": {
-      "name": "No license.",
-      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
-      "commercial_use": false
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "commercial_use": true
     },
     "pypath": {
       "format": [
