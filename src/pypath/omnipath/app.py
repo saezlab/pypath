@@ -358,8 +358,6 @@ class Database(session_mod.Logger):
                 if self.get_param('dorothea_expand_levels') else
             netres.transcription
         )
-        
-        transcription.update(dorothea)
 
         return {'resources': transcription}
 
