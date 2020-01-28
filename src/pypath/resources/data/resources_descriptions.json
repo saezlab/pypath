@@ -4154,5 +4154,13 @@
             "commercial_use": false
         },
         "emails": ["xiaoyun@ems.hrbmu.edu.cn", "Yun Xiao"]
+    },
+    "Surfaceome": {
+        "license": {
+            "name": "No license",
+            "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
+            "commercial_use": false
+        },
+        "emails": ["wbernd@ethz.ch", "Bernd Wollscheid"]
     }
 }
