@@ -2468,6 +2468,8 @@ class Network(session_mod.Logger):
                 self.nodes_by_label,
             ) = pickle.load(fp)
         
+        self._update_interactions_by_nodes()
+        
         self._log('Loaded from pickle `%s`.' % pickle_file)
     
     

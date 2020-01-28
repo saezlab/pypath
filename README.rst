@@ -491,6 +491,11 @@ Main improvements in the past releases:
   has been removed from the mandatory dependencies
 * New API for the network, interactions, evidences, molecular entities
 
+0.10.0
+------
+* New module structure: modules grouped into `core`, `inputs`, `internals`,
+  `legacy`, `omnipath`, `resources`, `share` and `utils` submodeules.
+
 Upcoming
 --------
 
