@@ -830,7 +830,9 @@ urls = {
     'pwcommons': {
         'label': 'PathwayCommons binary SIF files',
         'url': 'http://www.pathwaycommons.org/archives/PC2/v8/'
-        'PathwayCommons.8.%s.BINARY_SIF.hgnc.txt.sif.gz'
+        'PathwayCommons.8.%s.BINARY_SIF.hgnc.txt.sif.gz',
+        'url': 'https://www.pathwaycommons.org/archives/PC2/v12/'
+            'PathwayCommons12.%s.hgnc.sif.gz',
     },
     'homologene': {
         'label': 'NCBI HomoloGene data, recent release',

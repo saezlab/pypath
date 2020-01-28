@@ -200,3 +200,20 @@ def intact_interactions(
     prg.terminate()
 
     return results
+
+
+def _try_isoform(name):
+
+    name = name.split('-')
+
+    if len(name) > 1 and name[1].isdigit():
+
+        isoform = int(name[1])
+        main = name[0]
+
+    else:
+
+        main = '-'.join(name)
+        isoform = None
+
+    return main, isoform
