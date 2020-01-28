@@ -118,8 +118,8 @@ import pypath.internals.input_formats as input_formats
 import pypath.internals.refs as _refs
 import pypath.visual.plot as plot
 import pypath.core.ptm
-import pypath.omnipath.legacy.export as export
-import pypath.ig_drawing as ig_drawing
+import pypath.omnipath.export as export
+import pypath.visual.igraph_drawing as ig_drawing
 import pypath.share.common as common
 import pypath._version as _version
 from pypath.share.progress import *

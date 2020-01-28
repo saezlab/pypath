@@ -36,7 +36,7 @@ import igraph
 import time
 
 from pypath.share.common import *
-from pypath.ig_drawing import *
+from pypath.visual.igraph_drawing import *
 import pypath.share.session as session_mod
 
 __all__ = ['Plot', 'InterSet']

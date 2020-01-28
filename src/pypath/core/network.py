@@ -2333,6 +2333,28 @@ class Network(session_mod.Logger):
             return self.nodes_by_label[label]
     
     
+    def interaction(self, a, b):
+        """
+        Retrieves the interaction `a --> b` if it exists in the network,
+        otherwise `b --> a`. If no interaction exist between `a` and `b`
+        returns `None`.
+        """
+        
+        entity_a = self.entity(a)
+        entity_b = self.entity(b)
+        
+        key_ab = (entity_a, entity_b)
+        key_ba = (entity_b, entity_a)
+        
+        if key_ab in self.interactions:
+            
+            return self.interactions[key_ab]
+            
+        elif key_ba in self.interactions:
+            
+            return self.interactions[key_ba]
+    
+    
     def _get_interaction(self, id_a, id_b, name_type = 'id'):
         
         method = 'entity_by_%s' % name_type

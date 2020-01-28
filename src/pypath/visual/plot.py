@@ -22,7 +22,7 @@
 from future.utils import iteritems
 from past.builtins import xrange, range, reduce
 
-from pypath import session_mod
+from pypath.share import session as session_mod
 _logger = session_mod.get_log()
 
 import re
@@ -53,7 +53,7 @@ from matplotlib import ticker
 from scipy import stats
 
 import pypath.share.common as common
-from pypath.ig_drawing import DefaultGraphDrawerFFsupport
+from pypath.visual.igraph_drawing import DefaultGraphDrawerFFsupport
 import pypath.resources.descriptions
 import pypath.share.progress as progress
 import pypath.internals.refs as _refs
