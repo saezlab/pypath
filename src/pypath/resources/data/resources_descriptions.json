@@ -2304,7 +2304,7 @@
     "license": {
       "name": "Design Science License",
       "url": "http://www.innatedb.com/license.jsp",
-      "commercial_use": false
+      "commercial_use": true
     },
     "pypath": {
       "format": [

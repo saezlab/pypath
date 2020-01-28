@@ -1657,7 +1657,7 @@ descriptions = {
         'license': {
             'name': 'Design Science License',
             'url': 'http://www.innatedb.com/license.jsp',
-            'commercial_use': False
+            'commercial_use': True
         },
         'pypath': {
             'format': [
