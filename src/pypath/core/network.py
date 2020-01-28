@@ -2808,12 +2808,22 @@ class Network(session_mod.Logger):
         return new
     
     
-    def load_dorothea(self, levels = None, **kwargs):
+    def load_dorothea(self, levels = None, expand_levels = None, **kwargs):
         
-        dorothea = copy_mod.deepcopy(network_resources.dorothea['dorothea'])
+        expand_levels = (
+            expand_levels
+                if isinstance(expand_levels, bool) else
+            settings.get('dorothea_expand_levels')
+        )
         
-        if levels:
-            dorothea.networkinput.input_args['levels'] = levels
+        dorothea = (
+            netres.dorothea_expand_levels(
+                network_resources.dorothea,
+                levels = levels,
+            )
+                if expand_levels else
+            network_resources.dorothea
+        )
         
         self.load(dorothea, **kwargs)
     

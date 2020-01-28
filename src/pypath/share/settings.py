@@ -142,6 +142,9 @@ _defaults = {
         'pathway_extra': True,
     },
     
+    # only for pypath.omnipath.app and pypath.core.network
+    'dorothea_expand_levels': True,
+    
     'dependencies': {
         'intercell': ('annotations',),
         'annotations': ('complex',),

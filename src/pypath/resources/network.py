@@ -27,6 +27,7 @@ import copy
 import pypath.internals.resource as resource
 import pypath.resources.data_formats as data_formats
 import pypath.share.session as session_mod
+import pypath.share.settings as settings
 
 _logger = session_mod.Logger(name = 'network_resources')
 _log = _logger._log
@@ -67,6 +68,50 @@ def _networkinput_to_networkresource(networkinput, data_model = None):
         networkinput = networkinput,
         data_model = data_model,
     )
+
+
+def dorothea_expand_levels(resources = None, levels = None):
+    """
+    In a dictionary of resource definitions creates a separate
+    ``NetworkResource`` object for each confidence levels of DoRothEA
+    just like each level was a different resource.
+    
+    No matter ``resources`` is a ``NetworkResource`` or a dict of network
+    resources, returns always a dict of network resources.
+    """
+    
+    resources = resources or transcription
+    levels = levels or settings.get('tfregulons_levels')
+    dorothea = {}
+    
+    dorothea_original = (
+        resources
+            if hasattr(resources, 'networkinput') else
+        resources['dorothea']
+            if 'dorothea' in resources else
+        transcription['dorothea']
+    )
+    
+    for level in levels:
+        
+        level_key = 'dorothea_%s' % level
+        
+        dorothea[level_key] = copy.deepcopy(dorothea_original)
+        dorothea[level_key].name = 'DoRothEA_%s' % level
+        dorothea[level_key].networkinput.name = 'DoRothEA_%s' % level
+        dorothea[level_key].networkinput.input_args = {'levels': {level}}
+    
+    if resources:
+        
+        resources = copy.deepcopy(resources)
+        _ = resources.pop('dorothea', None)
+        resources.update(dorothea)
+        
+        return resources
+        
+    else:
+        
+        return dorothea
 
 
 for resource_set_label in dir(data_formats):

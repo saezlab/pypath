@@ -349,19 +349,16 @@ class Database(session_mod.Logger):
         """
         Returns the arguments for building the TF-target network dataset.
         """
-
-        transcription = copy.deepcopy(netres.transcription)
-        dorothea = {}
         
-        for level in self.get_param('tfregulons_levels'):
-            
-            dorothea['dorothea_%s' % level] = copy.deepcopy(
-                transcription['dorothea']
+        transcription = (
+            netres.dorothea_expand_levels(
+                resources = netres.transcription,
+                levels = self.get_param('tfregulons_levels'),
             )
-            dorothea['dorothea_%s' % level].name = 'DoRothEA_%s' % level
-            dorothea['dorothea_%s' % level].input_args = {'levels': {level}}
+                if self.get_param('dorothea_expand_levels') else
+            netres.transcription
+        )
         
-        del transcription['dorothea']
         transcription.update(dorothea)
 
         return {'resources': transcription}

@@ -308,6 +308,31 @@ reaction_pc = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
 }
+
+
+reactome_pc = {
+    'reactome': input_formats.NetworkInput(
+        name = 'Reactome',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 2,
+        id_type_a = 'genesymbol',
+        id_type_b = 'genesymbol',
+        entity_type_a = 'protein',
+        entity_type_b = 'protein',
+        is_directed = (1, ['state-chanege', 'controls-phosphorylation-of']),
+        sign = None,
+        resource = 3,
+        input = 'get_pathwaycommons',
+        references = None,
+        ncbi_tax_id = 9606,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+        must_have_references = False,
+        input_args = {'sources': ('reactome',)},
+    ),
+}
 '''
 Pathway databases included in OmniPath.
 These are manually curated, directed, and in most
@@ -483,7 +508,7 @@ pathway = {
         entity_type_b = "protein",
         is_directed = False,
         sign = False,
-        input = 'deathdomain_interactions_rescued',
+        input = 'deathdomain.deathdomain_interactions_rescued',
         references = (3, ";"),
         ncbi_tax_id = 9606,
         extra_edge_attrs = {"dd_methods": (2, ';')},
@@ -1198,7 +1223,7 @@ interaction_misc = {
         entity_type_b = "protein",
         is_directed = False,
         sign = False,
-        input = 'hippie_interactions',
+        input = 'hippie.hippie_interactions',
         references = 4,
         ncbi_tax_id = 9606,
         extra_edge_attrs = {},
