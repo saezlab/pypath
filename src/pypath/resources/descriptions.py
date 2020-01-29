@@ -1657,7 +1657,7 @@ descriptions = {
         'license': {
             'name': 'Design Science License',
             'url': 'http://www.innatedb.com/license.jsp',
-            'commercial_use': False
+            'commercial_use': True
         },
         'pypath': {
             'format': [
@@ -2425,9 +2425,9 @@ descriptions = {
         'emails': [('matrixdb@ibcp.fr', 'MatrixDB Team'),
                    ('sylvie.ricard-blum@ibcp.fr', 'Sylvie Ricard-Blum')],
         'license': {
-            'name': 'No license',
-            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense',
-            'commercial_use': False
+            'name': 'CC BY 4.0',
+            'url': 'https://creativecommons.org/licenses/by/4.0/',
+            'commercial_use': True
         },
         'pypath': {
             'format': [

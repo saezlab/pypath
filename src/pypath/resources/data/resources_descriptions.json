@@ -2304,7 +2304,7 @@
     "license": {
       "name": "Design Science License",
       "url": "http://www.innatedb.com/license.jsp",
-      "commercial_use": false
+      "commercial_use": true
     },
     "pypath": {
       "format": [
@@ -3517,9 +3517,9 @@
       "Sylvie Ricard-Blum"
     ],
     "license": {
-      "name": "No license.",
-      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
-      "commercial_use": false
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "commercial_use": true
     },
     "pypath": {
       "format": [
@@ -4106,9 +4106,9 @@
   },
   "ProtMapper": {
 	"license": {
-            "name": "CC-Attribution-ShareAlike-NonCommercial 4.0",
-            "url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
-            "commercial_use": false
+            "name": "CC-Attribution 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "commercial_use": true
         }
     },
     "LRdb": {
@@ -4154,5 +4154,13 @@
             "commercial_use": false
         },
         "emails": ["xiaoyun@ems.hrbmu.edu.cn", "Yun Xiao"]
+    },
+    "Surfaceome": {
+        "license": {
+            "name": "No license",
+            "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
+            "commercial_use": false
+        },
+        "emails": ["wbernd@ethz.ch", "Bernd Wollscheid"]
     }
 }
