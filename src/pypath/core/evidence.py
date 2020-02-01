@@ -335,7 +335,9 @@ class Evidence(object):
                 _match('interaction_type', interaction_type)
             ) and
             (
-                via == False or
+                via is None or
+                (via == False and not self.resource.via) or
+                (via == True and self.resources.via) or
                 _match('via', via)
             ) and
             (

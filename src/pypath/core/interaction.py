@@ -2655,12 +2655,14 @@ class Interaction(object):
     @staticmethod
     def _get(self, method, **kwargs):
         
+        via = kwargs['via'] if 'via' in kwargs else False
+        
         return getattr(
             self.get_evidences(
                 **kwargs
             ),
             'get_%s' % method,
-        )()
+        )(via = via)
     
     
     @staticmethod
