@@ -556,7 +556,7 @@ class Evidences(object):
     
     def count_resources(self, **kwargs):
         
-        return len(self.filter(**kwargs))
+        return len(list(self.filter(**kwargs)))
     
     
     def get_resources(self, **kwargs):

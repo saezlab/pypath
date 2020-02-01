@@ -1777,11 +1777,27 @@ class Interaction(object):
             by_references = by_references,
             by_reference_resource_pairs = by_reference_resource_pairs,
         )
+        
+        if _dir == 'undirected' or _dir is None:
+            
+            _dir = self.majority_dir(
+                only_interaction_type = only_interaction_type,
+                only_primary = only_primary,
+                by_references = False,
+                by_reference_resource_pairs = False,
+            )
+        
         _effect = self.majority_sign(
             only_interaction_type = only_interaction_type,
             only_primary = only_primary,
             by_references = by_references,
             by_reference_resource_pairs = by_reference_resource_pairs,
+        )
+        _effect_noref = self.majority_sign(
+            only_interaction_type = only_interaction_type,
+            only_primary = only_primary,
+            by_references = False,
+            by_reference_resource_pairs = False,
         )
 
         if _dir == 'undirected':
@@ -1798,11 +1814,20 @@ class Interaction(object):
             dirs = (self.a_b, self.b_a) if _dir is None else (_dir,)
 
             for d in dirs:
-
-                if _effect[d] is not None:
+                
+                d_effect = (
+                    _effect[d]
+                        if (
+                            _effect[d] is not None and
+                            _effect[d][0] != _effect[d][1]
+                        ) else
+                    _effect_noref[d]
+                )
+                
+                if d_effect is not None:
                     
                     # index #0 is positive
-                    if _effect[d][0]:
+                    if d_effect[0]:
                         
                         result.append([
                             d[0],
@@ -1813,7 +1838,7 @@ class Interaction(object):
                     
                     # can not be elif bc of the case of equal weight of
                     # evidences for both positive and negative
-                    if _effect[d][1]:
+                    if d_effect[1]:
                         
                         result.append([
                             d[0],
