@@ -58,6 +58,7 @@ class WebserviceTables(session_mod.Logger):
             complex_args = None,
             intercell_args = None,
             rebuild = None,
+            network_datasets = None,
         ):
         
         session_mod.Logger.__init__(self, name = 'websrvtab')
@@ -73,6 +74,16 @@ class WebserviceTables(session_mod.Logger):
         self.complex_args = complex_args or {}
         self.intercell_args = intercell_args or {}
         self.rebuild = rebuild or set()
+        self.network_datasets = (
+            network_datasets or
+            (
+                'omnipath',
+                'tf_target',
+                'mirna_mrna',
+                'tf_mirna',
+                'lncrna_mrna',
+            )
+        )
     
     
     def reload(self):
@@ -98,88 +109,33 @@ class WebserviceTables(session_mod.Logger):
         self._log('Building `interactions` data frame.')
         dataframes = []
         
-        tf_target = copy.deepcopy(netres.transcription)
-        tf_target['dorothea'].input_args['levels'] = {
-            'A', 'B', 'C', 'D',
-        }
-        tf_target['dorothea'].must_have_references = False
-        
-        param = {
-            'PPI': (
-                'load_omnipath',
-                {
-                    'kinase_substrate_extra': True,
-                    'ligand_receptor_extra': True,
-                    'pathway_extra': True,
-                },
-            ),
-            'TF-target': (
-                'init_network',
-                {'lst': tf_target},
-            ),
-            'miRNA-target': (
-                'init_network',
-                {'lst': data_formats.mirna_target},
-            ),
-            'lncRNA-target': (
-                'init_network',
-                {'lst': data_formats.lncrna_target},
-            )
-        }
-        
-        for name, (to_call, kwargs) in iteritems(param):
+        for dataset in self.network_datasets:
             
-            self._log('Building %s interactions.' % name)
+            self._log('Building `%s` interactions.' % dataset)
             
-            pa = main.PyPath()
-            getattr(pa, to_call)(**kwargs)
+            netw = omnipath.data.get_db(dataset)
             
-            e = export.Export(pa)
-            e.webservice_interactions_df()
-            dataframes.append(e.df)
+            exp = export.Export(netw)
+            exp.webservice_interactions_df()
+            dataframes.append(exp.df)
             
-            if not self.only_human and name != 'lncRNA-target':
+            for rodent in (10090, 10116):
                 
-                graph_human = None
-                
-                for rodent in (10090, 10116):
-                    
-                    self._log(
-                        'Translating %s interactions to organism `%u`' % (
-                            name,
-                            rodent,
-                        )
+                self._log(
+                    'Translating `%s` interactions to organism `%u`' % (
+                        name,
+                        rodent,
                     )
-                    
-                    if pa.ncbi_tax_id == 9606:
-                        
-                        if pa.graph.ecount() < 100000:
-                            
-                            graph_human = copy.deepcopy(pa.graph)
-                        
-                    else:
-                        
-                        if graph_human:
-                            
-                            pa.graph = graph_human
-                            pa.ncbi_tax_id = 9606
-                            pa.genesymbol_labels(remap_all = True)
-                            pa.update_vname()
-                            
-                        else:
-                            
-                            del e
-                            del pa
-                            pa = main.PyPath()
-                            getattr(pa, to_call)(**kwargs)
-                    
-                    pa.orthology_translation(rodent)
-                    e = export.Export(pa)
-                    e.webservice_interactions_df()
-                    dataframes.append(e.df)
+                )
+                
+                rodent_netw = netw.homology_translate(rodent)
+                exp = export.Export(rodent_netw)
+                exp.webservice_interactions_df()
+                dataframes.append(exp.df)
         
-        del e
-        del pa
+        del exp
+        del netw
+        del rodent_netw
         
         self.df_interactions = pd.concat(dataframes)
         self.df_interactions.to_csv(
