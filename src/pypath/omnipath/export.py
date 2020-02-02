@@ -213,19 +213,6 @@ class Export(session.Logger):
         See docs at method ``make_df``.
         """
         
-        def match_consensus(consensus, nodes, effect = None):
-            
-            effect = effect or 'unknown'
-            param = list(nodes) + ['directed', effect]
-            
-            return int(
-                any(
-                    co == param
-                    for co in consensus
-                )
-            )
-        
-        
         self._log('Creating data frame from `core.network.Network` object.')
         
         if unique_pairs:
@@ -252,75 +239,101 @@ class Export(session.Logger):
         
         for ia in self.network:
             
-            consensus = ia.consensus()
-            
-            for _dir in ('a_b', 'b_a'):
-                
-                nodes = getattr(ia, _dir)
-                directed = bool(ia.direction[nodes])
-                directed_rev = bool(ia.direction[tuple(reversed(nodes))])
-                
-                if not directed and (_dir == 'b_a' or directed_rev):
-                    
-                    continue
-                
-                positive = getattr(ia, 'positive_%s' % _dir)()
-                negative = getattr(ia, 'negative_%s' % _dir)()
-                
-                resources = ';'.join(
-                    sorted(set(
-                        itertools.chain(
-                            ia.get_resource_names(direction = 'undirected'),
-                            ia.get_resource_names(direction = _dir),
-                        )
-                    ))
-                )
-                
-                references = ';'.join(
-                    sorted(set(
-                        '%s:%s' % (ev.resource.name, ref.pmid)
-                        for ev in itertools.chain(
-                            ia.get_evidences(direction = 'undirected'),
-                            ia.get_evidences(direction = _dir),
-                        )
-                        for ref in ev.references
-                        if not ev.resource.via
-                    ))
-                )
-
-                this_row = [
-                    nodes[0].identifier,
-                    nodes[1].identifier,
-                    nodes[0].label,
-                    nodes[1].label,
-                    int(directed),
-                    int(positive),
-                    int(negative),
-                    match_consensus(
-                        consensus,
-                        nodes,
-                    ),
-                    match_consensus(
-                        consensus,
-                        nodes,
-                        'positive',
-                    ),
-                    match_consensus(
-                        consensus,
-                        nodes,
-                        'negative',
-                    ),
-                    resources,
-                    references,
-                    self._dip_urls(ia),
-                ]
-                
-                this_row = self.add_extra_fields(ia, this_row, nodes)
-                
-                result.append(this_row)
+            results.extend(self.process_interaction(ia))
         
         self.df = pd.DataFrame(result, columns = header)
         self.df = self.df.astype(dtypes)
+
+
+    def process_interaction(self, ia):
+        
+        result = []
+        
+        consensus = ia.consensus()
+        
+        for _dir in ('a_b', 'b_a'):
+            
+            nodes = getattr(ia, _dir)
+            directed = bool(ia.direction[nodes])
+            directed_rev = bool(ia.direction[tuple(reversed(nodes))])
+            
+            if not directed and (_dir == 'b_a' or directed_rev):
+                
+                continue
+            
+            positive = getattr(ia, 'positive_%s' % _dir)()
+            negative = getattr(ia, 'negative_%s' % _dir)()
+            
+            resources = ';'.join(
+                sorted(set(
+                    itertools.chain(
+                        ia.get_resource_names(direction = 'undirected'),
+                        ia.get_resource_names(direction = nodes),
+                    )
+                ))
+            )
+            
+            references = ';'.join(
+                sorted(set(
+                    '%s:%s' % (ev.resource.name, ref.pmid)
+                    for ev in itertools.chain(
+                        ia.get_evidences(direction = 'undirected'),
+                        ia.get_evidences(direction = nodes),
+                    )
+                    for ref in ev.references
+                    if not ev.resource.via
+                ))
+            )
+
+            this_row = [
+                nodes[0].identifier,
+                nodes[1].identifier,
+                nodes[0].label,
+                nodes[1].label,
+                int(directed),
+                int(positive),
+                int(negative),
+                self.match_consensus(
+                    consensus,
+                    nodes,
+                ),
+                self.match_consensus(
+                    consensus,
+                    nodes,
+                    'positive',
+                ),
+                self.match_consensus(
+                    consensus,
+                    nodes,
+                    'negative',
+                ),
+                resources,
+                references,
+                self._dip_urls(ia),
+            ]
+            
+            this_row = self.add_extra_fields(ia, this_row, nodes)
+            
+            result.append(this_row)
+        
+        return result
+
+
+    @staticmethod
+    def match_consensus(consensus, nodes, effect = None):
+        
+        param = list(nodes) + ['directed']
+        
+        if effect:
+            
+            param.append(effect)
+        
+        return int(
+            any(
+                co[:len(param)] == param
+                for co in consensus
+            )
+        )
 
 
     def _make_df_igraph(
