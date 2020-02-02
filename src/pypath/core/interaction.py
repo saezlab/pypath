@@ -1935,25 +1935,33 @@ class Interaction(object):
                         new_ids[label] in new_attrs and
                         attr in new_attrs[new_ids[label]]
                     ) else
-                getattr(self, '%s_%s' % (attr, label))
+                getattr(getattr(self, label), attr)
             )
             for attr in ('id_type', 'entity_type', 'taxon')
             for label in ('a', 'b')
         )
         
         new = Interaction(
-            id_a = new_a,
-            id_b = new_b,
+            a = new_a,
+            b = new_b,
             **all_new_attrs
         )
         
         new.evidences += self.evidences
         
+        to_old = dict(
+            (
+                new_id,
+                self.id_to_entity(old_id)
+            )
+            for new_id, old_id in iteritems(to_old)
+        )
+        
         for (old_dir, new_dir), attr in itertools.product(
             zip(
                 (
-                    (to_old[new.id_a], to_old[new.id_b]),
-                    (to_old[new.id_b], to_old[new.id_a]),
+                    (to_old[new.a.identifier], to_old[new.b.identifier]),
+                    (to_old[new.b.identifier], to_old[new.a.identifier]),
                     'undirected'
                 ),
                 (
@@ -1965,17 +1973,17 @@ class Interaction(object):
             ('direction', 'positive', 'negative'),
         ):
             
-            if _dir == 'undirected' and attr != 'direction':
+            if old_dir == 'undirected' and attr != 'direction':
                 
                 continue
             
             
-            getattr(self, attr)[new_dir] += getattr(self, attr)[old_dir]
+            getattr(new, attr)[new_dir] += getattr(self, attr)[old_dir]
         
         return new
     
     
-    def homology_translate(id_a, id_b, taxon):
+    def homology_translate_one(self, id_a, id_b, taxon):
         
         return self.translate(
             ids = {
@@ -1991,6 +1999,28 @@ class Interaction(object):
                 },
             },
         )
+    
+    
+    def homology_translate(self, taxon):
+        
+        for new_a, new_b in itertools.product(
+            homology.translate(
+                source_id = self.a.identifier,
+                target = taxon,
+                source = self.a.taxon,
+            ),
+            homology.translate(
+                source_id = self.b.identifier,
+                target = taxon,
+                source = self.b.taxon,
+            ),
+        ):
+            
+            yield self.homology_translate_one(
+                id_a = new_a,
+                id_b = new_b,
+                taxon = taxon,
+            )
     
     
     def get_evidences(
