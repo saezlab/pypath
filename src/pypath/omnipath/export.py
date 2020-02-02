@@ -27,20 +27,23 @@ import importlib as imp
 import re
 import json
 import copy
-import pandas as pd
 import itertools
+import collections
+
+import pandas as pd
 
 import pypath.share.progress as progress
 import pypath.resources.urls as urls
 import pypath.resources.data_formats as data_formats
 import pypath.share.settings as settings
 import pypath.core.entity as entity
+import pypath.share.session as session
 
 strip_json = re.compile(r'[\[\]{}\"]')
 simple_types = {bool, int, float, type(None)}
 
 
-class Export(object):
+class Export(session.Logger):
 
     default_header_uniquepairs = ['UniProt_A', 'GeneSymbol_A', 'UniProt_B',
                                   'GeneSymbol_B', 'Databases', 'PubMed_IDs',
@@ -99,6 +102,8 @@ class Export(object):
             default_edge_attr_processor = None,
             pa = None,
         ):
+
+        session.Logger.__init__(self, name = 'export')
 
         self.extra_node_attrs = extra_node_attrs or {}
         self.extra_edge_attrs = extra_edge_attrs or {}
@@ -200,9 +205,114 @@ class Export(object):
         See docs at method ``make_df``.
         """
         
-        raise NotImplementedError
-    
-    
+        def match_consensus(consensus, nodes, effect = None):
+            
+            effect = effect or 'unknown'
+            param = list(nodes) + ['directed', effect]
+            
+            return int(
+                any(
+                    co == param
+                    for co in consensus
+                )
+            )
+        
+        
+        if unique_pairs:
+            
+            raise NotImplementedError
+        
+        self.extra_node_attrs = extra_node_attrs or self.extra_node_attrs
+        self.extra_edge_attrs = extra_edge_attrs or self.extra_edge_attrs
+        
+        dtypes = (
+            self.default_dtypes_uniquepairs
+                if unique_pairs else
+            self.default_dtypes_bydirs
+        )
+        
+        header = self.get_header(
+            unique_pairs = unique_pairs,
+            extra_node_attrs = extra_node_attrs,
+            extra_edge_attrs = extra_edge_attrs,
+        )
+
+        record = collections.namedtuple(
+            'NetworkRecord%s' % ('UniquePairs' if unique_pairs else ''),
+            header,
+        )
+        
+        result = []
+        
+        for ia in self.network:
+            
+            consensus = ia.consensus()
+            
+            for _dir in ('a_b', 'b_a'):
+                
+                nodes = getattr(ia, _dir)
+                directed = bool(ia.direction[nodes])
+                
+                if not directed and _dir == 'b_a':
+                    
+                    continue
+                
+                positive = getattr(ia, 'positive_%s' % _dir)()
+                negative = getattr(ia, 'negative_%s' % _dir)()
+                
+                resources = ';'.join(
+                    sorted(set(
+                        itertools.chain(
+                            ia.get_resource_names(direction = 'undirected'),
+                            ia.get_resource_names(direction = _dir),
+                        )
+                    ))
+                )
+                
+                references = ';'.join(
+                    sorted(set(
+                        '%s:%s' % (ev.resource.name, ref.pmid)
+                        for ev in itertools.chain(
+                            ia.get_evidences(direction = 'undirected'),
+                            ia.get_evidences(direction = _dir),
+                        )
+                        for ref in ev.references
+                    ))
+                )
+
+                result.append(
+                    record(
+                        source = nodes[0].identifier,
+                        target = nodes[1].identifier,
+                        source_genesymbol = nodes[0].label,
+                        target_genesymbol = nodes[1].label,
+                        is_directed    = int(directed),
+                        is_stimulation = int(positive),
+                        is_inhibition  = int(negative),
+                        consensus_direction = match_consensus(
+                            consensus,
+                            nodes,
+                        ),
+                        consensus_stimulation = match_consensus(
+                            consensus,
+                            nodes,
+                            'positive',
+                        ),
+                        consensus_inhibition = match_consensus(
+                            consensus,
+                            nodes,
+                            'negative',
+                        ),
+                        sources = resources,
+                        references = references,
+                        dip_url = self._dip_urls(ia),
+                    )
+                )
+        
+        self.df = pd.DataFrame(result, columns = header)
+        self.df = self.df.astype(dtypes)
+
+
     def _make_df_igraph(
             self,
             unique_pairs = True,
@@ -220,28 +330,17 @@ class Export(object):
         self.extra_node_attrs = extra_node_attrs or self.extra_node_attrs
         self.extra_edge_attrs = extra_edge_attrs or self.extra_edge_attrs
 
-        suffix_a = 'A' if unique_pairs else 'source'
-        suffix_b = 'B' if unique_pairs else 'target'
-
         dtypes = (
             self.default_dtypes_uniquepairs
                 if unique_pairs else
             self.default_dtypes_bydirs
         )
-        header = copy.copy(
-            self.default_header_uniquepairs
-            if unique_pairs else
-            self.default_header_bydirs
+        
+        header = self.get_header(
+            unique_pairs = unique_pairs,
+            extra_node_attrs = extra_node_attrs,
+            extra_edge_attrs = extra_edge_attrs,
         )
-        header += self.extra_edge_attrs.keys()
-        header += [
-            '%s_%s' % (x, suffix_a)
-            for x in self.extra_node_attrs.keys()
-        ]
-        header += [
-            '%s_%s' % (x, suffix_b)
-            for x in self.extra_node_attrs.keys()
-        ]
 
         prg = progress.Progress(
             total = self.graph.ecount(),
@@ -266,6 +365,41 @@ class Export(object):
 
         self.df = pd.DataFrame(result, columns = header)
         self.df = self.df.astype(dtypes)
+    
+    
+    def get_header(
+            self,
+            unique_pairs = True,
+            extra_node_attrs = None,
+            extra_edge_attrs = None,
+        ):
+        """
+        Creates a data frame header (list of field names) according to the
+        data frame type and the extra fields.
+        """
+        
+        extra_node_attrs = extra_node_attrs or {}
+        extra_edge_attrs = extra_edge_attrs or {}
+        
+        suffix_a = 'A' if unique_pairs else 'source'
+        suffix_b = 'B' if unique_pairs else 'target'
+        
+        header = copy.copy(
+            self.default_header_uniquepairs
+            if unique_pairs else
+            self.default_header_bydirs
+        )
+        header += self.extra_edge_attrs.keys()
+        header += [
+            '%s_%s' % (x, suffix_a)
+            for x in self.extra_node_attrs.keys()
+        ]
+        header += [
+            '%s_%s' % (x, suffix_b)
+            for x in self.extra_node_attrs.keys()
+        ]
+        
+        return header
 
 
     def _process_edge_uniquepairs_igraph(self, e):
@@ -551,15 +685,19 @@ class Export(object):
 
     def _dip_urls(self, e):
 
+        attrs = e.attrs if hasattr(e, 'attrs') else e.attributes
+
         result = []
-        if 'dip_id' in e.attributes():
-            for dip_id in e['dip_id']:
+        
+        if 'dip_id' in attrs:
+            
+            for dip_id in attrs['dip_id']:
                 try:
                     result.append(urls.urls['dip']['ik'] %
                         int(dip_id.split('-')[1][:-1]))
                 except:
 
-                    sys.stdout.write('Could not find DIP ID: %s\n' % dip_id)
+                    self._log('Could not find DIP ID: %s' % dip_id)
 
         return ';'.join(result)
 
@@ -637,6 +775,7 @@ class Export(object):
                         e['sources_by_type']['TF'] &
                         e['dirs'].sources[d]
                     ) else ''),
+                # quite wrong (taking only the first one):
                 'type': lambda e: e['type'][0]
             }
         )

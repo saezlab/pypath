@@ -657,22 +657,22 @@ class Evidences(object):
         return any(ev.has_data_model(data_model) for ev in self)
     
     
-    def get_resources(self):
+    def get_resources(self, **kwargs):
         
         return {ev.resource for ev in self}
     
     
-    def get_resource_names(self):
+    def get_resource_names(self, **kwargs):
         
         return {ev.resource.name for ev in self}
     
     
-    def get_interaction_types(self):
+    def get_interaction_types(self, **kwargs):
         
         return {ev.resource.interaction_type for ev in self}
     
     
-    def get_data_models(self):
+    def get_data_models(self, **kwargs):
         
         return {ev.resource.data_model for ev in self}
     
