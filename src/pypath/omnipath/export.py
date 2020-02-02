@@ -104,6 +104,8 @@ class Export(session.Logger):
         ):
 
         session.Logger.__init__(self, name = 'export')
+        
+        self._log('Export object created for network.')
 
         self.extra_node_attrs = extra_node_attrs or {}
         self.extra_edge_attrs = extra_edge_attrs or {}
@@ -183,6 +185,10 @@ class Export(session.Logger):
             "netrowk-<session id>.tab" is used.
         """
         
+        self._log('Creating data frame of type `%s`.' % (
+            'unique pairs' if unique_pairs else 'by direction'
+        ))
+        
         kwargs = locals()
         _ = kwargs.pop('self')
         
@@ -218,7 +224,14 @@ class Export(session.Logger):
             )
         
         
+        self._log('Creating data frame from `core.network.Network` object.')
+        
         if unique_pairs:
+            
+            self._log(
+                'Data frame with unique pairs from `core.network.Network` '
+                'is not implemented yet, only possible to create it from '
+                '`legacy.main.PyPath` object.')
             
             raise NotImplementedError
         
@@ -322,6 +335,8 @@ class Export(session.Logger):
         """
         See docs at method ``make_df``.
         """
+
+        self._log('Creating data frame from `legacy.main.PyPath` object.')
 
         result = []
 
