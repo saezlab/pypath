@@ -2732,9 +2732,12 @@ class Interaction(object):
     
     def get_curation_effort(self, **kwargs):
         
-        for ref in self.get_references():
-            
-            return (self.a, self.b, ref)
+        return tuple(
+            (self.a, self.b, res, ref)
+            for res, refs in
+            iteritems(self.references_by_resource(**kwargs))
+            for ref in refs
+        )
     
     
     @staticmethod

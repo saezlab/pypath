@@ -337,7 +337,7 @@ class Evidence(object):
             (
                 via is None or
                 (via == False and not self.resource.via) or
-                (via == True and self.resources.via) or
+                (via == True and self.resource.via) or
                 _match('via', via)
             ) and
             (
