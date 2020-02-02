@@ -37,6 +37,7 @@ import pypath.omnipath.export as export
 import pypath.legacy.main as main
 import pypath.resources.data_formats as data_formats
 import pypath.share.session as session_mod
+import pypath.omnipath as omnipath
 
 
 class WebserviceTables(session_mod.Logger):
@@ -95,6 +96,108 @@ class WebserviceTables(session_mod.Logger):
     def interactions(self):
         
         self._log('Building `interactions` data frame.')
+        dataframes = []
+        
+        tf_target = copy.deepcopy(netres.transcription)
+        tf_target['dorothea'].input_args['levels'] = {
+            'A', 'B', 'C', 'D',
+        }
+        tf_target['dorothea'].must_have_references = False
+        
+        param = {
+            'PPI': (
+                'load_omnipath',
+                {
+                    'kinase_substrate_extra': True,
+                    'ligand_receptor_extra': True,
+                    'pathway_extra': True,
+                },
+            ),
+            'TF-target': (
+                'init_network',
+                {'lst': tf_target},
+            ),
+            'miRNA-target': (
+                'init_network',
+                {'lst': data_formats.mirna_target},
+            ),
+            'lncRNA-target': (
+                'init_network',
+                {'lst': data_formats.lncrna_target},
+            )
+        }
+        
+        for name, (to_call, kwargs) in iteritems(param):
+            
+            self._log('Building %s interactions.' % name)
+            
+            pa = main.PyPath()
+            getattr(pa, to_call)(**kwargs)
+            
+            e = export.Export(pa)
+            e.webservice_interactions_df()
+            dataframes.append(e.df)
+            
+            if not self.only_human and name != 'lncRNA-target':
+                
+                graph_human = None
+                
+                for rodent in (10090, 10116):
+                    
+                    self._log(
+                        'Translating %s interactions to organism `%u`' % (
+                            name,
+                            rodent,
+                        )
+                    )
+                    
+                    if pa.ncbi_tax_id == 9606:
+                        
+                        if pa.graph.ecount() < 100000:
+                            
+                            graph_human = copy.deepcopy(pa.graph)
+                        
+                    else:
+                        
+                        if graph_human:
+                            
+                            pa.graph = graph_human
+                            pa.ncbi_tax_id = 9606
+                            pa.genesymbol_labels(remap_all = True)
+                            pa.update_vname()
+                            
+                        else:
+                            
+                            del e
+                            del pa
+                            pa = main.PyPath()
+                            getattr(pa, to_call)(**kwargs)
+                    
+                    pa.orthology_translation(rodent)
+                    e = export.Export(pa)
+                    e.webservice_interactions_df()
+                    dataframes.append(e.df)
+        
+        del e
+        del pa
+        
+        self.df_interactions = pd.concat(dataframes)
+        self.df_interactions.to_csv(
+            self.outfile_interactions,
+            sep = '\t',
+            index = False
+        )
+        self._log('Data frame `interactions` has been exported to `%s`.' % (
+            self.outfile_interactions,
+        ))
+    
+    
+    def interactions_legacy(self):
+        
+        self._log(
+            'Building `interactions` data frame from '
+            '`legacy.main.PyPath` object.'
+        )
         dataframes = []
         
         tf_target = copy.deepcopy(data_formats.transcription)

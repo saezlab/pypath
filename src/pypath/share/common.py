@@ -1807,3 +1807,21 @@ def _add_method(cls, method_name, method, signature = None, doc = None):
         method.__doc__ = doc
     
     setattr(cls, method_name, method)
+
+
+def sets_to_sorted_lists(obj):
+    
+    if isinstance(obj, dict):
+        
+        return dict(
+            (k, sets_to_sorted_list(v))
+            for k, v in iteritems(obj)
+        )
+        
+    elif isinstance(obj, (list, set, tuple)):
+        
+        return sorted(obj)
+        
+    else:
+        
+        return obj

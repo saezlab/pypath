@@ -38,6 +38,8 @@ import pypath.resources.data_formats as data_formats
 import pypath.share.settings as settings
 import pypath.core.entity as entity
 import pypath.share.session as session
+import pypath.resources.network as netres
+import pypath.share.common as common
 
 strip_json = re.compile(r'[\[\]{}\"]')
 simple_types = {bool, int, float, type(None)}
@@ -131,7 +133,7 @@ class Export(session.Logger):
     def reload(self):
 
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
@@ -244,16 +246,7 @@ class Export(session.Logger):
             self.default_dtypes_bydirs
         )
         
-        header = self.get_header(
-            unique_pairs = unique_pairs,
-            extra_node_attrs = extra_node_attrs,
-            extra_edge_attrs = extra_edge_attrs,
-        )
-
-        record = collections.namedtuple(
-            'NetworkRecord%s' % ('UniquePairs' if unique_pairs else ''),
-            header,
-        )
+        header = self.get_header(unique_pairs = unique_pairs)
         
         result = []
         
@@ -265,8 +258,9 @@ class Export(session.Logger):
                 
                 nodes = getattr(ia, _dir)
                 directed = bool(ia.direction[nodes])
+                directed_rev = bool(ia.direction[tuple(reversed(nodes))])
                 
-                if not directed and _dir == 'b_a':
+                if not directed and (_dir == 'b_a' or directed_rev):
                     
                     continue
                 
@@ -293,34 +287,36 @@ class Export(session.Logger):
                     ))
                 )
 
-                result.append(
-                    record(
-                        source = nodes[0].identifier,
-                        target = nodes[1].identifier,
-                        source_genesymbol = nodes[0].label,
-                        target_genesymbol = nodes[1].label,
-                        is_directed    = int(directed),
-                        is_stimulation = int(positive),
-                        is_inhibition  = int(negative),
-                        consensus_direction = match_consensus(
-                            consensus,
-                            nodes,
-                        ),
-                        consensus_stimulation = match_consensus(
-                            consensus,
-                            nodes,
-                            'positive',
-                        ),
-                        consensus_inhibition = match_consensus(
-                            consensus,
-                            nodes,
-                            'negative',
-                        ),
-                        sources = resources,
-                        references = references,
-                        dip_url = self._dip_urls(ia),
-                    )
-                )
+                this_row = [
+                    nodes[0].identifier,
+                    nodes[1].identifier,
+                    nodes[0].label,
+                    nodes[1].label,
+                    int(directed),
+                    int(positive),
+                    int(negative),
+                    match_consensus(
+                        consensus,
+                        nodes,
+                    ),
+                    match_consensus(
+                        consensus,
+                        nodes,
+                        'positive',
+                    ),
+                    match_consensus(
+                        consensus,
+                        nodes,
+                        'negative',
+                    ),
+                    resources,
+                    references,
+                    self._dip_urls(ia),
+                ]
+                
+                this_row = self.add_extra_fields(ia, this_row, nodes)
+                
+                result.append(this_row)
         
         self.df = pd.DataFrame(result, columns = header)
         self.df = self.df.astype(dtypes)
@@ -350,12 +346,8 @@ class Export(session.Logger):
                 if unique_pairs else
             self.default_dtypes_bydirs
         )
-        
-        header = self.get_header(
-            unique_pairs = unique_pairs,
-            extra_node_attrs = extra_node_attrs,
-            extra_edge_attrs = extra_edge_attrs,
-        )
+
+        header = self.get_header(unique_pairs = unique_pairs)
 
         prg = progress.Progress(
             total = self.graph.ecount(),
@@ -385,16 +377,11 @@ class Export(session.Logger):
     def get_header(
             self,
             unique_pairs = True,
-            extra_node_attrs = None,
-            extra_edge_attrs = None,
         ):
         """
         Creates a data frame header (list of field names) according to the
         data frame type and the extra fields.
         """
-        
-        extra_node_attrs = extra_node_attrs or {}
-        extra_edge_attrs = extra_edge_attrs or {}
         
         suffix_a = 'A' if unique_pairs else 'source'
         suffix_b = 'B' if unique_pairs else 'target'
@@ -572,7 +559,9 @@ class Export(session.Logger):
                 self._dip_urls(e)
             ]
 
-            this_edge = self.add_extra_fields(e, this_edge, 'undirected')
+            this_edge = (
+                self.add_extra_fields_igraph(e, this_edge, 'undirected')
+            )
 
             lines.append(this_edge)
 
@@ -606,13 +595,27 @@ class Export(session.Logger):
                 if hasattr(v, '__call__') else
                 self.default_edge_attr_processor(
                     e[v]
-                    if v in self.graph.es.attributes() else
+                        if (
+                            self.graph and
+                            v in self.graph.es.attributes()
+                        ) else
+                    getattr(e, v)
+                        if hasattr(e, v) else
+                    e.attrs[v]
+                        if v in e.attrs else
                     None
                 )
             )
 
         # extra vertex attributes
-        for vertex in (self.graph.vs[e.source], self.graph.vs[e.target]):
+        
+        nodes = (
+            (self.graph.vs[e.source], self.graph.vs[e.target])
+                if self.graph else
+            dr
+        )
+        
+        for vertex in nodes:
 
             for k, v in iteritems(self.extra_node_attrs):
 
@@ -621,7 +624,14 @@ class Export(session.Logger):
                     if hasattr(v, '__call__') else
                     self.default_vertex_attr_processor(
                         vertex[v]
-                        if v in self.graph.vs.attributes() else
+                            if (
+                                self.graph and
+                                v in self.graph.vs.attributes()
+                            ) else
+                        getattr(vertex, v)
+                            if hasattr(vertex, v) else
+                        vertex.attrs[v]
+                            if v in vertex.attrs else
                         None
                     )
                 )
@@ -632,18 +642,16 @@ class Export(session.Logger):
     @staticmethod
     def default_vertex_attr_processor(vattr):
 
-            return (
-                vattr if type(vattr) in simple_types else
-                ';'.join([
-                    x.strip()
-                    for x in strip_json.sub('',
-                        json.dumps(
-                            list(vattr)
-                            if type(vattr) is set
-                            else vattr
-                        )).split(',')
-                ])
-            )
+        return (
+            vattr if type(vattr) in simple_types else
+            ';'.join([
+                x.strip()
+                for x in strip_json.sub('',
+                    json.dumps(
+                        common.sets_to_sorted_lists(vattr)
+                    )).split(',')
+            ])
+        )
 
     @staticmethod
     def default_edge_attr_processor(eattr):
@@ -652,7 +660,13 @@ class Export(session.Logger):
             eattr if type(eattr) in simple_types else
             ';'.join([
                 x.strip()
-                for x in strip_json.sub('', json.dumps(eattr)).split(',')
+                for x in
+                strip_json.sub(
+                    '',
+                    json.dumps(
+                        common.sets_to_sorted_lists(eattr)
+                    )
+                ).split(',')
             ])
         )
 
@@ -666,6 +680,16 @@ class Export(session.Logger):
         `TypeError` we call with one argument.
         """
         
+        dr = (
+            'undirected'
+                if (
+                    dr and
+                    hasattr(obj, 'is_directed') and
+                    not obj.is_directed()
+                ) else
+            dr
+        )
+        
         try:
 
             return proc(obj, dr)
@@ -673,6 +697,7 @@ class Export(session.Logger):
         except TypeError:
 
             return proc(obj)
+
 
     def write_tab(self, outfile = None, **kwargs):
         """
@@ -716,7 +741,100 @@ class Export(session.Logger):
 
         return ';'.join(result)
 
+
     def webservice_interactions_df(self):
+
+        sources_omnipath = set(netres.omnipath.values())
+        sources_extra_directions = set(netres.extra_directions.values())
+        sources_kinase_extra = set(netres.ptm_misc.values())
+        sources_ligrec_extra = set(netres.ligand_receptor.values())
+        sources_pathway_extra = set(netres.pathway_noref.values())
+        sources_mirna = set(netres.mirna_target.values())
+
+        self.make_df(
+            unique_pairs = False,
+            extra_node_attrs = {
+                'ncbi_tax_id': 'taxon',
+            },
+            extra_edge_attrs = {
+                'omnipath': lambda e, d: (
+                    (
+                        bool(
+                            e.get_resources(direction = d) &
+                            sources_omnipath
+                        ) or
+                        (
+                            bool(
+                                e.get_resources(direction = 'undirected') &
+                                sources_omnipath
+                            ) and
+                            bool(
+                                e.get_resources(direction = d) &
+                                sources_extra_directions
+                            )
+                        )
+                    ) and (
+                        'post_translational' in
+                        e.get_interaction_types(direction = d)
+                    )
+                ),
+                'kinaseextra': lambda e, d: (
+                    bool(
+                        e.get_resources(direction = d) &
+                        sources_kinase_extra
+                    ) and (
+                        'post_translational' in
+                        e.get_interaction_types(direction = d)
+                    )
+                ),
+                'ligrecextra': lambda e, d: (
+                    bool(
+                        e.get_resources(direction = d) &
+                        sources_ligrec_extra
+                    ) and (
+                        'post_translational' in
+                        e.get_interaction_types(direction = d)
+                    )
+                ),
+                'pathwayextra': lambda e, d: (
+                    bool(
+                        e.get_resources(direction = d) &
+                        sources_pathway_extra
+                    ) and (
+                        'post_translational' in
+                        e.get_interaction_types(direction = d)
+                    )
+                ),
+                'mirnatarget': lambda e, d: (
+                    bool(
+                        e.get_resources(direction = d) &
+                        sources_mirna
+                    ) and (
+                        'post_transcriptional' in
+                        e.get_interaction_types(direction = d)
+                    )
+                ),
+                'tfregulons': lambda e, d: (
+                    bool(
+                        e.get_resources(
+                            direction = d,
+                            interaction_type = 'transcriptional'
+                        )
+                    )
+                ),
+                'tfregulons_curated': 'tfregulons_curated',
+                'tfregulons_chipseq': 'tfregulons_chipseq',
+                'tfregulons_tfbs':    'tfregulons_tfbs',
+                'tfregulons_coexp':   'tfregulons_coexp',
+                'tfregulons_level':   'tfregulons_level',
+                'type': lambda e, d: (
+                    list(e.get_interaction_types(direction = d))[0]
+                ),
+            }
+        )
+
+
+    def webservice_interactions_df_legacy(self):
 
         sources_omnipath = set(
             f.name for f in data_formats.omnipath.values()
