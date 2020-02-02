@@ -23,10 +23,17 @@
 from future.utils import iteritems
 from past.builtins import xrange, range
 
+import os
 import sys
 import itertools
 import importlib as imp
 import re
+import time
+import datetime
+import json
+import pickle
+
+import timeloop
 
 import pypath.utils.mapping as mapping
 import pypath.share.common as common
@@ -37,9 +44,128 @@ import pypath.inputs.uniprot as uniprot_input
 import pypath.utils.seq as _se
 import pypath.share.session as session_mod
 import pypath.utils.taxonomy as taxonomy
+import pypath.share.cache as cache_mod
+
+timeloop.app.logging.disable(level = 9999)
+_homology_cleanup_timeloop = timeloop.Timeloop()
 
 _logger = session_mod.Logger(name = 'homology')
 _log = _logger._log
+
+
+class HomologyManager(session_mod.Logger):
+    
+    
+    def __init__(self, cleanup_period = 10, lifetime = 300):
+        
+        session_mod.Logger.__init__(self, name = 'homology')
+        
+        
+        @_homology_cleanup_timeloop.job(
+            interval = datetime.timedelta(
+                seconds = cleanup_period
+            )
+        )
+        def _cleanup():
+            
+            self._remove_expired()
+        
+        
+        _homology_cleanup_timeloop.start(block = False)
+        
+        self.lifetime = lifetime
+        self.tables = {}
+        self.expiry = {}
+        self.cachedir = cache_mod.get_cachedir()
+        
+        self._log('HomologyManager has been created.')
+    
+    
+    def which_table(self, target, source = 9606, only_swissprot = True):
+        
+        key = (source, target, only_swissprot)
+        
+        self.expiry[key] = time.time()
+        
+        if key not in self.tables:
+            
+            self.load(key)
+        
+        if key in self.tables:
+            
+            return self.tables[key]
+    
+    
+    def load(self, key):
+        
+        cachefile = common.md5(json.dumps(key))
+        cachefile = os.path.join(self.cachedir, cachefile)
+        
+        if os.path.exists(cachefile):
+            
+            self.tables[key] = pickle.load(open(cachefile, 'rb'))
+            
+            self._log(
+                'Homology table from taxon %u to %u (only SwissProt: %s) '
+                'has been loaded from `%s`.' % (key + (cachefile,))
+            )
+            
+        else:
+            
+            self.tables[key] = self._load(key)
+            pickle.dump(self.tables[key], open(cachefile, 'wb'))
+            self._log(
+                'Homology table from taxon %u to %u (only SwissProt: %s) '
+                'has been saved to `%s`.' % (key + (cachefile,))
+            )
+    
+    
+    def _load(self, key):
+        
+        return ProteinHomology(
+            target = key[1],
+            source = key[0],
+            only_swissprot = key[2],
+        )
+    
+    
+    def translate(
+            self,
+            source_id,
+            target,
+            source = 9606,
+            only_swissprot = True,
+        ):
+        
+        table = self.which_table(
+            target = target,
+            source = source,
+            only_swissprot = only_swissprot,
+        )
+        
+        return table.translate(protein = source_id, source = source)
+    
+    
+    def _remove_expired(self):
+        
+        for key, last_used in list(self.expiry.items()):
+            
+            if time.time() - last_used > self.lifetime and key in self.tables:
+                
+                self._log(
+                    'Removing homology table from taxon %u to %u '
+                    '(only SwissProt: %s)' % key
+                )
+                
+                del self.tables[key]
+                del self.expiry[key]
+    
+    
+    def __del__(self):
+        
+        if hasattr(_homology_cleanup_timeloop, 'stop'):
+            
+            _homology_cleanup_timeloop.stop()
 
 
 def get_homologene():
@@ -283,7 +409,12 @@ class Proteomes(object):
 
 class ProteinHomology(Proteomes):
     
-    def __init__(self, target, source = None, only_swissprot = True):
+    def __init__(
+            self,
+            target,
+            source = None,
+            only_swissprot = True,
+        ):
         """
         This class translates between homologous UniProt IDs of
         2 organisms based on NCBI HomoloGene data.
@@ -707,3 +838,29 @@ class PtmHomology(ProteinHomology, SequenceContainer):
                     ', '.join(sorted(unknown_taxa))
                 )
             )
+
+
+def init():
+    
+    globals()['manager'] = HomologyManager()
+
+
+def get_manager():
+    
+    if 'manager' not in globals():
+        
+        init()
+    
+    return globals()['manager']
+
+
+def translate(source_id, target, source = 9606, only_swissprot = True):
+    
+    manager = get_manager()
+    
+    return manager.translate(
+        source_id  = source_id,
+        target = target,
+        source = source,
+        only_swissprot = only_swissprot,
+    )
