@@ -284,6 +284,7 @@ class Export(session.Logger):
                             ia.get_evidences(direction = _dir),
                         )
                         for ref in ev.references
+                        if not ev.resource.via
                     ))
                 )
 
