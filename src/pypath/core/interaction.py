@@ -41,6 +41,7 @@ import pypath.share.session as session_mod
 import pypath.share.common as common
 import pypath.utils.mapping as mapping
 import pypath.core.entity as entity
+import pypath.utils.homology as homology
 
 _logger = session_mod.Logger(name = 'interaction')
 _log = _logger._log
@@ -1972,6 +1973,24 @@ class Interaction(object):
             getattr(self, attr)[new_dir] += getattr(self, attr)[old_dir]
         
         return new
+    
+    
+    def homology_translate(id_a, id_b, taxon):
+        
+        return self.translate(
+            ids = {
+                self.a: id_a,
+                self.b: id_b,
+            },
+            new_attrs = {
+                id_a: {
+                    'taxon': taxon,
+                },
+                id_b: {
+                    'taxon': taxon,
+                },
+            },
+        )
     
     
     def get_evidences(
