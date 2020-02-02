@@ -111,23 +111,26 @@ class WebserviceTables(session_mod.Logger):
             exp.webservice_interactions_df()
             dataframes.append(exp.df)
             
-            for rodent in (10090, 10116):
+            if dataset not in {'mirna_mrna', 'lncrna_mrna', 'tf_mirna'}:
                 
-                self._log(
-                    'Translating `%s` interactions to organism `%u`' % (
-                        name,
-                        rodent,
+                for rodent in (10090, 10116):
+                    
+                    self._log(
+                        'Translating `%s` interactions to organism `%u`' % (
+                            dataset,
+                            rodent,
+                        )
                     )
-                )
-                
-                rodent_netw = netw.homology_translate(rodent)
-                exp = export.Export(rodent_netw)
-                exp.webservice_interactions_df()
-                dataframes.append(exp.df)
+                    
+                    rodent_netw = netw.homology_translate(rodent)
+                    exp = export.Export(rodent_netw)
+                    exp.webservice_interactions_df()
+                    dataframes.append(exp.df)
+                    
+                    del rodent_netw
             
             del exp
             del netw
-            del rodent_netw
             omnipath.data.remove_db(dataset)
         
         self.df_interactions = pd.concat(dataframes)
@@ -337,6 +340,11 @@ class WebserviceTables(session_mod.Logger):
             sep = '\t',
             index = False,
         )
+        
+        del i
+        omnipath.data.remove_db('intercell')
+        omnipath.data.remove_db('complex')
+        omnipath.data.remove_db('annotations')
         
         self._log('Data frame `intercell` has been exported to `%s`.' % (
             self.outfile_intercell,

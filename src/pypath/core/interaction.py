@@ -1653,7 +1653,7 @@ class Interaction(object):
     def majority_dir(
             self,
             only_interaction_type = None,
-            only_primary = False,
+            only_primary = True,
             by_references = False,
             by_reference_resource_pairs = True,
         ):
@@ -1708,7 +1708,7 @@ class Interaction(object):
     def majority_sign(
             self,
             only_interaction_type = None,
-            only_primary = False,
+            only_primary = True,
             by_references = False,
             by_reference_resource_pairs = True,
         ):
