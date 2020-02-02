@@ -2083,6 +2083,7 @@ class Network(session_mod.Logger):
             interaction added here.
         """
         
+        attrs = attrs or {}
         key = (interaction.a, interaction.b)
         
         if key not in self.interactions:
@@ -3660,6 +3661,22 @@ class Network(session_mod.Logger):
         if return_table:
 
             return tab
+    
+    
+    def homology_translate(self, taxon, exclude = None):
+        
+        new = Network(ncbi_tax_id = taxon)
+        
+        for ia in self:
+            
+            for new_ia in ia.homology_translate(
+                taxon = taxon,
+                exclude = exclude,
+            ):
+                
+                new.add_interaction(new_ia)
+        
+        return new
     
     
     @staticmethod

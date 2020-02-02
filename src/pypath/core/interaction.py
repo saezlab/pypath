@@ -1957,11 +1957,29 @@ class Interaction(object):
             for new_id, old_id in iteritems(to_old)
         )
         
+        # this is required to handle also loop edges
+        new_old_a_b = (
+            (
+                to_old[new.a.identifier],
+                to_old[new.b.identifier],
+            )
+                if new.a != new.b else
+            self.a_b
+        )
+        new_old_b_a = (
+            (
+                to_old[new.b.identifier],
+                to_old[new.a.identifier],
+            )
+                if new.a != new.b else
+            self.b_a
+        )
+        
         for (old_dir, new_dir), attr in itertools.product(
             zip(
                 (
-                    (to_old[new.a.identifier], to_old[new.b.identifier]),
-                    (to_old[new.b.identifier], to_old[new.a.identifier]),
+                    new_old_a_b,
+                    new_old_b_a,
                     'undirected'
                 ),
                 (
@@ -1977,7 +1995,6 @@ class Interaction(object):
                 
                 continue
             
-            
             getattr(new, attr)[new_dir] += getattr(self, attr)[old_dir]
         
         return new
@@ -1992,23 +2009,38 @@ class Interaction(object):
             },
             new_attrs = {
                 id_a: {
-                    'taxon': taxon,
+                    'taxon': (
+                        self.a.taxon
+                            if id_a == self.a.identifier else
+                        taxon
+                    ),
                 },
                 id_b: {
-                    'taxon': taxon,
+                    'taxon': (
+                        self.b.taxon
+                            if id_b == self.b.identifier else
+                        taxon
+                    ),
                 },
             },
         )
     
     
-    def homology_translate(self, taxon):
+    def homology_translate(self, taxon, exclude = None):
+        
+        exclude = exclude or set()
+        exclude.add(0)
         
         for new_a, new_b in itertools.product(
+            (self.a.identifier,)
+                if self.a.taxon in exclude else
             homology.translate(
                 source_id = self.a.identifier,
                 target = taxon,
                 source = self.a.taxon,
             ),
+            (self.b.identifier,)
+                if self.b.taxon in exclude else
             homology.translate(
                 source_id = self.b.identifier,
                 target = taxon,
