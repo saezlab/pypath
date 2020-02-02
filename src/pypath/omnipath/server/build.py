@@ -132,10 +132,11 @@ class WebserviceTables(session_mod.Logger):
                 exp = export.Export(rodent_netw)
                 exp.webservice_interactions_df()
                 dataframes.append(exp.df)
-        
-        del exp
-        del netw
-        del rodent_netw
+            
+            del exp
+            del netw
+            del rodent_netw
+            omnipath.data.remove_db(dataset)
         
         self.df_interactions = pd.concat(dataframes)
         self.df_interactions.to_csv(
@@ -256,7 +257,7 @@ class WebserviceTables(session_mod.Logger):
         
         dataframes = []
         
-        ptma = ptm.PtmAggregator()
+        ptma = omnipath.data.get_db('enz_sub')
         ptma.make_df(tax_id = True)
         dataframes.append(ptma.df)
         
@@ -270,6 +271,9 @@ class WebserviceTables(session_mod.Logger):
                 )
                 ptma.make_df(tax_id = True)
                 dataframes.append(ptma.df)
+        
+        omnipath.data.remove_db('enz_sub')
+        del ptma
         
         self.df_ptms = pd.concat(dataframes)
         self.df_ptms.to_csv(
@@ -287,17 +291,14 @@ class WebserviceTables(session_mod.Logger):
         
         self._log('Building `complexes` data frame.')
         
-        if 'complex' in self.rebuild:
-            
-            co = complex.ComplexAggregator(**self.complex_args)
-            
-        else:
-            
-            co = complex.get_db(**self.complex_args)
+        co = omnipath.data.get_db('complex')
         
         co.make_df()
         
         self.df_complexes = co.df
+        
+        del co
+        
         self.df_complexes.to_csv(
             self.outfile_complexes,
             sep = '\t',
@@ -313,13 +314,7 @@ class WebserviceTables(session_mod.Logger):
         
         self._log('Building `annotations` data frame.')
         
-        if 'annot' in self.rebuild:
-            
-            an = annot.AnnotationTable(**self.annot_args)
-            
-        else:
-            
-            an = annot.get_db(**self.annot_args)
+        an = omnipath.data.get_db('annotations')
         
         an.make_narrow_df()
         
@@ -339,13 +334,7 @@ class WebserviceTables(session_mod.Logger):
         
         self._log('Building `intercell` data frame.')
         
-        if 'intercell' in self.rebuild:
-            
-            i = intercell.IntercellAnnotation(**self.intercell_args)
-            
-        else:
-            
-            i = intercell.get_db(**self.intercell_args)
+        i = omnipath.data.get_db('intercell')
         
         i.make_df()
         i.add_classes_to_df()
