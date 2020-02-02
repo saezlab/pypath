@@ -958,7 +958,11 @@ class Interaction(object):
             ``False`` otherwise.
         """
 
-        return any(self.direction.values())
+        return any(
+            evs
+            for dkey, evs in iteritems(self.direction)
+            if dkey != 'undirected'
+        )
 
 
     def is_directed_by_resources(self, resources = None):
