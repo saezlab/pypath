@@ -54,10 +54,6 @@ class WebserviceTables(session_mod.Logger):
             outfile_complexes = 'omnipath_webservice_complexes.tsv',
             outfile_annotations = 'omnipath_webservice_annotations.tsv',
             outfile_intercell = 'omnipath_webservice_intercell.tsv',
-            annot_args = None,
-            complex_args = None,
-            intercell_args = None,
-            rebuild = None,
             network_datasets = None,
         ):
         
@@ -70,10 +66,6 @@ class WebserviceTables(session_mod.Logger):
         self.outfile_complexes = outfile_complexes
         self.outfile_annotations = outfile_annotations
         self.outfile_intercell = outfile_intercell
-        self.annot_args = annot_args or {}
-        self.complex_args = complex_args or {}
-        self.intercell_args = intercell_args or {}
-        self.rebuild = rebuild or set()
         self.network_datasets = (
             network_datasets or
             (
