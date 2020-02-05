@@ -103,7 +103,7 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         'protmapper': ['uniprot'],
         'kea': ['uniprot'],
     }
-    
+
     resource_names = dict(
         (
             name.lower(),
@@ -213,17 +213,17 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
 
         def empty_input(*args, **kwargs): return []
 
-        
+
         # a method provided
         if hasattr(self.input_method, '__call__'):
-            
+
             self.inputm = self.input_method
             self.name = self.name or self.input_method.__name__
-            
+
         # the method is associated to a resource name
         # in the list of built in resources
         elif self.input_is(self.methods, '__contains__'):
-            
+
             self.inputm = inputs.get_method(
                 self.methods[self.input_method.lower()]
             )
@@ -235,10 +235,10 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
                     self.input_method
                 )
             )
-            
+
         # attempting to look up the method in the inputs module
         else:
-            
+
             self.inputm = inputs.get_method(self.input_method) or empty_input
             self.name = self.name or self.inputm.__name__
 
@@ -489,13 +489,13 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
                     sources=[self.name],
                     refs=p['references'],
                 )
-                
+
 
                 if self.input_is('mimp') and p['databases']:
                     dommot.mimp_sources = p['databases'].split(';')
                     dommot.add_sources(dommot.mimp_sources)
                     dommot.npmid = p['npmid']
-                
+
                 if self.input_is('protmapper') and p['databases']:
                     dommot.protmapper_sources = p['databases']
                     dommot.add_sources(p['databases'])
@@ -530,15 +530,15 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
                 yield ptm
 
         #prg.terminate()
-    
-    
+
+
     def __len__(self):
-        
+
         return len(self.data)
-    
-    
+
+
     def __repr__(self):
-        
+
         return '<Enzyme-substrate processor: %u records>' % len(self)
 
 
@@ -624,7 +624,7 @@ class PtmHomologyProcessor(
                 enzyme_id_type = self.enzyme_id_type,
                 substrate_id_type = self.substrate_id_type,
                 name = self.name, allow_mixed_organisms = True,
-                **self.ptmprocargs,
+                **self.ptmprocargs
             )
 
             #self.reset_ptmprocessor(ncbi_tax_id = source_taxon)
@@ -637,8 +637,8 @@ class PtmHomologyProcessor(
 
 
 class PtmAggregator(session_mod.Logger):
-    
-    
+
+
     def __init__(self,
             input_methods = None,
             ncbi_tax_id = 9606,
@@ -655,15 +655,15 @@ class PtmAggregator(session_mod.Logger):
         """
         Docs not written yet.
         """
-        
+
         session_mod.Logger.__init__(self, name = 'enz_sub')
-        
+
         for k, v in iteritems(locals()):
             setattr(self, k, v)
-        
+
         self.main()
-    
-    
+
+
     def reload(self):
 
         modname = self.__class__.__module__
@@ -671,36 +671,36 @@ class PtmAggregator(session_mod.Logger):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-    
-    
+
+
     def main(self):
-        
+
         if self.pickle_file:
-            
+
             self.load_from_pickle(pickle_file = self.pickle_file)
-            
+
         else:
-            
+
             self.build()
-    
-    
+
+
     def load_from_pickle(self, pickle_file = None):
-        
+
         self._log('Loading from file `%s`.' % pickle_file)
-        
+
         with open(self.pickle_file, 'rb') as fp:
-            
+
             self.enz_sub, self.references = pickle.load(fp)
-        
+
         self.update_ptm_lookup_dict()
-    
-    
+
+
     def save_to_pickle(self, pickle_file):
-        
+
         self._log('Saving to file file `%s`.' % pickle_file)
-        
+
         with open(pickle_file, 'wb') as fp:
-            
+
             pickle.dump(
                 obj = (
                     self.enz_sub,
@@ -708,10 +708,10 @@ class PtmAggregator(session_mod.Logger):
                 ),
                 file = fp,
             )
-    
-    
+
+
     def build(self):
-        
+
         self.inputargs = self.inputargs or {}
         self.map_by_homology_from = set(self.map_by_homology_from or [9606])
 
@@ -729,22 +729,22 @@ class PtmAggregator(session_mod.Logger):
         for ptm in itertools.chain(*self.enz_sub.values()):
 
             yield ptm
-    
-    
+
+
     def __len__(self):
-        
+
         return sum([len(esub) for esub in self.enz_sub.values()])
-    
-    
+
+
     def __repr__(self):
-        
+
         return '<Enzyme-substrate database: %s relationships>' % len(self)
-    
-    
+
+
     def set_inputs(self):
 
         if self.input_methods is None:
-            
+
             self.input_methods = builtin_inputs
 
 
@@ -769,19 +769,19 @@ class PtmAggregator(session_mod.Logger):
                     self.enz_sub[key] = []
 
                 self.enz_sub[key].append(ptm)
-                
+
                 for resource in ptm.sources:
-                    
+
                     self.references[resource][ptm.key()].update(ptm.refs)
-        
-        
+
+
         self.enz_sub = {}
         self.references = collections.defaultdict(
             lambda: collections.defaultdict(set)
         )
 
         for input_method in self.input_methods:
-            
+
             self._log(
                 'Loding enzyme-substrate interactions '
                 'from `%s`.' % input_method
@@ -794,25 +794,25 @@ class PtmAggregator(session_mod.Logger):
             )
 
             if self.ncbi_tax_id == 9606 or self.nonhuman_direct_lookup:
-                
+
                 self._log(
                     'Loading enzyme-substrate interactions '
                     'for taxon `%u`.' % self.ncbi_tax_id
                 )
-                
+
                 proc = PtmProcessor(
                     input_method = input_method,
                     ncbi_tax_id = self.ncbi_tax_id,
                     trace = self.trace,
                     enzyme_id_type = self.enzyme_id_type,
                     substrate_id_type = self.substrate_id_type,
-                    **inputargs,
+                    **inputargs
                 )
-                
+
                 extend_lists(proc.__iter__())
-            
+
             if self.map_by_homology_from:
-                
+
                 self._log(
                     'Mapping `%s` by homology from taxons %s to %u.' % (
                         input_method,
@@ -822,7 +822,7 @@ class PtmAggregator(session_mod.Logger):
                         self.ncbi_tax_id,
                     )
                 )
-                
+
                 proc = PtmHomologyProcessor(
                     input_method = input_method,
                     ncbi_tax_id = self.ncbi_tax_id,
@@ -834,25 +834,25 @@ class PtmAggregator(session_mod.Logger):
                     ptm_homology_strict = self.ptm_homology_strict,
                     **inputargs
                 )
-                
+
                 extend_lists(proc.__iter__())
-        
+
         self.references = dict(self.references)
         self.update_ptm_lookup_dict()
-    
-    
+
+
     def update_ptm_lookup_dict(self):
-        
+
         self.ptm_to_enzyme = collections.defaultdict(set)
         self.ptms = {}
-        
+
         for (enz, sub), ptms in iteritems(self.enz_sub):
-            
+
             for ptm in ptms:
-                
+
                 self.ptm_to_enzyme[ptm.ptm].add(enz)
                 self.ptms[ptm.ptm] = ptm.ptm
-        
+
         self.ptm_to_enzyme = dict(self.ptm_to_enzyme)
 
 
@@ -888,10 +888,10 @@ class PtmAggregator(session_mod.Logger):
 
 
     def make_df(self, tax_id = False):
-        
+
         self._log('Creating enzyme-substrate interaction data frame.')
-        
-        
+
+
         hdr = ['enzyme', 'substrate', 'isoforms',
                'residue_type', 'residue_offset', 'modification',
                'sources', 'references']
@@ -942,7 +942,7 @@ class PtmAggregator(session_mod.Logger):
         if tax_id:
 
             self.df['ncbi_tax_id'] = [self.ncbi_tax_id] * self.df.shape[0]
-        
+
         self._log(
             'Created enzyme-substrate interaction data frame. '
             'Memory usage: %s.' % common.df_memory_usage(self.df)
@@ -983,18 +983,18 @@ class PtmAggregator(session_mod.Logger):
                     pa.graph.es[e]['ptm'] = []
 
                 pa.graph.es[e]['ptm'].extend(ptms)
-    
-    
+
+
     @property
     def resources(self):
-        
+
         return set.union(*(es.sources for es in self))
-    
-    
+
+
     def update_summaries(self):
-        
+
         self.summaries = {}
-        
+
         refs_by_resource = dict(
             (
                 resource,
@@ -1020,9 +1020,9 @@ class PtmAggregator(session_mod.Logger):
             )
             for resource in self.resources
         )
-        
+
         for resource in sorted(self.resources):
-            
+
             n_total = sum(1 for es in self if resource in es.sources)
             n_unique = sum(
                 1 for es in self
@@ -1032,7 +1032,7 @@ class PtmAggregator(session_mod.Logger):
                 1 for es in self
                 if len(es.sources) > 1 and resource in es.sources
             )
-            
+
             curation_effort = len(curation_effort_by_resource[resource])
             ce_others = set.union(*(
                 ce
@@ -1047,7 +1047,7 @@ class PtmAggregator(session_mod.Logger):
                 curation_effort_by_resource[resource] -
                 ce_others
             )
-            
+
             references = len(refs_by_resource[resource])
             refs_others = set.union(*(
                 refs
@@ -1056,7 +1056,7 @@ class PtmAggregator(session_mod.Logger):
             ))
             references_shared = len(refs_by_resource[resource] & refs_others)
             references_unique = len(refs_by_resource[resource] - refs_others)
-            
+
             enzymes = len(set(
                 es.domain.protein
                 for es in self
@@ -1067,7 +1067,7 @@ class PtmAggregator(session_mod.Logger):
                 for es in self
                 if resource in es.sources
             ))
-            
+
             modification_types = ', '.join(
                 (
                     '%s (%u)' % (typ, cnt)
@@ -1084,7 +1084,7 @@ class PtmAggregator(session_mod.Logger):
                     if typ
                 )
             )
-            
+
             self.summaries[resource] = {
                 'name': resource,
                 'n_es_total': n_total,
@@ -1100,10 +1100,10 @@ class PtmAggregator(session_mod.Logger):
                 'curation_effort_shared': curation_effort_shared,
                 'modification_types': modification_types,
             }
-    
-    
+
+
     def summaries_tab(self, outfile = None, return_table = False):
-        
+
         columns = (
             ('name', 'Resource'),
             ('n_es_total', 'E-S interactions'),
@@ -1119,10 +1119,10 @@ class PtmAggregator(session_mod.Logger):
             ('curation_effort_unique', 'Unique curation effort'),
             ('modification_types', 'Modification types'),
         )
-        
+
         tab = []
         tab.append([f[1] for f in columns])
-        
+
         tab.extend([
             [
                 str(self.summaries[src][f[0]])
@@ -1130,28 +1130,28 @@ class PtmAggregator(session_mod.Logger):
             ]
             for src in sorted(self.summaries.keys())
         ])
-        
+
         if outfile:
-            
+
             with open(outfile, 'w') as fp:
-                
+
                 fp.write('\n'.join('\t'.join(row) for row in tab))
-        
+
         if return_table:
-            
+
             return tab
 
 
 
 def init_db(**kwargs):
-    
+
     globals()['db'] = PtmAggregator(**kwargs)
 
 
 def get_db(**kwargs):
-    
+
     if 'db' not in globals():
-        
+
         init_db(**kwargs)
-    
+
     return globals()['db']
