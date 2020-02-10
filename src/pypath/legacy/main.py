@@ -6584,7 +6584,8 @@ class PyPath(session_mod.Logger):
                     not v.networkinput.huge or
                     v.name in cache_files
                 ) and
-                k not in exclude
+                k not in exclude and
+                v.name not in exclude
             )
         )
 
