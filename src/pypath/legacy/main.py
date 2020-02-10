@@ -6570,6 +6570,7 @@ class PyPath(session_mod.Logger):
                     v.networkinput.huge
                 ) and
                 k not in exclude and
+                v.name not in exclude and
                 v.name not in cache_files
             )
         )
