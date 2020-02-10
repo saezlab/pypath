@@ -110,6 +110,7 @@ import pypath.resources.data_formats as data_formats
 import pypath.utils.mapping as mapping
 import pypath.resources.descriptions as descriptions
 import pypath.inputs.main as dataio
+import pypath.inputs as inputs
 import pypath.core.network as network
 import pypath.utils.homology as homology
 import pypath.inputs.uniprot as uniprot_input
@@ -2570,7 +2571,7 @@ class PyPath(session_mod.Logger):
                                 '\n\tPlease answer `y` or `n`:\n\t')
                             sys.stdout.flush()
 
-                input_func = self.get_function(param.input)
+                input_func = inputs.get_method(networkinput.input)
 
                 if input_func is None and hasattr(dataio, param.input):
                     input_func = getattr(dataio, param.input)
@@ -6587,9 +6588,9 @@ class PyPath(session_mod.Logger):
             )
         )
 
-        for inputs in [huge, nothuge]:
+        for _inputs in [huge, nothuge]:
 
-            for this_input in inputs.values():
+            for this_input in _inputs.values():
 
                 self.load_resource(
                     this_input,
