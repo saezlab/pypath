@@ -239,7 +239,7 @@ class Export(session.Logger):
         
         for ia in self.network:
             
-            results.extend(self.process_interaction(ia))
+            result.extend(self.process_interaction(ia))
         
         self.df = pd.DataFrame(result, columns = header)
         self.df = self.df.astype(dtypes)
