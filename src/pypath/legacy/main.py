@@ -2571,7 +2571,7 @@ class PyPath(session_mod.Logger):
                                 '\n\tPlease answer `y` or `n`:\n\t')
                             sys.stdout.flush()
 
-                input_func = inputs.get_method(networkinput.input)
+                input_func = inputs.get_method(param.input)
 
                 if input_func is None and hasattr(dataio, param.input):
                     input_func = getattr(dataio, param.input)
