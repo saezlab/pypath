@@ -47,6 +47,11 @@ import pypath.utils.reflists as reflists
 import pypath.resources.network as network_resources
 import pypath.inputs as inputs
 
+# Py 2/3
+try:
+    input = raw_input
+except NameError:
+    pass
 
 NetworkEntityCollection = collections.namedtuple(
     'NetworkEntityCollection',
@@ -817,7 +822,7 @@ class Network(session_mod.Logger):
                     sys.stdout.flush()
 
                     while True:
-                        answer = raw_input().lower()
+                        answer = input().lower()
 
                         if answer == 'n':
                             return None
