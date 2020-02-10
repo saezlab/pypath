@@ -48,11 +48,18 @@ import collections
 from scipy import stats
 import numpy as np
 
+# Py 2/3
 try:
     basestring
 
 except NameError:
     basestring = str
+
+# Py 2/3
+try:
+    input = raw_input
+except NameError:
+    pass
 
 try:
     import cPickle as pickle
@@ -2550,7 +2557,7 @@ class PyPath(session_mod.Logger):
                     sys.stdout.flush()
 
                     while True:
-                        answer = raw_input().lower()
+                        answer = input().lower()
 
                         if answer == 'n':
                             return None
