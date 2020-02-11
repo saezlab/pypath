@@ -375,6 +375,8 @@ class Network(session_mod.Logger):
     :arg int ncbi_tax_id:
         Restrict the network only to this organism. If ``None`` identifiers
         from any organism will be allowed.
+    :arg bool allow_loops:
+        Allow interactions with the their two endpoints being the same entity.
     """
     
     _partners_methods = (
@@ -428,6 +430,7 @@ class Network(session_mod.Logger):
             df_dtype = None,
             pickle_file = None,
             ncbi_tax_id = 9606,
+            allow_loops = True,
             **kwargs
         ):
         
@@ -476,6 +479,8 @@ class Network(session_mod.Logger):
         for interaction in self.interactions.values():
             
             interaction.__class__ = interaction_mod.Interaction
+            interaction.a.__class__ = entity_mod.Entity
+            interaction.b.__class__ = entity_mod.Entity
     
     
     def __len__(self):
@@ -2262,6 +2267,19 @@ class Network(session_mod.Logger):
                 self.ecount,
             )
         )
+    
+    
+    def remove_loops(self):
+        """
+        Removes the loop interactions from the network i.e. the ones with
+        their two endpoints being the same entity.
+        """
+        
+        for ia in list(self):
+            
+            if ia.is_loop():
+                
+                self.remove_interaction(ia.a, ia.b)
     
     
     @property
