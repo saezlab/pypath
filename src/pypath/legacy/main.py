@@ -3917,7 +3917,6 @@ class PyPath(session_mod.Logger):
 
         organisms_allowed = organisms_allowed or {self.ncbi_tax_id}
 
-        to_delete = []
         self.update_vname()
 
         self._log('Checking network components against reference lists.')
@@ -3934,7 +3933,7 @@ class PyPath(session_mod.Logger):
             i for i, j in enumerate(organisms)
             if j in organisms_allowed
         ]
-        vertices = list((set(names) & set(entity_types)) & set(organisms))
+        vertices = list(set(names) & set(entity_types) & set(organisms))
         names_selected = [g.vs[i]['name'] for i in vertices]
 
         names_to_delete = set.intersection(
@@ -3950,7 +3949,7 @@ class PyPath(session_mod.Logger):
 
         vertices_to_delete = [self.nodDct[n] for n in names_to_delete]
 
-        g.delete_vertices(to_delete)
+        g.delete_vertices(vertices_to_delete)
 
         self.update_vname()
 
