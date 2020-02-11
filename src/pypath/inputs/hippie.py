@@ -20,9 +20,13 @@
 #
 
 import collections
+import itertools
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+import pypath.share.common as common
+import pypath.utils.mapping as mapping
+import pypath.utils.taxonomy as taxonomy
 
 
 def hippie_interactions(
