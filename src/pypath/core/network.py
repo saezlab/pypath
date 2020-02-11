@@ -443,6 +443,7 @@ class Network(session_mod.Logger):
         self.df_columns = df_columns
         self.df_dtype = df_dtype
         self.ncbi_tax_id = ncbi_tax_id
+        self.allow_loops = allow_loops
         
         self.cache_dir = cache_mod.get_cachedir()
         self.keep_original_names = settings.get('network_keep_original_names')
@@ -667,6 +668,10 @@ class Network(session_mod.Logger):
         
         self.organisms_check()
         self.remove_zero_degree()
+        
+        if not self.allow_loops:
+            
+            self.remove_loops()
         
         self._log(
             'Completed: loading network data from '
@@ -2275,11 +2280,19 @@ class Network(session_mod.Logger):
         their two endpoints being the same entity.
         """
         
+        self._log(
+            'Removing loop edges. Number of edges before: %u.' % len(self)
+        )
+        
         for ia in list(self):
             
             if ia.is_loop():
                 
                 self.remove_interaction(ia.a, ia.b)
+        
+        self._log(
+            'Removed loop edges. Number of edges after: %u.' % len(self)
+        )
     
     
     @property
