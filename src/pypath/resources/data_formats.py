@@ -1298,7 +1298,7 @@ interaction_misc = {
         is_directed = False,
         sign = False,
         ncbi_tax_id = 9606,
-        input = 'get_lit_bm_13',
+        input = 'lit_bm_13_interactions',
         references = False,
         header = False,
         extra_edge_attrs = {},
@@ -1317,7 +1317,7 @@ interaction_misc = {
         sign = False,
         ncbi_tax_id = 9606,
         references = (2, ';'),
-        input = 'get_lit_bm_17',
+        input = 'lit_bm_17_interactions',
         header = False,
         extra_edge_attrs = {
             'mentha_score': 3,
