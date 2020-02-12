@@ -62,7 +62,7 @@ class Database(session_mod.Logger):
         self.ensure_dirs()
         self.network_dfs = {}
 
-        self._log('The OmniPath database builder has been initialized.')
+        self._log('The OmniPath database manager has been initialized.')
 
 
     def reload(self):

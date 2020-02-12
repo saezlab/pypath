@@ -743,13 +743,19 @@ class Export(session.Logger):
         attrs = e.attrs if hasattr(e, 'attrs') else e.attributes
 
         result = []
-        
+
         if 'dip_id' in attrs:
-            
-            for dip_id in attrs['dip_id']:
+
+            dip_ids = sorted(common.to_set(attrs['dip_id']))
+
+            for dip_id in dip_ids:
+
                 try:
-                    result.append(urls.urls['dip']['ik'] %
-                        int(dip_id.split('-')[1][:-1]))
+                    result.append(
+                        urls.urls['dip']['ik'] % (
+                            int(dip_id.split('-')[1][:-1])
+                        )
+                    )
                 except:
 
                     self._log('Could not find DIP ID: %s' % dip_id)

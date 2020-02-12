@@ -48,7 +48,7 @@ def init(**kwargs):
         'You can customize the database building process by '
         'setting parameters in the `OP_DB_ARGS` global variable '
         'or by calling `init` again with keyword arguments or after '
-        'setting values in the `pypath.settings` module.'
+        'setting values in the `pypath.share.settings` module.'
     )
 
     param.update(kwargs)

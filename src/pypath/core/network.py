@@ -597,7 +597,7 @@ class Network(session_mod.Logger):
                 
                 self.load_resource(resource, **kwargs)
                 
-            else:
+            elif resource is not None:
                 
                 self._log(
                     'Could not recognize network input '
