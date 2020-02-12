@@ -9919,6 +9919,16 @@ def lit_bm_13_interactions():
     Returns list of interactions.
     """
     
+    LitBm13Interaction = collections.namedtuple(
+        'LitBm13Interaction',
+        [
+            'entrez_a',
+            'entrez_b',
+            'genesymbol_a',
+            'genesymbol_b',
+        ]
+    )
+    
     url = urls.urls['hid']['lit-bm-13']
     c = curl.Curl(url, silent = False, large = True)
     
@@ -9926,7 +9936,14 @@ def lit_bm_13_interactions():
     
     for row in c.result:
         
-        row.strip().split('\t')
+        row = row.strip().split('\t')
+        
+        yield LitBm13Interaction(
+            entrez_a = row[0],
+            entrez_b = row[2],
+            genesymbol_a = row[1],
+            genesymbol_b = row[3],
+        )
 
 
 def lit_bm_17_interactions():

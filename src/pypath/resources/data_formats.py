@@ -1289,7 +1289,7 @@ interaction_misc = {
     'lit13': input_formats.NetworkInput(
         name = "Lit-BM-13",
         separator = None,
-        id_col_a = 1,
+        id_col_a = 2,
         id_col_b = 3,
         id_type_a = "genesymbol",
         id_type_b = "genesymbol",

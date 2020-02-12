@@ -226,7 +226,7 @@ class Database(session_mod.Logger):
         
         if os.path.exists(pickle_path):
             
-            shutil.moce(pickle_path, old_pickle_path)
+            shutil.move(pickle_path, old_pickle_path)
         
         self._log('Saving dataset `%s` to `%s`.' % (dataset, pickle_path))
         
@@ -511,7 +511,7 @@ class Database(session_mod.Logger):
         if (
             (
                 hasattr(obj, 'graph') and
-                isinstance(obj.graph, main.igraph.Graph)
+                hasattr(obj.graph, 'es')
             ) or
             isinstance(obj, network.Network)
         ):

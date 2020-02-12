@@ -131,7 +131,7 @@ categories_receiver = {
 categories = categories_transmitter | categories_receiver
 
 
-class CellPhoneDB(omnipath.OmniPath):
+class CellPhoneDB(session_mod.Logger):
     
     def __init__(
             self,
@@ -149,9 +149,7 @@ class CellPhoneDB(omnipath.OmniPath):
             complex_pickle = None,
         ):
         
-        if not hasattr(self, '_log_name'):
-            
-            session_mod.Logger.__init__(self, name = 'cellphonedb')
+        session_mod.Logger.__init__(self, name = 'cellphonedb')
         
         self.output_dir = output_dir
         self.network = network
