@@ -615,6 +615,7 @@ class TableServer(BaseServer):
             'type': 'category',
             'ncbi_tax_id_source': 'int16',
             'ncbi_tax_id_target': 'int16',
+            'curation_effort': 'int16',
         },
         annotations = {
             'uniprot': 'category',

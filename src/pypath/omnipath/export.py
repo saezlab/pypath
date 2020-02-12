@@ -852,7 +852,11 @@ class Export(session.Logger):
                     list(e.get_interaction_types(direction = d))[0]
                 ),
                 'curation_effort': lambda e, d: (
-                    e.count_curation_effort(direction = d)
+                    e.count_curation_effort(direction = d) + (
+                        e.count_curation_effort(direction = 'undirected')
+                            if isinstance(d, tuple) else
+                        0
+                    )
                 ),
             }
         )
@@ -935,7 +939,11 @@ class Export(session.Logger):
                 # quite wrong (taking only the first one):
                 'type': lambda e: e['type'][0],
                 'curation_effort': lambda e, d: (
-                    e.count_curation_effort(direction = d)
+                    e.count_curation_effort(direction = d) + (
+                        e.count_curation_effort(direction = 'undirected')
+                            if isinstance(d, tuple) else
+                        0
+                    )
                 ),
             }
         )
