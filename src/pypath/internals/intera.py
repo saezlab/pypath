@@ -159,60 +159,6 @@ class Residue(object):
         return None
 
 
-class Mutation(object):
-
-    def __init__(self, original, mutated, sample, properties={}):
-        if original.protein == mutated.protein and \
-                original.number == mutated.number:
-            self.original = original
-            self.mutated = mutated
-            self.protein = original.protein
-            self.number = original.number
-            self.isoform = original.isoform \
-                if original.isoform == mutated.isoform else None
-            self.sample = sample
-            self.prop = properties
-        else:
-            self.protein = None
-            sys.stdour.write(
-                '\t:: Warning: Original and mutated residues should'
-                'be within the same protein.\n'
-                '\t     Here: original: %s-%u %s%u, '
-                'mutated: %s-%u %s%u\n' %
-                (original.protein, original.isoform, original.name,
-                 original.number, mutated.protein, mutated.isoform,
-                 mutated.name, mutated.number))
-
-    def __hash__(self):
-        return hash((self.original, self.mutated))
-
-    def __str__(self):
-        return '%s%u%s' % (self.original.name, self.number, self.mutated.name)
-
-    def __eq__(self, other):
-        if self.protein == other.protein and self.original == other.original and \
-                self.mutated == other.mutated:
-            return True
-        return False
-
-    def __contains__(self, other):
-        if isinstance(other, Residue):
-            if self.protein == other.protein and self.number == other.number and \
-                    self.original.name == other.name:
-                return True
-        elif isinstance(other, Ptm):
-            if other.residue == self.original or self.original in other.motif:
-                return True
-        elif isinstance(other, Domain):
-            if self.original in other:
-                return True
-        elif isinstance(other, DomainMotif):
-            if self.original in other.ptm or self.original in other.domain:
-                return True
-        else:
-            return False
-
-
 class Ptm(object):
 
     def __init__(self,
