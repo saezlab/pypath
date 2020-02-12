@@ -40,10 +40,17 @@ from collections import Counter
 # from pypath:
 import pypath.share.common as common
 import pypath.utils.mapping as mapping
+import pypath.core.evidence as evidence
+import pypath.core.entity as entity
 
 __all__ = [
-    'Residue', 'Ptm', 'Motif', 'Domain', 'DomainDomain', 'DomainMotif',
-    'Interface'
+    'Residue',
+    'Ptm',
+    'Motif',
+    'Domain',
+    'DomainDomain',
+    'DomainMotif',
+    'Interface',
 ]
 
 if 'unicode' not in __builtins__:
@@ -55,56 +62,100 @@ COMPLEX_SEP = '_'
 
 class Residue(object):
 
-    def __init__(self,
-                 number,
-                 name,
-                 identifier,
-                 id_type='uniprot',
-                 isoform=1,
-                 mutated=False,
-                 seq=None):
+    def __init__(
+            self,
+            number,
+            name,
+            protein,
+            id_type = 'uniprot',
+            isoform = 1,
+            mutated = False,
+            seq = None
+        ):
+
         non_digit = re.compile(r'[^\d.-]+')
         self.name = name
-        self.number = number if type(number) not in [str, unicode] \
-            else int(non_digit.sub('', number))
-        self.protein = identifier
-        self.id_type = id_type
+        self.number = (
+            number
+                if not isinstance(number, common.basestring) else
+            int(non_digit.sub('', number))
+        )
+
+        self.protein = (
+            protein
+                if isinstance(protein, entity.Entity) else
+            entity.Entity(protein, id_type = id_type)
+        )
         self.mutated = mutated
         self.seq = seq
-        self.isoform = isoform if type(isoform) is int \
-            else int(non_digit.sub('', isoform))
+        self.isoform = (
+            isoform
+                if type(isoform) is int else
+            int(non_digit.sub('', isoform))
+        )
+
 
     def __hash__(self):
+
         return hash((self.number, self.name, self.protein))
 
+
     def __eq__(self, other):
-        if type(other) is Residue and self.protein == other.protein and \
-                self.number == other.number and self.name == other.name:
-            return True
-        else:
-            return False
+
+        return (
+            self.protein == other.protein and
+            self.number == other.number and
+            self.name == other.name
+        )
 
     def __ne__(self, other):
+
         return not self.__eq__(other)
 
+
     def __str__(self):
+
         return 'Residue %s-%u in protein %s-%u%s\n' % (
-            self.name, self.number, self.protein, self.isoform, ' (mutated)'
-            if self.mutated else '')
+            self.name,
+            self.number,
+            self.protein.identifier,
+            self.isoform,
+            ' (mutated)' if self.mutated else ''
+        )
+
 
     def __repr__(self):
-        return self.__str__()
+
+        return '<%s:%s%u>' % (
+            self.protein.label,
+            self.name,
+            self.number,
+        )
+
 
     def serialize(self):
+
         return '%s:%u' % (self.name, self.number)
 
+
     def in_isoform(self, isoform, seq=None):
+
         seq = seq or self.seq
+
         if seq and seq.has_isoform(isoform):
+
             if seq.get(self.number, isoform=isoform) == self.name:
-                res = Residue(self.number, self.name, self.protein,
-                              self.id_type, isoform, self.mutated)
+
+                res = Residue(
+                    number = self.number,
+                    name = self.name,
+                    protein = self.protein,
+                    id_type = self.id_type,
+                    isoform = isoform,
+                    mutated = self.mutated,
+                )
                 return res
+
         return None
 
 
@@ -632,21 +683,26 @@ class DomainDomain(object):
 
 class DomainMotif(object):
 
-    def __init__(self, domain, ptm, sources=None, refs=None, pdbs=None):
+
+    def __init__(self, domain, ptm, evidences = None, pdbs = None):
+
         self.ptm = ptm
         self.domain = domain
-        self.sources = set([])
-        self.refs = set([])
-        self.pdbs = set([])
-        self.add_sources(sources)
-        self.add_refs(refs)
-        self.add_pdbs(pdbs)
+        self.pdbs = set()
         self.pnetw_score = None
 
+        self.add_pdbs(pdbs)
+
+        self.evidences = evidence.Evidences()
+
+
     def __hash__(self):
+
         return hash((self.domain, self.ptm))
 
+
     def __str__(self):
+
         return 'Domain-motif interaction:\n'\
             '  %s  %s'\
             '  Data sources: %s\n'\
@@ -659,7 +715,18 @@ class DomainMotif(object):
                 #', '.join(self.pdbs) if self.pdbs else '',
             )
 
+
+    def __repr__(self):
+
+        return '<%s => %s [%s]>' % (
+            self.domain.protein.label,
+            self.ptm.__repr__(),
+            self.evidences.__repr__().strip('<>')
+        )
+
+
     def __eq__(self, other):
+
         if isinstance(other, DomainMotif) and \
             self.ptm == other.ptm and \
             (self.domain == other.domain or
@@ -669,8 +736,11 @@ class DomainMotif(object):
         else:
             return False
 
+
     def __ne__(self, other):
+
         return not self.__eq__(other)
+
 
     def __contains__(self, other):
         if other == self.domain or other == self.ptm:
@@ -679,7 +749,8 @@ class DomainMotif(object):
             return True
         else:
             return False
-    
+
+
     def key(self):
         """
         Returns a unique key which is a tuple of the proteins, the residue
