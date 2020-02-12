@@ -91,6 +91,7 @@ class Export(session.Logger):
         'consensus_inhibition': 'int8',
         'sources': 'category',
         'references': 'category',
+        'curation_effort': 'int16',
     }
 
     def __init__(
@@ -844,6 +845,9 @@ class Export(session.Logger):
                 'type': lambda e, d: (
                     list(e.get_interaction_types(direction = d))[0]
                 ),
+                'curation_effort': lambda e, d: (
+                    e.count_curation_effort(direction = d)
+                ),
             }
         )
 
@@ -923,7 +927,10 @@ class Export(session.Logger):
                         e['dirs'].sources[d]
                     ) else ''),
                 # quite wrong (taking only the first one):
-                'type': lambda e: e['type'][0]
+                'type': lambda e: e['type'][0],
+                'curation_effort': lambda e, d: (
+                    e.count_curation_effort(direction = d)
+                ),
             }
         )
 
