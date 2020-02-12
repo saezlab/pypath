@@ -161,159 +161,252 @@ class Residue(object):
 
 class Ptm(object):
 
-    def __init__(self,
-                 protein,
-                 id_type='uniprot',
-                 typ='unknown',
-                 motif=None,
-                 residue=None,
-                 source=None,
-                 isoform=1,
-                 seq=None):
+    def __init__(
+            self,
+            protein,
+            id_type = 'uniprot',
+            typ = 'unknown',
+            motif = None,
+            residue = None,
+            isoform = 1,
+            evidences = None,
+            seq = None,
+        ):
+
         self.non_digit = re.compile(r'[^\d.-]+')
-        self.protein = protein
+        self.protein = (
+            protein
+                if isinstance(protein, evidence.Evidence) else
+            evidence.Evidence(
+                identifier = protein,
+                id_type = id_type,
+            )
+        )
         self.id_type = id_type
         self.typ = typ.lower()
         self.seq = seq
         self.motif = motif
         self.residue = residue
-        self.isoform = isoform if type(isoform) is int \
-            else int(self.non_digit.sub('', isoform))
-        self.sources = set([])
-        self.add_source(source)
-        self.isoforms = set([])
+        self.isoform = (
+            isoform
+                if type(isoform) is int else
+            int(self.non_digit.sub('', isoform))
+        )
+        self.isoforms = set()
         self.add_isoform(isoform)
 
+        self.evidences = evidence.Evidences()
+        self.add_evidences(evidences)
+
+
     def __hash__(self):
+
         return hash((self.residue, self.typ))
 
+
     def __str__(self):
-        return '%s in protein %s-%u\n    '\
-            'Motif: %s\n%s' % (
-                'Domain-motif interaction' if self.typ == 'unknown' and self.residue is None
-                else 'PTM: %s' % self.typ,
-                self.protein, self.isoform,
-                'unknown' if self.motif is None else self.motif.__str__(),
-                '' if self.residue is None else '\n    Residue: %s' % self.residue.__str__()
+
+        return (
+            '%s in protein %s-%u\n    Motif: %s\n%s' % (
+                (
+                    'Domain-motif interaction'
+                        if (
+                            self.typ == 'unknown' and
+                            self.residue is None
+                        ) else
+                    'PTM: %s' % self.typ
+                ),
+                self.protein.label,
+                self.isoform,
+                (
+                    'unknown'
+                        if self.motif is None else
+                    self.motif.__str__()
+                ),
+                (
+                    ''
+                        if self.residue is None else
+                    '\n    Residue: %s' % self.residue.__str__()
+                ),
             )
 
+
     def __eq__(self, other):
-        if type(other) == Ptm and \
-            self.protein == other.protein and \
-            (self.residue == other.residue or
+
+        return (
+            isinstance(other, Ptm) and
+            self.protein == other.protein and
+            (
+                self.residue == other.residue or
                 (
                     (self.residue is None or other.residue is None) and
-                    (self.motif is None or other.motif is None or
-                        self.motif == other.motif
-                     )
+                    self.motif == other.motif
                 )
-             ) and \
-            (self.typ == other.typ or
-             self.typ is None or other.typ is None):
-            return True
-        else:
-            return False
+            ) and (
+                self.typ == other.typ or
+                self.typ is None or other.typ is None
+            )
+        )
+
 
     def __ne__(self, other):
+
         return not self.__eq__(other)
 
+
     def __contains__(self, other):
+
         if isinstance(other, Residue):
+
             if self.residue is not None:
+
                 return other == self.residue
+
             elif self.motif is not None:
+
                 return other in self.motif
+
             else:
+
                 return False
+
         if isinstance(other, Motif):
+
             return other in self.motif
+
         elif other == self.protein:
+
             return True
+
         elif isinstance(other, Mutation):
-            if other.original == self.residue or \
-                    other.original in self.motif:
-                return True
-        else:
-            return False
+
+            return (
+                other.original == self.residue or
+                other.original in self.motif
+            )
+
 
     def __deepcopy__(self, memo):
-        new = type(self)(self.protein,
-                         id_type = self.id_type,
-                         typ = self.typ,
-                         motif = self.motif,
-                         residue = self.residue,
-                         isoform = self.isoform)
+
+        new = type(self)(
+            protein = self.protein,
+            id_type = self.id_type,
+            typ = self.typ,
+            motif = self.motif,
+            residue = self.residue,
+            isoform = self.isoform,
+        )
+
         new.add_isoform(self.isoforms)
+
         return new
 
-    def add_source(self, source):
-        if source is None:
-            return None
-        elif type(source) in common.char_types:
-            self._add_source(source)
-        else:
-            for s in source:
-                self._add_source(s)
 
-    def _add_source(self, source):
-        self.sources.add(source)
+    def add_evidences(self, evidences):
+
+        self.evidences += evidences
+
 
     def serialize(self):
+
         return '%s-%u:%s:%s:%s:%s:%u' % (
-            self.protein, self.isoform, self.typ, ','.join(self.sources),
-            ':::0-0' if self.motif is None else self.motif.serialize(), ''
-            if self.residue is None else self.residue.name, 0
-            if self.residue is None else self.residue.number)
+            self.protein,
+            self.isoform,
+            self.typ,
+            ','.join(self.sources),
+            ':::0-0' if self.motif is None else self.motif.serialize(),
+            '' if self.residue is None else self.residue.name,
+            0 if self.residue is None else self.residue.number,
+        )
 
     def print_residue(self):
+
         return '%s-%u:%s:%u' % (
-            self.protein, self.isoform, ''
-            if self.residue is None else self.residue.name, 0
-            if self.residue is None else self.residue.number)
+            self.protein, self.isoform,
+            '' if self.residue is None else self.residue.name,
+            0 if self.residue is None else self.residue.number,
+        )
+
 
     def merge(self, other):
+
         if self == other:
-            self.add_source(other.sources)
-            self.motif = self.motif if other.motif is None \
-                else other.motif if self.motif is None \
-                else self.motif.merge(other.motif)
-            if (self.typ == 'unknown' or len(self.typ) == 3) and \
-                    other.typ != 'unknown':
+
+            self.add_evidences(other.evidences)
+            self.motif = (
+                self.motif
+                    if other.motif is None else
+                other.motif
+                    if self.motif is None else
+                self.motif.merge(other.motif)
+            )
+            if (
+                (self.typ == 'unknown' or len(self.typ) == 3) and
+                other.typ != 'unknown'
+            ):
                 self.typ = other.typ
+
             self.isoform = min(self.isoform, other.isoform)
             self.isoforms = other.isoforms | self.isoforms
 
+
     def add_isoform(self, isoform):
-        isoform = set([isoform]) if type(isoform) is int \
-            else isoform if type(isoform) is set \
-            else set([int(self.non_digit.sub('', isoform))])
+
+        isoform = (
+            set([isoform])
+                if isinstance(isoform, int) else
+            isoform
+                if isinstance(isoform, set) else
+            {int(self.non_digit.sub('', isoform))}
+        )
+
         self.isoforms = self.isoforms | isoform
 
-    def get_isoforms(self, seq=None):
+
+    def get_isoforms(self, seq = None):
+
         result = []
         seq = seq or self.seq
+
         if seq:
+
             for isoform in seq.get_isoforms():
+
                 ptm = self.in_isoform(isoform, seq)
+
                 if ptm:
+
                     result.append(ptm)
+
         return result
 
-    def in_isoform(self, isoform, seq=None):
+
+    def in_isoform(self, isoform, seq = None):
+
         seq = seq or self.seq
 
         if seq and seq.has_isoform(isoform):
 
-            if seq.get(self.residue.number,
-                       isoform=isoform) == self.residue.name:
+            if (
+                seq.get(self.residue.number, isoform = isoform) ==
+                self.residue.name
+            ):
 
-                res = self.residue.in_isoform(isoform, seq=seq)
-                mot = self.motif.in_isoform(isoform, seq=seq)
-                ptm = Ptm(self.protein, self.id_type, self.typ, mot, res,
-                          self.sources, isoform, seq)
+                res = self.residue.in_isoform(isoform, seq = seq)
+                mot = self.motif.in_isoform(isoform, seq = seq)
+
+                ptm = Ptm(
+                    protein = self.protein,
+                    id_type = self.id_type,
+                    typ = self.typ,
+                    motif = mot,
+                    residue = res,
+                    evidences = self.sources,
+                    isoform = isoform,
+                    seq = seq,
+                )
 
                 return ptm
-        return None
 
 
 class Motif(object):
