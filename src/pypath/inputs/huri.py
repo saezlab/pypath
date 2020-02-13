@@ -1,3 +1,30 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright
+#  2014-2020
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  File author(s): Dénes Türei (turei.denes@gmail.com)
+#                  Nicolàs Palacio
+#                  Olga Ivanova
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
+
+import collections
+
+import pypath.resources.urls as urls
+import pypath.share.curl as curl
+
+
 def rolland_hi_ii_14():
     """
     Loads the HI-II-14 unbiased interactome from the large scale screening
@@ -91,5 +118,82 @@ def hi_iii():
             isoform_a = int(isoform_a),
             isoform_b = int(isoform_b),
             screens = screens,
+            score = score,
+        )
+
+
+def lit_bm_13_interactions():
+    """
+    Downloads and processes Lit-BM-13 dataset, the 2013 version of the 
+    high confidence literature curated interactions from CCSB.
+    Returns list of interactions.
+    """
+    
+    LitBm13Interaction = collections.namedtuple(
+        'LitBm13Interaction',
+        [
+            'entrez_a',
+            'entrez_b',
+            'genesymbol_a',
+            'genesymbol_b',
+        ]
+    )
+    
+    url = urls.urls['hid']['lit-bm-13']
+    c = curl.Curl(url, silent = False, large = True)
+    
+    _ = next(c.result)
+    
+    for row in c.result:
+        
+        row = row.strip().split('\t')
+        
+        yield LitBm13Interaction(
+            entrez_a = row[0],
+            entrez_b = row[2],
+            genesymbol_a = row[1],
+            genesymbol_b = row[3],
+        )
+
+
+def lit_bm_17_interactions():
+    """
+    Downloads and processes Lit-BM-13 dataset, the 2017 version of the 
+    high confidence literature curated interactions from CCSB.
+    Returns list of interactions.
+    """
+    
+    LitBm17Interaction = collections.namedtuple(
+        'LitBm17Interaction',
+        [
+            'id_a',
+            'id_b',
+            'pubmed',
+            'score',
+        ]
+    )
+    
+    url = urls.urls['hid']['lit-bm-17']
+    c = curl.Curl(url, silent = False)
+    data = c.result
+    
+    c = curl.Curl(url, silent = False, large = True)
+    
+    _ = next(c.result)
+    
+    for row in c.result:
+        
+        row = row.strip().split('\t')
+        
+        id_a = row[0][10:]
+        id_b = row[1][10:]
+       
+        pubmed = row[8][7:]
+        score = float(row[14][13:])
+        
+        yield LitBm17Interaction(
+            id_a = id_a,
+            id_b = id_b,
+            pubmed = pubmed,
             score = score,
         )
