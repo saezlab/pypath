@@ -720,7 +720,7 @@ urls = {
         'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-II-14.tsv',
         'hi-i-05':
         'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-I-05.tsv',
-        'hi-iii': 'http://interactome.baderlab.org/download',
+        'hi-iii': 'http://interactome-atlas.org/download',
         'lit-bm-17': 'http://interactome.baderlab.org/data/LitBM-17.psi',
     },
     'ca1': {

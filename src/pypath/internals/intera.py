@@ -229,6 +229,7 @@ class Ptm(object):
                     '\n    Residue: %s' % self.residue.__str__()
                 ),
             )
+        )
 
 
     def __eq__(self, other):
@@ -411,67 +412,89 @@ class Ptm(object):
 
 class Motif(object):
 
-    def __init__(self,
-                 protein,
-                 start,
-                 end,
-                 id_type='uniprot',
-                 regex=None,
-                 instance=None,
-                 isoform=1,
-                 motif_name=None,
-                 prob=None,
-                 elm=None,
-                 description=None,
-                 seq=None,
-                 source=None):
+    def __init__(
+            self,
+            protein,
+            start,
+            end,
+            id_type = 'uniprot',
+            regex = None,
+            instance = None,
+            isoform = 1,
+            motif_name = None,
+            prob = None,
+            elm = None,
+            description = None,
+            seq = None,
+            evidences = None,
+        ):
+
         non_digit = re.compile(r'[^\d.-]+')
-        self.protein = protein
+        self.protein = (
+            protein
+                if isinstance(protien, entity.Entity) else
+            entity.Entity(protein, if_type = id_type)
+        )
         self.id_type = id_type
         self.seq = seq
-        self.isoform = isoform if type(isoform) is int \
-            else int(non_digit.sub('', isoform))
-        self.start = start if type(start) not in [str, unicode] \
-            else int(non_digit.sub('', start))
-        self.end = end if type(end) not in [str, unicode] \
-            else int(non_digit.sub('', end))
+        self.isoform = (
+            isoform
+                if isinstance(isoform, int) else
+            int(non_digit.sub('', isoform))
+        )
+        self.start = (
+            start
+                if not isinstance(start, common.basestring) else
+            int(non_digit.sub('', start))
+        )
+        self.end = (
+            end
+                if not isinstance(end, common.basestring) else
+            int(non_digit.sub('', end))
+        )
         self.regex = None if regex is None else re.compile(regex)
         self.instance = instance
         self.motif_name = motif_name
         self.prob = prob
         self.elm = elm
         self.description = description
-        self.sources = set([])
-        if source is not None:
-            self.add_source(source)
+        self.evidences = evidence.Evidences()
+
+        self.add_evidences(evidences)
+
 
     def __hash__(self):
+
         return hash((self.protein, self.start, self.end))
 
+
     def __eq__(self, other):
-        if other.protein == self.protein and \
-                other.start == self.start and \
-                other.end == self.end:
-            return True
-        else:
-            return False
+
+        return (
+            other.protein == self.protein and
+            other.start == self.start and
+            other.end == self.end
+        )
+
 
     def __contains__(self, other):
-        if isinstance(other, Residue):
-            if other.protein == self.protein and \
-                    other.number >= self.start and \
-                    other.number <= self.end:
-                return True
-        elif isinstance(other, Mutation):
-            if other.original in self:
-                return True
-        elif other == self.protein or \
-                other == self.instance or \
-                other == self.motif_name:
-            return True
-        return False
+
+        return (
+            (
+                isinstance(other, Residue) and
+                other.protein == self.protein and
+                other.number >= self.start and
+                other.number <= self.end
+            ) or (
+                other == self.protein or
+                other == self.instance or
+                other == self.motif_name
+            )
+        )
+
 
     def add_source(self, source):
+
         if source is None:
             return None
         elif type(source) in common.char_types:
@@ -480,21 +503,29 @@ class Motif(object):
             for s in source:
                 self._add_source(s)
 
+
     def _add_source(self, source):
+
         self.sources.add(source)
 
+
     def serialize(self):
+
         return '%s:%s:%u-%u' % ('unknown' if self.motif_name is None else
                                 self.motif_name, self.instance, 0
                                 if self.start is None else self.start, 0
                                 if self.end is None else self.end)
 
+
     def print_residues(self):
+
         return '%s-%u:%u-%u' % (self.protein, self.isoform, 0
                                 if self.start is None else self.start, 0
                                 if self.end is None else self.end)
 
+
     def merge(self, other):
+
         if self == other:
             self.instance = self.instance or other.instance
             self.regex = self.regex or other.regex
