@@ -724,6 +724,9 @@ urls = {
         'lit-bm-17': 'http://interactome.baderlab.org/data/LitBM-17.psi',
         'huri': 'http://www.interactome-atlas.org/data/HuRI.pmi',
         'hi-union': 'http://www.interactome-atlas.org/data/HI-union.pmi',
+        'yang-2016': 'http://www.interactome-atlas.org/data/Yang-16.pmi',
+        'hi-i-05-pmi': 'http://www.interactome-atlas.org/data/H-I-05.pmi',
+        'yu-2011': 'http://www.interactome-atlas.org/data/Yu-11.pmi',
     },
     'ca1': {
         'label': 'Supplementary Online Materials for Ma\'ayan 2005',

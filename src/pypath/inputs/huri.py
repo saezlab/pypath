@@ -204,6 +204,26 @@ def lit_bm_17_interactions():
 
 def huri_interactions():
 
+    return _huri_interactions(dataset = 'huri')
+
+
+def yu2011_interactions():
+
+    return _huri_interactions(dataset = 'yu-2011')
+
+
+def hi_union_interactions():
+
+    return _huri_interactions(dataset = 'hi-union')
+
+
+def yang2016_interactions():
+
+    return _huri_interactions(dataset = 'yang-2016')
+
+
+def _huri_interactions(dataset):
+
     reuniprot = re.compile(r'[a-z]+:([\w\.]+)(?:-?([0-9]?))?')
 
     HuriInteraction = collections.namedtuple(
@@ -226,7 +246,7 @@ def huri_interactions():
         )
 
 
-    url = urls.urls['hid']['huri']
+    url = dataset if dataset.startswith('http') else urls.urls['hid'][dataset]
     c = curl.Curl(url, large = True, silent = False)
 
     for row in c.result:
