@@ -21,6 +21,7 @@
 
 import re
 import collections
+import itertools
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
@@ -38,9 +39,9 @@ def rolland_hi_ii_14():
     xlsname = c.fileobj.name
     c.fileobj.close()
     tbl = read_xls(xlsname, sheet = '2G')
-    
+
     for row in tbl[1:]:
-        
+
         yield [c.split('.')[0] for c in row]
 
 
@@ -74,7 +75,7 @@ def hi_iii():
     Please check the conditions and licensing terms carefully at
     http://interactome.baderlab.org.
     """
-    
+
     HiiiiInteraction = collections.namedtuple(
         'HiiiiInteraction',
         [
@@ -86,11 +87,11 @@ def hi_iii():
             'score',
         ]
     )
-    
-    
+
+
     rescore = re.compile(r'author score: ([\d\.]+)')
     rescreens = re.compile(r'Found in screens ([\d,]+)')
-    
+
     url = urls.urls['hid']['hi-iii']
     post_data = {
         'form[request_dataset]': '2',
@@ -202,10 +203,9 @@ def lit_bm_17_interactions():
 
 
 def huri_interactions():
-    
+
     reuniprot = re.compile(r'[a-z]+:([\w\.]+)(?:-?([0-9]?))?')
-    
-    
+
     HuriInteraction = collections.namedtuple(
         'HuriInteraction',
         [
@@ -215,25 +215,39 @@ def huri_interactions():
             'isoform_b',
         ]
     )
-    
-    
+
+
+    def _map_ids(_id):
+
+        return mapping.map_name(
+            _id,
+            _id[:4].lower() if _id[:4] in {'ensp', 'enst'} else 'uniprot',
+            'uniprot',
+        )
+
+
     url = urls.urls['hid']['huri']
     c = curl.Curl(url, large = True, silent = False)
-    
+
     for row in c.result:
-        
+
         row = row.split()
-        
-        try:
-            uniprot_a, isoform_a = reuniprot.match(row[0]).groups()
-            uniprot_b, isoform_b = reuniprot.match(row[1]).groups()
-        except:
-            print(row[0], row[1])
+
+        if len(row) < 2:
+
             continue
-        
-        yield HuriInteraction(
-            uniprot_a = uniprot_a,
-            uniprot_b = uniprot_b,
-            isoform_a = int(isoform_a) if isoform_a else 1,
-            isoform_b = int(isoform_b) if isoform_b else 1,
-        )
+
+        id_a, isoform_a = reuniprot.match(row[0]).groups()
+        id_b, isoform_b = reuniprot.match(row[1]).groups()
+
+        uniprots_a = _map_ids(id_a)
+        uniprots_b = _map_ids(id_b)
+
+        for uniprot_a, uniprot_b in itertools.product(uniprots_a, uniprots_b):
+
+            yield HuriInteraction(
+                uniprot_a = uniprot_a,
+                uniprot_b = uniprot_b,
+                isoform_a = int(isoform_a) if isoform_a else 1,
+                isoform_b = int(isoform_b) if isoform_b else 1,
+            )
