@@ -24,7 +24,7 @@ from past.builtins import xrange, range, reduce
 
 import os
 import sys
-import codecs
+import math
 import re
 import importlib as imp
 import copy
@@ -222,7 +222,7 @@ class MapReader(session_mod.Logger):
 
 
     def id_type_side(self, id_type):
-        
+
         return (
             'a'
                 if id_type == self.id_type_a else
@@ -501,8 +501,8 @@ class MapReader(session_mod.Logger):
 
         if not self.uniprots:
 
-            self.set_uniprot_space()
-        
+            self.set_uniprot_space(swissprot = False)
+
         # We need a list to query this service, and we have method only for
         # getting a proteome wide list of UniProt IDs. If the translated
         # ID type is not UniProt, then first we need to translate the
@@ -521,14 +521,12 @@ class MapReader(session_mod.Logger):
         else:
 
             upload_ac_list = self.uniprots
-        
+
         uniprot_data = self._read_mapping_uniprot_list(
             upload_ac_list = upload_ac_list,
         )
 
-        _ = next(uniprot_data)
-
-        for l in uniprot_data:
+        for l in uniprot_data.split('\n'):
 
             if not l:
 
@@ -548,14 +546,16 @@ class MapReader(session_mod.Logger):
         self.b_to_a = b_to_a if self.load_b_to_a else None
 
 
-    def set_uniprot_space(self):
+    def set_uniprot_space(self, swissprot = None):
         """
         Sets up a search space of UniProt IDs.
         """
 
+        swissprot = self.param.swissprot if swissprot is None else swissprot
+
         self.uniprots = uniprot_input.all_uniprots(
             self.ncbi_tax_id,
-            swissprot = self.param.swissprot,
+            swissprot = swissprot,
         )
 
 
@@ -564,53 +564,84 @@ class MapReader(session_mod.Logger):
             uniprot_id_type_a = None,
             uniprot_id_type_b = None,
             upload_ac_list = None,
+            chunk_size = None,
         ):
         """
         Reads a mapping table from UniProt "upload lists" service.
         """
-        
+
+        chunk_size = (
+            chunk_size or
+            settings.get('uniprot_uploadlists_chunk_size')
+        )
         uniprot_id_type_a = uniprot_id_type_a or self.param.uniprot_id_type_a
         uniprot_id_type_b = uniprot_id_type_b or self.param.uniprot_id_type_b
 
         upload_ac_list = upload_ac_list or self.uniprots
 
+        self._log(
+            'Querying the UniProt uploadlists service for ID translation '
+            'data. Querying a list of %u IDs.' % len(upload_ac_list)
+        )
+
         url = urls.urls['uniprot_basic']['lists']
-        post = {
-            'from': uniprot_id_type_a,
-            'format': 'tab',
-            'to': uniprot_id_type_b,
-            'uploadQuery': ' '.join(sorted(upload_ac_list)),
-        }
 
-        c = curl.Curl(url, post = post, large = True, silent = False)
+        result = ''
 
-        if c.result is None:
+        # loading data in chunks of 10,000 by default
+        for i in range(math.ceil(len(upload_ac_list) / chunk_size)):
 
-            for i in xrange(3):
+            this_chunk = upload_ac_list[i * chunk_size:(i + 1) * chunk_size]
 
-                c = curl.Curl(
-                    url,
-                    post = post,
-                    large = True,
-                    silent = False,
-                    cache = False,
+            self._log(
+                'Request to UniProt uploadlists, chunk #%u with %u IDs.' % (
+                    i,
+                    len(this_chunk),
                 )
-
-                if c.result is not None:
-
-                    break
-
-        if c.result is None or c.fileobj.read(5) == '<!DOC':
-
-            _logger.console(
-                'Error at downloading ID mapping data from UniProt.', -9
             )
 
-            c.result = ''
+            post = {
+                'from': uniprot_id_type_a,
+                'format': 'tab',
+                'to': uniprot_id_type_b,
+                'uploadQuery': ' '.join(sorted(this_chunk)),
+            }
 
-        c.fileobj.seek(0)
+            c = curl.Curl(url, post = post, large = True, silent = False)
 
-        return c.result
+            # 3 extra attempts
+            if c.result is None:
+
+                for i in xrange(3):
+
+                    c = curl.Curl(
+                        url,
+                        post = post,
+                        large = True,
+                        silent = False,
+                        cache = False,
+                    )
+
+                    if c.result is not None:
+
+                        break
+
+            if c.result is None or c.fileobj.read(5) == '<!DOC':
+
+                _logger.console(
+                    'Error at downloading ID mapping data from UniProt.', -9
+                )
+
+                c.result = ''
+
+            c.fileobj.seek(0)
+
+            # removing the header row
+            _ = next(c.result)
+
+            result += c.fileobj.read()
+
+        return result
 
 
     def read_mapping_uniprot(self):
@@ -1278,6 +1309,20 @@ class Mapper(session_mod.Logger):
             # maybe it's all lowercase?
             mapped_names = self._map_name(
                 name = name.lower(),
+                id_type = id_type,
+                target_id_type = target_id_type,
+                ncbi_tax_id = ncbi_tax_id,
+            )
+
+        if (
+            not mapped_names and
+            id_type.startswith('ens') and
+            '.' in name
+        ):
+
+            # trying to split the part after the dot:
+            mapped_names = self._map_name(
+                name = name.upper().split('.')[0],
                 id_type = id_type,
                 target_id_type = target_id_type,
                 ncbi_tax_id = ncbi_tax_id,

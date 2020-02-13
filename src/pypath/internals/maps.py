@@ -134,10 +134,11 @@ uniprot = {
         input_formats.UniprotMapping(
             id_type_a = 'hgnc',
         ),
-    ('enst', 'uniprot'):
-        input_formats.UniprotMapping(
-            id_type_a = 'enst',
-        ),
+    # turned off this as the uploadlists also provides ENST IDs
+    #('enst', 'uniprot'):
+        #input_formats.UniprotMapping(
+            #id_type_a = 'enst',
+        #),
     ('refseqp', 'uniprot'):
         input_formats.UniprotMapping(
             id_type_a = 'refseqp',

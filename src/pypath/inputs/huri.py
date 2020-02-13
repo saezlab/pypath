@@ -24,6 +24,7 @@ import collections
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+import pypath.utils.mapping as mapping
 
 
 def rolland_hi_ii_14():
@@ -202,7 +203,7 @@ def lit_bm_17_interactions():
 
 def huri_interactions():
     
-    reuniprot = re.compile(r'uniprotkb:([\w]+)(?:-?([0-9]?))?')
+    reuniprot = re.compile(r'[a-z]+:([\w\.]+)(?:-?([0-9]?))?')
     
     
     HuriInteraction = collections.namedtuple(
