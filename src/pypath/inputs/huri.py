@@ -225,6 +225,7 @@ def yang2016_interactions():
 def _huri_interactions(dataset):
 
     reuniprot = re.compile(r'[a-z]+:([\w\.]+)(?:-?([0-9]?))?')
+    rescore = re.compile(r'author score: ([\.0-9]+)')
 
     HuriInteraction = collections.namedtuple(
         'HuriInteraction',
@@ -233,6 +234,7 @@ def _huri_interactions(dataset):
             'uniprot_b',
             'isoform_a',
             'isoform_b',
+            'score',
         ]
     )
 
@@ -250,6 +252,12 @@ def _huri_interactions(dataset):
     c = curl.Curl(url, large = True, silent = False)
 
     for row in c.result:
+
+        score = rescore.search(row)
+
+        if score:
+
+            score = float(score.groups()[0])
 
         row = row.split()
 
@@ -270,4 +278,5 @@ def _huri_interactions(dataset):
                 uniprot_b = uniprot_b,
                 isoform_a = int(isoform_a) if isoform_a else 1,
                 isoform_b = int(isoform_b) if isoform_b else 1,
+                score = score,
             )
