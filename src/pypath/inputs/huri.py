@@ -19,6 +19,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import re
 import collections
 
 import pypath.resources.urls as urls
@@ -187,7 +188,7 @@ def lit_bm_17_interactions():
         
         id_a = row[0][10:]
         id_b = row[1][10:]
-       
+        
         pubmed = row[8][7:]
         score = float(row[14][13:])
         
@@ -196,4 +197,42 @@ def lit_bm_17_interactions():
             id_b = id_b,
             pubmed = pubmed,
             score = score,
+        )
+
+
+def huri_interactions():
+    
+    reuniprot = re.compile(r'uniprotkb:([\w]+)(?:-?([0-9]?))?')
+    
+    
+    HuriInteraction = collections.namedtuple(
+        'HuriInteraction',
+        [
+            'uniprot_a',
+            'uniprot_b',
+            'isoform_a',
+            'isoform_b',
+        ]
+    )
+    
+    
+    url = urls.urls['hid']['huri']
+    c = curl.Curl(url, large = True, silent = False)
+    
+    for row in c.result:
+        
+        row = row.split()
+        
+        try:
+            uniprot_a, isoform_a = reuniprot.match(row[0]).groups()
+            uniprot_b, isoform_b = reuniprot.match(row[1]).groups()
+        except:
+            print(row[0], row[1])
+            continue
+        
+        yield HuriInteraction(
+            uniprot_a = uniprot_a,
+            uniprot_b = uniprot_b,
+            isoform_a = int(isoform_a) if isoform_a else 1,
+            isoform_b = int(isoform_b) if isoform_b else 1,
         )

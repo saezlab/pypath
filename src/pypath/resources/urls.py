@@ -722,6 +722,8 @@ urls = {
         'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-I-05.tsv',
         'hi-iii': 'http://interactome-atlas.org/download',
         'lit-bm-17': 'http://interactome.baderlab.org/data/LitBM-17.psi',
+        'huri': 'http://www.interactome-atlas.org/data/HuRI.pmi',
+        'hi-union': 'http://www.interactome-atlas.org/data/HI-union.pmi',
     },
     'ca1': {
         'label': 'Supplementary Online Materials for Ma\'ayan 2005',
