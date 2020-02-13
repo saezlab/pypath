@@ -1265,27 +1265,6 @@ interaction_misc = {
         extra_edge_attrs = {'hi2_numof_screens': 4},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
-    'hi3': input_formats.NetworkInput(
-        name = "HI-III",
-        separator = None,
-        id_col_a = 0,
-        id_col_b = 1,
-        id_type_a = "uniprot",
-        id_type_b = "uniprot",
-        entity_type_a = "protein",
-        entity_type_b = "protein",
-        is_directed = False,
-        sign = False,
-        ncbi_tax_id = 9606,
-        input = 'huri.hi_iii',
-        references = False,
-        header = True,
-        extra_edge_attrs = {
-            'hi3_score': 5,
-        },
-        extra_node_attrs_a = {},
-        extra_node_attrs_b = {},
-    ),
     'lit13': input_formats.NetworkInput(
         name = "Lit-BM-13",
         separator = None,
@@ -1348,7 +1327,7 @@ interaction_misc['acsn'] = copy.deepcopy(reaction_pc['acsn'])
 
 
 interaction_deprecated = {
-    'hi3': input_formats.NetworkInput(
+    'hi3_local': input_formats.NetworkInput(
         name = "HI-III",
         separator = None,
         id_col_a = 1,
@@ -1368,6 +1347,27 @@ interaction_deprecated = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
+    'hi3': input_formats.NetworkInput(
+        name = "HI-III",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = False,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'huri.hi_iii',
+        references = False,
+        header = True,
+        extra_edge_attrs = {
+            'hi3_score': 5,
+        },
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
     'hsn': input_formats.NetworkInput(
         name = "HumanSignalingNetwork",
         separator = ",",
