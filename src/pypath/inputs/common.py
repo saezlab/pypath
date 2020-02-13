@@ -31,6 +31,8 @@ _logger = session_mod.Logger(name = 'dataio')
 _log = _logger._log
 _console = _logger._console
 
+if 'unicode' not in __builtins__: unicode = str
+
 
 def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
     """

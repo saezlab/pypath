@@ -120,6 +120,7 @@ import pypath.share.settings as settings
 import pypath.utils.taxonomy as taxonomy
 import pypath.utils.homology as homology_mod
 import pypath.inputs.pfam as pfam_input
+import pypath.inputs.common as inputs_common
 
 if 'long' not in __builtins__:
     long = int
@@ -150,25 +151,6 @@ CellPhoneDBAnnotation = collections.namedtuple(
         'integrin',
     )
 )
-
-
-def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
-
-    try:
-        book = open_workbook(xls_file, on_demand = True)
-        try:
-            sheet = book.sheet_by_name(sheet)
-        except XLRDError:
-            sheet = book.sheet_by_index(0)
-            table = [[str(c.value) for c in sheet.row(i)]
-                     for i in xrange(sheet.nrows)]
-            if csv_file:
-                with open(csv_file, 'w') as csv:
-                    csv.write('\n'.join(['\t'.join(r) for r in table]))
-            if return_table:
-                return table
-    except IOError:
-        _console('No such file: %s\n' % xls_file)
 
 
 def read_table(cols,
@@ -539,7 +521,7 @@ def get_havugimana():
     c = curl.Curl(url, silent = False, large = True)
     fname = c.fileobj.name
     del c
-    table = read_xls(fname)
+    table = inputs_common.read_xls(fname)
 
     return table[3:]
 
@@ -5282,7 +5264,7 @@ def ramilowski_interactions(putative = False):
     c = curl.Curl(urls.urls['rami']['url'], silent = False, large = True)
     xlsname = c.fname
     del(c)
-    raw = read_xls(xlsname, 'All.Pairs')[1:]
+    raw = inputs_common.read_xls(xlsname, 'All.Pairs')[1:]
 
     return [
         [
@@ -5410,7 +5392,7 @@ def kirouac2010_interactions():
     )
     xlsname = c.fname
     del(c)
-    tbl = read_xls(xlsname, sheet = 'S12')
+    tbl = inputs_common.read_xls(xlsname, sheet = 'S12')
 
     result = []
 
@@ -6974,7 +6956,7 @@ def get_li2012():
     xls = c.fileobj
     xlsfile = xls.name
     xls.close()
-    tbl = read_xls(xlsfile, sheet = 'File S1')
+    tbl = inputs_common.read_xls(xlsfile, sheet = 'File S1')
     return filter(lambda l: len(l[-1]) > 0, map(lambda l: l[:7], tbl[2:]))
 
 
@@ -7936,37 +7918,6 @@ def signor_complexes(organism = 9606):
     return complexes
 
 
-def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
-    """
-    Generic function to read MS Excel XLS file, and convert one sheet
-    to CSV, or return as a list of lists
-    """
-    try:
-        if hasattr(xls_file, 'read'):
-            book = xlrd.open_workbook(
-                file_contents = xls_file.read(),
-                on_demand = True,
-            )
-        else:
-            book = xlrd.open_workbook(xls_file, on_demand = True)
-        try:
-            sheet = book.sheet_by_name(sheet)
-        except XLRDError:
-            sheet = book.sheet_by_index(0)
-        table = [[unicode(c.value) for c in sheet.row(i)]
-                 for i in xrange(sheet.nrows)]
-        if csv_file:
-            with open(csv_file, 'w') as csv:
-                csv.write('\n'.join(['\t'.join(r) for r in table]))
-        if not return_table:
-            table = None
-        book.release_resources()
-        return table
-    except IOError:
-        sys.stdout.write('No such file: %s\n' % xls_file)
-    sys.stdout.flush()
-
-
 def kinasedotcom_annotations():
     """
     Downloads and processes kinase annotations from kinase.com.
@@ -7997,7 +7948,7 @@ def kinasedotcom_annotations():
     xlsf = c.fileobj
     xlsname = xlsf.name
     xlsf.close()
-    tbl = read_xls(xlsname)
+    tbl = inputs_common.read_xls(xlsname)
     
     result = collections.defaultdict(set)
     
@@ -8036,7 +7987,7 @@ def phosphatome_annotations():
 
     url = urls.urls['phosphatome']['url']
     c = curl.Curl(url, large = True, silent = False, default_mode = 'rb')
-    tbl = read_xls(c.result['aag1796_Tables S1 to S23.xlsx'])
+    tbl = inputs_common.read_xls(c.result['aag1796_Tables S1 to S23.xlsx'])
 
     data = collections.defaultdict(set)
 
@@ -10481,7 +10432,7 @@ def macrophage_interactions():
     c = curl.Curl(url, silent = False, large = True)
     fname = c.fileobj.name
     del c
-    tbl = read_xls(fname)[5:]
+    tbl = inputs_common.read_xls(fname)[5:]
     types = ["Protein", "Complex"]
     lst = []
     lnum = 0
@@ -10668,7 +10619,7 @@ def mirecords_interactions():
     url = urls.urls['mirecords']['url']
     c = curl.Curl(url, silent = False, large = True)
 
-    tbl = read_xls(c.fileobj.name)
+    tbl = inputs_common.read_xls(c.fileobj.name)
 
     c.close()
 
@@ -10684,7 +10635,7 @@ def mirtarbase_interactions():
     url = urls.urls['mirtarbase']['strong']
     c = curl.Curl(url, silent = False, large = True)
 
-    tbl = read_xls(c.fileobj.name)
+    tbl = inputs_common.read_xls(c.fileobj.name)
 
     c.close()
 
@@ -11144,7 +11095,7 @@ def proteinatlas_secretome_annotations():
         silent = False,
     )
     
-    reader = read_xls(c.fileobj.name)[1:]
+    reader = inputs_common.read_xls(c.fileobj.name)[1:]
     result = collections.defaultdict(set)
     
     for rec in reader:
@@ -11437,7 +11388,7 @@ def get_cspa(organism = 9606):
     c = curl.Curl(url, large = True, silent = False)
     xlsname = c.fname
     del(c)
-    raw = read_xls(xlsname, sheets[str_organism])[1:]
+    raw = inputs_common.read_xls(xlsname, sheets[str_organism])[1:]
 
     return mapping.map_names((r[1] for r in raw), 'uniprot', 'uniprot')
 
@@ -11453,7 +11404,7 @@ def surfaceome_annotations():
     c = curl.Curl(url, large = True, silent = False)
     xlsname = c.fname
     del(c)
-    raw = read_xls(xlsname, 'in silico surfaceome only')[2:]
+    raw = inputs_common.read_xls(xlsname, 'in silico surfaceome only')[2:]
 
     return dict(
         (
@@ -11489,7 +11440,7 @@ def matrisome_annotations(organism = 9606):
     c = curl.Curl(url, large = True, silent = False)
     xlsname = c.fname
     del(c)
-    raw = read_xls(xlsname)[1:]
+    raw = inputs_common.read_xls(xlsname)[1:]
 
     result = collections.defaultdict(set)
     
@@ -12992,7 +12943,7 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
     
     c = curl.Curl(url, silent = False, large = True)
     
-    data = read_xls(c.fileobj.name, sheet = 'SuppTable3')
+    data = inputs_common.read_xls(c.fileobj.name, sheet = 'SuppTable3')
     
     result = []
     

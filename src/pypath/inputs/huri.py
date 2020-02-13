@@ -26,6 +26,7 @@ import itertools
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.utils.mapping as mapping
+import pypath.inputs.common as inputs_common
 
 
 def rolland_hi_ii_14():
@@ -38,7 +39,7 @@ def rolland_hi_ii_14():
     c = curl.Curl(url, silent = False, large = True)
     xlsname = c.fileobj.name
     c.fileobj.close()
-    tbl = read_xls(xlsname, sheet = '2G')
+    tbl = inputs_common.read_xls(xlsname, sheet = '2G')
 
     for row in tbl[1:]:
 
@@ -58,14 +59,8 @@ def vidal_hi_iii_old(fname):
     """
 
     f = curl.FileOpener(fname)
-    return \
-        list(
-            map(
-                lambda l:
-                    l.strip().split('\t'),
-                f.result
-            )
-        )[1:]
+
+    return [l.strip().split('\t') for l in f.result][1:]
 
 
 def hi_iii():
