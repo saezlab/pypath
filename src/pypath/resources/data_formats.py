@@ -1303,6 +1303,90 @@ interaction_misc = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
+    'huri': input_formats.NetworkInput(
+        name = "HuRI",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = False,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'huri.huri_interactions',
+        references = False,
+        header = True,
+        extra_edge_attrs = {
+            'huri_score': 4,
+        },
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
+    'hi_union': input_formats.NetworkInput(
+        name = "HI-union",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = False,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'huri.hi_union_interactions',
+        references = False,
+        header = True,
+        extra_edge_attrs = {
+            'huri_score': 4,
+        },
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
+    'yu2011': input_formats.NetworkInput(
+        name = "Yu2011",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = False,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'huri.yu2011_interactions',
+        references = False,
+        header = True,
+        extra_edge_attrs = {
+            'huri_score': 4,
+        },
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
+    'yang2016': input_formats.NetworkInput(
+        name = "Yang2016",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = False,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'huri.yang2016_interactions',
+        references = False,
+        header = True,
+        extra_edge_attrs = {
+            'huri_score': 4,
+        },
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
     'cpdb': input_formats.NetworkInput(
         name = "CPDB",
         separator = None,
@@ -1346,7 +1430,28 @@ interaction_deprecated = {
         header = True,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
+    'hi3_local_2': input_formats.NetworkInput(
+        name = "Vidal HI-III",
+        separator = None,
+        id_col_a = 1,
+        id_col_b = 3,
+        id_type_a = "genesymbol",
+        id_type_b = "genesymbol",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = False,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'huri.vidal_hi_iii',
+        references = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+        must_have_references = False,
+        input_args = {'fname': '/home/denes/Documents/pw/data/hi3-2.3.tsv'}
+    ),
     'hi3': input_formats.NetworkInput(
         name = "HI-III",
         separator = None,
@@ -1384,8 +1489,10 @@ interaction_deprecated = {
         ncbi_tax_id = 9606,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
 }
+
 
 interaction_htp = {
     'intact': input_formats.NetworkInput(
@@ -1424,8 +1531,11 @@ interaction_htp = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
-        input_args = {'htp_limit': None,
-                   'ltp': False}),
+        input_args = {
+            'htp_limit': None,
+            'ltp': False,
+        },
+    ),
     'dip': input_formats.NetworkInput(
         name = "DIP",
         id_col_a = 0,
@@ -1446,8 +1556,11 @@ interaction_htp = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
-        input_args = {'core_only': False,
-                   'small_scale_only': False}),
+        input_args = {
+            'core_only': False,
+            'small_scale_only': False,
+        }
+    ),
     'ccmap': input_formats.NetworkInput(
         name = "CancerCellMap",
         id_col_a = 0,
@@ -1463,7 +1576,8 @@ interaction_htp = {
         references = (3, ";"),
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'innatedb': input_formats.NetworkInput(
         name = "InnateDB",
         id_col_a = 0,
@@ -1479,7 +1593,8 @@ interaction_htp = {
         ncbi_tax_id = 9606,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'matrixdb': input_formats.NetworkInput(
         name = "MatrixDB",
         id_col_a = 0,
@@ -1495,7 +1610,8 @@ interaction_htp = {
         ncbi_tax_id = 9606,
         extra_edge_attrs = {"matrixdb_methods": (3, '|')},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'hprd': input_formats.NetworkInput(
         name = "HPRD",
         separator = None,
@@ -1513,26 +1629,8 @@ interaction_htp = {
         header = False,
         extra_edge_attrs = {'hprd_methods': (6, ';')},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
-    'hi3': input_formats.NetworkInput(
-        name = "Vidal HI-III",
-        separator = None,
-        id_col_a = 1,
-        id_col_b = 3,
-        id_type_a = "genesymbol",
-        id_type_b = "genesymbol",
-        entity_type_a = "protein",
-        entity_type_b = "protein",
-        is_directed = False,
-        sign = False,
-        ncbi_tax_id = 9606,
-        input = 'huri.vidal_hi_iii',
-        references = False,
-        extra_edge_attrs = {},
-        extra_node_attrs_a = {},
-        extra_node_attrs_b = {},
-        must_have_references = False,
-        input_args = {'fname': '/home/denes/Documents/pw/data/hi3-2.3.tsv'}),
+        extra_node_attrs_b = {}
+    ),
     'mppi': input_formats.NetworkInput(
         name = "MPPI",
         separator = "|",
@@ -1549,8 +1647,10 @@ interaction_htp = {
         ncbi_tax_id = 9606,
         extra_edge_attrs = {"mppi_evidences": (1, ";")},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {})
+        extra_node_attrs_b = {}
+    ),
 }
+
 '''
 Transcriptional regulatory interactions.
 '''
