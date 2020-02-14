@@ -297,3 +297,73 @@ class NetworkResource(ResourceAttributes):
                 if self.data_model else
             'Unknown'
         )
+
+
+EnzymeSubstrateResourceKey = collections.namedtuple(
+    'EnzymeSubstrateResourceKey',
+    [
+        'name',
+        'data_type',
+        'via',
+    ]
+)
+
+
+class EnzymeSubstrateResource(ResourceAttributes):
+    
+    
+    _key = EnzymeSubstrateResourceKey
+    
+    
+    def __init__(
+            self,
+            name,
+            evidence_types = None,
+            via = None,
+            **kwargs,
+        ):
+        
+        ResourceAttributes.__init__(
+            self,
+            name = name,
+            data_type = 'enzyme_substrate',
+            evidence_types = evidence_types,
+            via = via,
+            **kwargs,
+        )
+    
+    
+    def __hash__(self):
+        
+        return hash(self.key)
+    
+    
+    @property
+    def key(self):
+        
+        return self._key(
+            name = self.name,
+            data_type = self.data_type,
+            via = self.via,
+        )
+    
+    
+    def __eq__(self, other):
+        
+        return (
+            self.name == other
+                if isinstance(other, common.basestring) else
+            self.__hash__() == other.__hash__()
+        )
+    
+    
+    def __repr__(self):
+        
+        return '<EnzymeSubstrateResource: %s>' % (
+            self.name,
+        )
+    
+    
+    def is_primary(self):
+        
+        return self.via is None
