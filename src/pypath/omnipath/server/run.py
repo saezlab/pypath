@@ -274,9 +274,9 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             return self.resources(req)
 
         rc = resource_controller.ResourcesController(use_package_path=True)
-        resources_info = rc.get_info_all_resources()
+        rc.update()
 
-        return generate_about_page.generate_about_html(resources_info)
+        return generate_about_page.generate_about_html(rc.data)
     
     
     def _root(self, req):
