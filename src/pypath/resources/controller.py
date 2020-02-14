@@ -23,60 +23,108 @@ import json
 import os
 
 import pypath.share.session as session_mod
+import pypath.share.common as common
+import pypath.internals.resource as resource_base
 
 
 _logger = session_mod.Logger(name = 'resources.controller')
 
 
-class ResourcesController:
+class ResourceController(session_mod.Logger):
     """
     Resource controller is aimed to be the central part of pypath
     communication with resources.
 
     14.01.2020: the initial step for resource controller development:
         used for /info page generating for the server.
+    14.02.2020: storing and reading enzyme-substrate resource definitions
+        from the JSON; class inherits from session.Logger
     """
 
     def __init__(
             self,
-            list_resources_path = (
+            resource_info_path = (
+                common.ROOT,
+                'resources',
                 'data',
                 'resources_descriptions.json',
             ),
             use_package_path = False,
         ):
 
+        session_mod.Logger.__init__(self, name = 'resource_controller')
+
+        self.data = None
+
         if use_package_path:
 
-            list_resources_path = (
+            resource_info_path = (
                 (
                     os.path.dirname(os.path.abspath(__file__)),
                 ) +
-                list_resources_path
+                resource_info_path
             )
 
-        self.list_resources_path = os.path.join(*list_resources_path)
+        self.resource_info_path = os.path.join(*resource_info_path)
 
-        _logger._log(
+        self._log(
             'Loading resource information from '
-            'JSON file: %s' % self.list_resources_path
+            'JSON file: %s' % self.resource_info_path
         )
 
+        self.update()
 
-    def get_info_all_resources(self):
+
+    def update(self, path = None, force = False, remove_old = False):
         """
-        :return: list of of available resources in pypath
+        Reads resource information from a JSON file.
+
+        :arg str,NoneType path:
+            Path to a JSON file with resource information. By default the
+            path in py:attr:``resource_info_path`` used which points by
+            default to the built in resource information file.
+        :arg bool force:
+            Read the file again even if no new path provided and it has been
+            read already.
+        :arg bool remove_old:
+            Remove old data before reading. By default the data will be
+            updated with the contents of the new file potentially overwriting
+            identical keys in the old data.
         """
 
-        resources_data = []
+        if self.data and not path and not force:
+
+            return
+
+        if not self.data or remove_old:
+
+            self.data = {}
+
+        path = path or self.resource_info_path
 
         try:
-            with open(self.list_resources_path) as json_file:
+
+            with open(path) as json_file:
+
                 resources_data = json.load(json_file)
+                self.data = resources_data
+                self._log(
+                    'Resource information has been read from `%s`.' % path
+                )
+
         except IOError:
-            _logger._console(
+
+            self._console(
                 'File %s with resources information cannot be accessed. '
-                'Check the name of the file.' % self.list_resources_path
+                'Check the name of the file.' % path
             )
 
-        return resources_data
+
+    def collect_resource_definitions(self, data_type):
+
+        
+
+
+    def get_enzyme_substrate_resource_definitions(self):
+
+        

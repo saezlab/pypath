@@ -378,5 +378,3 @@ def export_licenses(descriptions, outfile='licenses.tsv'):
         _ = fp.write('\n'.join(
             '\t'.join(row) for row in rows
         ))
-
-
