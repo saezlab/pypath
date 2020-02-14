@@ -493,83 +493,134 @@ class Motif(object):
         )
 
 
-    def add_source(self, source):
+    def add_evidences(self, evidences):
 
-        if source is None:
-            return None
-        elif type(source) in common.char_types:
-            self._add_source(source)
-        else:
-            for s in source:
-                self._add_source(s)
-
-
-    def _add_source(self, source):
-
-        self.sources.add(source)
+        self.evidences += evidences
 
 
     def serialize(self):
 
-        return '%s:%s:%u-%u' % ('unknown' if self.motif_name is None else
-                                self.motif_name, self.instance, 0
-                                if self.start is None else self.start, 0
-                                if self.end is None else self.end)
+        return '%s:%s:%u-%u' % (
+            self.motif_name or 'unknown',
+            self.instance,
+            0 if self.start is None else self.start,
+            0 if self.end is None else self.end,
+        )
 
 
     def print_residues(self):
 
-        return '%s-%u:%u-%u' % (self.protein, self.isoform, 0
-                                if self.start is None else self.start, 0
-                                if self.end is None else self.end)
+        return '%s-%u:%u-%u' % (
+            self.protein, self.isoform,
+            0 if self.start is None else self.start,
+            0 if self.end is None else self.end,
+        )
 
 
     def merge(self, other):
 
         if self == other:
+
             self.instance = self.instance or other.instance
             self.regex = self.regex or other.regex
             self.elm = self.elm or other.elm
             self.prob = self.prob or other.prob
             self.motif_name = self.motif_name or other.motif_name
             self.description = self.description or other.description
+            self.evidences += other.evidences
+
 
     def __str__(self):
-        return 'Motif in protein %s-%u:\n'\
-            '\tName: %s\n'\
-            '\tELM: %s\n'\
-            '\tRange: %u-%u\n'\
-            '\tRegex: %s\n'\
-            '\tInstance: %s\n' % (self.protein, self.isoform,
-                                  'unknown' if self.motif_name is None else self.motif_name,
-                                  'unknown' if self.elm is None else self.elm,
-                                  0 if self.start is None else self.start,
-                                  0 if self.end is None else self.end,
-                                  'unknown' if self.regex is None else self.regex.pattern,
-                                  'unknown' if self.instance is None else self.instance)
 
-    def in_isoform(self, isoform, seq=None):
+        return (
+            'Motif in protein %s-%u:\n'
+            '\tName: %s\n'
+            '\tELM: %s\n'
+            '\tRange: %u-%u\n'
+            '\tRegex: %s\n'
+            '\tInstance: %s\n' % (
+                self.protein,
+                self.isoform,
+                self.motif_name or 'unknown',
+                self.elm or 'unknown',
+                0 if self.start is None else self.start,
+                0 if self.end is None else self.end,
+                'unknown' if self.regex is None else self.regex.pattern,
+                self.instance or 'unknown',
+            )
+        )
+
+
+    def __repr__(self):
+
+        rng = self.range_str()
+
+        return '<Motif %sin %s-%u%s>' % (
+            '%s ' % self.motif_name if self.motif_name else ''
+            self.protein,
+            self.isoform,
+            ' [%s]' % rng if rng else '',
+        )
+
+
+    def range(self):
+
+        return (
+            (self.start, self.end)
+                if self.start and self.end else
+            None
+        )
+
+
+    def range_str(self):
+
+        start_end = self.range()
+
+        return '%s-%s' % start_end if start_end or ''
+
+
+    def in_isoform(self, isoform, seq = None):
+
         seq = seq or self.seq
+
         if seq and seq.has_isoform(isoform):
+
             start, end, reg = seq.get_region(self.start, self.start, self.end)
-            mot = Motif(self.protein, start, end, self.id_type, self.refex,
-                        reg, isoform, self.motif_name, self.prob, self.elm,
-                        self.description, seq)
+
+            mot = Motif(
+                self.protein,
+                start,
+                end,
+                self.id_type,
+                self.regex,
+                reg,
+                isoform,
+                self.motif_name,
+                self.prob,
+                self.elm,
+                self.description,
+                seq,
+            )
+
             return mot
+
         return None
 
 
 class Domain(object):
 
-    def __init__(self,
-                 protein,
-                 id_type='uniprot',
-                 domain=None,
-                 domain_id_type='pfam',
-                 start=None,
-                 end=None,
-                 isoform=1,
-                 chains={}):
+    def __init__(
+        self,
+        protein,
+        id_type = 'uniprot',
+        domain = None,
+        domain_id_type = 'pfam',
+        start = None,
+        end = None,
+        isoform = 1,
+        chains = {},
+    ):
+
         non_digit = re.compile(r'[^\d.-]+')
         self.protein = protein
         self.id_type = id_type
@@ -585,96 +636,188 @@ class Domain(object):
         for pdb, chain in iteritems(chains):
             self.add_chains(pdb, chain)
 
+
     def __hash__(self):
+
         return hash((self.protein, self.domain))
 
+
     def __eq__(self, other):
-        if (self.start and self.end and other.start and other.end) is None:
+
+        if any(
+            num is None
+            for num in (self.start, self.end, other.start, other.end)
+        ):
+
             return False
+
         flk = min(
             max(
                 int(
-                    min(self.end - self.start, other.end - other.start) * 0.1),
-                10), 30)
-        if self.protein == other.protein and \
-                self.id_type == other.id_type and \
-                self.start is not None and self.end is not None and \
-                self.start < other.start + flk and \
-                self.start > other.start - flk and \
-                self.end < other.end + flk and \
-                self.end > other.end - flk:
-            return True
-        else:
-            return False
+                    min(
+                        self.end - self.start,
+                        other.end - other.start
+                    ) * 0.1
+                ),
+                10
+            ),
+            30
+        )
+
+        return (
+            not  and
+            self.protein == other.protein and
+            self.id_type == other.id_type and
+            self.start is not None and
+            self.end is not None and
+            self.start < other.start + flk and
+            self.start > other.start - flk and
+            self.end < other.end + flk and
+            self.end > other.end - flk
+        )
+
 
     def __ne__(self, other):
+
         return not self.__eq__(other)
 
+
     def __contains__(self, other):
-        if isinstance(other, Residue):
-            if other.protein == self.protein and \
-                    other.number >= self.start and \
-                    other.number <= self.end:
-                return True
-            else:
-                return False
-        elif isinstance(other, Motif):
-            if other.protein == self.protein and \
-                    other.start < self.end and \
-                    other.end <= self.start:
-                return True
-            else:
-                return False
-        elif isinstance(other, Ptm):
-            return other.residue in self or other.motif in self
-        elif other == self.protein or \
-                other == self.instance or \
-                other == self.motif_name:
-            return True
-        else:
-            return False
+
+        return (
+            (
+                isinstance(other, Residue) and
+                other.protein == self.protein and
+                other.number >= self.start and
+                other.number <= self.end
+            ) or
+            (
+                isinstance(other, Motif):
+                other.protein == self.protein and
+                other.start < self.end and
+                other.end <= self.start
+            ) or
+            (
+                isinstance(other, Ptm):
+                and (
+                    other.residue in self or
+                    other.motif in self
+                )
+            ) or
+            (
+                other == self.protein or
+                other == self.instance or
+                other == self.motif_name
+            )
+        )
+
 
     def has_position(self):
+
         return bool(self.start and self.end)
 
+
     def get_position(self):
+
         return (self.start, self.end)
 
+
     def add_chains(self, pdb, chain):
+
         if pdb not in self.pdbs:
+
             self.pdbs[pdb] = []
+
         self.pdbs[pdb] = common.add_to_list(self.pdbs[pdb], chain)
 
+
     def serialize(self):
-        return '%s-%u:%s:%s:%u-%u' % (
-            self.protein, self.isoform, 'unknown'
-            if self.domain is None else self.domain, 0
-            if self.start is None else self.start, 0
-            if self.end is None else self.end, ','.join([
+
+        return '%s-%u:%s:%u-%u:%s' % (
+            self.protein,
+            self.isoform,
+            'unknown' if self.domain is None else self.domain,
+            0 if self.start is None else self.start,
+            0 if self.end is None else self.end,
+            ','.join(
                 '%s.%s' % (pdb, '.'.join(chains))
                 for pdb, chains in iteritems(self.pdbs)
-            ]))
+            )
+        )
+
 
     def __str__(self):
-        return 'Domain in protein %s-%u:\n'\
-            '\tName: %s\n'\
-            '\tRange: %u-%u\n'\
-            '\t3D structures: %s\n' % (self.protein, self.isoform,
-                                       'unknown' if self.domain is None else self.domain,
-                                       0 if self.start is None else self.start,
-                                       0 if self.end is None else self.end,
-                                       ', '.join(['%s (chains %s)' % (pdb, ', '.join(chains))
-                                                  for pdb, chains in iteritems(self.pdbs)])
-                                       )
+
+        return (
+            'Domain in protein %s-%u:\n'
+            '\tName: %s\n'
+            '\tRange: %u-%u\n'
+            '\t3D structures: %s\n' % (
+                self.protein,
+                self.isoform,
+                self.domain or 'unknown',
+                0 if self.start is None else self.start,
+                0 if self.end is None else self.end,
+                ', '.join(
+                    '%s (chains %s)' % (pdb, ', '.join(chains))
+                    for pdb, chains in iteritems(self.pdbs)
+                )
+            )
+        )
+
+
+    def __repr__(self):
+
+        rng = self.range_str()
+
+        return '<Domain %sin %s-%u%s>' % (
+            '%s ' % self.domain if self.domain else ''
+            self.protein,
+            self.isoform,
+            ' [%s]' % rng if rng else '',
+        )
+
+
+    def range(self):
+
+        return (
+            (self.start, self.end)
+                if self.start and self.end else
+            None
+        )
+
+
+    def range_str(self):
+
+        start_end = self.range()
+
+        return '%s-%s' % start_end if start_end or ''
 
     def merge(self, other):
-        if self == other or (self.start and self.end) is None or \
-                (other.start and other.end) is None:
+
+        if (
+            self == other or
+            (self.start and self.end) is None or
+            (other.start and other.end) is None
+        ):
+
             for pdb, chain in iteritems(other.pdbs):
+
                 self.add_chains(pdb, chain)
+
             self.domain_id_type = self.domain_id_type or other.domain_id_type
-            if self.domain_id_type != 'pfam' and other.domain is not None \
-                    or (self.domain is None and other.domain is not None):
+
+            if (
+                (
+                    self.domain_id_type != 'pfam' and
+                    other.domain is not None
+                ) or
+                (
+                    self.domain is None and
+                    other.domain is not None
+                )
+            ):
+
                 self.domain = other.domain
 
 
