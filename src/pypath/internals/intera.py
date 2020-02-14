@@ -916,17 +916,18 @@ class DomainMotif(object):
 
     def __str__(self):
 
-        return 'Domain-motif interaction:\n'\
-            '  %s  %s'\
-            '  Data sources: %s\n'\
-            '  References: %s\n'\
+        return (
+            'Domain-motif interaction:\n'
+            '  %s  %s'
+            '  Data sources: %s\n'
+            '  References: %s\n'
             '  3D structures: \n' % (
                 self.domain.__str__(),
                 self.ptm.__str__(),
-                ', '.join(self.sources) if self.sources else '',
-                ', '.join(self.refs) if self.refs else '',
-                #', '.join(self.pdbs) if self.pdbs else '',
+                ', '.join(self.evidences.get_resource_names()),
+                ', '.join(self.evidences.get_references()),
             )
+        )
 
 
     def __repr__(self):
@@ -969,7 +970,7 @@ class DomainMotif(object):
         Returns a unique key which is a tuple of the proteins, the residue
         and the modification type.
         """
-        
+
         return (
             self.domain.protein,
             self.ptm.protein,
@@ -977,9 +978,11 @@ class DomainMotif(object):
             self.ptm.residue.number,
             self.ptm.typ,
         )
-    
+
+
     def get_proteins(self):
         return [self.domain.protein, self.ptm.protein]
+
 
     def add_sources(self, source):
         if source is None:
@@ -990,14 +993,18 @@ class DomainMotif(object):
             for s in source:
                 self._add_source(s)
 
+
     def _add_source(self, source):
         self.sources.add(source)
+
 
     def add_refs(self, refs):
         self.refs = common.add_to_set(self.refs, refs)
 
+
     def add_pdbs(self, pdbs):
         self.pdbs = common.add_to_set(self.pdbs, pdbs)
+
 
     def serialize(self):
         return '|'.join([
@@ -1005,15 +1012,23 @@ class DomainMotif(object):
             ','.join(self.sources), ','.join(self.refs), ','.join(self.pdbs)
         ])
 
+
     def print_residues(self):
-        return '%s-%u:%s:%s' % (self.domain.protein, self.domain.isoform,
-                                '%s-%u:' % (self.ptm.protein, self.ptm.isoform)
-                                if self.ptm.motif is None else
-                                self.ptm.motif.print_residues(),
-                                self.ptm.print_residue())
+
+        return '%s-%u:%s:%s' % (
+            self.domain.protein,
+            self.domain.isoform,
+            '%s-%u:' % (self.ptm.protein, self.ptm.isoform)
+                if self.ptm.motif is None else
+            self.ptm.motif.print_residues(),
+            self.ptm.print_residue(),
+        )
+
 
     def merge(self, other):
+
         if self == other:
+
             self.domain.merge(other.domain)
             self.ptm.merge(other.ptm)
             self.add_sources(other.sources)
@@ -1021,7 +1036,9 @@ class DomainMotif(object):
             self.add_pdbs(other.pdbs)
             self.pnetw_score = self.pnetw_score or other.pnetw_score
 
+
     def get_line(self):
+
         return [
             self.domain.protein,
             self.ptm.protein,
@@ -1035,6 +1052,7 @@ class DomainMotif(object):
 
 
 class Regulation(object):
+
     def __init__(self, ptm, source, target, effect, sources=None, refs=None):
         self.ptm = ptm if type(ptm) is list else [ptm]
         self.source = source
@@ -1507,29 +1525,36 @@ class Interface(object):
                                          self.isoform_b, self.source, self.pdb,
                                          ':'.join(res))
 
+
     def __str__(self):
+
         nbonds = self.numof_residues()
-        return 'Molecular interface between %s and %s,\n'\
-            'as observed in PDB structure %s\n\n'\
-            ' Data source: %s\n'\
-            ' Number of residues in contact: %u\n'\
-            ' Hydrogene bonds: %u\n'\
-            ' Covalent bonds: %u\n'\
-            ' Saltbridges: %u\n'\
-            ' S-S bonds: %u\n'\
-            ' Stable energy: %s\n'\
-            ' Solvation energy: %s\n'\
-            ' Surface area: %s\n'\
-            ' Complexation significance score: %s\n' % (self.id_a, self.id_b,
-                                                        self.pdb, self.source,
-                                                        sum(nbonds.values()), nbonds[
-                                                            'hbonds'], nbonds['covbonds'],
-                                                        nbonds['sbridges'], nbonds[
-                                                            'ssbonds'],
-                                                        'n/a' if self.stab_en is None else str(
-                                                            self.stab_en),
-                                                        'n/a' if self.solv_en is None else str(
-                                                            self.solv_en),
-                                                        'n/a' if self.area is None else str(
-                                                            self.area),
-                                                        'n/a' if self.css is None else str(self.css))
+
+        return (
+            'Molecular interface between %s and %s,\n'
+            'as observed in PDB structure %s\n\n'
+            ' Data source: %s\n'
+            ' Number of residues in contact: %u\n'
+            ' Hydrogene bonds: %u\n'
+            ' Covalent bonds: %u\n'
+            ' Saltbridges: %u\n'
+            ' S-S bonds: %u\n'
+            ' Stable energy: %s\n'
+            ' Solvation energy: %s\n'
+            ' Surface area: %s\n'
+            ' Complexation significance score: %s\n' % (
+                self.id_a,
+                self.id_b,
+                self.pdb,
+                self.source,
+                sum(nbonds.values()),
+                nbonds['hbonds'],
+                nbonds['covbonds'],
+                nbonds['sbridges'],
+                nbonds['ssbonds'],
+                'n/a' if self.stab_en is None else str(self.stab_en),
+                'n/a' if self.solv_en is None else str(self.solv_en),
+                'n/a' if self.area is None else str(self.area),
+                'n/a' if self.css is None else str(self.css),
+            )
+        )
