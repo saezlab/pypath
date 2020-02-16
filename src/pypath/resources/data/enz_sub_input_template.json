@@ -1,0 +1,11 @@
+{
+    "name": "name of the resource",
+    "id_type_enzyme": "uniprot",
+    "id_type_substrate": "uniprot",
+    "input_method": "method name",
+    "organisms": [
+        9606
+    ],
+    "organisms_supported": false,
+    "extra_attrs": {}
+}
