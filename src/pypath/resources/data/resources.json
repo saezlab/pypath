@@ -1041,8 +1041,10 @@
       "enzyme_substrate": {
         "id_type_enzyme": "genesymbol",
         "id_type_substrate": [
+          [
             "refseqp",
             "substrate_refseqp"
+          ]
         ],
         "input_method": "hprd.hprd_enzyme_substrate",
         "organisms": [
@@ -4213,12 +4215,24 @@
     }
   },
   "ProtMapper": {
-	"license": {
-            "name": "CC-Attribution 4.0",
-            "url": "https://creativecommons.org/licenses/by/4.0/",
-            "commercial_use": true
-        }
+    "license": {
+      "name": "CC-Attribution 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "commercial_use": true
     },
+    "inputs": {
+      "enzyme_substrate": {
+        "id_type_enzyme": "uniprot",
+        "id_type_substrate": "uniprot",
+        "input_method": "protmapper.protmapper_enzyme_substrate",
+        "organisms": [
+          9606
+        ],
+        "organisms_supported": false,
+        "extra_attrs": {}
+      }
+    }
+  },
     "LRdb": {
         "license": {
             "name": "No license.",
