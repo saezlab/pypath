@@ -47,7 +47,7 @@ class ResourceController(session_mod.Logger):
                 common.ROOT,
                 'resources',
                 'data',
-                'resources_descriptions.json',
+                'resources.json',
             ),
             use_package_path = False,
         ):
