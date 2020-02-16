@@ -103,7 +103,7 @@ class EnzymeSubstrateProcessor(homology.Proteomes,homology.SequenceContainer):
         'protmapper': ['uniprot'],
         'kea': ['uniprot'],
     }
-    
+
     resource_names = dict(
         (
             name.lower(),

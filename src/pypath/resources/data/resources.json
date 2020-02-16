@@ -4052,6 +4052,18 @@
       "name": "CC-Attribution-NonCommercial 3.0",
       "url": "https://creativecommons.org/licenses/by-nc/3.0/",
       "commercial_use": false
+    },
+    "inputs": {
+      "enzyme_substrate": {
+        "id_type_enzyme": "genesymbol",
+        "id_type_substrate": "genesymbol",
+        "input_method": "li2012.li2012_enzyme_substrate",
+        "organisms": [
+          9606
+        ],
+        "organisms_supported": false,
+        "extra_attrs": {}
+      }
     }
   },
   "UniProt": {

@@ -1168,11 +1168,13 @@ ptm_misc = {
         entity_type_b = "protein",
         is_directed = 1,
         sign = False,
-        input = 'li2012_interactions',
+        input = 'li2012.li2012_interactions',
         references = False,
         ncbi_tax_id = 9606,
-        extra_edge_attrs = {'li2012_mechanism': 3,
-                        'li2012_route': 2},
+        extra_edge_attrs = {
+            'li2012_mechanism': 3,
+            'li2012_route': 2,
+        },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}
     ),
