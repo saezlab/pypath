@@ -323,17 +323,31 @@ class EnzymeSubstrateResource(ResourceAttributes):
     def __init__(
             self,
             name,
+            input_method,
             evidence_types = None,
             via = None,
+            id_type_enzyme = 'uniprot',
+            id_type_substrate = 'uniprot',
+            organisms_supported = False,
+            organisms = None,
+            resource_attrs = None,
+            extra_attrs = None,
             **kwargs,
         ):
         
         ResourceAttributes.__init__(
             self,
             name = name,
+            input_method = input_method,
             data_type = 'enzyme_substrate',
             evidence_types = evidence_types,
             via = via,
+            id_type_enzyme = id_type_enzyme,
+            id_type_substrate = id_type_substrate,
+            organisms_supported = organisms_supported,
+            organisms = organisms,
+            resource_attrs = resource_attrs or {},
+            extra_attrs = extra_attrs or {},
             **kwargs,
         )
     

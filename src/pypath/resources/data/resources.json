@@ -720,7 +720,21 @@
         "pypath.pypath.PyPath().load_signor_ptms()"
       ]
     },
-    "dateUpdated": "Nov 2016"
+    "dateUpdated": "Nov 2016",
+    "inputs": {
+      "enzyme_substrate": {
+        "id_type_enzyme": "uniprot",
+        "id_type_substrate": "uniprot",
+        "input_method": "signor.signor_enzyme_substrate",
+        "organisms": [
+          9606,
+          10090,
+          10116
+        ],
+        "organisms_supported": true,
+        "extra_attrs": {}
+      }
+    }
   },
   "HuPho": {
     "yearUsedRelease": 2015,
@@ -777,21 +791,7 @@
       "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
       "commercial_use": false
     },
-    "dateUpdated": "Nov 2016",
-    "inputs": {
-      "enzyme_substrate": {
-        "id_type_enzyme": "uniprot",
-        "id_type_substrate": "uniprot",
-        "input_method": "signor.signor_enzyme_substrate",
-        "organisms": [
-          9606,
-          10090,
-          10116
-        ],
-        "organisms_supported": true,
-        "extra_attrs": {}
-      }
-    }
+    "dateUpdated": "Nov 2016"
   },
   "SignaLink3": {
     "yearUsedRelease": 2015,
@@ -4064,7 +4064,10 @@
     "inputs": {
       "enzyme_substrate": {
         "id_type_enzyme": "uniprot",
-        "id_type_substrate": "uniprot",
+        "id_type_substrate": [
+          ["genesymbol", "substrate"],
+          ["refseq", "substrate_refseq"]
+        ],
         "input_method": "mimp.mimp_enzyme_substrate",
         "organisms": [
           9606

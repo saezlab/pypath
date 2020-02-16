@@ -556,7 +556,7 @@ class Motif(object):
         rng = self.range_str()
 
         return '<Motif %sin %s-%u%s>' % (
-            '%s ' % self.motif_name if self.motif_name else ''
+            '%s ' % self.motif_name if self.motif_name else '',
             self.protein,
             self.isoform,
             ' [%s]' % rng if rng else '',
@@ -576,7 +576,7 @@ class Motif(object):
 
         start_end = self.range()
 
-        return '%s-%s' % start_end if start_end or ''
+        return '%s-%s' % start_end if start_end else ''
 
 
     def in_isoform(self, isoform, seq = None):
@@ -665,7 +665,6 @@ class Domain(object):
         )
 
         return (
-            not  and
             self.protein == other.protein and
             self.id_type == other.id_type and
             self.start is not None and
@@ -692,14 +691,14 @@ class Domain(object):
                 other.number <= self.end
             ) or
             (
-                isinstance(other, Motif):
+                isinstance(other, Motif) and
                 other.protein == self.protein and
                 other.start < self.end and
                 other.end <= self.start
             ) or
             (
-                isinstance(other, Ptm):
-                and (
+                isinstance(other, Ptm) and
+                (
                     other.residue in self or
                     other.motif in self
                 )
@@ -771,7 +770,7 @@ class Domain(object):
         rng = self.range_str()
 
         return '<Domain %sin %s-%u%s>' % (
-            '%s ' % self.domain if self.domain else ''
+            '%s ' % self.domain if self.domain else '',
             self.protein,
             self.isoform,
             ' [%s]' % rng if rng else '',
@@ -791,7 +790,7 @@ class Domain(object):
 
         start_end = self.range()
 
-        return '%s-%s' % start_end if start_end or ''
+        return '%s-%s' % start_end if start_end else ''
 
     def merge(self, other):
 

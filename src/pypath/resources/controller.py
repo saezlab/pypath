@@ -19,8 +19,12 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
 import json
 import os
+import copy
+import importlib as imp
 
 import pypath.share.session as session_mod
 import pypath.share.common as common
@@ -75,6 +79,15 @@ class ResourceController(session_mod.Logger):
         self.update()
 
 
+    def reload(self):
+
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+
+
     def update(self, path = None, force = False, remove_old = False):
         """
         Reads resource information from a JSON file.
@@ -122,9 +135,31 @@ class ResourceController(session_mod.Logger):
 
     def collect_resource_definitions(self, data_type):
 
-        
+        resource_cls = getattr(
+            resource_base,
+            '%sResource' % (
+                ''.join(n.capitalize() for n in data_type.split('_'))
+            )
+        )
+
+        result = []
+
+        for name, attrs in iteritems(self.data):
+
+            if 'inputs' in attrs and data_type in attrs['inputs']:
+
+                args = copy.deepcopy(attrs['inputs'][data_type])
+                args['resource_attrs'] = attrs
+                if 'name' not in args:
+                    args['name'] = name
+
+                result.append(
+                    resource_cls(**args)
+                )
+
+        return result
 
 
     def collect_enzyme_substrate_resource_definitions(self):
 
-        
+        return self.collect_resource_definitions('enzyme_substrate')
