@@ -125,7 +125,7 @@ import pypath.utils.reflists as reflists
 import pypath.internals.input_formats as input_formats
 import pypath.internals.refs as _refs
 import pypath.visual.plot as plot
-import pypath.core.ptm
+import pypath.core.enz_sub
 import pypath.omnipath.export as export
 import pypath.visual.igraph_drawing as ig_drawing
 import pypath.share.common as common
@@ -10139,8 +10139,8 @@ class PyPath(session_mod.Logger):
         ):
         """
         This is a new method which will replace `load_ptms`.
-        It uses `pypath.ptm.PtmAggregator`, a newly introduced
-        module for combining enzyme-substrate data from multiple
+        It uses `pypath.enz_sub.EnzymeSubstrateAggregator`, a newly
+        introduced module for combining enzyme-substrate data from multiple
         resources using homology translation on users demand.
 
         :param list input_methods: Resources to collect enzyme-substrate
@@ -10188,7 +10188,7 @@ class PyPath(session_mod.Logger):
 
             method = 'init_db' if force_load else 'get_db'
 
-            _ = getattr(pypath.ptm, 'method')(
+            _ = getattr(pypath.core.enz_sub, 'method')(
                 input_methods = input_methods,
                 ncbi_tax_id = self.ncbi_tax_id,
                 map_by_homology_from = map_by_homology_from,
@@ -10198,7 +10198,7 @@ class PyPath(session_mod.Logger):
                 inputargs = inputargs
             )
 
-            ptma = pypath.ptm.get_db()
+            ptma = pypath.core.enz_sub.get_db()
 
         ptma.assign_to_network(self)
 

@@ -591,7 +591,7 @@ class EnzymeSubstrateHomologyProcessor(
             **kwargs
         ):
         """
-        Unifies a `pypath.core.ptm.EnzymeSubstrateProcessor` and
+        Unifies a `pypath.core.enz_sub.EnzymeSubstrateProcessor` and
         a `pypath.utils.homology.EnzymeSubstrateHomology` object to build
         a set of enzyme-substrate interactions from a database and
         subsequently translate them by homology to one different organism.

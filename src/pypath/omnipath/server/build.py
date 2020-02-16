@@ -29,7 +29,7 @@ import copy
 
 import pandas as pd
 
-import pypath.core.ptm as ptm
+import pypath.core.enz_sub as enz_sub
 import pypath.core.complex as complex
 import pypath.core.annot as annot
 import pypath.core.intercell as intercell
@@ -248,27 +248,27 @@ class WebserviceTables(session_mod.Logger):
     
     def ptms(self):
         
-        self._log('Building `ptms` data frame.')
+        self._log('Building `enz_sub` data frame.')
         
         dataframes = []
         
-        ptma = omnipath.data.get_db('enz_sub')
-        ptma.make_df(tax_id = True)
-        dataframes.append(ptma.df)
+        enz_sub_a = omnipath.data.get_db('enz_sub')
+        enz_sub_a.make_df(tax_id = True)
+        dataframes.append(enz_sub_a.df)
         
         if not self.only_human:
             
             for rodent1, rodent2 in ((10090, 10116), (10116, 10090)):
                 
-                ptma = ptm.PtmAggregator(
+                enz_sub_a = enz_sub.EnzymeSubstrateAggregator(
                     ncbi_tax_id = rodent1,
                     map_by_homology_from = (9606, rodent2),
                 )
-                ptma.make_df(tax_id = True)
-                dataframes.append(ptma.df)
+                enz_sub_a.make_df(tax_id = True)
+                dataframes.append(enz_sub_a.df)
         
         omnipath.data.remove_db('enz_sub')
-        del ptma
+        del enz_sub_a
         
         self.df_ptms = pd.concat(dataframes)
         self.df_ptms.to_csv(
