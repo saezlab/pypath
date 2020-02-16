@@ -190,6 +190,7 @@ class EnzymeSubstrateProcessor(
             'id_type_substrate',
             'genesymbol',
         )
+        self.id_type_substrate = common.to_list(self.id_type_substrate)
         self.ncbi_tax_id = self._get_param('ncbi_tax_id', 9606)
         self.organisms_supported = self._get_param(
             'organisms_supported',
@@ -293,7 +294,7 @@ class EnzymeSubstrateProcessor(
         Loads the data by the defined input method.
         """
 
-        self.data = self.inputm(**self.inputargs)
+        self.data = self.input_method(**self.inputargs)
 
 
     def _phosphosite_setup(self):
@@ -316,17 +317,13 @@ class EnzymeSubstrateProcessor(
 
     def _setup(self):
 
-        setupmethod = '_%s_setup' % self.input_method.lower()
+        setupmethod = '_%s_setup' % self.name.lower()
 
         self._organism_setup()
 
         if hasattr(self, setupmethod):
 
             getattr(self, setupmethod)()
-
-        # database specific id conversions
-        if self.input_is(self.enzyme_id_uniprot, '__contains__'):
-            self.id_type_enzyme = 'uniprot'
 
 
     def _organism_setup(self):
@@ -366,11 +363,7 @@ class EnzymeSubstrateProcessor(
 
         substrate_ups_all = set([])
 
-        for sub_id_type in (
-            self.id_type_substrates[self.input_method.lower()]
-            if self.input_is(self.id_type_substrates, '__contains__')
-            else [self.id_type_substrate]
-        ):
+        for sub_id_type in self.id_type_substrate:
 
             if isinstance(sub_id_type, (list, tuple)):
                 sub_id_type, sub_id_attr = sub_id_type
@@ -506,36 +499,35 @@ class EnzymeSubstrateProcessor(
                     s[0],
                     p['start'],
                     p['end'],
-                    instance=p['instance'],
-                    isoform=s[1])
+                    instance = p['instance'],
+                    isoform = s[1])
 
                 ptm = intera.Ptm(
                     s[0],
-                    motif=mot,
-                    residue=res,
-                    typ=p['typ'],
-                    source=[self.name],
-                    isoform=s[1],
+                    motif = mot,
+                    residue = res,
+                    typ = p['typ'],
+                    source = [self.name],
+                    isoform = s[1],
                 )
 
-                dom = intera.Domain(protein=k)
+                dom = intera.Domain(protein = k)
 
                 if 'references' not in p:
                     p['references'] = []
 
                 dommot = intera.DomainMotif(
-                    domain=dom,
-                    ptm=ptm,
-                    sources=[self.name],
-                    refs=p['references'],
+                    domain = dom,
+                    ptm = ptm,
+                    sources = [self.name],
+                    refs = p['references'],
                 )
-                
 
                 if self.input_is('mimp') and p['databases']:
                     dommot.mimp_sources = p['databases'].split(';')
                     dommot.add_sources(dommot.mimp_sources)
                     dommot.npmid = p['npmid']
-                
+
                 if self.input_is('protmapper') and p['databases']:
                     dommot.protmapper_sources = p['databases']
                     dommot.add_sources(p['databases'])
@@ -549,36 +541,34 @@ class EnzymeSubstrateProcessor(
 
                 yield dommot
 
+
     def input_is(self, i, op = '__eq__'):
 
         return (
-            type(self.input_method) in common.char_types and
-            getattr(i, op)(self.input_method.lower())
+            type(self.name) in common.char_types and
+            getattr(i, op)(self.name.lower())
         )
+
 
     def __iter__(self):
         """
         Iterates through the enzyme-substrate interactions.
         """
-        #prg = progress.Progress(len(self.data), 'Processing PTMs', 1)
+
         for p in self.data:
 
-            #prg.step()
+            for enz_sub in self._process(p):
 
-            for ptm in self._process(p):
+                yield enz_sub
 
-                yield ptm
 
-        #prg.terminate()
-    
-    
     def __len__(self):
-        
+
         return len(self.data)
-    
-    
+
+
     def __repr__(self):
-        
+
         return '<Enzyme-substrate processor: %u records>' % len(self)
 
 
