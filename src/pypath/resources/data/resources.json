@@ -3986,6 +3986,18 @@
       "name": "Custom license",
       "url": "https://phosphonetworks.org/about.html",
       "commercial_use": false
+    },
+    "inputs": {
+      "enzyme_substrate": {
+        "id_type_enzyme": "uniprot",
+        "id_type_substrate": "uniprot",
+        "input_method": "phosphonetworks.phosphonetworks_enzyme_substrate",
+        "organisms": [
+          9606
+        ],
+        "organisms_supported": false,
+        "extra_attrs": {}
+      }
     }
   },
   "MIMP": {

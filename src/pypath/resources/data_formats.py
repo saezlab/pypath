@@ -1097,7 +1097,8 @@ ptm_misc = {
         references = False,
         extra_edge_attrs = {"psite_evidences": (4, ";")},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'ppoint': input_formats.NetworkInput(
         name = "PhosphoPoint",
         separator = ";",
@@ -1115,7 +1116,8 @@ ptm_misc = {
         sign = False,
         extra_edge_attrs = {"phosphopoint_category": 4},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'pnetworks': input_formats.NetworkInput(
         name = "PhosphoNetworks",
         separator = None,
@@ -1128,12 +1130,13 @@ ptm_misc = {
         is_directed = True,
         sign = False,
         ncbi_tax_id = 9606,
-        input = 'pnetworks_interactions',
+        input = 'phosphonetworks.phosphonetworks_interactions',
         references = False,
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'mimp': input_formats.NetworkInput(
         name = "MIMP",
         separator = None,
@@ -1152,7 +1155,8 @@ ptm_misc = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'li2012': input_formats.NetworkInput(
         name = "Li2012",
         separator = False,
@@ -1172,7 +1176,7 @@ ptm_misc = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}
     ),
-    
+
 }
 
 ptm_misc['protmapper'] = copy.deepcopy(ptm['protmapper'])
