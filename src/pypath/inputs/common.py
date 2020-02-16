@@ -63,3 +63,46 @@ def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
     except IOError:
         sys.stdout.write('No such file: %s\n' % xls_file)
         sys.stdout.flush()
+
+
+def csv_sep_change(csv, old, new):
+
+    clean_csv = []
+    bw_quotes = False
+
+    for char in csv:
+        if char == '\r':
+            continue
+        elif char == '"':
+            bw_quotes = not bw_quotes
+        elif char == '\n':
+            if not bw_quotes:
+                clean_csv.append(char)
+            else:
+                clean_csv.append(' ')
+        elif char == old:
+            if bw_quotes:
+                clean_csv.append(char)
+            else:
+                clean_csv.append(new)
+        else:
+            clean_csv.append(char)
+
+    return ''.join(clean_csv)
+
+
+def _try_isoform(name):
+
+    name = name.split('-')
+
+    if len(name) > 1 and name[1].isdigit():
+
+        isoform = int(name[1])
+        main = name[0]
+
+    else:
+
+        main = '-'.join(name)
+        isoform = None
+
+    return main, isoform
