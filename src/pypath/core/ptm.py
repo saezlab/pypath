@@ -57,7 +57,10 @@ builtin_inputs = [
 ]
 
 
-class EnzymeSubstrateProcessor(homology.Proteomes,homology.SequenceContainer):
+class EnzymeSubstrateProcessor(
+        homology.Proteomes,
+        homology.SequenceContainer
+    ):
 
     methods = {
         'signor': 'load_signor_ptms',

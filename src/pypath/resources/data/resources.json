@@ -4233,56 +4233,75 @@
       }
     }
   },
-    "LRdb": {
-        "license": {
-            "name": "No license.",
-            "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
-            "commercial_use": false
-        },
-        "emails": ["jacques.colinge@inserm.fr", "Jacques Colinge"]
+  "LRdb": {
+    "license": {
+        "name": "No license.",
+        "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
+        "commercial_use": false
     },
-    "MSigDB": {
-        "license": {
-            "name": "CC-Attribution 4.0",
-            "url": "http://creativecommons.org/licenses/by/4.0/",
-            "commercial_use": true
-        },
-        "emails": ["gsea-team@broadinstitute.org", "GSEA Team"]
+    "emails": ["jacques.colinge@inserm.fr", "Jacques Colinge"]
+  },
+  "MSigDB": {
+    "license": {
+        "name": "CC-Attribution 4.0",
+        "url": "http://creativecommons.org/licenses/by/4.0/",
+        "commercial_use": true
     },
-    "Baccin2019": {
-        "license": {
-            "name": "No license.",
-            "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
-            "commercial_use": false
-        },
-        "emails": [
-            "lars.velten@embl.de", "Lars Velten",
-            "a.trumpp@dkfz-heidelberg.de", "Andreas Trumpp",
-            "s.haas@dkfz-heidelberg.de", "Simon Haas"
-        ]
+    "emails": ["gsea-team@broadinstitute.org", "GSEA Team"]
+  },
+  "Baccin2019": {
+    "license": {
+        "name": "No license.",
+        "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
+        "commercial_use": false
     },
-    "ABS": {
-        "license": {
-            "name": "GNU-GPLv2",
-            "url": "http://genome.crg.es/datasets/abs2005/index.html",
-            "commercial_use": true
-        },
-        "emails": ["eblanco@imim.es", "Enrique Blanco"]
+    "emails": [
+        "lars.velten@embl.de", "Lars Velten",
+        "a.trumpp@dkfz-heidelberg.de", "Andreas Trumpp",
+        "s.haas@dkfz-heidelberg.de", "Simon Haas"
+    ]
+  },
+  "ABS": {
+    "license": {
+        "name": "GNU-GPLv2",
+        "url": "http://genome.crg.es/datasets/abs2005/index.html",
+        "commercial_use": true
     },
-    "CacncerSEA": {
-        "license": {
-            "name": "No license.",
-            "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
-            "commercial_use": false
-        },
-        "emails": ["xiaoyun@ems.hrbmu.edu.cn", "Yun Xiao"]
+    "emails": ["eblanco@imim.es", "Enrique Blanco"]
+  },
+  "CacncerSEA": {
+    "license": {
+        "name": "No license.",
+        "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
+        "commercial_use": false
     },
-    "Surfaceome": {
-        "license": {
-            "name": "No license",
-            "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
-            "commercial_use": false
-        },
-        "emails": ["wbernd@ethz.ch", "Bernd Wollscheid"]
+    "emails": ["xiaoyun@ems.hrbmu.edu.cn", "Yun Xiao"]
+  },
+  "Surfaceome": {
+    "license": {
+        "name": "No license",
+        "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
+        "commercial_use": false
+    },
+    "emails": ["wbernd@ethz.ch", "Bernd Wollscheid"]
+  },
+  "KEA": {
+    "license": {
+      "name": "No license",
+      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
+      "commercial_use": false
+    },
+    "inputs": {
+      "enzyme_substrate": {
+        "id_type_enzyme": "uniprot",
+        "id_type_substrate": "uniprot",
+        "input_method": "kea.kea_enzyme_substrate",
+        "organisms": [
+          9606
+        ],
+        "organisms_supported": false,
+        "extra_attrs": {}
+      }
     }
+  }
 }

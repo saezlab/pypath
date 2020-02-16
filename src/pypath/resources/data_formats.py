@@ -1051,7 +1051,7 @@ ptm = {
         must_have_references = True,
     ),
     'kea': input_formats.NetworkInput(
-        name = "KEA",
+        name = 'KEA',
         separator = None,
         id_col_a = 0,
         id_col_b = 1,
