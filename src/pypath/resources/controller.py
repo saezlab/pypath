@@ -125,6 +125,6 @@ class ResourceController(session_mod.Logger):
         
 
 
-    def get_enzyme_substrate_resource_definitions(self):
+    def collect_enzyme_substrate_resource_definitions(self):
 
         

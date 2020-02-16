@@ -57,7 +57,7 @@ builtin_inputs = [
 ]
 
 
-class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
+class EnzymeSubstrateProcessor(homology.Proteomes,homology.SequenceContainer):
 
     methods = {
         'signor': 'load_signor_ptms',
@@ -335,7 +335,7 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
             else [self.substrate_id_type]
         ):
 
-            if type(sub_id_type) is tuple:
+            if isinstance(sub_id_type, (list, tuple)):
                 sub_id_type, sub_id_attr = sub_id_type
             else:
                 sub_id_attr = 'substrate'
@@ -445,7 +445,8 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
                     p['resnum'],
                     p['resaa'],
                     s[0],
-                    isoform=s[1])
+                    isoform=s[1],
+                )
 
                 if 'instance' not in p or p['instance'] is None:
 
@@ -471,12 +472,14 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
                     instance=p['instance'],
                     isoform=s[1])
 
-                ptm = intera.Ptm(s[0],
-                                    motif=mot,
-                                    residue=res,
-                                    typ=p['typ'],
-                                    source=[self.name],
-                                    isoform=s[1])
+                ptm = intera.Ptm(
+                    s[0],
+                    motif=mot,
+                    residue=res,
+                    typ=p['typ'],
+                    source=[self.name],
+                    isoform=s[1],
+                )
 
                 dom = intera.Domain(protein=k)
 
@@ -542,9 +545,10 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         return '<Enzyme-substrate processor: %u records>' % len(self)
 
 
-class PtmHomologyProcessor(
-        homology.PtmHomology,
-        PtmProcessor):
+class EnzymeSubstrateHomologyProcessor(
+        homology.EnzymeSubstrateHomology,
+        EnzymeSubstrateProcessor
+    ):
 
 
     def __init__(self,
@@ -560,20 +564,20 @@ class PtmHomologyProcessor(
             **kwargs
         ):
         """
-        Unifies a `pypath.ptm.PtmProcessor` and
-        a `pypath.homology.PtmHomology` object to build a set of
-        enzyme-substrate interactions from a database and subsequently
-        translate them by homology to one different organism.
+        Unifies a `pypath.core.ptm.EnzymeSubstrateProcessor` and
+        a `pypath.utils.homology.EnzymeSubstrateHomology` object to build
+        a set of enzyme-substrate interactions from a database and
+        subsequently translate them by homology to one different organism.
         Multiple organism can be chosen as the source of the
         enzyme-substrate interactions. For example if you want mouse
         interactions, you can translate them from human and from rat.
         To get the original mouse interactions themselves, use an
-        other instance of the `PtmProcessor`.
+        other instance of the `EnzymeSubstrateProcessor`.
         To have both the original and the homology translated set,
         and also from multiple databases, whatmore all these merged
-        into a single set, use the `PtmAggregator`.
+        into a single set, use the `EnzymeSubstrateAggregator`.
 
-        :param str input_method: Data source for `PtmProcessor`.
+        :param str input_method: Data source for `EnzymeSubstrateProcessor`.
         :param int ncbi_tax_id: The NCBI Taxonomy ID the interactions
                                 should be translated to.
         :param bool homology_only_swissprot: Use only SwissProt
@@ -584,7 +588,7 @@ class PtmHomologyProcessor(
                                          do not look for residues with same
                                          offset in protein sequence.
 
-        See further options at `PtmProcessor`.
+        See further options at `EnzymeSubstrateProcessor`.
 
         """
 
@@ -598,7 +602,7 @@ class PtmHomologyProcessor(
         self.name = name
         self.ptmprocargs = kwargs
 
-        homology.PtmHomology.__init__(
+        homology.EnzymeSubstrateHomology.__init__(
             self,
             target = ncbi_tax_id,
             only_swissprot = homology_only_swissprot,
@@ -616,7 +620,7 @@ class PtmHomologyProcessor(
 
             self.set_default_source(source_taxon)
 
-            PtmProcessor.__init__(
+            EnzymeSubstrateProcessor.__init__(
                 self,
                 self.input_method,
                 source_taxon,
@@ -629,14 +633,14 @@ class PtmHomologyProcessor(
 
             #self.reset_ptmprocessor(ncbi_tax_id = source_taxon)
 
-            for ptm in PtmProcessor.__iter__(self):
+            for ptm in EnzymeSubstrateProcessor.__iter__(self):
 
                 for tptm in self.translate(ptm):
 
                     yield tptm
 
 
-class PtmAggregator(session_mod.Logger):
+class EnzymeSubstrateAggregator(session_mod.Logger):
     
     
     def __init__(self,
@@ -800,7 +804,7 @@ class PtmAggregator(session_mod.Logger):
                     'for taxon `%u`.' % self.ncbi_tax_id
                 )
                 
-                proc = PtmProcessor(
+                proc = EnzymeSubstrateProcessor(
                     input_method = input_method,
                     ncbi_tax_id = self.ncbi_tax_id,
                     trace = self.trace,
@@ -823,7 +827,7 @@ class PtmAggregator(session_mod.Logger):
                     )
                 )
                 
-                proc = PtmHomologyProcessor(
+                proc = EnzymeSubstrateHomologyProcessor(
                     input_method = input_method,
                     ncbi_tax_id = self.ncbi_tax_id,
                     map_by_homology_from = self.map_by_homology_from,
@@ -1145,7 +1149,7 @@ class PtmAggregator(session_mod.Logger):
 
 def init_db(**kwargs):
     
-    globals()['db'] = PtmAggregator(**kwargs)
+    globals()['db'] = EnzymeSubstrateAggregator(**kwargs)
 
 
 def get_db(**kwargs):

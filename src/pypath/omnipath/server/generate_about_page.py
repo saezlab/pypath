@@ -334,7 +334,9 @@ def resource_list_latex(descriptions,
 def export_licenses(descriptions, outfile='licenses.tsv'):
 
     if not descriptions:
-        _logger._console("Empty description was provided. Cannot export licenses.")
+        _logger._console(
+            'Empty description was provided. Cannot export licenses.'
+        )
         return None
 
     hdr = [
@@ -347,7 +349,11 @@ def export_licenses(descriptions, outfile='licenses.tsv'):
 
     for k, v in iteritems(descriptions):
         name = v['label'] if 'label' in v else k
-        license_name = v['license']['name'] if 'license' in v and 'name' in v['license'] else ''
+        license_name = (
+            v['license']['name']
+                if 'license' in v and 'name' in v['license'] else
+            ''
+        )
         license_comment = (
             "".join(v['license']['comment'])
             if 'license' in v and 'comment' in v['license'] else ''
@@ -359,7 +365,9 @@ def export_licenses(descriptions, outfile='licenses.tsv'):
         )
         emails = (
             ", ".join("%s <%s>" % (contact_name, email)
-                for email, contact_name in zip(v['emails'][::2], v['emails'][1::2]))  # zip makes (0,1),(2,3) ...
+                for email, contact_name
+                # zip makes (0,1),(2,3) ...
+                in zip(v['emails'][::2], v['emails'][1::2]))
             if 'emails' in v else ''
         )
 
