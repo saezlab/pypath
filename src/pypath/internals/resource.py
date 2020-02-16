@@ -30,6 +30,7 @@ except:
     import pickle
 
 
+import pypath.inputs as inputs
 import pypath.inputs.main as dataio
 import pypath.share.common as common
 import pypath.share.session as session_mod
@@ -102,6 +103,10 @@ class AbstractResource(session_mod.Logger):
         elif callable(self._input_method):
 
             self.input_method = self._input_method
+
+        else:
+
+            self.input_method = inputs.get_method(self._input_method)
 
 
     def load_data(self):

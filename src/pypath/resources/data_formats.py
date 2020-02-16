@@ -586,7 +586,7 @@ pathway = {
                 'down-regulates quantity by repression',
             }
         ),
-        input = 'signor_interactions',
+        input = 'signor.signor_interactions',
         references = (9, ";"),
         header = False,
         extra_edge_attrs = {"signor_mechanism": (7, ';')},
@@ -1818,7 +1818,7 @@ transcription_onebyone = {
                 'down-regulates quantity by repression',
             }
         ),
-        input = 'signor_interactions',
+        input = 'signor.signor_interactions',
         references = (9, ";"),
         header = True,
         extra_edge_attrs = {"signor_mechanism": (7, ';')},
@@ -2352,7 +2352,7 @@ small_molecule_protein = {
             'down-regulates', 'down-regulates activity',
             'down-regulates quantity by destabilization'
         ]),
-        input = 'signor_interactions',
+        input = 'signor.signor_interactions',
         references = (9, ";"),
         header = True,
         extra_edge_attrs = {"signor_mechanism": (7, ';')},
