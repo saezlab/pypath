@@ -28,7 +28,10 @@
       "commercial_use": false,
       "comment": "'This dataset is freely available to the research community through the search engine or via download.'"
     },
-    "dateUpdated": "Nov 2016"
+    "dateUpdated": "Nov 2016",
+    "inputs": {
+        "network": null
+    }
   },
   "HuRI Lit-BM": {
     "yearUsedRelease": 2017,
@@ -166,9 +169,9 @@
     },
     "pubmeds": [25776024],
     "emails": [
-    "ssaha4@jcbose.ac.in",
-    "Sudipto Saha"
-  ],
+      "ssaha4@jcbose.ac.in",
+      "Sudipto Saha"
+    ],
     "type": "literature curated",
     "subtype": "post-translational modifications",
     "recommend": "structural details: domain-motif relationships; similar to ELM, but more recent and larger",
@@ -754,7 +757,21 @@
       "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
       "commercial_use": false
     },
-    "dateUpdated": "Nov 2016"
+    "dateUpdated": "Nov 2016",
+    "inputs": {
+      "enzyme_substrate": {
+        "id_type_enzyme": "uniprot",
+        "id_type_substrate": "uniprot",
+        "input_method": "signor.signor_enzyme_substrate",
+        "organisms": [
+          9606,
+          10090,
+          10116
+        ],
+        "organisms_supported": true,
+        "extra_attrs": {}
+      }
+    }
   },
   "SignaLink3": {
     "yearUsedRelease": 2015,
