@@ -2644,7 +2644,17 @@
       "input": ["pypath.dataio.get_depod()"],
       "ptm": ["pypath.pypath.PyPath().load_depod_dmi()"]
     },
-    "dateUpdated":"Nov 2016"
+    "dateUpdated":"Nov 2016",
+    "inputs": {
+      "enzyme_substrate": {
+        "id_type_enzyme": "uniprot",
+        "id_type_substrate": "uniprot",
+        "input_method": "depod.depod_enzyme_substrate",
+        "organisms": null,
+        "organisms_supported": true,
+        "extra_attrs": {}
+      }
+    }
   },
   "PhosphoPoint": {
     "yearUsedRelease": 2008,
