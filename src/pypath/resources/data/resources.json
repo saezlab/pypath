@@ -445,7 +445,17 @@
       "ptm": ["pypath.pypath.PyPath().load_phosphoelm()"]
     },
     "pathguide": 138,
-    "dateUpdated": "Nov 2016"
+    "dateUpdated": "Nov 2016",
+    "inputs": {
+      "enzyme_substrate": {
+        "id_type_enzyme": "uniprot",
+        "id_type_substrate": "uniprot",
+        "input_method": "phosphoelm.phosphoelm_enzyme_substrate",
+        "organisms": null,
+        "organisms_supported": true,
+        "extra_attrs": {}
+      }
+    }
   },
   "DOMINO": {
     "yearUsedRelease": 2006,

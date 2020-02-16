@@ -931,7 +931,7 @@ ptm = {
                    'dict': {
                        'Homo sapiens': 9606
                    }},
-        input = 'phelm_interactions',
+        input = 'phosphoelm.phosphoelm_interactions',
         references = (2, ';'),
         header = False,
         extra_edge_attrs = {},
