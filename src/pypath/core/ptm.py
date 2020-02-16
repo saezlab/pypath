@@ -93,7 +93,7 @@ class EnzymeSubstrateProcessor(
         'kea',
     ])
 
-    substrate_id_types = {
+    id_type_substrates = {
         'mimp': [('genesymbol', 'substrate'), ('refseq', 'substrate_refseq')],
         'phosphonetworks': ['genesymbol'],
         'phosphoelm': ['uniprot'],
@@ -118,13 +118,14 @@ class EnzymeSubstrateProcessor(
 
     def __init__(
             self,
-            input_method,
-            ncbi_tax_id = 9606,
+            input_param = None,
+            input_method = None,
+            ncbi_tax_id = None,
             trace = False,
-            enzyme_id_type = 'genesymbol',
-            substrate_id_type = 'genesymbol',
+            id_type_enzyme = None,
+            id_type_substrate = None,
             name = None,
-            allow_mixed_organisms = False,
+            allow_mixed_organisms = None,
             **kwargs
         ):
         """
@@ -141,8 +142,8 @@ class EnzymeSubstrateProcessor(
                            in mismatch with UniProt sequences.
         :param pypath.mapping.Mapper: A `Mapper` instance. If `None` a new
                                       instance will be created.
-        :param str enzyme_id_type: The ID type of the enzyme in the database.
-        :param str substrate_id_type: The ID type of the substrate in the
+        :param str id_type_enzyme: The ID type of the enzyme in the database.
+        :param str id_type_substrate: The ID type of the substrate in the
                                       database.
 
         :param bool nonhuman_direct_lookup: Use direct lookup at non-human
@@ -156,11 +157,14 @@ class EnzymeSubstrateProcessor(
         self.kin_ambig = {}
         self.sub_ambig = {}
 
+        self.input_param = input_param
         self.name = name
         self.allow_mixed_organisms = allow_mixed_organisms
         self.input_method = input_method
         self.trace = trace
         self.ncbi_tax_id = ncbi_tax_id
+
+        self.setup()
 
         homology.SequenceContainer.__init__(self)
         self.load_seq(self.ncbi_tax_id)
@@ -173,10 +177,40 @@ class EnzymeSubstrateProcessor(
 
         homology.Proteomes.__init__(self)
 
-        self.enzyme_id_type = enzyme_id_type
-        self.set_method()
+        self.id_type_enzyme = id_type_enzyme
         self.set_inputargs(**kwargs)
         self.load()
+
+
+    def setup(self):
+
+        self.name = self._get_param('name')
+        self.id_type_enzyme = self._get_param('id_type_enzyme', 'genesymbol')
+        self.id_type_substrate = self._get_param(
+            'id_type_substrate',
+            'genesymbol',
+        )
+        self.ncbi_tax_id = self._get_param('ncbi_tax_id', 9606)
+        self.organisms_supported = self._get_param(
+            'organisms_supported',
+            False,
+        )
+        self.allow_mixed_organisms = self._get_param(
+            'allow_mixed_organisms',
+            False,
+        )
+        self.input_method = self._get_param('input_method')
+
+
+    def _get_param(self, label, default = None):
+
+        return (
+            getattr(self, label) or (
+                getattr(self.input_param, label)
+                    if hasattr(self.input_param, label) else
+                default
+            )
+        )
 
 
     def load(self):
@@ -216,17 +250,17 @@ class EnzymeSubstrateProcessor(
 
         def empty_input(*args, **kwargs): return []
 
-        
+
         # a method provided
         if hasattr(self.input_method, '__call__'):
-            
+
             self.inputm = self.input_method
             self.name = self.name or self.input_method.__name__
-            
+
         # the method is associated to a resource name
         # in the list of built in resources
         elif self.input_is(self.methods, '__contains__'):
-            
+
             self.inputm = inputs.get_method(
                 self.methods[self.input_method.lower()]
             )
@@ -238,10 +272,10 @@ class EnzymeSubstrateProcessor(
                     self.input_method
                 )
             )
-            
+
         # attempting to look up the method in the inputs module
         else:
-            
+
             self.inputm = inputs.get_method(self.input_method) or empty_input
             self.name = self.name or self.inputm.__name__
 
@@ -292,7 +326,7 @@ class EnzymeSubstrateProcessor(
 
         # database specific id conversions
         if self.input_is(self.enzyme_id_uniprot, '__contains__'):
-            self.enzyme_id_type = 'uniprot'
+            self.id_type_enzyme = 'uniprot'
 
 
     def _organism_setup(self):
@@ -325,7 +359,7 @@ class EnzymeSubstrateProcessor(
 
         kinase_ups = mapping.map_names(
             p['kinase'],
-            self.enzyme_id_type,
+            self.id_type_enzyme,
             'uniprot',
             ncbi_tax_id = self.ncbi_tax_id,
         )
@@ -333,9 +367,9 @@ class EnzymeSubstrateProcessor(
         substrate_ups_all = set([])
 
         for sub_id_type in (
-            self.substrate_id_types[self.input_method.lower()]
-            if self.input_is(self.substrate_id_types, '__contains__')
-            else [self.substrate_id_type]
+            self.id_type_substrates[self.input_method.lower()]
+            if self.input_is(self.id_type_substrates, '__contains__')
+            else [self.id_type_substrate]
         ):
 
             if isinstance(sub_id_type, (list, tuple)):
@@ -559,8 +593,8 @@ class EnzymeSubstrateHomologyProcessor(
             ncbi_tax_id,
             map_by_homology_from = [9606],
             trace = False,
-            enzyme_id_type = 'genesymbol',
-            substrate_id_type = 'genesymbol',
+            id_type_enzyme = 'genesymbol',
+            id_type_substrate = 'genesymbol',
             name = None,
             homology_only_swissprot = True,
             ptm_homology_strict = False,
@@ -600,8 +634,8 @@ class EnzymeSubstrateHomologyProcessor(
         self.target_taxon = ncbi_tax_id
         self.input_method = input_method
         self.trace = trace
-        self.enzyme_id_type = enzyme_id_type
-        self.substrate_id_type = substrate_id_type
+        self.id_type_enzyme = id_type_enzyme
+        self.id_type_substrate = id_type_substrate
         self.name = name
         self.ptmprocargs = kwargs
 
@@ -628,8 +662,8 @@ class EnzymeSubstrateHomologyProcessor(
                 self.input_method,
                 source_taxon,
                 trace = self.trace,
-                enzyme_id_type = self.enzyme_id_type,
-                substrate_id_type = self.substrate_id_type,
+                id_type_enzyme = self.id_type_enzyme,
+                id_type_substrate = self.id_type_substrate,
                 name = self.name, allow_mixed_organisms = True,
                 **self.ptmprocargs,
             )
@@ -651,8 +685,8 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
             ncbi_tax_id = 9606,
             map_by_homology_from = None,
             trace = False,
-            enzyme_id_type = 'genesymbol',
-            substrate_id_type = 'genesymbol',
+            id_type_enzyme = 'genesymbol',
+            id_type_substrate = 'genesymbol',
             homology_only_swissprot = True,
             ptm_homology_strict = False,
             nonhuman_direct_lookup = True,
@@ -811,8 +845,8 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                     input_method = input_method,
                     ncbi_tax_id = self.ncbi_tax_id,
                     trace = self.trace,
-                    enzyme_id_type = self.enzyme_id_type,
-                    substrate_id_type = self.substrate_id_type,
+                    id_type_enzyme = self.id_type_enzyme,
+                    id_type_substrate = self.id_type_substrate,
                     **inputargs,
                 )
                 
@@ -835,8 +869,8 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                     ncbi_tax_id = self.ncbi_tax_id,
                     map_by_homology_from = self.map_by_homology_from,
                     trace = self.trace,
-                    enzyme_id_type = self.enzyme_id_type,
-                    substrate_id_type = self.substrate_id_type,
+                    id_type_enzyme = self.id_type_enzyme,
+                    id_type_substrate = self.id_type_substrate,
                     homology_only_swissprot = self.homology_only_swissprot,
                     ptm_homology_strict = self.ptm_homology_strict,
                     **inputargs
