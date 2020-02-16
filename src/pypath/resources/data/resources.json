@@ -3991,6 +3991,18 @@
   "MIMP": {
     "license": {
       "comment": "License information was requested but not received yet."
+    },
+    "inputs": {
+      "enzyme_substrate": {
+        "id_type_enzyme": "uniprot",
+        "id_type_substrate": "uniprot",
+        "input_method": "mimp.mimp_enzyme_substrate",
+        "organisms": [
+          9606
+        ],
+        "organisms_supported": false,
+        "extra_attrs": {}
+      }
     }
   },
   "Li2012": {

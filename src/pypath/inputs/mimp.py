@@ -25,7 +25,7 @@ import pypath.share.curl as curl
 import pypath.resources.urls as urls
 
 
-def get_mimp():
+def mimp_enzyme_substrate():
     
     db_names = {
         'PhosphoSitePlus': 'PhosphoSite',
@@ -144,7 +144,7 @@ def get_kinase_class():
 def mimp_interactions():
 
     result = []
-    mimp = get_mimp()
+    mimp = mimp_enzyme_substrate()
 
     for m in mimp:
 
