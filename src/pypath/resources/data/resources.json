@@ -647,7 +647,17 @@
       "intr": ["pypath.dataio.dbptm_interactions()"],
       "ptm": ["pypath.pypath.PyPath().load_dbptm()"]
     },
-    "dateUpdated": "Nov 2016"
+    "dateUpdated": "Nov 2016",
+    "inputs": {
+      "enzyme_substrate": {
+        "id_type_enzyme": "genesymbol",
+        "id_type_substrate": "uniprot",
+        "input_method": "dbptm.dbptm_enzyme_substrate",
+        "organisms": null,
+        "organisms_supported": true,
+        "extra_attrs": {}
+      }
+    }
   },
   "SIGNOR": {
     "yearUsedRelease": 2015,
