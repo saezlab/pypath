@@ -1036,7 +1036,22 @@
       "ptm": ["pypath.dataio.get_hprd_ptms()"]
     },
     "pathguide": 14,
-    "dateUpdated": "Nov 2016"
+    "dateUpdated": "Nov 2016",
+    "inputs": {
+      "enzyme_substrate": {
+        "id_type_enzyme": "genesymbol",
+        "id_type_substrate": [
+            "refseqp",
+            "substrate_refseqp"
+        ],
+        "input_method": "hprd.hprd_enzyme_substrate",
+        "organisms": [
+          9606
+        ],
+        "organisms_supported": false,
+        "extra_attrs": {}
+      }
+    }
   },
   "ACSN": {
     "yearUsedRelease": 2015,
