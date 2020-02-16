@@ -28,6 +28,7 @@ import pypath.share.progress as progress
 import pypath.utils.taxonomy as taxonomy
 import pypath.internals.intera as intera
 import pypath.share.curl as curl
+import pypath.resources.urls as urls
 
 
 def signor_interactions(organism = 9606, raw_records = False):
