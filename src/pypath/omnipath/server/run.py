@@ -1321,9 +1321,9 @@ class TableServer(BaseServer):
         
         # if user requested TF type interactions
         # they likely want the tfregulons dataset
-        if 'TF' in args['types']:
+        if 'transcriptional' in args['types']:
             args['datasets'].add('tfregulons')
-        if 'MTI' in args['types']:
+        if 'post_transcriptional' in args['types']:
             args['datasets'].add('mirnatarget')
         
         # here adjust on the defaults otherwise we serve empty
@@ -1361,9 +1361,9 @@ class TableServer(BaseServer):
         # but if they requested other types, then we
         # serve those as well
         if 'tfregulons' in args['datasets']:
-            args['types'].add('TF')
+            args['types'].add('transcriptional')
         if 'mirnatarget' in args['datasets']:
-            args['types'].add('MTI')
+            args['types'].add('post_transcriptional')
         
         # if no types provided we collect the types
         # for the datasets requested
@@ -1423,7 +1423,7 @@ class TableServer(BaseServer):
         ]
         
         # filter by TG Regulons confidence levels
-        if 'TF' in args['types'] and args['tfregulons_levels']:
+        if 'transcriptional' in args['types'] and args['tfregulons_levels']:
             
             tbl = tbl[
                 np.logical_not(tbl.tfregulons) |
@@ -1444,7 +1444,7 @@ class TableServer(BaseServer):
             ]
         
         # filtering by TF Regulons methods
-        if 'TF' in args['types'] and args['tfregulons_methods']:
+        if 'transcriptional' in args['types'] and args['tfregulons_methods']:
             
             q = ['tfregulons_%s' % m for m in args['tfregulons_methods']]
             
