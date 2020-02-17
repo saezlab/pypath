@@ -84,7 +84,10 @@ class Residue(object):
         self.protein = (
             protein
                 if isinstance(protein, entity.Entity) else
-            entity.Entity(protein, id_type = id_type)
+            entity.Entity(
+                identifier = protein,
+                id_type = id_type,
+            )
         )
         self.mutated = mutated
         self.seq = seq
@@ -126,8 +129,9 @@ class Residue(object):
 
     def __repr__(self):
 
-        return '<%s:%s%u>' % (
+        return '<%s-%u:%s%u>' % (
             self.protein.label,
+            self.isoform,
             self.name,
             self.number,
         )
@@ -177,7 +181,7 @@ class Ptm(object):
         self.protein = (
             protein
                 if isinstance(protein, evidence.Evidence) else
-            evidence.Evidence(
+            entity.Entity(
                 identifier = protein,
                 id_type = id_type,
             )
@@ -195,8 +199,7 @@ class Ptm(object):
         self.isoforms = set()
         self.add_isoform(isoform)
 
-        self.evidences = evidence.Evidences()
-        self.add_evidences(evidences)
+        self.evidences = evidences or evidence.Evidences()
 
 
     def __hash__(self):
@@ -229,6 +232,14 @@ class Ptm(object):
                     '\n    Residue: %s' % self.residue.__str__()
                 ),
             )
+        )
+
+
+    def __repr__(self):
+
+        return '<PTM %s:%s>' % (
+            self.residue.__repr__().strip('<>'),
+            self.typ,
         )
 
 
@@ -432,8 +443,8 @@ class Motif(object):
         non_digit = re.compile(r'[^\d.-]+')
         self.protein = (
             protein
-                if isinstance(protien, entity.Entity) else
-            entity.Entity(protein, if_type = id_type)
+                if isinstance(protein, entity.Entity) else
+            entity.Entity(protein, id_type = id_type)
         )
         self.id_type = id_type
         self.seq = seq
@@ -622,7 +633,14 @@ class Domain(object):
     ):
 
         non_digit = re.compile(r'[^\d.-]+')
-        self.protein = protein
+        self.protein = (
+            protein
+                if isinstance(protein, evidence.Evidence) else
+            entity.Entity(
+                identifier = protein,
+                id_type = id_type,
+            )
+        )
         self.id_type = id_type
         self.domain = domain
         self.domain_id_type = domain_id_type
@@ -905,7 +923,7 @@ class DomainMotif(object):
 
         self.add_pdbs(pdbs)
 
-        self.evidences = evidence.Evidences()
+        self.evidences = evidences or evidence.Evidences()
 
 
     def __hash__(self):
@@ -933,7 +951,7 @@ class DomainMotif(object):
 
         return '<%s => %s [%s]>' % (
             self.domain.protein.label,
-            self.ptm.__repr__(),
+            self.ptm.__repr__().strip('<>').replace('PTM ', ''),
             self.evidences.__repr__().strip('<>')
         )
 

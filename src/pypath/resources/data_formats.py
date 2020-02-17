@@ -1138,7 +1138,7 @@ ptm_misc = {
         extra_node_attrs_b = {}
     ),
     'mimp': input_formats.NetworkInput(
-        name = "MIMP",
+        name = 'MIMP',
         separator = None,
         id_col_a = 0,
         id_col_b = 1,
@@ -1151,7 +1151,7 @@ ptm_misc = {
         ncbi_tax_id = 9606,
         input = 'mimp.mimp_interactions',
         references = False,
-        resource = (2, ';'),
+        resource = 2,
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},

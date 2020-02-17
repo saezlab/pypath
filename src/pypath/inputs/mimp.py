@@ -78,14 +78,11 @@ def mimp_enzyme_substrate():
                     start = None
                     end = None
                     instance = l[4]
-                    
-                databases = ';'.join(
-                    tuple(
-                        '%s_MIMP' % (db_names[db] if db in db_names else db)
-                        for db in l[6].split(';')
-                    ) +
-                    ('MIMP',)
-                )
+                
+                databases = [
+                    db_names[db] if db in db_names else db
+                    for db in l[6].split(';')
+                ]
                 
                 result.append({
                     'instance': instance,

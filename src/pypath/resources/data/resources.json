@@ -4073,7 +4073,9 @@
           9606
         ],
         "organisms_supported": false,
-        "extra_attrs": {}
+        "extra_attrs": {
+          "npmid": "npmid"
+        }
       }
     }
   },

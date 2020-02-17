@@ -115,7 +115,7 @@ def dbptm_enzyme_substrate_old(organism = 9606):
                         'resnum': resnum,
                         'instance': l[8].strip(),
                         'references': l[4].split(';'),
-                        'source': l[5].split()[0],
+                        'databases': (l[5].split()[0],),
                         'kinase': None if byre.match(l[3]) is None else [
                             i.strip()
                             for i in andre.split(

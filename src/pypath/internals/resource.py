@@ -386,3 +386,21 @@ class EnzymeSubstrateResource(ResourceAttributes):
     def is_primary(self):
         
         return self.via is None
+    
+    
+    def get_via(self, name):
+        """
+        Returns a copy of the same resource attributes but the ``name`` set
+        to ``name`` and the ``via`` set to the original name. This means
+        the data comes from the resource ``name`` via the resource ``via``.
+        """
+        
+        args = dict(
+            (k, getattr(self, k))
+            for k in self.__dir__()
+            if not k.startswith('__') and not callable(getattr(self, k))
+        )
+        args['via'] = self.name
+        args['name'] = name
+        
+        return EnzymeSubstrateResource(**args)

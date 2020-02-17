@@ -40,6 +40,7 @@ import pypath.share.progress as progress
 import pypath.share.session as session_mod
 import pypath.utils.taxonomy as taxonomy
 import pypath.inputs as inputs
+import pypath.core.evidence as evidence
 
 
 builtin_inputs = [
@@ -159,6 +160,8 @@ class EnzymeSubstrateProcessor(
 
         self.input_param = input_param
         self.name = name
+        self.id_type_enzyme = id_type_enzyme
+        self.id_type_substrate = id_type_substrate
         self.allow_mixed_organisms = allow_mixed_organisms
         self.input_method = input_method
         self.trace = trace
@@ -177,7 +180,6 @@ class EnzymeSubstrateProcessor(
 
         homology.Proteomes.__init__(self)
 
-        self.id_type_enzyme = id_type_enzyme
         self.set_inputargs(**kwargs)
         self.load()
 
@@ -201,6 +203,7 @@ class EnzymeSubstrateProcessor(
             False,
         )
         self.input_method = self._get_param('input_method')
+        self.set_method()
 
 
     def _get_param(self, label, default = None):
@@ -252,33 +255,15 @@ class EnzymeSubstrateProcessor(
         def empty_input(*args, **kwargs): return []
 
 
-        # a method provided
-        if hasattr(self.input_method, '__call__'):
-
-            self.inputm = self.input_method
-            self.name = self.name or self.input_method.__name__
-
-        # the method is associated to a resource name
-        # in the list of built in resources
-        elif self.input_is(self.methods, '__contains__'):
-
-            self.inputm = inputs.get_method(
-                self.methods[self.input_method.lower()]
-            )
-            self.name = (
-                self.name or
-                (
-                    self.resource_names[self.input_method.lower()]
-                    if self.input_method.lower() in self.resource_names else
-                    self.input_method
-                )
-            )
-
         # attempting to look up the method in the inputs module
-        else:
+        if not hasattr(self.input_method, '__call__'):
 
-            self.inputm = inputs.get_method(self.input_method) or empty_input
-            self.name = self.name or self.inputm.__name__
+            self.input_method = (
+                inputs.get_method(self.input_method) or
+                empty_input
+            )
+
+        self.name = self.name or self.input_method.__name__
 
 
     def set_inputargs(self, **inputargs):
@@ -405,7 +390,7 @@ class EnzymeSubstrateProcessor(
                             p['instance'],
                             p['start'],
                             p['end'],
-                            isoform=isof
+                            isoform = isof,
                         ):
 
                             substrate_ups.append((s, isof))
@@ -441,22 +426,100 @@ class EnzymeSubstrateProcessor(
                     if se is None:
                         continue
 
-                    nomatch.append((s[0], s[1],
-                        ((p['substrate_refseq']
-                        if 'substrate_refseq' in p
-                        else ''),
-                        s, p['instance'],
-                        se.get(
-                            p['start'],
-                            p['end'])
+                    nomatch.append(
+                        (
+                            s[0],
+                            s[1],
+                            (
+                                p['substrate_refseq']
+                                    if 'substrate_refseq' in p else
+                                '',
+                                s,
+                                p['instance'],
+                                se.get(
+                                    p['start'],
+                                    p['end']
+                                ),
+                            ),
                         )
-                    ))
+                    )
 
-        # adding kinase-substrate interactions
+        # building objects representing the enzyme-substrate interaction(s)
 
-        for k in kinase_ups:
+        if 'typ' not in p:
+            p['typ'] = 'phosphorylation'
 
-            for s in substrate_ups:
+        resources = tuple(
+            (
+                self.input_param.get_via(name)
+                    if hasattr(self.input_param, 'get_via') else
+                name
+            )
+            for name in (
+                p['databases'] if 'databases' in p else ()
+            )
+        )
+        resources += (
+            (self.name,)
+                if isinstance(self.input_param, common.basestring) else
+            (self.input_param,)
+        )
+
+        # collecting the evidences
+        evidences = evidence.Evidences(
+            evidence.Evidence(
+                resource = _res,
+                references = p['references'] if 'references' in p else None
+            )
+            for _res in resources
+        )
+
+        for s in substrate_ups:
+
+            # building the objects representing the substrate
+            se = self.get_seq(s[0])
+
+            if se is None:
+                continue
+
+            res = intera.Residue(
+                p['resnum'],
+                p['resaa'],
+                s[0],
+                isoform = s[1],
+            )
+
+            if 'instance' not in p or p['instance'] is None:
+
+                reg = se.get_region(
+                    p['resnum'],
+                    p['start'] if 'start' in p else None,
+                    p['end'] if 'end' in p else None,
+                    isoform = s[1],
+                )
+
+                if reg is not None:
+
+                    p['start'], p['end'], p['instance'] = reg
+
+            mot = intera.Motif(
+                    s[0],
+                    p['start'],
+                    p['end'],
+                    instance = p['instance'],
+                    isoform = s[1],
+                )
+
+            ptm = intera.Ptm(
+                s[0],
+                motif = mot,
+                residue = res,
+                typ = p['typ'],
+                evidences = evidences,
+                isoform = s[1],
+            )
+
+            for k in kinase_ups:
 
                 if (
                     not self.allow_mixed_organisms and (
@@ -466,78 +529,22 @@ class EnzymeSubstrateProcessor(
                 ):
                     continue
 
-                se = self.get_seq(s[0])
-
-                if se is None:
-                    continue
-
-                res = intera.Residue(
-                    p['resnum'],
-                    p['resaa'],
-                    s[0],
-                    isoform=s[1],
-                )
-
-                if 'instance' not in p or p['instance'] is None:
-
-                    reg = se.get_region(
-                        p['resnum'],
-                        p['start'] if 'start' in p else None,
-                        p['end'] if 'end' in p else None,
-                        isoform=s[1])
-
-                    if reg is not None:
-
-                        p['instance'] = reg[2]
-                        p['start'] = reg[0]
-                        p['end'] = reg[1]
-
-                if 'typ' not in p:
-                    p['typ'] = 'phosphorylation'
-
-                mot = intera.Motif(
-                    s[0],
-                    p['start'],
-                    p['end'],
-                    instance = p['instance'],
-                    isoform = s[1])
-
-                ptm = intera.Ptm(
-                    s[0],
-                    motif = mot,
-                    residue = res,
-                    typ = p['typ'],
-                    source = [self.name],
-                    isoform = s[1],
-                )
-
+                # the enzyme (kinase)
                 dom = intera.Domain(protein = k)
-
-                if 'references' not in p:
-                    p['references'] = []
 
                 dommot = intera.DomainMotif(
                     domain = dom,
                     ptm = ptm,
-                    sources = [self.name],
-                    refs = p['references'],
+                    evidences = evidences,
                 )
 
-                if self.input_is('mimp') and p['databases']:
-                    dommot.mimp_sources = p['databases'].split(';')
-                    dommot.add_sources(dommot.mimp_sources)
-                    dommot.npmid = p['npmid']
+                if hasattr(self.input_param, 'extra_attrs'):
 
-                if self.input_is('protmapper') and p['databases']:
-                    dommot.protmapper_sources = p['databases']
-                    dommot.add_sources(p['databases'])
+                    for attr, key in iteritems(self.input_param.extra_attrs):
 
-                elif self.input_is('phosphonetworks'):
-                    dommot.pnetw_score = p['score']
+                        if key in p:
 
-                elif self.input_is('dbptm') and p['source']:
-                    dommot.dbptm_sources = ['%s_dbPTM' % p['source']]
-                    dommot.add_sources(dommot.dbptm_sources)
+                            setattr(dommot, attr, p[key])
 
                 yield dommot
 
@@ -573,7 +580,7 @@ class EnzymeSubstrateProcessor(
 
 
 class EnzymeSubstrateHomologyProcessor(
-        homology.EnzymeSubstrateHomology,
+        homology.PtmHomology,
         EnzymeSubstrateProcessor
     ):
 
