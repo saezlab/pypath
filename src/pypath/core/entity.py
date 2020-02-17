@@ -86,6 +86,23 @@ class Entity(session_mod.Logger):
             attrs = None,
         ):
         
+        if (
+            isinstance(identifier, Entity) or
+            hasattr(identifier, 'identifier')
+        ):
+            
+            (
+                identifier,
+                entity_type,
+                id_type,
+                taxon,
+            ) = (
+                identifier.identifier,
+                identifier.entity_type,
+                identifier.id_type,
+                identifier.taxon,
+            )
+        
         self.identifier = identifier
         self.entity_type = entity_type or self.get_entity_type()
         # override `protein` in case this is a `complex`

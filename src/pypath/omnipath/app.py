@@ -35,7 +35,7 @@ import pypath.resources.network as netres
 from pypath.core import annot
 from pypath.core import intercell
 from pypath.core import complex
-from pypath.core import ptm
+from pypath.core import enz_sub
 from pypath.core import network
 from pypath.share import session as session_mod
 
@@ -95,14 +95,19 @@ class Database(session_mod.Logger):
             dataset,
             force_reload = False,
             force_rebuild = False,
+            ncbi_tax_id = 9606,
         ):
         """
         Makes sure a dataset is loaded. It loads only if it's not loaded
         yet or :py:arg:`force_reload` is ``True``. It only builds if it's
         not availabe as a pickle dump or :py:arg:`force_rebuild` is ``True``.
-        
+
         :arg str dataset:
             The name of the dataset.
+        :arg int ncbi_tax_id:
+            NCBI Taxonomy ID of the organism. Considered only if the dataset
+            builds for one organism and saved to organism specific pickle
+            files.
         """
 
         for dep_dataset in self.dataset_dependencies(dataset):
@@ -111,21 +116,30 @@ class Database(session_mod.Logger):
 
         rebuild_dataset = self.get_param('rebuild_%s' % dataset)
 
-        if force_reload or force_rebuild or not hasattr(self, dataset):
+        _dataset = self._dataset_taxid(dataset, ncbi_tax_id = ncbi_tax_id)
+
+        if (
+            force_reload or
+            force_rebuild or
+            not hasattr(self, _dataset)
+        ):
 
             if (
                 force_rebuild or
                 self.rebuild or
                 rebuild_dataset or
-                not self.pickle_exists(dataset)
+                not self.pickle_exists(dataset, ncbi_tax_id = ncbi_tax_id)
             ):
 
-                self.remove_db(dataset)
-                self.build_dataset(dataset)
+                self.remove_db(dataset, ncbi_tax_id = ncbi_tax_id)
+                self.build_dataset(dataset, ncbi_tax_id = ncbi_tax_id)
 
-            elif not hasattr(self, dataset) or force_reload:
+            elif (
+                not hasattr(self, _dataset) or
+                force_reload
+            ):
 
-                self.load_dataset(dataset)
+                self.load_dataset(dataset, ncbi_tax_id = ncbi_tax_id)
 
 
     def dataset_dependencies(self, dataset):
@@ -175,7 +189,7 @@ class Database(session_mod.Logger):
             )
 
 
-    def pickle_path(self, dataset):
+    def pickle_path(self, dataset, ncbi_tax_id = 9606):
         """
         Returns the path of the pickle dump for a dataset according to
         the current settings.
@@ -183,18 +197,24 @@ class Database(session_mod.Logger):
 
         pickle_fname = self.get_param('%s_pickle' % dataset)
 
+        if dataset == 'enz_sub':
+
+            pickle_fname = pickle_fname % ncbi_tax_id
+
         return os.path.join(
             self.get_param('pickle_dir'),
             pickle_fname,
         )
 
 
-    def pickle_exists(self, dataset):
+    def pickle_exists(self, dataset, ncbi_tax_id = 9606):
         """
         Tells if a pickle dump of a particular dataset exists.
         """
 
-        return os.path.exists(self.pickle_path(dataset))
+        return os.path.exists(
+            self.pickle_path(dataset, ncbi_tax_id = ncbi_tax_id)
+        )
 
 
     def table_path(self, dataset):
@@ -208,7 +228,7 @@ class Database(session_mod.Logger):
         )
 
 
-    def build_dataset(self, dataset):
+    def build_dataset(self, dataset, ncbi_tax_id = 9606):
         """
         Builds a dataset.
         """
@@ -219,35 +239,44 @@ class Database(session_mod.Logger):
 
         mod = self.ensure_module(dataset)
 
+        if dataset == 'enz_sub':
+
+            args['ncbi_tax_id'] = ncbi_tax_id
+
+            if hasattr(mod, 'db'):
+
+                delattr(mod, 'db')
+
         db = mod.get_db(**args)
 
-        pickle_path = self.pickle_path(dataset)
+        pickle_path = self.pickle_path(dataset, ncbi_tax_id = ncbi_tax_id)
+
         old_pickle_path = '%s.old' % pickle_path
-        
+
         if os.path.exists(pickle_path):
-            
+
             shutil.move(pickle_path, old_pickle_path)
-        
+
         self._log('Saving dataset `%s` to `%s`.' % (dataset, pickle_path))
-        
+
         try:
             db.save_to_pickle(pickle_file = pickle_path)
-            
+
             if os.path.exists(old_pickle_path):
-                
+
                 os.remove(old_pickle_path)
-            
+
             self._log(
                 'Saved dataset `%s` to `%s`.' % (
                     dataset,
                     pickle_path
                 )
             )
-            
+
         except:
-            
+
             os.remove(pickle_path)
-            
+
             self._log(
                 'Failed to save dataset `%s` to `%s`. '
                 'The dataset is currently loaded. '
@@ -257,17 +286,19 @@ class Database(session_mod.Logger):
                     pickle_path,
                 )
             )
-            
+
             if os.path.exists(old_pickle_path):
-                
+
                 self._log('Restoring the old version of `%s`.' % pickle_path)
                 shutil.move(old_pickle_path, pickle_path)
 
         self._log('Successfully built dataset `%s`.' % dataset)
 
-        setattr(self, dataset, db)
+        _dataset = self._dataset_taxid(dataset, ncbi_tax_id = ncbi_tax_id)
 
-        self._add_network_df(dataset)
+        setattr(self, _dataset, db)
+
+        self._add_network_df(dataset, ncbi_tax_id = ncbi_tax_id)
 
 
     def ensure_module(self, dataset, reset = True):
@@ -316,22 +347,32 @@ class Database(session_mod.Logger):
         return args
 
 
-    def load_dataset(self, dataset):
+    def load_dataset(self, dataset, ncbi_tax_id = 9606):
         """
         Loads a dataset, builds it if no pickle dump is available.
         """
 
-        pickle_path = self.pickle_path(dataset)
+        pickle_path = self.pickle_path(dataset, ncbi_tax_id = ncbi_tax_id)
 
         self._log('Loading dataset `%s` from `%s`.' % (dataset, pickle_path))
 
         mod = self.ensure_module(dataset)
 
-        setattr(self, dataset, mod.get_db(pickle_file = pickle_path))
+        _dataset = self._dataset_taxid(dataset, ncbi_tax_id = ncbi_tax_id)
+
+        setattr(self, _dataset, mod.get_db(pickle_file = pickle_path))
 
         self._log('Loaded dataset `%s` from `%s`.' % (dataset, pickle_path))
 
-        self._add_network_df(dataset)
+        self._add_network_df(dataset, ncbi_tax_id = ncbi_tax_id)
+
+
+    def _dataset_taxid(self, dataset, ncbi_tax_id = 9606):
+
+        return '%s%s' % (
+            dataset,
+            '_%u' % ncbi_tax_id if dataset == 'enz_sub' else '',
+        )
 
 
     def get_args_curated(self):
@@ -417,26 +458,35 @@ class Database(session_mod.Logger):
             _ = method(dataset)
 
 
-    def get_db(self, dataset):
+    def get_db(self, dataset, ncbi_tax_id = 9606):
         """
         Returns a dataset object. Loads and builds the dataset if necessary.
+
+        :arg int ncbi_tax_id:
+            NCBI Taxonomy ID of the organism. Considered only if the dataset
+            builds for one organism and saved to organism specific pickle
+            files.
         """
 
-        self.ensure_dataset(dataset)
+        self.ensure_dataset(dataset, ncbi_tax_id = ncbi_tax_id)
 
-        return getattr(self, dataset)
+        _dataset = self._dataset_taxid(dataset, ncbi_tax_id = ncbi_tax_id)
+
+        return getattr(self, _dataset)
 
 
-    def remove_db(self, dataset):
+    def remove_db(self, dataset, ncbi_tax_id = 9606):
         """
         Removes a dataset. Deletes the references to the object
         in the module, however if you have references elsewhere in your
         code it remains in the memory.
         """
 
-        if hasattr(self, dataset):
+        _dataset = self._dataset_taxid(dataset, ncbi_tax_id = ncbi_tax_id)
 
-            delattr(self, dataset)
+        if hasattr(self, _dataset):
+
+            delattr(self, _dataset)
 
 
     def remove_all(self):
@@ -468,6 +518,7 @@ class Database(session_mod.Logger):
         graph = self.get_db(dataset)
 
         return self._network_df(graph, **kwargs)
+
 
     def network_df(self, dataset, by_source = False):
         """
@@ -504,9 +555,11 @@ class Database(session_mod.Logger):
         return obj.df
 
 
-    def _add_network_df(self, dataset):
+    def _add_network_df(self, dataset, ncbi_tax_id = 9606):
 
-        obj = getattr(self, dataset)
+        _dataset = self._dataset_taxid(dataset, ncbi_tax_id = ncbi_tax_id)
+
+        obj = getattr(self, _dataset)
 
         if (
             (

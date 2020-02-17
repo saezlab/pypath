@@ -638,6 +638,7 @@ class TableServer(BaseServer):
             'sources': 'category',
             'references': 'category',
             'ncbi_tax_id': 'int16',
+            'curation_effort': 'int32',
         },
         complexes = {
             'name': 'category',

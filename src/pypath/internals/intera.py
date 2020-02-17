@@ -84,7 +84,7 @@ class Residue(object):
 
         self.protein = (
             protein
-                if isinstance(protein, entity.Entity) else
+                if hasattr(protein, 'identifier') else
             entity.Entity(
                 identifier = protein,
                 id_type = id_type,
@@ -183,7 +183,7 @@ class Ptm(object):
         self.non_digit = re.compile(r'[^\d.-]+')
         self.protein = (
             protein
-                if isinstance(protein, evidence.Evidence) else
+                if hasattr(protein, 'identifier') else
             entity.Entity(
                 identifier = protein,
                 id_type = id_type,
@@ -448,7 +448,7 @@ class Motif(object):
         non_digit = re.compile(r'[^\d.-]+')
         self.protein = (
             protein
-                if isinstance(protein, entity.Entity) else
+                if hasattr(protein, 'identifier') else
             entity.Entity(
                 protein,
                 id_type = id_type,
@@ -645,7 +645,7 @@ class Domain(object):
         non_digit = re.compile(r'[^\d.-]+')
         self.protein = (
             protein
-                if isinstance(protein, evidence.Evidence) else
+                if hasattr(protein, 'identifier') else
             entity.Entity(
                 identifier = protein,
                 id_type = id_type,

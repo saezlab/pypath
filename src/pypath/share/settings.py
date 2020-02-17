@@ -156,7 +156,7 @@ _defaults = {
     'complex_pickle': 'complexes.pickle',
     'annotations_pickle': 'annotations.pickle',
     'intercell_pickle': 'intercell.pickle',
-    'enz_sub_pickle': 'enz_sub.pickle',
+    'enz_sub_pickle': 'enz_sub_%u.pickle',
     'tf_target_pickle': 'tftarget.pickle',
     'tf_mirna_pickle': 'tfmirna.pickle',
     'mirna_mrna_pickle': 'mirna_mrna.pickle',

@@ -575,9 +575,14 @@ class EnzymeSubstrateHomologyProcessor(
 
             session_mod.Logger.__init__(name = 'enz_sub_homology')
 
-        self.map_by_homology_from = map_by_homology_from or [9606]
-
         self.target_taxon = ncbi_tax_id
+        self.map_by_homology_from = (
+            map_by_homology_from or
+            {9606, 10090, 10116}
+        )
+        self.map_by_homology_from = common.to_set(self.map_by_homology_from)
+        self.map_by_homology_from.discard(self.target_taxon)
+
         self.input_param = input_param
         self.input_method = input_method
         self.trace = trace
@@ -730,12 +735,19 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
     def build(self):
         
         self.inputargs = self.inputargs or {}
-        self.map_by_homology_from = set(self.map_by_homology_from or [9606])
-
-        self.set_inputs()
-
+        self.map_by_homology_from = (
+            (
+                {9606, 10090, 10116}
+                    if self.ncbi_tax_id != 9606 else
+                set()
+            )
+                if self.map_by_homology_from is None else
+            self.map_by_homology_from
+        )
         self.map_by_homology_from = set(self.map_by_homology_from)
         self.map_by_homology_from.discard(self.ncbi_tax_id)
+
+        self.set_inputs()
 
         self.build_list()
         self.unique()
@@ -830,7 +842,12 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                 {'input_param': input_param}
             )
 
-            if self.ncbi_tax_id == 9606 or self.nonhuman_direct_lookup:
+            if (
+                self.ncbi_tax_id == 9606 or (
+                    self.nonhuman_direct_lookup and
+                    input_param.organisms_supported
+                )
+            ):
                 
                 self._log(
                     'Loading enzyme-substrate interactions '
@@ -1174,7 +1191,7 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
 
 
 def init_db(**kwargs):
-    
+
     globals()['db'] = EnzymeSubstrateAggregator(**kwargs)
 
 
