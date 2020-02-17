@@ -68,6 +68,7 @@ class Residue(object):
             name,
             protein,
             id_type = 'uniprot',
+            ncbi_tax_id = 9606,
             isoform = 1,
             mutated = False,
             seq = None
@@ -87,6 +88,7 @@ class Residue(object):
             entity.Entity(
                 identifier = protein,
                 id_type = id_type,
+                taxon = ncbi_tax_id,
             )
         )
         self.mutated = mutated
@@ -169,6 +171,7 @@ class Ptm(object):
             self,
             protein,
             id_type = 'uniprot',
+            ncbi_tax_id = 9606,
             typ = 'unknown',
             motif = None,
             residue = None,
@@ -184,6 +187,7 @@ class Ptm(object):
             entity.Entity(
                 identifier = protein,
                 id_type = id_type,
+                taxon = ncbi_tax_id,
             )
         )
         self.id_type = id_type
@@ -429,6 +433,7 @@ class Motif(object):
             start,
             end,
             id_type = 'uniprot',
+            ncbi_tax_id = 9606,
             regex = None,
             instance = None,
             isoform = 1,
@@ -444,7 +449,11 @@ class Motif(object):
         self.protein = (
             protein
                 if isinstance(protein, entity.Entity) else
-            entity.Entity(protein, id_type = id_type)
+            entity.Entity(
+                protein,
+                id_type = id_type,
+                taxon = ncbi_tax_id,
+            )
         )
         self.id_type = id_type
         self.seq = seq
@@ -550,7 +559,7 @@ class Motif(object):
             '\tRange: %u-%u\n'
             '\tRegex: %s\n'
             '\tInstance: %s\n' % (
-                self.protein,
+                self.protein.label,
                 self.isoform,
                 self.motif_name or 'unknown',
                 self.elm or 'unknown',
@@ -568,7 +577,7 @@ class Motif(object):
 
         return '<Motif %sin %s-%u%s>' % (
             '%s ' % self.motif_name if self.motif_name else '',
-            self.protein,
+            self.protein.label,
             self.isoform,
             ' [%s]' % rng if rng else '',
         )
@@ -624,6 +633,7 @@ class Domain(object):
         self,
         protein,
         id_type = 'uniprot',
+        ncbi_tax_id = 9606,
         domain = None,
         domain_id_type = 'pfam',
         start = None,
@@ -639,6 +649,7 @@ class Domain(object):
             entity.Entity(
                 identifier = protein,
                 id_type = id_type,
+                taxon = ncbi_tax_id,
             )
         )
         self.id_type = id_type
@@ -770,7 +781,7 @@ class Domain(object):
             '\tName: %s\n'
             '\tRange: %u-%u\n'
             '\t3D structures: %s\n' % (
-                self.protein,
+                self.protein.label,
                 self.isoform,
                 self.domain or 'unknown',
                 0 if self.start is None else self.start,
@@ -789,7 +800,7 @@ class Domain(object):
 
         return '<Domain %sin %s-%u%s>' % (
             '%s ' % self.domain if self.domain else '',
-            self.protein,
+            self.protein.label,
             self.isoform,
             ' [%s]' % rng if rng else '',
         )
@@ -840,13 +851,16 @@ class Domain(object):
 
 class DomainDomain(object):
 
-    def __init__(self,
-                 domain_a,
-                 domain_b,
-                 pdbs=None,
-                 sources=None,
-                 refs=None,
-                 contact_residues=None):
+    def __init__(
+            self,
+            domain_a,
+            domain_b,
+            pdbs = None,
+            sources = None,
+            refs = None,
+            contact_residues = None,
+        ):
+
         self.domains = [domain_a, domain_b]
         self.sources = set([])
         self.refs = set([])

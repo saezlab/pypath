@@ -544,7 +544,8 @@ class ProteinHomology(Proteomes):
 
 
 class PtmHomology(ProteinHomology, SequenceContainer):
-    
+
+
     def __init__(self, target, source = None, only_swissprot = True,
              strict = True):
         
@@ -563,15 +564,22 @@ class PtmHomology(ProteinHomology, SequenceContainer):
         self.strict = strict
         
         self.ptm_orthology()
-    
-    def translate_site(self, protein, res, offset,
-                       isoform = 1, typ = 'phosphorylation',
-                       source_taxon = None):
+
+
+    def translate_site(
+            self,
+            protein,
+            res,
+            offset,
+            isoform = 1,
+            typ = 'phosphorylation',
+            source_taxon = None,
+        ):
         """
         Translates one PTM site.
         """
         
-        result = set([])
+        result = set()
         
         self.set_default_source(source_taxon)
         
@@ -579,7 +587,7 @@ class PtmHomology(ProteinHomology, SequenceContainer):
         
         sourceptm = (protein, isoform, res, offset, source, typ)
         
-        if self.get_taxon(protein) == self.target:
+        if self.get_taxon(protein.identifier) == self.target:
             result.add(sourceptm)
             return result
         
@@ -591,7 +599,11 @@ class PtmHomology(ProteinHomology, SequenceContainer):
         
         if not result and not self.strict:
             
-            tsubs = ProteinHomology.translate(self, protein, source = source)
+            tsubs = ProteinHomology.translate(
+                self,
+                protein.identifier,
+                source = source,
+            )
             
             for tsub in tsubs:
                 
@@ -621,60 +633,83 @@ class PtmHomology(ProteinHomology, SequenceContainer):
                         break
         
         return result
-    
+
+
     def translate_domain(self, domain):
         
         return (
             list(
                 map(
                     lambda x:
-                        intera.Domain(x),
+                        intera.Domain(
+                            protein = x,
+                            ncbi_tax_id = self.target,
+                        ),
                     ProteinHomology.translate(
                         self,
-                        domain.protein,
+                        domain.protein.identifier,
                         source = self.get_source()
                     )
                 )
             )
         )
-    
+
+
     def translate_ptm(self, ptm):
         
-        tptms = self.translate_site(ptm.protein,
-                                    ptm.residue.name,
-                                    ptm.residue.number,
-                                    ptm.residue.isoform,
-                                    ptm.typ)
+        tptms = self.translate_site(
+            ptm.protein,
+            ptm.residue.name,
+            ptm.residue.number,
+            ptm.residue.isoform,
+            ptm.typ,
+        )
         
         result = []
         
-        if self.target in tptms:
+        for x in tptms:
             
-            for x in tptms[self.target]:
-                
-                se = self.get_seq(x[0])
-                
-                if (se is None or x[1] not in se.isof) and self.strict:
-                    continue
-                
-                res = intera.Residue(x[3], x[2], x[0], isoform = x[1])
-                start, end, region = (
-                    se.get_region(x[3], isoform = x[1])
-                    if se is not None and x[1] in se.isof
-                    else (None, None, None)
-                )
-                mot = intera.Motif(x[0], start = start, end = end,
-                                instance = region,
-                                isoform = x[1])
-                
-                ptm = intera.Ptm(x[0], motif = mot, residue = res,
-                                typ = x[5], isoform = x[1],
-                                source = ptm.sources)
-                
-                result.append(ptm)
+            se = self.get_seq(x[0])
+            
+            if (se is None or x[1] not in se.isof) and self.strict:
+                continue
+            
+            res = intera.Residue(
+                number = x[3],
+                name = x[2],
+                protein = x[0],
+                isoform = x[1],
+                ncbi_tax_id = self.target,
+            )
+            start, end, region = (
+                se.get_region(x[3], isoform = x[1])
+                if se is not None and x[1] in se.isof
+                else (None, None, None)
+            )
+            mot = intera.Motif(
+                protein = x[0],
+                start = start,
+                end = end,
+                instance = region,
+                isoform = x[1],
+                ncbi_tax_id = self.target,
+            )
+            
+            ptm = intera.Ptm(
+                protein = x[0],
+                motif = mot,
+                residue = res,
+                typ = x[5],
+                isoform = x[1],
+                evidences = ptm.evidences,
+                ncbi_tax_id = self.target,
+            )
+            
+            result.append(ptm)
         
         return result
-    
+
+
     def translate_domain_motif(self, dmotif):
         
         ds = self.translate_domain(dmotif.domain)
@@ -684,14 +719,17 @@ class PtmHomology(ProteinHomology, SequenceContainer):
             list(
                 map(
                     lambda x:
-                        intera.DomainMotif(x[0], x[1],
-                                           sources = dmotif.sources,
-                                           refs = dmotif.refs),
+                        intera.DomainMotif(
+                            x[0],
+                            x[1],
+                            evidences = dmotif.evidences,
+                        ),
                         itertools.product(ds, ps)
                 )
             )
         )
-    
+
+
     def translate_residue(self, residue):
         
         return (
@@ -708,7 +746,8 @@ class PtmHomology(ProteinHomology, SequenceContainer):
                 )
             )
         )
-    
+
+
     def translate(self, x, return_strings = False, **kwargs):
         """
         Translates anything:
@@ -743,20 +782,21 @@ class PtmHomology(ProteinHomology, SequenceContainer):
                               '%s_%s%u' % (r[0], r[2], r[3]),
                               result))
             
-        elif type(x) is intera.Ptm:
+        elif isinstance(x, intera.Ptm):
             
             result = self.translate_ptm(x)
             
-        elif type(x) is intera.Domain:
+        elif isinstance(x, intera.Domain):
             
             result = self.translate_domain(x)
             
-        elif type(x) is intera.DomainMotif:
+        elif isinstance(x, intera.DomainMotif):
             
             result = self.translate_domain_motif(x)
         
         return result
-    
+
+
     def ptm_orthology(self):
         """
         Creates an orthology translation dict of phosphosites
@@ -794,7 +834,11 @@ class PtmHomology(ProteinHomology, SequenceContainer):
                     continue
                 
                 uniprot = r[2]
-                isoform = 1 if '-' not in uniprot else int(uniprot.split('-')[1])
+                isoform = (
+                    1
+                        if '-' not in uniprot else
+                    int(uniprot.split('-')[1])
+                )
                 uniprot = uniprot.split('-')[0]
                 aa = r[4][0]
                 num = int(nondigit.sub('', r[4]))

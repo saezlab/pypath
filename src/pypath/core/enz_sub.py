@@ -487,6 +487,7 @@ class EnzymeSubstrateProcessor(
                 p['resaa'],
                 s[0],
                 isoform = s[1],
+                ncbi_tax_id = self.ncbi_tax_id,
             )
 
             if 'instance' not in p or p['instance'] is None:
@@ -508,6 +509,7 @@ class EnzymeSubstrateProcessor(
                     p['end'],
                     instance = p['instance'],
                     isoform = s[1],
+                    ncbi_tax_id = self.ncbi_tax_id,
                 )
 
             ptm = intera.Ptm(
@@ -517,6 +519,7 @@ class EnzymeSubstrateProcessor(
                 typ = p['typ'],
                 evidences = evidences,
                 isoform = s[1],
+                ncbi_tax_id = self.ncbi_tax_id,
             )
 
             for k in kinase_ups:
@@ -530,7 +533,10 @@ class EnzymeSubstrateProcessor(
                     continue
 
                 # the enzyme (kinase)
-                dom = intera.Domain(protein = k)
+                dom = intera.Domain(
+                    protein = k,
+                    ncbi_tax_id = self.ncbi_tax_id,
+                )
 
                 dommot = intera.DomainMotif(
                     domain = dom,
@@ -571,7 +577,7 @@ class EnzymeSubstrateProcessor(
 
     def __len__(self):
 
-        return len(self.data)
+        return len(self.data) if hasattr(self, 'data') else 0
 
 
     def __repr__(self):
@@ -581,17 +587,20 @@ class EnzymeSubstrateProcessor(
 
 class EnzymeSubstrateHomologyProcessor(
         homology.PtmHomology,
-        EnzymeSubstrateProcessor
+        EnzymeSubstrateProcessor,
+        session_mod.Logger
     ):
 
 
-    def __init__(self,
-            input_method,
+    def __init__(
+            self,
             ncbi_tax_id,
-            map_by_homology_from = [9606],
+            input_param = None,
+            input_method = None,
+            map_by_homology_from = None,
             trace = False,
-            id_type_enzyme = 'genesymbol',
-            id_type_substrate = 'genesymbol',
+            id_type_enzyme = None,
+            id_type_substrate = None,
             name = None,
             homology_only_swissprot = True,
             ptm_homology_strict = False,
@@ -626,9 +635,14 @@ class EnzymeSubstrateHomologyProcessor(
 
         """
 
-        self.map_by_homology_from = map_by_homology_from
+        if not hasattr(self, '_log'):
+
+            session_mod.Logger.__init__(name = 'enz_sub_homology')
+
+        self.map_by_homology_from = map_by_homology_from or [9606]
 
         self.target_taxon = ncbi_tax_id
+        self.input_param = input_param
         self.input_method = input_method
         self.trace = trace
         self.id_type_enzyme = id_type_enzyme
@@ -636,7 +650,7 @@ class EnzymeSubstrateHomologyProcessor(
         self.name = name
         self.ptmprocargs = kwargs
 
-        homology.EnzymeSubstrateHomology.__init__(
+        homology.PtmHomology.__init__(
             self,
             target = ncbi_tax_id,
             only_swissprot = homology_only_swissprot,
@@ -651,27 +665,57 @@ class EnzymeSubstrateHomologyProcessor(
         """
 
         for source_taxon in self.map_by_homology_from:
+            
+            self._log(
+                'Translating enzyme-substrate interactions '
+                'from organism %u to %u.' % (
+                    source_taxon,
+                    self.target_taxon,
+                )
+            )
 
             self.set_default_source(source_taxon)
 
             EnzymeSubstrateProcessor.__init__(
                 self,
-                self.input_method,
-                source_taxon,
+                input_param = self.input_param,
+                input_method = self.input_method,
+                ncbi_tax_id = source_taxon,
                 trace = self.trace,
                 id_type_enzyme = self.id_type_enzyme,
                 id_type_substrate = self.id_type_substrate,
-                name = self.name, allow_mixed_organisms = True,
+                name = self.name,
+                allow_mixed_organisms = True,
                 **self.ptmprocargs,
             )
 
             #self.reset_ptmprocessor(ncbi_tax_id = source_taxon)
 
-            for ptm in EnzymeSubstrateProcessor.__iter__(self):
+            self._log(
+                'Enzyme-substrate interactions loaded from resource `%s` '
+                'for organism %s, %u raw records.' % (
+                    self.name,
+                    source_taxon,
+                    len(self),
+                )
+            )
 
-                for tptm in self.translate(ptm):
+            for es in EnzymeSubstrateProcessor.__iter__(self):
 
-                    yield tptm
+                for target_es in self.translate(es):
+
+                    yield target_es
+
+
+    def __repr__(self):
+        
+        return (
+            '<Enzyme-substrate homology processor, '
+            'target taxon: %u, source taxon(s): %s>' % (
+                self.target_taxon,
+                ', '.join(str(tax) for tax in self.map_by_homology_from),
+            )
+        )
 
 
 class EnzymeSubstrateAggregator(session_mod.Logger):
