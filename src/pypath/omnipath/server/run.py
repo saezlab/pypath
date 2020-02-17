@@ -80,7 +80,8 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         self.welcome_message = (
             'Hello, this is the REST service of pypath %s. Welcome!\n'
             'For the descriptions of pathway resources go to `/info`.\n'
-            'Available query types: ?'
+            'Available query types: interactions, enz_sub, complexes, \n'
+            'annotations, intercell'
         ) % __version__
         
         self.isLeaf = True
