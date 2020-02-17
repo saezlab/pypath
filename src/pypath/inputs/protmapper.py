@@ -65,7 +65,7 @@ def protmapper_enzyme_substrate(
     """
     
     databases = {
-        'signor': 'Signor',
+        'signor': 'SIGNOR',
         'psp': 'PhosphoSite',
         'sparser': 'Sparser',
         'reach': 'REACH',

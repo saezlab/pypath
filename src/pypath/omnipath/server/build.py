@@ -50,7 +50,7 @@ class WebserviceTables(session_mod.Logger):
             self,
             only_human = False,
             outfile_interactions = 'omnipath_webservice_interactions.tsv',
-            outfile_ptms = 'omnipath_webservice_ptms.tsv',
+            outfile_ptms = 'omnipath_webservice_enz_sub.tsv',
             outfile_complexes = 'omnipath_webservice_complexes.tsv',
             outfile_annotations = 'omnipath_webservice_annotations.tsv',
             outfile_intercell = 'omnipath_webservice_intercell.tsv',
@@ -261,7 +261,10 @@ class WebserviceTables(session_mod.Logger):
             
             for rodent in (10090, 10116):
                 
-                enz_sub_a = omnipath.get_db('enz_sub', ncbi_tax_id = rodent)
+                enz_sub_a = omnipath.data.get_db(
+                    'enz_sub',
+                    ncbi_tax_id = rodent,
+                )
                 enz_sub_a.make_df(tax_id = True)
                 dataframes.append(enz_sub_a.df)
                 omnipath.data.remove_db('enz_sub', ncbi_tax_id = rodent)

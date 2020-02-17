@@ -352,9 +352,9 @@ class TableServer(BaseServer):
                 'mirnatarget',
             },
             'types': {
-                'PPI',
-                'TF',
-                'MTI',
+                'post_translational',
+                'transcriptional',
+                'post_transcriptional',
             },
             'sources':  None,
             'targets':  None,
@@ -372,6 +372,7 @@ class TableServer(BaseServer):
                 'ncbi_tax_id',
                 'databases',
                 'organism',
+                'curation_effort',
             },
             'tfregulons_levels':  {'A', 'B', 'C', 'D', 'E'},
             'tfregulons_methods': {
@@ -424,6 +425,7 @@ class TableServer(BaseServer):
                 'organism',
                 'databases',
                 'isoforms',
+                'curation_effort',
             },
             'enzyme_substrate': {
                 'AND',
@@ -567,26 +569,28 @@ class TableServer(BaseServer):
     }
     tfregulons_methods = {'curated', 'coexp', 'chipseq', 'tfbs'}
     dataset2type = {
-        'omnipath': 'PPI',
-        'tfregulons': 'TF',
-        'kinaseextra': 'PPI',
-        'ligrecextra': 'PPI',
-        'pathwayextra': 'PPI',
-        'mirnatarget': 'MTI'
+        'omnipath': 'post_translational',
+        'tfregulons': 'transcriptional',
+        'kinaseextra': 'post_translational',
+        'ligrecextra': 'post_translational',
+        'pathwayextra': 'post_translational',
+        'mirnatarget': 'post_transcriptional'
     }
     interaction_fields = {
         'references', 'sources', 'tfregulons_level',
         'tfregulons_curated', 'tfregulons_chipseq',
         'tfregulons_tfbs', 'tfregulons_coexp', 'type',
-        'ncbi_tax_id', 'databases', 'organism'
+        'ncbi_tax_id', 'databases', 'organism',
+        'curation_effort',
     }
     enzsub_fields = {
         'references', 'sources', 'databases',
-        'isoforms', 'organism', 'ncbi_tax_id'
+        'isoforms', 'organism', 'ncbi_tax_id',
+        'curation_effort',
     }
     default_input_files = {
         'interactions': 'omnipath_webservice_interactions.tsv',
-        'enzsub': 'omnipath_webservice_ptms.tsv',
+        'enzsub': 'omnipath_webservice_enz_sub.tsv',
         'annotations': 'omnipath_webservice_annotations.tsv',
         'complexes': 'omnipath_webservice_complexes.tsv',
         'intercell': 'omnipath_webservice_intercell.tsv',
@@ -833,21 +837,6 @@ class TableServer(BaseServer):
         tbl = self.data['interactions']
         tbl['set_sources'] = pd.Series(
             [set(s.split(';')) for s in tbl.sources]
-        )
-        tbl['references'] = pd.Series(
-            [
-                (
-                    ';'.join(
-                        sorted(
-                            set(r.split(';')),
-                            key = int,
-                        )
-                    )
-                        if isinstance(r, common.basestring) else
-                    ''
-                )
-                for r in tbl.references
-            ]
         )
         tbl['set_tfregulons_level'] = pd.Series(
             [
