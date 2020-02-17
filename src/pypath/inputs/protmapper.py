@@ -113,9 +113,7 @@ def protmapper_enzyme_substrate(
             'unknown'
         )
         sources = {
-            '%s_ProtMapper' % (
-                databases[source] if source in databases else source
-            )
+            databases[source] if source in databases else source
             for source in rec['SOURCES'].strip('"').split(',')
         }
         

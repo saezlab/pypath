@@ -19,7 +19,10 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
 import sys
+import re
 import collections
 import itertools
 
@@ -29,6 +32,7 @@ import pypath.utils.taxonomy as taxonomy
 import pypath.internals.intera as intera
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
+import pypath.share.common as common
 
 
 def signor_interactions(organism = 9606, raw_records = False):

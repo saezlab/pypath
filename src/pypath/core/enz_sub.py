@@ -346,7 +346,7 @@ class EnzymeSubstrateProcessor(
             ncbi_tax_id = self.ncbi_tax_id,
         )
 
-        substrate_ups_all = set([])
+        substrate_ups_all = set()
 
         for sub_id_type in self.id_type_substrate:
 
@@ -400,7 +400,7 @@ class EnzymeSubstrateProcessor(
                         if se.match(
                             p['resaa'],
                             p['resnum'],
-                            isoform=isof
+                            isoform = isof,
                         ):
 
                             substrate_ups.append((s, isof))
@@ -426,7 +426,7 @@ class EnzymeSubstrateProcessor(
                     if se is None:
                         continue
 
-                    nomatch.append(
+                    self.nomatch.append(
                         (
                             s[0],
                             s[1],

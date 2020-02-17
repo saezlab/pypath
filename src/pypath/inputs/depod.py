@@ -20,10 +20,13 @@
 #
 
 import re
+import itertools
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.utils.mapping as mapping
+import pypath.utils.taxonomy as taxonomy
+import pypath.share.common as common
 
 
 def depod_interactions(organism = 9606):

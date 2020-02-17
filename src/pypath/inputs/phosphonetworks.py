@@ -25,7 +25,7 @@ import pypath.share.curl as curl
 import pypath.resources.urls as urls
 
 
-def get_phosphonetworks():
+def phosphonetworks_enzyme_substrate():
 
     result = []
     reres = re.compile(r'([A-Z])([0-9]+)')

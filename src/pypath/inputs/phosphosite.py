@@ -33,6 +33,9 @@ import pypath.internals.intera as intera
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.common as inputs_common
+import pypath.utils.homology as homology
+import pypath.utils.mapping as mapping
 
 
 def phosphosite_enzyme_substrate(
@@ -62,11 +65,16 @@ def phosphosite_enzyme_substrate(
         'residue': 9,
         'motif': 11
     }
-    data = read_table(cols = cols, fileObject = data, sep = '\t', hdr = 4)
+    data = inputs_common.read_table(
+        cols = cols,
+        fileObject = data,
+        sep = '\t',
+        hdr = 4,
+    )
     result = []
     non_digit = re.compile(r'[^\d.-]+')
     motre = re.compile(r'(_*)([A-Za-z]+)(_*)')
-    
+
     for r in data:
 
         if organism is None or \
@@ -82,8 +90,8 @@ def phosphosite_enzyme_substrate(
                     taxid = taxonomy.taxa[organism]
 
                     if korg not in orto:
-                        
-                        orto[korg] = homology_mod.homologene_dict(
+
+                        orto[korg] = homology.homologene_dict(
                             ktaxid,
                             taxid,
                             'refseqp',
@@ -361,7 +369,12 @@ def phosphosite_regsites():
         'comments': 19
     }
 
-    data = read_table(cols = cols, fileObject = data, sep = '\t', hdr = 4)
+    data = inputs_common.read_table(
+        cols = cols,
+        fileObject = data,
+        sep = '\t',
+        hdr = 4,
+    )
     regsites = {}
 
     for r in data:
@@ -473,7 +486,7 @@ def phosphosite_regsites_one_organism(organism = 9606):
                 lambda other:
                     (
                         other,
-                        homology_mod.homologene_uniprot_dict(
+                        homology.homologene_uniprot_dict(
                             source = other,
                             target = organism,
                         )

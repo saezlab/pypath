@@ -19,6 +19,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
 from past.builtins import xrange, range
 
 import sys
@@ -106,3 +107,93 @@ def _try_isoform(name):
         isoform = None
 
     return main, isoform
+
+
+def read_table(
+        cols,
+        fileObject = None,
+        data = None,
+        sep = '\t',
+        sep2 = None,
+        rem = None,
+        hdr = None,
+        encoding = 'ascii',
+    ):
+    """
+    Generic function to read data tables.
+
+    fileObject : file-like
+        Any file like object: file opened for read, or StringIO buffer
+    cols : dict
+        Dictionary of columns to read. Keys identifying fields are returned
+        in the result. Values are column numbers.
+    sepLevel1 : str
+        Field separator of the file.
+    sepLevel2 : dict
+        Subfield separators and prefixes.
+        E.g. {2: ',', 3: '|'}
+    hdr : int
+        Number of header lines. If None, no headers assumed.
+    rem : list
+        Strings to remove. For each line these elements will be replaced with ''.
+    """
+
+    rem = rem or []
+
+    if data is None:
+
+        if hasattr(fileObject, 'readline'):
+
+            fileObject.seek(0)
+
+        if hdr:
+
+            for h in xrange(0, hdr):
+
+                _ = next(fileObject)
+
+        data = fileObject
+
+    else:
+
+        data = [l.strip() for l in data.split('\n') if len(l) > 0][hdr:]
+
+    res = []
+
+    for l in data:
+
+        if type(l) is bytes:
+
+            l = l.decode(encoding)
+
+        for r in rem:
+
+            l = l.replace(r, '')
+
+        l = [f.strip() for f in l.split(sep)]
+
+        if len(l) > max(cols.values()):
+
+            dic = {}
+
+            for name, col in iteritems(cols):
+
+                field = l[col].strip()
+
+                if sep2 is not None:
+
+                    field = [
+                        sf.strip()
+                        for sf in field.split(sep2)
+                        if len(sf) > 0
+                    ]
+
+                dic[name] = field
+
+            res.append(dic)
+
+    if fileObject is not None:
+
+        fileObject.close()
+
+    return res

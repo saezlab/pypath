@@ -4046,14 +4046,16 @@
     },
     "inputs": {
       "enzyme_substrate": {
-        "id_type_enzyme": "uniprot",
-        "id_type_substrate": "uniprot",
+        "id_type_enzyme": "genesymbol",
+        "id_type_substrate": "genesymbol",
         "input_method": "phosphonetworks.phosphonetworks_enzyme_substrate",
         "organisms": [
           9606
         ],
         "organisms_supported": false,
-        "extra_attrs": {}
+        "extra_attrs": {
+          "phosphonetworks_score": "score"
+        }
       }
     }
   },
@@ -4063,7 +4065,7 @@
     },
     "inputs": {
       "enzyme_substrate": {
-        "id_type_enzyme": "uniprot",
+        "id_type_enzyme": "genesymbol",
         "id_type_substrate": [
           ["genesymbol", "substrate"],
           ["refseq", "substrate_refseq"]

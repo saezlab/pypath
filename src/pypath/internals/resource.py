@@ -398,9 +398,14 @@ class EnzymeSubstrateResource(ResourceAttributes):
         args = dict(
             (k, getattr(self, k))
             for k in self.__dir__()
-            if not k.startswith('__') and not callable(getattr(self, k))
+            if (
+                not k.startswith('__') and
+                not callable(getattr(self, k))
+            )
         )
         args['via'] = self.name
         args['name'] = name
+        _ = args.pop('data_type', None)
+        _ = args.pop('key', None)
         
         return EnzymeSubstrateResource(**args)
