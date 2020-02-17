@@ -60,6 +60,7 @@ class EnzymeSubstrateProcessor(
             id_type_substrate = None,
             name = None,
             allow_mixed_organisms = None,
+            organisms_supported = False,
             **kwargs
         ):
         """
@@ -99,6 +100,7 @@ class EnzymeSubstrateProcessor(
         self.input_method = input_method
         self.trace = trace
         self.ncbi_tax_id = ncbi_tax_id
+        self.organisms_supported = organisms_supported
 
         self.setup()
 
@@ -682,7 +684,7 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
     def reload(self):
 
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
@@ -923,17 +925,27 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
 
 
     def make_df(self, tax_id = False):
-        
+
         self._log('Creating enzyme-substrate interaction data frame.')
-        
-        
-        hdr = ['enzyme', 'substrate', 'isoforms',
-               'residue_type', 'residue_offset', 'modification',
-               'sources', 'references']
+
+
+        hdr = [
+            'enzyme',
+            'enzyme_genesymbol',
+            'substrate',
+            'substrate_genesymbol',
+            'isoforms',
+            'residue_type',
+            'residue_offset',
+            'modification',
+            'sources',
+            'references',
+            'curation_effort',
+        ]
 
         self.df = pd.DataFrame(
             [dm.get_line() for dm in self],
-            columns = hdr
+            columns = hdr,
         ).astype(
             {
                 'enzyme': 'category',
@@ -942,35 +954,11 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                 'residue_type': 'category',
                 'residue_offset': 'int32',
                 'modification': 'category',
+                'sources': 'category',
+                'references': 'category',
+                'curation_effort': 'int32',
             }
         )
-
-        self.df['enzyme_genesymbol'] = pd.Series([
-            (
-                mapping.map_name0(
-                    u,
-                    id_type = 'uniprot',
-                    target_id_type = 'genesymbol',
-                    ncbi_tax_id = self.ncbi_tax_id,
-                ) or ''
-            )
-            for u in self.df.enzyme
-        ])
-
-        self.df['substrate_genesymbol'] = pd.Series([
-            (
-                mapping.map_name0(
-                    u,
-                    id_type = 'uniprot',
-                    target_id_type = 'genesymbol',
-                    ncbi_tax_id = self.ncbi_tax_id,
-                ) or ''
-            )
-            for u in self.df.substrate
-        ])
-
-        hdr.insert(2, 'enzyme_genesymbol')
-        hdr.insert(3, 'substrate_genesymbol')
 
         self.df = self.df.loc[:,hdr]
 
@@ -992,8 +980,8 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
 
     def assign_to_network(self, pa):
         """
-        Assigns enzyme-substrate interactions to edges of a
-        network in a `pypath.main.PyPath` instance.
+        Assigns enzyme-substrate interactions to the edges of a
+        network in a py:class:``pypath.legacy.main.PyPath`` instance.
         """
 
         pa.update_vname()
@@ -1023,7 +1011,10 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
     @property
     def resources(self):
         
-        return set.union(*(es.sources for es in self))
+        return set.union(*(
+            es.evidences.get_resource_names_via(via = None)
+            for es in self
+        ))
     
     
     def update_summaries(self):
@@ -1058,7 +1049,11 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         
         for resource in sorted(self.resources):
             
-            n_total = sum(1 for es in self if resource in es.sources)
+            n_total = sum(
+                1
+                for es in self
+                if resource in es.get_resource_names_via(via = None)
+            )
             n_unique = sum(
                 1 for es in self
                 if len(es.sources) == 1 and resource in es.sources

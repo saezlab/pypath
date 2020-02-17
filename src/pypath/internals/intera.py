@@ -988,6 +988,7 @@ class DomainMotif(object):
 
 
     def __contains__(self, other):
+
         if other == self.domain or other == self.ptm:
             return True
         elif other == self.domain.protein or other == self.ptm.protein:
@@ -1012,14 +1013,17 @@ class DomainMotif(object):
 
 
     def get_proteins(self):
+
         return [self.domain.protein, self.ptm.protein]
 
 
     def add_pdbs(self, pdbs):
+
         self.pdbs = common.add_to_set(self.pdbs, pdbs)
 
 
     def serialize(self):
+
         return '|'.join([
             self.domain.serialize(), self.ptm.serialize(),
             ','.join(self.sources), ','.join(self.refs), ','.join(self.pdbs)
@@ -1049,17 +1053,82 @@ class DomainMotif(object):
             self.pnetw_score = self.pnetw_score or other.pnetw_score
 
 
-    def get_line(self):
+    def resources(self, only_primary = False):
 
         return [
-            self.domain.protein,
-            self.ptm.protein,
+            '%s%s' % (
+                res,
+                '_%s' % via if via else '',
+            )
+            for res, via in
+            self.evidences.get_resource_names_via(via = None)
+            if not only_primary or not via
+        ]
+
+
+    def references(self):
+
+        return self.evidences.get_references()
+
+
+    def references_by_resource(self, only_primary = True):
+
+        return [
+            (
+                ev.resource.name,
+                ev.resource.via,
+                ref,
+            )
+            for ev in self.evidences
+            for ref in ev.references
+            if not only_primary or not ev.resource.via
+        ]
+
+
+    def references_by_resource_str(self, only_primary = True):
+
+        return ';'.join(sorted(
+            '%s%s:%s' % (
+                res,
+                '_%s' % via if via else '',
+                ref.pmid,
+            )
+            for res, via, ref
+            in self.references_by_resource(only_primary = only_primary)
+        ))
+
+
+    def get_line(self):
+        """
+        Returns a list intended to be a row in a data frame of
+        enzyme-substrate relationships.
+
+        Elements of the list:
+            - enzyme
+            - enzyme_genesymbol
+            - substrate
+            - substrate_genesymbol
+            - isoforms
+            - residue_type
+            - residue_offset
+            - modification
+            - sources
+            - references
+            - curation_effort
+        """
+
+        return [
+            self.domain.protein.identifier,
+            self.domain.protein.label,
+            self.ptm.protein.identifier,
+            self.ptm.protein.label,
             ';'.join(map(lambda i: '%u' % i, sorted(self.ptm.isoforms))),
             self.ptm.residue.name,
             '%u' % self.ptm.residue.number,
             self.ptm.typ,
-            ';'.join(sorted(self.sources)),
-            ';'.join(sorted(self.refs))
+            ';'.join(sorted(self.resources())),
+            self.references_by_resource_str(),
+            self.evidences.count_curation_effort(),
         ]
 
 
