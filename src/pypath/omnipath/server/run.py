@@ -46,7 +46,7 @@ import json
 import pandas as pd
 import numpy as np
 
-import pypath.resources.controller as resource_controller
+import pypath.resources as resources
 from pypath.omnipath.server import generate_about_page
 import pypath.omnipath.server._html as _html
 import pypath.resources.urls as urls
@@ -273,7 +273,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             
             return self.resources(req)
 
-        rc = resource_controller.ResourcesController(use_package_path=True)
+        rc = resources.get_controller()
         rc.update()
 
         return generate_about_page.generate_about_html(rc.data)

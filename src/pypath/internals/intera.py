@@ -1015,24 +1015,6 @@ class DomainMotif(object):
         return [self.domain.protein, self.ptm.protein]
 
 
-    def add_sources(self, source):
-        if source is None:
-            return None
-        elif type(source) in common.char_types:
-            self._add_source(source)
-        else:
-            for s in source:
-                self._add_source(s)
-
-
-    def _add_source(self, source):
-        self.sources.add(source)
-
-
-    def add_refs(self, refs):
-        self.refs = common.add_to_set(self.refs, refs)
-
-
     def add_pdbs(self, pdbs):
         self.pdbs = common.add_to_set(self.pdbs, pdbs)
 
@@ -1062,8 +1044,7 @@ class DomainMotif(object):
 
             self.domain.merge(other.domain)
             self.ptm.merge(other.ptm)
-            self.add_sources(other.sources)
-            self.add_refs(other.refs)
+            self.add_evidences(other.evidences)
             self.add_pdbs(other.pdbs)
             self.pnetw_score = self.pnetw_score or other.pnetw_score
 
@@ -1080,6 +1061,11 @@ class DomainMotif(object):
             ';'.join(sorted(self.sources)),
             ';'.join(sorted(self.refs))
         ]
+
+
+    def add_evidences(self, evidences):
+
+        self.evidences += evidences
 
 
 class Regulation(object):

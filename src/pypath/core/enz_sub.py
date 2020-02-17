@@ -41,6 +41,7 @@ import pypath.share.session as session_mod
 import pypath.utils.taxonomy as taxonomy
 import pypath.inputs as inputs
 import pypath.core.evidence as evidence
+import pypath.resources as resources
 
 
 builtin_inputs = [
@@ -449,7 +450,7 @@ class EnzymeSubstrateProcessor(
         if 'typ' not in p:
             p['typ'] = 'phosphorylation'
 
-        resources = tuple(
+        _resources = tuple(
             (
                 self.input_param.get_via(name)
                     if hasattr(self.input_param, 'get_via') else
@@ -459,7 +460,7 @@ class EnzymeSubstrateProcessor(
                 p['databases'] if 'databases' in p else ()
             )
         )
-        resources += (
+        _resources += (
             (self.name,)
                 if isinstance(self.input_param, common.basestring) else
             (self.input_param,)
@@ -471,7 +472,7 @@ class EnzymeSubstrateProcessor(
                 resource = _res,
                 references = p['references'] if 'references' in p else None
             )
-            for _res in resources
+            for _res in _resources
         )
 
         for s in substrate_ups:
@@ -722,12 +723,11 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
     
     
     def __init__(self,
-            input_methods = None,
+            input_param = None,
+            exclude = None,
             ncbi_tax_id = 9606,
             map_by_homology_from = None,
             trace = False,
-            id_type_enzyme = 'genesymbol',
-            id_type_substrate = 'genesymbol',
             homology_only_swissprot = True,
             ptm_homology_strict = False,
             nonhuman_direct_lookup = True,
@@ -825,9 +825,10 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
     
     def set_inputs(self):
 
-        if self.input_methods is None:
-            
-            self.input_methods = builtin_inputs
+        self.input_param = (
+            self.input_param or
+            resources.get_controller().collect_enzyme_substrate()
+        )
 
 
     def build_list(self):
@@ -840,21 +841,25 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         for each pair.
         """
 
-        def extend_lists(ptms):
+        def extend_lists(enz_sub):
 
-            for ptm in ptms:
+            for es in enz_sub:
 
-                key = (ptm.domain.protein, ptm.ptm.protein)
+                key = (es.domain.protein, es.ptm.protein)
 
                 if key not in self.enz_sub:
 
                     self.enz_sub[key] = []
 
-                self.enz_sub[key].append(ptm)
+                self.enz_sub[key].append(es)
                 
-                for resource in ptm.sources:
+                for ev in es.evidences:
                     
-                    self.references[resource][ptm.key()].update(ptm.refs)
+                    resource_key = (ev.resource.name, ev.resource.via)
+                    
+                    self.references[resource_key][es.key()].update(
+                        ev.references
+                    )
         
         
         self.enz_sub = {}
@@ -862,17 +867,32 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
             lambda: collections.defaultdict(set)
         )
 
-        for input_method in self.input_methods:
+        for input_param in self.input_param:
+            
+            name = (
+                input_param['name']
+                    if isinstance(input_param, dict) else
+                input_param.name
+            )
+            
+            input_method = (
+                input_param['input_method']
+                    if isinstance(input_param, dict) else
+                input_param.input_method
+            )
             
             self._log(
-                'Loding enzyme-substrate interactions '
-                'from `%s`.' % input_method
+                'Loading enzyme-substrate interactions '
+                'from resource `%s` by method `%s`.' % (
+                    name,
+                    input_method,
+                )
             )
 
-            inputargs = (
-                self.inputargs[input_method]
-                if input_method in self.inputargs
-                else {}
+            args = (
+                input_param
+                    if isinstance(input_param, dict) else
+                {'input_param': input_param}
             )
 
             if self.ncbi_tax_id == 9606 or self.nonhuman_direct_lookup:
@@ -883,12 +903,9 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                 )
                 
                 proc = EnzymeSubstrateProcessor(
-                    input_method = input_method,
                     ncbi_tax_id = self.ncbi_tax_id,
                     trace = self.trace,
-                    id_type_enzyme = self.id_type_enzyme,
-                    id_type_substrate = self.id_type_substrate,
-                    **inputargs,
+                    **args,
                 )
                 
                 extend_lists(proc.__iter__())
@@ -906,15 +923,12 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                 )
                 
                 proc = EnzymeSubstrateHomologyProcessor(
-                    input_method = input_method,
                     ncbi_tax_id = self.ncbi_tax_id,
                     map_by_homology_from = self.map_by_homology_from,
                     trace = self.trace,
-                    id_type_enzyme = self.id_type_enzyme,
-                    id_type_substrate = self.id_type_substrate,
                     homology_only_swissprot = self.homology_only_swissprot,
                     ptm_homology_strict = self.ptm_homology_strict,
-                    **inputargs
+                    **args
                 )
                 
                 extend_lists(proc.__iter__())
@@ -945,28 +959,34 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         except the sources, references and isoforms.
         """
 
-        self.unique_list = set([])
+        self.unique_list = set()
 
-        for key, ptms in iteritems(self.enz_sub):
+        for key, enz_sub in iteritems(self.enz_sub):
 
-            self.enz_sub[key] = self.uniq_ptms(ptms)
+            self.enz_sub[key] = self.uniq_enz_sub(enz_sub)
 
 
     @staticmethod
-    def uniq_ptms(ptms):
+    def uniq_enz_sub(enz_sub):
 
-        ptms_uniq = []
+        enz_sub_uniq = []
 
-        for ptm in ptms:
+        for es in enz_sub:
+
             merged = False
-            for i, ptmu in enumerate(ptms_uniq):
-                if ptm == ptmu:
-                    ptms_uniq[i].merge(ptm)
-                    merged = True
-            if not merged:
-                ptms_uniq.append(ptm)
 
-        return ptms_uniq
+            for i, es_u in enumerate(enz_sub_uniq):
+
+                if es == es_u:
+
+                    enz_sub_uniq[i].merge(es)
+                    merged = True
+
+            if not merged:
+
+                enz_sub_uniq.append(es)
+
+        return enz_sub_uniq
 
 
     def make_df(self, tax_id = False):

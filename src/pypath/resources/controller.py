@@ -133,7 +133,7 @@ class ResourceController(session_mod.Logger):
             )
 
 
-    def collect_resource_definitions(self, data_type):
+    def collect(self, data_type):
 
         resource_cls = getattr(
             resource_base,
@@ -160,6 +160,6 @@ class ResourceController(session_mod.Logger):
         return result
 
 
-    def collect_enzyme_substrate_resource_definitions(self):
+    def collect_enzyme_substrate(self):
 
-        return self.collect_resource_definitions('enzyme_substrate')
+        return self.collect('enzyme_substrate')

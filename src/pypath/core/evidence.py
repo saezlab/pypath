@@ -168,7 +168,7 @@ class Evidence(object):
         
         return '<Evidence %s (%s%u references)>' % (
             self.resource.name,
-            'via %s,' % self.resource.via if self.resource.via else '',
+            'via %s, ' % self.resource.via if self.resource.via else '',
             len(self.references),
         )
     
