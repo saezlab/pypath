@@ -90,7 +90,7 @@ class WebserviceTables(session_mod.Logger):
     def main(self):
         
         self.interactions()
-        self.ptms()
+        self.enz_sub()
         self.complexes()
         self.annotations()
         self.intercell()
@@ -246,7 +246,7 @@ class WebserviceTables(session_mod.Logger):
         ))
     
     
-    def ptms(self):
+    def enz_sub(self):
         
         self._log('Building `enz_sub` data frame.')
         
@@ -255,23 +255,20 @@ class WebserviceTables(session_mod.Logger):
         enz_sub_a = omnipath.data.get_db('enz_sub')
         enz_sub_a.make_df(tax_id = True)
         dataframes.append(enz_sub_a.df)
+        omnipath.data.remove_db('enz_sub', ncbi_tax_id = 9606)
         
         if not self.only_human:
             
-            for rodent1, rodent2 in ((10090, 10116), (10116, 10090)):
+            for rodent in (10090, 10116):
                 
-                enz_sub_a = enz_sub.EnzymeSubstrateAggregator(
-                    ncbi_tax_id = rodent1,
-                    map_by_homology_from = (9606, rodent2),
-                )
+                enz_sub_a = omnipath.get_db('enz_sub', ncbi_tax_id = rodent)
                 enz_sub_a.make_df(tax_id = True)
                 dataframes.append(enz_sub_a.df)
+                omnipath.data.remove_db('enz_sub', ncbi_tax_id = rodent)
+                del enz_sub_a
         
-        omnipath.data.remove_db('enz_sub')
-        del enz_sub_a
-        
-        self.df_ptms = pd.concat(dataframes)
-        self.df_ptms.to_csv(
+        self.df_enz_sub = pd.concat(dataframes)
+        self.df_enz_sub.to_csv(
             self.outfile_ptms,
             sep = '\t',
             index = False
