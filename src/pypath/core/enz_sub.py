@@ -44,78 +44,10 @@ import pypath.core.evidence as evidence
 import pypath.resources as resources
 
 
-builtin_inputs = [
-    'PhosphoSite',
-    'phosphoELM',
-    'SIGNOR',
-    'dbPTM',
-    'HPRD',
-    'Li2012',
-    'PhosphoNetworks',
-    'MIMP',
-    'DEPOD',
-    'ProtMapper',
-    'KEA',
-]
-
-
 class EnzymeSubstrateProcessor(
         homology.Proteomes,
         homology.SequenceContainer
     ):
-
-    methods = {
-        'signor': 'load_signor_ptms',
-        'mimp': 'get_mimp',
-        'phosphonetworks': 'get_phosphonetworks',
-        'phosphoelm': 'get_phosphoelm',
-        'dbptm': 'get_dbptm',
-        'phosphosite': 'get_psite_phos',
-        'hprd': 'get_hprd_ptms',
-        'li2012': 'li2012_phospho',
-        'depod': 'get_depod',
-        'protmapper': 'protmapper_ptms',
-        'kea': 'kea.kea_enzyme_substrate',
-    }
-
-    organisms_supported = set([
-        'signor',
-        'phosphosite',
-        'phosphoelm',
-        'dbptm',
-        'depod',
-    ])
-
-    enzyme_id_uniprot = set([
-        'phosphosite',
-        'phosphoelm',
-        'signor',
-        'depod',
-        'protmapper',
-        'kea',
-    ])
-
-    id_type_substrates = {
-        'mimp': [('genesymbol', 'substrate'), ('refseq', 'substrate_refseq')],
-        'phosphonetworks': ['genesymbol'],
-        'phosphoelm': ['uniprot'],
-        'li2012': ['genesymbol'],
-        'dbptm': ['uniprot'],
-        'phosphosite': ['uniprot'],
-        'signor': ['uniprot'],
-        'hprd': [('refseqp', 'substrate_refseqp')],
-        'depod': ['uniprot'],
-        'protmapper': ['uniprot'],
-        'kea': ['uniprot'],
-    }
-
-    resource_names = dict(
-        (
-            name.lower(),
-            name
-        )
-        for name in builtin_inputs
-    )
 
 
     def __init__(
@@ -314,9 +246,10 @@ class EnzymeSubstrateProcessor(
 
     def _organism_setup(self):
 
-        if self.input_is(self.organisms_supported, '__contains__'):
+        if self.organisms_supported:
 
             if self.ncbi_tax_id in taxonomy.taxa:
+
                 self.ncbi_tax_id = taxonomy.taxa[self.ncbi_tax_id]
 
             self.inputargs['organism'] = self.ncbi_tax_id
