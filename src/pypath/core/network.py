@@ -23,6 +23,7 @@ from future.utils import iteritems
 
 import importlib as imp
 import os
+import sys
 import collections
 import itertools
 import functools
@@ -75,23 +76,23 @@ NetworkEntityCollection.__new__.__defaults__ = (None,) * 8
 
 
 class NetworkEntityCollection(object):
-    
+
     __slots__ = [
         'collection',
         '_collection',
         'label',
-        
+
         'shared_within_data_model',
         'unique_within_data_model',
         'shared_within_interaction_type',
         'unique_within_interaction_type',
-        
+
         'n_collection',
         'n_shared_within_data_model',
         'n_unique_within_data_model',
         'n_shared_within_interaction_type',
         'n_unique_within_interaction_type',
-        
+
         'pct_collection',
         'pct_within_data_model',
         'pct_within_interaction_type',
@@ -99,88 +100,88 @@ class NetworkEntityCollection(object):
         'pct_unique_within_data_model',
         'pct_shared_within_interaction_type',
         'pct_unique_within_interaction_type',
-        
+
         'by_data_model',
         'by_interaction_type',
         'unique_by_data_model',
         'shared_by_data_model',
         'unique_by_interaction_type',
         'shared_by_interaction_type',
-        
+
         'n_by_data_model',
         'n_by_interaction_type',
         'n_unique_by_data_model',
         'n_shared_by_data_model',
         'n_unique_by_interaction_type',
         'n_shared_by_interaction_type',
-        
+
         'pct_by_data_model',
         'pct_by_interaction_type',
         'pct_unique_by_data_model',
         'pct_shared_by_data_model',
         'pct_unique_by_interaction_type',
         'pct_shared_by_interaction_type',
-        
+
     ]
-    
-    
+
+
     def __init__(self, collection, label = None):
-        
+
         self.collection = collection.copy()
         # we need a copy where we don't add the totals
         # so these don't bother the shared and unique methods
         self._collection = collection.copy()
         self.label = label
-        
+
         self.main()
-    
-    
+
+
     def main(self):
-        
+
         self.setup()
-    
-    
+
+
     def setup(self):
-        
+
         self.update()
         self.collection_add_total()
         self.update_collection_counts()
-    
-    
+
+
     def update_collection_counts(self):
-        
+
         self.n_collection = common.dict_counts(self.collection)
         self.pct_collection = common.dict_set_percent(self.collection)
-    
-    
+
+
     def collection_add_total(self):
-        
+
         self.collection = self._add_total(
             self.collection,
             key = ('all', 'all', 'Total')
         )
-    
-    
+
+
     def update(self):
-        
+
         for level in ('interaction_type', 'data_model'):
-            
+
             self._update(level = level)
             self._update(level = level, summarize_groups = True)
-    
-    
+
+
     def _update(self, level, summarize_groups = False):
-        
+
         midpart = '_by_' if summarize_groups else '_within_'
-        
+
         if summarize_groups:
-            
+
             collection = common.dict_subtotals(
                 self._expand_keys(level = level)
             )
-            
+
             by = 'by_%s' % level
-            
+
             setattr(
                 self,
                 by,
@@ -191,19 +192,19 @@ class NetworkEntityCollection(object):
                 'n%s%s' % (midpart, level),
                 common.dict_counts(collection)
             )
-            
+
             for k, v in iteritems(getattr(self, by)):
-                
+
                 k = k if isinstance(k, tuple) else (k, 'all')
-                
+
                 k += ('Total',)
-                
+
                 self.collection[k] = v
-            
+
         else:
-            
+
             collection = self._expand_keys(level = level)
-        
+
         setattr(
             self,
             'pct%s%s' % (midpart, level),
@@ -213,9 +214,9 @@ class NetworkEntityCollection(object):
                 self._percent_and_collapse(collection)
             )
         )
-        
+
         for method in ('shared', 'unique'):
-            
+
             shared_unique = (
                 self._add_total(
                     common.shared_unique_foreach(collection, op = method),
@@ -236,15 +237,15 @@ class NetworkEntityCollection(object):
                     ),
                 )
             )
-            
+
             if not summarize_groups:
-                
+
                 shared_unique_flat = common.dict_collapse_keys(shared_unique)
-            
+
             attr = '%s%s%s' % (method, midpart, level)
             n_attr = 'n_%s' % attr
             pct_attr = 'pct_%s' % attr
-            
+
             setattr(
                 self,
                 attr,
@@ -266,20 +267,20 @@ class NetworkEntityCollection(object):
                     self._percent_and_collapse(shared_unique)
                 )
             )
-    
-    
+
+
     def _expand_keys(self, level):
-        
+
         return common.dict_expand_keys(
             self._collection,
             depth = 1,
             front = level == 'interaction_type',
         )
-    
-    
+
+
     @classmethod
     def _shared_unique(cls, dct, method, total_key = None):
-        
+
         return dict(
             (
                 key,
@@ -290,39 +291,39 @@ class NetworkEntityCollection(object):
             )
             for key, val in iteritems(dct)
         )
-    
-    
+
+
     @staticmethod
     def _add_total(dct, key = None):
-        
+
         if isinstance(key, (common.basestring, tuple)):
-            
+
             _key = key
-            
+
         else:
-            
+
             first_key = next(dct.keys().__iter__())
-            
+
             if callable(key):
-                
+
                 _key = key(first_key)
-                
+
             else:
-                
+
                 _key = (
                     'Total'
                         if isinstance(first_key, common.basestring) else
                     first_key[:-1] + ('Total',)
                 )
-        
+
         dct[_key] = common.dict_union(dct)
-        
+
         return dct
-    
-    
+
+
     @classmethod
     def _percent_and_collapse(cls, dct):
-        
+
         return (
             common.dict_collapse_keys(
                 dict(
@@ -365,7 +366,7 @@ class Network(session_mod.Logger):
     Represents a molecular interaction network. Provides various methods to
     query the network and its components. Optionally converts the network
     to a ``pandas.DataFrame`` of interactions.
-    
+
     :arg list,dict resources:
         One or more lists or dictionaries containing
         ``pypath.resource.NetworkResource`` objects.
@@ -378,7 +379,7 @@ class Network(session_mod.Logger):
     :arg bool allow_loops:
         Allow interactions with the their two endpoints being the same entity.
     """
-    
+
     _partners_methods = (
         {
             '': {},
@@ -418,8 +419,8 @@ class Network(session_mod.Logger):
             }
         },
     )
-    
-    
+
+
     def __init__(
             self,
             resources = None,
@@ -433,82 +434,81 @@ class Network(session_mod.Logger):
             allow_loops = True,
             **kwargs
         ):
-        
+
         session_mod.Logger.__init__(self, name = 'network')
-        
+
         self._log('Creating network object.')
-        
+
         self.df_by_source = df_by_source
         self.df_with_references = df_with_references
         self.df_columns = df_columns
         self.df_dtype = df_dtype
         self.ncbi_tax_id = ncbi_tax_id
         self.allow_loops = allow_loops
-        
         self.cache_dir = cache_mod.get_cachedir()
         self.keep_original_names = settings.get('network_keep_original_names')
         self.default_name_types = settings.get('default_name_types')
-        
+
         self.reset()
-        
+
         if pickle_file and os.path.exists(pickle_file):
-            
+
             self.load_from_pickle(pickle_file = pickle_file)
             return
-        
+
         self.load(resources = resources, make_df = make_df, **kwargs)
-    
-    
+
+
     def reload(self):
         """
         Reloads the object from the module level.
         """
-        
+
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-        
+
         imp.reload(entity_mod)
         imp.reload(interaction_mod)
-        
+
         for entity in self.nodes.values():
-            
+
             entity.__class__ = entity_mod.Entity
-        
+
         for interaction in self.interactions.values():
-            
+
             interaction.__class__ = interaction_mod.Interaction
             interaction.a.__class__ = entity_mod.Entity
             interaction.b.__class__ = entity_mod.Entity
-    
-    
+
+
     def __len__(self):
-        
+
         return len(self.interactions)
-    
-    
+
+
     def __iter__(self):
-        
+
         for ia in self.interactions.values():
-            
+
             yield ia
-    
-    
+
+
     def reset(self):
         """
         Removes network data i.e. creates empty interaction and node
         dictionaries.
         """
-        
+
         self.raw_data = {}
         self.interactions = {}
         self.nodes = {}
         self.nodes_by_label = {}
         self.interactions_by_nodes = collections.defaultdict(set)
-    
-    
+
+
     def load(
             self,
             resources = None,
@@ -524,7 +524,7 @@ class Network(session_mod.Logger):
         ):
         """
         Loads data from a network resource or a collection of resources.
-        
+
         :arg str,dict,list,resource.NetworkResource resources:
             An object defining one or more network resources. If *str* it
             will be looked up among the collections in the
@@ -541,12 +541,12 @@ class Network(session_mod.Logger):
             A *set* of resource names to be ignored. It is useful if you want
             to load a collection with the exception of a few resources.
         """
-        
+
         if pickle_file:
-            
+
             self.load_from_pickle(pickle_file = pickle_file)
             return
-        
+
         kwargs = {
             'reread': reread,
             'redownload': redownload,
@@ -554,9 +554,9 @@ class Network(session_mod.Logger):
             'top_call': False,
             'only_directions': only_directions,
         }
-        
+
         exclude = common.to_set(exclude)
-        
+
         resources = (
             (resources,)
                 if not isinstance(resources, (list, dict, tuple, set)) else
@@ -564,26 +564,26 @@ class Network(session_mod.Logger):
                 if isinstance(resources, dict) else
             resources
         )
-        
+
         for resource in resources:
-            
+
             if (
                 isinstance(resource, common.basestring) and
                 hasattr(network_resources, resource)
             ):
-                
+
                 self.load(
                     resources = getattr(network_resources, resource),
                     **kwargs
                 )
-                
+
             elif isinstance(resource, (list, dict, tuple, set)):
-                
+
                 self.load(
                     resources = resource,
                     **kwargs
                 )
-                
+
             elif (
                 isinstance(
                     resource,
@@ -594,26 +594,26 @@ class Network(session_mod.Logger):
                     )
                 ) and resource.name not in exclude
             ):
-                
+
                 self.load_resource(resource, **kwargs)
-                
+
             elif resource is not None:
-                
+
                 self._log(
                     'Could not recognize network input '
                     'definition: `%s`.' % str(resource)
                 )
-        
+
         if make_df and top_call:
-            
+
             self.make_df()
-    
-    
+
+
     # synonyms (old method names of PyPath)
     load_resources = load
     init_network = load
-    
-    
+
+
     def load_resource(
             self,
             resource,
@@ -665,20 +665,21 @@ class Network(session_mod.Logger):
             keep_raw = keep_raw,
         )
         self._add_edge_list(only_directions = only_directions)
-        
+
         self.organisms_check()
         self.remove_zero_degree()
-        
+
         if not self.allow_loops:
-            
+
             self.remove_loops()
-        
+
+
         self._log(
             'Completed: loading network data from '
             'resource `%s`.' % resource.name
         )
-    
-    
+
+
     def _read_resource(
             self,
             resource,
@@ -719,7 +720,7 @@ class Network(session_mod.Logger):
             Optional, ``False`` by default. Specifies whether to
             re-download the data and ignore the cache.
         """
-        
+
         self._log('Reading network data from `%s`.' % resource.name)
 
         # workaround in order to make it work with both NetworkInput
@@ -761,7 +762,7 @@ class Network(session_mod.Logger):
         edge_list_mapped = []
         infile = None
         _name = networkinput.name.lower()
-        
+
         edges_cache = os.path.join(
             self.cache_dir,
             '%s_%s_%s.edges.pickle' % (
@@ -770,7 +771,7 @@ class Network(session_mod.Logger):
                 _resource.interaction_type,
             )
         )
-        
+
         interaction_cache = os.path.join(
             self.cache_dir,
             '%s_%s_%s.interactions.pickle' % (
@@ -801,7 +802,7 @@ class Network(session_mod.Logger):
                         network_resources.resource.NetworkResource,
                     )
                 ):
-                    
+
                     self._log(
                         '_read_network_data: No proper input file '
                         'definition. `param` should be either '
@@ -1046,11 +1047,11 @@ class Network(session_mod.Logger):
 
                 # reading names and attributes:
                 if is_directed and not isinstance(is_directed, tuple):
-                    
+
                     this_edge_dir = True
 
                 else:
-                    
+
                     this_edge_dir = self._process_direction(
                         line,
                         dir_col,
@@ -1269,7 +1270,7 @@ class Network(session_mod.Logger):
             )
 
             if reread or redownload:
-                
+
                 pickle.dump(edge_list_mapped, open(edges_cache, 'wb'), -1)
                 self._log('ID translated edge list saved to %s' % edges_cache)
 
@@ -1285,8 +1286,8 @@ class Network(session_mod.Logger):
             self.raw_data[networkinput.name] = edge_list_mapped
 
         self.edge_list_mapped = edge_list_mapped
-    
-    
+
+
     def _lookup_cache(self, name, cache_files, int_cache, edges_cache):
         """
         Checks up the cache folder for the files of a given resource.
@@ -1310,7 +1311,7 @@ class Network(session_mod.Logger):
             * (*list*) -- List of mapped edges if the file contains the
               information from the edges. ``[]`` otherwise.
         """
-        
+
         cache_files = cache_files or {}
         infile = None
         edge_list_mapped = []
@@ -1332,8 +1333,8 @@ class Network(session_mod.Logger):
             infile = self.read_from_cache(int_cache)
 
         return infile, edge_list_mapped
-    
-    
+
+
     def _filters(
             self,
             line,
@@ -1381,8 +1382,8 @@ class Network(session_mod.Logger):
                 return True
 
         return False
-    
-    
+
+
     def _process_sign(self, sign_data, sign_def):
         """
         Processes the sign of an interaction, used when processing an
@@ -1415,11 +1416,11 @@ class Network(session_mod.Logger):
         neg = common.to_set(sign_def[2])
 
         if bool(sign_data & pos):
-            
+
             positive = True
 
         if bool(sign_data & neg):
-            
+
             negative = True
 
         return positive, negative
@@ -1449,15 +1450,15 @@ class Network(session_mod.Logger):
         """
 
         if dir_col is None or dir_val is None:
-            
+
             return False
 
         else:
-            
+
             this_directed = set(line[dir_col].split(dir_sep))
             return bool(this_directed & dir_val)
-    
-    
+
+
     def _map_list(
             self,
             lst,
@@ -1594,8 +1595,8 @@ class Network(session_mod.Logger):
             edge_stack.append(this_edge)
 
         return edge_stack
-    
-    
+
+
     def _process_attrs(self, line, spec, lnum): # TODO
         """
         """
@@ -1633,8 +1634,8 @@ class Network(session_mod.Logger):
             attrs[field_name] = field_value
 
         return attrs
-    
-    
+
+
     def _process_taxon(self, tax_dict, fields): # TODO
         """
         """
@@ -1656,8 +1657,8 @@ class Network(session_mod.Logger):
 
             else:
                 return None
-    
-    
+
+
     def _add_edge_list(
             self,
             edge_list = False,
@@ -1727,8 +1728,8 @@ class Network(session_mod.Logger):
         )
 
         self.raw_data = None
-    
-    
+
+
     def _add_update_edge(
             self,
             edge,
@@ -1737,7 +1738,7 @@ class Network(session_mod.Logger):
         """
         Adds a new interaction (edge) or updates the attributes of the edge
         if it already exists.
-        
+
         :arg dict edge:
             A dictionary describing an edge (interaction) with the following
             items:
@@ -1768,14 +1769,14 @@ class Network(session_mod.Logger):
             :item dict extra_attrs:
                 Optional, ``{}`` by default. Contains any extra attributes
                 for the edge to be updated.
-        
+
         :arg bool only_directions:
             Optional, ``False`` by default. If set to ``True`` and the
             edge is not in the network, it won't be created. If it already
             exists the attributes of the new edge will be added to the
             existing one.
         """
-        
+
         (
             id_a,
             id_b,
@@ -1815,9 +1816,9 @@ class Network(session_mod.Logger):
             edge['attrs_node_a'],
             edge['attrs_node_b'],
         )
-        
+
         refs = {refs_mod.Reference(pmid) for pmid in refs}
-        
+
         entity_a = entity_mod.Entity(
             identifier = id_a,
             id_type = id_type_a,
@@ -1832,29 +1833,29 @@ class Network(session_mod.Logger):
             taxon = taxon_b,
             attrs = extra_attrs_b,
         )
-        
+
         interaction = interaction_mod.Interaction(
             a = entity_a,
             b = entity_b,
         )
 
         if is_directed:
-            
+
             interaction.add_evidence(
                 evidence = evidences,
                 direction = (entity_a, entity_b),
             )
-            
+
         else:
-            
+
             interaction.add_evidence(
                 evidence = evidences,
                 direction = 'undirected',
             )
-        
+
         # setting signs:
         if positive:
-            
+
             interaction.add_evidence(
                 evidence = evidences,
                 direction = (entity_a, entity_b),
@@ -1862,20 +1863,20 @@ class Network(session_mod.Logger):
             )
 
         if negative:
-            
+
             interaction.add_evidence(
                 evidence = evidences,
                 direction = (entity_a, entity_b),
                 effect = -1,
             )
-        
+
         self.add_interaction(
             interaction,
             attrs = extra_attrs,
             only_directions = only_directions,
         )
-    
-    
+
+
     def organisms_check(
             self,
             organisms = None,
@@ -1885,7 +1886,7 @@ class Network(session_mod.Logger):
         """
         Scans the network for one or more organisms and removes the nodes
         and interactions which belong to any other organism.
-        
+
         :arg int,set,NoneType organisms:
             One or more NCBI Taxonomy IDs. If ``None`` the value in
             :py:attr:`ncbi_tax_id` will be used. If that's too is ``None``
@@ -1899,24 +1900,24 @@ class Network(session_mod.Logger):
             represent the non taxon specific entities such as metabolites
             or drug compounds.
         """
-        
+
         self._log(
             'Checking organisms. %u nodes and %u interactions before.' % (
                 self.vcount,
                 self.ecount,
             )
         )
-        
+
         organisms = common.to_set(organisms or self.ncbi_tax_id)
-        
+
         to_remove = set()
-        
+
         for node in self.nodes.values():
-            
+
             if organisms and node.taxon not in organisms:
-                
+
                 to_remove.add(node)
-            
+
             if (
                 (
                     remove_mismatches and
@@ -1932,13 +1933,13 @@ class Network(session_mod.Logger):
                     not node.taxon
                 )
             ):
-                
+
                 to_remove.add(node)
-        
+
         for node in to_remove:
-            
+
             self.remove_node(node)
-        
+
         self._log(
             'Finished checking organisms. '
             '%u nodes have been removed, '
@@ -1948,28 +1949,28 @@ class Network(session_mod.Logger):
                 self.ecount,
             )
         )
-    
-    
+
+
     def get_organisms(self):
         """
         Returns the set of all NCBI Taxonomy IDs occurring in the network.
         """
-        
+
         return {n.taxon for n in self.nodes.values()}
-    
-    
+
+
     @property
     def vcount(self):
-        
+
         return len(self.nodes)
-    
-    
+
+
     @property
     def ecount(self):
-        
+
         return len(self.interactions)
-    
-    
+
+
     def make_df(
             self,
             records = None,
@@ -1981,9 +1982,9 @@ class Network(session_mod.Logger):
         """
         Creates a ``pandas.DataFrame`` from the interactions.
         """
-        
+
         self._log('Creating interactions data frame.')
-        
+
         by_source = by_source if by_source is not None else self.df_by_source
         with_references = (
             with_references
@@ -1992,9 +1993,9 @@ class Network(session_mod.Logger):
         )
         columns = columns or self.df_columns
         dtype = dtype or self.df_dtype
-        
+
         if not dtype:
-            
+
             dtype = {
                 'id_a': 'category',
                 'id_b': 'category',
@@ -2006,72 +2007,72 @@ class Network(session_mod.Logger):
                 'sources': 'category' if by_source else 'object',
                 'references': 'object' if with_references else 'category',
             }
-        
+
         if not records:
-            
+
             records = self.generate_df_records(
                 by_source = by_source,
                 with_references = with_references,
             )
-        
+
         if not isinstance(records, (list, tuple, pd.np.ndarray)):
-            
+
             records = list(records)
-        
+
         if not columns and hasattr(records[0], '_fields'):
-            
+
             columns = records[0]._fields
-        
+
         self.records = records
         self.dtype = dtype
-        
+
         self.df = pd.DataFrame(
             records,
             columns = columns,
         )
-        
+
         ### why?
         if dtype:
-            
+
             self.df = self.df.astype(dtype)
-        
+
         self._log(
             'Interaction data frame ready. '
             'Memory usage: %s ' % common.df_memory_usage(self.df)
         )
-    
-    
+
+
     def generate_df_records(self, by_source = False, with_references = False):
-        
+
         for ia in self.interactions.values():
-            
+
             for rec in ia.generate_df_records(
                 by_source = by_source,
                 with_references = with_references,
             ):
-                
+
                 yield rec
-    
-    
+
+
     @classmethod
     def from_igraph(cls, pa, **kwargs):
         """
         Creates an instance from an ``igraph.Graph`` based
         ``pypath.main.PyPath`` object.
-        
+
         :arg pypath.main.PyPath pa:
             A ``pypath.main.PyPath`` object with network data loaded.
         """
-        
+
         obj = cls(**kwargs)
-        
+
         for ia in pa.graph.es['attrs']:
-            
+
             obj.add_interaction(ia)
-        
+
         return obj
-    
-    
+
+
     def add_interaction(
             self,
             interaction,
@@ -2083,7 +2084,7 @@ class Network(session_mod.Logger):
         If an interaction between the two endpoints already exists, the
         interactions will be merged: this stands for the directions, signs,
         evidences and other attributes.
-        
+
         :arg interaction.Interaction interaction:
             A ``pypath.interaction.Interaction`` object.
         :arg NoneType,dict attrs:
@@ -2097,56 +2098,57 @@ class Network(session_mod.Logger):
             ``interaction_type`` of the existing interaction has to match the
             interaction added here.
         """
-        
+
         attrs = attrs or {}
+
         key = (interaction.a, interaction.b)
-        
+
         if key not in self.interactions:
-            
+
             if only_directions:
-                
+
                 return
-                
+
             else:
-                
+
                 self.interactions[key] = interaction
-            
+
         else:
-            
+
             if only_directions:
-                
+
                 if (
                     self.interactions[key].get_interaction_types() &
                     interaction.get_interaction_types()
                 ):
-                    
+
                     for itype_to_remove in (
                         interaction.get_interaction_types() -
                         self.interactions[key].get_interaction_types()
                     ):
-                        
+
                         interaction.unset_interaction_type(itype_to_remove)
-                    
+
                 else:
-                    
+
                     return
-            
+
             self.interactions[key] += interaction
-        
+
         self.interactions[key].update_attrs(**attrs)
-        
+
         self.add_node(interaction.a, add = not only_directions)
         self.add_node(interaction.b, add = not only_directions)
-        
+
         self.interactions_by_nodes[interaction.a].add(key)
         self.interactions_by_nodes[interaction.b].add(key)
-    
-    
+
+
     def add_node(self, entity, attrs = None, add = True):
         """
         Adds a molecular entity to the py:attr:``nodes`` and
         py:attr:``nodes_by_label`` dictionaries.
-        
+
         :arg entity.Entity entity:
             An object representing a molecular entity.
         :arg NoneType,dict attrs:
@@ -2156,93 +2158,93 @@ class Network(session_mod.Logger):
             not exist yet. If ``False`` will only update attributes for
             existing entities otherwise will do nothing.
         """
-        
+
         if attrs:
-            
+
             entity.update_attrs(**attrs)
-        
+
         if entity.identifier in self.nodes:
-            
+
             self.nodes[entity.identifier] += entity
-            
+
         elif add:
-            
+
             self.nodes[entity.identifier] = entity
             self.nodes_by_label[entity.label or entity.identifier] = entity
-    
-    
+
+
     def remove_node(self, entity):
         """
         Removes a node with all its interactions.
         If the removal of the interactions leaves any of the partner nodes
         without interactions it will be removed too.
-        
+
         :arg str,Entity entity:
             A molecular entity identifier, label or ``Entity`` object.
         """
-        
+
         entity = self.entity(entity)
-        
+
         if not entity:
-            
+
             return
-        
+
         _ = self.nodes.pop(entity.identifier, None)
         _ = self.nodes_by_label.pop(entity.label, None)
-        
+
         if entity in self.interactions_by_nodes:
-            
+
             partners = set()
-            
+
             for i_key in self.interactions_by_nodes[entity].copy():
-                
+
                 self.remove_interaction(*i_key)
-            
+
             _ = self.interactions_by_nodes.pop(entity, None)
-    
-    
+
+
     def remove_interaction(self, entity_a, entity_b):
         """
         Removes the interaction between two nodes if exists.
-        
+
         :arg str,Entity entity_a,entity_b:
             A pair of molecular entity identifiers, labels or ``Entity``
             objects.
         """
-        
+
         entity_a = self.entity(entity_a)
         entity_b = self.entity(entity_b)
-        
+
         key_ab = (entity_a, entity_b)
         key_ba = (entity_b, entity_a)
-        
+
         _ = self.interactions.pop(key_ab, None)
         _ = self.interactions.pop(key_ba, None)
-        
+
         keys = {key_ab, key_ba}
         self.interactions_by_nodes[entity_a] -= keys
         self.interactions_by_nodes[entity_b] -= keys
-        
+
         if (
             entity_a in self.interactions_by_nodes and
             not self.interactions_by_nodes[entity_a]
         ):
-            
+
             self.remove_node(entity_a)
-        
+
         if (
             entity_b in self.interactions_by_nodes and
             not self.interactions_by_nodes[entity_b]
         ):
-            
+
             self.remove_node(entity_b)
-    
-    
+
+
     def remove_zero_degree(self):
         """
         Removes all nodes with no interaction.
         """
-        
+
         self._log(
             'Removing zero degree nodes. '
             '%u nodes and %u interactions before.' % (
@@ -2250,19 +2252,19 @@ class Network(session_mod.Logger):
                 self.ecount,
             )
         )
-        
+
         to_remove = set()
-        
+
         for node, interactions in iteritems(self.interactions_by_nodes):
-            
+
             if not interactions:
-                
+
                 to_remove.add(node)
-        
+
         for node in to_remove:
-            
+
             self.remove_node(node)
-        
+
         self._log(
             'Finished removing zero degree nodes. '
             '%u nodes have been removed, '
@@ -2272,53 +2274,53 @@ class Network(session_mod.Logger):
                 self.ecount,
             )
         )
-    
-    
+
+
     def remove_loops(self):
         """
         Removes the loop interactions from the network i.e. the ones with
         their two endpoints being the same entity.
         """
-        
+
         self._log(
             'Removing loop edges. Number of edges before: %u.' % len(self)
         )
-        
+
         for ia in list(self):
-            
+
             if ia.is_loop():
-                
+
                 self.remove_interaction(ia.a, ia.b)
-        
+
         self._log(
             'Removed loop edges. Number of edges after: %u.' % len(self)
         )
-    
-    
+
+
     @property
     def resources(self):
         """
         Returns a set of all resources.
         """
-        
+
         return set.union(*(ia.get_resources() for ia in self))
-    
-    
+
+
     @property
     def resource_names(self):
         """
         Returns a set of all resource names.
         """
-        
+
         return set.union(*(ia.get_resource_names() for ia in self))
-    
-    
+
+
     def entities_by_resource(self):
         """
         Returns a dict of sets with resources as keys and sets of entity IDs
         as values.
         """
-        
+
         return dict(
             (
                 resource,
@@ -2335,97 +2337,97 @@ class Network(session_mod.Logger):
             )
             for resource in self.resources
         )
-    
-    
+
+
     def entity_by_id(self, identifier):
         """
         Returns a ``pypath.entity.Entity`` object representing a molecular
         entity by looking it up by its identifier. If the molecule does not
         present in the current network ``None`` will be returned.
-        
+
         :arg str identifier:
             The identifier of a molecular entity. Unless it's been set
             otherwise for genes/proteins it is the UniProt ID.
             E.g. ``'P00533'``.
         """
-        
+
         if identifier in self.nodes:
-            
+
             return self.nodes[identifier]
-    
-    
+
+
     def entity_by_label(self, label):
         """
         Returns a ``pypath.entity.Entity`` object representing a molecular
         entity by looking it up by its label. If the molecule does not
         present in the current network ``None`` will be returned.
-        
+
         :arg str label:
             The label of a molecular entity. Unless it's been set otherwise
             for genes/proteins it is the Gene Symbol. E.g. ``'EGFR'``.
         """
-        
+
         if label in self.nodes_by_label:
-            
+
             return self.nodes_by_label[label]
-    
-    
+
+
     def interaction(self, a, b):
         """
         Retrieves the interaction `a --> b` if it exists in the network,
         otherwise `b --> a`. If no interaction exist between `a` and `b`
         returns `None`.
         """
-        
+
         entity_a = self.entity(a)
         entity_b = self.entity(b)
-        
+
         key_ab = (entity_a, entity_b)
         key_ba = (entity_b, entity_a)
-        
+
         if key_ab in self.interactions:
-            
+
             return self.interactions[key_ab]
-            
+
         elif key_ba in self.interactions:
-            
+
             return self.interactions[key_ba]
-    
-    
+
+
     def _get_interaction(self, id_a, id_b, name_type = 'id'):
-        
+
         method = 'entity_by_%s' % name_type
-        
+
         entity_a = getattr(self, method)(id_a)
         entity_b = getattr(self, method)(id_b)
-        
+
         a_b = (entity_a, entity_b)
         b_a = (entity_b, entity_a)
-        
+
         if a_b in self.interactions:
-            
+
             return self.interactions[a_b]
-            
+
         elif b_a in self.interactions:
-            
+
             return self.interactions[b_a]
-    
-    
+
+
     def entity(self, entity):
-        
+
         if not isinstance(entity, entity_mod.Entity):
-            
+
             entity = self.entity_by_id(entity) or self.entity_by_label(entity)
-        
+
         return entity
-    
-    
+
+
     def interaction_by_id(self, id_a, id_b):
         """
         Returns a ``pypath.interaction.Interaction`` object by looking it up
         based on a pair of identifiers. If the interaction does not exist
         in the network ``None`` will be returned.
-        
+
         :arg str id_a:
             The identifier of one of the partners in the interaction. Unless
             it's been set otherwise for genes/proteins it is the UniProt ID.
@@ -2434,16 +2436,16 @@ class Network(session_mod.Logger):
             The other partner, similarly to ``id_a``. The order of the
             partners does not matter here.
         """
-        
+
         return self._get_interaction(id_a, id_b)
-    
-    
+
+
     def interaction_by_label(self, label_a, label_b):
         """
         Returns a ``pypath.interaction.Interaction`` object by looking it up
         based on a pair of labels. If the interaction does not exist
         in the network ``None`` will be returned.
-        
+
         :arg str label_a:
             The label of one of the partners in the interaction. Unless
             it's been set otherwise for genes/proteins it is the Gene Symbol.
@@ -2452,37 +2454,37 @@ class Network(session_mod.Logger):
             The other partner, similarly to ``label_a``. The order of the
             partners does not matter here.
         """
-        
+
         return self._get_interaction(label_a, label_b, name_type = 'label')
-    
-    
+
+
     def to_igraph(self):
         """
         Converts the network to the legacy ``igraph.Graph`` based ``PyPath``
         object.
         """
-        
+
         raise NotImplementedError
-    
-    
+
+
     def __repr__(self):
-        
+
         return '<Network: %u nodes, %u interactions>' % (
             self.vcount,
             self.ecount,
         )
-    
-    
+
+
     def save_to_pickle(self, pickle_file):
         """
         Saves the network to a pickle file.
-        
+
         :arg str pickle_file:
             Path to the pickle file.
         """
-        
+
         self._log('Saving to pickle `%s`.' % pickle_file)
-        
+
         with open(pickle_file, 'wb') as fp:
 
             pickle.dump(
@@ -2493,32 +2495,32 @@ class Network(session_mod.Logger):
                 ),
                 file = fp,
             )
-        
+
         self._update_interactions_by_nodes()
-        
+
         self._log('Saved to pickle `%s`.' % pickle_file)
-    
-    
+
+
     def _update_interactions_by_nodes(self):
-        
+
         self.interactions_by_nodes = collections.defaultdict(set)
-        
+
         for key, ia in iteritems(self.interactions):
-            
+
             self.interactions_by_nodes[ia.a].add(key)
             self.interactions_by_nodes[ia.b].add(key)
-    
-    
+
+
     def load_from_pickle(self, pickle_file):
         """
         Loads the network to a pickle file.
-        
+
         :arg str pickle_file:
             Path to the pickle file.
         """
-        
+
         self._log('Loading from pickle `%s`.' % pickle_file)
-        
+
         with open(pickle_file, 'rb') as fp:
 
             (
@@ -2526,32 +2528,32 @@ class Network(session_mod.Logger):
                 self.nodes,
                 self.nodes_by_label,
             ) = pickle.load(fp)
-        
+
         self._update_interactions_by_nodes()
-        
+
         self._log('Loaded from pickle `%s`.' % pickle_file)
-    
-    
+
+
     @classmethod
     def from_pickle(cls, pickle_file, **kwargs):
         """
         Initializes a new ``Network`` object by loading it from a pickle
         file. Returns a ``Network`` object.
-        
+
         :arg str pickle_file:
             Path to a pickle file.
         **kwargs:
             Passed to ``Network.__init__``.
         """
-        
+
         new = cls(
             pickle_file = pickle_file,
             **kwargs
         )
-        
+
         return new
-    
-    
+
+
     def extra_directions(
             self,
             resources = 'extra_directions',
@@ -2564,29 +2566,29 @@ class Network(session_mod.Logger):
         about the directionality for interactions already supported by
         literature evidences from other sources.
         """
-        
+
         resources = (
             getattr(network_resources, resources)
                 if isinstance(resources, common.basestring) else
             list(resources)
         )
-        
+
         if use_laudanna:
-            
+
             resources.append(
                 network_resources.pathway_bad['laudanna_effects']
             )
             resources.append(
                 network_resources.pathway_bad['laudanna_directions']
             )
-        
+
         if use_string:
-            
+
             pass
-        
+
         self.load(resources = resources, only_directions = True)
-    
-    
+
+
     def load_omnipath(
             self,
             omnipath = None,
@@ -2602,41 +2604,41 @@ class Network(session_mod.Logger):
             exclude = None,
             pickle_file = None,
         ):
-        
-        
+
+
         def reference_constraints(resources, interaction_type, release):
-            
+
             resources = (
                 resources.values()
                     if isinstance(resources, dict) else
                 resources
             )
-            
+
             for res in resources:
-                
+
                 if res.networkinput.interaction_type == interaction_type:
-                    
+
                     res.networkinput.must_have_references = not release
-        
-        
+
+
         self._log('Loading the `OmniPath` network.')
-        
+
         if pickle_file:
-            
+
             self.load(pickle_file = pickle_file)
             return
-        
+
         omnipath = omnipath or copy_mod.deepcopy(network_resources.omnipath)
-        
+
         if old_omnipath_resources:
-            
+
             omnipath = copy_mod.deepcopy(omnipath)
             omnipath['biogrid'] = network_resources.interaction['biogrid']
             omnipath['alz'] = network_resources.interaction['alz']
             omnipath['netpath'] = network_resources.interaction['netpath']
             exclude = exclude or []
             exclude.extend(['IntAct', 'HPRD'])
-        
+
         reference_constraints(
             omnipath,
             'pathway',
@@ -2652,47 +2654,47 @@ class Network(session_mod.Logger):
             'enzyme_substrate',
             kinase_substrate_extra,
         )
-        
+
         self.load(omnipath, exclude = exclude)
-        
+
         if kinase_substrate_extra:
-            
+
             self._log('Loading extra enzyme-substrate interactions.')
-            
+
             self.load(network_resources.ptm_misc, exclude = exclude)
-        
+
         if ligand_receptor_extra:
-            
+
             self._log('Loading extra ligand-receptor interactions.')
-            
+
             self.load(network_resources.ligand_receptor, exclude = exclude)
-        
+
         if pathway_extra:
-            
+
             self._log('Loading extra activity flow interactions.')
-            
+
             self.load(network_resources.pathway_noref, exclude = exclude)
-        
+
         if extra_directions:
-            
+
             self.extra_directions()
-        
+
         if remove_htp:
-            
+
             self.remove_htp(
                 threshold = htp_threshold,
                 keep_directed = keep_directed,
             )
-        
+
         if not keep_directed:
-            
+
             self.remove_undirected(min_refs = min_refs_undirected)
-        
+
         self._log('Finished loading the `OmniPath` network.')
-    
-    
+
+
     def remove_htp(self, threshold = 50, keep_directed = False):
-        
+
         self._log(
             'Removing high-throughput interactions above threshold %u'
             ' interactions per reference. Directed interactions %s.' % (
@@ -2700,36 +2702,36 @@ class Network(session_mod.Logger):
                 'will be kept' if keep_directed else 'also will be removed'
             )
         )
-        
+
         interactions_per_reference = self.numof_interactions_per_reference()
         interactions_by_reference = self.interactions_by_reference()
-        
+
         htp_refs = {
             ref
             for ref, cnt in iteritems(interactions_per_reference)
             if cnt > threshold
         }
-        
+
         to_remove = set()
-        
+
         ecount_before = self.ecount
         vcount_before = self.vcount
-        
+
         for key, ia in iteritems(self.interactions):
-            
+
             if (
                 not ia.get_references() - htp_refs and (
                     not keep_directed or
                     not ia.is_directed()
                 )
             ):
-                
+
                 to_remove.add(key)
-        
+
         for key in to_remove:
-            
+
             self.remove_interaction(*key)
-        
+
         self._log(
             'Interactions with only high-throughput references '
             'have been removed. %u interactions removed. '
@@ -2742,10 +2744,10 @@ class Network(session_mod.Logger):
                 self.vcount,
             )
         )
-    
-    
+
+
     def remove_undirected(self, min_refs = None):
-        
+
         self._log(
             'Removing undirected interactions%s.' % (
                 (
@@ -2754,24 +2756,24 @@ class Network(session_mod.Logger):
                 if min_refs else ''
             )
         )
-        
+
         ecount_before = self.ecount
         vcount_before = self.vcount
-        
+
         removed = 0
-        
+
         for key, ia in iteritems(self.interactions):
-            
+
             if (
                 ia.is_directed() and (
                     not min_refs or
                     len(ia.get_references()) < min_refs
                 )
             ):
-                
+
                 self.remove_interaction(*key)
                 removed += 1
-        
+
         self._log(
             'Undirected interactions %s have been removed. '
             '%u interactions removed. Number of edges '
@@ -2787,14 +2789,14 @@ class Network(session_mod.Logger):
                 self.vcount,
             )
         )
-    
-    
+
+
     def numof_interactions_per_reference(self):
         """
         Counts the number of interactions for each literature reference.
         Returns a ``collections.Counter`` object (similar to ``dict``).
         """
-        
+
         return collections.Counter(
             itertools.chain(
                 *(
@@ -2803,29 +2805,29 @@ class Network(session_mod.Logger):
                 )
             )
         )
-    
-    
+
+
     def interactions_by_reference(self):
         """
         Creates a ``dict`` with literature references as keys and interactions
         described by each reference as values.
         """
-        
+
         interactions_by_reference = collections.defaultdict(set)
-        
+
         for i_key, ia in iteritems(self.interactions):
-            
+
             for ref in ia.get_references():
-                
+
                 interactions_by_reference[ref].add(i_key)
-        
+
         return dict(interactions_by_reference)
-    
+
     #
     # Methods for loading specific datasets or initializing the object
     # with loading datasets
     #
-    
+
     @classmethod
     def omnipath(
             cls,
@@ -2843,11 +2845,11 @@ class Network(session_mod.Logger):
             ncbi_tax_id = 9606,
             **kwargs
         ):
-        
+
         make_df = kwargs.pop('make_df', None)
-        
+
         new = cls(ncbi_tax_id = ncbi_tax_id, **kwargs)
-        
+
         new.load_omnipath(
             omnipath = omnipath,
             kinase_substrate_extra = kinase_substrate_extra,
@@ -2861,53 +2863,53 @@ class Network(session_mod.Logger):
             old_omnipath_resources = old_omnipath_resources,
             exclude = exclude,
         )
-        
+
         if make_df:
-            
+
             cls.make_df()
-        
+
         return new
-    
-    
+
+
     def load_dorothea(self, levels = None, expand_levels = None, **kwargs):
-        
+
         expand_levels = (
             expand_levels
                 if isinstance(expand_levels, bool) else
             settings.get('dorothea_expand_levels')
         )
-        
+
         dorothea = (
-            netres.dorothea_expand_levels(
+            network_resources.dorothea_expand_levels(
                 network_resources.dorothea,
                 levels = levels,
             )
                 if expand_levels else
             network_resources.dorothea
         )
-        
+
         self.load(dorothea, **kwargs)
-    
-    
+
+
     @classmethod
     def dorothea(cls, levels = None, ncbi_tax_id = 9606, **kwargs):
         """
         Initializes a new ``Network`` object with loading the transcriptional
         regulation network from DoRothEA.
-        
+
         :arg NontType,set levels:
             The confidence levels to include.
         """
-        
+
         make_df = kwargs.pop('make_df', False)
-        
+
         new = cls(ncbi_tax_id = ncbi_tax_id, **kwargs)
-        
+
         new.load_dorothea(levels = levels, make_df = make_df)
-        
+
         return new
-    
-    
+
+
     def load_transcription(
             self,
             dorothea = True,
@@ -2918,37 +2920,37 @@ class Network(session_mod.Logger):
             redownload = False,
             **kwargs
         ):
-        
+
         make_df = kwargs.pop('make_df', None)
-        
+
         if dorothea:
-            
+
             self.load_dorothea(
                 levels = dorothea_levels,
                 reread = reread,
                 redownload = redownload,
             )
-        
+
         if original_resources:
-            
+
             transcription = (
                 original_resources
                     if not isinstance(original_resources, bool) else
                 network_resources.transcription_onebyone
             )
-            
+
             self.load(
                 resources = transcription,
                 reread = reread,
                 redownload = redownload,
                 exclude = exclude,
             )
-        
+
         if make_df:
-            
+
             self.make_df()
-    
-    
+
+
     @classmethod
     def transcription(
             cls,
@@ -2965,32 +2967,32 @@ class Network(session_mod.Logger):
         """
         Initializes a new ``Network`` object with loading a transcriptional
         regulation network from all databases by default.
-        
+
         **kwargs: passed to ``Network.__init__``.
         """
-        
+
         load_args = locals()
         kwargs = load_args.pop('kwargs')
         ncbi_tax_id = load_args.pop('ncbi_tax_id')
         kwargs['ncbi_tax_id'] = ncbi_tax_id
         cls = load_args.pop('cls')
-        
+
         new = cls(**kwargs)
-        
+
         new.load_transcription(**load_args)
-        
+
         return new
-    
-    
+
+
     def load_mirna_target(self, **kwargs):
-        
+
         if 'resources' not in kwargs:
-            
+
             kwargs['resources'] = network_resources.mirna_target
-        
+
         self.load(**kwargs)
-    
-    
+
+
     @classmethod
     def mirna_target(
             cls,
@@ -3005,25 +3007,25 @@ class Network(session_mod.Logger):
         """
         Initializes a new ``Network`` object with loading a miRNA-mRNA
         regulation network from all databases by default.
-        
+
         **kwargs: passed to ``Network.__init__``.
         """
-        
+
         new = cls(ncbi_tax_id = ncbi_tax_id, **kwargs)
-        
+
         new.mirna_target(
             exclude = exclude,
             make_df = make_df,
             reread = reread,
             redownload = redownload,
         )
-        
+
         return new
-    
+
     #
     # Methods for querying partners by node
     #
-    
+
     def partners(
             self,
             entity,
@@ -3047,7 +3049,7 @@ class Network(session_mod.Logger):
             Mode of counting the interactions: `IN`, `OUT` or `ALL` , whether
             to consider incoming, outgoing or all edges, respectively,
             respective to the `node defined in `entity``.
-        
+
         :returns:
             :py:class:`EntityList` object containing the partners having
             interactions to the queried node(s) matching all the criteria.
@@ -3055,26 +3057,26 @@ class Network(session_mod.Logger):
             ``EntityList`` will be empty just like if no interaction matches
             the criteria.
         """
-        
+
         if (
             not isinstance(entity, common.basestring) and
             hasattr(entity, '__iter__')
         ):
-            
+
             kwargs = locals()
             _ = kwargs.pop('self')
             _ = kwargs.pop('entity')
             _ = kwargs.pop('return_interactions')
-            
+
             return entity_mod.EntityList(
                 set(itertools.chain(*(
                     self.partners(_entity, **kwargs)
                     for _entity in entity
                 )))
             )
-        
+
         entity = self.entity(entity)
-        
+
         # we need to swap it to make it work relative to the queried entity
         _mode = (
             'IN'
@@ -3083,7 +3085,7 @@ class Network(session_mod.Logger):
                 if mode == 'IN' else
             'ALL'
         )
-        
+
         return (
             entity_mod.EntityList(
                 {
@@ -3105,38 +3107,38 @@ class Network(session_mod.Logger):
                 ()
             )
         )
-    
-    
+
+
     def count_partners(self, entity, **kwargs):
         """
         Returns the count of the interacting partners for one or more
         entities according to the specified criteria.
         Please refer to the docs of the ``partners`` method.
         """
-        
+
         return len(self.partners(entity = entity, **kwargs))
-    
-    
+
+
     @classmethod
     def _generate_partners_methods(cls):
-        
+
         def _create_partners_method(method_args):
-            
+
             count = method_args.pop('count')
             method = 'count_partners' if count else 'partners'
-            
+
             @functools.wraps(method_args)
             def _partners_method(*args, **kwargs):
-                
+
                 self = args[0]
                 kwargs.update(method_args)
-                
+
                 return getattr(self, method)(*args[1:], **kwargs)
-            
+
             _partners_method.__doc__ = getattr(cls, method).__doc__
-            
+
             return _partners_method
-        
+
         for name_parts, arg_parts in (
             zip(*param)
             for param in
@@ -3144,9 +3146,9 @@ class Network(session_mod.Logger):
                 *(iteritems(variety) for variety in  cls._partners_methods)
             )
         ):
-            
+
             for count in (False, True):
-                
+
                 method_args = dict(
                     itertools.chain(
                         *(iteritems(part) for part in arg_parts)
@@ -3159,17 +3161,17 @@ class Network(session_mod.Logger):
                 method_args['count'] = count
                 method = _create_partners_method(method_args)
                 method.__name__ = method_name
-                
+
                 setattr(
                     cls,
                     method_name,
                     method,
                 )
-    
+
     #
     # Methods for selecting paths and motives in the network
     #
-    
+
     def find_paths(
             self,
             start,
@@ -3211,7 +3213,7 @@ class Network(session_mod.Logger):
             Minimum length of the path.
         :arg bool silent:
             Indicate progress by showing a progress bar.
-        
+
         :details:
         The arguments: ``direction``, ``effect``, ``resources``,
         ``interaction_type``, ``data_model``, ``via`` and ``references``
@@ -3229,17 +3231,17 @@ class Network(session_mod.Logger):
         estrogen receptor transcription factor *ESR1* transcriptionally
         regulates a gene encoding a protein which then has some effect
         post-translationally on *ESR1*:
-        
+
         >>> n.find_paths(
         ...     'ESR1',
         ...     loops = True,
         ...     minlen = 2,
         ...     interaction_type = ('transcriptional', 'post_translational'),
         ... )
-        
+
         Or if you are interested only in the -/+ feedback loops i.e.
         *ESR1 --(-)--> X --(+)--> ESR1*:
-        
+
         >>> n.find_paths(
         ...     'ESR1',
         ...     loops = True,
@@ -3369,11 +3371,11 @@ class Network(session_mod.Logger):
             prg.terminate()
 
         return all_paths
-    
+
     #
     # Methods for collecting interaction attributes across the network
     #
-    
+
     def _collect(
             self,
             what,
@@ -3384,71 +3386,71 @@ class Network(session_mod.Logger):
         """
         Collects the values of an attribute over all interactions in the
         network.
-        
+
         **kwargs: passed to methods of
         :py:class:`pypath.interaction.Interaction`.
         """
-        
+
         result = set() if not by else collections.defaultdict(set)
-        
+
         method = self._get_by_method_name(what, by)
-        
+
         if not hasattr(interaction_mod.Interaction, method):
-            
+
             self._log('Collecting attributes: no such method: `%s`.' % method)
-            
+
         else:
-            
+
             for ia in self:
-                
+
                 ia_attrs = getattr(ia, method)(**kwargs)
-                
+
                 if by:
-                    
+
                     for grp, val in iteritems(ia_attrs):
-                        
+
                         result[grp].update(val)
-                    
+
                 else:
-                    
+
                     result.update(ia_attrs)
-        
+
         if by and add_total:
-            
+
             result['total'] = set.union(*result.values())
-        
+
         return dict(result) if by else result
-    
-    
+
+
     @classmethod
     def _generate_collect_methods(cls):
-        
+
         def _create_collect_method(what):
-            
+
             @functools.wraps(what)
             def _collect_method(self, **kwargs):
-                
+
                 kwargs['what'] = what
-                
+
                 self._log('Collecting `%s`.' % what)
-                
+
                 collection = self._collect(
                     by = 'interaction_type_and_data_model_and_resource',
                     **kwargs
                 )
-                
+
                 return (
                     NetworkEntityCollection(
                         collection = collection,
                         label = what,
                     )
                 )
-            
+
             return _collect_method
-        
-        
+
+
         for _get in interaction_mod.Interaction._get_methods:
-            
+
             method = _create_collect_method(_get)
             method_name = 'collect_%s' % _get
             doc = (
@@ -3457,24 +3459,24 @@ class Network(session_mod.Logger):
                 'by resource, data model and interaction types.' % _get
             )
             signature = interaction_mod.Interaction._get_method_signature
-            
+
             if 'degree' in _get:
-                
+
                 signature = [('mode',)] + signature
-            
+
             cls._add_method(
                 method_name,
                 method,
                 signature = signature,
                 doc = doc,
             )
-    
-    
+
+
     def update_summaries(self):
-        
-        
+
+
         def get_labels(lab, key, segments):
-            
+
             return tuple(
                 (
                     '%s%s%s%s' % (
@@ -3488,12 +3490,12 @@ class Network(session_mod.Logger):
                 for seg in segments
                 for pct in ('', r' [%]')
             )
-        
-        
+
+
         def add_resource_segments(rec, res, key, lab, segments, coll):
-            
+
             get = coll[key].__getattribute__
-            
+
             values = tuple(itertools.chain(*zip(*(
                 (
                     get('%s_collection' % n_pct).get(res, 0),
@@ -3508,21 +3510,21 @@ class Network(session_mod.Logger):
                 )
                 for n_pct in ('n', 'pct')
             ))))
-            
+
             labels = get_labels(lab, key, segments)
-            
+
             rec.extend(list(zip(labels, values)))
-            
+
             return rec
-        
-        
+
+
         def add_dmodel_segments(rec, itype, dmodel, key, lab, segments, coll):
-            
+
             it_dm_key = (itype, dmodel)
             total_key = it_dm_key + ('Total',)
-            
+
             get = coll[key].__getattribute__
-            
+
             values = tuple(itertools.chain(*zip(*(
                 (
                     get('%s_by_data_model' % n_pct).get(it_dm_key, 0),
@@ -3537,19 +3539,19 @@ class Network(session_mod.Logger):
                 )
                 for n_pct in ('n', 'pct')
             ))))
-            
+
             labels = get_labels(lab, key, segments)
-            
+
             rec.extend(list(zip(labels, values)))
-            
+
             return rec
-        
-        
+
+
         def add_itype_segments(rec, itype, key, lab, segments, coll):
-            
+
             get = coll[key].__getattribute__
             total_key = (itype, 'all', 'Total')
-            
+
             values = tuple(itertools.chain(*zip(*(
                 (
                     get('%s_by_interaction_type' % n_pct).get(itype, 0),
@@ -3564,14 +3566,14 @@ class Network(session_mod.Logger):
                 )
                 for n_pct in ('n', 'pct')
             ))))
-            
+
             labels = get_labels(lab, key, segments)
-            
+
             rec.extend(list(zip(labels, values)))
-            
+
             return rec
-        
-        
+
+
         required = collections.OrderedDict(
             entities = 'Entities',
             proteins = 'Proteins',
@@ -3585,7 +3587,7 @@ class Network(session_mod.Logger):
             interactions_negative = 'Inhibitory interactions',
             interactions_mutual = 'Mutual interactions',
         )
-        
+
         segments = (
             '',
             'shared within database category',
@@ -3593,21 +3595,21 @@ class Network(session_mod.Logger):
             'shared within interaction type',
             'unique within interaction type',
         )
-        
+
         self.summaries = []
-        
+
         coll = {}
-        
+
         self._log('Updating summaries.')
-        
+
         for method in required.keys():
-            
+
             coll[method] = getattr(self, 'collect_%s' % method)()
-        
+
         for itype in self.get_interaction_types():
-            
+
             for dmodel in self.get_data_models(interaction_type = itype):
-                
+
                 for res in sorted(
                     self.get_resource_names(
                         interaction_type = itype,
@@ -3615,60 +3617,60 @@ class Network(session_mod.Logger):
                     ),
                     key = lambda r: r.lower()
                 ):
-                    
+
                     # compiling a record for each resource
                     # within the data model
-                    
+
                     rec = [(('resource', 'Resource'), res)]
-                    
+
                     _res = (itype, dmodel, res)
-                    
+
                     for key, lab in iteritems(required):
-                        
+
                         rec = add_resource_segments(
                             rec, _res, key, lab, segments, coll,
                         )
-                    
+
                     self.summaries.append(rec)
-                
+
                 # compiling a summary record for the data model
-                
+
                 rec = [(
                     ('resource', 'Resource'),
                     '%s total' % dmodel.replace('_', ' ').capitalize()
                 )]
-                
+
                 for key, lab in iteritems(required):
-                    
+
                     rec = add_dmodel_segments(
                         rec, itype, dmodel, key, lab, segments, coll,
                     )
-                
+
                 self.summaries.append(rec)
-            
+
             # compiling a summary record for the interaction type
-            
+
             rec = [(
                 ('resource', 'Resource'),
                 '%s total' % itype.replace('_', ' ').capitalize()
             )]
-            
+
             for key, lab in iteritems(required):
-                
+
                 rec = add_itype_segments(rec, itype, key, lab, segments, coll)
-            
+
             self.summaries.append(rec)
-        
+
         # maybe we could compile a summary record for the entire network
-        
+
         self.summaries = [
             collections.OrderedDict(rec)
             for rec in self.summaries
         ]
-        
+
         self._log('Finished updating summaries.')
-    
-    
+
+
     def summaries_tab(
             self,
             outfile = None,
@@ -3681,11 +3683,11 @@ class Network(session_mod.Logger):
         """
 
         tab = []
-        
+
         tab.append(key[label_type] for key in self.summaries[0].keys())
-        
+
         for rec in self.summaries:
-            
+
             tab.append([str(val) for val in rec.values()])
 
         if outfile:
@@ -3697,27 +3699,27 @@ class Network(session_mod.Logger):
         if return_table:
 
             return tab
-    
-    
+
+
     def homology_translate(self, taxon, exclude = None):
-        
+
         new = Network(ncbi_tax_id = taxon)
-        
+
         for ia in self:
-            
+
             for new_ia in ia.homology_translate(
                 taxon = taxon,
                 exclude = exclude,
             ):
-                
+
                 new.add_interaction(new_ia)
-        
+
         return new
-    
-    
+
+
     @staticmethod
     def _get_by_method_name(get, by):
-        
+
         return (
             ''.join(
                 (
@@ -3728,91 +3730,91 @@ class Network(session_mod.Logger):
                 )
             )
         )
-    
-    
+
+
     @staticmethod
     def _iter_get_by_methods():
-        
+
         return (
             itertools.product(
                 interaction_mod.Interaction._get_methods | {'entities'},
                 interaction_mod.Interaction._by_methods + (None,),
             )
         )
-    
+
     @classmethod
     def _generate_get_methods(cls):
-        
+
         def _create_get_method(what, by):
-            
+
             wrap_args = (what, by)
-            
+
             @functools.wraps(wrap_args)
             def _get_by_method(*args, **kwargs):
-                
+
                 what, by = wrap_args
-                
+
                 self = args[0]
                 kwargs['what'] = what
                 kwargs['by'] = by
-                
+
                 return self._collect(**kwargs)
-            
+
             return _get_by_method
-        
-        
+
+
         for _get, _by in cls._iter_get_by_methods():
-            
+
             method_name = cls._get_by_method_name(_get, _by)
-            
+
             setattr(
                 cls,
                 method_name,
                 _create_get_method(what = _get, by = _by),
             )
-    
-    
+
+
     @classmethod
     def _generate_count_methods(cls):
-        
+
         def _create_count_method(what, by):
-            
+
             method_name = cls._get_by_method_name(what, by)
-            
+
             @functools.wraps(method_name)
             def _count_method(*args, **kwargs):
-                
+
                 self = args[0]
-                
+
                 collection = getattr(self, method_name)(**kwargs)
-                
+
                 return (
                     len(collection)
                         if isinstance(collection, set) else
                     common.dict_counts(collection)
                 )
-            
+
             return _count_method
-        
-        
+
+
         for _get, _by in cls._iter_get_by_methods():
-            
+
             method_name = (
                 'count_%s' % (
                     cls._get_by_method_name(_get, _by).replace('get_', '')
                 )
             )
-            
+
             setattr(
                 cls,
                 method_name,
                 _create_count_method(what = _get, by = _by)
             )
-    
-    
+
+
     @classmethod
     def _add_method(cls, method_name, method, signature = None, doc = None):
-        
+
         common._add_method(
             cls,
             method_name,

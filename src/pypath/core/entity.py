@@ -25,6 +25,7 @@ A molecular entity is defined by its identifier, type and taxon.
 
 from future.utils import iteritems
 
+import itertools
 import importlib as imp
 import collections
 
@@ -49,7 +50,7 @@ class Entity(session_mod.Logger):
     """
     Represents a molecular entity such as protein, miRNA, lncRNA or small
     molecule.
-    
+
     :arg str identifier:
         An identifier from the reference database e.g. UniProt ID for
         proteins.
@@ -65,7 +66,7 @@ class Entity(session_mod.Logger):
     :arg NoneType,dict attrs:
         A dictionary of additional attributes.
     """
-    
+
     __slots__ = [
         'identifier',
         'entity_type',
@@ -75,8 +76,8 @@ class Entity(session_mod.Logger):
         'label',
         'key',
     ]
-    
-    
+
+
     def __init__(
             self,
             identifier,
@@ -85,12 +86,12 @@ class Entity(session_mod.Logger):
             taxon = 9606,
             attrs = None,
         ):
-        
+
         if (
             isinstance(identifier, Entity) or
             hasattr(identifier, 'identifier')
         ):
-            
+
             (
                 identifier,
                 entity_type,
@@ -102,7 +103,7 @@ class Entity(session_mod.Logger):
                 identifier.id_type,
                 identifier.taxon,
             )
-        
+
         self.identifier = identifier
         self.entity_type = entity_type or self.get_entity_type()
         # override `protein` in case this is a `complex`
@@ -110,84 +111,84 @@ class Entity(session_mod.Logger):
         self.id_type = id_type
         self.taxon = taxon
         self.key = self._key
-        
+
         self.attrs = attrs or {}
-        
+
         self.set_label()
-    
-    
+
+
     def reload(self):
-        
+
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
         import importlib as imp
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-    
-    
+
+
     @staticmethod
     def entity_name_str(entity):
-        
+
         return (
             entity
                 if isinstance(entity, common.basestring) else
             str(entity)
         )
-    
-    
+
+
     @classmethod
     def igraph_vertex_name(cls, igraph_v):
-        
+
         return cls.entity_name_str(igraph_v['name'])
-    
-    
+
+
     @staticmethod
     def igraph_vertex_label(igraph_v):
-        
+
         return igraph_v['label']
-    
-    
+
+
     @classmethod
     def igraph_vertex_name_label(cls, igraph_v):
-        
+
         return (
             cls.igraph_vertex_name(igraph_v),
             cls.igraph_vertex_label(igraph_v),
         )
-    
-    
+
+
     @staticmethod
     def _is_protein(key):
-        
+
         return (
             isinstance(key, common.basestring) and
             not key.startswith('MIMAT') and
             not key.startswith('COMPLEX')
         )
-    
-    
+
+
     @staticmethod
     def _is_mirna(key):
-        
+
         return (
             isinstance(key, common.basestring) and
             key.startswith('MIMAT')
         )
-    
-    
+
+
     @staticmethod
     def _is_complex(key):
-        
+
         return isinstance(key, intera.Complex) or (
             isinstance(key, common.basestring) and
             key.startswith('COMPLEX')
         )
-    
-    
+
+
     @classmethod
     def _get_entity_type(cls, key):
-        
+
         return (
             'complex'
                 if cls._is_complex(key) else
@@ -195,193 +196,193 @@ class Entity(session_mod.Logger):
                 if cls._is_mirna(key) else
             'protein'
         )
-    
-    
+
+
     def is_protein(self):
-        
+
         return self._is_protein(self.identifier)
-    
-    
+
+
     def is_mirna(self):
-        
+
         return self._is_mirna(self.identifier)
-    
-    
+
+
     def is_complex(self):
-        
+
         return self._is_complex(self.identifier)
-    
-    
+
+
     def get_entity_type(self):
-        
+
         return self._get_entity_type(self.identifier)
-    
-    
+
+
     @property
     def _key(self):
-        
+
         return EntityKey(
             identifier = self.identifier,
             id_type = self.id_type,
             entity_type = self.entity_type,
             taxon = self.taxon,
         )
-    
-    
+
+
     def __hash__(self):
-        
+
         return hash(self.key)
-    
-    
+
+
     def __eq__(self, other):
-        
+
         return (
             self.__hash__() == other.__hash__()
                 if hasattr(other, 'key') else
             self.identifier == other
         )
-    
-    
+
+
     def __lt__(self, other):
-        
+
         return (
             self.key < other.key
                 if hasattr(other, 'key') else
             self.identifier < other
         )
-    
-    
+
+
     def __gt__(self, other):
-        
+
         return (
             self.key < other.key
                 if hasattr(other, 'key') else
             self.identifier < other
         )
-    
-    
+
+
     def set_label(self):
-        
+
         self.label = mapping.label(
             name = self.identifier,
             id_type = self.id_type,
             ncbi_tax_id = self.taxon,
         ) or self.identifier
-    
-    
+
+
     def __repr__(self):
-        
+
         return '<Entity: %s>' % (self.label or self.identifier)
-    
-    
+
+
     def __iadd__(self, other):
-        
+
         if self == other:
-            
+
             self.update_attrs(**other.attrs)
-        
+
         return self
-    
-    
+
+
     def update_attrs(self, **kwargs):
-        
+
         for key, val in iteritems(kwargs):
-            
+
             if key in self.attrs:
-                
+
                 self.attrs[key] = common.combine_attrs((self.attrs[key], val))
-                
+
             else:
-                
+
                 self.attrs[key] = val
 
 
 class EntityList(object):
-    
-    
+
+
     def __init__(self, entities):
-        
+
         self._entities = (
             entities
                 if isinstance(entities, (list, tuple, set)) else
             list(entities)
         )
-    
-    
+
+
     def __iter__(self):
-        
+
         for e in self._entities:
-            
+
             yield e
-    
-    
+
+
     def __len__(self):
-        
+
         return len(self._entities)
-    
-    
+
+
     def __repr__(self):
-        
+
         return '<EntityList (%u elements)>' % len(self)
-    
-    
+
+
     def __add__(self, other):
-        
+
         return EntityList(set(itertools.chain(self._entities, list(other))))
-    
-    
+
+
     def __iadd__(self, other):
-        
+
         self._entities = set(itertools.chain(self._entities, list(other)))
-        
+
         return self
-    
-    
+
+
     @property
     def labels(self):
-        
+
         for e in self:
-            
+
             yield e.label
-    
-    
+
+
     @property
     def ids(self):
-        
+
         for e in self:
-            
+
             yield e.identifier
-    
-    
+
+
     identifiers = ids
-    
-    
+
+
     @property
     def entities(self):
-        
+
         for e in self:
-            
+
             yield e
-    
-    
+
+
     @property
     def list_ids(self):
-        
+
         return list(self.ids)
-    
-    
+
+
     @property
     def list_labels(self):
-        
+
         return list(self.labels)
-    
-    
+
+
     @property
     def list_entities(self):
-        
+
         return list(self.entities)
-    
-    
+
+
     l = labels
     i = ids
     e = entities

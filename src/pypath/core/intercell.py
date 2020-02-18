@@ -53,7 +53,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
         annot.CustomAnnotation.__init__(
             self,
             class_definitions = class_definitions,
-            **kwargs,
+            **kwargs
         )
 
         self.make_df()
@@ -102,9 +102,9 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
 
     def add_classes_to_df(self):
-        
+
         if not hasattr(self, 'df'):
-            
+
             return
 
         self.df['mainclass'] = (
@@ -122,89 +122,89 @@ class IntercellAnnotation(annot.CustomAnnotation):
             ])
         )
         self.df['class_type'] = self.df['class_type'].astype('category')
-    
-    
+
+
     def collect_classes(self):
-        
+
         self.class_names = set(
             itertools.chain(
                 *intercell_annot.class_types.values()
             )
         )
-        
+
         self.class_types = dict(
             (cls, typ)
             for typ, ccls in intercell_annot.class_types.items()
             for cls in ccls
         )
-        
+
         self.children = collections.defaultdict(set)
         self.parents = {}
         self.class_labels = {}
         self.resource_labels = {}
-        
+
         for cls in self.classes.keys():
-            
+
             mainclass = None
-            
+
             if cls in intercell_annot.class_types['misc']:
-                
+
                 self.parents[cls] = None
-                
+
             else:
-                
+
                 cls_split = cls.split('_')
-                
+
                 for j in range(len(cls_split) + 1):
-                    
+
                     this_part = '_'.join(cls_split[:j])
-                    
+
                     if this_part in self.class_names:
-                        
+
                         mainclass = this_part
-                
+
                 self.children[mainclass].add(cls)
                 self.parents[cls] = mainclass
-                
+
                 resource = cls_split[-1]
-            
+
             if mainclass is not None and resource not in mainclass:
-                
+
                 self.resource_labels[cls] = (
                     intercell_annot.get_resource_label(resource)
                 )
-            
+
             self.class_labels[cls] = (
                 intercell_annot.get_class_label(mainclass or cls)
             )
-    
-    
+
+
     def make_df(self):
-        
+
         annot.CustomAnnotation.make_df(self)
-        
+
         self.setup_intercell_classes()
-    
-    
+
+
     def load_from_pickle(self, pickle_file):
-        
+
         annot.CustomAnnotation.load_from_pickle(
             self,
             pickle_file = pickle_file,
         )
-        
+
         self.setup_intercell_classes()
-    
-    
+
+
     def setup_intercell_classes(self):
-        
+
         self.set_classes()
         self.add_classes_to_df()
         self.collect_classes()
-    
-    
+
+
     def __repr__(self):
-        
+
         return (
             '<Intercell annotations: %s records about %s entities>' % (
                 self.numof_records(),
@@ -214,14 +214,14 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
 
 def init_db(**kwargs):
-    
+
     globals()['db'] = IntercellAnnotation(**kwargs)
 
 
 def get_db(**kwargs):
-    
+
     if 'db' not in globals():
-        
+
         init_db(**kwargs)
-    
+
     return globals()['db']

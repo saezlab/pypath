@@ -44,10 +44,82 @@ import pypath.core.evidence as evidence
 import pypath.resources as resources
 
 
+<<<<<<< HEAD:src/pypath/core/enz_sub.py
 class EnzymeSubstrateProcessor(
         homology.Proteomes,
         homology.SequenceContainer
     ):
+=======
+builtin_inputs = [
+    'PhosphoSite',
+    'phosphoELM',
+    'SIGNOR',
+    'dbPTM',
+    'HPRD',
+    'Li2012',
+    'PhosphoNetworks',
+    'MIMP',
+    'DEPOD',
+    'ProtMapper',
+    'KEA',
+]
+
+
+class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
+
+    methods = {
+        'signor': 'load_signor_ptms',
+        'mimp': 'get_mimp',
+        'phosphonetworks': 'get_phosphonetworks',
+        'phosphoelm': 'get_phosphoelm',
+        'dbptm': 'get_dbptm',
+        'phosphosite': 'get_psite_phos',
+        'hprd': 'get_hprd_ptms',
+        'li2012': 'li2012_phospho',
+        'depod': 'get_depod',
+        'protmapper': 'protmapper_ptms',
+        'kea': 'kea.kea_enzyme_substrate',
+    }
+
+    organisms_supported = set([
+        'signor',
+        'phosphosite',
+        'phosphoelm',
+        'dbptm',
+        'depod',
+    ])
+
+    enzyme_id_uniprot = set([
+        'phosphosite',
+        'phosphoelm',
+        'signor',
+        'depod',
+        'protmapper',
+        'kea',
+    ])
+
+    substrate_id_types = {
+        'mimp': [('genesymbol', 'substrate'), ('refseq', 'substrate_refseq')],
+        'phosphonetworks': ['genesymbol'],
+        'phosphoelm': ['uniprot'],
+        'li2012': ['genesymbol'],
+        'dbptm': ['uniprot'],
+        'phosphosite': ['uniprot'],
+        'signor': ['uniprot'],
+        'hprd': [('refseqp', 'substrate_refseqp')],
+        'depod': ['uniprot'],
+        'protmapper': ['uniprot'],
+        'kea': ['uniprot'],
+    }
+
+    resource_names = dict(
+        (
+            name.lower(),
+            name
+        )
+        for name in builtin_inputs
+    )
+>>>>>>> 66d6e044ace614af08d4aeaba6db14783f561d9f:src/pypath/core/ptm.py
 
 
     def __init__(
@@ -190,6 +262,7 @@ class EnzymeSubstrateProcessor(
         def empty_input(*args, **kwargs): return []
 
 
+<<<<<<< HEAD:src/pypath/core/enz_sub.py
         # attempting to look up the method in the inputs module
         if not hasattr(self.input_method, '__call__'):
 
@@ -199,6 +272,35 @@ class EnzymeSubstrateProcessor(
             )
 
         self.name = self.name or self.input_method.__name__
+=======
+        # a method provided
+        if hasattr(self.input_method, '__call__'):
+
+            self.inputm = self.input_method
+            self.name = self.name or self.input_method.__name__
+
+        # the method is associated to a resource name
+        # in the list of built in resources
+        elif self.input_is(self.methods, '__contains__'):
+
+            self.inputm = inputs.get_method(
+                self.methods[self.input_method.lower()]
+            )
+            self.name = (
+                self.name or
+                (
+                    self.resource_names[self.input_method.lower()]
+                    if self.input_method.lower() in self.resource_names else
+                    self.input_method
+                )
+            )
+
+        # attempting to look up the method in the inputs module
+        else:
+
+            self.inputm = inputs.get_method(self.input_method) or empty_input
+            self.name = self.name or self.inputm.__name__
+>>>>>>> 66d6e044ace614af08d4aeaba6db14783f561d9f:src/pypath/core/ptm.py
 
 
     def set_inputargs(self, **inputargs):
@@ -606,7 +708,7 @@ class EnzymeSubstrateHomologyProcessor(
         """
 
         for source_taxon in self.map_by_homology_from:
-            
+
             self._log(
                 'Translating enzyme-substrate interactions '
                 'from organism %u to %u.' % (
@@ -630,8 +732,6 @@ class EnzymeSubstrateHomologyProcessor(
                 **self.ptmprocargs,
             )
 
-            #self.reset_ptmprocessor(ncbi_tax_id = source_taxon)
-
             self._log(
                 'Enzyme-substrate interactions loaded from resource `%s` '
                 'for organism %s, %u raw records.' % (
@@ -649,7 +749,7 @@ class EnzymeSubstrateHomologyProcessor(
 
 
     def __repr__(self):
-        
+
         return (
             '<Enzyme-substrate homology processor, '
             'target taxon: %u, source taxon(s): %s>' % (
@@ -660,8 +760,8 @@ class EnzymeSubstrateHomologyProcessor(
 
 
 class EnzymeSubstrateAggregator(session_mod.Logger):
-    
-    
+
+
     def __init__(self,
             input_param = None,
             exclude = None,
@@ -677,15 +777,15 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         """
         Docs not written yet.
         """
-        
+
         session_mod.Logger.__init__(self, name = 'enz_sub')
-        
+
         for k, v in iteritems(locals()):
             setattr(self, k, v)
-        
+
         self.main()
-    
-    
+
+
     def reload(self):
 
         modname = self.__class__.__module__
@@ -693,36 +793,36 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-    
-    
+
+
     def main(self):
-        
+
         if self.pickle_file:
-            
+
             self.load_from_pickle(pickle_file = self.pickle_file)
-            
+
         else:
-            
+
             self.build()
-    
-    
+
+
     def load_from_pickle(self, pickle_file = None):
-        
+
         self._log('Loading from file `%s`.' % pickle_file)
-        
+
         with open(self.pickle_file, 'rb') as fp:
-            
+
             self.enz_sub, self.references = pickle.load(fp)
-        
+
         self.update_ptm_lookup_dict()
-    
-    
+
+
     def save_to_pickle(self, pickle_file):
-        
+
         self._log('Saving to file file `%s`.' % pickle_file)
-        
+
         with open(pickle_file, 'wb') as fp:
-            
+
             pickle.dump(
                 obj = (
                     self.enz_sub,
@@ -730,10 +830,10 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                 ),
                 file = fp,
             )
-    
-    
+
+
     def build(self):
-        
+
         self.inputargs = self.inputargs or {}
         self.map_by_homology_from = (
             (
@@ -758,18 +858,18 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         for ptm in itertools.chain(*self.enz_sub.values()):
 
             yield ptm
-    
-    
+
+
     def __len__(self):
-        
+
         return sum([len(esub) for esub in self.enz_sub.values()])
-    
-    
+
+
     def __repr__(self):
-        
+
         return '<Enzyme-substrate database: %s relationships>' % len(self)
-    
-    
+
+
     def set_inputs(self):
 
         self.input_param = (
@@ -807,8 +907,7 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                     self.references[resource_key][es.key()].update(
                         ev.references
                     )
-        
-        
+
         self.enz_sub = {}
         self.references = collections.defaultdict(
             lambda: collections.defaultdict(set)
@@ -848,22 +947,22 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                     input_param.organisms_supported
                 )
             ):
-                
+
                 self._log(
                     'Loading enzyme-substrate interactions '
                     'for taxon `%u`.' % self.ncbi_tax_id
                 )
-                
+
                 proc = EnzymeSubstrateProcessor(
                     ncbi_tax_id = self.ncbi_tax_id,
                     trace = self.trace,
                     **args,
                 )
-                
+
                 extend_lists(proc.__iter__())
-            
+
             if self.map_by_homology_from:
-                
+
                 self._log(
                     'Mapping `%s` by homology from taxons %s to %u.' % (
                         input_method,
@@ -873,7 +972,7 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                         self.ncbi_tax_id,
                     )
                 )
-                
+
                 proc = EnzymeSubstrateHomologyProcessor(
                     ncbi_tax_id = self.ncbi_tax_id,
                     map_by_homology_from = self.map_by_homology_from,
@@ -882,25 +981,25 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                     ptm_homology_strict = self.ptm_homology_strict,
                     **args
                 )
-                
+
                 extend_lists(proc.__iter__())
-        
+
         self.references = dict(self.references)
         self.update_ptm_lookup_dict()
-    
-    
+
+
     def update_ptm_lookup_dict(self):
-        
+
         self.ptm_to_enzyme = collections.defaultdict(set)
         self.ptms = {}
-        
+
         for (enz, sub), ptms in iteritems(self.enz_sub):
-            
+
             for ptm in ptms:
-                
+
                 self.ptm_to_enzyme[ptm.ptm].add(enz)
                 self.ptms[ptm.ptm] = ptm.ptm
-        
+
         self.ptm_to_enzyme = dict(self.ptm_to_enzyme)
 
 
@@ -982,7 +1081,7 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         if tax_id:
 
             self.df['ncbi_tax_id'] = [self.ncbi_tax_id] * self.df.shape[0]
-        
+
         self._log(
             'Created enzyme-substrate interaction data frame. '
             'Memory usage: %s.' % common.df_memory_usage(self.df)
@@ -1023,21 +1122,21 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                     pa.graph.es[e]['ptm'] = []
 
                 pa.graph.es[e]['ptm'].extend(ptms)
-    
-    
+
+
     @property
     def resources(self):
-        
+
         return set.union(*(
             es.evidences.get_resource_names_via(via = None)
             for es in self
         ))
-    
-    
+
+
     def update_summaries(self):
-        
+
         self.summaries = {}
-        
+
         refs_by_resource = dict(
             (
                 resource,
@@ -1063,14 +1162,15 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
             )
             for resource in self.resources
         )
-        
+
         for resource in sorted(self.resources):
-            
+
             n_total = sum(
                 1
                 for es in self
                 if resource in es.get_resource_names_via(via = None)
             )
+
             n_unique = sum(
                 1 for es in self
                 if len(es.sources) == 1 and resource in es.sources
@@ -1079,7 +1179,7 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                 1 for es in self
                 if len(es.sources) > 1 and resource in es.sources
             )
-            
+
             curation_effort = len(curation_effort_by_resource[resource])
             ce_others = set.union(*(
                 ce
@@ -1094,7 +1194,7 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                 curation_effort_by_resource[resource] -
                 ce_others
             )
-            
+
             references = len(refs_by_resource[resource])
             refs_others = set.union(*(
                 refs
@@ -1103,7 +1203,7 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
             ))
             references_shared = len(refs_by_resource[resource] & refs_others)
             references_unique = len(refs_by_resource[resource] - refs_others)
-            
+
             enzymes = len(set(
                 es.domain.protein
                 for es in self
@@ -1114,7 +1214,7 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                 for es in self
                 if resource in es.sources
             ))
-            
+
             modification_types = ', '.join(
                 (
                     '%s (%u)' % (typ, cnt)
@@ -1131,7 +1231,7 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                     if typ
                 )
             )
-            
+
             self.summaries[resource] = {
                 'name': resource,
                 'n_es_total': n_total,
@@ -1147,10 +1247,10 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                 'curation_effort_shared': curation_effort_shared,
                 'modification_types': modification_types,
             }
-    
-    
+
+
     def summaries_tab(self, outfile = None, return_table = False):
-        
+
         columns = (
             ('name', 'Resource'),
             ('n_es_total', 'E-S interactions'),
@@ -1166,10 +1266,10 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
             ('curation_effort_unique', 'Unique curation effort'),
             ('modification_types', 'Modification types'),
         )
-        
+
         tab = []
         tab.append([f[1] for f in columns])
-        
+
         tab.extend([
             [
                 str(self.summaries[src][f[0]])
@@ -1177,15 +1277,15 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
             ]
             for src in sorted(self.summaries.keys())
         ])
-        
+
         if outfile:
-            
+
             with open(outfile, 'w') as fp:
-                
+
                 fp.write('\n'.join('\t'.join(row) for row in tab))
-        
+
         if return_table:
-            
+
             return tab
 
 
@@ -1196,9 +1296,9 @@ def init_db(**kwargs):
 
 
 def get_db(**kwargs):
-    
+
     if 'db' not in globals():
-        
+
         init_db(**kwargs)
-    
+
     return globals()['db']
