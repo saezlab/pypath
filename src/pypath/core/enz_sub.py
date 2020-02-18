@@ -44,82 +44,10 @@ import pypath.core.evidence as evidence
 import pypath.resources as resources
 
 
-<<<<<<< HEAD:src/pypath/core/enz_sub.py
 class EnzymeSubstrateProcessor(
         homology.Proteomes,
         homology.SequenceContainer
     ):
-=======
-builtin_inputs = [
-    'PhosphoSite',
-    'phosphoELM',
-    'SIGNOR',
-    'dbPTM',
-    'HPRD',
-    'Li2012',
-    'PhosphoNetworks',
-    'MIMP',
-    'DEPOD',
-    'ProtMapper',
-    'KEA',
-]
-
-
-class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
-
-    methods = {
-        'signor': 'load_signor_ptms',
-        'mimp': 'get_mimp',
-        'phosphonetworks': 'get_phosphonetworks',
-        'phosphoelm': 'get_phosphoelm',
-        'dbptm': 'get_dbptm',
-        'phosphosite': 'get_psite_phos',
-        'hprd': 'get_hprd_ptms',
-        'li2012': 'li2012_phospho',
-        'depod': 'get_depod',
-        'protmapper': 'protmapper_ptms',
-        'kea': 'kea.kea_enzyme_substrate',
-    }
-
-    organisms_supported = set([
-        'signor',
-        'phosphosite',
-        'phosphoelm',
-        'dbptm',
-        'depod',
-    ])
-
-    enzyme_id_uniprot = set([
-        'phosphosite',
-        'phosphoelm',
-        'signor',
-        'depod',
-        'protmapper',
-        'kea',
-    ])
-
-    substrate_id_types = {
-        'mimp': [('genesymbol', 'substrate'), ('refseq', 'substrate_refseq')],
-        'phosphonetworks': ['genesymbol'],
-        'phosphoelm': ['uniprot'],
-        'li2012': ['genesymbol'],
-        'dbptm': ['uniprot'],
-        'phosphosite': ['uniprot'],
-        'signor': ['uniprot'],
-        'hprd': [('refseqp', 'substrate_refseqp')],
-        'depod': ['uniprot'],
-        'protmapper': ['uniprot'],
-        'kea': ['uniprot'],
-    }
-
-    resource_names = dict(
-        (
-            name.lower(),
-            name
-        )
-        for name in builtin_inputs
-    )
->>>>>>> 66d6e044ace614af08d4aeaba6db14783f561d9f:src/pypath/core/ptm.py
 
 
     def __init__(
@@ -262,7 +190,6 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         def empty_input(*args, **kwargs): return []
 
 
-<<<<<<< HEAD:src/pypath/core/enz_sub.py
         # attempting to look up the method in the inputs module
         if not hasattr(self.input_method, '__call__'):
 
@@ -272,35 +199,6 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
             )
 
         self.name = self.name or self.input_method.__name__
-=======
-        # a method provided
-        if hasattr(self.input_method, '__call__'):
-
-            self.inputm = self.input_method
-            self.name = self.name or self.input_method.__name__
-
-        # the method is associated to a resource name
-        # in the list of built in resources
-        elif self.input_is(self.methods, '__contains__'):
-
-            self.inputm = inputs.get_method(
-                self.methods[self.input_method.lower()]
-            )
-            self.name = (
-                self.name or
-                (
-                    self.resource_names[self.input_method.lower()]
-                    if self.input_method.lower() in self.resource_names else
-                    self.input_method
-                )
-            )
-
-        # attempting to look up the method in the inputs module
-        else:
-
-            self.inputm = inputs.get_method(self.input_method) or empty_input
-            self.name = self.name or self.inputm.__name__
->>>>>>> 66d6e044ace614af08d4aeaba6db14783f561d9f:src/pypath/core/ptm.py
 
 
     def set_inputargs(self, **inputargs):
