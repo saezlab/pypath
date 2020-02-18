@@ -2,19 +2,52 @@
 *pypath:* A Python module for molecular signaling prior knowledge processing
 ############################################################################
 
+..warning:: **New module structure and new network API**
+    Around the end of December we added a new network API to ``pypath`` which
+    is not based on ``igraph`` any more and provides a modular and versatile
+    access interface to the network data (since version ``0.9``). In January
+    we reorganized the submodules in ``pypath`` in order to create a clear
+    structure (since version ``0.10``). These are important milestones
+    towards version ``1.0`` and we hope they will make ``pypath`` more
+    convenient to use for everyone. By 18 February we merged these changes
+    to the master branch however the *pypath guide* is still to be updated.
+    Apologies for this inconvenience and please don't hesitate to ask
+    questions by opening an issue on github. The old ``igraph`` based network
+    class is still available in the ``pypath.legacy`` module.
 
-:note: ``pypath`` supports both Python 2.7 and Python 3.6+. In the beginning,
-    pypath has been developed only for Python 2.7. Then the code have been
-    adjusted to Py3 and for a few years we develop and test ``pypath`` in
-    Python 3. Therefore this is the better supported Python variant.
+:Py2/3: Although we still keep the compatibility with Python 2, we don't
+        test ``pypath`` in this environment and very few people uses it
+        already. We highly recommend to use ``pypath`` in Python 3.6+.
 
 :documentation: http://saezlab.github.io/pypath
 :issues: https://github.com/saezlab/pypath/issues
+:contact: omnipathdb@gmail.com
 
-**pypath** consists of a number of submodules to build various databases.
-Most of these are provided as **pandas** data frames. The network database
-is built around igraph to work with molecular network representations e.g.
-protein, miRNA and drug compound interaction networks.
+**pypath** is a Python module for processing molecular biology data resources,
+combining them into databases and providing a versatile interface in Python
+as well as exporting the data for access through other platforms such as
+the R (the OmnipathR R/Bioconductor package), web service (at
+http://omnipathdb.org), Cytoscape (the OmniPath Cytoscape app) and BEL
+(Biological Expression Language).
+
+**pypath** provides access to more than 100 resources! It builds 5 major
+combined databases and within these we can distinguish different datasets.
+The 5 major databases are interactions (molecular interaction network or
+pathways), enzyme-substrate relationships, protein complexes, molecular
+annotations (functional roles, localizations, and more) and inter-cellular
+communication roles.
+
+**pypath** consists of a number of submodules and each of them again contains
+a number of submodules. Overall **pypath** consists of around 100 modules.
+The most important higher level submodules:
+- *pypath.core:* contains the database classes e.g. network, complex,
+  annotations, etc
+- *pypath.inputs:* contains the resource specific methods which directly
+  downlad and preprocess data from the original sources
+- *pypath.omnipath:* higher level applications, e.g. a database manager, a
+  web server
+- *pypath.utils:* stand alone useful utilities, e.g. identifier translator,
+  Gene Ontology processor, BioPax processor, etc
 
 
 Webservice
@@ -32,7 +65,7 @@ Query types
 -----------
 
 The webservice currently recognizes 7 types of queries: ``interactions``,
-``ptms``, ``annotations``, ``complexes``, ``intercell``, ``queries`` and
+``enz_sub``, ``annotations``, ``complexes``, ``intercell``, ``queries`` and
 ``info``.
 The query types ``resources``, ``network`` and ``about`` have not been
 implemented yet in the new webservice.
@@ -139,11 +172,11 @@ Enzyme-substrate interactions
 Another query type available is ``ptms`` which provides enzyme-substrate
 interactions. It is very similar to the ``interactions``:
 
-    http://omnipathdb.org/ptms?genesymbols=1&fields=sources,references,isoforms&enzymes=FYN
+    http://omnipathdb.org/enz_sub?genesymbols=1&fields=sources,references,isoforms&enzymes=FYN
 
 Is there any ubiquitination reaction?
 
-    http://omnipathdb.org/ptms?genesymbols=1&fields=sources,references&types=ubiquitination
+    http://omnipathdb.org/ens_sub?genesymbols=1&fields=sources,references&types=ubiquitination
 
 And acetylation in mouse?
 
@@ -152,7 +185,7 @@ And acetylation in mouse?
 Rat interactions, both directly from rat and homology translated from human,
 from the PhosphoSite database:
 
-    http://omnipathdb.org/ptms?genesymbols=1&fields=sources,references&organisms=10116&databases=PhosphoSite,PhosphoSite_noref
+    http://omnipathdb.org/enz_sub?genesymbols=1&fields=sources,references&organisms=10116&databases=PhosphoSite,PhosphoSite_noref
 
 
 Molecular complexes
@@ -225,8 +258,6 @@ instead of reply. To see the parameters for the ``interactions`` query:
     http://omnipathdb.org/queries/interactions
 
 
-
-
 Can I use OmniPath in R?
 ========================
 
@@ -235,9 +266,6 @@ our colleague Attila Gabor we have a dedicated package for this:
 
     https://github.com/saezlab/OmnipathR
 
-Alternatively here is a very simple example:
-
-    https://github.com/saezlab/pypath/tree/master/r_import
 
 Installation
 ============
@@ -246,15 +274,16 @@ Linux
 -----
 
 In almost any up-to-date Linux distribution the dependencies of **pypath** are
-built-in, or provided by the distributors. You only need to install a couple
-of things in your package manager (cairo, py(2)cairo, igraph,
-python(2)-igraph, graphviz, pygraphviz), and after install **pypath** by *pip*
-(see below). If any module still missing, you can install them the usual way
-by *pip* or your package manager.
+built-in, or provided by the distributors. You can simply install **pypath**
+by **pip** (see below).
+If any non mandatory dependency is still missing, you can install them the
+usual way by *pip* or your package manager.
 
 igraph C library, cairo and pycairo
 -----------------------------------
 
+For the legacy network class or the ``igraph`` conversion from the current
+network class *python-igraph* must be installed.
 *python(2)-igraph* is a Python interface to use the igraph C library. The
 C library must be installed. The same goes for *cairo*, *py(2)cairo* and
 *graphviz*.
@@ -287,9 +316,13 @@ Clone the git repo, and run setup.py:
 Mac OS X
 --------
 
-On OS X installation is not straightforward primarily because cairo needs to
-be compiled from source. We provide 2 scripts here: the
-**mac-install-brew.sh** installs everything with HomeBrew, and
+Recently the installation on Mac should not be any complicated than on Linux:
+you can simply install by **pip** (see above).
+
+When ``igraph`` was a mandatory dependency and it didn't provide wheels
+the OS X installation was not straightforward primarily because cairo needs to
+be compiled from source. If you want igraph and cairo we provide 2 scripts
+here: the **mac-install-brew.sh** installs everything with HomeBrew, and
 **mac-install-conda.sh** installs from Anaconda distribution. With these
 scripts installation of igraph, cairo and graphviz goes smoothly most of the
 time, and options are available for omitting the 2 latter. To know more see
@@ -494,7 +527,7 @@ Main improvements in the past releases:
 0.10.0
 ------
 * New module structure: modules grouped into `core`, `inputs`, `internals`,
-  `legacy`, `omnipath`, `resources`, `share` and `utils` submodeules.
+  `legacy`, `omnipath`, `resources`, `share` and `utils` submodules.
 
 Upcoming
 --------
@@ -507,6 +540,8 @@ Upcoming
 
 Features
 ========
+
+.. warning:: The sections below are outdated, will be updated soon
 
 In the beginning the primary aim of **pypath** was to build networks from
 multiple sources using an igraph object as the fundament of the integrated
@@ -524,8 +559,8 @@ rug compound data, searching drug targets and compounds in **ChEMBL**.
 ID conversion
 -------------
 
-The ID conversion module ``mapping`` can be used independently. It has the
-feature to translate secondary UniProt IDs to primaries, and Trembl IDs to
+The ID conversion module ``utils.mapping`` can be used independently. It has
+the feature to translate secondary UniProt IDs to primaries, and Trembl IDs to
 SwissProt, using primary Gene Symbols to find the connections. This module
 automatically loads and stores the necessary conversion tables. Many tables
 are predefined, such as all the IDs in **UniProt mapping service,** while
