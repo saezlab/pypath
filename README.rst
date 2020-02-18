@@ -322,7 +322,7 @@ Clone the git repo, and run setup.py:
 Mac OS X
 --------
 
-Recently the installation on Mac should not be any complicated than on Linux:
+Recently the installation on Mac should not be more complicated than on Linux:
 you can simply install by **pip** (see above).
 
 When ``igraph`` was a mandatory dependency and it didn't provide wheels
@@ -547,7 +547,8 @@ Upcoming
 Features
 ========
 
-.. warning:: The sections below are outdated, will be updated soon
+    *Warning:*
+    The sections below are outdated, will be updated soon
 
 In the beginning the primary aim of **pypath** was to build networks from
 multiple sources using an igraph object as the fundament of the integrated
