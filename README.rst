@@ -23,6 +23,10 @@
 :documentation: http://saezlab.github.io/pypath
 :issues: https://github.com/saezlab/pypath/issues
 :contact: omnipathdb@gmail.com
+:developers: ``pypath`` is developed in the Saez Lab (http://saezlab.org) by
+  Olga Ivanova, Nicolàs Palacio and Dénes Türei; the R package and the
+  Cytoscape app are developed and maintained by Francesco Ceccarelli, Attila
+  Gábor, Alberto Valdeolivas and Nicolàs Palacio.
 
 **pypath** is a Python module for processing molecular biology data resources,
 combining them into databases and providing a versatile interface in Python
