@@ -2,7 +2,7 @@
 *pypath:* A Python module for molecular signaling prior knowledge processing
 ############################################################################
 
-..warning:: **New module structure and new network API**
+.. warning:: **New module structure and new network API**
     Around the end of December we added a new network API to ``pypath`` which
     is not based on ``igraph`` any more and provides a modular and versatile
     access interface to the network data (since version ``0.9``). In January
@@ -40,14 +40,15 @@ communication roles.
 **pypath** consists of a number of submodules and each of them again contains
 a number of submodules. Overall **pypath** consists of around 100 modules.
 The most important higher level submodules:
+
 - *pypath.core:* contains the database classes e.g. network, complex,
-  annotations, etc
+annotations, etc
 - *pypath.inputs:* contains the resource specific methods which directly
-  downlad and preprocess data from the original sources
+downlad and preprocess data from the original sources
 - *pypath.omnipath:* higher level applications, e.g. a database manager, a
-  web server
+web server
 - *pypath.utils:* stand alone useful utilities, e.g. identifier translator,
-  Gene Ontology processor, BioPax processor, etc
+Gene Ontology processor, BioPax processor, etc
 
 
 Webservice
