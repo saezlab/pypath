@@ -90,9 +90,6 @@ setup(
         'beautifulsoup4',
         'configparser',
         'pyopenssl',
-        'ndg-httpsclient',
-        'chembl_webresource_client',
-        'pyasn1',
         'numpy',
         'scipy',
         'matplotlib',
@@ -100,7 +97,6 @@ setup(
         'pycurl',
         'lxml',
         'xlrd',
-        'httplib2',
         'future',
         'tqdm',
         'fabric3',
@@ -119,8 +115,8 @@ setup(
             'click',
         ],
         'graph': [
-            'igraph',
+            'python-igraph',
         ],
     },
-    entry_points=ENTRY_POINTS,
+    entry_points = ENTRY_POINTS,
 )
