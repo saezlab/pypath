@@ -1347,14 +1347,38 @@ class CustomAnnotation(session_mod.Logger):
         self.df.to_csv(fname, **kwargs)
 
 
-    def counts(self):
+    def counts(self, entity_type = None, class_type = None):
         """
         Returns a dict with number of elements in each class.
+
+        :arg str,NoneType entity_type:
+            One or more entity type to consider e.g. `'protein'` or
+            `'complex'` or a set of more of them.
+            By default all entities are considered.
+        :arg str,NoneType class_type:
+            One or more class type to consider e.g. `'main'` or a set of
+            more of them.
+            By default all entities are considered.
         """
 
+        entity_type = common.to_set(entity_type)
+        class_type = common.to_set(class_type)
+
         return dict(
-            (name, len(members))
+            (
+                name,
+                len(members)
+                    if not entity_type else
+                sum(
+                    1 for m in members
+                    if entity.Entity._get_entity_type(m) in entity_type
+                )
+            )
             for name, members in iteritems(self.classes)
+            if (
+                not class_type or
+                self.get_class_type(name) in class_type
+            )
         )
 
 
