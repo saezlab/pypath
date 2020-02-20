@@ -6566,8 +6566,13 @@ class PyPath(session_mod.Logger):
             for k, v in iteritems(lst)
             if (
                 (
-                    (hasattr(v, 'huge') and v.huge) or
-                    v.networkinput.huge
+                    (hasattr(v, 'huge') and v.huge) or (
+                        hasattr(v, 'networkinput') and
+                        v.networkinput.huge
+                    ) or (
+                        hasattr(v, 'huge') and
+                        v.huge
+                    )
                 ) and
                 k not in exclude and
                 v.name not in exclude and
@@ -6579,8 +6584,13 @@ class PyPath(session_mod.Logger):
             for k, v in iteritems(lst)
             if (
                 (
-                    (hasattr(v, 'huge') and not v.huge) or
-                    not v.networkinput.huge or
+                    (hasattr(v, 'huge') and not v.huge) or (
+                        hasattr(v, 'networkinput') and
+                        not v.networkinput.huge
+                    ) or (
+                        hasattr(v, 'huge') and
+                        not v.huge
+                    ) and
                     v.name in cache_files
                 ) and
                 k not in exclude and
