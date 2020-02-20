@@ -1387,12 +1387,20 @@ annot_combined_classes = (
     # extracellular enzyme
     af.AnnotDef(
         name = 'extracellular_enzyme',
-        source = 'extracellular_enzyme_go',
+        source = af.AnnotOp(
+            annots = (
+                'extracellular_enzyme_go',
+                'extracellular_enzyme_matrisome',
+            ),
+            op = set.union
+        ),
     ),
     af.AnnotDef(
         name = 'extracellular_enzyme_go',
         source = af.AnnotOp(
             annots = (
+                # extracellular by any evidence
+                # and enzyme according to GO
                 af.AnnotOp(
                     annots = (
                         'extracellular',
@@ -1406,16 +1414,25 @@ annot_combined_classes = (
                     ),
                     op = set.intersection,
                 ),
-                af.AnnotDef(
-                    name = 'matrisome_regulators',
-                    source = 'Matrisome',
-                    args = {
-                        'subclass': 'ECM Regulators',
-                    },
+                # but not transmembrane or receptor or ligand
+                af.AnnotOp(
+                    annots = (
+                        'transmembrane',
+                        'receptor',
+                        'ligand',
+                    ),
+                    op = set.union,
                 ),
             ),
-            op = set.union,
+            op = set.difference,
         ),
+    ),
+    af.AnnotDef(
+        name = 'extracellular_enzyme_matrisome',
+        source = 'Matrisome',
+        args = {
+            'subclass': 'ECM Regulators',
+        },
     ),
     # extracellular peptidase
     af.AnnotDef(
