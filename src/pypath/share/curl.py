@@ -68,7 +68,6 @@ except ImportError:
     import urllib.request
     urllib2 = urllib.request
 
-import httplib2
 try:
     import urlparse
 except:

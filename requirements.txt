@@ -1,13 +1,9 @@
 --index-url https://pypi.python.org/simple/
 
-git+git://github.com/fabioticconi/fishers_exact_test@fix-setup-deps#egg=fisher
-python-igraph
 beautifulsoup4
 configparser
 pyopenssl
 ndg-httpsclient
-chembl_webresource_client
-pyasn1
 numpy
 scipy
 timeloop
@@ -16,7 +12,6 @@ statsmodels
 pycurl
 lxml
 xlrd
-httplib2
 future
 tqdm
 -e .
