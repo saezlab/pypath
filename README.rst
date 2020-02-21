@@ -668,7 +668,10 @@ HTTP with REST style querying.
 Developers' corner
 ==================
 
-**Notes:** To display code fragments illustrated in this documentation properly
+Notes
+-----
+
+To display code fragments illustrated in this documentation properly
 in PyCharm IDE, we need to install ``Pygments`` package so as to interpret and
 highlight code blocks as described in
 `PyCharm help <https://www.jetbrains.com/help/pycharm/restructured-text.html>`_.
@@ -684,6 +687,8 @@ or the equivalent method
 
     pip install Pygments-x.y.z.tar.gz
 
+Consult `the installation guide <https://pygments.org/docs/>`_ if you have any problem during setting up.
+
 Setup development environment
 -----------------------------
 After forking source code from the official repository, you can clone it from your repository.
@@ -695,14 +700,14 @@ similar or alternative commands
 
     python -m venv <virtual_environment_name>
 
-Example:
+*Example*: the following command will create a virtual environment named 'venv'
 
 .. code-block:: bash
 
     python -m venv venv
 
-Then, you must active the newly created virtual environment before installing all required packages
-for the project.
+Then, you must activate the newly created virtual environment before installing all required packages
+for the project or another packages needed afterward.
 
 .. code-block:: bash
 
@@ -713,3 +718,18 @@ To install all the required packages, just run the following command:
 .. code-block:: bash
 
     pip install -r requirements.txt
+
+Install python-igraph and pycairo
+---------------------------------
+
+These two modules are used for visualisation. Under the virtual environment
+created above, running the following commands
+
+.. code-block:: bash
+
+    pip install python-igraph
+    pip install pycairo
+
+will install them into your working directory. You **must have** ``cairo`` library
+installed first. I found `the link <http://macappstore.org/cairo/>`_ be useful
+to install ``cairo`` with ``brew``.
