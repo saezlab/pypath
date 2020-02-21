@@ -6807,10 +6807,6 @@ class PyPath(session_mod.Logger):
 
         sys.stdout.write(out)
 
-    #
-    # functions to make life easier
-    #
-
     # XXX: all these having_* functions are actually not used anywhere
 
     def having_attr(self, attr, graph=None, index=True, edges=True):
