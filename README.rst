@@ -661,3 +661,52 @@ the ``pypath.settings.setup()`` and the ``pypath.settings.get()`` methods.
 A simple **webservice** comes with this module: the ``server`` module based on
 ``twisted.web.server`` opens a custom port and serves plain text tables over
 HTTP with REST style querying.
+
+Developers' corner
+==================
+
+**Notes:** To display code fragments illustrated in this documentation properly
+in PyCharm IDE, we need to install ``Pygments`` package so as to interpret and
+highlight code blocks as described in
+`PyCharm help <https://www.jetbrains.com/help/pycharm/restructured-text.html>`_.
+Run the following command to install this package:
+
+.. code-block:: bash
+
+    pip install pygments
+
+or the equivalent method
+
+.. code-block:: bash
+
+    pip install Pygments-x.y.z.tar.gz
+
+Setup development environment
+-----------------------------
+After forking source code from the official repository, you can clone it from your repository.
+As the best practice, we recommend you create a virtual environment under the directory where
+the repository has been cloned. Depending on Python installation in your system, you can find
+similar or alternative commands
+
+.. code-block:: bash
+
+    python -m venv <virtual_environment_name>
+
+Example:
+
+.. code-block:: bash
+
+    python -m venv venv
+
+Then, you must active the newly created virtual environment before installing all required packages
+for the project.
+
+.. code-block:: bash
+
+    source venv/bin/activate
+
+To install all the required packages, just run the following command:
+
+.. code-block:: bash
+
+    pip install -r requirements.txt
