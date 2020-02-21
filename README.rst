@@ -257,7 +257,7 @@ Exploring possible parameters
 Sometimes the names and values of the query parameters are not intuitive,
 even though in many cases the server accepts multiple alternatives. To see
 the possible parameters with all possible values you can use the ``queries``
-query type. The server checks the paremeter names and values exactly against
+query type. The server checks the parameter names and values exactly against
 these rules and if any of them don't match you will get an error message
 instead of reply. To see the parameters for the ``interactions`` query:
 
@@ -289,7 +289,7 @@ igraph C library, cairo and pycairo
 -----------------------------------
 
 For the legacy network class or the ``igraph`` conversion from the current
-network class *python-igraph* must be installed.
+network class, *python-igraph* must be installed.
 *python(2)-igraph* is a Python interface to use the igraph C library. The
 C library must be installed. The same goes for *cairo*, *py(2)cairo* and
 *graphviz*.
@@ -322,16 +322,16 @@ Clone the git repo, and run setup.py:
 Mac OS X
 --------
 
-Recently the installation on Mac should not be more complicated than on Linux:
+Recently, the installation on Mac should not be more complicated than on Linux:
 you can simply install by **pip** (see above).
 
 When ``igraph`` was a mandatory dependency and it didn't provide wheels
-the OS X installation was not straightforward primarily because cairo needs to
-be compiled from source. If you want igraph and cairo we provide 2 scripts
-here: the **mac-install-brew.sh** installs everything with HomeBrew, and
-**mac-install-conda.sh** installs from Anaconda distribution. With these
-scripts installation of igraph, cairo and graphviz goes smoothly most of the
-time, and options are available for omitting the 2 latter. To know more see
+the OS X installation was not primarily straightforward because cairo needs to
+be compiled from source. If you want igraph and cairo, we provide two scripts
+located in ``src/scripts``: the **mac-install-brew.sh** installs everything
+with HomeBrew, and **mac-install-conda.sh** installs from Anaconda distribution.
+With these scripts, the installation of igraph, cairo and graphviz goes smoothly
+most of the time, and options are available for omitting the 2 latter. To know more see
 the description in the script header. There is a third script
 **mac-install-source.sh** which compiles everything from source and presumes
 only Python 2.7 and Xcode installed. We do not recommend this as it is time
@@ -341,7 +341,7 @@ Troubleshooting
 ^^^^^^^^^^^^^^^
 
 * ``no module named ...`` when you try to load a module in Python. Did
-  theinstallation of the module run without error? Try to run again the specific
+  the installation of the module run without error? Try to run again the specific
   part from the mac install shell script to see if any error comes up. Is the
   path where the module has been installed in your ``$PYTHONPATH``? Try ``echo
   $PYTHONPATH`` to see the current paths. Add your local install directories if
@@ -413,10 +413,9 @@ external dependencies, after *pip* install should work. On Windows certain
 packages can not be installed by compiled from source by *pip*, instead the
 easiest to install them precompiled. These are in our case *fisher, lxml,
 numpy (mkl version), pycairo, igraph, pygraphviz, scipy and statsmodels*. The
-precompiled packages are available here:
-http://www.lfd.uci.edu/~gohlke/pythonlibs/. We tested the setup with Python
-3.4.3 and Python 2.7.11. The former should just work fine, while with the
-latter we have issues to be resolved.
+precompiled packages are available `here <http://www.lfd.uci.edu/~gohlke/pythonlibs/>`_.
+We tested the setup with Python 3.4.3 and Python 2.7.11. The former should just work fine
+while with the latter still causes some issues to be resolved.
 
 Known issues
 ^^^^^^^^^^^^
@@ -428,7 +427,11 @@ Known issues
 * Encoding related exceptions in Python2: these might occur at some points in
   the module, please send the traceback if you encounter one, and we will fix
   as soon as possible.
-* For Mac OS X (v >= 10.11 El Capitan) import of pypath fails with error: "libcurl link-time ssl backend (openssl) is different from compile-time ssl backend (none/other)". To fix it, you may need to reinstall pycurl library using special flags. More information and steps can be found e.g. [here](https://cscheng.info/2018/01/26/installing-pycurl-on-macos-high-sierra.html)   
+* For Mac OS X (v >= 10.11 El Capitan) import of pypath fails with
+  error: "libcurl link-time ssl backend (openssl) is different from compile-time
+  ssl backend (none/other)". To fix it, you may need to reinstall pycurl library
+  using special flags. More information and steps can be found e.g.
+  `Installing pycurl on MacOS <https://cscheng.info/2018/01/26/installing-pycurl-on-macos-high-sierra.html>`_.
 
 *Special thanks to Jorge Ferreira for testing pypath on Windows!*
 
@@ -520,7 +523,7 @@ Main improvements in the past releases:
   delete data to free memory
 * New interaction category in `data_formats`: `ligand_receptor`
 * Improved logging and control over verbosity
-* Better control over paremeters by the `settings` module
+* Better control over parameters by the `settings` module
 * Many methods in `dataio` have been improved or fixed, docs and code style largely improved
 * Started to add tests especially for methods in `dataio`
 
@@ -551,7 +554,7 @@ Features
     The sections below are outdated, will be updated soon
 
 In the beginning the primary aim of **pypath** was to build networks from
-multiple sources using an igraph object as the fundament of the integrated
+multiple sources using an igraph object as the fundamental of the integrated
 data structure. From version 0.7 and 0.8 this design principle started to
 change. Today **pypath** builds a number of different databases each having
 **pandas.DataFrame** as a final format. Each of these integrates a specific
@@ -578,7 +581,7 @@ Pathways
 --------
 
 **pypath** includes data and predefined format descriptions for more than 25
-high quality, literature curated databases. The inut formats are defined in
+high quality, literature curated databases. The input formats are defined in
 the ``data_formats`` module. For some resources data downloaded on the fly,
 where it is not possible, data is redistributed with the module. Descriptions
 and comprehensive information about the resources is available in the
@@ -614,7 +617,7 @@ Functional annotations
 ----------------------
 
 **GSEA** and **Gene Ontology** are two approaches for annotating genes and
-gene products, and enrichment analysis technics aims to use these annotations
+gene products, and enrichment analysis techniques aim to use these annotations
 to highlight the biological functions a given set of genes is related to. Here
 the ``enrich`` module gives abstract classes to calculate enrichment
 statistics, while the ``go`` and the ``gsea`` modules give access to GO and
@@ -637,12 +640,12 @@ Technical
 
 The module ``pypath.curl`` provides a very flexible **download manager**
 built on top of ``pycurl``. The classes ``pypath.curl.Curl()`` and
-``pypath.curl.FileOpener`` accept numerous arguments, try to deal in a smart
+``pypath.curl.FileOpener`` accept numerous arguments for trying to deal in a smart
 way with local **cache,** authentication, redirects, uncompression, character
 encodings, FTP and HTTP transactions, and many other stuff. Cache can grow to
 several GBs, and takes place in ``~/.pypath/cache`` by default. If you
-experience issues using ``pypath`` these are most often related to failed
-downloads which often result nonsense cache contents. To debug such issues
+experience issues using ``pypath``, these are most often related to failed
+downloads which often result nonsense cache contents. To debug such issues,
 you can see the cache file names and cache usage in the log, and you can use
 the context managers in ``pypath.curl`` to show, delete or bypass the cache
 for some particular method calls (``pypath.curl.cache_print_on()``,
@@ -653,9 +656,9 @@ using the ``pypath.settings`` module.
 The ``pypath.session`` and ``pypath.log`` modules take care of setting up
 session level parameters and logging. Each session has a random 5 character
 identifier e.g. ``y5jzx``. The default log file in this case is
-``pypath_log/pypath-y5jzx.log``. The log messages flushed in every 2 seconds
+``pypath_log/pypath-y5jzx.log``. The log messages are flushed in every 2 seconds
 by default. You can always change these things by the ``settings`` module.
-In this module you can get and set the values of various parameters using
+In this module, you can get and set the values of various parameters using
 the ``pypath.settings.setup()`` and the ``pypath.settings.get()`` methods.
 
 A simple **webservice** comes with this module: the ``server`` module based on
