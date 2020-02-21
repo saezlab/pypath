@@ -27,25 +27,23 @@ interactions serve as the building elements of the network and the
 of the :py:class:`Interaction`` objects.
 """
 
+import collections
+import functools
+import importlib as imp
+import itertools
+import operator
+
 from future.utils import iteritems
 
-import importlib as imp
-import collections
-import operator
-import itertools
-import functools
-
+import pypath.core.entity as entity
 import pypath.core.evidence as pypath_evidence
 import pypath.internals.resource as pypath_resource
-import pypath.share.session as session_mod
 import pypath.share.common as common
-import pypath.utils.mapping as mapping
-import pypath.core.entity as entity
+import pypath.share.session as session_mod
 import pypath.utils.homology as homology
 
-_logger = session_mod.Logger(name = 'interaction')
+_logger = session_mod.Logger(name='interaction')
 _log = _logger._log
-
 
 InteractionKey = collections.namedtuple(
     'InteractionKey',
@@ -54,7 +52,6 @@ InteractionKey = collections.namedtuple(
         'entity_b',
     ],
 )
-
 
 InteractionDataFrameRecord = collections.namedtuple(
     'InteractionDataFrameRecord',
@@ -100,7 +97,7 @@ class Interaction(object):
         and ``b`` in an alphabetical order, hence it's possible that
         argument ``a`` becomes attribute ``b``.
     """
-    
+
     __slots__ = [
         'a',
         'b',
@@ -114,7 +111,7 @@ class Interaction(object):
         'negative',
         'attrs',
     ]
-    
+
     _get_methods = {
         'entities',
         'evidences',
@@ -138,7 +135,7 @@ class Interaction(object):
         'resources_via',
         'resource_names_via',
     }
-    
+
     _get_methods_autogen = (
         'references',
         'resources',
@@ -148,7 +145,7 @@ class Interaction(object):
         'data_models',
         'interaction_types',
     )
-    
+
     _by_methods = (
         'resource',
         'reference',
@@ -157,7 +154,7 @@ class Interaction(object):
         'interaction_type_and_data_model',
         'interaction_type_and_data_model_and_resource',
     )
-    
+
     _count_methods = {
         'references',
         'resources',
@@ -178,7 +175,7 @@ class Interaction(object):
         'data_models',
         'interaction_types',
     }
-    
+
     _get_method_signature = [
         ('direction', None),
         ('effect', None),
@@ -188,13 +185,13 @@ class Interaction(object):
         ('via', None),
         ('references', None),
     ]
-    
+
     _degree_modes = (
         'ALL',
         'IN',
         'OUT',
     )
-    
+
     _degree_directions = {
         'undirected': (None, None),
         'non_directed': (False, None),
@@ -203,7 +200,7 @@ class Interaction(object):
         'positive': (True, 'positive'),
         'negative': (True, 'negative'),
     }
-    
+
     _entity_types = {
         'protein',
         ('complex', 'complexes'),
@@ -212,48 +209,47 @@ class Interaction(object):
         'small_molecule',
         None,
     }
-    
+
     _entity_values = {
         'identifiers',
         'labels',
         None,
     }
-    
-    
+
     def __init__(
             self,
             a,
             b,
-            id_type_a = 'uniprot',
-            id_type_b = 'uniprot',
-            entity_type_a = 'protein',
-            entity_type_b = 'protein',
-            taxon_a = 9606,
-            taxon_b = 9606,
-        ):
-        
+            id_type_a='uniprot',
+            id_type_b='uniprot',
+            entity_type_a='protein',
+            entity_type_b='protein',
+            taxon_a=9606,
+            taxon_b=9606,
+    ):
+
         a = self._get_entity(
-            identifier = a,
-            id_type = id_type_a,
-            entity_type = entity_type_a,
-            taxon = taxon_a,
+            identifier=a,
+            id_type=id_type_a,
+            entity_type=entity_type_a,
+            taxon=taxon_a,
         )
         b = self._get_entity(
-            identifier = b,
-            id_type = id_type_b,
-            entity_type = entity_type_b,
-            taxon = taxon_b,
+            identifier=b,
+            id_type=id_type_b,
+            entity_type=entity_type_b,
+            taxon=taxon_b,
         )
-        
+
         self.nodes = tuple(sorted((a, b)))
         self.a = self.nodes[0]
         self.b = self.nodes[1]
-        
+
         self.key = self._key
-        
+
         self.a_b = (self.nodes[0], self.nodes[1])
         self.b_a = (self.nodes[1], self.nodes[0])
-        
+
         self.evidences = pypath_evidence.Evidences()
         self.direction = {
             self.a_b: pypath_evidence.Evidences(),
@@ -268,10 +264,9 @@ class Interaction(object):
             self.a_b: pypath_evidence.Evidences(),
             self.b_a: pypath_evidence.Evidences(),
         }
-        
+
         self.attrs = {}
-    
-    
+
     def reload(self):
         """
         Reloads the object from the module level.
@@ -280,9 +275,9 @@ class Interaction(object):
         modname = self.__class__.__module__
         evmodname = self.evidences.__class__.__module__
         enmodname = self.a.__class__.__module__
-        mod = __import__(modname, fromlist = [modname.split('.')[0]])
-        evmod = __import__(evmodname, fromlist = [evmodname.split('.')[0]])
-        enmod = __import__(enmodname, fromlist = [enmodname.split('.')[0]])
+        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        evmod = __import__(evmodname, fromlist=[evmodname.split('.')[0]])
+        enmod = __import__(enmodname, fromlist=[enmodname.split('.')[0]])
         imp.reload(mod)
         imp.reload(evmod)
         imp.reload(enmod)
@@ -291,47 +286,43 @@ class Interaction(object):
         evnew = getattr(evmod, 'Evidence')
         ennew = getattr(enmod, 'Entity')
         setattr(self, '__class__', new)
-        
+
         for evs in itertools.chain(
-            (self.evidences,),
-            self.direction.values(),
-            self.positive.values(),
-            self.negative.values(),
+                (self.evidences,),
+                self.direction.values(),
+                self.positive.values(),
+                self.negative.values(),
         ):
-            
+
             evs.__class__ = evsnew
-            
+
             for ev in evs:
-                
                 ev.__class__ = evnew
-        
+
         self.a.__class__ = ennew
         self.b.__class__ = ennew
-        
+
         self._generate_get_methods()
         self._generate_count_methods()
         self._generate_by_methods()
 
-
     def _get_entity(
             self,
             identifier,
-            id_type = 'uniprot',
-            entity_type = 'protein',
-            taxon = 9606,
-        ):
-        
-        if not isinstance(identifier, entity.Entity):
-            
-            identifier = entity.Entity(
-                identifier = identifier,
-                id_type = id_type,
-                entity_type = entity_type,
-                taxon = taxon,
-            )
-        
-        return identifier
+            id_type='uniprot',
+            entity_type='protein',
+            taxon=9606,
+    ):
 
+        if not isinstance(identifier, entity.Entity):
+            identifier = entity.Entity(
+                identifier=identifier,
+                id_type=id_type,
+                entity_type=entity_type,
+                taxon=taxon,
+            )
+
+        return identifier
 
     def _check_nodes_key(self, nodes):
         """Checks if *nodes* is contained in the edge.
@@ -345,7 +336,6 @@ class Interaction(object):
         """
 
         return nodes == self.a_b or nodes == self.b_a
-
 
     def _check_direction_key(self, direction):
         """
@@ -362,62 +352,55 @@ class Interaction(object):
         """
 
         return (
-            direction == 'undirected' or (
+                direction == 'undirected' or (
                 isinstance(direction, tuple) and
                 self._check_nodes_key(direction)
-            )
         )
-
+        )
 
     def id_to_entity(self, identifier):
-        
+
         return (
             self.a
-                if self.a == identifier else
+            if self.a == identifier else
             self.b
-                if self.b == identifier else
+            if self.b == identifier else
             None
         )
-
 
     def direction_key(self, direction):
-        
+
         if direction == 'undirected':
-            
             return direction
-        
+
         direction = tuple(map(self.id_to_entity, direction))
-        
+
         return (
             direction
-                if direction == self.a_b or direction == self.b_a else
+            if direction == self.a_b or direction == self.b_a else
             None
         )
-    
-    
+
     @staticmethod
     def direction_key_identifiers(direction):
-        
+
         if direction == 'undirected':
-            
             return direction
-        
+
         return tuple(ent.identifier for ent in direction)
-    
-    
+
     @staticmethod
     def _directed_key(direction):
-        
-        return direction is not None and direction != 'undirected'
 
+        return direction is not None and direction != 'undirected'
 
     def add_evidence(
             self,
             evidence,
-            direction = 'undirected',
-            effect = 0,
-            references = None,
-        ):
+            direction='undirected',
+            effect=0,
+            references=None,
+    ):
         """
         Adds directionality information with the corresponding data
         source named. Modifies self attributes :py:attr:`dirs` and
@@ -438,138 +421,124 @@ class Interaction(object):
             A set of references, used only if the resource have been provided
             as ``NetworkResource`` object.
         """
-        
+
         direction = self.direction_key(direction)
-        
+
         if direction is None:
-            
             _log(
                 'Attempting to add evidence with non matching '
                 'interaction partners.'
             )
             return
-        
+
         evidence = (
             evidence
-                if isinstance(
-                    evidence,
-                    (
-                        pypath_evidence.Evidence,
-                        pypath_evidence.Evidences,
-                    )
-                ) else
+            if isinstance(
+                evidence,
+                (
+                    pypath_evidence.Evidence,
+                    pypath_evidence.Evidences,
+                )
+            ) else
             pypath_evidence.Evidence(
-                resource = evidence,
-                references = references,
+                resource=evidence,
+                references=references,
             )
         )
-        
+
         self.evidences += evidence
         self.direction[direction] += evidence
-        
+
         if direction != 'undirected':
-            
+
             if effect in {1, 'positive', 'stimulation'}:
-                
+
                 self.positive[direction] += evidence
-            
+
             elif effect in {-1, 'negative', 'inhibition'}:
-                
+
                 self.negative[direction] += evidence
-    
-    
+
     def __hash__(self):
-        
+
         return hash(self.key)
-    
-    
+
     def __eq__(self, other):
-        
+
         return self.key == other.key
-    
-    
+
     @property
     def _key(self):
-        
+
         return InteractionKey(
             self.a.key,
             self.b.key,
         )
 
-
     def __iadd__(self, other):
-        
+
         if self != other:
-            
             _log(
                 'Attempt to merge interactions with '
                 'non matching interaction partners.'
             )
             return self
-        
+
         self._merge_evidences(self, other)
         self.update_attrs(**other.attrs)
-        
+
         return self
-    
-    
+
     def update_attrs(self, **kwargs):
-        
+
         for key, val in iteritems(kwargs):
-            
+
             if key in self.attrs:
-                
+
                 self.attrs[key] = common.combine_attrs((self.attrs[key], val))
-                
+
             else:
-                
+
                 self.attrs[key] = val
-    
-    
+
     def __add__(self, other):
-        
+
         new = self.__copy__()
-        
+
         new += other
-        
+
         return new
-    
-    
+
     def __copy__(self):
-        
+
         new = Interaction(*self.key)
         new += self
-        
+
         return new
-    
-    
+
     @staticmethod
     def _merge_evidences(one, other):
-        
+
         one.evidences += other.evidences
-        
+
         for dir_key in one.direction.keys():
-            
             one.direction[dir_key] += other.direction[dir_key]
-        
+
         for eff_key in one.positive.keys():
-            
             one.positive[eff_key] += other.positive[eff_key]
-        
+
         for eff_key in one.negative.keys():
-            
             one.negative[eff_key] += other.negative[eff_key]
-    
-    
+
     def __repr__(self):
-        
+
         return '<Interaction: %s %s=%s=%s=%s %s [%s]>' % (
             self.a.label or self.a.identifier,
             '<' if self.direction[self.b_a] else '=',
             (
                 '(+-)' if (
-                    self.positive[self.b_a] and
-                    self.negative[self.b_a]
+                        self.positive[self.b_a] and
+                        self.negative[self.b_a]
                 ) else
                 '(+)=' if self.positive[self.b_a] else
                 '(-)=' if self.negative[self.b_a] else
@@ -577,8 +546,8 @@ class Interaction(object):
             ),
             (
                 '(+-)' if (
-                    self.positive[self.a_b] and
-                    self.negative[self.a_b]
+                        self.positive[self.a_b] and
+                        self.negative[self.a_b]
                 ) else
                 '(+)=' if self.positive[self.a_b] else
                 '(-)=' if self.negative[self.a_b] else
@@ -588,43 +557,40 @@ class Interaction(object):
             self.b.label or self.b.identifier,
             self.evidences.__repr__().strip('<>'),
         )
-    
-    
+
     def __contains__(self, other):
-        
+
         return (
             other == self.a or other == self.b
-                if isinstance(other, entity.Entity) else
+            if isinstance(other, entity.Entity) else
             self.evidences.__contains__(other)
         )
-    
-    
+
     def has_data_model(self, data_model):
-        
+
         return self.evidences.has_data_model(data_model)
-    
-    
+
     @property
     def data_models(self):
-        
+
         return {
             ev.resource.data_model
             for ev in self.evidences
         }
 
-
     def get_direction(
             self,
             direction,
-            resources = False,
-            evidences = False,
-            sources = False,
-            resource_names = False,
-        ):
+            resources=False,
+            evidences=False,
+            sources=False,
+            resource_names=False,
+    ):
         """
         Returns the state (or *resources* if specified) of the given
         *direction*.
 
+        :param resource_names:
         :arg tuple direction:
             Or [str] (if ``'undirected'``). Pair of nodes from which
             direction information is to be retrieved.
@@ -638,32 +604,31 @@ class Interaction(object):
             of the requested direction (or the list of resources if
             specified). Returns ``None`` if *direction* is not valid.
         """
-        
+
         direction = self.direction_key(direction)
-        
+
         if direction is not None:
-            
+
             return self._select_answer_type(
                 self.direction[direction],
-                resources = resources,
-                evidences = evidences,
-                resource_names = resource_names,
-                sources = sources,
+                resources=resources,
+                evidences=evidences,
+                resource_names=resource_names,
+                sources=sources,
             )
 
         else:
             return None
 
-
     def get_directions(
             self,
             src,
             tgt,
-            resources = False,
-            evidences = False,
-            resource_names = False,
-            sources = False,
-        ):
+            resources=False,
+            evidences=False,
+            resource_names=False,
+            sources=False,
+    ):
         """
         Returns all directions with boolean values or list of sources.
 
@@ -681,18 +646,18 @@ class Interaction(object):
         """
 
         query = (src, tgt)
-        
+
         answer_type_args = {
             'resources': resources,
             'evidences': evidences,
             'resource_names': resource_names,
             'sources': sources,
         }
-        
+
         query = self.direction_key(query)
-        
+
         if query is not None:
-            
+
             return [
                 self._select_answer_type(
                     self.direction[query],
@@ -707,36 +672,34 @@ class Interaction(object):
                     **answer_type_args
                 ),
             ]
-            
+
         else:
             return None
-
 
     def _select_answer_type(
             self,
             answer,
-            resources = False,
-            evidences = False,
-            resource_names = False,
-            sources = False,
-        ):
-        
+            resources=False,
+            evidences=False,
+            resource_names=False,
+            sources=False,
+    ):
+
         return (
             answer
-                if evidences else
+            if evidences else
             answer.get_resources()
-                if resources else
+            if resources else
             answer.get_resource_names()
-                if sources or resource_names else
+            if sources or resource_names else
             bool(answer)
         )
 
-
     def which_directions(
             self,
-            resources = None,
-            effect = None,
-        ):
+            resources=None,
+            effect=None,
+    ):
         """
         Returns the pair(s) of nodes for which there is information
         about their directionality.
@@ -761,24 +724,22 @@ class Interaction(object):
             for _dir, _evidences in iteritems(self.direction)
             if _dir != 'undirected' and
             _evidences and (
-                not resources or
-                _evidences & resources
+                    not resources or
+                    _evidences & resources
             ) and (
-                not effect
-                or (
-                    not resources and
-                    getattr(self, effect)[_dir]
-                ) or
-                getattr(self, effect)[_dir] & resources
+                    not effect
+                    or (
+                            not resources and
+                            getattr(self, effect)[_dir]
+                    ) or
+                    getattr(self, effect)[_dir] & resources
             )
         )
-
 
     # synonym: old name
     which_dirs = which_directions
 
-
-    def which_signs(self, resources = None, effect = None):
+    def which_signs(self, resources=None, effect=None):
         """
         Returns the pair(s) of nodes for which there is information
         about their effect signs.
@@ -806,42 +767,36 @@ class Interaction(object):
             for _effect in effects
             for _dir, _evidences in iteritems(getattr(self, _effect))
             if _evidences and (
-                not resources or
-                _evidences & resources
+                    not resources or
+                    _evidences & resources
             )
         )
-
 
     @staticmethod
     def _effect_synonyms(effect):
 
         if not effect or effect == True:
-
             return effect
 
         if effect in {'positive', 'stimulation', 'stimulatory'}:
-
             return 'positive'
 
         if effect in {'negative', 'inhibition', 'inhibitory'}:
-
             return 'negative'
 
-
-    def _resources_set(self, resources = None):
+    def _resources_set(self, resources=None):
 
         return common.to_set(resources)
-
 
     def unset_direction(
             self,
             direction,
-            only_sign = False,
-            resource = None,
-            interaction_type = None,
-            via = False,
-            source = None,
-        ):
+            only_sign=False,
+            resource=None,
+            interaction_type=None,
+            via=False,
+            source=None,
+    ):
         """
         Removes directionality and/or source information of the
         specified *direction*. Modifies attribute :py:attr:`dirs` and
@@ -856,47 +811,45 @@ class Interaction(object):
             which specific source(s) is(are) to be removed from
             :py:attr:`sources` attribute in the specified *direction*.
         """
-        
+
         direction = self.direction_key(direction)
-        
+
         if direction is not None:
-            
+
             attrs = (
                 (self._effect_synonyms(only_sign),)
-                    if only_sign else
+                if only_sign else
                 ('direction', 'positive', 'negative')
             )
             resource = resource or source
-            
+
             for attr in attrs:
-                
+
                 if resource is not None:
-                    
+
                     getattr(self, attr)[direction].remove(
-                        resource = resource,
-                        interaction_type = interaction_type,
-                        via = via,
+                        resource=resource,
+                        interaction_type=interaction_type,
+                        via=via,
                     )
-                    
+
                 else:
                     getattr(self, attr)[direction] = (
                         pypath_evidence.Evidences()
                     )
 
-
     # synonym: old name
     unset_dir = unset_direction
-
 
     def unset_sign(
             self,
             direction,
             sign,
-            resource = None,
-            interaction_type = None,
-            via = False,
-            source = None,
-        ):
+            resource=None,
+            interaction_type=None,
+            via=False,
+            source=None,
+    ):
         """
         Removes sign and/or source information of the specified
         *direction* and *sign*. Modifies attribute :py:attr:`positive`
@@ -916,38 +869,34 @@ class Interaction(object):
             which source(s) is(are) to be removed from the sources in
             the specified *direction* and *sign*.
         """
-        
+
         self.unset_direction(
-            direction = direction,
-            only_sign = sign,
-            resource = resource,
-            interaction_type = interaction_type,
-            via = via,
-            source = source,
+            direction=direction,
+            only_sign=sign,
+            resource=resource,
+            interaction_type=interaction_type,
+            via=via,
+            source=source,
         )
-    
-    
+
     def unset_interaction_type(self, interaction_type):
         """
         Removes all evidences with a certain ``interaction_type``.
         """
-        
-        for ev in tuple(self.evidences):
-            
-            if ev.resource.interaction_type == interaction_type:
-                
-                self.evidences -= ev
-        
-        for attr in ('direction', 'positive', 'negative'):
-            
-            for key, evs in getattr(self, attr):
-                
-                for ev in tuple(evs):
-                    
-                    if ev.resource.interaction_type == interaction_type:
-                        
-                        evs -= ev
 
+        for ev in tuple(self.evidences):
+
+            if ev.resource.interaction_type == interaction_type:
+                self.evidences -= ev
+
+        for attr in ('direction', 'positive', 'negative'):
+
+            for key, evs in getattr(self, attr):
+
+                for ev in tuple(evs):
+
+                    if ev.resource.interaction_type == interaction_type:
+                        evs -= ev
 
     def is_directed(self):
         """
@@ -965,8 +914,7 @@ class Interaction(object):
             if dkey != 'undirected'
         )
 
-
-    def is_directed_by_resources(self, resources = None):
+    def is_directed_by_resources(self, resources=None):
         """
         Checks if edge has any directionality information from some
         resource(s).
@@ -977,29 +925,26 @@ class Interaction(object):
             ``False`` otherwise.
         """
 
-        return self._by_resource(resources, op = operator.or_)
+        return self._by_resource(resources, op=operator.or_)
 
-
-    def is_mutual(self, resources = None):
+    def is_mutual(self, resources=None):
         """
         Checks if the edge has mutual directions (both A-->B and B-->A).
         """
 
         return (
             bool(self.direction[self.a_b]) and bool(self.direction[self.b_a])
-                if not resources else
-            self.is_mutual_by_resources(resources = resources)
+            if not resources else
+            self.is_mutual_by_resources(resources=resources)
         )
 
-
-    def is_mutual_by_resources(self, resources = None):
+    def is_mutual_by_resources(self, resources=None):
         """
         Checks if the edge has mutual directions (both A-->B and B-->A)
         according to some resource(s).
         """
 
-        return self._by_resource(resources, op = operator.and_)
-
+        return self._by_resource(resources, op=operator.and_)
 
     def is_loop(self):
         """
@@ -1007,11 +952,10 @@ class Interaction(object):
         ``True`` if the interaction is a loop edge i.e. its endpoints are the
         same node.
         """
-        
+
         return self.a == self.b
 
-
-    def _by_resource(self, resources = None, op = operator.or_):
+    def _by_resource(self, resources=None, op=operator.or_):
 
         resources = self._resources_set(resources)
 
@@ -1020,8 +964,7 @@ class Interaction(object):
             self.direction[self.b_a] & resources,
         )
 
-
-    def is_stimulation(self, direction = None, resources = None):
+    def is_stimulation(self, direction=None, resources=None):
         """
         Checks if any (or for a specific *direction*) interaction is
         activation (positive interaction).
@@ -1037,13 +980,12 @@ class Interaction(object):
         """
 
         return self._is_effect(
-            sign = 'positive',
-            direction = direction,
-            resources = resources,
+            sign='positive',
+            direction=direction,
+            resources=resources,
         )
 
-
-    def is_inhibition(self, direction = None, resources = None):
+    def is_inhibition(self, direction=None, resources=None):
         """
         Checks if any (or for a specific *direction*) interaction is
         inhibition (negative interaction).
@@ -1059,13 +1001,12 @@ class Interaction(object):
         """
 
         return self._is_effect(
-            sign = 'negative',
-            direction = direction,
-            resources = resources,
+            sign='negative',
+            direction=direction,
+            resources=resources,
         )
 
-
-    def _is_effect(self, sign, direction = None, resources = None):
+    def _is_effect(self, sign, direction=None, resources=None):
 
         _sign = getattr(self, sign)
         _resources = self._resources_set(resources)
@@ -1074,7 +1015,7 @@ class Interaction(object):
             any(
                 bool(
                     _evidences
-                        if not _resources else
+                    if not _resources else
                     _evidences & _resources
                 )
                 for _direction, _evidences in iteritems(_sign)
@@ -1082,8 +1023,7 @@ class Interaction(object):
             )
         )
 
-
-    def has_sign(self, direction = None, resources = None):
+    def has_sign(self, direction=None, resources=None):
         """
         Checks whether the edge (or for a specific *direction*) has
         any signed information (about positive/negative interactions).
@@ -1098,22 +1038,21 @@ class Interaction(object):
         """
 
         return (
-            self.is_stimulation(direction = direction, resources = resources)
+                self.is_stimulation(direction=direction, resources=resources)
                 or
-            self.is_inhibition(direction = direction, resources = resources)
+                self.is_inhibition(direction=direction, resources=resources)
         )
-
 
     def add_sign(
             self,
             direction,
             sign,
-            resource = None,
-            resource_name = None,
-            interaction_type = 'PPI',
-            data_model = None,
+            resource=None,
+            resource_name=None,
+            interaction_type='PPI',
+            data_model=None,
             **kwargs
-        ):
+    ):
         """
         Sets sign and source information on a given direction of the
         edge. Modifies the attributes :py:attr:`positive` and
@@ -1136,46 +1075,44 @@ class Interaction(object):
             is not already a ``NetworkResource`` or ``Evidence``
             instance.
         """
-        
+
         sign = self._effect_synonyms(sign)
-        
+
         evidence = (
             resource
-                if isinstance(resource, pypath_evidence.Evidence) else
+            if isinstance(resource, pypath_evidence.Evidence) else
             pypath_evidence.Evidence(
-                resource = resource,
-                references = references,
+                resource=resource,
+                references=references,
             )
-                if isinstance(resource, pypath_resource.NetworkResource) else
+            if isinstance(resource, pypath_resource.NetworkResource) else
             pypath_evidence.Evidence(
-                resource = pypath_resource.NetworkResource(
-                    name = resource_name,
-                    interaction_type = interaction_type,
-                    data_model = data_model,
+                resource=pypath_resource.NetworkResource(
+                    name=resource_name,
+                    interaction_type=interaction_type,
+                    data_model=data_model,
                     **kwargs
                 )
             )
-                if resource_name is not None else
+            if resource_name is not None else
             None
         )
-        
+
         direction = self.direction_key(direction)
-        
+
         if self._directed_key(direction) and evidence is not None:
-            
             ev_attr = getattr(self, sign)
             ev_attr += evidence
-
 
     def get_sign(
             self,
             direction,
-            sign = None,
-            evidences = False,
-            resources = False,
-            resource_names = False,
-            sources = False,
-        ):
+            sign=None,
+            evidences=False,
+            resources=False,
+            resource_names=False,
+            sources=False,
+    ):
         """
         Retrieves the sign information of the edge in the given
         diretion. If specified in *sign*, only that sign's information
@@ -1202,27 +1139,26 @@ class Interaction(object):
         """
 
         sign = self._effect_synonyms(sign)
-        
+
         answer_type_args = {
             'resources': resources,
             'evidences': evidences,
             'resource_names': resource_names,
             'sources': sources,
         }
-        
-        direction = self.direction_key(direction)
-        
-        if self._directed_key(direction):
 
+        direction = self.direction_key(direction)
+
+        if self._directed_key(direction):
             return (
-                
+
                 self._select_answer_type(
                     getattr(self, sign)[direction],
                     **answer_type_args
                 )
-                
-                    if sign else
-                
+
+                if sign else
+
                 [
                     self._select_answer_type(
                         self.positive[direction],
@@ -1233,16 +1169,15 @@ class Interaction(object):
                         **answer_type_args
                     )
                 ]
-                
-            )
 
+            )
 
     def source(
             self,
-            undirected = False,
-            resources = None,
+            undirected=False,
+            resources=None,
             **kwargs
-        ):
+    ):
         """
         Returns the name(s) of the source node(s) for each existing
         direction on the interaction.
@@ -1258,23 +1193,21 @@ class Interaction(object):
         """
 
         return self._partner(
-            source_target = 'source',
-            undirected = undirected,
-            resources = resources,
+            source_target='source',
+            undirected=undirected,
+            resources=resources,
             **kwargs
         )
-
 
     # synonym: old name
     src = source
 
-
     def target(
             self,
-            undirected = False,
-            resources = None,
+            undirected=False,
+            resources=None,
             **kwargs
-        ):
+    ):
         """
         Returns the name(s) of the target node(s) for each existing
         direction on the interaction.
@@ -1290,24 +1223,22 @@ class Interaction(object):
         """
 
         return self._partner(
-            source_target = 'target',
-            undirected = undirected,
-            resources = resources,
+            source_target='target',
+            undirected=undirected,
+            resources=resources,
             **kwargs
         )
-
 
     # synonym: old name
     tgt = target
 
-
     def _partner(
             self,
             source_target,
-            undirected = False,
-            resources = None,
+            undirected=False,
+            resources=None,
             **kwargs
-        ):
+    ):
 
         resources = self._resources_set(resources)
         _slice = slice(0, 1) if source_target == 'source' else slice(1, 2)
@@ -1315,33 +1246,32 @@ class Interaction(object):
         return tuple(itertools.chain(
             (
                 _direction[_slice]
-                    if _direction != 'undirected' else
+                if _direction != 'undirected' else
                 self.nodes
-                    if undirected else
+                if undirected else
                 ()
             )
             for _direction, _evidences in iteritems(self.direction)
             if (
                 (
-                    (
-                        not resources and
-                        not kwargs and
-                        bool(_evidences)
-                    ) or
-                    (
-                        any(
-                            ev.match(
-                                resource = res,
-                                **kwargs
+                        (
+                                not resources and
+                                not kwargs and
+                                bool(_evidences)
+                        ) or
+                        (
+                            any(
+                                ev.match(
+                                    resource=res,
+                                    **kwargs
+                                )
+                                for res in resources or (None,)
+                                for ev in _evidences
                             )
-                            for res in resources or (None,)
-                            for ev in _evidences
                         )
-                    )
                 )
             )
         ))
-
 
     def src_by_resource(self, resource):
         """
@@ -1364,11 +1294,10 @@ class Interaction(object):
             _dir[0]
             for _dir, _evidences in iteritems(self.direction)
             if (
-                _dir != 'undirected' and
-                resource in _evidences
+                    _dir != 'undirected' and
+                    resource in _evidences
             )
         ]
-
 
     def tgt_by_resource(self, resource):
         """
@@ -1391,19 +1320,18 @@ class Interaction(object):
             _dir[1]
             for _dir, _evidences in iteritems(self.direction)
             if (
-                _dir != 'undirected' and
-                resource in _evidences
+                    _dir != 'undirected' and
+                    resource in _evidences
             )
         ]
 
-
     def resources_a_b(
             self,
-            resources = False,
-            evidences = False,
-            resource_names = False,
-            sources = False,
-        ):
+            resources=False,
+            evidences=False,
+            resource_names=False,
+            sources=False,
+    ):
         """
         Retrieves the list of resources for the :py:attr:`a_b`
         direction.
@@ -1425,18 +1353,16 @@ class Interaction(object):
             **answer_type_args
         )
 
-
     # synonym for old method name
     sources_straight = resources_a_b
 
-
     def resources_b_a(
             self,
-            resources = False,
-            evidences = False,
-            resource_names = False,
-            sources = False,
-        ):
+            resources=False,
+            evidences=False,
+            resource_names=False,
+            sources=False,
+    ):
         """
         Retrieves the list of sources for the :py:attr:`b_a` direction.
 
@@ -1457,18 +1383,16 @@ class Interaction(object):
             **answer_type_args
         )
 
-
     # synonym for old method name
     sources_reverse = resources_b_a
 
-
     def resources_undirected(
             self,
-            resources = False,
-            evidences = False,
-            resource_names = False,
-            sources = False,
-        ):
+            resources=False,
+            evidences=False,
+            resource_names=False,
+            sources=False,
+    ):
         """
         Retrieves the list of resources without directed information.
 
@@ -1490,9 +1414,7 @@ class Interaction(object):
             **answer_type_args
         )
 
-
     sources_undirected = resources_undirected
-
 
     def positive_a_b(self):
         """
@@ -1507,9 +1429,7 @@ class Interaction(object):
 
         return bool(self.positive[self.a_b])
 
-
     positive_straight = positive_a_b
-
 
     def positive_b_a(self):
         """
@@ -1524,9 +1444,7 @@ class Interaction(object):
 
         return bool(self.positive[self.b_a])
 
-
     positive_reverse = positive_b_a
-
 
     def negative_a_b(self):
         """
@@ -1541,9 +1459,7 @@ class Interaction(object):
 
         return bool(self.negative[self.a_b])
 
-
     negative_straight = negative_a_b
-
 
     def negative_b_a(self):
         """
@@ -1558,9 +1474,7 @@ class Interaction(object):
 
         return bool(self.negative[self.b_a])
 
-
     negative_reverse = negative_b_a
-
 
     def negative_resources_a_b(self, **kwargs):
         """
@@ -1583,7 +1497,6 @@ class Interaction(object):
             **answer_type_args
         )
 
-
     def negative_resources_b_a(self, **kwargs):
         """
         Retrieves the list of resources for the :py:attr:`b_a`
@@ -1594,7 +1507,7 @@ class Interaction(object):
             :py:attr:`b_a` directionality of the edge with a
             negative sign.
         """
-        
+
         answer_type_args = {
             'resource_names': True
         }
@@ -1604,7 +1517,6 @@ class Interaction(object):
             self.negative[self.b_a],
             **answer_type_args
         )
-
 
     def positive_resources_a_b(self, **kwargs):
         """
@@ -1627,7 +1539,6 @@ class Interaction(object):
             **answer_type_args
         )
 
-
     def positive_resources_b_a(self, **kwargs):
         """
         Retrieves the list of resources for the :py:attr:`b_a`
@@ -1649,14 +1560,13 @@ class Interaction(object):
             **answer_type_args
         )
 
-
     def majority_dir(
             self,
-            only_interaction_type = None,
-            only_primary = True,
-            by_references = False,
-            by_reference_resource_pairs = True,
-        ):
+            only_interaction_type=None,
+            only_primary=True,
+            by_references=False,
+            by_reference_resource_pairs=True,
+    ):
         """
         Infers which is the major directionality of the edge by number
         of supporting sources.
@@ -1668,50 +1578,47 @@ class Interaction(object):
             directionality information, ``'undirected'``` will be
             returned.
         """
-        
-        
+
         a_b = self.direction[self.a_b]
         b_a = self.direction[self.b_a]
-        
+
         if not a_b and not b_a:
-            
             return 'undirected'
-        
+
         method = (
             'count_references'
-                if by_references else
+            if by_references else
             'count_curation_effort'
-                if by_reference_resource_pairs else
+            if by_reference_resource_pairs else
             'count_resources'
         )
-        
+
         n_a_b = getattr(a_b, method)(
-            interaction_type = only_interaction_type,
-            via = False if only_primary else None,
+            interaction_type=only_interaction_type,
+            via=False if only_primary else None,
         )
         n_b_a = getattr(b_a, method)(
-            interaction_type = only_interaction_type,
-            via = False if only_primary else None,
+            interaction_type=only_interaction_type,
+            via=False if only_primary else None,
         )
-        
+
         return (
             'undirected'
-                if n_a_b == 0 and n_b_a == 0 else
+            if n_a_b == 0 and n_b_a == 0 else
             None
-                if n_a_b == n_b_a else
+            if n_a_b == n_b_a else
             self.a_b
-                if n_a_b > n_b_a else
+            if n_a_b > n_b_a else
             self.b_a
         )
 
-
     def majority_sign(
             self,
-            only_interaction_type = None,
-            only_primary = True,
-            by_references = False,
-            by_reference_resource_pairs = True,
-        ):
+            only_interaction_type=None,
+            only_primary=True,
+            by_references=False,
+            by_reference_resource_pairs=True,
+    ):
         """
         Infers which is the major sign (activation/inhibition) of the
         edge by number of supporting sources on both directions.
@@ -1726,43 +1633,41 @@ class Interaction(object):
             supporting sources for both signs in that direction is
             equal.
         """
-        
+
         result = {}
-        
+
         method = (
             'count_references'
-                if by_references else
+            if by_references else
             'count_curation_effort'
-                if by_reference_resource_pairs else
+            if by_reference_resource_pairs else
             'count_resources'
         )
-        
+
         for _dir in (self.a_b, self.b_a):
-            
             n_pos = getattr(self.positive[_dir], method)(
-                interaction_type = only_interaction_type,
-                via = False if only_primary else None,
+                interaction_type=only_interaction_type,
+                via=False if only_primary else None,
             )
             n_neg = getattr(self.negative[_dir], method)(
-                interaction_type = only_interaction_type,
-                via = False if only_primary else None,
+                interaction_type=only_interaction_type,
+                via=False if only_primary else None,
             )
-            
+
             result[_dir] = [
                 0 < n_pos >= n_neg,
                 0 < n_neg >= n_pos,
             ]
-        
-        return result
 
+        return result
 
     def consensus(
             self,
-            only_interaction_type = None,
-            only_primary = False,
-            by_references = False,
-            by_reference_resource_pairs = True,
-        ):
+            only_interaction_type=None,
+            only_primary=False,
+            by_references=False,
+            by_reference_resource_pairs=True,
+    ):
         """
         Infers the consensus edge(s) according to the number of
         supporting sources. This includes direction and sign.
@@ -1775,38 +1680,37 @@ class Interaction(object):
         """
 
         result = []
-        
+
         _dir = self.majority_dir(
-            only_interaction_type = only_interaction_type,
-            only_primary = only_primary,
-            by_references = by_references,
-            by_reference_resource_pairs = by_reference_resource_pairs,
+            only_interaction_type=only_interaction_type,
+            only_primary=only_primary,
+            by_references=by_references,
+            by_reference_resource_pairs=by_reference_resource_pairs,
         )
-        
+
         if _dir == 'undirected' or _dir is None:
-            
             _dir = self.majority_dir(
-                only_interaction_type = only_interaction_type,
-                only_primary = only_primary,
-                by_references = False,
-                by_reference_resource_pairs = False,
+                only_interaction_type=only_interaction_type,
+                only_primary=only_primary,
+                by_references=False,
+                by_reference_resource_pairs=False,
             )
-        
+
         _effect = self.majority_sign(
-            only_interaction_type = only_interaction_type,
-            only_primary = only_primary,
-            by_references = by_references,
-            by_reference_resource_pairs = by_reference_resource_pairs,
+            only_interaction_type=only_interaction_type,
+            only_primary=only_primary,
+            by_references=by_references,
+            by_reference_resource_pairs=by_reference_resource_pairs,
         )
         _effect_noref = self.majority_sign(
-            only_interaction_type = only_interaction_type,
-            only_primary = only_primary,
-            by_references = False,
-            by_reference_resource_pairs = False,
+            only_interaction_type=only_interaction_type,
+            only_primary=only_primary,
+            by_references=False,
+            by_reference_resource_pairs=False,
         )
 
         if _dir == 'undirected':
-            
+
             result.append([
                 self.a_b[0],
                 self.a_b[1],
@@ -1815,46 +1719,44 @@ class Interaction(object):
             ])
 
         else:
-            
+
             dirs = (self.a_b, self.b_a) if _dir is None else (_dir,)
 
             for d in dirs:
-                
+
                 d_effect = (
                     _effect[d]
-                        if (
+                    if (
                             _effect[d] is not None and
                             _effect[d][0] != _effect[d][1]
-                        ) else
+                    ) else
                     _effect_noref[d]
                 )
-                
+
                 if d_effect is not None:
-                    
+
                     # index #0 is positive
                     if d_effect[0]:
-                        
                         result.append([
                             d[0],
                             d[1],
                             'directed',
                             'positive',
                         ])
-                    
+
                     # can not be elif bc of the case of equal weight of
                     # evidences for both positive and negative
                     if d_effect[1]:
-                        
                         result.append([
                             d[0],
                             d[1],
                             'directed',
                             'negative',
                         ])
-                
+
                 # directed with unknown effect
                 else:
-                    
+
                     result.append([
                         d[0],
                         d[1],
@@ -1864,9 +1766,7 @@ class Interaction(object):
 
         return result
 
-
     consensus_edges = consensus
-
 
     def merge(self, other):
         """
@@ -1877,31 +1777,27 @@ class Interaction(object):
         :arg pypath.interaction.Interaction other:
             The new Interaction object to be merged with the current one.
         """
-        
-        
+
         if not self._check_nodes_key(other.nodes):
-            
             _log(
                 'Attempting to merge Interaction instances with different '
                 'interacting partners.'
             )
             return
-        
+
         self.evidences += other.evidences
-        
+
         for attr, _dir in itertools.product(
-            ('direction', 'positive', 'negative'),
-            (self.a_b, self.b_a, 'undirected')
+                ('direction', 'positive', 'negative'),
+                (self.a_b, self.b_a, 'undirected')
         ):
-            
+
             if attr != 'direction' and _dir == 'undirected':
-                
                 continue
-            
+
             getattr(self, attr)[_dir] += getattr(other, attr)[_dir]
 
-
-    def translate(self, ids, new_attrs = None):
+    def translate(self, ids, new_attrs=None):
         """
         Translates the node names/identifiers according to the
         dictionary *ids*. Also is able to change attributes like `id_type`,
@@ -1926,29 +1822,29 @@ class Interaction(object):
         new_b = ids[self.nodes[1]]
         new_ids = {'a': new_a, 'b': new_b}
         to_old = common.swap_dict_simple(ids)
-        
+
         all_new_attrs = dict(
             (
                 '%s_%s' % (attr, label),
                 new_attrs[new_ids[label]][attr]
-                    if (
+                if (
                         new_ids[label] in new_attrs and
                         attr in new_attrs[new_ids[label]]
-                    ) else
+                ) else
                 getattr(getattr(self, label), attr)
             )
             for attr in ('id_type', 'entity_type', 'taxon')
             for label in ('a', 'b')
         )
-        
+
         new = Interaction(
-            a = new_a,
-            b = new_b,
+            a=new_a,
+            b=new_b,
             **all_new_attrs
         )
-        
+
         new.evidences += self.evidences
-        
+
         to_old = dict(
             (
                 new_id,
@@ -1956,14 +1852,14 @@ class Interaction(object):
             )
             for new_id, old_id in iteritems(to_old)
         )
-        
+
         # this is required to handle also loop edges
         new_old_a_b = (
             (
                 to_old[new.a.identifier],
                 to_old[new.b.identifier],
             )
-                if new.a != new.b else
+            if new.a != new.b else
             self.a_b
         )
         new_old_b_a = (
@@ -1971,171 +1867,165 @@ class Interaction(object):
                 to_old[new.b.identifier],
                 to_old[new.a.identifier],
             )
-                if new.a != new.b else
+            if new.a != new.b else
             self.b_a
         )
-        
+
         for (old_dir, new_dir), attr in itertools.product(
-            zip(
-                (
-                    new_old_a_b,
-                    new_old_b_a,
-                    'undirected'
+                zip(
+                    (
+                            new_old_a_b,
+                            new_old_b_a,
+                            'undirected'
+                    ),
+                    (
+                            new.a_b,
+                            new.b_a,
+                            'undirected',
+                    ),
                 ),
-                (
-                    new.a_b,
-                    new.b_a,
-                    'undirected',
-                ),
-            ),
-            ('direction', 'positive', 'negative'),
+                ('direction', 'positive', 'negative'),
         ):
-            
+
             if old_dir == 'undirected' and attr != 'direction':
-                
                 continue
-            
+
             getattr(new, attr)[new_dir] += getattr(self, attr)[old_dir]
-        
+
         return new
-    
-    
+
     def homology_translate_one(self, id_a, id_b, taxon):
-        
+
         return self.translate(
-            ids = {
+            ids={
                 self.a: id_a,
                 self.b: id_b,
             },
-            new_attrs = {
+            new_attrs={
                 id_a: {
                     'taxon': (
                         self.a.taxon
-                            if id_a == self.a.identifier else
+                        if id_a == self.a.identifier else
                         taxon
                     ),
                 },
                 id_b: {
                     'taxon': (
                         self.b.taxon
-                            if id_b == self.b.identifier else
+                        if id_b == self.b.identifier else
                         taxon
                     ),
                 },
             },
         )
-    
-    
-    def homology_translate(self, taxon, exclude = None):
-        
+
+    def homology_translate(self, taxon, exclude=None):
+
         exclude = exclude or set()
         exclude.add(0)
-        
+
         for new_a, new_b in itertools.product(
-            (self.a.identifier,)
+                (self.a.identifier,)
                 if self.a.taxon in exclude else
-            homology.translate(
-                source_id = self.a.identifier,
-                target = taxon,
-                source = self.a.taxon,
-            ),
-            (self.b.identifier,)
+                homology.translate(
+                    source_id=self.a.identifier,
+                    target=taxon,
+                    source=self.a.taxon,
+                ),
+                (self.b.identifier,)
                 if self.b.taxon in exclude else
-            homology.translate(
-                source_id = self.b.identifier,
-                target = taxon,
-                source = self.b.taxon,
-            ),
+                homology.translate(
+                    source_id=self.b.identifier,
+                    target=taxon,
+                    source=self.b.taxon,
+                ),
         ):
-            
             yield self.homology_translate_one(
-                id_a = new_a,
-                id_b = new_b,
-                taxon = taxon,
+                id_a=new_a,
+                id_b=new_b,
+                taxon=taxon,
             )
-    
-    
+
     def get_evidences(
             self,
-            direction = None,
-            effect = None,
-            resources = None,
-            data_model = None,
-            interaction_type = None,
-            via = None,
-            references = None,
-        ):
-        
+            direction=None,
+            effect=None,
+            resources=None,
+            data_model=None,
+            interaction_type=None,
+            via=None,
+            references=None,
+    ):
+
         effect = self._effect_synonyms(effect)
-        
+
         evidences = (
-            
+
             # any signed
             sum(itertools.chain(
                 self.positive.values(),
                 self.negative.values(),
             ))
-                
-                if effect == True else
-                
+
+            if effect == True else
+
             # only positive
             (
                 self.positive[direction]
-                    if direction in self.positive else
+                if direction in self.positive else
                 sum(self.positive.values())
             )
-                
-                if effect == 'positive' else
-                
+
+            if effect == 'positive' else
+
             # only negative
             (
                 self.negative[direction]
-                    if direction in self.negative else
+                if direction in self.negative else
                 sum(self.negative.values())
             )
-                
-                if effect == 'negative' else
-                
+
+            if effect == 'negative' else
+
             # any directed
             sum(self.direction[_dir] for _dir in self.which_dirs())
-                
-                if direction == True else
-                
+
+            if direction == True else
+
             # one specific direction
             self.direction[direction]
-                
-                if direction in self.direction else
-                
+
+            if direction in self.direction else
+
             # all evidences (default)
             self.evidences
-            
+
         )
-        
+
         return (
             pypath_evidence.Evidences(
                 evidences.filter(
-                    resource = resources,
-                    interaction_type = interaction_type,
-                    via = via,
-                    data_model = data_model,
-                    references = references,
+                    resource=resources,
+                    interaction_type=interaction_type,
+                    via=via,
+                    data_model=data_model,
+                    references=references,
                 )
             )
         )
-    
-    
+
     def get_entities(
             self,
-            entity_type = None,
-            direction = None,
-            effect = None,
-            resources = None,
-            data_model = None,
-            interaction_type = None,
-            via = None,
-            references = None,
-            return_type = None,
-        ):
+            entity_type=None,
+            direction=None,
+            effect=None,
+            resources=None,
+            data_model=None,
+            interaction_type=None,
+            via=None,
+            references=None,
+            return_type=None,
+    ):
         """
         Retrieves the entities involved in interactions matching the criteria.
         It either returns both interacting entities in a *set* or an empty
@@ -2151,45 +2041,45 @@ class Interaction(object):
             py:class:``pypath.entity.Entity`` objects, alternatives are
             ``labels``  ``identifiers``.
         """
-        
+
         # TODO: this method could be made slightly more efficient by using
         # not ``get_interactions`` but a simpler logic as here we don't need
         # to handle the directions separately; however this is not very
         # important and for the time being it's good as it is.
-        
+
         kwargs = locals()
         _ = kwargs.pop('self')
         entity_type = common.to_set(kwargs.pop('entity_type'))
         return_type = kwargs.pop('return_type')
-        
+
         return_types = {
             'entity': None,
             'entities': None,
             'id': 'identifier',
             'name': 'identifier',
         }
-        
+
         # allow plurals
         return_type = (
             return_type[:-1]
-                if (
+            if (
                     isinstance(return_type, common.basestring) and
                     return_type[-1] == 's'
-                ) else
+            ) else
             return_type
         )
         # allow some synonyms
         return_type = (
             return_types[return_type]
-                if return_type in return_types else
+            if return_type in return_types else
             return_type
         )
-        
+
         return (
             set(
                 (
                     getattr(en, return_type)
-                        if return_type and hasattr(en, return_type) else
+                    if return_type and hasattr(en, return_type) else
                     en
                 )
                 for en in
@@ -2199,49 +2089,43 @@ class Interaction(object):
                 if not entity_type or en.entity_type in entity_type
             )
         )
-    
-    
+
     @classmethod
     def _generate_entity_methods(cls):
-        
+
         def _create_entity_method(entity_type, return_type):
-            
-            
+
             def _entity_method(*args, **kwargs):
-                
                 self = args[0]
                 kwargs['entity_type'] = entity_type
                 kwargs['return_type'] = return_type
-                
+
                 return self.get_entities(*args[1:], **kwargs)
-            
-            
+
             return _entity_method
-        
-        
+
         for etype, vtype in itertools.product(
-            cls._entity_types,
-            cls._entity_values,
+                cls._entity_types,
+                cls._entity_values,
         ):
-            
+
             if etype is None and vtype is None:
-                
                 continue
-            
+
             entity_type = etype[0] if isinstance(etype, tuple) else etype
             return_type = vtype
-            
+
             etype_part = (
                 ''
-                    if not entity_type else
+                if not entity_type else
                 entity_type
-                    if vtype else
+                if vtype else
                 etype[1]
-                    if isinstance(etype, tuple) else
+                if isinstance(etype, tuple) else
                 '%ss' % entity_type
             )
             vtype_part = '%s' % vtype if vtype else ''
-            
+
             _method_name = '%s%s%s' % (
                 etype_part,
                 '_' if etype_part and vtype_part else '',
@@ -2249,37 +2133,36 @@ class Interaction(object):
             )
             method_name = 'get_%s' % _method_name
             method = _create_entity_method(
-                entity_type = entity_type,
-                return_type = return_type,
+                entity_type=entity_type,
+                return_type=return_type,
             )
-            
+
             cls._add_method(
                 method_name,
                 method,
-                signature = (
-                    ['self', ('entity_type', None)] +
-                    cls._get_method_signature +
-                    [('return_type', None)]
+                signature=(
+                        ['self', ('entity_type', None)] +
+                        cls._get_method_signature +
+                        [('return_type', None)]
                 ),
-                doc = cls.get_entities.__doc__,
+                doc=cls.get_entities.__doc__,
             )
             cls._get_methods.add(_method_name)
             cls._count_methods.add(_method_name)
-    
-    
+
     def get_interactions(
             self,
-            direction = None,
-            effect = None,
-            resources = None,
-            data_model = None,
-            interaction_type = None,
-            via = None,
-            references = None,
-            entity_type = None,
-            source_entity_type = None,
-            target_entity_type = None,
-        ):
+            direction=None,
+            effect=None,
+            resources=None,
+            data_model=None,
+            interaction_type=None,
+            via=None,
+            references=None,
+            entity_type=None,
+            source_entity_type=None,
+            target_entity_type=None,
+    ):
         """
         Returns one or two tuples of the interacting partners: one if only
         one direction, two if both directions match the query criteria.
@@ -2318,194 +2201,185 @@ class Interaction(object):
         :arg str target_entity_type:
             Molecule type for the target entity.
         """
-        
+
         effect = self._effect_synonyms(effect)
         direction = (
             self.direction_key(direction)
-                if isinstance(direction, tuple) else
+            if isinstance(direction, tuple) else
             direction
         )
-        
+
         entity_type = common.to_set(entity_type)
         source_entity_type = common.to_set(source_entity_type) or entity_type
         target_entity_type = common.to_set(target_entity_type) or entity_type
-        
+
         return tuple(
-            
+
             # direction key
             _dir
-            
+
             # possible directions
             for _dir in (self.a_b, self.b_a)
-            
+
             # conditions by selecting and evaluating evidence collections
             if (
-                (
-                    not source_entity_type or
-                    _dir[0].entity_type in source_entity_type
-                ) and
-                (
-                    not target_entity_type or
-                    _dir[1].entity_type in target_entity_type
-                )
+                    (
+                            not source_entity_type or
+                            _dir[0].entity_type in source_entity_type
+                    ) and
+                    (
+                            not target_entity_type or
+                            _dir[1].entity_type in target_entity_type
+                    )
             )
             and
             (
                 self.evaluate_evidences(
-                    this_direction = _dir,
-                    direction = direction,
-                    effect = effect,
-                    resources = resources,
-                    data_model = data_model,
-                    interaction_type = interaction_type,
-                    via = via,
-                    references = references,
+                    this_direction=_dir,
+                    direction=direction,
+                    effect=effect,
+                    resources=resources,
+                    data_model=data_model,
+                    interaction_type=interaction_type,
+                    via=via,
+                    references=references,
                 )
             )
-            
+
         )
-    
-    
+
     def evaluate_evidences(
             self,
             this_direction,
-            direction = None,
-            effect = None,
-            resources = None,
-            data_model = None,
-            interaction_type = None,
-            via = None,
-            references = None,
-        ):
+            direction=None,
+            effect=None,
+            resources=None,
+            data_model=None,
+            interaction_type=None,
+            via=None,
+            references=None,
+    ):
         """
         Selects the evidence collections matching the direction and effect
         criteria and then evaluates if any of the evidences in these
         collections match the evidence criteria.
         """
-        
+
         kwargs = locals()
         _ = kwargs.pop('self')
-        
+
         return any(self.iter_match_evidences(**kwargs))
-    
-    
+
     def iter_match_evidences(
             self,
             this_direction,
-            direction = None,
-            effect = None,
-            resources = None,
-            data_model = None,
-            interaction_type = None,
-            via = None,
-            references = None,
-        ):
+            direction=None,
+            effect=None,
+            resources=None,
+            data_model=None,
+            interaction_type=None,
+            via=None,
+            references=None,
+    ):
         """
         Selects the evidence collections matching the direction and effect
         criteria and yields collections matching the evidence criteria.
         """
-        
+
         for evs in self.iter_evidences(
-            this_direction = this_direction,
-            direction = direction,
-            effect = effect,
+                this_direction=this_direction,
+                direction=direction,
+                effect=effect,
         ):
-            
+
             if evs.match(
-                resource = resources,
-                data_model = data_model,
-                interaction_type = interaction_type,
-                via = via,
-                references = references,
+                    resource=resources,
+                    data_model=data_model,
+                    interaction_type=interaction_type,
+                    via=via,
+                    references=references,
             ):
-                
                 yield evs
-    
-    
+
     def iter_evidences(
             self,
             this_direction,
-            direction = None,
-            effect = None,
-        ):
+            direction=None,
+            effect=None,
+    ):
         """
         Selects and yields evidence collections matching the direction and
         effect criteria.
         """
-        
+
         # evidence keys
         for evs_key in ('undirected', this_direction):
-            
+
             # evidence dicts
             for this_effect in ('direction', 'positive', 'negative'):
-                
+
                 if (
-                    # only undirected
-                    (
-                        direction == False and
-                        evs_key == 'undirected' and
-                        this_effect == 'direction'
-                    ) or
-                    # undirected
-                    (
-                        direction is None and
-                        not effect and
-                        this_effect == 'direction'
-                    ) or
-                    # directed
-                    (
-                        direction != False and
-                        evs_key != 'undirected' and
-                        this_effect == 'direction' and
-                        not effect and (
-                            # any direction
-                            direction == True or
-                            # specific direction
-                            direction == this_direction
+                        # only undirected
+                        (
+                                direction == False and
+                                evs_key == 'undirected' and
+                                this_effect == 'direction'
+                        ) or
+                        # undirected
+                        (
+                                direction is None and
+                                not effect and
+                                this_effect == 'direction'
+                        ) or
+                        # directed
+                        (
+                                direction != False and
+                                evs_key != 'undirected' and
+                                this_effect == 'direction' and
+                                not effect and (
+                                        # any direction
+                                        direction == True or
+                                        # specific direction
+                                        direction == this_direction
+                                )
+                        ) or
+                        # with effect
+                        (
+                                direction != False and
+                                evs_key != 'undirected' and
+                                this_effect != 'direction' and (
+                                        # any effect
+                                        effect == True or
+                                        # specific effect
+                                        effect == this_effect
+                                )
                         )
-                    ) or
-                    # with effect
-                    (
-                        direction != False and
-                        evs_key != 'undirected' and
-                        this_effect != 'direction' and (
-                            # any effect
-                            effect == True or
-                            # specific effect
-                            effect == this_effect
-                        )
-                    )
                 ):
-                    
                     # getting the evidence dict and the key from it
                     yield getattr(self, this_effect)[evs_key]
-    
-    
+
     def get_interactions_0(self, **kwargs):
         """
         Returns unique interacting pairs without being aware of the direction.
         """
-        
+
         kwargs['direction'] = None
         kwargs['effect'] = None
-        
+
         result = self.get_interactions(**kwargs)
-        
+
         return result[:1] if result else ()
-    
-    
+
     def get_interactions_directed(self, **kwargs):
         """
         **kwargs: see the docs of method ``get_interactions``.
         """
-        
+
         if 'direction' not in kwargs or kwargs['direction'] is None:
-            
             kwargs['direction'] = True
-        
+
         return self.get_interactions(**kwargs)
-    
-    
+
     def get_interactions_undirected(self, **kwargs):
         """
         Only the undirected interactions will be considered, if any resource
@@ -2516,12 +2390,11 @@ class Interaction(object):
         
         **kwargs: see the docs of method ``get_interactions``.
         """
-        
+
         kwargs['direction'] = False
-        
+
         return self.get_interactions(**kwargs)
-    
-    
+
     def get_interactions_undirected_0(self, **kwargs):
         """
         Only the undirected interactions will be considered, if any resource
@@ -2530,12 +2403,11 @@ class Interaction(object):
         
         **kwargs: see the docs of method ``get_interactions``.
         """
-        
+
         undir = self.get_interactions_undirected(**kwargs)
-        
+
         return undir[:1] if undir else ()
-    
-    
+
     def get_interactions_non_directed(self, **kwargs):
         """
         Only the undirected interactions will be considered, if any resource
@@ -2546,16 +2418,15 @@ class Interaction(object):
         
         **kwargs: see the docs of method ``get_interactions``.
         """
-        
+
         kwargs['direction'] = True
-        
+
         return (
             self.get_interactions_undirected(**kwargs)
-                if not self.get_interactions(**kwargs) else
+            if not self.get_interactions(**kwargs) else
             ()
         )
-    
-    
+
     def get_interactions_non_directed_0(self, **kwargs):
         """
         Only the undirected interactions will be considered, if any resource
@@ -2565,44 +2436,39 @@ class Interaction(object):
         
         **kwargs: see the docs of method ``get_interactions``.
         """
-        
+
         nondir = self.get_interactions_non_directed(**kwargs)
-        
+
         return nondir[:1] if nondir else ()
-    
-    
+
     def get_interactions_signed(self, **kwargs):
         """
         **kwargs: see the docs of method ``get_interactions``.
         """
-        
+
         if 'effect' not in kwargs or kwargs['effect'] is None:
-            
             kwargs['effect'] = True
-        
+
         return self.get_interactions(**kwargs)
-    
-    
+
     def get_interactions_positive(self, **kwargs):
         """
         **kwargs: see the docs of method ``get_interactions``.
         """
-        
+
         kwargs['effect'] = 'positive'
-        
+
         return self.get_interactions(**kwargs)
-    
-    
+
     def get_interactions_negative(self, **kwargs):
         """
         **kwargs: see the docs of method ``get_interactions``.
         """
-        
+
         kwargs['effect'] = 'negative'
-        
+
         return self.get_interactions(**kwargs)
-    
-    
+
     def get_interactions_mutual(self, **kwargs):
         """
         Note: undirected interactions does not count as mutual but only
@@ -2610,16 +2476,14 @@ class Interaction(object):
         
         **kwargs: see the docs of method ``get_interactions``.
         """
-        
+
         if 'direction' not in kwargs or kwargs['direction'] is None:
-            
             kwargs['direction'] = True
-        
+
         interactions = self.get_interactions(**kwargs)
-        
+
         return interactions if len(interactions) == 2 else ()
-    
-    
+
     def is_mutual(self, **kwargs):
         """
         Note: undirected interactions does not count as mutual but only
@@ -2627,10 +2491,9 @@ class Interaction(object):
         
         **kwargs: see the docs of method ``get_interactions``.
         """
-        
+
         return bool(self.get_interactions_mutual(**kwargs))
-    
-    
+
     def count_interactions_mutual(self, **kwargs):
         """
         Note: undirected interactions does not count as mutual but only
@@ -2638,10 +2501,9 @@ class Interaction(object):
         
         **kwargs: see the docs of method ``get_interactions``.
         """
-        
+
         return int(self.is_mutual(**kwargs))
-    
-    
+
     def count_interactions_undirected(self, **kwargs):
         """
         Returns `True` if any resource annotates this interaction without
@@ -2649,10 +2511,9 @@ class Interaction(object):
         
         **kwargs: see the docs of method ``get_interactions``.
         """
-        
+
         return bool(self.get_interactions_undirected(**kwargs))
-    
-    
+
     def count_interactions_non_directed(self, **kwargs):
         """
         Returns `True` if any resource annotates this interaction without
@@ -2660,21 +2521,20 @@ class Interaction(object):
         
         **kwargs: see the docs of method ``get_interactions``.
         """
-        
+
         return bool(self.get_interactions_non_directed(**kwargs))
-    
-    
+
     def get_degrees(
             self,
             mode,
-            direction = None,
-            effect = None,
-            resources = None,
-            data_model = None,
-            interaction_type = None,
-            via = None,
-            references = None,
-        ):
+            direction=None,
+            effect=None,
+            resources=None,
+            data_model=None,
+            interaction_type=None,
+            via=None,
+            references=None,
+    ):
         """
         Returns a *set* of nodes with the connections matching the direction,
         effect and evidence criteria. E.g. if the query concerns the incoming
@@ -2690,94 +2550,84 @@ class Interaction(object):
             overwrite the undirected evidences and only the directed result
             will be returned.
         """
-        
+
         kwargs = locals()
         _ = kwargs.pop('self')
         mode = kwargs.pop('mode')
-        
+
         idx = {
             'ALL': (0, 2),
             'OUT': (0, 1),
-            'IN':  (1, 2),
+            'IN': (1, 2),
         }
-        
+
         if direction == False:
-            
             mode = 'ALL'
-        
+
         if direction is None and not effect:
-            
             _ = kwargs.pop('direction')
-            
+
             return (
-                self.get_degrees(mode = mode, direction = True, **kwargs) or
-                self.get_degrees(mode = mode, direction = False, **kwargs)
+                    self.get_degrees(mode=mode, direction=True, **kwargs) or
+                    self.get_degrees(mode=mode, direction=False, **kwargs)
             )
-        
+
         result = set()
-        
+
         node_pairs = self.get_interactions(**kwargs)
-        
+
         for pair in node_pairs:
-            
             result.update(
                 pair[
-                    idx[mode][0]:
-                    idx[mode][1]
+                idx[mode][0]:
+                idx[mode][1]
                 ]
             )
-        
+
         return result
-    
-    
+
     def get_curation_effort(self, **kwargs):
-        
+
         return tuple(
             (self.a, self.b, res, ref)
             for res, refs in
             iteritems(self.references_by_resource(**kwargs))
             for ref in refs
         )
-    
-    
+
     @staticmethod
     def _get(self, method, **kwargs):
-        
+
         via = kwargs['via'] if 'via' in kwargs else False
-        
+
         return getattr(
             self.get_evidences(
                 **kwargs
             ),
             'get_%s' % method,
-        )(via = via)
-    
-    
+        )(via=via)
+
     @staticmethod
     def _count(method):
-        
+
         @functools.wraps(method)
         def count_method(*args, **kwargs):
-            
             return len(method(*args, **kwargs))
-        
+
         return count_method
-    
-    
+
     @staticmethod
-    def _by(method, by = 'resources'):
-        
+    def _by(method, by='resources'):
+
         by = (by,) if isinstance(by, common.basestring) else by
-        
+
         @functools.wraps(method)
-        def by_method(*args, name_keys = True, **kwargs):
-            
+        def by_method(*args, name_keys=True, **kwargs):
             self = args[0]
-            
+
             for _by in by:
-                
                 _ = kwargs.pop(_by, None)
-            
+
             levels_methods = (
                 'get_%s%ss' % (
                     _by[:-1] if _by in {'resources', 'references'} else _by,
@@ -2785,12 +2635,12 @@ class Interaction(object):
                 )
                 for _by in by
             )
-            
+
             levels = list(itertools.product(*(
                 getattr(self, levels_method)()
                 for levels_method in levels_methods
             )))
-            
+
             result = dict(
                 (
                     _levels if len(_levels) > 1 else _levels[0],
@@ -2802,194 +2652,173 @@ class Interaction(object):
                 )
                 for _levels in levels
             )
-            
+
             return dict((k, v) for k, v in iteritems(result) if v)
-        
+
         return by_method
-    
-    
+
     @classmethod
     def _by_resource(cls, method):
-        
-        return cls._by(method, by = 'resources')
-    
-    
+
+        return cls._by(method, by='resources')
+
     @classmethod
     def _by_data_model(cls, method):
-        
-        return cls._by(method, by = 'data_model')
-    
-    
+
+        return cls._by(method, by='data_model')
+
     @classmethod
     def _by_interaction_type_and_data_model(cls, method):
-        
-        return cls._by(method, by = ('interaction_type', 'data_model'))
-    
-    
+
+        return cls._by(method, by=('interaction_type', 'data_model'))
+
     @classmethod
     def _by_interaction_type_and_data_model_and_resource(cls, method):
-        
+
         return cls._by(
             method,
-            by = ('interaction_type', 'data_model', 'resources'),
+            by=('interaction_type', 'data_model', 'resources'),
         )
-    
-    
+
     @classmethod
     def _by_interaction_type(cls, method):
-        
-        return cls._by(method, by = 'interaction_type')
-    
-    
+
+        return cls._by(method, by='interaction_type')
+
     @classmethod
     def _by_reference(cls, method):
-        
-        return cls._by(method, by = 'references')
-    
-    
+
+        return cls._by(method, by='references')
+
     @classmethod
     def _generate_get_methods(cls):
-        
+
         def _create_get_method(method):
-            
             @functools.wraps(method)
             def _get_method(*args, **kwargs):
-                
-                return cls._get(self = args[0], method = method, **kwargs)
-            
+                return cls._get(self=args[0], method=method, **kwargs)
+
             return _get_method
-        
+
         for _get in cls._get_methods_autogen:
-            
             method_name = 'get_%s' % _get
-            
+
             signature = cls._update_get_method_signature(method_name)
-            
+
             cls._add_method(
-                method_name = method_name,
-                method = _create_get_method(_get),
+                method_name=method_name,
+                method=_create_get_method(_get),
                 # this is not always correct, to be fixed later
-                signature = signature,
-                doc = (
-                    'Retrieves %s matching the criteria.' % (
-                        _get.replace('_', ' ')
-                    )
+                signature=signature,
+                doc=(
+                        'Retrieves %s matching the criteria.' % (
+                    _get.replace('_', ' ')
+                )
                 ),
             )
-    
-    
+
     @classmethod
     def _generate_degree_methods(cls):
-        
+
         def _create_degree_method(mode, direction, effect):
-            
+
             def _degree_method(*args, **kwargs):
-                
                 mode, direction, effect = wrap_args
-                
+
                 kwargs['direction'] = direction
                 kwargs['effect'] = effect
-                
-                return cls.get_degrees(self = args[0], mode = mode, **kwargs)
-            
+
+                return cls.get_degrees(self=args[0], mode=mode, **kwargs)
+
             return _degree_method
-        
+
         for mode, (dir_label, dir_args) in itertools.product(
-            cls._degree_modes,
-            iteritems(cls._degree_directions)
+                cls._degree_modes,
+                iteritems(cls._degree_directions)
         ):
-            
+
             if dir_label in {'undirected', 'non_directed'} and mode != 'ALL':
-                
                 continue
-            
+
             method_name = 'degrees_%s%s' % (
                 dir_label,
                 '_%s' % mode.lower() if mode != 'ALL' else ''
             )
-            
+
             cls._count_methods.add(method_name)
             cls._get_methods.add(method_name)
-            
+
             method = _create_degree_method(mode, *dir_args)
             _method_name = 'get_%s' % method_name
-            
+
             cls._add_method(
-                method_name = _method_name,
-                method = method,
-                signature = ['mode'] + cls._get_method_signature,
-                doc = cls.get_degrees.__doc__,
+                method_name=_method_name,
+                method=method,
+                signature=['mode'] + cls._get_method_signature,
+                doc=cls.get_degrees.__doc__,
             )
-    
-    
+
     @classmethod
     def _generate_count_methods(cls):
-        
+
         for _get in cls._count_methods:
-            
             _get_method = getattr(cls, 'get_%s' % _get)
-            
+
             method_name = 'count_%s' % _get
-            
+
             signature = cls._update_get_method_signature(method_name)
-            
+
             cls._add_method(
-                method_name = method_name,
-                method = cls._count(_get_method),
-                signature = cls._get_method_signature,
-                doc = _get_method.__doc__,
+                method_name=method_name,
+                method=cls._count(_get_method),
+                signature=cls._get_method_signature,
+                doc=_get_method.__doc__,
             )
-    
-    
+
     @classmethod
     def _update_get_method_signature(cls, method_name):
-        
+
         signature = cls._get_method_signature
-        
+
         if 'interaction' in method_name:
-            
             signature = signature + [
                 ('entity_type', None),
                 ('source_entity_type', None),
                 ('target_entity_type', None),
             ]
-        
+
         return signature
-    
-    
+
     @classmethod
     def _generate_by_methods(cls):
-        
+
         for _get, _by in itertools.product(
-            cls._get_methods,
-            cls._by_methods,
+                cls._get_methods,
+                cls._by_methods,
         ):
-            
             _get_method = getattr(cls, 'get_%s' % _get)
             method_name = '%s_by_%s' % (_get, _by)
             method = getattr(cls, '_by_%s' % _by)(_get_method)
-            
+
             cls._add_method(
-                method_name = method_name,
-                method = method,
-                signature = cls._get_method_signature,
-                doc = _get_method.__doc__,
+                method_name=method_name,
+                method=method,
+                signature=cls._get_method_signature,
+                doc=_get_method.__doc__,
             )
-    
-    
+
     @classmethod
-    def _add_method(cls, method_name, method, signature = None, doc = None):
-        
+    def _add_method(cls, method_name, method, signature=None, doc=None):
+
         common._add_method(
             cls,
             method_name,
             method,
-            signature = signature,
-            doc = doc,
+            signature=signature,
+            doc=doc,
         )
-    
-    
-    def generate_df_records(self, by_source = False, with_references = False):
+
+    def generate_df_records(self, by_source=False, with_references=False):
         """
         Yields interaction records. It is a generator because one edge can
         be represented by one or more records depending on the signs and
@@ -3007,152 +2836,145 @@ class Interaction(object):
             because you rarely need these and they increase the data size
             significantly.
         """
-        
+
         def source_add_via(source, via):
-            
+
             return '%s%s' % (source, '_%s' % via if via else '')
-        
-        
+
         def iter_sources(evs):
-            
+
             sources = evs.get_resource_names_via()
-            
+
             if by_source:
-                
+
                 for source, via in sources:
-                    
                     refs = (
                         {
                             ref.pmid
                             for ref in
                             self.get_references(
-                                resources = source,
-                                interaction_type = interaction_type,
-                                via = via,
+                                resources=source,
+                                interaction_type=interaction_type,
+                                via=via,
                             )
                         }
-                            if with_references else
+                        if with_references else
                         None
                     )
-                    
+
                     _source = source_add_via(source, via)
-                    
+
                     yield _source, refs
-                    
+
             else:
-                
+
                 _sources = {
                     source_add_via(source, via)
                     for source, via in sources
                 }
-                
+
                 refs = (
                     {
                         ref.pmid
                         for ref in
                         self.get_references(
-                            resources = {s[0] for s in sources},
-                            interaction_type = interaction_type,
+                            resources={s[0] for s in sources},
+                            interaction_type=interaction_type,
                         )
                     }
-                        if with_references else
+                    if with_references else
                     None
                 )
-                
+
                 if _sources:
-                    
                     yield _sources, refs
-        
-        
+
         for interaction_type in self.get_interaction_types():
-            
+
             dmodels = (
-                self.get_data_models(interaction_type = interaction_type)
+                self.get_data_models(interaction_type=interaction_type)
             )
             dmodels = dmodels if by_source else (dmodels,)
-            
+
             for data_model in dmodels:
-                
+
                 evs_undirected = self.get_evidences(
-                    direction = 'undirected',
-                    interaction_type = interaction_type,
-                    data_model = data_model,
+                    direction='undirected',
+                    interaction_type=interaction_type,
+                    data_model=data_model,
                 )
-                
+
                 for _dir in (self.a_b, self.b_a):
-                    
+
                     evs_dir = self.get_evidences(
-                        direction = _dir,
-                        interaction_type = interaction_type,
-                        data_model = data_model,
+                        direction=_dir,
+                        interaction_type=interaction_type,
+                        data_model=data_model,
                     )
                     evs_without_sign = evs_dir.__copy__()
-                    
+
                     for _effect, effect in zip(
-                        (1, -1),
-                        ('positive', 'negative')
+                            (1, -1),
+                            ('positive', 'negative')
                     ):
-                        
+
                         evs_sign = self.get_evidences(
-                            direction = _dir,
-                            effect = effect,
-                            interaction_type = interaction_type,
-                            data_model = data_model,
+                            direction=_dir,
+                            effect=effect,
+                            interaction_type=interaction_type,
+                            data_model=data_model,
                         )
                         # to make sure we keep all references:
                         evs_sign += evs_sign.intersection(evs_dir)
                         evs_without_sign -= evs_sign
                         evs_undirected -= evs_sign
-                        
+
                         for sources, refs in iter_sources(evs_sign):
-                            
                             yield InteractionDataFrameRecord(
-                                id_a = _dir[0].identifier,
-                                id_b = _dir[1].identifier,
-                                type_a = _dir[0].entity_type,
-                                type_b = _dir[1].entity_type,
-                                directed = True,
-                                effect = _effect,
-                                type = interaction_type,
-                                dmodel = data_model,
-                                sources = sources,
-                                references = refs,
+                                id_a=_dir[0].identifier,
+                                id_b=_dir[1].identifier,
+                                type_a=_dir[0].entity_type,
+                                type_b=_dir[1].entity_type,
+                                directed=True,
+                                effect=_effect,
+                                type=interaction_type,
+                                dmodel=data_model,
+                                sources=sources,
+                                references=refs,
                             )
-                    
+
                     if evs_without_sign:
-                        
+
                         evs_undirected -= evs_without_sign
-                        
+
                         for sources, refs in iter_sources(evs_without_sign):
-                            
                             yield InteractionDataFrameRecord(
-                                id_a = _dir[0].identifier,
-                                id_b = _dir[1].identifier,
-                                type_a = _dir[0].entity_type,
-                                type_b = _dir[1].entity_type,
-                                directed = True,
-                                effect = 0,
-                                type = interaction_type,
-                                dmodel = data_model,
-                                sources = sources,
-                                references = refs,
+                                id_a=_dir[0].identifier,
+                                id_b=_dir[1].identifier,
+                                type_a=_dir[0].entity_type,
+                                type_b=_dir[1].entity_type,
+                                directed=True,
+                                effect=0,
+                                type=interaction_type,
+                                dmodel=data_model,
+                                sources=sources,
+                                references=refs,
                             )
-                    
+
                 if evs_undirected:
-                    
+
                     for sources, refs in iter_sources(evs_undirected):
-                        
                         yield InteractionDataFrameRecord(
-                            id_a = self.a.identifier,
-                            id_b = self.b.identifier,
-                            type_a = self.a.entity_type,
-                            type_b = self.b.entity_type,
-                            directed = False,
-                            effect = 0,
-                            type = interaction_type,
-                            dmodel = data_model,
-                            sources = sources,
-                            references = refs,
+                            id_a=self.a.identifier,
+                            id_b=self.b.identifier,
+                            type_a=self.a.entity_type,
+                            type_b=self.b.entity_type,
+                            directed=False,
+                            effect=0,
+                            type=interaction_type,
+                            dmodel=data_model,
+                            sources=sources,
+                            references=refs,
                         )
 
 

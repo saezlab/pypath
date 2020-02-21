@@ -25,7 +25,6 @@
 from future.utils import iteritems
 
 import os
-import copy
 import collections
 
 ROOT = os.path.abspath(os.path.dirname(__file__))

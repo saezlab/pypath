@@ -34,14 +34,12 @@ import pypath.share.session as _session_mod
 
 
 class pypath(object):
-    
-    
     __version__ = _version_mod.__version__
     __author__ = _version_mod.__author__
-    
+
     _session_mod.new_session()
     session = _session_mod.get_session()
-    
+
     _disclaimer_text = (
         '\n\t=== d i s c l a i m e r ===\n\n'
         '\tAll data accessed through this module,\n'
@@ -57,32 +55,23 @@ class pypath(object):
         '\thttp://omnipathdb.org/info and \n'
         '\t`pypath.resources.urls.urls`.\n\n'
     )
-    
+
     def __init__(self):
-        
         pass
-    
+
     @classmethod
     def _disclaimer(cls):
-        
         sys.stdout.write(cls._disclaimer_text)
         sys.stdout.flush()
-    
-    
+
     @classmethod
     def license(cls):
-        
-        cls_disclaimer()
-    
-    
+        cls._disclaimer()
+
     def __getattribute__(self, attr):
-        
         try:
-            
             return importlib.import_module('pypath.%s' % attr)
-            
         except ImportError:
-            
             return object.__getattribute__(self, attr)
 
 
@@ -91,18 +80,18 @@ class pypath(object):
 pypath._disclaimer()
 _session_mod.get_log().msg(
     (
-        '\n'
-        '\t- session ID: `%s`\n'
-        '\t- working directory: `%s`\n'
-        '\t- logfile: `%s`\n'
-        '\t- pypath version: %s' % (
-            _session_mod.get_session().label,
-            os.getcwd(),
-            _session_mod.get_log().fname,
-            pypath.__version__
-        )
+            '\n'
+            '\t- session ID: `%s`\n'
+            '\t- working directory: `%s`\n'
+            '\t- logfile: `%s`\n'
+            '\t- pypath version: %s' % (
+                _session_mod.get_session().label,
+                os.getcwd(),
+                _session_mod.get_log().fname,
+                pypath.__version__
+            )
     ),
-    label = 'pypath',
-    level = -9,
-    wrap = False,
+    label='pypath',
+    level=-9,
+    wrap=False,
 )

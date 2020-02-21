@@ -23,7 +23,6 @@
 import pytest
 
 
-@pytest.fixture(scope = "session")
+@pytest.fixture(scope="session")
 def cachedir(tmpdir_factory):
-    
     return tmpdir_factory.mktemp("cache")

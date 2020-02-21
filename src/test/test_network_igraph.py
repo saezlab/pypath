@@ -24,75 +24,63 @@ Tests for the `igraph` based implementation of pypath's network building
 tools. Currently in `pypath.main.PyPath`.
 """
 
-import pytest
-
-import pypath.main as main
-import pypath.settings as settings
-import pypath.data_formats as data_formats
+import pypath.resources.data_formats as data_formats
+from pypath.legacy import main
+import pypath.share.settings as settings
 
 
 class TestPyPath(object):
-    
-    
+
     def test_complex_expansion(self):
-        
         input_param = {'Signor': data_formats.pathway['signor']}
-        
-        settings.setup(network_pickle_cache = False)
+
+        settings.setup(network_pickle_cache=False)
         # a network with all complexes expanded to single proteins
-        settings.setup(network_expand_complexes = True)
+        settings.setup(network_expand_complexes=True)
         netw_complex_expanded = main.PyPath()
         netw_complex_expanded.keep_raw = True
         netw_complex_expanded.init_network(input_param)
-        
+
         # a network with complexes as entities (vertices) in it
-        settings.setup(network_expand_complexes = False)
+        settings.setup(network_expand_complexes=False)
         netw_complex_entities = main.PyPath()
         netw_complex_entities.init_network(input_param)
-        
+
         # collecting all interactions of the complexes
         expanded_connections = set()
-        
+
         for v in netw_complex_entities.graph.vs:
-            
             if v['type'] != 'complex':
-                
                 continue
-            
+
             for vid_nb in netw_complex_entities.graph.neighbors(v.index):
-                
                 names_nb = netw_complex_entities.graph.vs[vid_nb]['name']
                 # if the neighbor is another complex
                 uniprots_nb = (
                     names_nb.components.keys()
-                        if hasattr(names_nb, 'components') else
+                    if hasattr(names_nb, 'components') else
                     (names_nb,)
                 )
-                
+
                 for uniprot_nb in uniprots_nb:
-                    
                     for uniprot_comp in v['name'].components.keys():
-                        
                         expanded_connections.add(tuple(sorted((
                             uniprot_nb,
                             uniprot_comp,
                         ))))
-        
+
         # checking if all these connections exist in the expanded network
         missing = set()
-        
+
         for uniprot1, uniprot2 in expanded_connections:
-            
             if (
-                not netw_complex_expanded.get_edge(uniprot1, uniprot2) and
-                uniprot1 != uniprot2
+                    not netw_complex_expanded.get_edge(uniprot1, uniprot2) and
+                    uniprot1 != uniprot2
             ):
-                
                 missing.add((uniprot1, uniprot2))
-        
+
         assert not missing
-    
-    
+
     def test_orthology_translation(self):
         """
         We test this on a nice complicated example case when 3 human
@@ -100,7 +88,7 @@ class TestPyPath(object):
         and check if it has one and only one interaction with this partner
         with the correct direction and sign.
         """
-        
+
         pa = main.PyPath()
         pa.init_network({'s': data_formats.pathway['signor']})
         pa.homology_translation(target = 10090)

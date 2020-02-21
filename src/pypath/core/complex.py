@@ -21,29 +21,26 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from future.utils import iteritems
-
-import sys
-import importlib as imp
-import traceback
 import collections
+import importlib as imp
+import sys
+import traceback
+
+from future.utils import iteritems
 
 try:
     import cPickle as pickle
 except:
     import pickle
 
-import numpy as np
 import pandas as pd
 
-import pypath.inputs as inputs
 import pypath.inputs.main as dataio
 import pypath.internals.intera as intera
 import pypath.internals.resource as resource
 import pypath.share.settings as settings
 import pypath.share.session as session_mod
 import pypath.share.common as common
-
 
 complex_resources = (
     'Signor',
@@ -64,16 +61,15 @@ class AbstractComplexResource(resource.AbstractResource):
     A resource which provides information about molecular complexes.
     """
 
-
     def __init__(
             self,
             name,
-            ncbi_tax_id = 9606,
-            input_method = None,
-            input_args = None,
-            dump = None,
+            ncbi_tax_id=9606,
+            input_method=None,
+            input_args=None,
+            dump=None,
             **kwargs
-        ):
+    ):
         """
         name : str
             Custom name for the resource.
@@ -84,28 +80,26 @@ class AbstractComplexResource(resource.AbstractResource):
             instances.
         """
 
-        session_mod.Logger.__init__(self, name = 'complex')
+        session_mod.Logger.__init__(self, name='complex')
 
         self.complexes = {}
 
         resource.AbstractResource.__init__(
             self,
-            name = name,
-            ncbi_tax_id = ncbi_tax_id,
-            input_method = input_method,
-            input_args = input_args,
-            dump = dump,
-            data_attr_name = 'complexes',
+            name=name,
+            ncbi_tax_id=ncbi_tax_id,
+            input_method=input_method,
+            input_args=input_args,
+            dump=dump,
+            data_attr_name='complexes',
         )
 
         self.load()
-
 
     def load(self):
 
         resource.AbstractResource.load(self)
         self.update_index()
-
 
     def _process_method(self):
 
@@ -113,13 +107,10 @@ class AbstractComplexResource(resource.AbstractResource):
 
         delattr(self, 'data')
 
-
     def __iter__(self):
 
         for cplex in self.complexes.values():
-
             yield cplex
-
 
     def update_index(self):
 
@@ -130,25 +121,20 @@ class AbstractComplexResource(resource.AbstractResource):
         for cplex in self:
 
             for protein in cplex:
-
                 self.proteins[protein].add(cplex)
 
             for db in cplex.sources:
-
                 self.resources[protein].add(cplex)
 
             for db, ids in iteritems(cplex.ids):
 
                 for _id in ids:
-
                     self.ids[(db, _id)] = cplex
-
 
     def __contains__(self, other):
 
         # a Complex instance
         if isinstance(other, intera.Complex):
-
             other = other.__str__()
 
         # either a UniProt ID or
@@ -165,75 +151,66 @@ class AbstractComplexResource(resource.AbstractResource):
 
         return False
 
-
     def __len__(self):
 
         return len(self.complexes)
-    
-    
+
     def __repr__(self):
-        
+
         return '<Complex database: %u complexes>' % len(self)
-    
-    
+
     @property
     def numof_references(self):
-        
+
         return len(
             set.union(*(
                 cplex.references for cplex in self.complexes.values()
             ))
         )
-    
-    
+
     @property
     def curation_effort(self):
-        
+
         return len(
             set.union(*(
                 {(key, ref) for ref in cplex.references}
                 for key, cplex in iteritems(self.complexes)
             ))
         )
-    
-    
+
     @property
     def has_stoichiometry(self):
-        
+
         return any(
             cnt > 1
             for cplex in self.complexes.values()
             for cnt in cplex.components.values()
         )
-    
-    
+
     @property
     def all_sources(self):
-        
+
         return set.union(*(
             cplex.sources
             for cplex in self.complexes.values()
         ))
-    
-    
+
     @property
     def homomers(self):
-        
+
         return sum(
             1 for cplex in self.complexes.values()
             if len(cplex.components) == 1
         )
-    
-    
+
     @property
     def heteromers(self):
-        
+
         return sum(
             1 for cplex in self.complexes.values()
             if len(cplex.components) > 1
         )
-    
-    
+
     def make_df(self):
 
         colnames = [
@@ -245,13 +222,12 @@ class AbstractComplexResource(resource.AbstractResource):
             'references',
             'identifiers',
         ]
-        
+
         self._log('Creating a data frame of complexes.')
-        
+
         records = []
 
         for cplex in self.complexes.values():
-
             records.append([
                 cplex.name if cplex.name else None,
                 cplex.__str__()[8:],
@@ -268,27 +244,24 @@ class AbstractComplexResource(resource.AbstractResource):
 
         self.df = pd.DataFrame(
             records,
-            columns = colnames,
+            columns=colnames,
         )
-        
+
         self._log(
             'Created data frame of complexes. '
             'Memory usage: %s.' % common.df_memory_usage(self.df)
         )
 
-
     def _from_dump_callback(self):
 
         if hasattr(self, '_from_dump'):
-
             self.complexes = self._from_dump
             delattr(self, '_from_dump')
             delattr(self, 'dump')
-    
-    
+
     @property
     def summary(self):
-        
+
         return {
             'n_complexes': self.__len__(),
             'n_references': self.numof_references,
@@ -299,193 +272,169 @@ class AbstractComplexResource(resource.AbstractResource):
             'homomers': self.homomers,
             'heteromers': self.heteromers,
         }
-    
-    
+
     @property
     def summary_str(self):
-        
+
         s = self.summary
         bar = '=' * 70
-        
+
         return (
-            '\n%s\n'
-            'Complex resource `%s`\n'
-            '%s\n'
-            '\tNumber of complexes: %u\n'
-            '\tHomomers: %u\n'
-            '\tHeteromers: %u\n'
-            '\tNumber of literature references: %u\n'
-            '\tCuration effort (reference-entity pairs): %u\n'
-            '\tHas stoichiometry: %s\n'
-            '\tSources: %s\n'
-            '%s\n\n'
-        ) % (
-            bar,
-            self.name,
-            bar,
-            s['n_complexes'],
-            s['homomers'],
-            s['heteromers'],
-            s['n_references'],
-            s['curation_effort'],
-            str(s['has_stoichiometry']),
-            ', '.join(s['sources']),
-            bar
-        )
+                   '\n%s\n'
+                   'Complex resource `%s`\n'
+                   '%s\n'
+                   '\tNumber of complexes: %u\n'
+                   '\tHomomers: %u\n'
+                   '\tHeteromers: %u\n'
+                   '\tNumber of literature references: %u\n'
+                   '\tCuration effort (reference-entity pairs): %u\n'
+                   '\tHas stoichiometry: %s\n'
+                   '\tSources: %s\n'
+                   '%s\n\n'
+               ) % (
+                   bar,
+                   self.name,
+                   bar,
+                   s['n_complexes'],
+                   s['homomers'],
+                   s['heteromers'],
+                   s['n_references'],
+                   s['curation_effort'],
+                   str(s['has_stoichiometry']),
+                   ', '.join(s['sources']),
+                   bar
+               )
 
 
 class CellPhoneDB(AbstractComplexResource):
 
-
     def __init__(self, **kwargs):
-
         AbstractComplexResource.__init__(
             self,
-            name = 'CellPhoneDB',
-            input_method = 'cellphonedb_complexes',
+            name='CellPhoneDB',
+            input_method='cellphonedb_complexes',
         )
 
 
 class Corum(AbstractComplexResource):
 
-
-    def __init__(self, input_args = None, **kwargs):
-
+    def __init__(self, input_args=None, **kwargs):
         AbstractComplexResource.__init__(
             self,
-            name = 'CORUM',
-            input_method = 'corum_complexes',
-            input_args = input_args or {},
+            name='CORUM',
+            input_method='corum_complexes',
+            input_args=input_args or {},
         )
 
 
 class Havugimana(AbstractComplexResource):
 
-
-    def __init__(self, input_args = None, **kwargs):
-
+    def __init__(self, input_args=None, **kwargs):
         AbstractComplexResource.__init__(
             self,
-            name = 'Havugimana2012',
-            input_method = 'havugimana_complexes',
-            input_args = input_args or {},
+            name='Havugimana2012',
+            input_method='havugimana_complexes',
+            input_args=input_args or {},
         )
 
 
 class Compleat(AbstractComplexResource):
 
-
-    def __init__(self, input_args = None, **kwargs):
-
+    def __init__(self, input_args=None, **kwargs):
         AbstractComplexResource.__init__(
             self,
-            name = 'Compleat',
-            input_method = 'compleat_complexes',
-            input_args = input_args or {},
+            name='Compleat',
+            input_method='compleat_complexes',
+            input_args=input_args or {},
         )
 
 
 class ComplexPortal(AbstractComplexResource):
 
-
-    def __init__(self, input_args = None, **kwargs):
-
+    def __init__(self, input_args=None, **kwargs):
         AbstractComplexResource.__init__(
             self,
-            name = 'ComplexPortal',
-            input_method = 'complexportal_complexes',
-            input_args = input_args or {},
+            name='ComplexPortal',
+            input_method='complexportal_complexes',
+            input_args=input_args or {},
         )
 
 
 class Pdb(AbstractComplexResource):
 
-
-    def __init__(self, input_args = None, **kwargs):
-
+    def __init__(self, input_args=None, **kwargs):
         input_args = input_args or {}
 
         if 'organism' not in input_args:
-
             input_args['organism'] = settings.get('default_organism')
 
         AbstractComplexResource.__init__(
             self,
-            name = 'PDB',
-            input_method = 'pdb_complexes',
-            input_args = input_args or {},
+            name='PDB',
+            input_method='pdb_complexes',
+            input_args=input_args or {},
         )
 
 
 class Signor(AbstractComplexResource):
 
-
-    def __init__(self, input_args = None, **kwargs):
-
+    def __init__(self, input_args=None, **kwargs):
         input_args = input_args or {}
 
         if 'organism' not in input_args:
-
             input_args['organism'] = settings.get('default_organism')
 
         AbstractComplexResource.__init__(
             self,
-            name = 'SIGNOR',
-            input_method = 'signor.signor_complexes',
-            input_args = input_args or {},
+            name='SIGNOR',
+            input_method='signor.signor_complexes',
+            input_args=input_args or {},
         )
 
 
 class Hpmr(AbstractComplexResource):
 
-
-    def __init__(self, input_args = None, **kwargs):
-
+    def __init__(self, input_args=None, **kwargs):
         input_args = input_args or {}
 
         AbstractComplexResource.__init__(
             self,
-            name = 'HPMR',
-            input_method = 'hpmr_complexes',
-            input_args = input_args or {},
+            name='HPMR',
+            input_method='hpmr_complexes',
+            input_args=input_args or {},
         )
 
 
 class Humap(AbstractComplexResource):
 
-
-    def __init__(self, input_args = None, **kwargs):
-
+    def __init__(self, input_args=None, **kwargs):
         AbstractComplexResource.__init__(
             self,
-            name = 'hu.MAP',
-            input_method = 'humap_complexes',
+            name='hu.MAP',
+            input_method='humap_complexes',
         )
 
 
 class GuideToPharmacology(AbstractComplexResource):
 
-
-    def __init__(self, input_args = None, **kwargs):
-
+    def __init__(self, input_args=None, **kwargs):
         input_args = input_args or {}
 
         AbstractComplexResource.__init__(
             self,
-            name = 'Guide2Pharma',
-            input_method = 'guide2pharma_complexes',
-            input_args = input_args or {},
+            name='Guide2Pharma',
+            input_method='guide2pharma_complexes',
+            input_args=input_args or {},
         )
 
 
 class ComplexAggregator(AbstractComplexResource):
 
-
     def __init__(
             self,
-            resources = None,
-            pickle_file = None,
-        ):
+            resources=None,
+            pickle_file=None,
+    ):
         """
         Combines complexes from multiple resources.
 
@@ -499,9 +448,8 @@ class ComplexAggregator(AbstractComplexResource):
 
         AbstractComplexResource.__init__(
             self,
-            name = 'OmniPath',
+            name='OmniPath',
         )
-
 
     def reload(self):
         """
@@ -509,16 +457,14 @@ class ComplexAggregator(AbstractComplexResource):
         """
 
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
 
-
     def load(self):
 
         if self.pickle_file:
-
             self.load_from_pickle(self.pickle_file)
             return
 
@@ -532,7 +478,6 @@ class ComplexAggregator(AbstractComplexResource):
                 if not callable(res):
 
                     if res in globals():
-
                         res = globals()[res]
 
                 if callable(res):
@@ -542,11 +487,10 @@ class ComplexAggregator(AbstractComplexResource):
                 elif hasattr(res, 'complexes'):
 
                     processor = res
-                
+
                 if hasattr(processor, 'summary'):
-                    
                     self.summaries[processor.name] = processor.summary
-                
+
                 for key, cplex in iteritems(processor.complexes):
 
                     if key in self.data:
@@ -569,35 +513,30 @@ class ComplexAggregator(AbstractComplexResource):
         self.update_index()
         self.update_summaries()
 
-
     def load_from_pickle(self, pickle_file):
-        
-        self._log('Loading from pickle `%s`.' % pickle_file)
-        
-        with open(pickle_file, 'rb') as fp:
 
+        self._log('Loading from pickle `%s`.' % pickle_file)
+
+        with open(pickle_file, 'rb') as fp:
             self.complexes, self.summaries = pickle.load(fp)
-        
+
         self._log('Loaded from pickle `%s`.' % pickle_file)
-    
-    
+
     def update_summaries(self):
-        
+
         for src in self.summaries.keys():
-            
             self.summaries[src]['unique_complexes'] = sum(
                 1 for cplex in self.complexes.values()
                 if len(cplex.sources) == 1 and src in cplex.sources
             )
-            
+
             self.summaries[src]['shared_complexes'] = sum(
                 1 for cplex in self.complexes.values()
                 if len(cplex.sources) > 1 and src in cplex.sources
             )
-    
-    
-    def summaries_tab(self, outfile = None, return_table = False):
-        
+
+    def summaries_tab(self, outfile=None, return_table=False):
+
         columns = (
             ('name', 'Resource'),
             ('n_complexes', 'All complexes'),
@@ -609,10 +548,10 @@ class ComplexAggregator(AbstractComplexResource):
             ('n_references', 'References'),
             ('curation_effort', 'Curation effort'),
         )
-        
+
         tab = []
         tab.append([f[1] for f in columns])
-        
+
         tab.extend([
             [
                 str(self.summaries[src][f[0]])
@@ -620,25 +559,20 @@ class ComplexAggregator(AbstractComplexResource):
             ]
             for src in sorted(self.summaries.keys())
         ])
-        
-        if outfile:
-            
-            with open(outfile, 'w') as fp:
-                
-                fp.write('\n'.join('\t'.join(row) for row in tab))
-        
-        if return_table:
-            
-            return tab
 
+        if outfile:
+            with open(outfile, 'w') as fp:
+                fp.write('\n'.join('\t'.join(row) for row in tab))
+
+        if return_table:
+            return tab
 
     def _update_complex_attribute_classes(self):
 
         self._update_complex_attribute_classes_static(self.complexes)
 
-
     @staticmethod
-    def _update_complex_attribute_classes_static(cplexes, mod = None):
+    def _update_complex_attribute_classes_static(cplexes, mod=None):
 
         mod = mod or sys.modules[__name__]
 
@@ -658,20 +592,18 @@ class ComplexAggregator(AbstractComplexResource):
 
                         val.__class__ = getattr(mod, cls)
 
-
     def save_to_pickle(self, pickle_file):
-        
-        self._log('Saving to pickle `%s`.' % pickle_file)
-        
-        self._update_complex_attribute_classes()
-        
-        with open(pickle_file, 'wb') as fp:
 
+        self._log('Saving to pickle `%s`.' % pickle_file)
+
+        self._update_complex_attribute_classes()
+
+        with open(pickle_file, 'wb') as fp:
             pickle.dump(
-                obj = (self.complexes, self.summaries),
-                file = fp,
+                obj=(self.complexes, self.summaries),
+                file=fp,
             )
-        
+
         self._log('Saved to pickle `%s`.' % pickle_file)
 
 
@@ -691,7 +623,6 @@ def get_db(**kwargs):
     """
 
     if 'db' not in globals():
-
         init_db(**kwargs)
 
     return globals()['db']

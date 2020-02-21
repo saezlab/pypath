@@ -34,7 +34,6 @@ import pypath.core.annot as annot
 import pypath.core.intercell_annot as intercell_annot
 import pypath.core.network as network_mod
 
-
 IntercellRole = collections.namedtuple(
     'IntercellRole',
     ['source', 'role'],
@@ -43,21 +42,19 @@ IntercellRole = collections.namedtuple(
 
 class IntercellAnnotation(annot.CustomAnnotation):
 
-
-    def __init__(self, class_definitions = None, **kwargs):
+    def __init__(self, class_definitions=None, **kwargs):
 
         class_definitions = (
-            class_definitions or intercell_annot.annot_combined_classes
+                class_definitions or intercell_annot.annot_combined_classes
         )
 
         annot.CustomAnnotation.__init__(
             self,
-            class_definitions = class_definitions,
+            class_definitions=class_definitions,
             **kwargs
         )
 
         self.make_df()
-
 
     def reload(self):
         """
@@ -65,11 +62,10 @@ class IntercellAnnotation(annot.CustomAnnotation):
         """
 
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-
 
     def set_classes(self):
 
@@ -95,16 +91,13 @@ class IntercellAnnotation(annot.CustomAnnotation):
                 this_part = '_'.join(cls_split[:j])
 
                 if this_part in self.class_names:
-
                     mainclass = this_part
 
             self.main_classes[cls] = mainclass
 
-
     def add_classes_to_df(self):
 
         if not hasattr(self, 'df'):
-
             return
 
         self.df['mainclass'] = (
@@ -115,14 +108,13 @@ class IntercellAnnotation(annot.CustomAnnotation):
             np.array([
                 (
                     self.class_types[c]
-                        if c in self.class_types else
+                    if c in self.class_types else
                     'sub'
                 )
                 for c in self.df.category
             ])
         )
         self.df['class_type'] = self.df['class_type'].astype('category')
-
 
     def collect_classes(self):
 
@@ -160,7 +152,6 @@ class IntercellAnnotation(annot.CustomAnnotation):
                     this_part = '_'.join(cls_split[:j])
 
                     if this_part in self.class_names:
-
                         mainclass = this_part
 
                 self.children[mainclass].add(cls)
@@ -169,7 +160,6 @@ class IntercellAnnotation(annot.CustomAnnotation):
                 resource = cls_split[-1]
 
             if mainclass is not None and resource not in mainclass:
-
                 self.resource_labels[cls] = (
                     intercell_annot.get_resource_label(resource)
                 )
@@ -178,23 +168,20 @@ class IntercellAnnotation(annot.CustomAnnotation):
                 intercell_annot.get_class_label(mainclass or cls)
             )
 
-
     def make_df(self):
 
         annot.CustomAnnotation.make_df(self)
 
         self.setup_intercell_classes()
 
-
     def load_from_pickle(self, pickle_file):
 
         annot.CustomAnnotation.load_from_pickle(
             self,
-            pickle_file = pickle_file,
+            pickle_file=pickle_file,
         )
 
         self.setup_intercell_classes()
-
 
     def setup_intercell_classes(self):
 
@@ -202,26 +189,22 @@ class IntercellAnnotation(annot.CustomAnnotation):
         self.add_classes_to_df()
         self.collect_classes()
 
-
     def __repr__(self):
 
         return (
-            '<Intercell annotations: %s records about %s entities>' % (
-                self.numof_records(),
-                self.numof_entities(),
-            )
+                '<Intercell annotations: %s records about %s entities>' % (
+            self.numof_records(),
+            self.numof_entities(),
+        )
         )
 
 
 def init_db(**kwargs):
-
     globals()['db'] = IntercellAnnotation(**kwargs)
 
 
 def get_db(**kwargs):
-
     if 'db' not in globals():
-
         init_db(**kwargs)
 
     return globals()['db']

@@ -19,18 +19,13 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-import pytest
-
-from pypath import main
 import pypath.resources.network as netres
-
+from pypath import main
 
 
 class TestInteraction(object):
-    
-    
+
     def test_contains(self):
-        
         sr = netres.pathway['signor']
         sk = sr.key
         si = 'SIGNOR'
@@ -39,18 +34,16 @@ class TestInteraction(object):
         pa.init_network(netres.pathway)
 
         assert (
-            [sr in a for a in pa.graph.es['attrs']] ==
-            [sk in a for a in pa.graph.es['attrs']] ==
-            [si in a for a in pa.graph.es['attrs']]
+                [sr in a for a in pa.graph.es['attrs']] ==
+                [sk in a for a in pa.graph.es['attrs']] ==
+                [si in a for a in pa.graph.es['attrs']]
         )
-    
-    
+
     def test_filter_via(self):
-        
         pa = main.PyPath()
         pa.init_network(netres.ptm_misc)
-        
+
         assert any(
-            len(list(a.evidences.filter(via = 'MIMP')))
+            len(list(a.evidences.filter(via='MIMP')))
             for a in pa.graph.es['attrs']
         )

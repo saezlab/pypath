@@ -382,7 +382,6 @@ class EntityList(object):
 
         return list(self.entities)
 
-
     l = labels
     i = ids
     e = entities

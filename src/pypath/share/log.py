@@ -26,20 +26,19 @@ import time
 import datetime
 
 import timeloop
+
 # we use this for simple little tasks only
 # and don't want engage another logger
 timeloop.app.logging.disable(level=9999)
 
 import pypath.share.settings as settings
 
-
 __all__ = ['new_logger', 'Logger']
-
 
 _log_flush_timeloop = timeloop.Timeloop()
 
 
-def new_logger(name = None, logdir = None, verbosity = None, **kwargs):
+def new_logger(name=None, logdir=None, verbosity=None, **kwargs):
     """
     Returns a new logger with default settings (can be customized).
 
@@ -62,28 +61,27 @@ def new_logger(name = None, logdir = None, verbosity = None, **kwargs):
     logdir = logdir or '%s_log' % name
 
     return Logger(
-        fname = '%s__%s.log' % (
+        fname='%s__%s.log' % (
             name,
             Logger.timestamp().replace(' ', '_').replace(':', '.'),
         ),
-        verbosity = 0,
-        logdir = logdir,
+        verbosity=0,
+        logdir=logdir,
         **kwargs
     )
 
 
 class Logger(object):
-
     strftime = time.strftime
 
     def __init__(
             self,
             fname,
-            verbosity = None,
-            console_level = None,
-            logdir = None,
-            max_width = 200,
-        ):
+            verbosity=None,
+            console_level=None,
+            logdir=None,
+            max_width=200,
+    ):
         """
         fname : str
             Log file name.
@@ -98,31 +96,30 @@ class Logger(object):
         """
 
         @_log_flush_timeloop.job(
-            interval = datetime.timedelta(
-                seconds = settings.get('log_flush_interval')
+            interval=datetime.timedelta(
+                seconds=settings.get('log_flush_interval')
             )
         )
         def _flush():
-
             self.flush()
 
-        _log_flush_timeloop.start(block = False)
+        _log_flush_timeloop.start(block=False)
 
         self.wrapper = textwrap.TextWrapper(
-            width = max_width,
-            subsequent_indent = ' ' * 22,
-            break_long_words = False,
+            width=max_width,
+            subsequent_indent=' ' * 22,
+            break_long_words=False,
         )
         self.logdir = self.get_logdir(logdir)
-        self.fname  = os.path.join(self.logdir, fname)
+        self.fname = os.path.join(self.logdir, fname)
         self.verbosity = (
             verbosity
-                if verbosity is not None else
+            if verbosity is not None else
             settings.get('log_verbosity')
         )
         self.console_level = (
             console_level
-                if console_level is not None else
+            if console_level is not None else
             settings.get('console_verbosity')
         )
         self.open_logfile()
@@ -152,7 +149,7 @@ class Logger(object):
         if level <= self.console_level:
             self._console(msg)
 
-    def label_message(self, msg, label = None):
+    def label_message(self, msg, label=None):
         """
         Adds a label in front of the message.
         """
@@ -161,7 +158,6 @@ class Logger(object):
 
         return '%s%s' % (label, msg)
 
-
     def timestamp_message(self, msg):
         """
         Adds a timestamp in front of the message.
@@ -169,14 +165,12 @@ class Logger(object):
 
         return '[%s] %s\n' % (self.timestamp(), msg)
 
-
     def _console(self, msg):
 
         sys.stdout.write(msg)
         sys.stdout.flush()
 
-
-    def console(self, msg = '', label = None):
+    def console(self, msg='', label=None):
         """
         Prints a message to the console and also to the logfile.
 
@@ -184,8 +178,7 @@ class Logger(object):
             Text of the message.
         """
 
-        self.msg(msg = msg, label = label, level = self.console_level)
-
+        self.msg(msg=msg, label=label, level=self.console_level)
 
     @classmethod
     def timestamp(cls):
@@ -195,19 +188,16 @@ class Logger(object):
 
         return cls.strftime('%Y-%m-%d %H:%M:%S')
 
-
     def __del__(self):
 
         if hasattr(_log_flush_timeloop, 'stop'):
-
             _log_flush_timeloop.stop()
 
         self.msg('Logger shut down, logfile `%s` closed.' % self.fname)
         self.msg('Bye.')
         self.close_logfile()
 
-
-    def get_logdir(self, dirname = None):
+    def get_logdir(self, dirname=None):
         """
         Returns the path to log directory.
         Also creates the directory if does not exist.
@@ -220,7 +210,6 @@ class Logger(object):
 
         return os.path.abspath(dirname)
 
-
     def open_logfile(self):
         """
         Opens the log file.
@@ -230,16 +219,13 @@ class Logger(object):
 
         self.fp = open(self.fname, 'wb')
 
-
     def close_logfile(self):
         """
         Closes the log file.
         """
 
         if hasattr(self, 'fp') and not self.fp.closed:
-
             self.fp.close()
-
 
     def flush(self):
         """
@@ -247,5 +233,4 @@ class Logger(object):
         """
 
         if hasattr(self, 'fp') and not self.fp.closed:
-
             self.fp.flush()

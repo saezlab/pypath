@@ -19,53 +19,46 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from future.utils import iteritems
-from past.builtins import xrange, range
-
-import sys
+import collections
 import importlib as imp
 import itertools
-import collections
 import pickle
 
 import pandas as pd
+from future.utils import iteritems
 
-import pypath.inputs.main as dataio
-import pypath.share.common as common
-import pypath.utils.mapping as mapping
-import pypath.utils.homology as homology
-import pypath.inputs.uniprot as uniprot_input
-import pypath.internals.intera as intera
-import pypath.share.progress as progress
-import pypath.share.session as session_mod
-import pypath.utils.taxonomy as taxonomy
-import pypath.inputs as inputs
 import pypath.core.evidence as evidence
+import pypath.inputs as inputs
+import pypath.internals.intera as intera
 import pypath.resources as resources
+import pypath.share.common as common
+import pypath.share.session as session_mod
+import pypath.utils.homology as homology
+import pypath.utils.mapping as mapping
+import pypath.utils.taxonomy as taxonomy
 
 
 class EnzymeSubstrateProcessor(
-        homology.Proteomes,
-        homology.SequenceContainer
-    ):
-
+    homology.Proteomes,
+    homology.SequenceContainer
+):
 
     def __init__(
             self,
-            input_param = None,
-            input_method = None,
-            ncbi_tax_id = None,
-            trace = False,
-            id_type_enzyme = None,
-            id_type_substrate = None,
-            name = None,
-            allow_mixed_organisms = None,
-            organisms_supported = False,
+            input_param=None,
+            input_method=None,
+            ncbi_tax_id=None,
+            trace=False,
+            id_type_enzyme=None,
+            id_type_substrate=None,
+            name=None,
+            allow_mixed_organisms=None,
+            organisms_supported=False,
             **kwargs
-        ):
+    ):
         """
         Processes enzyme-substrate interaction data from various databases.
-        Provedes generators to iterate over these interactions.
+        Provides generators to iterate over these interactions.
         For organisms other than human obtains the organism specific
         interactions from databases.
 
@@ -110,14 +103,12 @@ class EnzymeSubstrateProcessor(
         if self.allow_mixed_organisms:
 
             for taxon in self.mammal_taxa:
-
-                self.load_seq(taxon = taxon)
+                self.load_seq(taxon=taxon)
 
         homology.Proteomes.__init__(self)
 
         self.set_inputargs(**kwargs)
         self.load()
-
 
     def setup(self):
 
@@ -140,47 +131,34 @@ class EnzymeSubstrateProcessor(
         self.input_method = self._get_param('input_method')
         self.set_method()
 
-
-    def _get_param(self, label, default = None):
-
+    def _get_param(self, label, default=None):
         return (
-            getattr(self, label) or (
-                getattr(self.input_param, label)
-                    if hasattr(self.input_param, label) else
-                default
-            )
-        )
-
+                getattr(self, label) or (
+            getattr(self.input_param, label)
+            if hasattr(self.input_param, label) else
+            default
+        ))
 
     def load(self):
-
         self._setup()
         self.load_data()
 
-
     def reload(self):
-
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
 
-
-    def reset_ptmprocessor(self, seq = None, ncbi_tax_id = None):
-
+    def reset_ptmprocessor(self, seq=None, ncbi_tax_id=None):
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
-
         self.set_taxon(ncbi_tax_id)
         self.load_seq(ncbi_tax_id)
         self.load_data()
 
-
     def set_taxon(self, ncbi_tax_id):
-
         self.ncbi_tax_id = ncbi_tax_id
         self._organism_setup()
-
 
     def set_method(self):
         """
@@ -188,34 +166,26 @@ class EnzymeSubstrateProcessor(
         """
 
         def empty_input(*args, **kwargs): return []
-
-
         # attempting to look up the method in the inputs module
         if not hasattr(self.input_method, '__call__'):
-
             self.input_method = (
-                inputs.get_method(self.input_method) or
-                empty_input
+                    inputs.get_method(self.input_method) or
+                    empty_input
             )
 
         self.name = self.name or self.input_method.__name__
-
 
     def set_inputargs(self, **inputargs):
         """
         Sets the arguments to be provided for the input method.
         """
-
         self.inputargs = inputargs
-
 
     def load_data(self):
         """
         Loads the data by the defined input method.
         """
-
         self.data = self.input_method(**self.inputargs)
-
 
     def _phosphosite_setup(self):
 
@@ -227,49 +197,37 @@ class EnzymeSubstrateProcessor(
                 taxonomy.taxids[self.inputargs['organism']]
             )
 
-
     def _phosphoelm_setup(self):
-
         if self.ncbi_tax_id != 9606 and 'ltp_only' not in self.inputargs:
-
             self.inputargs['ltp_only'] = False
 
-
     def _setup(self):
-
         setupmethod = '_%s_setup' % self.name.lower()
 
         self._organism_setup()
 
         if hasattr(self, setupmethod):
-
             getattr(self, setupmethod)()
 
-
     def _organism_setup(self):
-
         if self.organisms_supported:
 
             if self.ncbi_tax_id in taxonomy.taxa:
-
                 self.ncbi_tax_id = taxonomy.taxa[self.ncbi_tax_id]
 
             self.inputargs['organism'] = self.ncbi_tax_id
 
         self.load_proteome(self.ncbi_tax_id, False)
 
-
     def _process(self, p):
-
         # human leukocyte antigenes result a result an
         # extremely high number of combinations
         if (
-            not p['kinase'] or (
+                not p['kinase'] or (
                 isinstance(p['substrate'], common.basestring) and
                 p['substrate'].startswith('HLA')
-            )
+        )
         ):
-
             return
 
         if not isinstance(p['kinase'], list):
@@ -279,7 +237,7 @@ class EnzymeSubstrateProcessor(
             p['kinase'],
             self.id_type_enzyme,
             'uniprot',
-            ncbi_tax_id = self.ncbi_tax_id,
+            ncbi_tax_id=self.ncbi_tax_id,
         )
 
         substrate_ups_all = set()
@@ -319,56 +277,43 @@ class EnzymeSubstrateProcessor(
                     continue
 
                 for isof in se.isoforms():
-
                     if 'instance' in p and p['instance'] is not None:
-
                         if se.match(
-                            p['instance'],
-                            p['start'],
-                            p['end'],
-                            isoform = isof,
+                                p['instance'],
+                                p['start'],
+                                p['end'],
+                                isoform=isof,
                         ):
-
                             substrate_ups.append((s, isof))
-
                     else:
-
                         if se.match(
-                            p['resaa'],
-                            p['resnum'],
-                            isoform = isof,
+                                p['resaa'],
+                                p['resnum'],
+                                isoform=isof,
                         ):
-
                             substrate_ups.append((s, isof))
 
         if self.trace:
-
             if p['substrate'] not in self.sub_ambig:
-
                 self.sub_ambig[p['substrate']] = substrate_ups
 
             for k in p['kinase']:
-
                 if k not in self.kin_ambig:
-
                     self.kin_ambig[k] = kinase_ups
+
             # generating report on non matching substrates
             if len(substrate_ups) == 0:
-
                 for s in substrate_ups_all:
-
                     se = self.get_seq(s[0])
-
                     if se is None:
                         continue
-
                     self.nomatch.append(
                         (
                             s[0],
                             s[1],
                             (
                                 p['substrate_refseq']
-                                    if 'substrate_refseq' in p else
+                                if 'substrate_refseq' in p else
                                 '',
                                 s,
                                 p['instance'],
@@ -381,14 +326,12 @@ class EnzymeSubstrateProcessor(
                     )
 
         # building objects representing the enzyme-substrate interaction(s)
-
         if 'typ' not in p:
             p['typ'] = 'phosphorylation'
-
         _resources = tuple(
             (
                 self.input_param.get_via(name)
-                    if hasattr(self.input_param, 'get_via') else
+                if hasattr(self.input_param, 'get_via') else
                 name
             )
             for name in (
@@ -397,24 +340,22 @@ class EnzymeSubstrateProcessor(
         )
         _resources += (
             (self.name,)
-                if isinstance(self.input_param, common.basestring) else
+            if isinstance(self.input_param, common.basestring) else
             (self.input_param,)
         )
 
         # collecting the evidences
         evidences = evidence.Evidences(
             evidence.Evidence(
-                resource = _res,
-                references = p['references'] if 'references' in p else None
+                resource=_res,
+                references=p['references'] if 'references' in p else None
             )
             for _res in _resources
         )
 
         for s in substrate_ups:
-
             # building the objects representing the substrate
             se = self.get_seq(s[0])
-
             if se is None:
                 continue
 
@@ -422,99 +363,83 @@ class EnzymeSubstrateProcessor(
                 p['resnum'],
                 p['resaa'],
                 s[0],
-                isoform = s[1],
-                ncbi_tax_id = self.ncbi_tax_id,
+                isoform=s[1],
+                ncbi_tax_id=self.ncbi_tax_id,
             )
 
             if 'instance' not in p or p['instance'] is None:
-
                 reg = se.get_region(
                     p['resnum'],
                     p['start'] if 'start' in p else None,
                     p['end'] if 'end' in p else None,
-                    isoform = s[1],
+                    isoform=s[1],
                 )
-
                 if reg is not None:
-
                     p['start'], p['end'], p['instance'] = reg
 
             mot = intera.Motif(
-                    s[0],
-                    p['start'],
-                    p['end'],
-                    instance = p['instance'],
-                    isoform = s[1],
-                    ncbi_tax_id = self.ncbi_tax_id,
-                )
+                s[0],
+                p['start'],
+                p['end'],
+                instance=p['instance'],
+                isoform=s[1],
+                ncbi_tax_id=self.ncbi_tax_id,
+            )
 
             ptm = intera.Ptm(
                 s[0],
-                motif = mot,
-                residue = res,
-                typ = p['typ'],
-                evidences = evidences,
-                isoform = s[1],
-                ncbi_tax_id = self.ncbi_tax_id,
+                motif=mot,
+                residue=res,
+                typ=p['typ'],
+                evidences=evidences,
+                isoform=s[1],
+                ncbi_tax_id=self.ncbi_tax_id,
             )
 
             for k in kinase_ups:
-
                 if (
-                    not self.allow_mixed_organisms and (
+                        not self.allow_mixed_organisms and (
                         self.get_taxon(k) != self.ncbi_tax_id or
                         self.get_taxon(s[0]) != self.ncbi_tax_id
-                    )
+                )
                 ):
                     continue
 
                 # the enzyme (kinase)
                 dom = intera.Domain(
-                    protein = k,
-                    ncbi_tax_id = self.ncbi_tax_id,
+                    protein=k,
+                    ncbi_tax_id=self.ncbi_tax_id,
                 )
 
                 dommot = intera.DomainMotif(
-                    domain = dom,
-                    ptm = ptm,
-                    evidences = evidences,
+                    domain=dom,
+                    ptm=ptm,
+                    evidences=evidences,
                 )
 
                 if hasattr(self.input_param, 'extra_attrs'):
-
                     for attr, key in iteritems(self.input_param.extra_attrs):
-
                         if key in p:
-
                             setattr(dommot, attr, p[key])
-
                 yield dommot
 
-
-    def input_is(self, i, op = '__eq__'):
-
+    def input_is(self, i, op='__eq__'):
         return (
-            type(self.name) in common.char_types and
-            getattr(i, op)(self.name.lower())
+                type(self.name) in common.char_types and
+                getattr(i, op)(self.name.lower())
         )
-
 
     def __iter__(self):
         """
         Iterates through the enzyme-substrate interactions.
         """
-
         for p in self.data:
-
             for enz_sub in self._process(p):
-
                 yield enz_sub
-
 
     def __len__(self):
 
         return len(self.data) if hasattr(self, 'data') else 0
-
 
     def __repr__(self):
 
@@ -522,26 +447,25 @@ class EnzymeSubstrateProcessor(
 
 
 class EnzymeSubstrateHomologyProcessor(
-        homology.PtmHomology,
-        EnzymeSubstrateProcessor,
-        session_mod.Logger
-    ):
-
+    homology.PtmHomology,
+    EnzymeSubstrateProcessor,
+    session_mod.Logger
+):
 
     def __init__(
             self,
             ncbi_tax_id,
-            input_param = None,
-            input_method = None,
-            map_by_homology_from = None,
-            trace = False,
-            id_type_enzyme = None,
-            id_type_substrate = None,
-            name = None,
-            homology_only_swissprot = True,
-            ptm_homology_strict = False,
+            input_param=None,
+            input_method=None,
+            map_by_homology_from=None,
+            trace=False,
+            id_type_enzyme=None,
+            id_type_substrate=None,
+            name=None,
+            homology_only_swissprot=True,
+            ptm_homology_strict=False,
             **kwargs
-        ):
+    ):
         """
         Unifies a `pypath.core.enz_sub.EnzymeSubstrateProcessor` and
         a `pypath.utils.homology.EnzymeSubstrateHomology` object to build
@@ -572,13 +496,12 @@ class EnzymeSubstrateHomologyProcessor(
         """
 
         if not hasattr(self, '_log'):
-
-            session_mod.Logger.__init__(name = 'enz_sub_homology')
+            session_mod.Logger.__init__(name='enz_sub_homology')
 
         self.target_taxon = ncbi_tax_id
         self.map_by_homology_from = (
-            map_by_homology_from or
-            {9606, 10090, 10116}
+                map_by_homology_from or
+                {9606, 10090, 10116}
         )
         self.map_by_homology_from = common.to_set(self.map_by_homology_from)
         self.map_by_homology_from.discard(self.target_taxon)
@@ -593,11 +516,10 @@ class EnzymeSubstrateHomologyProcessor(
 
         homology.PtmHomology.__init__(
             self,
-            target = ncbi_tax_id,
-            only_swissprot = homology_only_swissprot,
-            strict = ptm_homology_strict,
+            target=ncbi_tax_id,
+            only_swissprot=homology_only_swissprot,
+            strict=ptm_homology_strict,
         )
-
 
     def __iter__(self):
         """
@@ -619,14 +541,14 @@ class EnzymeSubstrateHomologyProcessor(
 
             EnzymeSubstrateProcessor.__init__(
                 self,
-                input_param = self.input_param,
-                input_method = self.input_method,
-                ncbi_tax_id = source_taxon,
-                trace = self.trace,
-                id_type_enzyme = self.id_type_enzyme,
-                id_type_substrate = self.id_type_substrate,
-                name = self.name,
-                allow_mixed_organisms = True,
+                input_param=self.input_param,
+                input_method=self.input_method,
+                ncbi_tax_id=source_taxon,
+                trace=self.trace,
+                id_type_enzyme=self.id_type_enzyme,
+                id_type_substrate=self.id_type_substrate,
+                name=self.name,
+                allow_mixed_organisms=True,
                 **self.ptmprocargs,
             )
 
@@ -642,104 +564,92 @@ class EnzymeSubstrateHomologyProcessor(
             for es in EnzymeSubstrateProcessor.__iter__(self):
 
                 for target_es in self.translate(es):
-
                     yield target_es
-
 
     def __repr__(self):
 
         return (
-            '<Enzyme-substrate homology processor, '
-            'target taxon: %u, source taxon(s): %s>' % (
-                self.target_taxon,
-                ', '.join(str(tax) for tax in self.map_by_homology_from),
-            )
+                '<Enzyme-substrate homology processor, '
+                'target taxon: %u, source taxon(s): %s>' % (
+                    self.target_taxon,
+                    ', '.join(str(tax) for tax in self.map_by_homology_from),
+                )
         )
 
 
 class EnzymeSubstrateAggregator(session_mod.Logger):
 
-
     def __init__(self,
-            input_param = None,
-            exclude = None,
-            ncbi_tax_id = 9606,
-            map_by_homology_from = None,
-            trace = False,
-            homology_only_swissprot = True,
-            ptm_homology_strict = False,
-            nonhuman_direct_lookup = True,
-            inputargs = None,
-            pickle_file = None,
-        ):
+                 input_param=None,
+                 exclude=None,
+                 ncbi_tax_id=9606,
+                 map_by_homology_from=None,
+                 trace=False,
+                 homology_only_swissprot=True,
+                 ptm_homology_strict=False,
+                 nonhuman_direct_lookup=True,
+                 inputargs=None,
+                 pickle_file=None,
+                 ):
         """
         Docs not written yet.
         """
 
-        session_mod.Logger.__init__(self, name = 'enz_sub')
+        session_mod.Logger.__init__(self, name='enz_sub')
 
         for k, v in iteritems(locals()):
             setattr(self, k, v)
 
         self.main()
 
-
     def reload(self):
 
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-
 
     def main(self):
 
         if self.pickle_file:
 
-            self.load_from_pickle(pickle_file = self.pickle_file)
+            self.load_from_pickle(pickle_file=self.pickle_file)
 
         else:
 
             self.build()
 
-
-    def load_from_pickle(self, pickle_file = None):
+    def load_from_pickle(self, pickle_file=None):
 
         self._log('Loading from file `%s`.' % pickle_file)
 
         with open(self.pickle_file, 'rb') as fp:
-
             self.enz_sub, self.references = pickle.load(fp)
 
         self.update_ptm_lookup_dict()
 
-
     def save_to_pickle(self, pickle_file):
-
         self._log('Saving to file file `%s`.' % pickle_file)
 
         with open(pickle_file, 'wb') as fp:
-
             pickle.dump(
-                obj = (
+                obj=(
                     self.enz_sub,
                     self.references,
                 ),
-                file = fp,
+                file=fp,
             )
 
-
     def build(self):
-
         self.inputargs = self.inputargs or {}
         self.map_by_homology_from = (
             (
                 {9606, 10090, 10116}
-                    if self.ncbi_tax_id != 9606 else
+                if self.ncbi_tax_id != 9606 else
                 set()
             )
-                if self.map_by_homology_from is None else
+            if self.map_by_homology_from is None else
             self.map_by_homology_from
         )
         self.map_by_homology_from = set(self.map_by_homology_from)
@@ -750,31 +660,21 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         self.build_list()
         self.unique()
 
-
     def __iter__(self):
-
         for ptm in itertools.chain(*self.enz_sub.values()):
-
             yield ptm
 
-
     def __len__(self):
-
         return sum([len(esub) for esub in self.enz_sub.values()])
 
-
     def __repr__(self):
-
         return '<Enzyme-substrate database: %s relationships>' % len(self)
 
-
     def set_inputs(self):
-
         self.input_param = (
-            self.input_param or
-            resources.get_controller().collect_enzyme_substrate()
+                self.input_param or
+                resources.get_controller().collect_enzyme_substrate()
         )
-
 
     def build_list(self):
         """
@@ -785,23 +685,16 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         in order to make it more efficient to compile a unique set
         for each pair.
         """
-
         def extend_lists(enz_sub):
-
             for es in enz_sub:
-
                 key = (es.domain.protein, es.ptm.protein)
-
                 if key not in self.enz_sub:
-
                     self.enz_sub[key] = []
-
                 self.enz_sub[key].append(es)
-                
+
                 for ev in es.evidences:
-                    
                     resource_key = (ev.resource.name, ev.resource.via)
-                    
+
                     self.references[resource_key][es.key()].update(
                         ev.references
                     )
@@ -812,19 +705,19 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         )
 
         for input_param in self.input_param:
-            
+
             name = (
                 input_param['name']
-                    if isinstance(input_param, dict) else
+                if isinstance(input_param, dict) else
                 input_param.name
             )
-            
+
             input_method = (
                 input_param['input_method']
-                    if isinstance(input_param, dict) else
+                if isinstance(input_param, dict) else
                 input_param.input_method
             )
-            
+
             self._log(
                 'Loading enzyme-substrate interactions '
                 'from resource `%s` by method `%s`.' % (
@@ -835,32 +728,30 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
 
             args = (
                 input_param
-                    if isinstance(input_param, dict) else
+                if isinstance(input_param, dict) else
                 {'input_param': input_param}
             )
 
             if (
-                self.ncbi_tax_id == 9606 or (
+                    self.ncbi_tax_id == 9606 or (
                     self.nonhuman_direct_lookup and
                     input_param.organisms_supported
-                )
+            )
             ):
-
                 self._log(
                     'Loading enzyme-substrate interactions '
                     'for taxon `%u`.' % self.ncbi_tax_id
                 )
 
                 proc = EnzymeSubstrateProcessor(
-                    ncbi_tax_id = self.ncbi_tax_id,
-                    trace = self.trace,
+                    ncbi_tax_id=self.ncbi_tax_id,
+                    trace=self.trace,
                     **args,
                 )
 
                 extend_lists(proc.__iter__())
 
             if self.map_by_homology_from:
-
                 self._log(
                     'Mapping `%s` by homology from taxons %s to %u.' % (
                         input_method,
@@ -872,11 +763,11 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                 )
 
                 proc = EnzymeSubstrateHomologyProcessor(
-                    ncbi_tax_id = self.ncbi_tax_id,
-                    map_by_homology_from = self.map_by_homology_from,
-                    trace = self.trace,
-                    homology_only_swissprot = self.homology_only_swissprot,
-                    ptm_homology_strict = self.ptm_homology_strict,
+                    ncbi_tax_id=self.ncbi_tax_id,
+                    map_by_homology_from=self.map_by_homology_from,
+                    trace=self.trace,
+                    homology_only_swissprot=self.homology_only_swissprot,
+                    ptm_homology_strict=self.ptm_homology_strict,
                     **args
                 )
 
@@ -884,7 +775,6 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
 
         self.references = dict(self.references)
         self.update_ptm_lookup_dict()
-
 
     def update_ptm_lookup_dict(self):
 
@@ -894,12 +784,10 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         for (enz, sub), ptms in iteritems(self.enz_sub):
 
             for ptm in ptms:
-
                 self.ptm_to_enzyme[ptm.ptm].add(enz)
                 self.ptms[ptm.ptm] = ptm.ptm
 
         self.ptm_to_enzyme = dict(self.ptm_to_enzyme)
-
 
     def unique(self):
         """
@@ -911,13 +799,10 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         self.unique_list = set()
 
         for key, enz_sub in iteritems(self.enz_sub):
-
             self.enz_sub[key] = self.uniq_enz_sub(enz_sub)
-
 
     @staticmethod
     def uniq_enz_sub(enz_sub):
-
         enz_sub_uniq = []
 
         for es in enz_sub:
@@ -927,21 +812,17 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
             for i, es_u in enumerate(enz_sub_uniq):
 
                 if es == es_u:
-
                     enz_sub_uniq[i].merge(es)
                     merged = True
 
             if not merged:
-
                 enz_sub_uniq.append(es)
 
         return enz_sub_uniq
 
-
-    def make_df(self, tax_id = False):
+    def make_df(self, tax_id=False):
 
         self._log('Creating enzyme-substrate interaction data frame.')
-
 
         hdr = [
             'enzyme',
@@ -959,7 +840,7 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
 
         self.df = pd.DataFrame(
             [dm.get_line() for dm in self],
-            columns = hdr,
+            columns=hdr,
         ).astype(
             {
                 'enzyme': 'category',
@@ -974,10 +855,9 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
             }
         )
 
-        self.df = self.df.loc[:,hdr]
+        self.df = self.df.loc[:, hdr]
 
         if tax_id:
-
             self.df['ncbi_tax_id'] = [self.ncbi_tax_id] * self.df.shape[0]
 
         self._log(
@@ -985,12 +865,9 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
             'Memory usage: %s.' % common.df_memory_usage(self.df)
         )
 
-
     def export_table(self, fname):
-
         self.make_df()
-        self.df.to_csv(fname, sep = '\t', index = False)
-
+        self.df.to_csv(fname, sep='\t', index=False)
 
     def assign_to_network(self, pa):
         """
@@ -1006,13 +883,13 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         for key, ptms in iteritems(self.enz_sub):
 
             nodes = pa.get_node_pair(key[0], key[1],
-                    directed = pa.graph.is_directed())
+                                     directed=pa.graph.is_directed())
 
             e = None
 
             if nodes:
                 e = pa.graph.get_eid(
-                    nodes[0], nodes[1], error = False)
+                    nodes[0], nodes[1], error=False)
 
             if isinstance(e, int) and e > 0:
 
@@ -1021,18 +898,14 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
 
                 pa.graph.es[e]['ptm'].extend(ptms)
 
-
     @property
     def resources(self):
-
         return set.union(*(
-            es.evidences.get_resource_names_via(via = None)
+            es.evidences.get_resource_names_via(via=None)
             for es in self
         ))
 
-
     def update_summaries(self):
-
         self.summaries = {}
 
         refs_by_resource = dict(
@@ -1062,11 +935,10 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         )
 
         for resource in sorted(self.resources):
-
             n_total = sum(
                 1
                 for es in self
-                if resource in es.get_resource_names_via(via = None)
+                if resource in es.get_resource_names_via(via=None)
             )
 
             n_unique = sum(
@@ -1123,8 +995,8 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                             for es in self
                             if resource in es.sources
                         )),
-                        key = lambda type_cnt: type_cnt[1],
-                        reverse = True,
+                        key=lambda type_cnt: type_cnt[1],
+                        reverse=True,
                     )
                     if typ
                 )
@@ -1146,9 +1018,7 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                 'modification_types': modification_types,
             }
 
-
-    def summaries_tab(self, outfile = None, return_table = False):
-
+    def summaries_tab(self, outfile=None, return_table=False):
         columns = (
             ('name', 'Resource'),
             ('n_es_total', 'E-S interactions'),
@@ -1177,26 +1047,19 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         ])
 
         if outfile:
-
             with open(outfile, 'w') as fp:
-
                 fp.write('\n'.join('\t'.join(row) for row in tab))
 
         if return_table:
-
             return tab
 
 
-
 def init_db(**kwargs):
-
     globals()['db'] = EnzymeSubstrateAggregator(**kwargs)
 
 
 def get_db(**kwargs):
-
     if 'db' not in globals():
-
         init_db(**kwargs)
 
     return globals()['db']

@@ -19,21 +19,17 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from future.utils import iteritems
-from past.builtins import xrange, range, reduce
-
-import os
-import sys
-import math
-import re
-import importlib as imp
-import copy
-import itertools
 import collections
 import datetime
+import importlib as imp
+import math
+import os
+import re
 import time
-
 import urllib
+
+from future.utils import iteritems
+from past.builtins import xrange, range
 
 if not hasattr(urllib, 'urlencode'):
 
