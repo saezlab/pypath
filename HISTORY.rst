@@ -14,7 +14,7 @@ This is a summary of the changelog.
 
 0.3.0:
 +++++++++++
-* First version whith partial Python 3 support.
+* First version with partial Python 3 support.
 
 0.4.0:
 +++++++++++
@@ -74,7 +74,7 @@ This is a summary of the changelog.
   delete data to free memory
 * New interaction category in `data_formats`: `ligand_receptor`
 * Improved logging and control over verbosity
-* Better control over paremeters by the `settings` module
+* Better control over parameters by the `settings` module
 * Many methods in `dataio` have been improved or fixed, docs and code style largely improved
 * Started to add tests especially for methods in `dataio`
 
