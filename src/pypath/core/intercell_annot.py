@@ -26,8 +26,7 @@ import pypath.utils.go as go
 import pypath.inputs.main as dataio
 import pypath.internals.annot_formats as af
 
-
-#TODO should go to jsons
+# TODO should go to jsons
 """
 Gene Ontology annotations to select categories relevant in intercellular
 signaling.

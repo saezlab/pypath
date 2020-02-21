@@ -25,7 +25,7 @@ Provides classes for representing and processing evidences supporting
 relationships. The evidences hold information about the databases and
 literature references, they can be organized into collections. A number
 of operations are available on evidences and their collections, for
-example they can be combined or filtered.
+example, they can be combined or filtered.
 """
 
 import copy
@@ -48,7 +48,7 @@ class Evidence(object):
     interaction, molecular complex, enzyme-PTM interaction, annotation, etc.
     
     The evidence consists of two main parts: the database and the literature
-    references. If a relationship is supprted by multiple databases, for
+    references. If a relationship is supported by multiple databases, for
     each one `Evidence` object should be created and 
     
     :arg pypath.resource.ResourceAttributes resource:

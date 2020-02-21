@@ -1168,8 +1168,8 @@ class Mapper(session_mod.Logger):
         among the preferred gene names from UniProt, if not
         found, it takes an attempt with the alternative gene
         names. If the gene symbol still couldn't be found, and
-        strict = False, the last attempt only the first 5 chara-
-        cters of the gene symbol matched. If the target name
+        strict = False, the last attempt only the first 5 characters
+        of the gene symbol matched. If the target name
         type is uniprot, then it converts all the ACs to primary.
         Then, for the Trembl IDs it looks up the preferred gene
         names, and find Swissprot IDs with the same preferred
