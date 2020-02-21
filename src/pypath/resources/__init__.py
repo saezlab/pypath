@@ -19,7 +19,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-import pypath.resources.controller as _controller_mod
+from pypath.resources import controller as _controller_mod
 
 
 def get_controller():

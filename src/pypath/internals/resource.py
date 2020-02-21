@@ -31,7 +31,6 @@ except:
 
 
 import pypath.inputs as inputs
-import pypath.inputs.main as dataio
 import pypath.share.common as common
 import pypath.share.session as session_mod
 
@@ -89,18 +88,11 @@ class AbstractResource(session_mod.Logger):
 
     def set_method(self):
         """
-        Sets the data input method by looking up in ``dataio`` module if
+        Sets the data input method by looking up in ``inputs`` module if
         necessary.
         """
 
-        if (
-            isinstance(self._input_method, common.basestring) and
-            hasattr(dataio, self._input_method)
-        ):
-
-            self.input_method = getattr(dataio, self._input_method)
-
-        elif callable(self._input_method):
+        if callable(self._input_method):
 
             self.input_method = self._input_method
 

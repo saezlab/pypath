@@ -92,7 +92,12 @@ import json
 import csv
 import pycurl
 import webbrowser
-import requests
+
+try:
+    import requests
+except ImportError:
+    _log('Module `requests` not available.', -1)
+
 import codecs
 import base64
 

@@ -32,7 +32,7 @@ except:
 import pypath.share.curl as curl
 import pypath.share.common as common
 import pypath.resources.urls as urls
-import pypath.inputs.main as dataio
+from pypath.inputs import main as dataio
 import pypath.share.settings as settings
 
 

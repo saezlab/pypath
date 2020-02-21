@@ -5081,8 +5081,7 @@ class PyPath(session_mod.Logger):
 
                 for e in g.es:
 
-                    if (v[e.source]["name"], v[e.target]["name"]
-                        ) in self.lists[name]:
+                    if (v[e.source]["name"], v[e.target]["name"]) in self.lists[name]:
                         e[name] = True
 
                     else:
@@ -6670,10 +6669,6 @@ class PyPath(session_mod.Logger):
             out += '\t\t %s\n\n' % txt.replace('\t\t', '\t    ')
 
         sys.stdout.write(out)
-
-    #
-    # functions to make life easier
-    #
 
     # XXX: all these having_* functions are actually not used anywhere
 
@@ -15703,14 +15698,14 @@ class PyPath(session_mod.Logger):
                         new_edge['refs_by_dir'] = (
                             self._translate_refsdir(e['refs_by_dir'], ids)
                         )
-                        new_edge['evidences'] = e['evidences']
+                        new_edge['attrs'] = e['attrs'].translate(ids)
 
                         # copying the remaining attributes
                         for eattr in e.attributes():
 
                             if (
                                     eattr not in
-                                    {'dirs', 'refs_by_dir', 'evidences'}
+                                    {'dirs', 'refs_by_dir', 'attrs'}
                             ):
                                 new_edge[eattr] = copy_mod.deepcopy(e[eattr])
 

@@ -30,7 +30,7 @@ import importlib as imp
 import collections
 
 import pypath.share.common as common
-import pypath.internals.intera as intera
+from pypath.internals import intera
 import pypath.share.session as session_mod
 import pypath.utils.mapping as mapping
 
