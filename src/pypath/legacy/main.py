@@ -15993,14 +15993,14 @@ class PyPath(session_mod.Logger):
                         new_edge['refs_by_dir'] = (
                             self._translate_refsdir(e['refs_by_dir'], ids)
                         )
-                        new_edge['evidence'] = e['evidence']
+                        new_edge['attrs'] = e['attrs'].translate(ids)
 
                         # copying the remaining attributes
                         for eattr in e.attributes():
 
                             if (
                                 eattr not in
-                                {'dirs', 'refs_by_dir', 'evidence'}
+                                {'dirs', 'refs_by_dir', 'attrs'}
                             ):
 
                                 new_edge[eattr] = copy_mod.deepcopy(e[eattr])
