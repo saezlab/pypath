@@ -1842,32 +1842,30 @@ class Mapper(session_mod.Logger):
 
                 line = line.decode('ascii').strip().split('\t')
 
-                for ac_typ in ac_types:
+                if len(line) > 2 and line[1] in self.names_uniprot_static:
 
-                    if len(line) > 2 and line[1] in self.names_uniprot_static:
+                    id_type_a = self.names_uniprot_static[line[1]]
 
-                        id_type_a = self.names_uniprot_static[line[1]]
+                    key_a_to_b = MappingTableKey(
+                        id_type = id_type_a,
+                        target_id_type = id_type_b,
+                        ncbi_tax_id = ncbi_tax_id,
+                    )
+                    key_b_to_a = MappingTableKey(
+                        id_type = id_type_b,
+                        target_id_type = id_type_a,
+                        ncbi_tax_id = ncbi_tax_id,
+                    )
 
-                        key_a_to_b = MappingTableKey(
-                            id_type = id_type_a,
-                            target_id_type = id_type_b,
-                            ncbi_tax_id = ncbi_tax_id,
-                        )
-                        key_b_to_a = MappingTableKey(
-                            id_type = id_type_b,
-                            target_id_type = id_type_a,
-                            ncbi_tax_id = ncbi_tax_id,
-                        )
+                    this_uniprot = line[0].split('-')[0]
 
-                        this_uniprot = line[0].split('-')[0]
+                    if key_a_to_b in to_load:
 
-                        if key_a_to_b in to_load:
+                        data[key_a_to_b][line[2]].add(this_uniprot)
 
-                            data[key_a_to_b][line[2]].add(this_uniprot)
+                    if key_b_to_a in to_load:
 
-                        if key_b_to_a in to_load:
-
-                            data[key_b_to_a][this_uniprot].add(line[2])
+                        data[key_b_to_a][this_uniprot].add(line[2])
 
             prg.terminate()
 
