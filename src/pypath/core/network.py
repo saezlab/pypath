@@ -431,7 +431,7 @@ class Network(session_mod.Logger):
             df_dtype = None,
             pickle_file = None,
             ncbi_tax_id = 9606,
-            allow_loops = True,
+            allow_loops = None,
             **kwargs
         ):
 
@@ -521,6 +521,7 @@ class Network(session_mod.Logger):
             cache_files = None,
             only_directions = False,
             pickle_file = None,
+            allow_loops = None,
         ):
         """
         Loads data from a network resource or a collection of resources.
@@ -553,6 +554,7 @@ class Network(session_mod.Logger):
             'keep_raw': keep_raw,
             'top_call': False,
             'only_directions': only_directions,
+            'allow_loops': allow_loops,
         }
 
         exclude = common.to_set(exclude)
@@ -622,6 +624,7 @@ class Network(session_mod.Logger):
             redownload = None,
             keep_raw = False,
             only_directions = False,
+            allow_loops = None,
             **kwargs
         ):
         """
@@ -664,15 +667,19 @@ class Network(session_mod.Logger):
             redownload = redownload,
             keep_raw = keep_raw,
         )
-        self._add_edge_list(only_directions = only_directions)
+
+        allow_loops = self._allow_loops(
+            allow_loops = allow_loops,
+            resource = resource,
+        )
+
+        self._add_edge_list(
+            only_directions = only_directions,
+            allow_loops = allow_loops,
+        )
 
         self.organisms_check()
         self.remove_zero_degree()
-
-        if not self.allow_loops:
-
-            self.remove_loops()
-
 
         self._log(
             'Completed: loading network data from '
@@ -1664,6 +1671,7 @@ class Network(session_mod.Logger):
             edge_list = False,
             regulator = False,
             only_directions = False,
+            allow_loops = None,
         ):
         """
         Adds edges to the network from *edge_list* obtained from file or
@@ -1683,6 +1691,8 @@ class Network(session_mod.Logger):
         """
 
         self._log('Adding preprocessed edge list to existing network.')
+
+        allow_loops = self._allow_loops(allow_loops = allow_loops)
 
         if not edge_list:
 
@@ -1717,7 +1727,11 @@ class Network(session_mod.Logger):
 
         for e in edge_list:
 
-            self._add_update_edge(e, only_directions = only_directions)
+            self._add_update_edge(
+                e,
+                allow_loops = allow_loops,
+                only_directions = only_directions,
+            )
 
         self._log(
             'New network resource added, current number '
@@ -1733,6 +1747,7 @@ class Network(session_mod.Logger):
     def _add_update_edge(
             self,
             edge,
+            allow_loops = None,
             only_directions = False,
         ):
         """
@@ -1817,6 +1832,8 @@ class Network(session_mod.Logger):
             edge['attrs_node_b'],
         )
 
+        allow_loops = allow_loops or self.allow_loops
+
         refs = {refs_mod.Reference(pmid) for pmid in refs}
 
         entity_a = entity_mod.Entity(
@@ -1838,6 +1855,10 @@ class Network(session_mod.Logger):
             a = entity_a,
             b = entity_b,
         )
+
+        if not allow_loops and interaction.is_loop():
+
+            return
 
         if is_directed:
 
@@ -2918,6 +2939,7 @@ class Network(session_mod.Logger):
             exclude = None,
             reread = False,
             redownload = False,
+            allow_loops = None,
             **kwargs
         ):
 
@@ -2929,6 +2951,7 @@ class Network(session_mod.Logger):
                 levels = dorothea_levels,
                 reread = reread,
                 redownload = redownload,
+                allow_loops = allow_loops,
             )
 
         if original_resources:
@@ -2944,6 +2967,7 @@ class Network(session_mod.Logger):
                 reread = reread,
                 redownload = redownload,
                 exclude = exclude,
+                allow_loops = allow_loops,
             )
 
         if make_df:
@@ -2962,6 +2986,7 @@ class Network(session_mod.Logger):
             redownload = False,
             make_df = False,
             ncbi_tax_id = 9606,
+            allow_loops = None,
             **kwargs
         ):
         """
@@ -3821,6 +3846,32 @@ class Network(session_mod.Logger):
             method,
             signature = signature,
             doc = doc,
+        )
+
+
+    def _allow_loops(self, allow_loops = None, resource = None):
+        """
+        Integrates settings for the `allow_loops` parameter from the
+        method, instance and module level settings.
+        """
+
+        default = settings.get('network_allow_loops')
+
+        return (
+            # from the arguments of the actual `load` call
+            allow_loops
+                if isinstance(allow_loops, bool) else
+            # from the current instance
+            self.allow_loops
+                if isinstance(self.allow_loops, bool) else
+            # interaction type specific settings from the module level
+            resource.networkinput.interaction_type in default
+                if (
+                    isinstance(default, common.list_like) and
+                    hasattr(resource, 'networkinput')
+                ) else
+            # general settings from the module level
+            bool(default)
         )
 
 
