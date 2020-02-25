@@ -125,6 +125,7 @@ import pypath.utils.taxonomy as taxonomy
 import pypath.utils.homology as homology_mod
 import pypath.inputs.pfam as pfam_input
 import pypath.inputs.common as inputs_common
+from pypath.resources import data_formats
 
 if 'long' not in __builtins__:
     long = int
@@ -950,7 +951,7 @@ def get_domino_ptms():
 
 
 def get_3dc_ddi():
-    
+
     c = curl.Curl(urls.urls['3dcomplexes_contact']['url'], silent = False)
     contact = c.result
     c = curl.Curl(urls.urls['3dcomplexes_correspondancy']['url'], silent = False)
@@ -1048,9 +1049,9 @@ def get_3dc_ddi():
                                                 contact_residues = float(l[3])
                                             )
                                             ddi.append(dd)
-    
+
     prg.terminate()
-    
+
     return ddi
 
 
@@ -1083,7 +1084,7 @@ def pisa_bonds(lst, chains):
 
 
 def get_pisa(pdblist):
-    
+
     bond_types = {
         'hbonds': 'h-bonds',
         'sbridges': 'salt-bridges',
@@ -1093,13 +1094,13 @@ def get_pisa(pdblist):
     interfaces = {}
     cachefile = os.path.join(settings.get('cachedir'), 'pisa.pickle')
     u_pdb, pdb_u = get_pdb_chains()
-    
+
     if os.path.exists(cachefile):
         try:
             interfaces = pickle.load(open(cachefile, 'rb'))
         except:
             pass
-    
+
     errors = []
     p = 5
     pdblist = list(set(pdblist) - set(interfaces.keys()))
@@ -1108,53 +1109,53 @@ def get_pisa(pdblist):
         'Downloading data from PDBe PISA',
         1,
     )
-    
+
     for i in xrange(0, len(pdblist), p):
-        
+
         to = i + p
         thisPart = pdblist[i:to]
         url = urls.urls['pisa_interfaces']['url'] + ','.join(thisPart)
         c = curl.Curl(url, cache = False)
         data = c.result
-        
+
         if data is None:
             msg = 'Could not download: \n\t\t%s' % url
             errors.append(msg)
             continue
-        
+
         soup = bs4.BeautifulSoup(data, 'html.parser')
         unmapped_residues = []
-        
+
         for pdb in soup.find_all('pdb_entry'):
-            
+
             pdb_id = pdb.find('pdb_code').text.lower()
             interfaces[pdb_id] = {}
             chains = {}
             resconv = ResidueMapper()
-            
+
             if pdb_id in pdb_u:
-                
+
                 for chain, chain_data in iteritems(pdb_u[pdb_id]):
-                    
+
                     chains[chain] = chain_data['uniprot']
-                
+
                 for interface in pdb.find_all('interface'):
-                    
+
                     for b, t in iteritems(bond_types):
-                        
+
                         lst = interface.find(t)
-                        
+
                         if lst is not None:
-                            
+
                             bonds = pisa_bonds(lst, chains)
-                            
+
                             for bond in bonds:
-                                
+
                                 uniprots = (
                                     bond['uniprot_1'],
                                     bond['uniprot_2'],
                                 )
-                                
+
                                 if uniprots not in interfaces[pdb_id]:
                                     css = common.non_digit.sub(
                                         '', interface.find('css').text)
@@ -1195,7 +1196,7 @@ def get_pisa(pdblist):
                                             stab_en = stab_en,
                                         )
                                     )
-                                
+
                                 res1 = resconv.get_residue(
                                     pdb_id,
                                     bond['seqnum_1'],
@@ -1204,7 +1205,7 @@ def get_pisa(pdblist):
                                     pdb_id,
                                     bond['seqnum_2'],
                                 )
-                                
+
                                 if (
                                     res1 is not None and
                                     res2 is not None and
@@ -2051,12 +2052,12 @@ def comppi_interaction_locations(organism = 9606):
         if organism and (organism_a != organism or organism_b != organism):
 
             continue
-        
+
         for uniprot1, uniprot2 in itertools.product(
             mapping.map_name(l[0], 'uniprot', 'uniprot'),
             mapping.map_name(l[8], 'uniprot', 'uniprot'),
         ):
-            
+
             yield ComppiInteraction(
                 id_a = uniprot1,
                 id_b = uniprot2,
@@ -2166,11 +2167,11 @@ def ramilowski_locations(long_notes = False):
 
                 location, note = m.groups()
                 tmh = l[9].strip()
-                
+
                 uniprots = mapping.map_name(l[3], 'uniprot', 'uniprot')
-                
+
                 for uniprot in uniprots:
-                    
+
                     result[uniprot].add(
                         RamilowskiLocation(
                             location = (
@@ -2476,7 +2477,7 @@ def pdzbase_interactions():
     """
     Downloads data from PDZbase. Parses data from the HTML tables.
     """
-    
+
     PDZbaseInteraction = collections.namedtuple(
         'PDZbaseInteraction',
         [
@@ -2491,8 +2492,8 @@ def pdzbase_interactions():
             'pubmed',
         ],
     )
-    
-    
+
+
     url = urls.urls['pdzbase']['url_rescued']
     c = curl.Curl(url, silent = False)
     data = c.result
@@ -2501,16 +2502,16 @@ def pdzbase_interactions():
         soup.find_all('table')[3].find('table').find('table').find_all('tr')
     )
     result = []
-    
+
     del rows[0]
-    
+
     for r in rows:
-        
+
         r = [c.text.strip() for c in r.find_all('td')]
-        
+
         uniprot_pdz, isoform_pdz = reupi.match(r[1]).groups()
         uniprot_ligand, isoform_ligand = reupi.match(r[4]).groups()
-        
+
         result.append(
             PDZbaseInteraction(
                 uniprot_pdz = uniprot_pdz,
@@ -2524,12 +2525,12 @@ def pdzbase_interactions():
                 pubmed = int(r[6]),
             )
         )
-    
+
     return result
 
 
 def get_domino(none_values = False, outfile = None):
-    
+
     result = []
     taxid = re.compile(r'taxid:(.*)\([a-zA-Z ]*\)')
     miont = re.compile(r'MI:[0-9]{4}\((.*)\)')
@@ -2546,7 +2547,7 @@ def get_domino(none_values = False, outfile = None):
     c = curl.Curl(url, silent = False, large = True)
     data = c.result
     _ = next(data)
-    
+
     header = [
         'uniprot-A', 'uniprot-B', 'isoform-A', 'isoform-B', 'exp. method',
         'references', 'taxon-A', 'taxon-B', 'role-A', 'role-B',
@@ -2557,9 +2558,9 @@ def get_domino(none_values = False, outfile = None):
         'mutation-effects-B', 'domains-interpro-A', 'domains-interpro-B',
         'negative'
     ]
-    
+
     for r in data:
-        
+
         r = r.strip().split('\t')
         if len(r) < 39:
             continue
@@ -2671,7 +2672,7 @@ def get_elm_classes():
 
 
 def get_elm_instances():
-    
+
     url = urls.urls['elm_inst']['url']
     c = curl.Curl(url, silent = False)
     data = c.result
@@ -2684,15 +2685,15 @@ def elm_interactions():
     Downlods manually curated interactions from ELM.
     This is the gold standard set of ELM.
     """
-    
-    
+
+
     def number_or_none(value, typ = int):
-        
+
         return typ(value) if value != 'None' else None
-    
-    
+
+
     retax = re.compile(r'"([0-9]+)"\([-:/,\.\[\]\(\)\w\s]+\)')
-    
+
     ELMInteraction = collections.namedtuple(
         'ELMInteraction',
         [
@@ -2713,25 +2714,25 @@ def elm_interactions():
             'taxon_domain',
         ],
     )
-    
+
     result = []
     url = urls.urls['elm_int']['url']
     c = curl.Curl(url, silent = False)
     data = c.result
     data = data.split('\n')
     del data[0]
-    
+
     for l in data:
-        
+
         if not l:
-            
+
             continue
-        
+
         l = tuple(x.strip() for x in l.split('\t'))
-        
+
         uniprot_mofif, isoform_motif = reupi.match(l[2]).groups()
         uniprot_domain, isoform_domain = reupi.match(l[3]).groups()
-        
+
         result.append(
             ELMInteraction(
                 motif_elm = l[0],
@@ -2751,12 +2752,12 @@ def elm_interactions():
                 taxon_domain = int(retax.match(l[12]).groups()[0]),
             )
         )
-    
+
     return result
 
 
 def pfam_uniprot(uniprots, infile = None):
-    
+
     result = {}
     url = urls.urls['pfam_up']['url']
     infile = infile if infile is not None \
@@ -2786,15 +2787,15 @@ def pfam_uniprot(uniprots, infile = None):
 
 
 def phosphopoint_interactions():
-    
+
     interactions = []
-    
+
     url = urls.urls['phosphopoint']['url']
-    
+
     c = curl.Curl(url, silent = False, large = True)
-    
+
     _ = next(c.result)
-    
+
     return [
         l.strip().split(';')
         for l in c.result
@@ -2802,14 +2803,14 @@ def phosphopoint_interactions():
 
 
 def phosphopoint_directions():
-    
+
     return [
         l[:2] for l in phosphopoint_interactions()
     ]
 
 
 def get_acsn():
-    
+
     greek = {
         '_alpha_': 'A',
         '_beta_': 'B',
@@ -2826,11 +2827,11 @@ def get_acsn():
         x.split('\t')
         for x in data.replace('\r', '').replace('*', '').strip().split('\n')
     ]
-    
+
     for l in data:
         l[0] = regreek.sub('', l[0]).split('_')[0].split('~')[0]
         l[2] = regreek.sub('', l[2]).split('_')[0].split('~')[0]
-    
+
     return data
 
 
@@ -2860,7 +2861,7 @@ def get_pazar():
 
 
 def get_htri():
-    
+
     HTRIInteraction = collections.namedtuple(
         'HTRIInteraction',
         [
@@ -2871,7 +2872,7 @@ def get_htri():
             'pubmed',
         ]
     )
-    
+
     c = curl.Curl(
         urls.urls['htri']['url'],
         init_url = urls.urls['htri']['init_url'],
@@ -2879,10 +2880,10 @@ def get_htri():
         follow = False,
         large = True,
     )
-    
+
     data = c.result
     _ = next(c.result)
-    
+
     return [
         HTRIInteraction(
             entrez_tf = fields[1],
@@ -4010,9 +4011,9 @@ def netpath_pathway_annotations():
                     'genesymbol',
                     'uniprot',
                 )
-                
+
                 for uniprot in uniprots:
-                    
+
                     result[uniprot].add(
                         NetpathPathway(
                             pathway = pathway
@@ -4023,17 +4024,17 @@ def netpath_pathway_annotations():
 
 
 def netpath_interactions():
-    
+
     result = []
     repwnum = re.compile(r'NetPath_([0-9]+)_')
     mi = '{net:sf:psidev:mi}'
     url = urls.urls['netpath_psimi']['url']
     c = curl.Curl(url, silent = False)
-    
+
     data = c.result
     data = dict([(k, v) for k, v in iteritems(data) if k.endswith('xml')])
     pwnames = netpath_names()
-    
+
     for pwfile, rawxml in iteritems(data):
         try:
             pwnum = repwnum.findall(pwfile)[0]
@@ -4234,8 +4235,8 @@ def kirouac2010_interactions():
             prev = None
 
         return names
-    
-    
+
+
     init_url = urls.urls['kirouac2010']['init_url']
     req_headers = [
         (
@@ -4244,16 +4245,16 @@ def kirouac2010_interactions():
         ),
     ]
     url = urls.urls['kirouac2010']['url']
-    
+
     c00 = curl.Curl(url, call = False, process = False)
-    
+
     if (
         not os.path.exists(c00.cache_file_name) or
         os.path.getsize(c00.cache_file_name) == 0
     ):
-        
+
         _log('Kirouac 2010 download: requesting website cookie.')
-        
+
         c0 = curl.Curl(
             init_url,
             silent = True,
@@ -4262,31 +4263,31 @@ def kirouac2010_interactions():
             follow = False,
             cache = False,
         )
-        
+
         cookies = []
-        
+
         if hasattr(c0, 'resp_headers'):
-            
+
             for hdr in c0.resp_headers:
-                
+
                 if hdr.lower().startswith(b'set-cookie'):
-                    
+
                     cookie = hdr.split(b':')[1].split(b';')[0].strip()
-                    
+
                     if cookie not in cookies:
-                        
+
                         cookies.append(cookie.decode('ascii'))
-            
+
             cookies = '; '.join(cookies)
-            
+
             req_headers.append('Cookie: %s' % cookies)
-            
+
             _log('Response header: %s' % str(c0.resp_headers))
             _log('Cookies: %s' % str(cookies))
             _log('Request header: %s' % str(req_headers))
-        
+
         os.remove(c00.cache_file_name)
-    
+
     c = curl.Curl(
         url,
         silent = False,
@@ -5214,28 +5215,28 @@ def cellphonedb_ligands_receptors():
 
     receptors = set()
     ligands   = set()
-    
+
     proteins = cellphonedb_protein_annotations()
     complexes = cellphonedb_complex_annotations()
-    
+
     for _id, annot in itertools.chain(
         iteritems(proteins),
         iteritems(complexes)
     ):
-        
+
         if annot.receptor:
-            
+
             receptors.add(_id)
-        
+
         if annot.secreted or (
             not annot.receptor and (
                 annot.transmembrane or
                 annot.peripheral
             )
         ):
-            
+
             ligands.add(_id)
-    
+
     return ligands, receptors
 
 
@@ -5250,7 +5251,7 @@ def _cellphonedb_annotations(url, name_method):
     def get_desc(rec, attr):
 
         desc = '%s_desc' % attr
-        
+
         return (
             '' if (
                 attr in rec and rec[attr] == 'False' or
@@ -5268,15 +5269,15 @@ def _cellphonedb_annotations(url, name_method):
     tab = list(csv.DictReader(c.result))
 
     for rec in tab:
-        
+
         names = name_method(rec)
-        
+
         if isinstance(names, (common.basestring, intera.Complex)):
-            
+
             names = (names,)
-        
+
         for name in names:
-            
+
             annot[name] = record(
                 receptor = get_bool(rec, 'receptor'),
                 receptor_class = (
@@ -5301,31 +5302,31 @@ def cellphonedb_protein_annotations(add_complex_annotations = True):
     :arg bool add_complex_annotations:
         Copy the annotations of complexes to each of their member proteins.
     """
-    
+
     def name_method(rec):
-        
+
         uniprot = rec['uniprot']
         uniprot = _cellphonedb_hla(uniprot)
         uniprot = mapping.map_names(uniprot, 'uniprot', 'uniprot')
-        
+
         return uniprot
-    
-    
+
+
     protein_annotations = _cellphonedb_annotations(
         url = urls.urls['cellphonedb_git']['proteins'],
         name_method = name_method,
     )
-    
+
     if add_complex_annotations:
-        
+
         complex_annotations = cellphonedb_complex_annotations()
-        
+
         for cplex, a_cplex in iteritems(complex_annotations):
-            
+
             for uniprot in cplex.components.keys():
-                
+
                 if uniprot in protein_annotations:
-                    
+
                     protein_annotations[uniprot] = CellPhoneDBAnnotation(
                         *(
                             p or c if isinstance(p, bool) else p
@@ -5336,11 +5337,11 @@ def cellphonedb_protein_annotations(add_complex_annotations = True):
                             )
                         )
                     )
-                    
+
                 else:
-                    
+
                     protein_annotations[uniprot].add(a_cplex)
-    
+
     return protein_annotations
 
 
@@ -5348,22 +5349,22 @@ def _cellphonedb_hla(uniprot):
     """
     Returns *set*.
     """
-    
+
     uniprots = None
-    
+
     # for HLA genes in the uniprot column we have "HLA..." gene symbols
     # but not always in the standard format (with dash)
     if uniprot.startswith('HLA') and '-' not in uniprot:
-        
+
         genesymbol = 'HLA-%s' % uniprot[3:]
         uniprots = mapping.map_name(genesymbol, 'genesymbol', 'uniprot')
-    
+
     return uniprots or {uniprot}
 
 
 def cellphonedb_complex_annotations():
-    
-    
+
+
     def get_uniprots(rec):
 
         return tuple(
@@ -5384,10 +5385,10 @@ def cellphonedb_complex_annotations():
             mapping.map_name0(genesymbol, 'genesymbol', 'uniprot')
             for genesymbol in rec['stoichiometry'].split(';')
         )
-    
-    
+
+
     def name_method(rec):
-        
+
         comp = get_stoichiometry(rec)
 
         cplex = intera.Complex(
@@ -5396,7 +5397,7 @@ def cellphonedb_complex_annotations():
             sources = 'CellPhoneDB',
             ids = rec['complex_name'],
         )
-        
+
         return cplex
 
 
@@ -5407,11 +5408,11 @@ def cellphonedb_complex_annotations():
 
 
 def _cellphonedb_get_entity(name, complexes):
-    
+
     if name in complexes:
-        
+
         return (complexes[name],)
-    
+
     if ':' in name:
 
         name = name.split(':')[1]
@@ -5419,11 +5420,11 @@ def _cellphonedb_get_entity(name, complexes):
     if '_' in name:
 
         name = mapping.map_name0(name, 'name-entry', 'name')
-        
+
     if not uniprot_input.is_uniprot(name):
-        
+
         uniprot = mapping.map_name0(name, 'genesymbol', 'uniprot')
-        
+
         name = uniprot or name
 
     name = _cellphonedb_hla(name)
@@ -5432,10 +5433,10 @@ def _cellphonedb_get_entity(name, complexes):
 
 
 def cellphonedb_interactions():
-    
-    
+
+
     def get_type(entity):
-        
+
         return (
             'ligand'
                 if entity in ligands else
@@ -5443,8 +5444,8 @@ def cellphonedb_interactions():
                 if entity in receptors else
             'unknown'
         )
-    
-    
+
+
     CellphonedbInteraction = collections.namedtuple(
         'CellphonedbInteraction',
         [
@@ -5480,7 +5481,7 @@ def cellphonedb_interactions():
     reader = csv.DictReader(c.result)
 
     for rec in reader:
-        
+
         _partner_a = _cellphonedb_get_entity(
             rec['partner_a'],
             complexes = complexes,
@@ -5489,9 +5490,9 @@ def cellphonedb_interactions():
             rec['partner_b'],
             complexes = complexes,
         )
-        
+
         for partner_a, partner_b in itertools.product(_partner_a, _partner_b):
-            
+
             type_a = get_type(partner_a)
             type_b = get_type(partner_b)
             rev = partner_b == 'ligand' and partner_b == 'receptor'
@@ -5515,9 +5516,9 @@ def cellphonedb_interactions():
                 )
             )
             refs   = ';'.join(repmid.findall(rec['source']))
-            
+
             type_b if rev else type_b
-            
+
             yield(
                 CellphonedbInteraction(
                     id_a = partner_b if rev else partner_a,
@@ -5536,9 +5537,9 @@ def cellphonedb_complexes():
     annot = cellphonedb_complex_annotations()
 
     complexes = {}
-    
+
     for cplex in annot.keys():
-        
+
         key = cplex.__str__()
 
         if key in annot:
@@ -5557,7 +5558,7 @@ def open_pubmed(pmid):
     @pmid : str or int
         PubMed ID
     """
-    
+
     pmid = str(pmid)
     url = urls.urls['pubmed']['url'] % pmid
     webbrowser.open(url)
@@ -5677,9 +5678,9 @@ def disgenet_annotations(dataset = 'curated'):
         if not uniprots:
 
             continue
-        
+
         for uniprot in uniprots:
-            
+
             data[uniprot].add(
                 DisGeNetAnnotation(
                     disease = rec['diseaseName'],
@@ -5707,23 +5708,23 @@ def load_lmpid(organism = 9606):
     Returns list of domain-motif interactions.
     """
     result = []
-    
+
     url = urls.urls['lmpid']['url']
     c = curl.Curl(url, silent = False, large = False)
-    
+
     soup = bs4.BeautifulSoup(c.result, 'html.parser')
     uniprots = uniprot_input.get_db(organism = organism, swissprot = None)
     prg = progress.Progress(
         len(soup.find_all('record')), 'Processing data from LMPID', 21)
-    
+
     for rec in soup.find_all('record'):
-        
+
         prg.step()
         uniprot_bait = rec.bait_uniprot_id.text
         uniprot_prey = rec.prey_uniprot_id.text
-        
+
         if uniprot_bait in uniprots and uniprot_prey in uniprots:
-            
+
             result.append({
                 'bait': uniprot_bait,
                 'prey': uniprot_prey,
@@ -5733,9 +5734,9 @@ def load_lmpid(organism = 9606):
                 'inst': rec.motif_instance.text,
                 'dom': rec.interacting_domain.text
             })
-    
+
     prg.terminate()
-    
+
     return result
 
 
@@ -6138,13 +6139,13 @@ def kegg_pathways():
     pws = common.uniq_list(map(lambda i: i[3], data))
     proteins_pws = dict(map(lambda pw: (pw, set([])), pws))
     interactions_pws = dict(map(lambda pw: (pw, set([])), pws))
-    
+
     for u1, u2, eff, pw in data:
-        
+
         proteins_pws[pw].add(u1)
         proteins_pws[pw].add(u2)
         interactions_pws[pw].add((u1, u2))
-    
+
     return proteins_pws, interactions_pws
 
 
@@ -6174,18 +6175,18 @@ def kinasedotcom_annotations():
     """
     Downloads and processes kinase annotations from kinase.com.
     """
-    
+
     KinasedotcomAnnotation = collections.namedtuple(
         'KinasedotcomAnnotation',
         ['group', 'family', 'subfamily']
     )
     KinasedotcomAnnotation.__new__.__defaults__ = (None,)
-    
-    
+
+
     def add_record(uniprot, rec, offset = 2):
-        
+
         if rec[offset].strip():
-            
+
             result[uniprot].add(
                 KinasedotcomAnnotation(
                     group = rec[offset].strip(),
@@ -6193,29 +6194,29 @@ def kinasedotcom_annotations():
                     subfamily = rec[offset + 2].strip() or None,
                 )
             )
-    
-    
+
+
     url = urls.urls['kinome']['url']
     c = curl.Curl(url, large = True, silent = False)
     xlsf = c.fileobj
     xlsname = xlsf.name
     xlsf.close()
     tbl = inputs_common.read_xls(xlsname)
-    
+
     result = collections.defaultdict(set)
-    
+
     for rec in tbl:
-        
+
         uniprots = mapping.map_name(rec[23].strip(), 'genesymbol', 'uniprot')
-        
+
         for uniprot in uniprots:
-            
+
             add_record(uniprot, rec)
-            
+
             if rec[12].strip():
-                
+
                 add_record(uniprot, rec, offset = 12)
-    
+
     return result
 
 
@@ -6246,9 +6247,9 @@ def phosphatome_annotations():
     for rec in tbl[2:]:
 
         uniprots = mapping.map_name(rec[0], 'genesymbol', 'uniprot')
-        
+
         for uniprot in uniprots:
-            
+
             data[uniprot].add(
                 PhosphatomeAnnotation(
                     fold = rec[2],
@@ -6268,7 +6269,7 @@ def phosphatome_annotations():
 def get_dgidb_old():
     """
     Deprecated. Will be removed soon.
-    
+
     Downloads and processes the list of all human druggable proteins.
     Returns a list of GeneSymbols.
     """
@@ -6299,37 +6300,37 @@ def dgidb_annotations():
     """
     Downloads druggable protein annotations from DGIdb.
     """
-    
+
     DgidbAnnotation = collections.namedtuple(
         'DgidbAnnotation',
         ['category'],
     )
-    
-    
+
+
     url = urls.urls['dgidb']['categories']
-    
+
     c = curl.Curl(url = url, silent = False, large = True)
-    
+
     data = csv.DictReader(c.result, delimiter = '\t')
-    
+
     result = collections.defaultdict(set)
-    
+
     for rec in data:
-        
+
         uniprots = mapping.map_name(
             rec['entrez_gene_symbol'],
             'genesymbol',
             'uniprot',
         )
-        
+
         for uniprot in uniprots:
-            
+
             result[uniprot].add(
                 DgidbAnnotation(
                     category = rec['category']
                 )
             )
-    
+
     return result
 
 
@@ -7212,12 +7213,12 @@ def signalink_interactions():
             return m.groups()[0]
         else:
             return attr
-    
+
     url_nodes = urls.urls['signalink']['nodes']
     c_nodes = curl.Curl(url_nodes, silent = False, large = True)
     url_edges = urls.urls['signalink']['edges']
     c_edges = curl.Curl(url_edges, silent = False, large = True)
-    
+
     for l in c_nodes.result:
 
         if len(l) > 0:
@@ -7276,7 +7277,7 @@ def signalink_interactions():
                 ])
         else:
             lPrev = l
-    
+
     return interactions
 
 
@@ -7293,18 +7294,18 @@ def signalink_pathway_annotations():
     interactions = signalink_interactions()
 
     for i in interactions:
-        
+
         for idx in (0, 1):
-            
+
             for pathway in i[idx + 8].split(';'):
-                
+
                 core = 'non-core' not in pathway
                 pathway = (
                     pathway.split('(')[0].strip().replace('/Wingless', '')
                 )
-                
+
                 for uniprot in mapping.map_name(i[idx], 'uniprot', 'uniprot'):
-                    
+
                     result[uniprot].add(
                         SignalinkPathway(pathway = pathway, core = core)
                     )
@@ -7313,20 +7314,20 @@ def signalink_pathway_annotations():
 
 
 def _netbiol_interactions(database):
-    
+
     url = urls.urls[database]['url']
     c = curl.Curl(url, silent = True, large = False)
-    
+
     return [row.split(',') for row in c.result.split('\n')]
 
 
 def arn_interactions():
-    
+
     return _netbiol_interactions(database = 'arn')
 
 
 def nrf2ome_interactions():
-    
+
     return _netbiol_interactions(database = 'nrf2ome')
 
 
@@ -7369,7 +7370,7 @@ def get_acsn_effects():
     """
     Processes ACSN data, returns list of effects.
     """
-    
+
     negatives = set(['NEGATIVE_INFLUENCE', 'UNKNOWN_NEGATIVE_INFLUENCE'])
     positives = set(
         ['TRIGGER', 'POSITIVE_INFLUENCE', 'UNKNOWN_POSITIVE_INFLUENCE'])
@@ -7381,11 +7382,11 @@ def get_acsn_effects():
         'MODULATION', 'TRANSCRIPTION', 'COMPLEX_EXPANSION', 'TRIGGER',
         'CATALYSIS', 'PHYSICAL_STIMULATION', 'UNKNOWN_INHIBITION', 'TRANSPORT'
     ])
-    
+
     data = acsn_interactions()
-    
+
     effects = []
-    
+
     for l in data:
         if len(l) == 4:
             eff = set(l[2].split(';'))
@@ -7395,7 +7396,7 @@ def get_acsn_effects():
                 effects.append([l[0], l[1], '+'])
             elif len(eff & directed) > 0:
                 effects.append([l[0], l[1], '*'])
-    
+
     return effects
 
 
@@ -7476,19 +7477,19 @@ def acsn_interactions(keep_in_complex_interactions = True):
     @keep_in_complex_interactions : bool
         Whether to include interactions from complex expansion.
     """
-    
+
     names_url = urls.urls['acsn']['names']
     ppi_url = urls.urls['acsn']['ppi']
     names_c = curl.Curl(names_url, silent = False, large = True)
     ppi_c = curl.Curl(ppi_url, silent = False, large = True)
-    
+
     names = {}
     interactions = []
-    
+
     for l in names_c.result:
         l = l.strip().split('\t')
         names[l[0]] = l[2:]
-    
+
     _ = next(ppi_c.result)
     for l in ppi_c.result:
         l = l.strip().split('\t')
@@ -7501,7 +7502,7 @@ def acsn_interactions(keep_in_complex_interactions = True):
                                 l[1].replace('COMPLEX_EXPANSION',
                                              'IN_COMPLEX_INTERACTION')
                         interactions.append([a, b, l[1], l[3]])
-    
+
     return interactions
 
 
@@ -7611,29 +7612,29 @@ def cancer_gene_census_annotations(
         credentials = settings.get('cosmic_credentials')
 
         if not credentials:
-            
+
             if os.path.exists(credentials_fname):
-                
+
                 _log(
                     'Reading COSMIC credentials '
                     'from file `%s`.' % credentials_fname
                 )
-                
+
                 with open(credentials_fname, 'r') as fp:
-                    
+
                     credentials = dict(
                         zip(
                             ('user', 'passwd'),
                             fp.read().split('\n')[:2],
                         )
                     )
-            
+
         else:
-            
+
             _log('COSMIC credentials provided by `settings`.')
-        
+
         if not credentials or {'user', 'passwd'} - set(credentials.keys()):
-            
+
             _log(
                 'No credentials available for the COSMIC website. '
                 'Either set the `cosmic_credentials` key in the `settings` '
@@ -7797,7 +7798,7 @@ def intogen_annotations():
         )
 
         for uniprot in uniprots:
-            
+
             role_prob, curated = (
                 (
                     1.0,
@@ -7809,7 +7810,7 @@ def intogen_annotations():
                     False,
                 )
             )
-            
+
             result[uniprot].add(
                 IntogenAnnotation(
                     type = rec['Driver_type'],
@@ -8329,8 +8330,8 @@ def mirdeathdb_interactions():
 
 
 def ncrdeathdb_interactions():
-    
-    
+
+
     NcrdeathdbInteraction = collections.namedtuple(
         'NcrdeathdbInteraction',
         [
@@ -8343,8 +8344,8 @@ def ncrdeathdb_interactions():
             'organism',
         ]
     )
-    
-    
+
+
     url = urls.urls['ncrdeathdb']['url']
     c = curl.Curl(
         url,
@@ -8352,29 +8353,29 @@ def ncrdeathdb_interactions():
         silent = False,
         encoding = 'iso-8859-1',
     )
-    
+
     data = csv.DictReader(c.fileobj, delimiter = '\t')
     result = []
-    
+
     for rec in data:
-        
+
         typ = rec['RNA Category'].strip()
-        
+
         rna_ids = (
             (rec['miRNA_symbol'],)
                 if typ == 'lncRNA' else
             rec['miRBase_ID'].split(',')
         )
-        
+
         for rna_id in rna_ids:
-            
+
             rna_id = rna_id.strip() or None
             protein_id = rec['Gene_Symbol'].strip() or None
-            
+
             if not rna_id and not protein_id:
-                
+
                 continue
-            
+
             result.append(NcrdeathdbInteraction(
                 ncrna = rna_id,
                 protein = protein_id,
@@ -8384,7 +8385,7 @@ def ncrdeathdb_interactions():
                 pmid = rec['PMID'].strip(),
                 organism = int(rec['tax_id'].strip()),
             ))
-    
+
     return result
 
 
@@ -8480,7 +8481,7 @@ def transmir_interactions():
         large = True,
         encoding = 'iso-8859-1',
     )
-    
+
     TransmirInteraction = collections.namedtuple(
         'TransmirInteraction',
         [
@@ -8490,20 +8491,20 @@ def transmir_interactions():
             'pubmed',
         ]
     )
-    
+
     result = []
 
     for l in c.result:
 
         l = l.strip().split('\t')
-        
+
         result.append(TransmirInteraction(
             tf_genesymbol = l[0],
             mirna = l[1],
             effect = l[4].split('(')[0],
             pubmed = l[5],
         ))
-    
+
     return result
 
 
@@ -8730,22 +8731,22 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
     if normal:
 
         for tissue, gex in iteritems(data['normal']):
-            
+
             organ = tissue
-            
+
             if ':' in tissue:
-                
+
                 organ, tissue = tissue.split(':')
-            
+
             organ = organ.strip()
             tissue = tissue.strip()
 
             for uniprot, ex in iteritems(gex):
 
                 uniprots = mapping.map_name(uniprot, 'uniprot', 'uniprot')
-                
+
                 for _uniprot in uniprots:
-                    
+
                     result[_uniprot].add(
                         ProteinatlasAnnotation(
                             organ = organ,
@@ -8771,11 +8772,11 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
                 except StopIteration:
 
                     prognostic, favourable, score = None, None, None
-                
+
                 uniprots = mapping.map_name(uniprot, 'uniprot', 'uniprot')
-                
+
                 for _uniprot in uniprots:
-                    
+
                     result[_uniprot].add(
                         ProteinatlasAnnotation(
                             organ = condition,
@@ -8801,8 +8802,8 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
 
 
 def proteinatlas_subcellular_annotations():
-    
-    
+
+
     ProteinatlasSubcellularAnnotation = collections.namedtuple(
         'ProteinatlasSubcellularAnnotation',
         [
@@ -8810,10 +8811,10 @@ def proteinatlas_subcellular_annotations():
             'status',
         ],
     )
-    
-    
+
+
     url = urls.urls['proteinatlas']['subcell']
-    
+
     c = curl.Curl(
         url,
         large = True,
@@ -8824,34 +8825,34 @@ def proteinatlas_subcellular_annotations():
         c.files_multipart['subcellular_location.tsv'],
         delimiter = '\t',
     )
-    
+
     result = collections.defaultdict(set)
-    
+
     for rec in reader:
-        
+
         uniprots = mapping.map_name(rec['Gene name'], 'genesymbol', 'uniprot')
-        
+
         for uniprot in uniprots:
-            
+
             for status in ('Enhanced', 'Supported', 'Uncertain'):
-                
+
                 if not rec[status]:
-                    
+
                     continue
-                
+
                 for location in rec[status].split(';'):
-                    
+
                     result[uniprot].add(ProteinatlasSubcellularAnnotation(
                         location = location,
                         status = status,
                     ))
-    
+
     return dict(result)
 
 
 def proteinatlas_secretome_annotations():
-    
-    
+
+
     ProteinatlasSecretomeAnnotation = collections.namedtuple(
         'ProteinatlasSecretomeAnnotation',
         [
@@ -8859,36 +8860,36 @@ def proteinatlas_secretome_annotations():
             'secreted',
         ],
     )
-    
-    
+
+
     url = urls.urls['proteinatlas']['secretome']
-    
+
     c = curl.Curl(
         url,
         large = True,
         silent = False,
     )
-    
+
     reader = inputs_common.read_xls(c.fileobj.name)[1:]
     result = collections.defaultdict(set)
-    
+
     for rec in reader:
-        
+
         for uniprot_original in rec[2].split(','):
-            
+
             uniprots = mapping.map_name(
                 uniprot_original,
                 'uniprot',
                 'uniprot',
             )
-            
+
             for uniprot in uniprots:
-                
+
                 result[uniprot].add(ProteinatlasSecretomeAnnotation(
                     mainclass = rec[3],
                     secreted = 'secreted' in rec[3].lower(),
                 ))
-    
+
     return dict(result)
 
 
@@ -8965,10 +8966,10 @@ def get_tfregulons(
 
     For details see https://github.com/saezlab/DoRothEA.
     """
-    
-    
+
+
     def process_sources(sources):
-        
+
         upper = (
             'jaspar',
             'trred',
@@ -8979,7 +8980,7 @@ def get_tfregulons(
             'hocomoco',
             'fantom4',
         )
-        
+
         special_case = {
             'tfact': 'TFactS',
             'oreganno': 'ORegAnno',
@@ -8987,35 +8988,35 @@ def get_tfregulons(
             'HOCOMOCO_v11': 'HOCOMOCO-v11',
             'JASPAR_v2018': 'JASPAR-v2018',
         }
-        
-        
+
+
         revia = re.compile(r',|_via_')
-        
+
         sources = functools.reduce(
             lambda s, r: s.replace(r, r.upper()),
             upper,
             sources,
         )
-        
+
         sources = functools.reduce(
             lambda s, r: s.replace(*r),
             iteritems(special_case),
             sources,
         )
-        
+
         return ','.join(
             '%s_DoRothEA' % s
             for s in revia.split(sources)
         )
-    
-    
+
+
     evidence_types = (
         'chipSeq',
         'TFbindingMotif',
         'coexpression',
         'curateddatabase'
     )
-    
+
     DorotheaInteraction = collections.namedtuple(
         'DorotheaInteraction',
         [
@@ -9036,7 +9037,7 @@ def get_tfregulons(
             'kegg_pathways',
         ]
     )
-    
+
     url = urls.urls['tfregulons_git']['url']
 
     c = curl.Curl(
@@ -9060,19 +9061,19 @@ def get_tfregulons(
         ):
 
             continue
-        
+
         rec = dict(
             (k, v if v not in {'-', 'none'} else '')
             for k, v in iteritems(rec)
         )
-        
+
         yield DorotheaInteraction(
             **dict(zip(
                 DorotheaInteraction._fields,
                 itertools.chain(
                     # TF, target, effect, score
                     (
-                        rec[key] for key in 
+                        rec[key] for key in
                         ('TF', 'target', 'effect', 'score')
                     ),
                     # boolean values for curated, chipseq, motif pred. and coexp
@@ -9199,12 +9200,12 @@ def matrisome_annotations(organism = 9606):
     Returns dict where keys are UniProt IDs and values are tuples of
     classes, subclasses and notes.
     """
-    
+
     MatrisomeAnnotation = collections.namedtuple(
         'MatrisomeAnnotation',
         ['mainclass', 'subclass', 'subsubclass']
     )
-    
+
     tax_names = {
         10090: ('Murine', 'mm'),
         9606:  ('Human',  'hs'),
@@ -9217,20 +9218,20 @@ def matrisome_annotations(organism = 9606):
     raw = inputs_common.read_xls(xlsname)[1:]
 
     result = collections.defaultdict(set)
-    
+
     for r in raw:
-        
+
         uniprots = set(r[7].split(':'))
         uniprots.discard('')
-        
+
         if not uniprots:
-            
+
             continue
-        
+
         uniprots = mapping.map_names(uniprots, 'uniprot', 'uniprot')
-        
+
         for uniprot in uniprots:
-            
+
             result[uniprot].add(
                 MatrisomeAnnotation(
                     mainclass = r[0].strip(),
@@ -9238,7 +9239,7 @@ def matrisome_annotations(organism = 9606):
                     subsubclass = r[10].strip() or None,
                 )
             )
-    
+
     return dict(result)
 
 
@@ -9291,11 +9292,11 @@ def membranome_annotations():
     prg.terminate()
 
     for p in prot_all:
-        
+
         uniprots = mapping.map_name(p['uniprotcode'], 'uniprot', 'uniprot')
-        
+
         for uniprot in uniprots:
-            
+
             yield (
                 uniprot,
                 membr[p['membrane_id']]['name'],
@@ -9536,11 +9537,11 @@ def hgnc_genegroups():
         rec = rec.split('\t')
         uniprots = {u.strip() for u in rec[2].split(',')}
         uniprots.discard('')
-        
+
         if not uniprots:
-            
+
             continue
-        
+
         uniprots = mapping.map_names(uniprots, 'uniprot', 'uniprot')
 
         if not uniprots:
@@ -9554,9 +9555,9 @@ def hgnc_genegroups():
             group = group.strip()
 
             if group:
-                
+
                 for uniprot in uniprots:
-                    
+
                     result[uniprot].add(
                         HGNCGeneGroupAnnotation(mainclass = group)
                     )
@@ -9631,7 +9632,7 @@ def adhesome_annotations():
             if uniprot == 'null':
 
                 continue
-            
+
             for _uniprot in mapping.map_name(uniprot, 'uniprot', 'uniprot'):
 
                 result[uniprot].add(AdhesomeAnnotation(
@@ -9770,7 +9771,7 @@ def _matrixdb_protein_list(category, organism = 9606):
         proteins.add(
             l.strip().replace('"', '').split('\t')[0]
         )
-    
+
     proteins = mapping.map_names(proteins, 'uniprot', 'uniprot')
 
     if organism:
@@ -10076,43 +10077,43 @@ def cancersea_annotations():
     Retrieves genes annotated with cancer funcitonal states from the
     CancerSEA database.
     """
-    
-    
+
+
     CancerseaAnnotation = collections.namedtuple(
         'CancerseaAnnotation',
         [
             'state',
         ],
     )
-    
-    
+
+
     annotations = collections.defaultdict(set)
-    
+
     url = urls.urls['cancersea']['url']
     c = curl.Curl(url, silent = False, large = False)
     soup = bs4.BeautifulSoup(c.result, 'html.parser')
-    
+
     for row in soup.find_all('tbody')[1].find_all('tr'):
-        
+
         state = row.find_all('td')[0].text
         url_end = row.find_all('td')[-1].find('a').attrs['href']
         data_url = urls.urls['cancersea']['data_url'] % url_end
         c = curl.Curl(data_url, silent = False, large = True)
-        
+
         _ = next(c.result)
-        
+
         for line in c.result:
-            
+
             line = line.strip().split('\t')
-            
+
             uniprots = mapping.map_name(line[1], 'genesymbol', 'uniprot')
-            
+
             for uniprot in uniprots:
-                
+
                 annotations[uniprot].add(
                     CancerseaAnnotation(state = state)
                 )
-    
+
     return dict(annotations)
 
 
@@ -10126,7 +10127,7 @@ def msigdb_download(
     Downloads and preprocesses a collection of gmt format gene sets from
     MSigDB. Returns dict of sets with gene set names as keys and molecular
     identifiers as values.
-    
+
     :arg str,NoneType registered_email:
         An email address registered at MSigDB. If `None` the `msigdb_email`
         from ``pypath.settings`` will be used.
@@ -10143,40 +10144,40 @@ def msigdb_download(
     :arg bool force_download:
         Download even if cache content is available.
     """
-    
+
     registered_email = registered_email or settings.get('msigdb_email')
-    
+
     if not registered_email:
-        
+
         _log(
             'To download MSigDB you must provide an email address '
             'you have previously registered at '
             '`http://software.broadinstitute.org/gsea/register.jsp`. '
             'Could not proceed, returning empty dict.'
         )
-        
+
         return {}
-    
+
     url = urls.urls['msigdb']['url'] % (
         collection,
         id_type,
     )
-    
+
     req_headers_1 = []
-    
+
     c_nocall = curl.Curl(
         url,
         call = False,
         process = False,
         bypass_url_encoding = True,
     )
-    
+
     if (
         not os.path.exists(c_nocall.cache_file_name) or
         os.path.getsize(c_nocall.cache_file_name) == 0 or
         force_download
     ):
-        
+
         c_login_1 = curl.Curl(
             urls.urls['msigdb']['login1'],
             cache = False,
@@ -10185,28 +10186,28 @@ def msigdb_download(
             large = False,
             silent = True,
         )
-        
+
         jsessionid = ''
-        
+
         if hasattr(c_login_1, 'resp_headers'):
-            
+
             for hdr in c_login_1.resp_headers:
-                
+
                 if hdr.lower().startswith(b'set-cookie'):
-                    
+
                     jsessionid = hdr.split(b':')[1].split(b';')[0].strip()
                     jsessionid = jsessionid.decode('ascii')
                     _log('msigdb cookie obtained: `%s`.' % jsessionid)
                     break
-        
+
         if not jsessionid:
-            
+
             _log('msigdb: could not get cookie, returning empty list.')
-            
+
             return {}
-        
+
         req_headers = ['Cookie: %s' % jsessionid]
-        
+
         c_login_2 = curl.Curl(
             urls.urls['msigdb']['login2'],
             cache = False,
@@ -10221,18 +10222,18 @@ def msigdb_download(
             follow = False,
             empty_attempt_again = False,
         )
-        
+
         jsessionid_1 = ''
-        
+
         if hasattr(c_login_2, 'resp_headers'):
-            
+
             for hdr in c_login_2.resp_headers:
-                
+
                 if hdr.lower().startswith(b'set-cookie'):
-                    
+
                     jsessionid_1 = hdr.split(b':')[1].split(b';')[0].strip()
                     jsessionid_1 = jsessionid_1.decode('ascii')
-            
+
             _log(
                 'msigdb: logged in with email `%s`, '
                 'new cookie obtained: `%s`.' % (
@@ -10240,18 +10241,18 @@ def msigdb_download(
                     jsessionid_1
                 )
             )
-        
+
         if not jsessionid_1:
-            
+
             _log(
                 'msigdb: could not log in with email `%s`, '
                 'returning empty dict.' % registered_email
             )
-            
+
             return {}
-        
+
         req_headers_1 = ['Cookie: %s' % jsessionid_1]
-    
+
     c = curl.Curl(
         url,
         req_headers = req_headers_1,
@@ -10260,15 +10261,15 @@ def msigdb_download(
         bypass_url_encoding = True,
         cache = not force_download,
     )
-    
+
     result = {}
-    
+
     for gset in c.result:
-        
+
         gset = gset.strip().split('\t')
-        
+
         result[gset[0]] = set(gset[2:])
-    
+
     return result
 
 
@@ -10282,7 +10283,7 @@ def msigdb_download_collections(
     Downloads all or some MSigDB gene set collections.
     Returns a dict of dicts where upper level keys are collections while
     lower level keys are geneset names and values are molecular identifiers.
-    
+
     :arg str,NoneType registered_email:
         An email address registered at MSigDB. If `None` the `msigdb_email`
         from ``pypath.settings`` will be used.
@@ -10294,7 +10295,7 @@ def msigdb_download_collections(
         Exclude the collections having their name starting with any of the
         strings in this tuple. By default `c5` (Gene Ontology) is excluded.
     """
-    
+
     MsigdbAnnotation = collections.namedtuple(
         'MsigdbAnnotation',
         [
@@ -10302,7 +10303,7 @@ def msigdb_download_collections(
             'geneset',
         ],
     )
-    
+
     all_collections = {
         'hallmark': 'h.all',
         'positional': 'c1.all',
@@ -10321,11 +10322,11 @@ def msigdb_download_collections(
         'oncogenic_signatures': 'c6.all',
         'immunologic_signatures': 'c7.all',
     }
-    
+
     collection_data = {}
-    
+
     for collection, label in iteritems(all_collections):
-        
+
         if (
             (
                 only_collections and
@@ -10333,13 +10334,13 @@ def msigdb_download_collections(
             ) or
             any(label.startswith(ex) for ex in exclude)
         ):
-            
+
             continue
-        
+
         _log(
             'MSigDB: downloading collection `%s` (%s).' % (collection, label)
         )
-        
+
         collection_data[(collection, label)] = (
             msigdb_download(
                 registered_email = registered_email,
@@ -10347,7 +10348,7 @@ def msigdb_download_collections(
                 id_type = id_type,
             )
         )
-    
+
     return collection_data
 
 
@@ -10359,7 +10360,7 @@ def msigdb_annotations(
     """
     Downloads all or some MSigDB gene set collections and processes them
     to an annotation type dictionary.
-    
+
     :arg str,NoneType registered_email:
         An email address registered at MSigDB. If `None` the `msigdb_email`
         from ``pypath.settings`` will be used.
@@ -10370,9 +10371,9 @@ def msigdb_annotations(
     :arg tuple exclude:
         Exclude the collections having their name starting with any of the
         strings in this tuple. By default `c5` (Gene Ontology) is excluded.
-     
+
     """
-    
+
     MsigdbAnnotation = collections.namedtuple(
         'MsigdbAnnotation',
         [
@@ -10380,57 +10381,57 @@ def msigdb_annotations(
             'geneset',
         ],
     )
-    
-    
+
+
     annotations = collections.defaultdict(set)
-    
+
     collection_data = msigdb_download_collections(
         registered_email = registered_email,
         only_collections = only_collections,
         exclude = exclude,
     )
-    
+
     for (collection, label), genesets in iteritems(collection_data):
-        
+
         for geneset, genesymbols in iteritems(genesets):
-            
+
             this_annot = MsigdbAnnotation(
                 collection = collection,
                 geneset = geneset,
             )
-            
+
             for uniprot in mapping.map_names(
                 genesymbols,
                 'genesymbol',
                 'uniprot',
             ):
-                
+
                 annotations[uniprot].add(this_annot)
-    
+
     return dict(annotations)
 
 
 def lrdb_interactions():
-    
-    
+
+
     resource_names = {
         'reactome': 'Reactome',
         'fantom5': 'Fantom5',
         'IUPHAR': 'Guide2Pharma',
         'uniprot': 'UniProt',
     }
-    
+
     def remove(lst, to_remove):
-        
+
         to_remove = common.to_set(to_remove)
-        
+
         return [
             it
             for it in lst
             if it not in to_remove
         ]
-    
-    
+
+
     LrdbRecord = collections.namedtuple(
         'LrdbRecord',
         [
@@ -10442,18 +10443,18 @@ def lrdb_interactions():
             'receptor_cells',
         ]
     )
-    
-    
+
+
     url = urls.urls['lrdb']['url']
-    
+
     c = curl.Curl(url, silent = False, large = True)
-    
+
     reader = csv.DictReader(c.result, delimiter = '\t')
-    
+
     result = []
-    
+
     for rec in reader:
-        
+
         result.append(
             LrdbRecord(
                 ligand_genesymbol = rec['ligand'],
@@ -10471,12 +10472,12 @@ def lrdb_interactions():
                 receptor_cells = remove(rec['cells.R'].split(','), ''),
             )
         )
-    
+
     return result
 
 
 def lrdb_annotations():
-    
+
     LrdbAnnotation = collections.namedtuple(
         'LrdbAnnotation',
         [
@@ -10484,29 +10485,29 @@ def lrdb_annotations():
             'cell_type',
         ],
     )
-    
-    
+
+
     result = collections.defaultdict(set)
-    
-    
+
+
     lrdb = lrdb_interactions()
-    
+
     for rec in lrdb:
-        
+
         for role in ('ligand', 'receptor'):
-            
+
             uniprots = mapping.map_name(
                 getattr(rec, '%s_genesymbol' % role),
                 'genesymbol',
                 'uniprot',
             )
-            
+
             for uniprot in uniprots:
-                
+
                 cell_types = getattr(rec, '%s_cells' % role) or (None,)
-                
+
                 for cell_type in cell_types:
-                    
+
                     cell_type = (
                         'T lymphocyte'
                             if cell_type == 'tymphocyte' else
@@ -10514,53 +10515,53 @@ def lrdb_annotations():
                             if cell_type else
                         None
                     )
-                    
+
                     result[uniprot].add(
                         LrdbAnnotation(
                             role = role,
                             cell_type = cell_type,
                         )
                     )
-    
+
     return dict(result)
 
 
 def baccin2019_interactions(ncbi_tax_id = 9606):
-    
+
     def id_translate(mouse_gs):
-        
+
         uniprots = mapping.map_name(
             mouse_gs,
             'genesymbol',
             'uniprot',
             10090,
         )
-        
+
         if ncbi_tax_id != 10090:
-            
+
             uniprots = set(
                 itertools.chain(*(
                     homology.translate(uniprot)
                     for uniprot in uniprots
                 ))
             )
-        
+
         return uniprots
-    
-    
+
+
     def raw_to_uniprots(raw):
-        
+
         components = raw.split('&')
-        
+
         return set(
             itertools.product(
                 *(id_translate(comp) for comp in components)
             )
         )
-    
-    
+
+
     def get_partners(components, sources, references):
-        
+
         return {
             (
                 comp[0]
@@ -10573,8 +10574,8 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
             )
             for comp in components
         }
-    
-    
+
+
     Baccin2019Interaction = collections.namedtuple(
         'Baccin2019Interaction',
         [
@@ -10587,48 +10588,48 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
             'references',
         ]
     )
-    
-    
+
+
     source_names = {
         'Baccin': 'Baccin2019',
         'Ramilowski': 'Ramilowski2015',
     }
-    
+
     url = urls.urls['baccin2019']['url']
-    
+
     c = curl.Curl(url, silent = False, large = True)
-    
+
     data = inputs_common.read_xls(c.fileobj.name, sheet = 'SuppTable3')
-    
+
     result = []
-    
+
     if ncbi_tax_id != 10090:
-        
+
         homology = homology_mod.ProteinHomology(
             target = ncbi_tax_id,
             source = 10090,
         )
-    
+
     for rec in data[3:]:
-        
+
         ligand_components = raw_to_uniprots(rec[1])
-        
+
         if not ligand_components:
-            
+
             continue
-        
+
         receptor_components = raw_to_uniprots(rec[2])
-        
+
         if not receptor_components:
-            
+
             continue
-        
+
         sources = {'Baccin2019', rec[3].strip()}
         sources = {
             source_names[s] if s in source_names else s
             for s in sources
         }
-        
+
         references = {
             _ref for _ref in
             (
@@ -10637,12 +10638,12 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
             )
             if _ref.isdigit()
         }
-        
+
         ligands = get_partners(ligand_components, sources, references)
         receptors = get_partners(receptor_components, sources, references)
-        
+
         for ligand, receptor in itertools.product(ligands, receptors):
-            
+
             result.append(
                 Baccin2019Interaction(
                     ligand = ligand,
@@ -10654,12 +10655,12 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
                     references = references,
                 )
             )
-    
+
     return result
 
 
 def baccin2019_annotations(ncbi_tax_id = 9606):
-    
+
     Baccin2019Annotation = collections.namedtuple(
         'Baccin2019Annotation',
         [
@@ -10667,21 +10668,21 @@ def baccin2019_annotations(ncbi_tax_id = 9606):
             'subclass',
         ]
     )
-    
-    
+
+
     ia = baccin2019_interactions(ncbi_tax_id = ncbi_tax_id)
-    
+
     result = collections.defaultdict(set)
-    
+
     for ia in ia:
-        
+
         result[ia.ligand].add(
             Baccin2019Annotation(
                 mainclass = 'ligand',
                 subclass = ia.ligand_category,
             )
         )
-        
+
         result[ia.receptor].add(
             Baccin2019Annotation(
                 mainclass = 'receptor',
@@ -10692,5 +10693,5 @@ def baccin2019_annotations(ncbi_tax_id = 9606):
                 ),
             )
         )
-    
+
     return dict(result)
