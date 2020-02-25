@@ -2737,22 +2737,13 @@ class Network(session_mod.Logger):
         )
 
         htp_refs = self.htp_references(threshold = threshold)
-        to_remove = set()
+        to_remove = self.htp_interactions(
+            threshold = threshold,
+            ignore_directed = keep_directed,
+        )
 
         ecount_before = self.ecount
         vcount_before = self.vcount
-
-        for key, ia in iteritems(self.interactions):
-
-            if (
-                (
-                    not keep_directed or
-                    not ia.is_directed()
-                ) and
-                not ia.get_references() - htp_refs
-            ):
-
-                to_remove.add(key)
 
         for key in to_remove:
 
@@ -2789,6 +2780,35 @@ class Network(session_mod.Logger):
         self._log('High-throughput references collected: %u' % len(htp_refs))
 
         return htp_refs
+
+
+    def htp_interactions(self, threshold = 50, ignore_directed = False):
+        """
+        Collects the interactions only from high-throughput studies.
+        
+        :returns:
+            Set of interaction keys (tuples of entities).
+        """
+
+        htp_refs = self.htp_references(threshold = threshold)
+
+        htp_int = set()
+
+        for key, ia in iteritems(self.interactions):
+
+            if (
+                (
+                    not ignore_directed or
+                    not ia.is_directed()
+                ) and
+                not ia.get_references() - htp_refs
+            ):
+
+                htp_int.add(key)
+
+        self._log('High-throughput interactions collected: %u' % len(htp_int))
+
+        return htp_int
 
 
     def remove_undirected(self, min_refs = None):
