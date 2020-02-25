@@ -1,0 +1,556 @@
+
+
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pypath.omnipath.server.build &mdash; pypath 0.10.6 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> pypath
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.10.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Release history</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">pypath</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pypath.omnipath.server.build</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pypath.omnipath.server.build</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright (c) 2014-2020 - EMBL</span>
+<span class="c1">#</span>
+<span class="c1">#  File author(s): Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#                  Nicolàs Palacio</span>
+<span class="c1">#                  Olga Ivanova</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GNU GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is a standalone module with the only purpose of</span>
+<span class="sd">building the tables for the webservice.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">future.utils</span> <span class="k">import</span> <span class="n">iteritems</span>
+
+<span class="kn">import</span> <span class="nn">importlib</span> <span class="k">as</span> <span class="nn">imp</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">pypath.core.enz_sub</span> <span class="k">as</span> <span class="nn">enz_sub</span>
+<span class="kn">import</span> <span class="nn">pypath.core.complex</span> <span class="k">as</span> <span class="nn">complex</span>
+<span class="kn">import</span> <span class="nn">pypath.core.annot</span> <span class="k">as</span> <span class="nn">annot</span>
+<span class="kn">import</span> <span class="nn">pypath.core.intercell</span> <span class="k">as</span> <span class="nn">intercell</span>
+<span class="kn">import</span> <span class="nn">pypath.omnipath.export</span> <span class="k">as</span> <span class="nn">export</span>
+<span class="kn">import</span> <span class="nn">pypath.legacy.main</span> <span class="k">as</span> <span class="nn">main</span>
+<span class="kn">import</span> <span class="nn">pypath.resources.data_formats</span> <span class="k">as</span> <span class="nn">data_formats</span>
+<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session_mod</span>
+<span class="kn">import</span> <span class="nn">pypath.omnipath</span> <span class="k">as</span> <span class="nn">omnipath</span>
+
+
+<div class="viewcode-block" id="WebserviceTables"><a class="viewcode-back" href="../../../../reference.html#pypath.omnipath.server.build.WebserviceTables">[docs]</a><span class="k">class</span> <span class="nc">WebserviceTables</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates the data frames which the web service uses to serve the data from.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">only_human</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">outfile_interactions</span> <span class="o">=</span> <span class="s1">&#39;omnipath_webservice_interactions.tsv&#39;</span><span class="p">,</span>
+            <span class="n">outfile_ptms</span> <span class="o">=</span> <span class="s1">&#39;omnipath_webservice_enz_sub.tsv&#39;</span><span class="p">,</span>
+            <span class="n">outfile_complexes</span> <span class="o">=</span> <span class="s1">&#39;omnipath_webservice_complexes.tsv&#39;</span><span class="p">,</span>
+            <span class="n">outfile_annotations</span> <span class="o">=</span> <span class="s1">&#39;omnipath_webservice_annotations.tsv&#39;</span><span class="p">,</span>
+            <span class="n">outfile_intercell</span> <span class="o">=</span> <span class="s1">&#39;omnipath_webservice_intercell.tsv&#39;</span><span class="p">,</span>
+            <span class="n">network_datasets</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
+        
+        <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;websrvtab&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;WebserviceTables initialized.&#39;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">only_human</span> <span class="o">=</span> <span class="n">only_human</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outfile_interactions</span> <span class="o">=</span> <span class="n">outfile_interactions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outfile_ptms</span> <span class="o">=</span> <span class="n">outfile_ptms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outfile_complexes</span> <span class="o">=</span> <span class="n">outfile_complexes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outfile_annotations</span> <span class="o">=</span> <span class="n">outfile_annotations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outfile_intercell</span> <span class="o">=</span> <span class="n">outfile_intercell</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_datasets</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">network_datasets</span> <span class="ow">or</span>
+            <span class="p">(</span>
+                <span class="s1">&#39;omnipath&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;tf_target&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;mirna_mrna&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;tf_mirna&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;lncrna_mrna&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enz_sub</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">complexes</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">intercell</span><span class="p">()</span>
+    
+    
+    <span class="k">def</span> <span class="nf">interactions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Building `interactions` data frame.&#39;</span><span class="p">)</span>
+        <span class="n">dataframes</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_datasets</span><span class="p">:</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Building `</span><span class="si">%s</span><span class="s1">` interactions.&#39;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">)</span>
+            
+            <span class="n">netw</span> <span class="o">=</span> <span class="n">omnipath</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_db</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+            
+            <span class="n">exp</span> <span class="o">=</span> <span class="n">export</span><span class="o">.</span><span class="n">Export</span><span class="p">(</span><span class="n">netw</span><span class="p">)</span>
+            <span class="n">exp</span><span class="o">.</span><span class="n">webservice_interactions_df</span><span class="p">()</span>
+            <span class="n">dataframes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exp</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">dataset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;mirna_mrna&#39;</span><span class="p">,</span> <span class="s1">&#39;lncrna_mrna&#39;</span><span class="p">,</span> <span class="s1">&#39;tf_mirna&#39;</span><span class="p">}:</span>
+                
+                <span class="k">for</span> <span class="n">rodent</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">10090</span><span class="p">,</span> <span class="mi">10116</span><span class="p">):</span>
+                    
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                        <span class="s1">&#39;Translating `</span><span class="si">%s</span><span class="s1">` interactions to organism `</span><span class="si">%u</span><span class="s1">`&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                            <span class="n">dataset</span><span class="p">,</span>
+                            <span class="n">rodent</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                    
+                    <span class="n">rodent_netw</span> <span class="o">=</span> <span class="n">netw</span><span class="o">.</span><span class="n">homology_translate</span><span class="p">(</span><span class="n">rodent</span><span class="p">)</span>
+                    <span class="n">exp</span> <span class="o">=</span> <span class="n">export</span><span class="o">.</span><span class="n">Export</span><span class="p">(</span><span class="n">rodent_netw</span><span class="p">)</span>
+                    <span class="n">exp</span><span class="o">.</span><span class="n">webservice_interactions_df</span><span class="p">()</span>
+                    <span class="n">dataframes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exp</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+                    
+                    <span class="k">del</span> <span class="n">rodent_netw</span>
+            
+            <span class="k">del</span> <span class="n">exp</span>
+            <span class="k">del</span> <span class="n">netw</span>
+            <span class="n">omnipath</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">remove_db</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_interactions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dataframes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_interactions</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outfile_interactions</span><span class="p">,</span>
+            <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Data frame `interactions` has been exported to `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outfile_interactions</span><span class="p">,</span>
+        <span class="p">))</span>
+    
+    
+    <span class="k">def</span> <span class="nf">interactions_legacy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+            <span class="s1">&#39;Building `interactions` data frame from &#39;</span>
+            <span class="s1">&#39;`legacy.main.PyPath` object.&#39;</span>
+        <span class="p">)</span>
+        <span class="n">dataframes</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="n">tf_target</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">data_formats</span><span class="o">.</span><span class="n">transcription</span><span class="p">)</span>
+        <span class="n">tf_target</span><span class="p">[</span><span class="s1">&#39;dorothea&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">input_args</span><span class="p">[</span><span class="s1">&#39;levels&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">tf_target</span><span class="p">[</span><span class="s1">&#39;dorothea&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">must_have_references</span> <span class="o">=</span> <span class="kc">False</span>
+        
+        <span class="n">param</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;PPI&#39;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s1">&#39;load_omnipath&#39;</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s1">&#39;kinase_substrate_extra&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s1">&#39;ligand_receptor_extra&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s1">&#39;pathway_extra&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;TF-target&#39;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s1">&#39;init_network&#39;</span><span class="p">,</span>
+                <span class="p">{</span><span class="s1">&#39;lst&#39;</span><span class="p">:</span> <span class="n">tf_target</span><span class="p">},</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;miRNA-target&#39;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s1">&#39;init_network&#39;</span><span class="p">,</span>
+                <span class="p">{</span><span class="s1">&#39;lst&#39;</span><span class="p">:</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">mirna_target</span><span class="p">},</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;lncRNA-target&#39;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s1">&#39;init_network&#39;</span><span class="p">,</span>
+                <span class="p">{</span><span class="s1">&#39;lst&#39;</span><span class="p">:</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">lncrna_target</span><span class="p">},</span>
+            <span class="p">)</span>
+        <span class="p">}</span>
+        
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">to_call</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Building </span><span class="si">%s</span><span class="s1"> interactions.&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+            
+            <span class="n">pa</span> <span class="o">=</span> <span class="n">main</span><span class="o">.</span><span class="n">PyPath</span><span class="p">()</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">pa</span><span class="p">,</span> <span class="n">to_call</span><span class="p">)(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            
+            <span class="n">e</span> <span class="o">=</span> <span class="n">export</span><span class="o">.</span><span class="n">Export</span><span class="p">(</span><span class="n">pa</span><span class="p">)</span>
+            <span class="n">e</span><span class="o">.</span><span class="n">webservice_interactions_df</span><span class="p">()</span>
+            <span class="n">dataframes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">only_human</span> <span class="ow">and</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;lncRNA-target&#39;</span><span class="p">:</span>
+                
+                <span class="n">graph_human</span> <span class="o">=</span> <span class="kc">None</span>
+                
+                <span class="k">for</span> <span class="n">rodent</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">10090</span><span class="p">,</span> <span class="mi">10116</span><span class="p">):</span>
+                    
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                        <span class="s1">&#39;Translating </span><span class="si">%s</span><span class="s1"> interactions to organism `</span><span class="si">%u</span><span class="s1">`&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                            <span class="n">name</span><span class="p">,</span>
+                            <span class="n">rodent</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                    
+                    <span class="k">if</span> <span class="n">pa</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">==</span> <span class="mi">9606</span><span class="p">:</span>
+                        
+                        <span class="k">if</span> <span class="n">pa</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">ecount</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">100000</span><span class="p">:</span>
+                            
+                            <span class="n">graph_human</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">pa</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
+                        
+                    <span class="k">else</span><span class="p">:</span>
+                        
+                        <span class="k">if</span> <span class="n">graph_human</span><span class="p">:</span>
+                            
+                            <span class="n">pa</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">graph_human</span>
+                            <span class="n">pa</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span>
+                            <span class="n">pa</span><span class="o">.</span><span class="n">genesymbol_labels</span><span class="p">(</span><span class="n">remap_all</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+                            <span class="n">pa</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
+                            
+                        <span class="k">else</span><span class="p">:</span>
+                            
+                            <span class="k">del</span> <span class="n">e</span>
+                            <span class="k">del</span> <span class="n">pa</span>
+                            <span class="n">pa</span> <span class="o">=</span> <span class="n">main</span><span class="o">.</span><span class="n">PyPath</span><span class="p">()</span>
+                            <span class="nb">getattr</span><span class="p">(</span><span class="n">pa</span><span class="p">,</span> <span class="n">to_call</span><span class="p">)(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    
+                    <span class="n">pa</span><span class="o">.</span><span class="n">orthology_translation</span><span class="p">(</span><span class="n">rodent</span><span class="p">)</span>
+                    <span class="n">e</span> <span class="o">=</span> <span class="n">export</span><span class="o">.</span><span class="n">Export</span><span class="p">(</span><span class="n">pa</span><span class="p">)</span>
+                    <span class="n">e</span><span class="o">.</span><span class="n">webservice_interactions_df</span><span class="p">()</span>
+                    <span class="n">dataframes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+        
+        <span class="k">del</span> <span class="n">e</span>
+        <span class="k">del</span> <span class="n">pa</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_interactions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dataframes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_interactions</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outfile_interactions</span><span class="p">,</span>
+            <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Data frame `interactions` has been exported to `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outfile_interactions</span><span class="p">,</span>
+        <span class="p">))</span>
+    
+    
+    <span class="k">def</span> <span class="nf">enz_sub</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Building `enz_sub` data frame.&#39;</span><span class="p">)</span>
+        
+        <span class="n">dataframes</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="n">enz_sub_a</span> <span class="o">=</span> <span class="n">omnipath</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_db</span><span class="p">(</span><span class="s1">&#39;enz_sub&#39;</span><span class="p">)</span>
+        <span class="n">enz_sub_a</span><span class="o">.</span><span class="n">make_df</span><span class="p">(</span><span class="n">tax_id</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">dataframes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">enz_sub_a</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">omnipath</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">remove_db</span><span class="p">(</span><span class="s1">&#39;enz_sub&#39;</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">only_human</span><span class="p">:</span>
+            
+            <span class="k">for</span> <span class="n">rodent</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">10090</span><span class="p">,</span> <span class="mi">10116</span><span class="p">):</span>
+                
+                <span class="n">enz_sub_a</span> <span class="o">=</span> <span class="n">omnipath</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_db</span><span class="p">(</span>
+                    <span class="s1">&#39;enz_sub&#39;</span><span class="p">,</span>
+                    <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">rodent</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">enz_sub_a</span><span class="o">.</span><span class="n">make_df</span><span class="p">(</span><span class="n">tax_id</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+                <span class="n">dataframes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">enz_sub_a</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+                <span class="n">omnipath</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">remove_db</span><span class="p">(</span><span class="s1">&#39;enz_sub&#39;</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">rodent</span><span class="p">)</span>
+                <span class="k">del</span> <span class="n">enz_sub_a</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_enz_sub</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dataframes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_enz_sub</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outfile_ptms</span><span class="p">,</span>
+            <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Data frame `ptms` has been exported to `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outfile_ptms</span><span class="p">,</span>
+        <span class="p">))</span>
+    
+    
+    <span class="k">def</span> <span class="nf">complexes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Building `complexes` data frame.&#39;</span><span class="p">)</span>
+        
+        <span class="n">co</span> <span class="o">=</span> <span class="n">omnipath</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_db</span><span class="p">(</span><span class="s1">&#39;complex&#39;</span><span class="p">)</span>
+        
+        <span class="n">co</span><span class="o">.</span><span class="n">make_df</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_complexes</span> <span class="o">=</span> <span class="n">co</span><span class="o">.</span><span class="n">df</span>
+        
+        <span class="k">del</span> <span class="n">co</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_complexes</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outfile_complexes</span><span class="p">,</span>
+            <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Data frame `complexes` has been exported to `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outfile_complexes</span><span class="p">,</span>
+        <span class="p">))</span>
+    
+    
+    <span class="k">def</span> <span class="nf">annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Building `annotations` data frame.&#39;</span><span class="p">)</span>
+        
+        <span class="n">an</span> <span class="o">=</span> <span class="n">omnipath</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_db</span><span class="p">(</span><span class="s1">&#39;annotations&#39;</span><span class="p">)</span>
+        
+        <span class="n">an</span><span class="o">.</span><span class="n">make_narrow_df</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_annotations</span> <span class="o">=</span> <span class="n">an</span><span class="o">.</span><span class="n">narrow_df</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_annotations</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outfile_annotations</span><span class="p">,</span>
+            <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Data frame `annotations` has been exported to `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outfile_annotations</span><span class="p">,</span>
+        <span class="p">))</span>
+    
+    
+    <span class="k">def</span> <span class="nf">intercell</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Building `intercell` data frame.&#39;</span><span class="p">)</span>
+        
+        <span class="n">i</span> <span class="o">=</span> <span class="n">omnipath</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_db</span><span class="p">(</span><span class="s1">&#39;intercell&#39;</span><span class="p">)</span>
+        
+        <span class="n">i</span><span class="o">.</span><span class="n">make_df</span><span class="p">()</span>
+        <span class="n">i</span><span class="o">.</span><span class="n">add_classes_to_df</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_intercell</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">df</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_intercell</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outfile_intercell</span><span class="p">,</span>
+            <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        
+        <span class="k">del</span> <span class="n">i</span>
+        <span class="n">omnipath</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">remove_db</span><span class="p">(</span><span class="s1">&#39;intercell&#39;</span><span class="p">)</span>
+        <span class="n">omnipath</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">remove_db</span><span class="p">(</span><span class="s1">&#39;complex&#39;</span><span class="p">)</span>
+        <span class="n">omnipath</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">remove_db</span><span class="p">(</span><span class="s1">&#39;annotations&#39;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Data frame `intercell` has been exported to `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outfile_intercell</span><span class="p">,</span>
+        <span class="p">))</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Dénes Türei, Nicolàs Palacio, Olga Ivanova. 
+European Molecular Biology Laboratory, Heidelberg Germany
+European Bioinformatics Institute, Hinxton UK
+University Hospital RWTH, Aachen Germany
+University Hospital Heidelberg Germany
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

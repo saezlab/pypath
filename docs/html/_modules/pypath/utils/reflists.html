@@ -1,0 +1,485 @@
+
+
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pypath.utils.reflists &mdash; pypath 0.10.6 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> pypath
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.10.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Release history</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pypath</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pypath.utils.reflists</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pypath.utils.reflists</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright</span>
+<span class="c1">#  2014-2020</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  File author(s): Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#                  Nicolàs Palacio</span>
+<span class="c1">#                  Olga Ivanova</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">future.utils</span> <span class="k">import</span> <span class="n">iteritems</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">timeloop</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">cPickle</span> <span class="k">as</span> <span class="nn">pickle</span>
+
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="c1"># we use this for simple little tasks only</span>
+<span class="c1"># and don&#39;t want engage another logger</span>
+<span class="n">timeloop</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">level</span> <span class="o">=</span> <span class="mi">9999</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">pypath.inputs.uniprot</span> <span class="k">as</span> <span class="nn">uniprot_input</span>
+<span class="kn">import</span> <span class="nn">pypath.inputs.mirbase</span> <span class="k">as</span> <span class="nn">mirbase_input</span>
+<span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
+<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session_mod</span>
+<span class="kn">import</span> <span class="nn">pypath.share.settings</span> <span class="k">as</span> <span class="nn">settings</span>
+<span class="kn">import</span> <span class="nn">pypath.share.cache</span> <span class="k">as</span> <span class="nn">cache_mod</span>
+
+
+<span class="c1"># method names for ID types</span>
+<span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;uniprot&#39;</span><span class="p">:</span> <span class="s1">&#39;all_uniprots&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;mirbase&#39;</span><span class="p">:</span> <span class="s1">&#39;mirbase_mature_all&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;mir-pre&#39;</span><span class="p">:</span> <span class="s1">&#39;mirbase_precursor_all&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="n">_reflists_cleanup_timeloop</span> <span class="o">=</span> <span class="n">timeloop</span><span class="o">.</span><span class="n">Timeloop</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">ReferenceListManager</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+    
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cleanup_period</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">lifetime</span> <span class="o">=</span> <span class="mi">300</span><span class="p">):</span>
+        
+        <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;reflists&#39;</span><span class="p">)</span>
+        
+        
+        <span class="nd">@_reflists_cleanup_timeloop</span><span class="o">.</span><span class="n">job</span><span class="p">(</span>
+            <span class="n">interval</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span>
+                <span class="n">seconds</span> <span class="o">=</span> <span class="n">cleanup_period</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">def</span> <span class="nf">_cleanup</span><span class="p">():</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">_remove_expired</span><span class="p">()</span>
+        
+        
+        <span class="n">_reflists_cleanup_timeloop</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">block</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">lifetime</span> <span class="o">=</span> <span class="n">lifetime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lists</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expiry</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cachedir</span> <span class="o">=</span> <span class="n">cache_mod</span><span class="o">.</span><span class="n">get_cachedir</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;ReferenceListManager has been created.&#39;</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">which_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        
+        <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;default_organism&#39;</span><span class="p">)</span>
+        
+        <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">expiry</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">:</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">:</span>
+            
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    
+    
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        
+        <span class="n">cachefile</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+        <span class="n">cachefile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cachedir</span><span class="p">,</span> <span class="n">cachefile</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cachefile</span><span class="p">):</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">))</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="s1">&#39;Reference list for ID type `</span><span class="si">%s</span><span class="s1">` for organism `</span><span class="si">%u</span><span class="s1">` &#39;</span>
+                <span class="s1">&#39;has been loaded from `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="p">(</span><span class="n">cachefile</span><span class="p">,))</span>
+            <span class="p">)</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="s1">&#39;Reference list for ID type `</span><span class="si">%s</span><span class="s1">` for organism `</span><span class="si">%u</span><span class="s1">` &#39;</span>
+                <span class="s1">&#39;has been saved to `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="p">(</span><span class="n">cachefile</span><span class="p">,))</span>
+            <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">input_method</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">input_method</span><span class="p">):</span>
+            
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">input_method</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+                
+                <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">fp</span><span class="o">.</span><span class="n">readlines</span><span class="p">()}</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="s1">&#39;Reference list for ID type `</span><span class="si">%s</span><span class="s1">` for organism `</span><span class="si">%u</span><span class="s1">` has &#39;</span>
+                <span class="s1">&#39;been loaded from `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="p">(</span><span class="n">input_method</span><span class="p">,))</span>
+            <span class="p">)</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+            
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">uniprot_input</span><span class="p">,</span> <span class="n">input_method</span><span class="p">):</span>
+                
+                <span class="n">input_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">uniprot_input</span><span class="p">,</span> <span class="n">input_method</span><span class="p">)</span>
+                
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mirbase_input</span><span class="p">,</span> <span class="n">input_method</span><span class="p">):</span>
+                
+                <span class="n">input_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mirbase_input</span><span class="p">,</span> <span class="n">input_method</span><span class="p">)</span>
+            
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">input_func</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="s1">&#39;Reference list for ID type `</span><span class="si">%s</span><span class="s1">` for organism `</span><span class="si">%u</span><span class="s1">` has &#39;</span>
+                <span class="s1">&#39;been loaded by method `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">input_method</span><span class="p">),))</span>
+            <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">data</span>
+    
+    
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the identifier ``name`` is in the reference list with</span>
+<span class="sd">        the provided ``id_type`` and organism.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">lst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">which_list</span><span class="p">(</span><span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">lst</span>
+    
+    
+    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Selects the identifiers in ``names`` which are in the reference list</span>
+<span class="sd">        with the provided ``id_type`` and organism.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+        
+        <span class="n">lst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">which_list</span><span class="p">(</span><span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">names</span> <span class="o">&amp;</span> <span class="n">lst</span>
+    
+    
+    <span class="k">def</span> <span class="nf">is_not</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the identifiers from ``names`` which are not instances of</span>
+<span class="sd">        the provided ``id_type`` and from the given organism.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+        
+        <span class="n">lst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">which_list</span><span class="p">(</span><span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">names</span> <span class="o">-</span> <span class="n">lst</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_remove_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">last_used</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expiry</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            
+            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">last_used</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">lifetime</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">:</span>
+                
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">expiry</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    
+    
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_reflists_cleanup_timeloop</span><span class="p">,</span> <span class="s1">&#39;stop&#39;</span><span class="p">):</span>
+            
+            <span class="n">_reflists_cleanup_timeloop</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">init</span><span class="p">():</span>
+    
+    <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;manager&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ReferenceListManager</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">get_manager</span><span class="p">():</span>
+    
+    <span class="k">if</span> <span class="s1">&#39;manager&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+        
+        <span class="n">init</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;manager&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="check"><a class="viewcode-back" href="../../../reference.html#pypath.utils.reflists.check">[docs]</a><span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if the identifier ``name`` is in the reference list with</span>
+<span class="sd">    the provided ``id_type`` and organism.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">get_manager</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="n">manager</span><span class="o">.</span><span class="n">check</span><span class="p">(</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span>
+        <span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span>
+        <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="select"><a class="viewcode-back" href="../../../reference.html#pypath.utils.reflists.select">[docs]</a><span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Selects the identifiers in ``names`` which are in the reference list</span>
+<span class="sd">    with the provided ``id_type`` and organism.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">get_manager</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="n">manager</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">names</span><span class="p">,</span>
+        <span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span>
+        <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="is_not"><a class="viewcode-back" href="../../../reference.html#pypath.utils.reflists.is_not">[docs]</a><span class="k">def</span> <span class="nf">is_not</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the identifiers from ``names`` which are not instances of</span>
+<span class="sd">    the provided ``id_type`` and from the given organism.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">get_manager</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="n">manager</span><span class="o">.</span><span class="n">is_not</span><span class="p">(</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">names</span><span class="p">,</span>
+        <span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span>
+        <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">get_reflist</span><span class="p">(</span><span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">get_manager</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="n">manager</span><span class="o">.</span><span class="n">which_list</span><span class="p">(</span><span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Dénes Türei, Nicolàs Palacio, Olga Ivanova. 
+European Molecular Biology Laboratory, Heidelberg Germany
+European Bioinformatics Institute, Hinxton UK
+University Hospital RWTH, Aachen Germany
+University Hospital Heidelberg Germany
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

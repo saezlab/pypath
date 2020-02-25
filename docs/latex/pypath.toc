@@ -12,33 +12,112 @@
 \contentsline {subsection}{\numberline {1.3.2}With other Python distributions}{5}{subsection.1.3.2}% 
 \contentsline {subsection}{\numberline {1.3.3}Known issues}{5}{subsection.1.3.3}% 
 \contentsline {chapter}{\numberline {2}Reference}{7}{chapter.2}% 
-\contentsline {section}{\numberline {2.1}annot module}{7}{section.2.1}% 
-\contentsline {section}{\numberline {2.2}bel module}{9}{section.2.2}% 
-\contentsline {section}{\numberline {2.3}complex module}{9}{section.2.3}% 
-\contentsline {section}{\numberline {2.4}intera module}{10}{section.2.4}% 
-\contentsline {section}{\numberline {2.5}intercell module}{10}{section.2.5}% 
-\contentsline {section}{\numberline {2.6}main module}{10}{section.2.6}% 
-\contentsline {section}{\numberline {2.7}ptm module}{56}{section.2.7}% 
-\contentsline {chapter}{\numberline {3}Webservice}{57}{chapter.3}% 
-\contentsline {section}{\numberline {3.1}Mouse and rat}{57}{section.3.1}% 
-\contentsline {section}{\numberline {3.2}Examples}{57}{section.3.2}% 
-\contentsline {chapter}{\numberline {4}Release history}{59}{chapter.4}% 
-\contentsline {section}{\numberline {4.1}0.1.0}{59}{section.4.1}% 
-\contentsline {section}{\numberline {4.2}0.2.0}{59}{section.4.2}% 
-\contentsline {section}{\numberline {4.3}0.3.0}{59}{section.4.3}% 
-\contentsline {section}{\numberline {4.4}0.4.0}{59}{section.4.4}% 
-\contentsline {section}{\numberline {4.5}0.5.0}{59}{section.4.5}% 
-\contentsline {section}{\numberline {4.6}0.7.74}{60}{section.4.6}% 
-\contentsline {section}{\numberline {4.7}Upcoming}{60}{section.4.7}% 
-\contentsline {chapter}{\numberline {5}Features}{61}{chapter.5}% 
-\contentsline {section}{\numberline {5.1}ID conversion}{61}{section.5.1}% 
-\contentsline {section}{\numberline {5.2}Pathways}{61}{section.5.2}% 
-\contentsline {section}{\numberline {5.3}Structural features}{61}{section.5.3}% 
-\contentsline {section}{\numberline {5.4}Sequences}{61}{section.5.4}% 
-\contentsline {section}{\numberline {5.5}Tissue expression}{62}{section.5.5}% 
-\contentsline {section}{\numberline {5.6}Functional annotations}{62}{section.5.6}% 
-\contentsline {section}{\numberline {5.7}Drug compounds}{62}{section.5.7}% 
-\contentsline {section}{\numberline {5.8}Technical}{62}{section.5.8}% 
-\contentsline {chapter}{\numberline {6}OmniPath in R}{63}{chapter.6}% 
-\contentsline {chapter}{Python Module Index}{65}{section*.457}% 
-\contentsline {chapter}{Index}{67}{section*.458}% 
+\contentsline {section}{\numberline {2.1}annot\_formats}{7}{section.2.1}% 
+\contentsline {section}{\numberline {2.2}annot}{7}{section.2.2}% 
+\contentsline {section}{\numberline {2.3}bel}{9}{section.2.3}% 
+\contentsline {section}{\numberline {2.4}cache}{9}{section.2.4}% 
+\contentsline {section}{\numberline {2.5}cellphonedb}{9}{section.2.5}% 
+\contentsline {section}{\numberline {2.6}common}{9}{section.2.6}% 
+\contentsline {section}{\numberline {2.7}complex}{15}{section.2.7}% 
+\contentsline {section}{\numberline {2.8}curl}{16}{section.2.8}% 
+\contentsline {section}{\numberline {2.9}data\_formats}{20}{section.2.9}% 
+\contentsline {section}{\numberline {2.10}dataio}{20}{section.2.10}% 
+\contentsline {section}{\numberline {2.11}descriptions}{31}{section.2.11}% 
+\contentsline {section}{\numberline {2.12}entity}{32}{section.2.12}% 
+\contentsline {section}{\numberline {2.13}evidence}{32}{section.2.13}% 
+\contentsline {section}{\numberline {2.14}export}{33}{section.2.14}% 
+\contentsline {section}{\numberline {2.15}go}{33}{section.2.15}% 
+\contentsline {section}{\numberline {2.16}homology}{33}{section.2.16}% 
+\contentsline {section}{\numberline {2.17}input\_formats}{34}{section.2.17}% 
+\contentsline {section}{\numberline {2.18}interaction}{34}{section.2.18}% 
+\contentsline {section}{\numberline {2.19}intera}{126}{section.2.19}% 
+\contentsline {section}{\numberline {2.20}intercell\_annot}{126}{section.2.20}% 
+\contentsline {section}{\numberline {2.21}intercell}{126}{section.2.21}% 
+\contentsline {section}{\numberline {2.22}log}{127}{section.2.22}% 
+\contentsline {section}{\numberline {2.23}main}{127}{section.2.23}% 
+\contentsline {section}{\numberline {2.24}mirbase}{174}{section.2.24}% 
+\contentsline {section}{\numberline {2.25}mapping}{174}{section.2.25}% 
+\contentsline {section}{\numberline {2.26}maps}{175}{section.2.26}% 
+\contentsline {section}{\numberline {2.27}network}{175}{section.2.27}% 
+\contentsline {section}{\numberline {2.28}omnipath}{286}{section.2.28}% 
+\contentsline {section}{\numberline {2.29}pdb}{286}{section.2.29}% 
+\contentsline {section}{\numberline {2.30}plot}{286}{section.2.30}% 
+\contentsline {section}{\numberline {2.31}progress}{287}{section.2.31}% 
+\contentsline {section}{\numberline {2.32}enz\_sub}{288}{section.2.32}% 
+\contentsline {section}{\numberline {2.33}pyreact}{288}{section.2.33}% 
+\contentsline {section}{\numberline {2.34}reflists}{289}{section.2.34}% 
+\contentsline {section}{\numberline {2.35}refs}{289}{section.2.35}% 
+\contentsline {section}{\numberline {2.36}residues}{290}{section.2.36}% 
+\contentsline {section}{\numberline {2.37}resource}{290}{section.2.37}% 
+\contentsline {section}{\numberline {2.38}seq}{291}{section.2.38}% 
+\contentsline {section}{\numberline {2.39}server}{291}{section.2.39}% 
+\contentsline {section}{\numberline {2.40}session}{291}{section.2.40}% 
+\contentsline {section}{\numberline {2.41}settings}{292}{section.2.41}% 
+\contentsline {section}{\numberline {2.42}taxonomy}{296}{section.2.42}% 
+\contentsline {section}{\numberline {2.43}unichem}{296}{section.2.43}% 
+\contentsline {section}{\numberline {2.44}uniprot}{296}{section.2.44}% 
+\contentsline {section}{\numberline {2.45}urls}{296}{section.2.45}% 
+\contentsline {section}{\numberline {2.46}build}{296}{section.2.46}% 
+\contentsline {section}{\numberline {2.47}resources}{296}{section.2.47}% 
+\contentsline {subsection}{\numberline {2.47.1}network}{296}{subsection.2.47.1}% 
+\contentsline {chapter}{\numberline {3}Webservice}{297}{chapter.3}% 
+\contentsline {section}{\numberline {3.1}Mouse and rat}{297}{section.3.1}% 
+\contentsline {section}{\numberline {3.2}Examples}{297}{section.3.2}% 
+\contentsline {chapter}{\numberline {4}Release history}{299}{chapter.4}% 
+\contentsline {section}{\numberline {4.1}0.1.0}{299}{section.4.1}% 
+\contentsline {section}{\numberline {4.2}0.2.0}{299}{section.4.2}% 
+\contentsline {section}{\numberline {4.3}0.3.0}{299}{section.4.3}% 
+\contentsline {section}{\numberline {4.4}0.4.0}{299}{section.4.4}% 
+\contentsline {section}{\numberline {4.5}0.5.0}{299}{section.4.5}% 
+\contentsline {section}{\numberline {4.6}0.7.74}{300}{section.4.6}% 
+\contentsline {section}{\numberline {4.7}Upcoming}{300}{section.4.7}% 
+\contentsline {chapter}{\numberline {5}Webservice}{301}{chapter.5}% 
+\contentsline {section}{\numberline {5.1}Query types}{301}{section.5.1}% 
+\contentsline {section}{\numberline {5.2}Interaction datasets}{301}{section.5.2}% 
+\contentsline {section}{\numberline {5.3}Mouse and rat}{301}{section.5.3}% 
+\contentsline {section}{\numberline {5.4}Examples}{302}{section.5.4}% 
+\contentsline {subsection}{\numberline {5.4.1}Molecular interaction network}{302}{subsection.5.4.1}% 
+\contentsline {subsection}{\numberline {5.4.2}Enzyme-substrate interactions}{303}{subsection.5.4.2}% 
+\contentsline {subsection}{\numberline {5.4.3}Molecular complexes}{303}{subsection.5.4.3}% 
+\contentsline {subsection}{\numberline {5.4.4}Annotations}{303}{subsection.5.4.4}% 
+\contentsline {subsection}{\numberline {5.4.5}Roles in inter-cellular communication}{303}{subsection.5.4.5}% 
+\contentsline {subsection}{\numberline {5.4.6}Exploring possible parameters}{304}{subsection.5.4.6}% 
+\contentsline {chapter}{\numberline {6}Can I use OmniPath in R?}{305}{chapter.6}% 
+\contentsline {chapter}{\numberline {7}Installation}{307}{chapter.7}% 
+\contentsline {section}{\numberline {7.1}Linux}{307}{section.7.1}% 
+\contentsline {section}{\numberline {7.2}igraph C library, cairo and pycairo}{307}{section.7.2}% 
+\contentsline {section}{\numberline {7.3}Directly from git}{307}{section.7.3}% 
+\contentsline {section}{\numberline {7.4}With pip}{307}{section.7.4}% 
+\contentsline {section}{\numberline {7.5}Build source distribution}{307}{section.7.5}% 
+\contentsline {section}{\numberline {7.6}Mac OS X}{308}{section.7.6}% 
+\contentsline {subsection}{\numberline {7.6.1}Troubleshooting}{308}{subsection.7.6.1}% 
+\contentsline {section}{\numberline {7.7}Microsoft Windows}{308}{section.7.7}% 
+\contentsline {subsection}{\numberline {7.7.1}With Anaconda}{308}{subsection.7.7.1}% 
+\contentsline {subsection}{\numberline {7.7.2}With other Python distributions}{309}{subsection.7.7.2}% 
+\contentsline {subsection}{\numberline {7.7.3}Known issues}{309}{subsection.7.7.3}% 
+\contentsline {chapter}{\numberline {8}Release History}{311}{chapter.8}% 
+\contentsline {section}{\numberline {8.1}0.1.0}{311}{section.8.1}% 
+\contentsline {section}{\numberline {8.2}0.2.0}{311}{section.8.2}% 
+\contentsline {section}{\numberline {8.3}0.3.0}{311}{section.8.3}% 
+\contentsline {section}{\numberline {8.4}0.4.0}{311}{section.8.4}% 
+\contentsline {section}{\numberline {8.5}0.5.0}{311}{section.8.5}% 
+\contentsline {section}{\numberline {8.6}0.5.32}{312}{section.8.6}% 
+\contentsline {section}{\numberline {8.7}0.6.31}{312}{section.8.7}% 
+\contentsline {section}{\numberline {8.8}0.7.0}{312}{section.8.8}% 
+\contentsline {section}{\numberline {8.9}0.7.74}{312}{section.8.9}% 
+\contentsline {section}{\numberline {8.10}0.7.93}{312}{section.8.10}% 
+\contentsline {section}{\numberline {8.11}0.7.110}{312}{section.8.11}% 
+\contentsline {section}{\numberline {8.12}0.8}{312}{section.8.12}% 
+\contentsline {section}{\numberline {8.13}0.9}{313}{section.8.13}% 
+\contentsline {section}{\numberline {8.14}Upcoming}{313}{section.8.14}% 
+\contentsline {chapter}{\numberline {9}Features}{315}{chapter.9}% 
+\contentsline {section}{\numberline {9.1}ID conversion}{315}{section.9.1}% 
+\contentsline {section}{\numberline {9.2}Pathways}{315}{section.9.2}% 
+\contentsline {section}{\numberline {9.3}Structural features}{315}{section.9.3}% 
+\contentsline {section}{\numberline {9.4}Sequences}{316}{section.9.4}% 
+\contentsline {section}{\numberline {9.5}Tissue expression}{316}{section.9.5}% 
+\contentsline {section}{\numberline {9.6}Functional annotations}{316}{section.9.6}% 
+\contentsline {section}{\numberline {9.7}Drug compounds}{316}{section.9.7}% 
+\contentsline {section}{\numberline {9.8}Technical}{316}{section.9.8}% 
+\contentsline {chapter}{Python Module Index}{317}{section*.2176}% 
+\contentsline {chapter}{Index}{319}{section*.2177}% 

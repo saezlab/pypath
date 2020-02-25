@@ -245,7 +245,7 @@ var Search = {
       if (results.length) {
         var item = results.pop();
         var listItem = $('<li style="display:none"></li>');
-        if (DOCUMENTATION_OPTIONS.BUILDER === 'dirhtml') {
+        if (DOCUMENTATION_OPTIONS.FILE_SUFFIX === '') {
           // dirhtml builder
           var dirname = item[0] + '/';
           if (dirname.match(/\/index\/$/)) {
@@ -319,13 +319,12 @@ var Search = {
     for (var prefix in objects) {
       for (var name in objects[prefix]) {
         var fullname = (prefix ? prefix + '.' : '') + name;
-        var fullnameLower = fullname.toLowerCase()
-        if (fullnameLower.indexOf(object) > -1) {
+        if (fullname.toLowerCase().indexOf(object) > -1) {
           var score = 0;
-          var parts = fullnameLower.split('.');
+          var parts = fullname.split('.');
           // check for different match types: exact matches of full name or
           // "last name" (i.e. last dotted part)
-          if (fullnameLower == object || parts[parts.length - 1] == object) {
+          if (fullname == object || parts[parts.length - 1] == object) {
             score += Scorer.objNameMatch;
           // matches in last name
           } else if (parts[parts.length - 1].indexOf(object) > -1) {
@@ -424,7 +423,7 @@ var Search = {
         for (j = 0; j < _files.length; j++) {
           file = _files[j];
           if (!(file in scoreMap))
-            scoreMap[file] = {};
+            scoreMap[file] = {}
           scoreMap[file][word] = o.score;
         }
       });
@@ -432,7 +431,7 @@ var Search = {
       // create the mapping
       for (j = 0; j < files.length; j++) {
         file = files[j];
-        if (file in fileMap && fileMap[file].indexOf(word) === -1)
+        if (file in fileMap)
           fileMap[file].push(word);
         else
           fileMap[file] = [word];
