@@ -673,6 +673,11 @@ class Network(session_mod.Logger):
             resource = resource,
         )
 
+        self._log('Loops allowed for resource `%s`: %s' % (
+            resource.name,
+            allow_loops,
+        ))
+
         self._add_edge_list(
             only_directions = only_directions,
             allow_loops = allow_loops,
@@ -1723,7 +1728,7 @@ class Network(session_mod.Logger):
 
                 return False
 
-        edges = []
+        self._filtered_loops = 0
 
         for e in edge_list:
 
@@ -1740,6 +1745,12 @@ class Network(session_mod.Logger):
                 self.ecount
             )
         )
+
+        if not allow_loops:
+
+            self._log('Loop edges discarded: %u' % self._filtered_loops)
+
+        delattr(self, '_filtered_loops')
 
         self.raw_data = None
 
@@ -1858,6 +1869,7 @@ class Network(session_mod.Logger):
 
         if not allow_loops and interaction.is_loop():
 
+            self._filtered_loops += 1
             return
 
         if is_directed:
