@@ -448,7 +448,7 @@ class MapReader(session_mod.Logger):
         else:
 
             infile = open(self.param.input, encoding = 'utf-8', mode = 'r')
-            total = os.path.getsize(param.input)
+            total = os.path.getsize(self.param.input)
 
         a_to_b = collections.defaultdict(set)
         b_to_a = collections.defaultdict(set)
