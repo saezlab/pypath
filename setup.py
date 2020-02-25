@@ -93,6 +93,7 @@ setup(
         'numpy',
         'scipy',
         'matplotlib',
+        'pandas',
         'statsmodels',
         'pycurl',
         'lxml',
