@@ -1,241 +1,244 @@
 Reference
 ---------
 
-
 annot_formats
-======
-.. automodule:: pypath.annot_formats
+=============
+.. automodule:: pypath.internal.annot_formats
    :members:
 
 annot
-======
-.. automodule:: pypath.annot
+=====
+.. automodule:: pypath.core.annot
    :members:
 
 bel
-======
-.. automodule:: pypath.bel
+===
+.. automodule:: pypath.omnipath.bel
    :members:
 
 cache
-======
-.. automodule:: pypath.cache
+=====
+.. automodule:: pypath.share.cache
    :members:
 
 cellphonedb
-======
-.. automodule:: pypath.cellphonedb
+===========
+.. automodule:: pypath.omnipath.cellphonedb
    :members:
 
 common
 ======
-.. automodule:: pypath.common
+.. automodule:: pypath.share.common
    :members:
 
 complex
-======
-.. automodule:: pypath.complex
+=======
+.. automodule:: pypath.core.complex
    :members:
 
 curl
-======
-.. automodule:: pypath.curl
+====
+.. automodule:: pypath.share.curl
    :members:
 
 data_formats
-======
-.. automodule:: pypath.data_formats
+============
+.. automodule:: pypath.resources.data_formats
    :members:
 
 dataio
 ======
-.. automodule:: pypath.dataio
+.. automodule:: pypath.inputs.main
    :members:
 
 descriptions
-======
-.. automodule:: pypath.descriptions
+============
+.. automodule:: pypath.resources.descriptions
    :members:
 
 entity
 ======
-.. automodule:: pypath.entity
+.. automodule:: pypath.core.entity
    :members:
 
 evidence
-======
-.. automodule:: pypath.evidence
+========
+.. automodule:: pypath.core.evidence
    :members:
 
 export
 ======
-.. automodule:: pypath.export
+.. automodule:: pypath.omnipath.export
    :members:
 
 go
-======
-.. automodule:: pypath.go
+===
+.. automodule:: pypath.utils.go
    :members:
 
 homology
-======
-.. automodule:: pypath.homology
+========
+.. automodule:: pypath.utils.homology
    :members:
 
 input_formats
-======
-.. automodule:: pypath.input_formats
+=============
+.. automodule:: pypath.internals.input_formats
    :members:
 
 interaction
-======
-.. automodule:: pypath.interaction
+===========
+.. automodule:: pypath.core.interaction
    :members:
 
 intera
 ======
-.. automodule:: pypath.intera
+.. automodule:: pypath.internals.intera
    :members:
 
 intercell_annot
-======
-.. automodule:: pypath.intercell_annot
+===============
+.. automodule:: pypath.core.intercell_annot
    :members:
 
 intercell
-======
-.. automodule:: pypath.intercell
+=========
+.. automodule:: pypath.core.intercell
    :members:
 
 log
-======
-.. automodule:: pypath.log
+===
+.. automodule:: pypath.share.log
    :members:
+
+.. XXX: should we remove this?
 
 main
-======
-.. automodule:: pypath.main
+====
+.. automodule:: pypath.legacy.main
    :members:
 
-mapping_input
-======
-.. automodule:: pypath.mapping_input
+mirbase
+=======
+.. automodule:: pypath.inputs.mirbase
    :members:
 
 mapping
-======
-.. automodule:: pypath.mapping
+=======
+.. automodule:: pypath.utils.mapping
    :members:
 
 maps
-======
-.. automodule:: pypath.maps
+====
+.. automodule:: pypath.internals.maps
    :members:
 
 network
-======
-.. automodule:: pypath.network
+=======
+.. automodule:: pypath.core.network
    :members:
 
+.. XXX: should we remove this?
+
 omnipath
-======
-.. automodule:: pypath.omnipath
+========
+.. automodule:: pypath.omnipath.legacy
    :members:
 
 pdb
-======
-.. automodule:: pypath.pdb
+===
+.. automodule:: pypath.utils.pdb
    :members:
 
 plot
-======
-.. automodule:: pypath.plot
+====
+.. automodule:: pypath.visual.plot
    :members:
 
 progress
-======
-.. automodule:: pypath.progress
+========
+.. automodule:: pypath.share.progress
    :members:
 
-ptm
-======
-.. automodule:: pypath.ptm
+enz_sub
+=======
+.. automodule:: pypath.core.enz_sub
    :members:
 
 pyreact
-======
-.. automodule:: pypath.pyreact
+=======
+.. automodule:: pypath.utils.pyreact
    :members:
 
 reflists
-======
-.. automodule:: pypath.reflists
+========
+.. automodule:: pypath.utils.reflists
    :members:
 
 refs
-======
-.. automodule:: pypath.refs
+====
+.. automodule:: pypath.internals.refs
    :members:
 
 residues
-======
-.. automodule:: pypath.residues
+========
+.. automodule:: pypath.utils.residues
    :members:
 
 resource
-======
-.. automodule:: pypath.resource
+========
+.. automodule:: pypath.internals.resource
    :members:
 
 seq
-======
-.. automodule:: pypath.seq
+===
+.. automodule:: pypath.utils.seq
    :members:
 
 server
 ======
-.. automodule:: pypath.server
+.. automodule:: pypath.omnipath.server.run
    :members:
 
-session_mod
-======
-.. automodule:: pypath.session_mod
+session
+=======
+.. automodule:: pypath.share.session
    :members:
 
 settings
-======
-.. automodule:: pypath.settings
+========
+.. automodule:: pypath.share.settings
    :members:
 
 taxonomy
-======
-.. automodule:: pypath.taxonomy
+========
+.. automodule:: pypath.utils.taxonomy
    :members:
 
 unichem
-======
-.. automodule:: pypath.unichem
+=======
+.. automodule:: pypath.utils.unichem
    :members:
 
-uniprot_input
-======
-.. automodule:: pypath.uniprot_input
+uniprot
+=======
+.. automodule:: pypath.input.uniprot
    :members:
 
 urls
-======
-.. automodule:: pypath.urls
+====
+.. automodule:: pypath.resources.urls
    :members:
 
-websrvtab
-======
-.. automodule:: pypath.websrvtab
+build
+=====
+.. automodule:: pypath.omnipath.server.build
    :members:
 
 resources
-======
+=========
 
 network
-++++++
++++++++
 .. automodule:: pypath.resources.network
    :members:
