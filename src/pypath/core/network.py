@@ -2736,15 +2736,7 @@ class Network(session_mod.Logger):
             )
         )
 
-        interactions_per_reference = self.numof_interactions_per_reference()
-        interactions_by_reference = self.interactions_by_reference()
-
-        htp_refs = {
-            ref
-            for ref, cnt in iteritems(interactions_per_reference)
-            if cnt > threshold
-        }
-
+        htp_refs = self.htp_references(threshold = threshold)
         to_remove = set()
 
         ecount_before = self.ecount
@@ -2753,10 +2745,11 @@ class Network(session_mod.Logger):
         for key, ia in iteritems(self.interactions):
 
             if (
-                not ia.get_references() - htp_refs and (
+                (
                     not keep_directed or
                     not ia.is_directed()
-                )
+                ) and
+                not ia.get_references() - htp_refs
             ):
 
                 to_remove.add(key)
@@ -2777,6 +2770,25 @@ class Network(session_mod.Logger):
                 self.vcount,
             )
         )
+
+
+    def htp_references(self, threshold = 50):
+        """
+        Collects the high-throughput references i.e. the ones cited at a
+        higher number of interactions than ``threshold``.
+        """
+
+        interactions_per_reference = self.numof_interactions_per_reference()
+
+        htp_refs = {
+            ref
+            for ref, cnt in iteritems(interactions_per_reference)
+            if cnt > threshold
+        }
+
+        self._log('High-throughput references collected: %u' % len(htp_refs))
+
+        return htp_refs
 
 
     def remove_undirected(self, min_refs = None):
