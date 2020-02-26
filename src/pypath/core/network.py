@@ -2736,7 +2736,6 @@ class Network(session_mod.Logger):
             )
         )
 
-        htp_refs = self.htp_references(threshold = threshold)
         to_remove = self.htp_interactions(
             threshold = threshold,
             ignore_directed = keep_directed,
