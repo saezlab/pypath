@@ -29,10 +29,11 @@ own code.
 
 import copy
 
+import pypath.share.settings as settings
 import pypath.resources.network as netres
 
 
-def get_curated_ppi():
+def curated_ppi_resources():
     """
     Returns a resource set which more or less corresponds to the literature
     curated activity flow resources. It is an union of the literature curated
@@ -43,3 +44,20 @@ def get_curated_ppi():
     resources.update(copy.deepcopy(netres.enzyme_substrate))
 
     return resources
+
+
+def tf_target_resources():
+    """
+    Returns the resource set for building the TF-target network dataset.
+    """
+
+    transcription = (
+        netres.dorothea_expand_levels(
+            resources = netres.transcription,
+            levels = settings.get('tfregulons_levels'),
+        )
+            if settings.get('dorothea_expand_levels') else
+        netres.transcription
+    )
+
+    return transcription
