@@ -1573,9 +1573,8 @@
       ]
     },
     "license": {
-      "name": "No license.",
-      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
-      "commercial_use": false
+      "name": "Full permission",
+      "commercial_use": true
     },
     "dateUpdated":"Nov 2016"
   },
@@ -2426,8 +2425,8 @@
     "subtype": "complexes",
     "omnipath": false,
     "license": {
-      "name": "No license.",
-      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
+      "name": "CC Attribution Non-Commercial 4.0",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/",
       "commercial_use": false
     },
     "pypath": {
@@ -3902,12 +3901,14 @@
   },
   "Exocarta": {
     "license": {
-      "comment": "License information was requested but not received yet."
+        "name": "Full permission",
+        "commercial_use": true
     }
   },
   "Vesiclepedia": {
     "license": {
-      "comment": "License information was requested but not received yet."
+        "name": "Full permission",
+        "commercial_use": true
     }
   },
   "Matrisome": {
@@ -3948,7 +3949,7 @@
   },
   "Kirouac2010": {
     "license": {
-      "name": "CC-Attribution-NonCommercial-NoDerivs 3.0",
+      "name": "CC Attribution-NonCommercial-NoDerivs 3.0",
       "url": "https://creativecommons.org/licenses/by-nc-nd/3.0/",
       "commercial_use": false
     }
@@ -3962,7 +3963,9 @@
   },
   "Adhesome": {
     "license": {
-      "comment": "License information was requested but not received yet."
+      "name": "CC Attribution 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "commercial_use": true
     }
   },
   "Integrins": {
@@ -4126,21 +4129,23 @@
   },
   "TransmiR": {
     "license": {
-      "name": "CC-Attribution-NonCommercial 4.0",
+      "name": "CC Attribution-NonCommercial 4.0",
       "url": "https://creativecommons.org/licenses/by-nc/4.0/",
       "commercial_use": false
     }
   },
   "ENCODE": {
     "license": {
-      "name": "CC-Attribution 4.0",
+      "name": "CC Attribution 4.0",
       "url": "https://creativecommons.org/licenses/by/4.0/",
       "commercial_use": true
     }
   },
   "lncRNADisease": {
     "license": {
-      "comment": "License information was requested but not received yet."
+        "name": "CC Attribution-NonCommercial 4.0",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "commercial_use": false
     }
   },
   "lncrnadb": {
@@ -4213,7 +4218,9 @@
   },
   "phosphatome": {
     "license": {
-      "comment": "License information was requested but not received yet."
+        "name": "CC Attribution 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "commercial_use": true
     }
   },
   "Vaquerizas2009": {
@@ -4250,7 +4257,7 @@
   },
   "MSigDB": {
     "license": {
-        "name": "CC-Attribution 4.0",
+        "name": "CC Attribution 4.0",
         "url": "http://creativecommons.org/licenses/by/4.0/",
         "commercial_use": true
     },
@@ -4258,8 +4265,8 @@
   },
   "Baccin2019": {
     "license": {
-        "name": "No license.",
-        "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
+        "name": "CC Attribution-NonCommercial 4.0",
+        "url": "http://creativecommons.org/licenses/by-nc/4.0/",
         "commercial_use": false
     },
     "emails": [

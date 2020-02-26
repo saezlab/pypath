@@ -7,3 +7,4 @@ log/
 .idea
 pip-wheel-metadata/*
 pypath_log/
+**/.ipynb_checkpoints/

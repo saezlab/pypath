@@ -83,6 +83,7 @@ _defaults = {
     'deathdomain': 'deathdomain.tsv',
     'hpmr_preprocessed': 'hpmr_preprocessed.pickle',
     'network_expand_complexes': False,
+    'network_allow_loops': True,
     'network_keep_original_names': True,
     'network_pickle_cache': True,
     'go_pickle_cache': True,

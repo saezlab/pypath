@@ -415,7 +415,7 @@ class Network(session_mod.Logger):
             df_dtype=None,
             pickle_file=None,
             ncbi_tax_id=9606,
-            allow_loops=True,
+            allow_loops=None,
             **kwargs
     ):
 
@@ -496,6 +496,7 @@ class Network(session_mod.Logger):
             cache_files=None,
             only_directions=False,
             pickle_file=None,
+            allow_loops=None,
     ):
         """
         Loads data from a network resource or a collection of resources.
@@ -527,6 +528,7 @@ class Network(session_mod.Logger):
             'keep_raw': keep_raw,
             'top_call': False,
             'only_directions': only_directions,
+            'allow_loops': allow_loops,
         }
 
         exclude = common.to_set(exclude)
@@ -593,6 +595,7 @@ class Network(session_mod.Logger):
             redownload=None,
             keep_raw=False,
             only_directions=False,
+            allow_loops=None,
             **kwargs
     ):
         """
@@ -635,13 +638,24 @@ class Network(session_mod.Logger):
             redownload=redownload,
             keep_raw=keep_raw,
         )
-        self._add_edge_list(only_directions=only_directions)
+
+        allow_loops = self._allow_loops(
+            allow_loops=allow_loops,
+            resource=resource,
+        )
+
+        self._log('Loops allowed for resource `%s`: %s' % (
+            resource.name,
+            allow_loops,
+        ))
+
+        self._add_edge_list(
+            only_directions=only_directions,
+            allow_loops=allow_loops,
+        )
 
         self.organisms_check()
         self.remove_zero_degree()
-
-        if not self.allow_loops:
-            self.remove_loops()
 
         self._log(
             'Completed: loading network data from '
@@ -1605,6 +1619,7 @@ class Network(session_mod.Logger):
             edge_list=False,
             regulator=False,
             only_directions=False,
+            allow_loops=None,
     ):
         """
         Adds edges to the network from *edge_list* obtained from file or
@@ -1624,6 +1639,8 @@ class Network(session_mod.Logger):
         """
 
         self._log('Adding preprocessed edge list to existing network.')
+
+        allow_loops = self._allow_loops(allow_loops=allow_loops)
 
         if not edge_list:
 
@@ -1654,10 +1671,14 @@ class Network(session_mod.Logger):
 
                 return False
 
-        edges = []
+        self._filtered_loops = 0
 
         for e in edge_list:
-            self._add_update_edge(e, only_directions=only_directions)
+            self._add_update_edge(
+                e,
+                allow_loops=allow_loops,
+                only_directions=only_directions,
+            )
 
         self._log(
             'New network resource added, current number '
@@ -1667,11 +1688,17 @@ class Network(session_mod.Logger):
             )
         )
 
+        if not allow_loops:
+            self._log('Loop edges discarded: %u' % self._filtered_loops)
+
+        delattr(self, '_filtered_loops')
+
         self.raw_data = None
 
     def _add_update_edge(
             self,
             edge,
+            allow_loops=None,
             only_directions=False,
     ):
         """
@@ -1756,6 +1783,8 @@ class Network(session_mod.Logger):
             edge['attrs_node_b'],
         )
 
+        allow_loops = allow_loops or self.allow_loops
+
         refs = {refs_mod.Reference(pmid) for pmid in refs}
 
         entity_a = entity_mod.Entity(
@@ -1777,6 +1806,10 @@ class Network(session_mod.Logger):
             a=entity_a,
             b=entity_b,
         )
+
+        if not allow_loops and interaction.is_loop():
+            self._filtered_loops += 1
+            return
 
         if is_directed:
 
@@ -2570,29 +2603,13 @@ class Network(session_mod.Logger):
             )
         )
 
-        interactions_per_reference = self.numof_interactions_per_reference()
-        interactions_by_reference = self.interactions_by_reference()
-
-        htp_refs = {
-            ref
-            for ref, cnt in iteritems(interactions_per_reference)
-            if cnt > threshold
-        }
-
-        to_remove = set()
+        to_remove = self.htp_interactions(
+            threshold=threshold,
+            ignore_directed=keep_directed,
+        )
 
         ecount_before = self.ecount
         vcount_before = self.vcount
-
-        for key, ia in iteritems(self.interactions):
-
-            if (
-                    not ia.get_references() - htp_refs and (
-                    not keep_directed or
-                    not ia.is_directed()
-            )
-            ):
-                to_remove.add(key)
 
         for key in to_remove:
             self.remove_interaction(*key)
@@ -2609,6 +2626,51 @@ class Network(session_mod.Logger):
                 self.vcount,
             )
         )
+
+    def htp_references(self, threshold=50):
+        """
+        Collects the high-throughput references i.e. the ones cited at a
+        higher number of interactions than ``threshold``.
+        """
+
+        interactions_per_reference = self.numof_interactions_per_reference()
+
+        htp_refs = {
+            ref
+            for ref, cnt in iteritems(interactions_per_reference)
+            if cnt > threshold
+        }
+
+        self._log('High-throughput references collected: %u' % len(htp_refs))
+
+        return htp_refs
+
+    def htp_interactions(self, threshold=50, ignore_directed=False):
+        """
+        Collects the interactions only from high-throughput studies.
+
+        :returns:
+            Set of interaction keys (tuples of entities).
+        """
+
+        htp_refs = self.htp_references(threshold=threshold)
+
+        htp_int = set()
+
+        for key, ia in iteritems(self.interactions):
+
+            if (
+                    (
+                            not ignore_directed or
+                            not ia.is_directed()
+                    ) and
+                    not ia.get_references() - htp_refs
+            ):
+                htp_int.add(key)
+
+        self._log('High-throughput interactions collected: %u' % len(htp_int))
+
+        return htp_int
 
     def remove_undirected(self, min_refs=None):
 
@@ -2774,6 +2836,7 @@ class Network(session_mod.Logger):
             exclude=None,
             reread=False,
             redownload=False,
+            allow_loops=None,
             **kwargs
     ):
 
@@ -2784,6 +2847,7 @@ class Network(session_mod.Logger):
                 levels=dorothea_levels,
                 reread=reread,
                 redownload=redownload,
+                allow_loops=allow_loops,
             )
 
         if original_resources:
@@ -2798,6 +2862,7 @@ class Network(session_mod.Logger):
                 reread=reread,
                 redownload=redownload,
                 exclude=exclude,
+                allow_loops=allow_loops,
             )
 
         if make_df:
@@ -2814,6 +2879,7 @@ class Network(session_mod.Logger):
             redownload=False,
             make_df=False,
             ncbi_tax_id=9606,
+            allow_loops=None,
             **kwargs
     ):
         """
@@ -3625,6 +3691,31 @@ class Network(session_mod.Logger):
             method,
             signature=signature,
             doc=doc,
+        )
+
+    def _allow_loops(self, allow_loops=None, resource=None):
+        """
+        Integrates settings for the `allow_loops` parameter from the
+        method, instance and module level settings.
+        """
+
+        default = settings.get('network_allow_loops')
+
+        return (
+            # from the arguments of the actual `load` call
+            allow_loops
+            if isinstance(allow_loops, bool) else
+            # from the current instance
+            self.allow_loops
+            if isinstance(self.allow_loops, bool) else
+            # interaction type specific settings from the module level
+            resource.networkinput.interaction_type in default
+            if (
+                    isinstance(default, common.list_like) and
+                    hasattr(resource, 'networkinput')
+            ) else
+            # general settings from the module level
+            bool(default)
         )
 
 

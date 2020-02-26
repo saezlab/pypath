@@ -1,0 +1,1574 @@
+
+
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pypath.utils.go &mdash; pypath 0.10.6 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> pypath
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.10.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Release history</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pypath</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pypath.utils.go</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pypath.utils.go</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#  Provides many functions to interact with Gene Ontology data.</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright</span>
+<span class="c1">#  2014-2020</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  File author(s): Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#                  Nicolàs Palacio</span>
+<span class="c1">#                  Olga Ivanova</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">future.utils</span> <span class="k">import</span> <span class="n">iteritems</span>
+<span class="kn">from</span> <span class="nn">past.builtins</span> <span class="k">import</span> <span class="n">xrange</span><span class="p">,</span> <span class="nb">range</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">importlib</span> <span class="k">as</span> <span class="nn">imp</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">cPickle</span> <span class="k">as</span> <span class="nn">pickle</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="kn">import</span> <span class="nn">pypath.share.cache</span> <span class="k">as</span> <span class="nn">cache</span>
+<span class="kn">import</span> <span class="nn">pypath.inputs.main</span> <span class="k">as</span> <span class="nn">dataio</span>
+<span class="kn">import</span> <span class="nn">pypath.share.progress</span> <span class="k">as</span> <span class="nn">progress</span>
+<span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
+<span class="kn">from</span> <span class="nn">pypath.share.common</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session_mod</span>
+<span class="kn">import</span> <span class="nn">pypath.share.settings</span> <span class="k">as</span> <span class="nn">settings</span>
+
+
+<span class="c1">#TODO may be separate this module from pypath?</span>
+
+<span class="c1"># this is for GO terms parsing:</span>
+<span class="n">_reexprterm</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;and|or|not|\(|\)|GO:[0-9]</span><span class="si">{7}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">_reexprname</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">r</span><span class="s1">&#39;(?!\s)&#39;</span> <span class="c1"># no space at the beginning</span>
+    <span class="sa">r</span><span class="s1">&#39;(?:AND|OR|NOT|\(|\)|&#39;</span> <span class="c1"># either AND, OR, NOT or parentheses</span>
+       <span class="sa">r</span><span class="s1">&#39;(?:(?!OR|AND|NOT|\s</span><span class="si">{2:}</span><span class="s1">)(?:[-\w: ]))+)&#39;</span> <span class="c1"># or something else</span>
+                                                 <span class="c1"># (words with spaces)</span>
+    <span class="sa">r</span><span class="s1">&#39;(?&lt;!\s)&#39;</span> <span class="c1"># no space at the end</span>
+<span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">GeneOntology</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+    
+    <span class="n">all_relations</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;is_a&#39;</span><span class="p">,</span> <span class="s1">&#39;part_of&#39;</span><span class="p">,</span> <span class="s1">&#39;occurs_in&#39;</span><span class="p">,</span> <span class="s1">&#39;regulates&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;positively_regulates&#39;</span><span class="p">,</span> <span class="s1">&#39;negatively_regulates&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+    
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">terms</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">ancestors</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">descendants</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">aspect</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">term</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads data about Gene Ontology terms and their relations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;go&#39;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_terms_provided</span> <span class="o">=</span> <span class="n">terms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ancestors_provided</span> <span class="o">=</span> <span class="n">ancestors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_descendants_provided</span> <span class="o">=</span> <span class="n">descendants</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_aspect_provided</span> <span class="o">=</span> <span class="n">aspect</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_term_provided</span> <span class="o">=</span> <span class="n">term</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name_provided</span> <span class="o">=</span> <span class="n">name</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">()</span>
+    
+    
+    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reloads the object from the module level.&quot;&quot;&quot;</span>
+        
+        <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Populating Gene Ontology: ontology.&#39;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_terms</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_tree</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_aspect</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_name</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_term</span><span class="p">()</span>
+        
+        <span class="c1"># delattr(self, &#39;_terms&#39;)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Gene Ontology: ontology populated.&#39;</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_load_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_terms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terms_provided</span> <span class="ow">or</span> <span class="n">dataio</span><span class="o">.</span><span class="n">go_terms_quickgo</span><span class="p">()</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_load_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Gene Ontology: building the ontology tree.&#39;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">ancestors</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ancestors_provided</span> <span class="ow">or</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_merge_aspects</span><span class="p">(</span>
+                <span class="n">dataio</span><span class="o">.</span><span class="n">go_ancestors_quickgo</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">descendants</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_descendants_provided</span> <span class="ow">or</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_merge_aspects</span><span class="p">(</span>
+                <span class="n">dataio</span><span class="o">.</span><span class="n">go_descendants_quickgo</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_set_aspect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">aspect</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_aspect_provided</span> <span class="ow">or</span>
+            <span class="nb">dict</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="n">asp</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">asp</span><span class="p">,</span> <span class="n">terms</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_terms</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">terms</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_set_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Collecting short names of GO terms.&#39;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_name_provided</span> <span class="ow">or</span>
+            <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">i</span>
+                <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terms</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">ii</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_set_term</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">term</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_term_provided</span> <span class="ow">or</span>
+            <span class="nb">dict</span><span class="p">(</span>
+                <span class="nb">reversed</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">is_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tells if ``term`` is a GO accession number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+    
+    
+    <span class="k">def</span> <span class="nf">is_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tells if ``name`` is a GO term name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">term</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a GO accession number returns the name of the term.</span>
+<span class="sd">        If ``term`` is already a GO term name returns it unchanged.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">term</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_name</span><span class="p">(</span><span class="n">term</span><span class="p">)</span> <span class="k">else</span>
+            <span class="kc">None</span>
+                <span class="k">if</span> <span class="n">term</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="n">term</span><span class="p">]</span>
+        <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a GO term name returns its GO accession number.</span>
+<span class="sd">        If ``name`` is a GO accession returns it unchanged.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">name</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_term</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">else</span>
+            <span class="kc">None</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">term</span> <span class="k">else</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">term</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Could not find GO term name: `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">result</span>
+    
+    
+    <span class="k">def</span> <span class="nf">terms_to_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a list of GO names returns a list of tuples with the terms</span>
+<span class="sd">        and their names.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="p">[(</span><span class="n">term</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">(</span><span class="n">term</span><span class="p">))</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">terms</span><span class="p">]</span>
+    
+    
+    <span class="k">def</span> <span class="nf">terms_to_names_aspects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a list of GO terms returns a list of tuples with the terms,</span>
+<span class="sd">        their names and the ontology aspect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">(</span><span class="n">term</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_aspect</span><span class="p">(</span><span class="n">term</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">terms</span>
+        <span class="p">]</span>
+    
+    
+    <span class="k">def</span> <span class="nf">names_to_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a list of GO terms returns a list of tuples with the terms</span>
+<span class="sd">        and their names.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_term</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
+    
+    
+    <span class="k">def</span> <span class="nf">names_to_terms_aspects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a list of GO namess returns a list of tuples with the terms,</span>
+<span class="sd">        their names and ontology aspects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_term</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">aspect_from_name</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span>
+        <span class="p">]</span>
+    
+    
+    <span class="k">def</span> <span class="nf">aspect_from_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tells about a Gene Ontology term name which aspect does it belong to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_term</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">term</span><span class="p">:</span>
+            
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_aspect</span><span class="p">(</span><span class="n">term</span><span class="p">)</span>
+    
+    
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_merge_aspects</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
+        
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">])</span>
+        <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="s1">&#39;F&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span>
+    
+    
+    <span class="k">def</span> <span class="nf">subgraph_nodes</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">direction</span><span class="p">,</span>
+            <span class="n">terms</span><span class="p">,</span>
+            <span class="n">relations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">include_seed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a set of all nodes either in the subgraph of ancestors </span>
+<span class="sd">        or descendants of a single term or a set of terms.</span>
+<span class="sd">        </span>
+<span class="sd">        :param str direction:</span>
+<span class="sd">            Possible values: `ancestors` or `descendants`.</span>
+<span class="sd">        :param bool include_seed:</span>
+<span class="sd">            Include ``terms`` in the subgraph or only the related nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">relations</span> <span class="o">=</span> <span class="n">relations</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_relations</span>
+        
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">terms</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">):</span>
+            
+            <span class="n">terms</span> <span class="o">=</span> <span class="p">{</span><span class="n">terms</span><span class="p">}</span>
+        
+        <span class="n">graph</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span>
+        <span class="n">subgraph</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">terms</span><span class="p">)</span> <span class="k">if</span> <span class="n">include_seed</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span>
+        
+        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">terms</span><span class="p">:</span>
+            
+            <span class="k">for</span> <span class="n">related</span><span class="p">,</span> <span class="n">relation</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="n">term</span><span class="p">]:</span>
+                
+                <span class="k">if</span> <span class="n">relation</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">relations</span><span class="p">:</span>
+                    
+                    <span class="k">continue</span>
+                
+                <span class="k">if</span> <span class="n">related</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">subgraph</span><span class="p">:</span>
+                    
+                    <span class="n">subgraph</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">subgraph_nodes</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span> <span class="n">related</span><span class="p">,</span> <span class="n">relations</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="n">subgraph</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">related</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">subgraph</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_all_ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="n">relations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">include_seed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a set of all ancestors of a single term or a set of terms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">terms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_of_terms</span><span class="p">(</span><span class="n">terms</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">subgraph_nodes</span><span class="p">(</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;ancestors&#39;</span><span class="p">,</span>
+            <span class="n">terms</span> <span class="o">=</span> <span class="n">terms</span><span class="p">,</span>
+            <span class="n">relations</span> <span class="o">=</span> <span class="n">relations</span><span class="p">,</span>
+            <span class="n">include_seed</span> <span class="o">=</span> <span class="n">include_seed</span><span class="p">,</span>
+        <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_all_descendants</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">terms</span><span class="p">,</span>
+            <span class="n">relations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">include_seed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a set of all descendants of a single term or a set of terms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">terms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_of_terms</span><span class="p">(</span><span class="n">terms</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">subgraph_nodes</span><span class="p">(</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;descendants&#39;</span><span class="p">,</span>
+            <span class="n">terms</span> <span class="o">=</span> <span class="n">terms</span><span class="p">,</span>
+            <span class="n">relations</span> <span class="o">=</span> <span class="n">relations</span><span class="p">,</span>
+            <span class="n">include_seed</span> <span class="o">=</span> <span class="n">include_seed</span><span class="p">,</span>
+        <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_aspect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a GO term tells which aspect does it belong to.</span>
+<span class="sd">        Returns `None` if the term is not in the ontology.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aspect</span><span class="p">:</span>
+            
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">aspect</span><span class="p">[</span><span class="n">term</span><span class="p">]</span>
+    
+    
+    <span class="k">def</span> <span class="nf">all_from_aspect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aspect</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the set of all GO terms of one aspect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">term</span>
+            <span class="k">for</span> <span class="n">term</span><span class="p">,</span> <span class="n">asp</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aspect</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">asp</span> <span class="o">==</span> <span class="n">aspect</span>
+        <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">is_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tells if a term is the root of the graph i.e. it has no ancestors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ancestors</span> <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ancestors</span><span class="p">[</span><span class="n">term</span><span class="p">])</span>
+    
+    
+    <span class="k">def</span> <span class="nf">is_leaf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tells if a term is a leaf of the graph i.e. it has no descendants.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ancestors</span> <span class="ow">and</span>
+                <span class="n">term</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">descendants</span>
+            <span class="p">)</span> <span class="ow">or</span>
+            <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">descendants</span><span class="p">[</span><span class="n">term</span><span class="p">])</span>
+        <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">lowest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        From a set of terms returns the lowest level ones, removing all which</span>
+<span class="sd">        are parents of some others in the set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">terms</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">highest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        From a set of terms returns the highest level ones, removing all</span>
+<span class="sd">        which are descendants of some others in the set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">terms</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">lowest</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">lowest</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a set of terms by removing either all redundant ancestors or</span>
+<span class="sd">        descendants from the provided set terms. By removing the ancestors</span>
+<span class="sd">        you get the lowest level set of terms, by removing the descendants</span>
+<span class="sd">        the result will be the highest level non-redundant terms.</span>
+<span class="sd">        </span>
+<span class="sd">        :param str direction:</span>
+<span class="sd">            Either `lowest` or `highest`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">terms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_of_terms</span><span class="p">(</span><span class="n">terms</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        
+        <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="s1">&#39;get_all_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="s1">&#39;ancestors&#39;</span> <span class="k">if</span> <span class="n">lowest</span> <span class="k">else</span> <span class="s1">&#39;descendants&#39;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">terms</span> <span class="o">-</span>
+            <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span>
+                <span class="o">*</span><span class="p">(</span>
+                    <span class="n">method</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="n">include_seed</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">terms</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">set_of_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms_names</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts anything to a set of terms. ``terms_names`` can be either a</span>
+<span class="sd">        single term or name or an iterable of terms and names.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_of</span><span class="p">(</span><span class="n">terms_names</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">set_of_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms_names</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts anything to a set of names. ``terms_names`` can be either a</span>
+<span class="sd">        single term or name or an iterable of terms and names.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_of</span><span class="p">(</span><span class="n">terms_names</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">to_terms</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">set_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms_names</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">to_terms</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts anything to a set of terms or names.</span>
+<span class="sd">        ``terms_names`` can be either a single term or name or an iterable</span>
+<span class="sd">        of terms and names.</span>
+<span class="sd">        </span>
+<span class="sd">        :param bool to_terms:</span>
+<span class="sd">            The target identifier type is `term`; if ``False`` the target</span>
+<span class="sd">            will be `name`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">terms_names</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">):</span>
+            
+            <span class="n">terms_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">terms_names</span><span class="p">}</span>
+            
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">terms_names</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
+            
+            <span class="n">terms_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">terms_names</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+            
+            <span class="n">terms_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
+        
+        <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="s1">&#39;get_term&#39;</span> <span class="k">if</span> <span class="n">to_terms</span> <span class="k">else</span> <span class="s1">&#39;get_name&#39;</span>
+        <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">method</span><span class="p">(</span><span class="n">term</span><span class="p">)</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">terms_names</span>
+        <span class="p">}</span>
+
+
+<span class="k">class</span> <span class="nc">GOAnnotation</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+    
+    <span class="n">aspects</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
+            <span class="n">ontology</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">pickle_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">use_pickle_cache</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For one organism loads Gene Ontology annotations, in addition it</span>
+<span class="sd">        accepts or creates a ``GeneOntology`` object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;go&#39;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pickle_file</span> <span class="o">=</span> <span class="n">pickle_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_use_pickle_cache</span> <span class="o">=</span> <span class="n">use_pickle_cache</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pickle_cache_load_hook</span><span class="p">():</span>
+            
+            <span class="k">return</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span> <span class="o">=</span> <span class="n">ontology</span> <span class="ow">or</span> <span class="n">GeneOntology</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+            <span class="s1">&#39;Populating Gene Ontology: &#39;</span>
+            <span class="s1">&#39;annotations for organism `</span><span class="si">%u</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">organism</span>
+        <span class="p">)</span>
+        
+        <span class="n">annot</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">go_annotations_goa</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">annot</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">annot</span><span class="p">[</span><span class="s1">&#39;F&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">annot</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ancestors_annotate</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_merge_annotations</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pickle_cache_save_hook</span><span class="p">()</span>
+    
+    
+    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reloads the object from the module level.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_ancestors_annotate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Creating ancestors lookup dictionary.&#39;</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">asp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aspects</span><span class="p">:</span>
+            
+            <span class="nb">setattr</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span>
+                <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_full&#39;</span> <span class="o">%</span> <span class="n">asp</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+                <span class="nb">dict</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="n">uniprot</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="o">.</span><span class="n">get_all_ancestors</span><span class="p">(</span><span class="n">annot</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">annot</span> <span class="ow">in</span>
+                    <span class="n">iteritems</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asp</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_merge_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Creating complete lookup dictionary.&#39;</span><span class="p">)</span>
+        
+        <span class="n">uniprots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_uniprots</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">all</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">uniprot</span><span class="p">,</span>
+                <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_annot</span><span class="p">(</span><span class="n">uniprot</span><span class="p">,</span> <span class="n">asp</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">asp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aspects</span>
+                <span class="p">))</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="n">uniprots</span>
+        <span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_full</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">uniprot</span><span class="p">,</span>
+                <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_annot_ancestors</span><span class="p">(</span><span class="n">uniprot</span><span class="p">,</span> <span class="n">asp</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">asp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aspects</span>
+                <span class="p">))</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="n">uniprots</span>
+        <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a GO accession number returns the name of the term.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="o">.</span><span class="n">get_name</span><span class="p">(</span><span class="n">term</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a GO term name returns its GO accession number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="o">.</span><span class="n">get_term</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_annot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">aspect</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a UniProt ID returns its direct annotations from one aspect</span>
+<span class="sd">        of Gene Ontology.</span>
+<span class="sd">        Returns set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">annot</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aspect</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">annot</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span> <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="n">annot</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_annots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a UniProt ID returns its direct annotations from all aspects</span>
+<span class="sd">        of Gene Ontology.</span>
+<span class="sd">        Returns set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span> <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_annot_ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">aspect</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a UniProt ID returns its annotations including lowest level</span>
+<span class="sd">        terms and their ancestors from one aspect of Gene Ontology.</span>
+<span class="sd">        Returns set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">annot</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_full&#39;</span> <span class="o">%</span> <span class="n">aspect</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">annot</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span> <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="n">annot</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_annots_ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a UniProt ID returns its annotations including lowest level</span>
+<span class="sd">        terms and their ancestors from all aspects of Gene Ontology.</span>
+<span class="sd">        Returns set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_full</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span> <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_full</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span>
+    
+    
+    <span class="k">def</span> <span class="nf">has_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">term</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tells if an UniProt ID is annotated with a GO term.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_full</span> <span class="ow">and</span> <span class="n">term</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_full</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span>
+    
+    
+    <span class="k">def</span> <span class="nf">has_any_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">terms</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tells if an UniProt ID is annotated with any of a set of GO terms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_full</span> <span class="ow">and</span> <span class="n">term</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_full</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span>
+    
+    
+    <span class="k">def</span> <span class="nf">all_uniprots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns all UniProt IDs having annotations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
+            <span class="nb">set</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asp</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">asp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aspects</span>
+        <span class="p">))</span>
+    
+    
+    <span class="k">def</span> <span class="nf">i_select_by_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Accepts a list of UniProt IDs and one or more gene ontology terms</span>
+<span class="sd">        and returns a set of indices of those UniProts which are annotated</span>
+<span class="sd">        with any of the terms.</span>
+<span class="sd">        If no UniProts given all annotated UniProts considered.</span>
+<span class="sd">        </span>
+<span class="sd">        :param str,set term:</span>
+<span class="sd">            A single GO term or set of terms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprots</span> <span class="ow">or</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_uniprots</span><span class="p">())</span>
+        
+        <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_any_term</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="nb">set</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_term</span>
+        
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">i</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">uniprots</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">method</span><span class="p">(</span><span class="n">uniprot</span><span class="p">,</span> <span class="n">term</span><span class="p">)</span>
+        <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">select_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_uniprots</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Accepts a list of UniProt IDs and one or more gene ontology names</span>
+<span class="sd">        and returns the UniProts which are annotated with any of the names.</span>
+<span class="sd">        If no UniProts given all annotated UniProts returned.</span>
+<span class="sd">        </span>
+<span class="sd">        :param str,set name:</span>
+<span class="sd">            A single GO term name or set of names.</span>
+<span class="sd">        :param bool return_uniprots:</span>
+<span class="sd">            By default returns list of indices; if ``True`` returns a set of</span>
+<span class="sd">            the selected UniProt IDs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">):</span>
+            
+            <span class="n">term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="o">.</span><span class="n">get_term</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+            
+            <span class="n">term</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="o">.</span><span class="n">names_to_terms</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+            <span class="n">term</span><span class="p">,</span>
+            <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprots</span><span class="p">,</span>
+            <span class="n">return_uniprots</span> <span class="o">=</span> <span class="n">return_uniprots</span><span class="p">,</span>
+        <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">select_by_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Accepts a list of UniProt IDs and one or more gene ontology terms</span>
+<span class="sd">        and returns the UniProts which are annotated with any of the terms.</span>
+<span class="sd">        If no UniProts given all annotated UniProts returned.</span>
+<span class="sd">        </span>
+<span class="sd">        :param str,set term:</span>
+<span class="sd">            A single GO term or set of terms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprots</span> <span class="ow">or</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_uniprots</span><span class="p">())</span>
+        
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">uniprots</span><span class="p">)[</span>
+                <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i_select_by_term</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="n">uniprots</span><span class="p">))</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">expr_names_to_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes an expression built by names to expressions of terms.</span>
+<span class="sd">        </span>
+<span class="sd">        :arg str expr:</span>
+<span class="sd">            An expression using Gene Ontology names, parentheses and logical</span>
+<span class="sd">            operators.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">not_name</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;(&#39;</span><span class="p">,</span> <span class="s1">&#39;)&#39;</span><span class="p">,</span> <span class="s1">&#39;AND&#39;</span><span class="p">,</span> <span class="s1">&#39;OR&#39;</span><span class="p">,</span> <span class="s1">&#39;NOT&#39;</span><span class="p">}</span>
+        
+        <span class="n">tokens_names</span> <span class="o">=</span> <span class="n">_reexprname</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+        <span class="n">tokens_terms</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">if</span> <span class="n">tokens_names</span><span class="p">:</span>
+            
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tokens_names</span><span class="p">:</span>
+                
+                <span class="n">t</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="p">:</span>
+                    
+                    <span class="k">continue</span>
+                
+                <span class="n">tokens_terms</span><span class="o">.</span><span class="n">append</span><span class="p">((</span>
+                    <span class="n">t</span>
+                        <span class="k">if</span> <span class="n">t</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;GO:&#39;</span> <span class="k">else</span>
+                    <span class="n">t</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">not_name</span> <span class="k">else</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_term</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                <span class="p">))</span>
+        
+        <span class="k">return</span> <span class="n">tokens_terms</span>
+    
+    
+    <span class="k">def</span> <span class="nf">select_by_expr</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">expr</span><span class="p">,</span>
+            <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">return_uniprots</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Selects UniProts based on an expression of Gene Ontology terms.</span>
+<span class="sd">        Operator precedence not considered, please use parentheses.</span>
+<span class="sd">        Return indices of the selected elements in the ``uniprots`` list</span>
+<span class="sd">        or the set of selected UniProt IDs.</span>
+<span class="sd">        </span>
+<span class="sd">        :param str expr:</span>
+<span class="sd">            An expression of Gene Ontology terms and names. E.g.</span>
+<span class="sd">            ``&#39;(GO:0005576 and not GO:0070062) or GO:0005887&#39;``. Parentheses</span>
+<span class="sd">            and operators ``and``, ``or`` and ``not`` can be used.</span>
+<span class="sd">            Another example:</span>
+<span class="sd">            ``hormone binding AND (cell surface OR GO:0009897)``.</span>
+<span class="sd">        :param bool return_uniprots:</span>
+<span class="sd">            By default returns list of indices; if ``True`` returns a set of</span>
+<span class="sd">            the selected UniProt IDs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">expr_terms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expr_names_to_terms</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+        
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_by_expr_terms</span><span class="p">(</span>
+            <span class="n">expr</span> <span class="o">=</span> <span class="n">expr_terms</span><span class="p">,</span>
+            <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprots</span><span class="p">,</span>
+            <span class="n">return_uniprots</span> <span class="o">=</span> <span class="n">return_uniprots</span><span class="p">,</span>
+        <span class="p">)</span>
+        
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">e</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">result</span><span class="p">):</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="s1">&#39;Could not process Gene Ontology expression: `</span><span class="si">%s</span><span class="s1">`. &#39;</span>
+                <span class="s1">&#39;Please check if the expression consists only of &#39;</span>
+                <span class="s1">&#39;GO terms and/or ACs, the operators `AND`, `OR` and &#39;</span>
+                <span class="s1">&#39;`NOT`, and braces. Whitespaces and newlines are OK. &#39;</span>
+                <span class="s1">&#39;If you think the expression is correct please open &#39;</span>
+                <span class="s1">&#39;an issue for `pypath`.&#39;</span> <span class="o">%</span> <span class="n">expr</span><span class="p">,</span>
+                <span class="o">-</span><span class="mi">9</span><span class="p">,</span>
+            <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">result</span>
+    
+    
+    <span class="k">def</span> <span class="nf">select_by_expr_terms</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">expr</span><span class="p">,</span>
+            <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">return_uniprots</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Selects UniProts based on an expression of Gene Ontology terms.</span>
+<span class="sd">        Operator precedence not considered, please use parentheses.</span>
+<span class="sd">        Return indices of the selected elements in the ``uniprots`` list</span>
+<span class="sd">        or the set of selected UniProt IDs.</span>
+<span class="sd">        </span>
+<span class="sd">        :param str expr:</span>
+<span class="sd">            An expression of Gene Ontology terms. E.g.</span>
+<span class="sd">            ``&#39;(GO:0005576 and not GO:0070062) or GO:0005887&#39;``. Parentheses</span>
+<span class="sd">            and operators ``and``, ``or`` and ``not`` can be used.</span>
+<span class="sd">        :param bool return_uniprots:</span>
+<span class="sd">            By default returns list of indices; if ``True`` returns a set of</span>
+<span class="sd">            the selected UniProt IDs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">ops</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;and&#39;</span><span class="p">:</span> <span class="s1">&#39;intersection&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;or&#39;</span><span class="p">:</span>  <span class="s1">&#39;union&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># if no UniProts provided does not make sense to return indices</span>
+        <span class="n">return_uniprots</span> <span class="o">=</span> <span class="n">return_uniprots</span> <span class="ow">or</span> <span class="n">uniprots</span> <span class="ow">is</span> <span class="kc">None</span>
+        
+        <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprots</span> <span class="ow">or</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_uniprots</span><span class="p">())</span>
+        
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">):</span>
+            
+            <span class="c1"># tokenizing expression if it is a string</span>
+            <span class="c1"># (method is recursive)</span>
+            <span class="n">expr</span> <span class="o">=</span> <span class="n">_reexprterm</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">e</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">expr</span><span class="p">):</span>
+                
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                    <span class="s1">&#39;Could not process Gene Ontology expression: `</span><span class="si">%s</span><span class="s1">`. &#39;</span>
+                    <span class="s1">&#39;Please check if the expression consists only of &#39;</span>
+                    <span class="s1">&#39;GO terms and/or ACs, the operators `AND`, `OR` and &#39;</span>
+                    <span class="s1">&#39;`NOT`, and braces. Whitespaces and newlines are OK. &#39;</span>
+                    <span class="s1">&#39;If you think the expression is correct please open &#39;</span>
+                    <span class="s1">&#39;an issue for `pypath`.&#39;</span> <span class="o">%</span> <span class="n">expr</span><span class="p">,</span>
+                    <span class="o">-</span><span class="mi">9</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
+        
+        <span class="c1"># initial values</span>
+        <span class="n">result</span>   <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">stack</span>    <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">sub</span>      <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">negate</span>   <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">op</span>       <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">this_set</span> <span class="o">=</span> <span class="kc">None</span>
+        
+        <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">expr</span><span class="p">:</span>
+            
+            <span class="c1"># processing expression by tokens</span>
+            
+            <span class="c1"># we are in a sub-selection part</span>
+            <span class="k">if</span> <span class="n">sub</span><span class="p">:</span>
+                
+                <span class="k">if</span> <span class="n">it</span> <span class="o">==</span> <span class="s1">&#39;)&#39;</span><span class="p">:</span>
+                    
+                    <span class="c1"># token is a closing parenthesis</span>
+                    <span class="c1"># execute sub-selection</span>
+                    <span class="n">this_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_by_expr_terms</span><span class="p">(</span>
+                        <span class="n">expr</span> <span class="o">=</span> <span class="n">stack</span><span class="p">,</span>
+                        <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprots</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="c1"># empty stack</span>
+                    <span class="n">stack</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">sub</span> <span class="o">=</span> <span class="kc">False</span>
+                
+                <span class="k">else</span><span class="p">:</span>
+                    
+                    <span class="c1"># token is something else</span>
+                    <span class="c1"># add to sub-selection stack</span>
+                    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">it</span><span class="p">)</span>
+                
+            <span class="k">elif</span> <span class="n">it</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                    <span class="s1">&#39;One part of a Gene Ontology the expression failed to &#39;</span>
+                    <span class="s1">&#39;translate to GO AC. Substituting with empty set, this &#39;</span>
+                    <span class="s1">&#39;will alter your results. Check for more specific &#39;</span>
+                    <span class="s1">&#39;information earlier in the log.&#39;</span>
+                <span class="p">)</span>
+                <span class="n">this_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                
+            <span class="c1"># we do actual processing of the expression</span>
+            <span class="k">elif</span> <span class="n">it</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;not&#39;</span><span class="p">:</span>
+                
+                <span class="c1"># token is negation</span>
+                <span class="c1"># turn on negation for the next set</span>
+                <span class="n">negate</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">continue</span>
+                
+            <span class="c1"># open a sub-selection part</span>
+            <span class="k">elif</span> <span class="n">it</span> <span class="o">==</span> <span class="s1">&#39;(&#39;</span><span class="p">:</span>
+                
+                <span class="c1"># token is a parenthesis</span>
+                <span class="c1"># start a new sub-selection</span>
+                <span class="n">sub</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">continue</span>
+                
+            <span class="k">elif</span> <span class="n">it</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;GO:&#39;</span><span class="p">:</span>
+                
+                <span class="c1"># token is a GO term</span>
+                <span class="c1"># get the vertex selection by the single term method</span>
+                <span class="n">this_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">i_select_by_term</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprots</span><span class="p">)</span>
+                
+                <span class="k">if</span> <span class="n">negate</span><span class="p">:</span>
+                    
+                    <span class="c1"># take the inverse of the current set</span>
+                    <span class="n">this_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">uniprots</span><span class="p">)))</span> <span class="o">-</span> <span class="n">this_set</span>
+                    <span class="c1"># set negation again to False</span>
+                    <span class="n">negate</span> <span class="o">=</span> <span class="kc">False</span>
+                
+            <span class="k">elif</span> <span class="n">it</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">ops</span><span class="p">:</span>
+                
+                <span class="c1"># token is an operator</span>
+                <span class="c1"># set it for use at the next operation</span>
+                <span class="n">op</span> <span class="o">=</span> <span class="n">ops</span><span class="p">[</span><span class="n">it</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+            
+            <span class="c1"># we found a set</span>
+            <span class="k">if</span> <span class="n">this_set</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                
+                <span class="c1"># and an operator</span>
+                <span class="k">if</span> <span class="n">op</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    
+                    <span class="n">result</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">op</span><span class="p">)(</span><span class="n">this_set</span><span class="p">)</span>
+                
+                <span class="c1"># this normally happens only at the first set</span>
+                <span class="k">else</span><span class="p">:</span>
+                    
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">this_set</span>
+                
+                <span class="n">this_set</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">op</span>       <span class="o">=</span> <span class="kc">None</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uniprot_return</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">uniprots</span><span class="p">,</span> <span class="n">return_uniprots</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_uniprots</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the UniProt IDs annotated with any Gene Ontology terms or</span>
+<span class="sd">        their descendants, or evaluates string expression</span>
+<span class="sd">        (see ``select_by_expr``).</span>
+<span class="sd">        Returns indices of the selected elements in the ``uniprots`` list</span>
+<span class="sd">        or the set of selected UniProt IDs.</span>
+<span class="sd">        </span>
+<span class="sd">        :param str,set terms:</span>
+<span class="sd">            A single GO term, a set of GO terms or an expression with</span>
+<span class="sd">            GO terms.</span>
+<span class="sd">        :param bool return_uniprots:</span>
+<span class="sd">            By default returns list of indices; if ``True`` returns a set of</span>
+<span class="sd">            the selected UniProt IDs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">return_uniprots</span> <span class="o">=</span> <span class="n">return_uniprots</span> <span class="ow">or</span> <span class="n">uniprots</span> <span class="ow">is</span> <span class="kc">None</span>
+        
+        <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprots</span> <span class="ow">or</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_uniprots</span><span class="p">())</span>
+        
+        <span class="c1"># this is not an individual term but an expression</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">terms</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="ow">not</span> <span class="n">terms</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;GO&#39;</span><span class="p">)</span>
+        <span class="p">):</span>
+            
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_by_expr</span><span class="p">(</span><span class="n">terms</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprots</span><span class="p">)</span>
+            
+        <span class="c1"># either one term or a set of terms</span>
+        <span class="k">else</span><span class="p">:</span>
+            
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">i_select_by_term</span><span class="p">(</span><span class="n">terms</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprots</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uniprot_return</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">uniprots</span><span class="p">,</span> <span class="n">return_uniprots</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">select_by_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terms</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_uniprots</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Selects the nodes annotated by all GO terms in ``terms``.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns indices of the selected elements in the ``uniprots`` list</span>
+<span class="sd">        or the set of selected UniProt IDs.</span>
+<span class="sd">        </span>
+<span class="sd">        :param list terms:</span>
+<span class="sd">            List, set or tuple of GO terms.</span>
+<span class="sd">        :param bool return_uniprots:</span>
+<span class="sd">            By default returns list of indices; if ``True`` returns a set of</span>
+<span class="sd">            the selected UniProt IDs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">return_uniprots</span> <span class="o">=</span> <span class="n">return_uniprots</span> <span class="ow">or</span> <span class="n">uniprots</span> <span class="ow">is</span> <span class="kc">None</span>
+        
+        <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprots</span> <span class="ow">or</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_uniprots</span><span class="p">())</span>
+        
+        <span class="n">idx</span> <span class="o">=</span> <span class="nb">set</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">select_by_term</span><span class="p">(</span><span class="n">term</span><span class="p">)</span> <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">terms</span><span class="p">])</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uniprot_return</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">uniprots</span><span class="p">,</span> <span class="n">return_uniprots</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_uniprot_return</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">uniprots</span><span class="p">,</span> <span class="n">return_uniprots</span><span class="p">):</span>
+        
+        <span class="k">if</span> <span class="n">return_uniprots</span><span class="p">:</span>
+            
+            <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">uniprots</span><span class="p">)[</span><span class="nb">list</span><span class="p">(</span><span class="n">idx</span><span class="p">)])</span>
+        
+        <span class="k">return</span> <span class="n">idx</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_pickle_cache_load_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_pickle_cache</span><span class="p">:</span>
+            
+            <span class="k">return</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_pickle_path</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_from_pickle</span><span class="p">()</span>
+        
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pickle_file</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_pickle_cache_save_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_pickle_path</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_to_pickle</span><span class="p">()</span>
+    
+    
+    <span class="k">def</span> <span class="nf">_set_pickle_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pickle_file</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pickle_file</span> <span class="ow">or</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">cache</span><span class="o">.</span><span class="n">get_cachedir</span><span class="p">(),</span>
+                <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;go_pickle_cache_fname&#39;</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">organism</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">save_to_pickle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pickle_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        
+        <span class="n">pickle_file</span> <span class="o">=</span> <span class="n">pickle_file</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pickle_file</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pickle_file</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">):</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="s1">&#39;Pickle file path must be a string: `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">pickle_file</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Saving to pickle `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">pickle_file</span><span class="p">)</span>
+        
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pickle_file</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">c_full</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">p_full</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">f_full</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">all_full</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="o">.</span><span class="n">_terms</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="o">.</span><span class="n">ancestors</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="o">.</span><span class="n">descendants</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="o">.</span><span class="n">term</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">file</span> <span class="o">=</span> <span class="n">fp</span><span class="p">,</span>
+            <span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Saved to pickle `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">pickle_file</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">load_from_pickle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pickle_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        
+        <span class="n">pickle_file</span> <span class="o">=</span> <span class="n">pickle_file</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pickle_file</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">pickle_file</span><span class="p">):</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Pickle file does not exist: `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">pickle_file</span><span class="p">))</span>
+            <span class="k">return</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Loading from pickle `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">pickle_file</span><span class="p">)</span>
+        
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pickle_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            
+            <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">c_full</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">p_full</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">f_full</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">all_full</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">,</span>
+                <span class="n">ontology_terms</span><span class="p">,</span>
+                <span class="n">ontology_ancestors</span><span class="p">,</span>
+                <span class="n">ontology_descendants</span><span class="p">,</span>
+                <span class="n">ontology_term</span><span class="p">,</span>
+                <span class="n">ontology_name</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">ontology</span> <span class="o">=</span> <span class="n">GeneOntology</span><span class="p">(</span>
+            <span class="n">terms</span> <span class="o">=</span> <span class="n">ontology_terms</span><span class="p">,</span>
+            <span class="n">ancestors</span> <span class="o">=</span> <span class="n">ontology_ancestors</span><span class="p">,</span>
+            <span class="n">descendants</span> <span class="o">=</span> <span class="n">ontology_descendants</span><span class="p">,</span>
+            <span class="n">term</span> <span class="o">=</span> <span class="n">ontology_term</span><span class="p">,</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">ontology_name</span><span class="p">,</span>
+        <span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Loaded from pickle `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">pickle_file</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">GOCustomAnnotation</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+    
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">categories</span><span class="p">,</span>
+            <span class="n">go_annot</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Provides annotations by a custom set of GO terms or expressions</span>
+<span class="sd">        built from multiple terms.</span>
+<span class="sd">        </span>
+<span class="sd">        :arg dict categories:</span>
+<span class="sd">            A dict with custom category labels as keys and single GO terms</span>
+<span class="sd">            or names or complex expressions as values.</span>
+<span class="sd">            Alternatively a set of GO terms, in this case the term names will</span>
+<span class="sd">            be used as labels.</span>
+<span class="sd">        :arg pypath.go.GOAnnotation go_annot:</span>
+<span class="sd">            A :class:``pypath.go.GOAnnotation`` object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;go&#39;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">go_annot</span> <span class="o">=</span> <span class="n">go_annot</span> <span class="ow">or</span> <span class="n">get_db</span><span class="p">()</span> <span class="c1"># TODO: consider ncbi_tax_id at</span>
+                                             <span class="c1"># selection DB</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_categories</span> <span class="o">=</span> <span class="n">categories</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process_categories</span><span class="p">()</span>
+    
+    
+    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reloads the object from the module level.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">process_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Translates GO term names listed in categories to GO terms ACs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="c1"># if the categories are grouped by aspects</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_categories</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_categories</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">go_annot</span><span class="o">.</span><span class="n">aspects</span><span class="p">)</span>
+        <span class="p">):</span>
+            
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_categories</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">set</span><span class="p">):</span>
+                
+                <span class="bp">self</span><span class="o">.</span><span class="n">_categories</span> <span class="o">=</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_categories</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+                
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_categories</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+                
+                <span class="bp">self</span><span class="o">.</span><span class="n">_categories</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
+                        <span class="o">*</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categories</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        
+        <span class="c1"># if a set provided we use names as keys</span>
+        <span class="c1"># and accessions as values</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_categories</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">_categories</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">go_annot</span><span class="o">.</span><span class="n">get_name</span><span class="p">(</span><span class="n">cat</span><span class="p">),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">go_annot</span><span class="o">.</span><span class="n">get_term</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categories</span>
+            <span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categories</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_annotation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For a category name returns a set of UniProt IDs annotated with</span>
+<span class="sd">        the corresponding Gene Ontology terms or expression.</span>
+<span class="sd">        </span>
+<span class="sd">        :arg str category:</span>
+<span class="sd">            The category name, should be a key in the ``categories`` dict.</span>
+<span class="sd">        :arg set uniprots:</span>
+<span class="sd">            A set or list of UniProt IDs. If ``None``, annotations based on</span>
+<span class="sd">            all UniProts in GO annotation will be returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">go_annot</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="n">category</span><span class="p">],</span>
+            <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprots</span><span class="p">,</span>
+            <span class="n">return_uniprots</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">get_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dict with set of UniProt IDs for each category.</span>
+<span class="sd">        </span>
+<span class="sd">        :arg set uniprots:</span>
+<span class="sd">            A set or list of UniProt IDs. If ``None``, annotations based on</span>
+<span class="sd">            all UniProts in GO annotation will be returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">category</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_annotation</span><span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="n">uniprots</span> <span class="o">=</span> <span class="n">uniprots</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">)</span>
+
+
+<div class="viewcode-block" id="annotate"><a class="viewcode-back" href="../../../reference.html#pypath.utils.go.annotate">[docs]</a><span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">aspects</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">)):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Adds Gene Ontology annotations to the nodes of a graph.</span>
+<span class="sd">    </span>
+<span class="sd">    :param igraph.Graph graph:</span>
+<span class="sd">        Any ``igraph.Graph`` object with uniprot IDs</span>
+<span class="sd">        in its ``name`` vertex attribute.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">aspects</span> <span class="o">=</span> <span class="n">aspects</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">aspects</span><span class="p">)</span> <span class="ow">in</span> <span class="p">{</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">}</span> <span class="k">else</span> <span class="p">(</span><span class="n">aspects</span><span class="p">,</span> <span class="p">)</span>
+    
+    <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;go&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="nb">set</span><span class="p">(),</span> <span class="s1">&#39;F&#39;</span><span class="p">:</span> <span class="nb">set</span><span class="p">(),</span> <span class="s1">&#39;P&#39;</span><span class="p">:</span> <span class="nb">set</span><span class="p">()}</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())</span>
+    <span class="p">]</span>
+    
+    <span class="n">terms</span><span class="p">,</span> <span class="n">annot</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">go_annotations_goa</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">)</span>
+    
+    <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">(),</span> <span class="s1">&#39;Loading GO annotations&#39;</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">:</span>
+        
+        <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+        
+        <span class="k">for</span> <span class="n">asp</span> <span class="ow">in</span> <span class="n">aspects</span><span class="p">:</span>
+            
+            <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">annot</span><span class="p">[</span><span class="n">asp</span><span class="p">]:</span>
+                
+                <span class="n">v</span><span class="p">[</span><span class="s1">&#39;go&#39;</span><span class="p">][</span><span class="n">asp</span><span class="p">]</span> <span class="o">=</span> <span class="n">annot</span><span class="p">[</span><span class="n">asp</span><span class="p">][</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]]</span>
+    
+    <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span></div>
+
+
+<span class="c1"># old name as synonym</span>
+<span class="n">load_go</span> <span class="o">=</span> <span class="n">annotate</span>
+
+
+<div class="viewcode-block" id="init_db"><a class="viewcode-back" href="../../../reference.html#pypath.utils.go.init_db">[docs]</a><span class="k">def</span> <span class="nf">init_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">pickle_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_pickle_cache</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes or reloads the GO annotation database.</span>
+<span class="sd">    The database will be assigned to the ``db`` attribute of this module.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="s1">&#39;db&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+        
+        <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">][</span><span class="n">organism</span><span class="p">]</span> <span class="o">=</span> <span class="n">GOAnnotation</span><span class="p">(</span>
+        <span class="n">organism</span><span class="p">,</span>
+        <span class="n">pickle_file</span> <span class="o">=</span> <span class="n">pickle_file</span><span class="p">,</span>
+        <span class="n">use_pickle_cache</span> <span class="o">=</span> <span class="n">use_pickle_cache</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../../../reference.html#pypath.utils.go.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">pickle_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_pickle_cache</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves the current database instance and initializes it if does</span>
+<span class="sd">    not exist yet.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># TODO: consider organism</span>
+    <span class="c1"># TODO: delete the DB if not used in order to free memory</span>
+    <span class="c1"># TODO: introduce pickle cache to make it load quicker</span>
+    
+    <span class="k">if</span> <span class="s1">&#39;db&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span> <span class="ow">or</span> <span class="n">organism</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">]:</span>
+        
+        <span class="n">init_db</span><span class="p">(</span>
+            <span class="n">organism</span><span class="p">,</span>
+            <span class="n">pickle_file</span> <span class="o">=</span> <span class="n">pickle_file</span><span class="p">,</span>
+            <span class="n">use_pickle_cache</span> <span class="o">=</span> <span class="n">use_pickle_cache</span><span class="p">,</span>
+        <span class="p">)</span>
+    
+    <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">][</span><span class="n">organism</span><span class="p">]</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Dénes Türei, Nicolàs Palacio, Olga Ivanova. 
+European Molecular Biology Laboratory, Heidelberg Germany
+European Bioinformatics Institute, Hinxton UK
+University Hospital RWTH, Aachen Germany
+University Hospital Heidelberg Germany
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

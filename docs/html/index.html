@@ -1,15 +1,18 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pypath: A Python module for molecular signaling prior knowledge processing &mdash; pypath 0.9.1 documentation</title>
+  <title>pypath: A Python module for molecular signaling prior knowledge processing &mdash; pypath 0.10.6 documentation</title>
   
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
 
   
   
@@ -17,7 +20,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -30,10 +35,6 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Installation" href="installation.html" /> 
@@ -50,7 +51,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> pypath
+            <a href="#" class="icon icon-home" alt="Documentation Home"> pypath
           
 
           
@@ -60,7 +61,7 @@
             
             
               <div class="version">
-                0.9.1
+                0.10.6
               </div>
             
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -95,6 +97,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -133,7 +136,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="#">Docs</a> &raquo;</li>
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
         
       <li><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</li>
     
@@ -195,51 +198,51 @@ Python 3. Therefore this is the better supported Python variant.</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="reference.html#annot-formats">annot_formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.annot">annot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.annot">annot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference.html#bel">bel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.cache">cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.share.cache">cache</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference.html#cellphonedb">cellphonedb</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.common">common</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#complex">complex</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.curl">curl</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#data-formats">data_formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.dataio">dataio</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#descriptions">descriptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.entity">entity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#evidence">evidence</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.export">export</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.go">go</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#homology">homology</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#input-formats">input_formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#interaction">interaction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.intera">intera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#intercell-annot">intercell_annot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#intercell">intercell</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.log">log</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.main">main</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#mapping-input">mapping_input</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#mapping">mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.maps">maps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#network">network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.share.common">common</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.complex">complex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.share.curl">curl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.resources.data_formats">data_formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.inputs.main">dataio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.resources.descriptions">descriptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.entity">entity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.evidence">evidence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.omnipath.export">export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.go">go</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.homology">homology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.internals.input_formats">input_formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.interaction">interaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.internals.intera">intera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.intercell_annot">intercell_annot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.intercell">intercell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.share.log">log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.legacy.main">main</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.inputs.mirbase">mirbase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.mapping">mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.internals.maps">maps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.network">network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference.html#omnipath">omnipath</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.pdb">pdb</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.plot">plot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#progress">progress</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.ptm">ptm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#pyreact">pyreact</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#reflists">reflists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.refs">refs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#residues">residues</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#resource">resource</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.seq">seq</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.server">server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#session-mod">session_mod</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#settings">settings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#taxonomy">taxonomy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#unichem">unichem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#uniprot-input">uniprot_input</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.urls">urls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#websrvtab">websrvtab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.pdb">pdb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.visual.plot">plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.share.progress">progress</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.enz_sub">enz_sub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.pyreact">pyreact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.reflists">reflists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.internals.refs">refs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.residues">residues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.internals.resource">resource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.seq">seq</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#server">server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.share.session">session</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.share.settings">settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.taxonomy">taxonomy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.unichem">unichem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#uniprot">uniprot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.resources.urls">urls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.omnipath.server.build">build</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference.html#resources">resources</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference.html#id173">network</a></li>
 </ul>
@@ -854,6 +857,7 @@ HTTP with REST style querying.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Dénes Türei, Nicolàs Palacio, Olga Ivanova. 
 European Molecular Biology Laboratory, Heidelberg Germany
 European Bioinformatics Institute, Hinxton UK
@@ -862,7 +866,9 @@ University Hospital Heidelberg Germany
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -873,7 +879,6 @@ University Hospital Heidelberg Germany
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

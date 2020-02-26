@@ -1,0 +1,378 @@
+
+
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pypath.resources.network &mdash; pypath 0.10.6 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> pypath
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.10.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Release history</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pypath</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pypath.resources.network</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pypath.resources.network</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#  (Planned for) centrally handling cache for all databases/resources.</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright</span>
+<span class="c1">#  2014-2020</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  File author(s): Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#                  Nicolàs Palacio</span>
+<span class="c1">#                  Olga Ivanova</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">future.utils</span> <span class="k">import</span> <span class="n">iteritems</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">import</span> <span class="nn">pypath.internals.resource</span> <span class="k">as</span> <span class="nn">resource</span>
+<span class="kn">import</span> <span class="nn">pypath.resources.data_formats</span> <span class="k">as</span> <span class="nn">data_formats</span>
+<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session_mod</span>
+<span class="kn">import</span> <span class="nn">pypath.share.settings</span> <span class="k">as</span> <span class="nn">settings</span>
+
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;network_resources&#39;</span><span class="p">)</span>
+<span class="n">_log</span> <span class="o">=</span> <span class="n">_logger</span><span class="o">.</span><span class="n">_log</span>
+
+<span class="n">_data_models</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;interaction&#39;</span><span class="p">:</span> <span class="s1">&#39;interaction&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;interaction_misc&#39;</span><span class="p">:</span> <span class="s1">&#39;interaction&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;interaction_htp&#39;</span><span class="p">:</span> <span class="s1">&#39;interaction&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ligand_receptor&#39;</span><span class="p">:</span> <span class="s1">&#39;ligand_receptor&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;pathway&#39;</span><span class="p">:</span> <span class="s1">&#39;activity_flow&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;pathway_all&#39;</span><span class="p">:</span> <span class="s1">&#39;activity_flow&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;pathway_noref&#39;</span><span class="p">:</span> <span class="s1">&#39;activity_flow&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;activity_flow&#39;</span><span class="p">:</span> <span class="s1">&#39;activity_flow&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;dorothea&#39;</span><span class="p">:</span> <span class="s1">&#39;activity_flow&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;transcription&#39;</span><span class="p">:</span> <span class="s1">&#39;activity_flow&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;transcription_dorothea&#39;</span><span class="p">:</span> <span class="s1">&#39;activity_flow&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;transcription_onebyone&#39;</span><span class="p">:</span> <span class="s1">&#39;activity_flow&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;tfregulons&#39;</span><span class="p">:</span> <span class="s1">&#39;activity_flow&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;mirna_target&#39;</span><span class="p">:</span> <span class="s1">&#39;activity_flow&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;lncrna_target&#39;</span><span class="p">:</span> <span class="s1">&#39;activity_flow&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;tf_mirna&#39;</span><span class="p">:</span> <span class="s1">&#39;activity_flow&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;enzyme_substrate&#39;</span><span class="p">:</span> <span class="s1">&#39;enzyme_substrate&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ptm&#39;</span><span class="p">:</span> <span class="s1">&#39;enzyme_substrate&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ptm_all&#39;</span><span class="p">:</span> <span class="s1">&#39;enzyme_substrate&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ptm_misc&#39;</span><span class="p">:</span> <span class="s1">&#39;enzyme_substrate&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ptm_noref&#39;</span><span class="p">:</span> <span class="s1">&#39;enzyme_substrate&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;reaction&#39;</span><span class="p">:</span> <span class="s1">&#39;process_description&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;reaction_misc&#39;</span><span class="p">:</span> <span class="s1">&#39;process_description&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;reaction_pc&#39;</span><span class="p">:</span> <span class="s1">&#39;process_description&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_networkinput_to_networkresource</span><span class="p">(</span><span class="n">networkinput</span><span class="p">,</span> <span class="n">data_model</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    
+    <span class="k">return</span> <span class="n">resource</span><span class="o">.</span><span class="n">NetworkResource</span><span class="p">(</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">networkinput</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">interaction_type</span> <span class="o">=</span> <span class="n">networkinput</span><span class="o">.</span><span class="n">interaction_type</span><span class="p">,</span>
+        <span class="n">networkinput</span> <span class="o">=</span> <span class="n">networkinput</span><span class="p">,</span>
+        <span class="n">data_model</span> <span class="o">=</span> <span class="n">data_model</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="dorothea_expand_levels"><a class="viewcode-back" href="../../../reference.html#pypath.resources.network.dorothea_expand_levels">[docs]</a><span class="k">def</span> <span class="nf">dorothea_expand_levels</span><span class="p">(</span><span class="n">resources</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">levels</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    In a dictionary of resource definitions creates a separate</span>
+<span class="sd">    ``NetworkResource`` object for each confidence levels of DoRothEA</span>
+<span class="sd">    just like each level was a different resource.</span>
+<span class="sd">    </span>
+<span class="sd">    No matter ``resources`` is a ``NetworkResource`` or a dict of network</span>
+<span class="sd">    resources, returns always a dict of network resources.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">resources</span> <span class="o">=</span> <span class="n">resources</span> <span class="ow">or</span> <span class="n">transcription</span>
+    <span class="n">levels</span> <span class="o">=</span> <span class="n">levels</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tfregulons_levels&#39;</span><span class="p">)</span>
+    <span class="n">dorothea</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="n">dorothea_original</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">resources</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">resources</span><span class="p">,</span> <span class="s1">&#39;networkinput&#39;</span><span class="p">)</span> <span class="k">else</span>
+        <span class="n">resources</span><span class="p">[</span><span class="s1">&#39;dorothea&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;dorothea&#39;</span> <span class="ow">in</span> <span class="n">resources</span> <span class="k">else</span>
+        <span class="n">transcription</span><span class="p">[</span><span class="s1">&#39;dorothea&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="n">levels</span><span class="p">:</span>
+        
+        <span class="n">level_key</span> <span class="o">=</span> <span class="s1">&#39;dorothea_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">level</span>
+        
+        <span class="n">dorothea</span><span class="p">[</span><span class="n">level_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">dorothea_original</span><span class="p">)</span>
+        <span class="n">dorothea</span><span class="p">[</span><span class="n">level_key</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;DoRothEA_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">level</span>
+        <span class="n">dorothea</span><span class="p">[</span><span class="n">level_key</span><span class="p">]</span><span class="o">.</span><span class="n">networkinput</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;DoRothEA_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">level</span>
+        <span class="n">dorothea</span><span class="p">[</span><span class="n">level_key</span><span class="p">]</span><span class="o">.</span><span class="n">networkinput</span><span class="o">.</span><span class="n">input_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;levels&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">level</span><span class="p">}}</span>
+    
+    <span class="k">if</span> <span class="n">resources</span><span class="p">:</span>
+        
+        <span class="n">resources</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">resources</span><span class="p">)</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">resources</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;dorothea&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">resources</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dorothea</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">resources</span>
+        
+    <span class="k">else</span><span class="p">:</span>
+        
+        <span class="k">return</span> <span class="n">dorothea</span></div>
+
+
+<span class="k">for</span> <span class="n">resource_set_label</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">data_formats</span><span class="p">):</span>
+    
+    <span class="n">resource_set</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data_formats</span><span class="p">,</span> <span class="n">resource_set_label</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">resource_set</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        
+        <span class="k">continue</span>
+    
+    <span class="n">new_resource_set</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="k">for</span> <span class="n">resource_label</span><span class="p">,</span> <span class="n">input_def</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">resource_set</span><span class="p">):</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_def</span><span class="p">,</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">input_formats</span><span class="o">.</span><span class="n">NetworkInput</span><span class="p">):</span>
+            
+            <span class="k">continue</span>
+        
+        <span class="n">data_model</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">input_def</span><span class="o">.</span><span class="n">data_model</span> <span class="ow">or</span>
+            <span class="p">(</span>
+                <span class="n">_data_models</span><span class="p">[</span><span class="n">resource_set_label</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">resource_set_label</span> <span class="ow">in</span> <span class="n">_data_models</span> <span class="k">else</span>
+                <span class="s1">&#39;unknown&#39;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">data_model</span> <span class="o">==</span> <span class="s1">&#39;unknown&#39;</span> <span class="ow">and</span>
+            <span class="n">resource_set_label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;omnipath&#39;</span><span class="p">,</span> <span class="s1">&#39;extra_directions&#39;</span><span class="p">}</span>
+        <span class="p">):</span>
+            
+            <span class="n">_log</span><span class="p">(</span>
+                <span class="s1">&#39;Could not find data model for &#39;</span>
+                <span class="s1">&#39;resource `</span><span class="si">%s</span><span class="s1">` in set `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">input_def</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">resource_set_label</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        
+        <span class="n">new_resource_set</span><span class="p">[</span><span class="n">resource_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">_networkinput_to_networkresource</span><span class="p">(</span>
+            <span class="n">networkinput</span> <span class="o">=</span> <span class="n">input_def</span><span class="p">,</span>
+            <span class="n">data_model</span> <span class="o">=</span> <span class="n">data_model</span><span class="p">,</span>
+        <span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">new_resource_set</span><span class="p">:</span>
+        
+        <span class="nb">globals</span><span class="p">()[</span><span class="n">resource_set_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_resource_set</span>
+
+
+<span class="c1"># these we need to re-create to have the data models set correctly</span>
+<span class="n">extra_directions</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">ptm_misc</span><span class="p">)</span>
+<span class="n">extra_directions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">pathway_noref</span><span class="p">))</span>
+<span class="n">extra_directions</span><span class="p">[</span><span class="s1">&#39;acsn&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">reaction_pc</span><span class="p">[</span><span class="s1">&#39;acsn&#39;</span><span class="p">])</span>
+<span class="n">extra_directions</span><span class="p">[</span><span class="s1">&#39;acsn&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data_model</span> <span class="o">=</span> <span class="s1">&#39;activity_flow&#39;</span>
+<span class="n">omnipath</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">omnipath</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pathway</span><span class="p">)</span>
+<span class="n">omnipath</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ptm</span><span class="p">)</span>
+<span class="n">omnipath</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">interaction</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Dénes Türei, Nicolàs Palacio, Olga Ivanova. 
+European Molecular Biology Laboratory, Heidelberg Germany
+European Bioinformatics Institute, Hinxton UK
+University Hospital RWTH, Aachen Germany
+University Hospital Heidelberg Germany
+
+    </p>
+  </div>
+    
+    
+      Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

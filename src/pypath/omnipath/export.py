@@ -258,7 +258,15 @@ class Export(session.Logger):
             directed = bool(ia.direction[nodes])
             directed_rev = bool(ia.direction[tuple(reversed(nodes))])
             
-            if not directed and (_dir == 'b_a' or directed_rev):
+            if (
+                (
+                    not directed and
+                    (_dir == 'b_a' or directed_rev)
+                ) or (
+                    ia.is_loop() and
+                    _dir == 'b_a'
+                )
+            ):
                 
                 continue
             
