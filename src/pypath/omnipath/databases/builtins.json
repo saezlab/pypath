@@ -1,0 +1,46 @@
+'omnipath_mod': 'network',
+    'curated_mod': 'network',
+    'complex_mod': 'complex',
+    'annotations_mod': 'annot',
+    'intercell_mod': 'intercell',
+    'enz_sub_mod': 'enz_sub',
+    'tf_target_mod': 'network',
+    'tf_mirna_mod': 'network',
+    'mirna_mrna_mod': 'network',
+    'lncrna_mrna_mod': 'network',
+
+{
+    "omnipath": {
+        "label": "omnipath",
+        "class": "network",
+        "def": {
+            "build": "omnipath",
+            "args": {
+                "kinase_substrate_extra": true,
+                "ligand_receptor_extra": true,
+                "pathway_extra": true,
+            },
+            "workflow": []
+        }
+    },
+    "curated": {
+        "label": "curated",
+        "class": "network",
+        "def": {
+            "build": null,
+            "args": {
+                "kinase_substrate_extra": true,
+                "ligand_receptor_extra": true,
+                "pathway_extra": true,
+            },
+            "prepare": {
+                "curated_ppi": "get_curated_ppi"
+            },
+            "workflow": [
+                "load": {
+                    "resources": "curated_ppi"
+                }
+            ]
+        }
+    },
+}

@@ -1,0 +1,22 @@
+{
+    "network": {
+        "module": "pypath.core.network",
+        "class": "Network"
+    },
+    "enz_sub": {
+        "module": "pypath.core.enz_sub",
+        "class": "EnzymeSubstrateAggregator"
+    },
+    "complex": {
+        "module": "pypath.core.complex",
+        "class": "ComplexAggregator"
+    },
+    "annotations": {
+        "module": "pypath.core.annot",
+        "class": "AnnotationTable"
+    },
+    "intercell": {
+        "module": "pypath.core.intercell",
+        "class": "IntercellAnnotation"
+    }
+}
