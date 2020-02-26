@@ -42,7 +42,7 @@ from pypath.share import session as session_mod
 import pypath.share.settings as settings
 
 
-class Database(session_mod.Logger):
+class DatabaseManager(session_mod.Logger):
     """
     Builds and serves the databases in OmniPath such as various networks,
     enzyme-substrate interactions, protein complexes, annotations and
@@ -53,7 +53,7 @@ class Database(session_mod.Logger):
 
     def __init__(self, rebuild = False, **kwargs):
 
-        session_mod.Logger.__init__(self, name = 'omnipath.database')
+        session_mod.Logger.__init__(self, name = 'omnipath.dbmanager')
 
         self.timestamp = time.strftime(settings.get('timestamp_format'))
         self.param = kwargs

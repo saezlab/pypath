@@ -3081,7 +3081,7 @@ class Network(session_mod.Logger):
 
         new = cls(ncbi_tax_id = ncbi_tax_id, **kwargs)
 
-        new.mirna_target(
+        new.load_mirna_target(
             exclude = exclude,
             make_df = make_df,
             reread = reread,
