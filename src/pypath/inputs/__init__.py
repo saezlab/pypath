@@ -24,6 +24,9 @@ import importlib
 
 import pypath.share.session as session
 
+_logger = session.Logger(name = 'inputs')
+_log = _logger._log
+
 
 def get_method(module_name, method_name = None):
     """
@@ -31,6 +34,12 @@ def get_method(module_name, method_name = None):
     name. E.g. for ``'uniprot.all_uniprots'`` it returns the ``all_uniprots``
     method from the ``pypath.inputs.uniprot`` module.
     """
+    
+    _log('Selecting input method: module `%s`, method `%s`.' % (
+            module_name,
+            method_name,
+        )
+    )
     
     if not method_name:
         
@@ -41,8 +50,15 @@ def get_method(module_name, method_name = None):
     module_name = module_name.rsplit('.', maxsplit = 1)[-1]
     module_name = 'pypath.inputs.%s' % module_name
     
+    _log('Selecting input method: module `%s`, method `%s`.' % (
+            module_name,
+            method_name,
+        )
+    )
+    
     try:
         
+        _log('Importing module `%s`.' % module_name)
         mod = importlib.import_module(module_name)
         
     except:

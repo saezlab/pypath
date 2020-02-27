@@ -36,7 +36,7 @@ from past.builtins import xrange, range
 
 import pypath.share.session as session_mod
 
-_logger = session_mod.Logger(name = 'dataio')
+_logger = session_mod.Logger(name = 'inputs')
 _log = _logger._log
 _console = _logger._console
 
@@ -543,6 +543,7 @@ def compleat_complexes(predicted = True):
 
 
 def humap_complexes():
+
     url = urls.urls['proteincomplexes']['url']
     c = curl.Curl(url, large = True)
 
