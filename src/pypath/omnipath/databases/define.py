@@ -20,14 +20,17 @@
 #
 #  Website: http://pypath.omnipathdb.org/
 
+from future.utils import iteritems
+
 import importlib as imp
 import os
 import itertools
 import json
 
 import pypath.share.session as session
+import pypath.share.common as common
 
-_logger = session_mod.Logger(name = 'db_define')
+_logger = session.Logger(name = 'db_define')
 _log = _logger._log
 _console = _logger._console
 
@@ -69,7 +72,29 @@ class DatabaseDefinition(object):
     @staticmethod
     def _parse_json(path, label = None):
         
-        data = {}
+        data = DatabaseDefinition._read_json(path) or {}
+        
+        if label:
+
+            if label in data:
+
+                data = data[label]
+                data['label'] = label
+
+            else:
+
+                _console(
+                    'Entry `%s` not available in file `%s`.' % (
+                        label,
+                        path,
+                    )
+                )
+        
+        return data
+    
+    
+    @staticmethod
+    def _read_json(path):
         
         if not os.path.exists(path):
             
@@ -77,25 +102,7 @@ class DatabaseDefinition(object):
             
         else:
             
-            data = json.load(path)
-
-            if label:
-
-                if label in data:
-
-                    data = data[label]
-                    data['label'] = label
-
-                else:
-
-                    _console(
-                        'Entry `%s` not available in file `%s`.' % (
-                            label,
-                            path,
-                        )
-                    )
-        
-        return data
+            return json.load(path)
 
 
     @classmethod
@@ -177,6 +184,67 @@ class DatabaseClass(object):
     
     
     @classmethod
-    def from_dict(cls, dct):
+    def from_dict(cls, label, dct):
+        
+        dct['label'] = label
         
         return cls(**dct)
+
+
+class DatabaseDefinitionManager(session.Logger):
+    
+    
+    def __init__(self, classes, databases):
+        
+        session.Logger.__init__(self, name = 'db_define')
+        
+        self._classes = classes
+        self._databases = databases
+        
+        self.load()
+    
+    
+    def __repr__(self):
+        
+        return '<Database definitions: %u classes and %u definitions>' % (
+            len(self.classes),
+            len(self.databases),
+        )
+    
+    
+    def load(self):
+        
+        if isinstance(self._classes, common.basestring):
+            
+            self._log('Reading database classes from `%s`' % self._classes)
+            self._classes = DatabaseDefinition._read_json(self._classes)
+            
+        if isinstance(self._databases, common.basestring):
+            
+            self._log(
+                'Reading database definitions from `%s`' % self._databases
+            )
+            self._databases = DatabaseDefinition._read_json(self._databases)
+            if os.path.exists(self._classes):
+                
+                self._classes = json.load(self._classes)
+                
+            else:
+                
+                self._console('No such file: `%s`.' % self._classes)
+        
+        self.classes = dict(
+            (
+                label,
+                DatabaseClass.from_dict(label = label, dct = param)
+            )
+            for label, param in iteritems(self._classes)
+        )
+        
+        self.databases = dict(
+            (
+                label,
+                DatabaseDefinition.from_dict(label = label, dct = param)
+            )
+            for label, param in iteritems(self._databases)
+        )
