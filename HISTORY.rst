@@ -14,7 +14,7 @@ This is a summary of the changelog.
 
 0.3.0:
 +++++++++++
-* First version whith partial Python 3 support.
+* First version with partial Python 3 support.
 
 0.4.0:
 +++++++++++
@@ -52,13 +52,11 @@ This is a summary of the changelog.
 
 0.7.93
 +++++++++++
-
 * New `dataio` methods for Gene Ontology
 
 0.7.110
 +++++++++++
 * Many new docstrings
-
 
 0.8
 +++++++++++
@@ -89,5 +87,3 @@ Upcoming:
 * New, more flexible network reader class
 * Full support for multi-species molecular interaction networks (e.g. pathogene-host)
 * Better support for not protein only molecular interaction networks (metabolites, drug compounds, RNA)
-
-
