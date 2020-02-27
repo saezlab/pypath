@@ -85,14 +85,8 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Release history</a></li>
-</ul>
-
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
             
           
         </div>
@@ -196,7 +190,7 @@
     <span class="s1">&#39;path_root&#39;</span><span class="p">:</span> <span class="s1">&#39;/&#39;</span><span class="p">,</span>
     <span class="c1"># The basedir for every files and directories in the followings.</span>
     <span class="s1">&#39;basedir&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
-    
+
     <span class="s1">&#39;progressbars&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
     <span class="c1"># verbosity for messages printed to console</span>
     <span class="s1">&#39;console_verbosity&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
@@ -261,10 +255,10 @@
     <span class="p">},</span>
     <span class="s1">&#39;keep_noref&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
     <span class="s1">&#39;msigdb_email&#39;</span><span class="p">:</span> <span class="s1">&#39;omnipathdb@gmail.com&#39;</span><span class="p">,</span>
-    
+
     <span class="c1"># parameters for pypath.omnipath</span>
     <span class="s1">&#39;timestamp_format&#39;</span><span class="p">:</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">,</span>
-    
+
     <span class="c1"># tfregulons levels</span>
     <span class="s1">&#39;tfregulons_levels&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">},</span>
 
@@ -281,7 +275,7 @@
        <span class="s1">&#39;lncrna_mrna&#39;</span><span class="p">,</span>
        <span class="s1">&#39;enz_sub&#39;</span><span class="p">,</span>
     <span class="p">],</span>
-    
+
     <span class="s1">&#39;omnipath_mod&#39;</span><span class="p">:</span> <span class="s1">&#39;network&#39;</span><span class="p">,</span>
     <span class="s1">&#39;curated_mod&#39;</span><span class="p">:</span> <span class="s1">&#39;network&#39;</span><span class="p">,</span>
     <span class="s1">&#39;complex_mod&#39;</span><span class="p">:</span> <span class="s1">&#39;complex&#39;</span><span class="p">,</span>
@@ -292,22 +286,22 @@
     <span class="s1">&#39;tf_mirna_mod&#39;</span><span class="p">:</span> <span class="s1">&#39;network&#39;</span><span class="p">,</span>
     <span class="s1">&#39;mirna_mrna_mod&#39;</span><span class="p">:</span> <span class="s1">&#39;network&#39;</span><span class="p">,</span>
     <span class="s1">&#39;lncrna_mrna_mod&#39;</span><span class="p">:</span> <span class="s1">&#39;network&#39;</span><span class="p">,</span>
-    
+
     <span class="s1">&#39;omnipath_args&#39;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s1">&#39;use_omnipath&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
         <span class="s1">&#39;kinase_substrate_extra&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
         <span class="s1">&#39;ligand_receptor_extra&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
         <span class="s1">&#39;pathway_extra&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">},</span>
-    
+
     <span class="c1"># only for pypath.omnipath.app and pypath.core.network</span>
     <span class="s1">&#39;dorothea_expand_levels&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    
+
     <span class="s1">&#39;dependencies&#39;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s1">&#39;intercell&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;annotations&#39;</span><span class="p">,),</span>
         <span class="s1">&#39;annotations&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;complex&#39;</span><span class="p">,),</span>
     <span class="p">},</span>
-    
+
     <span class="s1">&#39;omnipath_pickle&#39;</span><span class="p">:</span> <span class="s1">&#39;network_omnipath.pickle&#39;</span><span class="p">,</span>
     <span class="s1">&#39;curated_pickle&#39;</span><span class="p">:</span> <span class="s1">&#39;network_curated.pickle&#39;</span><span class="p">,</span>
     <span class="s1">&#39;complex_pickle&#39;</span><span class="p">:</span> <span class="s1">&#39;complexes.pickle&#39;</span><span class="p">,</span>
@@ -318,20 +312,20 @@
     <span class="s1">&#39;tf_mirna_pickle&#39;</span><span class="p">:</span> <span class="s1">&#39;tfmirna.pickle&#39;</span><span class="p">,</span>
     <span class="s1">&#39;mirna_mrna_pickle&#39;</span><span class="p">:</span> <span class="s1">&#39;mirna_mrna.pickle&#39;</span><span class="p">,</span>
     <span class="s1">&#39;lncrna_mrna_pickle&#39;</span><span class="p">:</span> <span class="s1">&#39;lncrna_mrna.pickle&#39;</span><span class="p">,</span>
-    
+
     <span class="s1">&#39;pickle_dir&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-    
+
     <span class="c1"># directory for exported tables</span>
     <span class="s1">&#39;tables_dir&#39;</span><span class="p">:</span> <span class="s1">&#39;omnipath_tables&#39;</span><span class="p">,</span>
-    
+
     <span class="c1"># directory for figures</span>
     <span class="s1">&#39;figures_dir&#39;</span><span class="p">:</span> <span class="s1">&#39;omnipath_figures&#39;</span><span class="p">,</span>
-    
+
     <span class="c1"># directory for LaTeX</span>
     <span class="s1">&#39;latex_dir&#39;</span><span class="p">:</span> <span class="s1">&#39;omnipath_latex&#39;</span><span class="p">,</span>
-    
+
     <span class="s1">&#39;timestamp_dirs&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    
+
 <span class="p">}</span>
 
 <span class="n">in_datadir</span> <span class="o">=</span> <span class="p">{</span>
@@ -363,10 +357,10 @@
 
 
 <span class="k">class</span> <span class="nc">Settings</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
 
@@ -377,23 +371,23 @@
 
 
 <span class="k">def</span> <span class="nf">reset_all</span><span class="p">():</span>
-    
+
     <span class="n">settings</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">()</span>
-    
+
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_defaults</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        
+
         <span class="n">val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">defaults</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">in_datadir</span><span class="p">:</span>
             <span class="n">val</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ROOT</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
-        
+
         <span class="nb">setattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
-    
+
     <span class="c1"># special director with built in default at user level</span>
     <span class="k">for</span> <span class="n">_key</span><span class="p">,</span> <span class="n">_dir</span> <span class="ow">in</span> <span class="p">((</span><span class="s1">&#39;cachedir&#39;</span><span class="p">,</span> <span class="s1">&#39;cache&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;pickle_dir&#39;</span><span class="p">,</span> <span class="s1">&#39;pickles&#39;</span><span class="p">)):</span>
-        
+
         <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">_key</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            
+
             <span class="nb">setattr</span><span class="p">(</span>
                 <span class="n">settings</span><span class="p">,</span>
                 <span class="n">_key</span><span class="p">,</span>
@@ -403,37 +397,37 @@
                     <span class="n">_dir</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-    
+
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">in_cachedir</span><span class="p">:</span>
-        
+
         <span class="nb">setattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">cachedir</span><span class="p">,</span> <span class="n">_defaults</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span>
-    
+
     <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;settings&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">settings</span>
 
 
 <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    
+
     <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">kwargs</span><span class="p">):</span>
-        
+
         <span class="nb">setattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
-    
+
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">get_default</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
-    
+
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">defaults</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">defaults</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
-    
+
     <span class="n">setup</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">param</span><span class="p">:</span> <span class="n">get_default</span><span class="p">(</span><span class="n">param</span><span class="p">)})</span>
 
 

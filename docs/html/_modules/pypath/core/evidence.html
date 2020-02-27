@@ -85,14 +85,8 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Release history</a></li>
-</ul>
-
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
             
           
         </div>
@@ -203,29 +197,29 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents an evidence supporting a relationship such as molecular</span>
 <span class="sd">    interaction, molecular complex, enzyme-PTM interaction, annotation, etc.</span>
-<span class="sd">    </span>
+
 <span class="sd">    The evidence consists of two main parts: the database and the literature</span>
-<span class="sd">    references. If a relationship is supprted by multiple databases, for</span>
-<span class="sd">    each one `Evidence` object should be created and </span>
-<span class="sd">    </span>
+<span class="sd">    references. If a relationship is supported by multiple databases, for</span>
+<span class="sd">    each one `Evidence` object should be created and</span>
+
 <span class="sd">    :arg pypath.resource.ResourceAttributes resource:</span>
 <span class="sd">        An object derived from :py:class:`pypath.resource.ResourceAttributes`.</span>
 <span class="sd">    :arg str,list,set,NoneType references:</span>
 <span class="sd">        Optional, one or more literature references (preferably PubMed IDs).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s1">&#39;resource&#39;</span><span class="p">,</span>
         <span class="s1">&#39;references&#39;</span><span class="p">,</span>
     <span class="p">]</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">references</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">resource</span> <span class="o">=</span> <span class="n">resource</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">references</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_references</span><span class="p">(</span><span class="n">references</span><span class="p">)</span>
-    
-    
+
+
 <div class="viewcode-block" id="Evidence.reload"><a class="viewcode-back" href="../../../reference.html#pypath.core.evidence.Evidence.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reloads the object from the module level.</span>
@@ -236,13 +230,13 @@
         <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
         <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span></div>
-    
-    
+
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_process_references</span><span class="p">(</span><span class="n">references</span><span class="p">):</span>
-        
+
         <span class="n">references</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">references</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">set</span><span class="p">(</span>
                 <span class="p">(</span>
@@ -253,15 +247,15 @@
                 <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">references</span>
             <span class="p">)</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">resource</span> <span class="o">==</span> <span class="n">other</span> <span class="ow">or</span>
             <span class="p">(</span>
@@ -269,75 +263,75 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">resource</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">resource</span>
             <span class="p">)</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This will ignore if the other evidence is from different resource:</span>
 <span class="sd">        still better than attributing wrong references to a resource.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">:</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">references</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">references</span><span class="p">)</span>
-            
+
         <span class="k">else</span><span class="p">:</span>
-            
+
             <span class="n">_log</span><span class="p">(</span>
                 <span class="s1">&#39;Warning: attempt to merge evidences from different &#39;</span>
                 <span class="s1">&#39;resources. Ignoring the second evidence.&#39;</span>
             <span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="n">Evidence</span><span class="p">(</span>
             <span class="n">resource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span>
             <span class="n">references</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">references</span> <span class="o">|</span> <span class="n">other</span><span class="o">.</span><span class="n">references</span><span class="p">,</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">key</span>
-    
-    
+
+
 <div class="viewcode-block" id="Evidence.merge"><a class="viewcode-back" href="../../../reference.html#pypath.core.evidence.Evidence.merge">[docs]</a>    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Merges two evidences. Returns set of either one or two evidences</span>
 <span class="sd">        depending on whether the two evidences are from the same resource.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">:</span>
-            
+
             <span class="bp">self</span> <span class="o">+=</span> <span class="n">other</span>
             <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="p">}</span>
-            
+
         <span class="k">else</span><span class="p">:</span>
-            
+
             <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">}</span></div>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="s1">&#39;&lt;Evidence </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%s%u</span><span class="s1"> references)&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="s1">&#39;via </span><span class="si">%s</span><span class="s1">, &#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">via</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">via</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
             <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">references</span><span class="p">),</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="n">Evidence</span><span class="p">(</span>
             <span class="n">resource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span>
             <span class="n">references</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">references</span><span class="p">),</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg str,tuple,Reference other:</span>
@@ -346,28 +340,28 @@
 <span class="sd">            type and a primary database (or None if the query should be</span>
 <span class="sd">            limited only to primary databases).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">contains_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">database</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">contains_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reference</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="n">reference</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">references</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">has_database_via</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="n">via</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">database</span> <span class="ow">and</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">via</span> <span class="o">==</span> <span class="n">via</span>
         <span class="p">)</span>
-    
-    
+
+
 <div class="viewcode-block" id="Evidence.has_interaction_type"><a class="viewcode-back" href="../../../reference.html#pypath.core.evidence.Evidence.has_interaction_type">[docs]</a>    <span class="k">def</span> <span class="nf">has_interaction_type</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">interaction_type</span><span class="p">,</span>
@@ -378,7 +372,7 @@
 <span class="sd">        If ``via`` is ``False`` then it will be ignored, otherwise if ``None``</span>
 <span class="sd">        only primary resources are considered.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">interaction_type</span> <span class="o">==</span> <span class="n">interaction_type</span> <span class="ow">and</span>
             <span class="p">(</span>
@@ -390,15 +384,15 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">via</span> <span class="o">==</span> <span class="n">via</span>
             <span class="p">)</span>
         <span class="p">)</span></div>
-    
-    
+
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_contains</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">refs</span><span class="o">.</span><span class="n">Reference</span><span class="p">):</span>
-            
+
             <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">contains_reference</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
-        
+
         <span class="c1"># this makes possible to accept a NetworkResource or a</span>
         <span class="c1"># NetworkResourceKey:</span>
         <span class="k">if</span> <span class="p">(</span>
@@ -406,11 +400,11 @@
             <span class="nb">hasattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;interaction_type&#39;</span><span class="p">)</span> <span class="ow">and</span>
             <span class="nb">hasattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;via&#39;</span><span class="p">)</span>
         <span class="p">):</span>
-            
+
             <span class="n">other</span> <span class="o">=</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">interaction_type</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">via</span><span class="p">)</span>
-        
+
         <span class="n">other</span> <span class="o">=</span> <span class="n">other</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="n">other</span><span class="p">,)</span>
-        
+
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">contains_database</span><span class="p">(</span><span class="n">other</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span>
             <span class="p">(</span>
@@ -422,13 +416,13 @@
                 <span class="n">obj</span><span class="o">.</span><span class="n">has_database_via</span><span class="p">(</span><span class="n">other</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">other</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
             <span class="p">)</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">has_data_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_model</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">data_model</span> <span class="o">==</span> <span class="n">data_model</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">match</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">resource</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -437,22 +431,22 @@
             <span class="n">via</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">references</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        
+
         <span class="k">def</span> <span class="nf">_match</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-            
+
             <span class="k">return</span> <span class="p">(</span>
                 <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="ow">in</span> <span class="n">value</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">list_like</span><span class="p">)</span> <span class="k">else</span>
                 <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="o">==</span> <span class="n">value</span>
             <span class="p">)</span>
-        
-        
+
+
         <span class="n">resource</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">resource</span><span class="o">.</span><span class="n">resource</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">Evidence</span><span class="p">)</span> <span class="k">else</span>
             <span class="n">resource</span>
         <span class="p">)</span>
-        
+
         <span class="n">interaction_type</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">resource</span><span class="o">.</span><span class="n">interaction_type</span>
                 <span class="k">if</span> <span class="p">(</span>
@@ -461,7 +455,7 @@
                 <span class="p">)</span> <span class="k">else</span>
             <span class="n">interaction_type</span>
         <span class="p">)</span>
-        
+
         <span class="n">via</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">resource</span><span class="o">.</span><span class="n">via</span>
                 <span class="k">if</span> <span class="p">(</span>
@@ -470,15 +464,15 @@
                 <span class="p">)</span> <span class="k">else</span>
             <span class="n">via</span>
         <span class="p">)</span>
-        
+
         <span class="n">data_model</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">resource</span><span class="o">.</span><span class="n">data_model</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="s1">&#39;data_model&#39;</span><span class="p">)</span> <span class="k">else</span>
             <span class="n">data_model</span>
         <span class="p">)</span>
-        
+
         <span class="n">references</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">references</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="p">(</span>
             <span class="p">(</span>
                 <span class="n">resource</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span>
@@ -514,24 +508,24 @@
 <span class="sd">    as molecular interaction, molecular complex, enzyme-PTM interaction,</span>
 <span class="sd">    annotation, etc should be collected in one `Evidences` object. This way</span>
 <span class="sd">    the set of evidences can be queried a comprehensive way.</span>
-<span class="sd">    </span>
+
 <span class="sd">    :arg tuple,list,set,Evidences evidences:</span>
 <span class="sd">        An iterable providing :py:class:`Evidence` instances. It is possible</span>
 <span class="sd">        to create an empty evidence collection and populate it later or to</span>
 <span class="sd">        show this way that certain relationship has no supporting evidences.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s1">&#39;evidences&#39;</span><span class="p">,</span>
     <span class="p">]</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evidences</span> <span class="o">=</span> <span class="p">()):</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="fm">__iadd__</span><span class="p">(</span><span class="n">evidences</span><span class="p">)</span>
-    
-    
+
+
 <div class="viewcode-block" id="Evidences.reload"><a class="viewcode-back" href="../../../reference.html#pypath.core.evidence.Evidences.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reloads the object from the module level.</span>
@@ -542,16 +536,16 @@
         <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
         <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
-        
+
         <span class="n">new_ev_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s1">&#39;Evidence&#39;</span><span class="p">)</span>
-        
+
         <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            
+
             <span class="n">ev</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">new_ev_class</span></div>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="n">other</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">other</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;__iter__&#39;</span><span class="p">)</span> <span class="k">else</span>
@@ -559,26 +553,26 @@
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span> <span class="k">else</span>
             <span class="p">()</span>
         <span class="p">)</span>
-        
+
         <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">other</span><span class="p">:</span>
-            
+
             <span class="k">if</span> <span class="n">ev</span><span class="o">.</span><span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span><span class="p">:</span>
-                
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span><span class="p">[</span><span class="n">ev</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span><span class="p">[</span><span class="n">ev</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="n">ev</span>
-                
+
             <span class="k">else</span><span class="p">:</span>
-                
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span><span class="p">[</span><span class="n">ev</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
-            
+
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span>
-        
+
         <span class="k">return</span> <span class="n">Evidences</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span>
@@ -590,40 +584,40 @@
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span>
             <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evidences</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">evidences</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__add__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="n">Evidences</span><span class="p">(</span>
             <span class="n">ev</span>
             <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span>
             <span class="k">if</span> <span class="n">ev</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">other</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">intersection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="n">Evidences</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">evidences</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span>
             <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evidences</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">evidences</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            
+
             <span class="k">yield</span> <span class="n">ev</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="s1">&#39;&lt;Evidences: </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%u</span><span class="s1"> references)&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
             <span class="p">(</span>
                 <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)))</span>
@@ -636,18 +630,18 @@
                 <span class="mi">0</span>
             <span class="p">),</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="n">Evidences</span><span class="p">((</span><span class="n">ev</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">))</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evidences</span><span class="p">))</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg str,tuple,Reference other:</span>
@@ -656,31 +650,31 @@
 <span class="sd">            type and a primary database (or None if the query should be</span>
 <span class="sd">            limited only to primary databases).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">return</span> <span class="n">Evidence</span><span class="o">.</span><span class="n">_contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__and__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="n">other</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_foreign_resources_set</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="n">this</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resident_resources_set</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">this</span> <span class="o">&amp;</span> <span class="n">other</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__or__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="n">other</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_foreign_resources_set</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="n">this</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resident_resources_set</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">this</span> <span class="o">|</span> <span class="n">other</span>
-    
-    
+
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_foreign_resources_set</span><span class="p">(</span><span class="n">resources</span><span class="p">):</span>
-        
+
         <span class="n">other</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">resources</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="p">{</span>
             <span class="p">(</span>
                 <span class="n">res</span><span class="o">.</span><span class="n">resource</span>
@@ -689,10 +683,10 @@
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">resources</span>
         <span class="p">}</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">_resident_resources_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="p">(</span>
             <span class="p">{</span><span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">}</span>
                 <span class="k">if</span> <span class="p">(</span>
@@ -701,97 +695,97 @@
                 <span class="p">)</span> <span class="k">else</span>
             <span class="p">{</span><span class="n">ev</span><span class="o">.</span><span class="n">resource</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">}</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="p">{</span><span class="n">ev</span><span class="o">.</span><span class="n">resource</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">}</span> <span class="o">==</span> <span class="p">{</span><span class="n">ev</span><span class="o">.</span><span class="n">resource</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">other</span><span class="p">}</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_resources</span><span class="p">()</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">count_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)))</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">get_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="p">{</span>
             <span class="n">ev</span><span class="o">.</span><span class="n">resource</span>
             <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="p">}</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">get_resources_via</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="p">{</span>
             <span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span> <span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">via</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="p">}</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">get_resource_names_via</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="p">{</span>
             <span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">via</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="p">}</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">count_references</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_references</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">get_references</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
+
         <span class="n">evidences</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="p">{</span>
             <span class="n">ref</span>
             <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">evidences</span>
             <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">ev</span><span class="o">.</span><span class="n">references</span>
         <span class="p">}</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">count_curation_effort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_curation_effort</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">get_curation_effort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
+
         <span class="n">evidences</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="p">{</span>
             <span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span> <span class="n">ref</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">evidences</span>
             <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">ev</span><span class="o">.</span><span class="n">references</span>
         <span class="p">}</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">contains_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">database</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">contains_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reference</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">reference</span> <span class="ow">in</span> <span class="n">ev</span><span class="o">.</span><span class="n">references</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">has_database_via</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="n">via</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
             <span class="n">ev</span><span class="o">.</span><span class="n">has_database_via</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="n">via</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span>
         <span class="p">)</span>
-    
-    
+
+
 <div class="viewcode-block" id="Evidences.has_interaction_type"><a class="viewcode-back" href="../../../reference.html#pypath.core.evidence.Evidences.has_interaction_type">[docs]</a>    <span class="k">def</span> <span class="nf">has_interaction_type</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">interaction_type</span><span class="p">,</span>
@@ -802,57 +796,57 @@
 <span class="sd">        If ``via`` is ``False`` then it will be ignored, otherwise if ``None``</span>
 <span class="sd">        only primary resources are considered.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
             <span class="n">ev</span><span class="o">.</span><span class="n">has_interaction_type</span><span class="p">(</span><span class="n">interaction_type</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="n">via</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span>
         <span class="p">)</span></div>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">has_data_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_model</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">has_data_model</span><span class="p">(</span><span class="n">data_model</span><span class="p">)</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">get_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="p">{</span><span class="n">ev</span><span class="o">.</span><span class="n">resource</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">}</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">get_resource_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="p">{</span><span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">}</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">get_interaction_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="p">{</span><span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">interaction_type</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">}</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">get_data_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="p">{</span><span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">data_model</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">}</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__isub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">):</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
                 <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">ev</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evidences</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">evidences</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">evidences</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ev</span>
             <span class="p">)</span>
-            
+
         <span class="k">else</span><span class="p">:</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">interaction_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">via</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">ev</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evidences</span><span class="p">)</span>
@@ -862,8 +856,8 @@
                 <span class="n">via</span> <span class="o">=</span> <span class="n">via</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">resource</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -872,7 +866,7 @@
             <span class="n">via</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">references</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">ev</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span>
             <span class="k">if</span> <span class="n">ev</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
@@ -883,8 +877,8 @@
                 <span class="n">references</span> <span class="o">=</span> <span class="n">references</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">match</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">resource</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -893,7 +887,7 @@
             <span class="n">via</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">references</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span>
             <span class="nb">tuple</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>

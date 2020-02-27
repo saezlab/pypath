@@ -85,14 +85,8 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Release history</a></li>
-</ul>
-
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
             
           
         </div>
@@ -605,7 +599,7 @@
         <span class="k">else</span><span class="p">:</span>
 
             <span class="n">infile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">encoding</span> <span class="o">=</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
-            <span class="n">total</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>
 
         <span class="n">a_to_b</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
         <span class="n">b_to_a</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
@@ -979,10 +973,10 @@
             <span class="n">target_id_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_id_type</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="s1">&#39;MappingTable from=`</span><span class="si">%s</span><span class="s1">`, to=`</span><span class="si">%s</span><span class="s1">`, taxon=`</span><span class="si">%u</span><span class="s1">`&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span></div>
 
 
@@ -1008,31 +1002,31 @@
         <span class="n">cleanup_period</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">cleanup_period</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mapper_cleanup_interval&#39;</span><span class="p">)</span>
         <span class="p">)</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_mapper_cleanup_timeloop</span> <span class="o">=</span> <span class="n">timeloop</span><span class="o">.</span><span class="n">Timeloop</span><span class="p">()</span>
-        
+
         <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapper_cleanup_timeloop</span><span class="o">.</span><span class="n">jobs</span><span class="p">:</span>
-            
+
             <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-                
+
                 <span class="n">job</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
                 <span class="n">job</span><span class="o">.</span><span class="n">stopped</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_mapper_cleanup_timeloop</span><span class="o">.</span><span class="n">jobs</span> <span class="o">=</span> <span class="p">[]</span>
-        
-        
+
+
         <span class="nd">@self</span><span class="o">.</span><span class="n">_mapper_cleanup_timeloop</span><span class="o">.</span><span class="n">job</span><span class="p">(</span>
             <span class="n">interval</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span>
                 <span class="n">seconds</span> <span class="o">=</span> <span class="n">cleanup_period</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="k">def</span> <span class="nf">_cleanup</span><span class="p">():</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">remove_expired</span><span class="p">()</span>
-        
-        
+
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_mapper_cleanup_timeloop</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">block</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">reuniprot</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
             <span class="sa">r</span><span class="s1">&#39;[OPQ][0-9][A-Z0-9]</span><span class="si">{3}</span><span class="s1">[0-9]|[A-NR-Z][0-9]&#39;</span>
             <span class="sa">r</span><span class="s1">&#39;([A-Z][A-Z0-9]</span><span class="si">{2}</span><span class="s1">[0-9]){1,2}&#39;</span>
@@ -1184,19 +1178,19 @@
                     <span class="n">target_id_type</span> <span class="ow">in</span> <span class="n">input_formats</span><span class="o">.</span><span class="n">ac_mapping</span> <span class="ow">and</span>
                     <span class="n">id_type</span> <span class="o">!=</span> <span class="n">target_id_type</span>
                 <span class="p">):</span>
-                    
+
                     <span class="k">if</span> <span class="n">target_id_type</span> <span class="o">==</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">:</span>
-                        
+
                         <span class="n">_id_type</span><span class="p">,</span> <span class="n">_target_id_type</span> <span class="o">=</span> <span class="n">target_id_type</span><span class="p">,</span> <span class="n">id_type</span>
                         <span class="n">load_a_to_b</span> <span class="o">=</span> <span class="kc">False</span>
                         <span class="n">load_b_to_a</span> <span class="o">=</span> <span class="kc">True</span>
-                        
+
                     <span class="k">else</span><span class="p">:</span>
-                        
+
                         <span class="n">_id_type</span><span class="p">,</span> <span class="n">_target_id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">target_id_type</span>
                         <span class="n">load_a_to_b</span> <span class="o">=</span> <span class="kc">True</span>
                         <span class="n">load_b_to_a</span> <span class="o">=</span> <span class="kc">False</span>
-                    
+
                     <span class="c1"># for uniprot/uploadlists</span>
                     <span class="c1"># we create here the mapping params</span>
                     <span class="n">this_param</span> <span class="o">=</span> <span class="n">input_formats</span><span class="o">.</span><span class="n">UniprotListMapping</span><span class="p">(</span>
@@ -1213,7 +1207,7 @@
                         <span class="n">uniprots</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                         <span class="n">lifetime</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
                     <span class="p">)</span>
-                    
+
                     <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="n">tbl_key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
                         <span class="n">reader</span><span class="p">,</span>
                         <span class="s1">&#39;mapping_table_</span><span class="si">%s</span><span class="s1">_to_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
@@ -1319,22 +1313,20 @@
 <span class="sd">        Returns set of the target ID type.</span>
 
 <span class="sd">        This function should be used to convert individual IDs.</span>
-<span class="sd">        It takes care about everything and ideally you don&#39;t need to think</span>
-<span class="sd">        on the details.</span>
+<span class="sd">        It takes care about everything and ideally you don&#39;t need to</span>
+<span class="sd">        think on the details.</span>
 
 <span class="sd">        How does it work: looks up dictionaries between the original</span>
-<span class="sd">        and target ID type, if doesn&#39;t find, attempts to load from</span>
-<span class="sd">        the predefined inputs.</span>
-<span class="sd">        If the original name is genesymbol, first it looks up</span>
-<span class="sd">        among the preferred gene names from UniProt, if not</span>
-<span class="sd">        found, it takes an attempt with the alternative gene</span>
-<span class="sd">        names. If the gene symbol still couldn&#39;t be found, and</span>
-<span class="sd">        strict = False, the last attempt only the first 5 chara-</span>
-<span class="sd">        cters of the gene symbol matched. If the target name</span>
-<span class="sd">        type is uniprot, then it converts all the ACs to primary.</span>
-<span class="sd">        Then, for the Trembl IDs it looks up the preferred gene</span>
-<span class="sd">        names, and find Swissprot IDs with the same preferred</span>
-<span class="sd">        gene name.</span>
+<span class="sd">        and target ID type, if doesn&#39;t find, attempts to load from the</span>
+<span class="sd">        predefined inputs.</span>
+<span class="sd">        If the original name is genesymbol, first it looks up among the</span>
+<span class="sd">        preferred gene names from UniProt, if not found, it takes an</span>
+<span class="sd">        attempt with the alternative gene names. If the gene symbol</span>
+<span class="sd">        still couldn&#39;t be found, and strict = False, the last attempt</span>
+<span class="sd">        only the first 5 characters of the gene symbol matched. If the</span>
+<span class="sd">        target name type is uniprot, then it converts all the ACs to</span>
+<span class="sd">        primary. Then, for the Trembl IDs it looks up the preferred gene</span>
+<span class="sd">        names, and find Swissprot IDs with the same preferred gene name.</span>
 
 <span class="sd">        name : str</span>
 <span class="sd">            The original name to be converted.</span>
@@ -1352,12 +1344,14 @@
 <span class="sd">            - embl (DDBJ/EMBL/GeneBank CDS accession)</span>
 <span class="sd">            - embl_id (DDBJ/EMBL/GeneBank accession)</span>
 <span class="sd">            To use other IDs, you need to define the input method</span>
-<span class="sd">            and load the table before calling :py:func:Mapper.map_name().</span>
+<span class="sd">            and load the table before calling</span>
+<span class="sd">            :py:func:Mapper.map_name().</span>
 <span class="sd">        target_id_type : str</span>
 <span class="sd">            The name type to translate to, more or less the same values</span>
 <span class="sd">            are available as for ``id_type``.</span>
 <span class="sd">        nameType : str</span>
-<span class="sd">            Deprecated. Synonym for ``id_type`` for backwards compatibility.</span>
+<span class="sd">            Deprecated. Synonym for ``id_type`` for backwards</span>
+<span class="sd">            compatibility.</span>
 <span class="sd">        targetNameType : str</span>
 <span class="sd">            Deprecated. Synonym for ``target_id_type``</span>
 <span class="sd">            for backwards compatibility.</span>
@@ -1673,12 +1667,12 @@
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">tbl</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">if</span> <span class="n">tbl</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span>
-    
+
     <span class="c1">#</span>
     <span class="c1"># ID specific translation methods</span>
     <span class="c1">#</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">id_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For any kind of entity, either protein, miRNA or protein complex,</span>
@@ -1686,35 +1680,35 @@
 <span class="sd">        Gene Symbols, for miRNAs miRNA names, for complexes a series of</span>
 <span class="sd">        Gene Symbols.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;genesymbol_str&#39;</span><span class="p">):</span>
-            
+
             <span class="k">return</span> <span class="n">name</span><span class="o">.</span><span class="n">genesymbol_str</span>
-            
+
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">):</span>
-            
+
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span>
-            
+
             <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;MIMAT&#39;</span><span class="p">):</span>
-                
+
                 <span class="k">return</span> <span class="n">map_name0</span><span class="p">(</span>
                     <span class="n">name</span><span class="p">,</span>
                     <span class="n">id_type</span> <span class="ow">or</span> <span class="s1">&#39;mirbase&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;mir-mat-name&#39;</span><span class="p">,</span>
                     <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span>
                 <span class="p">)</span> <span class="ow">or</span> <span class="n">name</span>
-                
+
             <span class="k">elif</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;MI&#39;</span><span class="p">):</span>
-                
+
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_name0</span><span class="p">(</span>
                     <span class="n">name</span><span class="p">,</span>
                     <span class="n">id_type</span> <span class="ow">or</span> <span class="s1">&#39;mir-pre&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;mir-name&#39;</span><span class="p">,</span>
                     <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span>
                 <span class="p">)</span> <span class="ow">or</span> <span class="n">name</span>
-                
+
             <span class="k">else</span><span class="p">:</span>
-                
+
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_name0</span><span class="p">(</span>
                     <span class="n">name</span><span class="p">,</span>
                     <span class="n">id_type</span> <span class="ow">or</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span>
@@ -1762,7 +1756,7 @@
         <span class="n">swissprots</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="n">uniprots</span><span class="p">:</span>
-            
+
             <span class="n">swissprot</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">genesymbols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span>
                 <span class="n">name</span> <span class="o">=</span> <span class="n">uniprot</span><span class="p">,</span>
@@ -1770,7 +1764,7 @@
                 <span class="n">target_id_type</span> <span class="o">=</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span>
                 <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span>
             <span class="p">)</span>
-            
+
             <span class="k">for</span> <span class="n">genesymbol</span> <span class="ow">in</span> <span class="n">genesymbols</span><span class="p">:</span>
 
                 <span class="n">swissprot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span>
@@ -1779,15 +1773,15 @@
                     <span class="n">target_id_type</span> <span class="o">=</span> <span class="s1">&#39;swissprot&#39;</span><span class="p">,</span>
                     <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span>
                 <span class="p">)</span>
-            
+
             <span class="k">if</span> <span class="ow">not</span> <span class="n">swissprot</span><span class="p">:</span>
-                
+
                 <span class="n">swissprots</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uniprot</span><span class="p">)</span>
-                
+
             <span class="k">else</span><span class="p">:</span>
-                
+
                 <span class="n">swissprots</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">swissprot</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">swissprots</span>
 
     <span class="c1">#</span>
@@ -1944,6 +1938,7 @@
     <span class="k">def</span> <span class="nf">load_uniprot_static</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">keys</span><span class="p">,</span>
+            <span class="n">ncbi_tax_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads mapping tables from the huge static mapping file from UniProt.</span>
@@ -1998,32 +1993,30 @@
 
                 <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
 
-                <span class="k">for</span> <span class="n">ac_typ</span> <span class="ow">in</span> <span class="n">ac_types</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names_uniprot_static</span><span class="p">:</span>
 
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">names_uniprot_static</span><span class="p">:</span>
+                    <span class="n">id_type_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">names_uniprot_static</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
 
-                        <span class="n">id_type_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">names_uniprot_static</span><span class="p">[</span><span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                    <span class="n">key_a_to_b</span> <span class="o">=</span> <span class="n">MappingTableKey</span><span class="p">(</span>
+                        <span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type_a</span><span class="p">,</span>
+                        <span class="n">target_id_type</span> <span class="o">=</span> <span class="n">id_type_b</span><span class="p">,</span>
+                        <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">key_b_to_a</span> <span class="o">=</span> <span class="n">MappingTableKey</span><span class="p">(</span>
+                        <span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type_b</span><span class="p">,</span>
+                        <span class="n">target_id_type</span> <span class="o">=</span> <span class="n">id_type_a</span><span class="p">,</span>
+                        <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span>
+                    <span class="p">)</span>
 
-                        <span class="n">key_a_to_b</span> <span class="o">=</span> <span class="n">MappingTableKey</span><span class="p">(</span>
-                            <span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type_a</span><span class="p">,</span>
-                            <span class="n">target_id_type</span> <span class="o">=</span> <span class="n">id_type_b</span><span class="p">,</span>
-                            <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span>
-                        <span class="p">)</span>
-                        <span class="n">key_b_to_a</span> <span class="o">=</span> <span class="n">MappingTableKey</span><span class="p">(</span>
-                            <span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type_b</span><span class="p">,</span>
-                            <span class="n">target_id_type</span> <span class="o">=</span> <span class="n">id_type_a</span><span class="p">,</span>
-                            <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span>
-                        <span class="p">)</span>
+                    <span class="n">this_uniprot</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
-                        <span class="n">this_uniprot</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">key_a_to_b</span> <span class="ow">in</span> <span class="n">to_load</span><span class="p">:</span>
 
-                        <span class="k">if</span> <span class="n">key_a_to_b</span> <span class="ow">in</span> <span class="n">to_load</span><span class="p">:</span>
+                        <span class="n">data</span><span class="p">[</span><span class="n">key_a_to_b</span><span class="p">][</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">this_uniprot</span><span class="p">)</span>
 
-                            <span class="n">data</span><span class="p">[</span><span class="n">key_a_to_b</span><span class="p">][</span><span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">this_uniprot</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">key_b_to_a</span> <span class="ow">in</span> <span class="n">to_load</span><span class="p">:</span>
 
-                        <span class="k">if</span> <span class="n">key_b_to_a</span> <span class="ow">in</span> <span class="n">to_load</span><span class="p">:</span>
-
-                            <span class="n">data</span><span class="p">[</span><span class="n">key_b_to_a</span><span class="p">][</span><span class="n">this_uniprot</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                        <span class="n">data</span><span class="p">[</span><span class="n">key_b_to_a</span><span class="p">][</span><span class="n">this_uniprot</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 
             <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
 
@@ -2092,23 +2085,23 @@
 
 
     <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapper_cleanup_timeloop</span><span class="p">,</span> <span class="s1">&#39;stop&#39;</span><span class="p">):</span>
-            
+
             <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapper_cleanup_timeloop</span><span class="o">.</span><span class="n">jobs</span><span class="p">:</span>
-                
+
                 <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-                    
+
                     <span class="n">job</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
                     <span class="n">job</span><span class="o">.</span><span class="n">stopped</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
 
 <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    
+
     <span class="k">if</span> <span class="s1">&#39;mapper&#39;</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
-        
+
         <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;mapper&#39;</span><span class="p">]</span><span class="o">.</span><span class="fm">__del__</span><span class="p">()</span>
-    
+
     <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;mapper&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Mapper</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
@@ -2205,9 +2198,9 @@
 <span class="sd">    Gene Symbols, for miRNAs miRNA names, for complexes a series of</span>
 <span class="sd">    Gene Symbols.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="n">mapper</span> <span class="o">=</span> <span class="n">get_mapper</span><span class="p">()</span>
-    
+
     <span class="k">return</span> <span class="n">mapper</span><span class="o">.</span><span class="n">label</span><span class="p">(</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span>
         <span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span>

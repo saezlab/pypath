@@ -85,14 +85,8 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Release history</a></li>
-</ul>
-
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
             
           
         </div>
@@ -547,7 +541,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Creating data frame from custom annotation.&#39;</span><span class="p">)</span>
-        
+
         <span class="n">header</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s1">&#39;category&#39;</span><span class="p">,</span>
             <span class="s1">&#39;database&#39;</span><span class="p">,</span>
@@ -555,7 +549,7 @@
             <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span>
             <span class="s1">&#39;entity_type&#39;</span><span class="p">,</span>
         <span class="p">]</span>
-        
+
         <span class="n">dtypes</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;category&#39;</span><span class="p">:</span>    <span class="s1">&#39;category&#39;</span><span class="p">,</span>
             <span class="s1">&#39;database&#39;</span><span class="p">:</span>    <span class="s1">&#39;category&#39;</span><span class="p">,</span>
@@ -1579,25 +1573,25 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">entities_by_resource</span><span class="p">(</span><span class="n">entity_types</span> <span class="o">=</span> <span class="n">entity_types</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">get_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">numof_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_entities</span><span class="p">())</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">numof_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">numof_records</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">len</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
 
 
@@ -2257,8 +2251,8 @@
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)):</span>
 
-            <span class="n">this_ifields</span> <span class="o">=</span> <span class="n">ifields</span><span class="p">[:</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">this_fields</span>  <span class="o">=</span>  <span class="n">fields</span><span class="p">[:</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">this_ifields</span> <span class="o">=</span> <span class="n">ifields</span><span class="p">[:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">this_fields</span>  <span class="o">=</span>  <span class="n">fields</span><span class="p">[:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
 
             <span class="n">value_combinations</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
                 <span class="nb">tuple</span><span class="p">(</span><span class="n">annot</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">this_ifields</span><span class="p">)</span>
@@ -3150,7 +3144,7 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The name of this resource abbreviated as `CSPA`.</span>
@@ -3165,7 +3159,7 @@
             <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;CSPA&#39;</span><span class="p">,</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span>
             <span class="n">input_method</span> <span class="o">=</span> <span class="s1">&#39;get_cspa&#39;</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span></div>
 
 
@@ -3570,7 +3564,7 @@
     <span class="k">def</span> <span class="nf">_process_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">annot</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">uniprot</span><span class="p">,</span> <span class="p">{</span><span class="n">annot</span><span class="p">,})</span>
+            <span class="p">(</span><span class="n">uniprot</span><span class="p">,</span> <span class="p">{</span><span class="n">annot</span><span class="p">,</span> <span class="p">})</span>
             <span class="k">for</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">annot</span> <span class="ow">in</span>
             <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="p">)</span>
@@ -3751,7 +3745,7 @@
         <span class="p">)</span>
         <span class="n">original_id</span> <span class="o">=</span> <span class="n">record</span><span class="p">[</span><span class="n">i_id</span><span class="p">]</span>
         <span class="n">uniprots</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">original_id</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
-        
+
         <span class="k">for</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="n">uniprots</span><span class="p">:</span>
 
             <span class="n">annot</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
@@ -4213,7 +4207,7 @@
         <span class="p">])</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">ikeep</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="n">ikeep</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="n">ikeep</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_cols</span><span class="p">()</span>
 
 
@@ -4224,7 +4218,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sets</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="n">name</span><span class="p">,</span>
-                <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_set</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="n">i</span><span class="p">]])</span>
+                <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_set</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]])</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
         <span class="p">)</span>
@@ -4442,31 +4436,31 @@
         <span class="k">if</span> <span class="n">return_table</span><span class="p">:</span>
 
             <span class="k">return</span> <span class="n">tab</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">get_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
             <span class="nb">set</span><span class="p">(</span><span class="n">an</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
             <span class="k">for</span> <span class="n">an</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">annots</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
         <span class="p">))</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">numof_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_entities</span><span class="p">())</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">numof_records</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">an</span><span class="o">.</span><span class="n">numof_records</span><span class="p">()</span> <span class="k">for</span> <span class="n">an</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">annots</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">numof_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annots</span><span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="p">(</span>

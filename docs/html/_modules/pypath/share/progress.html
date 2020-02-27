@@ -85,14 +85,8 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Release history</a></li>
-</ul>
-
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
             
           
         </div>
@@ -188,13 +182,13 @@
 
 
 <div class="viewcode-block" id="Progress"><a class="viewcode-back" href="../../../reference.html#pypath.share.progress.Progress">[docs]</a><span class="k">class</span> <span class="nc">Progress</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    
+
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Before I had my custom progressbar here.</span>
 <span class="sd">    Now it is a wrapper around the great progressbar `tqdm`.</span>
 <span class="sd">    Old implementation moved to `OldProgress` class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">total</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -207,15 +201,15 @@
             <span class="n">unit</span> <span class="o">=</span> <span class="s1">&#39;it&#39;</span><span class="p">,</span>
             <span class="n">off</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        
+
         <span class="k">if</span> <span class="n">off</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">off</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;progressbars&#39;</span><span class="p">)</span>
-            
+
         <span class="k">else</span><span class="p">:</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">off</span> <span class="o">=</span> <span class="n">off</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="p">(</span>
             <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">total</span> <span class="o">/</span> <span class="mi">100</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">interval</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">interval</span>
@@ -227,112 +221,112 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_update_interval</span> <span class="o">=</span> <span class="mf">0.1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_printed_value</span> <span class="o">=</span> <span class="mi">0</span>
-        
+
         <span class="k">if</span> <span class="n">init</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">:</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">init_tqdm</span><span class="p">()</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
         <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
         <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
         <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
-    
-    
+
+
 <div class="viewcode-block" id="Progress.init_tqdm"><a class="viewcode-back" href="../../../reference.html#pypath.share.progress.Progress.init_tqdm">[docs]</a>    <span class="k">def</span> <span class="nf">init_tqdm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a tqdm instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">tqdm</span> <span class="o">=</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="n">total</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">total</span><span class="p">,</span>
                               <span class="n">desc</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">),</span>
                               <span class="n">unit_scale</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                               <span class="n">unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_updated</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Progress.step"><a class="viewcode-back" href="../../../reference.html#pypath.share.progress.Progress.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;busy&#39;</span><span class="p">,</span> <span class="n">force</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates the progressbar by the desired number of steps.</span>
-<span class="sd">        </span>
+
 <span class="sd">        :param int step: Number of steps or items.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">done</span> <span class="o">+=</span> <span class="n">step</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">:</span>
-            
+
             <span class="k">return</span>
-        
+
         <span class="k">if</span> <span class="n">force</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">done</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">&lt;</span> <span class="mf">1.0</span> <span class="ow">and</span> \
             <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_updated</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_update_interval</span><span class="p">):</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
-            
+
             <span class="n">this_update</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">done</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_printed_value</span><span class="p">)</span>
-            
+
             <span class="k">if</span> <span class="n">this_update</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">tqdm</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">tqdm</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">tqdm</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">this_update</span><span class="p">))</span>
-                
+
             <span class="bp">self</span><span class="o">.</span><span class="n">last_printed_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">done</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">last_updated</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Progress.terminate"><a class="viewcode-back" href="../../../reference.html#pypath.share.progress.Progress.terminate">[docs]</a>    <span class="k">def</span> <span class="nf">terminate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;finished&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Terminates the progressbar and destroys the tqdm object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">:</span>
-            
+
             <span class="k">return</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">done</span><span class="p">,</span> <span class="n">force</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">status</span> <span class="o">=</span> <span class="n">status</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tqdm</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
-    
+
 <div class="viewcode-block" id="Progress.set_total"><a class="viewcode-back" href="../../../reference.html#pypath.share.progress.Progress.set_total">[docs]</a>    <span class="k">def</span> <span class="nf">set_total</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">total</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Changes the total value of the progress bar.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">:</span>
-            
+
             <span class="k">return</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="n">total</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tqdm</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="n">total</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="Progress.set_done"><a class="viewcode-back" href="../../../reference.html#pypath.share.progress.Progress.set_done">[docs]</a>    <span class="k">def</span> <span class="nf">set_done</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">done</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the position of the progress bar.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">off</span><span class="p">:</span>
-            
+
             <span class="k">return</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="n">done</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tqdm</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">done</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tqdm</span><span class="o">.</span><span class="n">last_print_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">done</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="Progress.set_status"><a class="viewcode-back" href="../../../reference.html#pypath.share.progress.Progress.set_status">[docs]</a>    <span class="k">def</span> <span class="nf">set_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Changes the prefix of the progressbar.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">off</span> <span class="ow">and</span> <span class="n">status</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">:</span>
-            
+
             <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tqdm</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_desc</span><span class="p">())</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tqdm</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span></div>
-    
+
 <div class="viewcode-block" id="Progress.get_desc"><a class="viewcode-back" href="../../../reference.html#pypath.share.progress.Progress.get_desc">[docs]</a>    <span class="k">def</span> <span class="nf">get_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a formatted string of the description, consisted of</span>
@@ -340,7 +334,7 @@
 <span class="sd">        within the life of the progressbar, while the status is there</span>
 <span class="sd">        to give information about the current stage of the task.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s%s%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
             <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
