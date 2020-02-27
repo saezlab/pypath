@@ -93,23 +93,23 @@ def hi_iii():
         'form[request_file_format]': 'psi',
     }
     c = curl.Curl(url, silent = False, large = True, post = post_data)
-    
+
     for row in c.result:
-        
+
         if not row.strip():
-            
+
             continue
-        
+
         id_a, id_b, rest = row.split(' ', maxsplit = 2)
         id_a, isoform_a = id_a.split('-') if '-' in id_a else (id_a, 1)
         id_b, isoform_b = id_b.split('-') if '-' in id_b else (id_b, 1)
-        
+
         sc = rescore.search(rest)
         score = float(sc.groups()[0]) if sc else None
         screens = tuple(
             int(i) for i in rescreens.search(rest).groups()[0].split(',')
         )
-        
+
         yield HiiiiInteraction(
             id_a = id_a[10:],
             id_b = id_b[10:],
@@ -122,11 +122,11 @@ def hi_iii():
 
 def lit_bm_13_interactions():
     """
-    Downloads and processes Lit-BM-13 dataset, the 2013 version of the 
+    Downloads and processes Lit-BM-13 dataset, the 2013 version of the
     high confidence literature curated interactions from CCSB.
     Returns list of interactions.
     """
-    
+
     LitBm13Interaction = collections.namedtuple(
         'LitBm13Interaction',
         [
@@ -136,16 +136,16 @@ def lit_bm_13_interactions():
             'genesymbol_b',
         ]
     )
-    
+
     url = urls.urls['hid']['lit-bm-13']
     c = curl.Curl(url, silent = False, large = True)
-    
+
     _ = next(c.result)
-    
+
     for row in c.result:
-        
+
         row = row.strip().split('\t')
-        
+
         yield LitBm13Interaction(
             entrez_a = row[0],
             entrez_b = row[2],
@@ -156,11 +156,11 @@ def lit_bm_13_interactions():
 
 def lit_bm_17_interactions():
     """
-    Downloads and processes Lit-BM-13 dataset, the 2017 version of the 
+    Downloads and processes Lit-BM-13 dataset, the 2017 version of the
     high confidence literature curated interactions from CCSB.
     Returns list of interactions.
     """
-    
+
     LitBm17Interaction = collections.namedtuple(
         'LitBm17Interaction',
         [
@@ -170,25 +170,25 @@ def lit_bm_17_interactions():
             'score',
         ]
     )
-    
+
     url = urls.urls['hid']['lit-bm-17']
     c = curl.Curl(url, silent = False)
     data = c.result
-    
+
     c = curl.Curl(url, silent = False, large = True)
-    
+
     _ = next(c.result)
-    
+
     for row in c.result:
-        
+
         row = row.strip().split('\t')
-        
+
         id_a = row[0][10:]
         id_b = row[1][10:]
-        
+
         pubmed = row[8][7:]
         score = float(row[14][13:])
-        
+
         yield LitBm17Interaction(
             id_a = id_a,
             id_b = id_b,

@@ -18,7 +18,6 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-
 import importlib
 
 
@@ -31,35 +30,35 @@ def get_method(module_name, method_name = None):
     name. E.g. for ``'uniprot.all_uniprots'`` it returns the ``all_uniprots``
     method from the ``pypath.inputs.uniprot`` module.
     """
-    
+
     if not method_name:
-        
+
         module_method = module_name.rsplit('.', maxsplit = 1)
         method_name = module_method[-1]
         module_name = module_method[-2] if len(module_method) > 1 else 'main'
-    
+
     module_name = module_name.rsplit('.', maxsplit = 1)[-1]
     module_name = 'pypath.inputs.%s' % module_name
-    
+
     try:
-        
+
         mod = importlib.import_module(module_name)
-        
+
     except:
-        
+
         session.get_log().msg(
             msg = 'Could not import module `%s`.' % module_name,
             label = 'inputs',
         )
-        
+
     try:
-        
+
         method = getattr(mod, method_name)
-        
+
         return method
-        
+
     except:
-        
+
         session.get_log().msg(
             msg = 'Could not find method `%s` in module `%s`.' % (
                 method_name,

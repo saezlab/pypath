@@ -279,9 +279,9 @@ def signor_pathways(**kwargs):
 
         proteins_pathways[full] = set()
         interactions_pathways[full] = set()
-        
+
         for row in data:
-            
+
             for uniprot1, uniprot2 in itertools.product(
                 mapping.map_name(row[4], 'uniprot', 'uniprot'),
                 mapping.map_name(row[8], 'uniprot', 'uniprot'),

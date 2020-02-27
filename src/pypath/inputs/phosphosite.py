@@ -707,7 +707,7 @@ def phosphosite_interactions(cache = True, ncbi_tax_id = 9606):
     noev = []
     noth = []
     edges = []
-    
+
     for c in xmlroot.findall(bpprefix + 'Catalysis'):
         if rdfprefix + 'resource' in c.find(bpprefix + 'controller').attrib:
             src = 'po_' + \
@@ -785,35 +785,35 @@ def phosphosite_interactions(cache = True, ncbi_tax_id = 9606):
                 norefs.append(c)
             if len(evs) == 0 and len(pmids) == 0:
                 noth.append(c)
-    
+
     if ncbi_tax_id:
-        
+
         all_uniprots = uniprot_input.all_uniprots(organism = ncbi_tax_id)
-    
+
     for e in edges:
-        
+
         if (
             ncbi_tax_id and (
                 e['src']['id'] not in all_uniprots or
                 e['tgt']['id'] not in all_uniprots
             )
         ):
-            
+
             continue
-        
+
         this_iaction = [
             e['src']['id'], e['tgt']['id'], e['src']['species'],
             e['tgt']['species'], ';'.join(e['evs']), ';'.join(e['pmids'])
         ]
-        
+
         if len(this_iaction[-1]) > 0:
-            
+
             result_curated.append(this_iaction)
-            
+
         else:
-            
+
             result_noref.append(this_iaction)
-    
+
     pickle.dump(result_curated, open(curated_cache, 'wb'))
     pickle.dump(result_noref, open(noref_cache, 'wb'))
     return result_curated, result_noref
@@ -826,41 +826,41 @@ def phosphosite_interactions_new(cache = True):
     Processes BioPAX format.
     Returns list of interactions.
     """
-    
+
     curated_cache = urls.files['phosphosite']['curated']
     noref_cache = urls.files['phosphosite']['noref']
-    
+
     if (
         cache and
         os.path.exists(curated_cache) and
         os.path.exists(noref_cache)
     ):
-        
+
         with pen(curated_cache, 'rb') as fp:
-            
+
             data_curated = pickle.load(fp)
-        
+
         with pen(noref_cache, 'rb') as fp:
-            
+
             data_noref = pickle.load(fp)
-            
+
         return data_curated, data_noref
-    
-    
+
+
     def collect_items(tagname, process_method):
-        
+
         result = {}
-        
+
         for p in xmlroot.iter(tagname):
-            
+
             key, value = process_method(p)
             result[key] = value
-        
+
         return result
-    
-    
+
+
     def process_protein(protein):
-        
+
         protein_id = protein.attrib['%sID' % rdfprefix]
         database = (
             protein.find(
@@ -892,38 +892,38 @@ def phosphosite_interactions_new(cache = True):
             )
 
         return protein_id, (databas, identifier, organism)
-    
+
     def process_site(site):
-        
+
         site_id = site.attrib['%sID' % rdfprefix]
         site_offset = site.find('%ssequencePosition').text
-        
+
         return site_id, site_offset
-    
-    
+
+
     def process_modification(seqmodvoc):
-        
+
         mod_id = seqmodvoc.attrib['%sID' % rdfprefix]
         residue, mod = mod_id.split('_').split('-')
-        
+
         return mod_id, (residue, mod)
-    
-    
+
+
     def get_resource(elem, resource_tag):
-        
+
         res_attr = '%sresource' % rdfprefix
-        
+
         if res_attr in elem.attrib:
-            
+
             return elem.attrib[res_attr][1:]
-            
+
         else:
-            
+
             return elem.find(resource_tag).attrib['%sID' % rdfprefix]
-    
-    
+
+
     def process_feature(feature):
-        
+
         feature_id = feature.attrib['%sID' % rdfprefix]
         site = get_resource(
             feature.find('%sfeatureLocation' % bpprefix),
@@ -933,22 +933,22 @@ def phosphosite_interactions_new(cache = True):
             feature.find('%smodificationType' % bpprefix),
             '%sSequenceModificationVocabulary' % bpprefix,
         )
-        
+
         return feature_id, (site, modification)
-    
-    
+
+
     result_curated = []
     result_noref = []
     bpprefix = '{http://www.biopax.org/release/biopax-level3.owl#}'
     rdfprefix = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
-    
+
     url = urls.urls['psite_bp']['url']
     c = curl.Curl(url, silent = False, large = True)
     bpax = c.gzfile
     xml = ET.parse(bpax)
     xmlroot = xml.getroot()
-    
-    
+
+
     proteins = collect_items(
         '%sProtein' % bpprefix,
         process_method = process_protein,
@@ -965,7 +965,7 @@ def phosphosite_interactions_new(cache = True):
         '%sModificationFeature' % bpprefix,
         process_method = process_feature,
     )
-    
+
     evidences = {}
     for p in xmlroot.iter(bpprefix + 'EvidenceCodeVocabulary'):
         evid = p.attrib[rdfprefix + 'ID'].split('_')[1]
@@ -978,7 +978,7 @@ def phosphosite_interactions_new(cache = True):
     noev = []
     noth = []
     edges = []
-    
+
     for c in xmlroot.findall(bpprefix + 'Catalysis'):
         if rdfprefix + 'resource' in c.find(bpprefix + 'controller').attrib:
             src = 'po_' + \
@@ -1087,14 +1087,14 @@ def phosphosite_interactions_curated(ncbi_tax_id = 9606):
     from preprocessed cache file if available.
     Returns list of interactions.
     """
-    
+
     curated_cache = urls.files['phosphosite']['curated']
     if not os.path.exists(curated_cache):
         curated, noref = phosphosite_interactions(ncbi_tax_id = ncbi_tax_id)
         result = curated
     else:
         result = pickle.load(open(curated_cache, 'rb'))
-    
+
     return _phosphosite_filter_organism(result, ncbi_tax_id)
 
 

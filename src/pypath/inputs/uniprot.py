@@ -42,7 +42,7 @@ _last_used = {}
 
 
 def _all_uniprots(organism = 9606, swissprot = None):
-    
+
     swissprot = 'yes' if swissprot == True else swissprot
     rev = '' if not swissprot else ' AND reviewed: %s' % swissprot
     url = urls.urls['uniprot_basic']['url']
@@ -53,19 +53,19 @@ def _all_uniprots(organism = 9606, swissprot = None):
     }
     c = curl.Curl(url, get = get, silent = False)
     data = c.result
-    
+
     return [
         l.strip() for l in data.split('\n')[1:] if l.strip()
     ]
 
 
 def all_uniprots(organism = 9606, swissprot = None):
-    
+
     return get_db(organism = organism, swissprot = swissprot)
 
 
 def init_db(organism = 9606, swissprot = None):
-    
+
     _logger._log(
         'Loading list of all UniProt IDs for '
         'organism `%u` (only SwissProt: %s).' % (
@@ -73,9 +73,9 @@ def init_db(organism = 9606, swissprot = None):
             str(swissprot == True),
         )
     )
-    
+
     key = (organism, swissprot == True)
-    
+
     globals()['db'][key] = _all_uniprots(
         organism = organism,
         swissprot = swissprot,
@@ -84,15 +84,15 @@ def init_db(organism = 9606, swissprot = None):
 
 
 def get_db(organism = 9606, swissprot = None):
-    
+
     key = (organism, swissprot == True)
-    
+
     if key not in globals()['db']:
-        
+
         init_db(organism = organism, swissprot = swissprot)
-    
+
     globals()['_last_used'][key] = time.time()
-    
+
     return globals()['db'][key]
 
 
@@ -100,7 +100,7 @@ def is_uniprot(name, organism = 9606, swissprot = None):
     """
     Tells if ``name`` is a UniProt ID of ``organism``.
     """
-    
+
     return name in get_db(organism = organism, swissprot = swissprot)
 
 
@@ -112,22 +112,22 @@ _cleanup_timeloop = timeloop.Timeloop()
     )
 )
 def _cleanup():
-    
+
     keys = list(globals()['db'].keys())
-    
+
     for key in keys:
-        
+
         if time.time() - globals()['_last_used'][key] > _lifetime:
-            
+
             _remove(key)
 
 _cleanup_timeloop.start(block = False)
 
 
 def _remove(key):
-    
+
     if key in globals()['db']:
-        
+
         _logger._log(
             'Removing UniProt ID list for '
             'organism `%u` (only SwissProt: %s)' % (
@@ -136,7 +136,7 @@ def _remove(key):
             )
         )
         del globals()['db'][key]
-    
+
     if key in globals()['_last_used']:
-        
+
         del globals()['_last_used'][key]
