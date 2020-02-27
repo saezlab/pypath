@@ -42,7 +42,7 @@ class DatabaseDefinition(object):
 
         self.label = label
 
-        _def = kwargs.pop('def', {}):
+        _def = kwargs.pop('def', {})
 
         for k, v in itertools.chain(
             iteritems(kwargs),
@@ -54,7 +54,7 @@ class DatabaseDefinition(object):
 
     def __repr__(self):
 
-        return '<%s database: %s>' % (self.class.capitalize(), self.label)
+        return '<%s database: %s>' % (self.dbclass.capitalize(), self.label)
 
 
     @classmethod
@@ -102,7 +102,9 @@ class DatabaseDefinition(object):
             
         else:
             
-            return json.load(path)
+            with open(path) as json_file:
+                
+                return json.load(json_file)
 
 
     @classmethod
@@ -125,11 +127,11 @@ class DatabaseClass(object):
     but here the module and the class implementing the database are defined.
     """
 
-    def __init__(self, label, module, dbclass):
+    def __init__(self, module, method, label = None):
 
         self.label = label
         self.module = module
-        self.dbclass = dbclass
+        self.method = method
     
     
     def __repr__(self):
@@ -138,18 +140,18 @@ class DatabaseClass(object):
             '<Database class `%s`, module: `%s`, class or method: `%s`>' % (
                 self.label,
                 self.module,
-                self.dbclass.__name__
-                    if hasattr(self.dbclass, '__name__') else
-                self.dbclass,
+                self.method.__name__
+                    if hasattr(self.method, '__name__') else
+                self.method,
             )
         )
 
 
     def get_class(self):
 
-        if callable(self.dbclass):
+        if callable(self.method):
 
-            return self.dbclass
+            return self.method
 
         else:
 
@@ -157,16 +159,16 @@ class DatabaseClass(object):
 
                 mod = importlib.import_module(self.module)
                 
-                if hasattr(mod, self.dbclass):
+                if hasattr(mod, self.method):
                     
-                    return getattr(mod, self.dbclass)
+                    return getattr(mod, self.method)
                     
                 else:
                     
                     _console(
                         'Module `%s` has no class or method `%s`.' % (
                             self.module,
-                            self.dbclass,
+                            self.method,
                         )
                     )
                 
@@ -184,9 +186,11 @@ class DatabaseClass(object):
     
     
     @classmethod
-    def from_dict(cls, label, dct):
+    def from_dict(cls, dct, label = None):
         
-        dct['label'] = label
+        if label:
+            
+            dct['label'] = label
         
         return cls(**dct)
 
@@ -194,12 +198,12 @@ class DatabaseClass(object):
 class DatabaseDefinitionManager(session.Logger):
     
     
-    def __init__(self, classes, databases):
+    def __init__(self, classes = None, databases = None):
         
         session.Logger.__init__(self, name = 'db_define')
         
-        self._classes = classes
-        self._databases = databases
+        self._classes = classes or self._default_json('classes')
+        self._databases = databases or self._default_json('builtins')
         
         self.load()
     
@@ -225,13 +229,6 @@ class DatabaseDefinitionManager(session.Logger):
                 'Reading database definitions from `%s`' % self._databases
             )
             self._databases = DatabaseDefinition._read_json(self._databases)
-            if os.path.exists(self._classes):
-                
-                self._classes = json.load(self._classes)
-                
-            else:
-                
-                self._console('No such file: `%s`.' % self._classes)
         
         self.classes = dict(
             (
@@ -247,4 +244,87 @@ class DatabaseDefinitionManager(session.Logger):
                 DatabaseDefinition.from_dict(label = label, dct = param)
             )
             for label, param in iteritems(self._databases)
+        )
+    
+    
+    def get_db_class(self, label):
+        
+        if label in self.classes:
+            
+            return self.classes[label]
+            
+        else:
+            
+            self._log('No such database class: `%s`.' % label)
+    
+    
+    def get_db_definition(self, label):
+        
+        if label not in self.databases:
+            
+            self._log(
+                'Warning: no parameters for label `%s`, '
+                'returning empty dict.' % label
+            )
+        
+        return self.databases[label] if label in self.databases else {}
+    
+    
+    def get_class(self, label):
+        
+        dbclass = self.get_db_class(label)
+        
+        if dbclass:
+            
+            return dbclass.get_class()
+    
+    
+    def class_and_param(self, label):
+        """
+        For a database definition label returns the class or method and its
+        arguments which are necessary to build the database according to
+        the definition.
+        """
+        
+        db_def = self.get_db_definition(label)
+        
+        if db_def:
+            
+            db_class = db_def.dbclass
+            
+            if not callable(db_class):
+                
+                if isinstance(db_class, dict):
+                    
+                    db_class = DatabaseClass(**db_class)
+                    
+                elif isinstance(db_class, common.basestring):
+                    
+                    db_class = self.get_db_class(db_class)
+        
+        return db_class, db_def
+    
+    
+    def build(self, label):
+        """
+        For a database definition label returns an instance of the database:
+        creates an instance of the class or calls the method with the
+        arguments in the database definition. Returns the database instance.
+        """
+        
+        db_class, db_def = self.class_and_param(label)
+        
+        if db_class:
+            
+            return db_class(**db_def)
+    
+    
+    @staticmethod
+    def _default_json(name):
+        
+        return os.path.join(
+            common.ROOT,
+            'omnipath',
+            'databases',
+            '%s.json' % name,
         )
