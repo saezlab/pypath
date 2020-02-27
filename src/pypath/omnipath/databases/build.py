@@ -31,6 +31,8 @@ def build(dbclass, dbdef):
     should be managed by the ``pypath.omnipath.app`` module.
     """
     
+    dbclass = dbclass if callable(dbclass) else dbclass.get_class()
+    
     build_method = (
         dbclass
             if not dbdef.get('init') else

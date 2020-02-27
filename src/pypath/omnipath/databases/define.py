@@ -22,7 +22,7 @@
 
 from future.utils import iteritems
 
-import importlib as imp
+import importlib
 import os
 import itertools
 import json

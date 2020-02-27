@@ -35,7 +35,7 @@ def get_method(module_name, method_name = None):
     method from the ``pypath.inputs.uniprot`` module.
     """
     
-    _log('Selecting input method: module `%s`, method `%s`.' % (
+    _log('Selecting input method (step 1): module `%s`, method `%s`.' % (
             module_name,
             method_name,
         )
@@ -50,7 +50,7 @@ def get_method(module_name, method_name = None):
     module_name = module_name.rsplit('.', maxsplit = 1)[-1]
     module_name = 'pypath.inputs.%s' % module_name
     
-    _log('Selecting input method: module `%s`, method `%s`.' % (
+    _log('Selecting input method (step 2): module `%s`, method `%s`.' % (
             module_name,
             method_name,
         )
