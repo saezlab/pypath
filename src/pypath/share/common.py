@@ -203,7 +203,7 @@ def is_float(num):
     Tells if a string represents a floating point number,
     i.e. it can be converted by `float`.
     """
-    
+
     return bool(refloat.match(num))
 
 
@@ -212,7 +212,7 @@ def is_int(num):
     Tells if a string represents an integer,
     i.e. it can be converted by `int`.
     """
-    
+
     return bool(reint.match(num))
 
 
@@ -221,7 +221,7 @@ def float_or_nan(num):
     Returns `num` converted from string to float if `num` represents a
     float otherwise `numpy.nan`.
     """
-    
+
     return float(num) if is_float(num) else np.nan
 
 
@@ -231,21 +231,21 @@ def to_set(var):
     otherwise it creates a single element set out of it.
     If `var` is None returns empty set.
     """
-    
+
     if isinstance(var, set):
-        
+
         return var
-        
+
     elif var is None:
-        
+
         return set()
-        
+
     elif not isinstance(var, basestring) and hasattr(var, '__iter__'):
-        
+
         return set(var)
-        
+
     else:
-        
+
         return {var}
 
 
@@ -254,17 +254,17 @@ def to_list(var):
     Makes sure `var` is a list otherwise creates a single element list
     out of it. If `var` is None returns empty list.
     """
-    
+
     if isinstance(var, list):
-        
+
         return var
-        
+
     elif var is None:
-        
+
         return []
-        
+
     else:
-        
+
         return [var]
 
 
@@ -991,18 +991,18 @@ def swap_dict(d):
     _d = {}
 
     for key, vals in iteritems(d):
-        
+
         vals = [vals] if type(vals) in simple_types else vals
-        
+
         for val in vals:
-            
+
             if val not in _d:
                 _d[val] = set([])
-            
+
             _d[val].add(key)
 
     if all(len(v) <= 1 for v in _d.values()):
-        
+
         _d = dict((k, list(v)[0]) for k, v in iteritems(_d) if len(v))
 
     return _d
@@ -1231,9 +1231,9 @@ def paginate(lst, size = 10):
     The last section might be shorter than ``size``.
     Following https://stackoverflow.com/a/3744502/854988.
     """
-    
+
     for i in xrange((len(lst) // size) + 1):
-        
+
         yield lst[size * i:size * (i + 1)]
 
 
@@ -1245,19 +1245,19 @@ def shared_unique(by_group, group, op = 'shared'):
     assigned to the other keys, depending on the operator ``op``.
     This method can be used among other things to find the shared and
     unique entities across resources.
-    
+
     :arg str op:
         Either `shared` or `unique`.
     """
-    
+
     if group not in by_group:
-        
+
         warnings.warn(
             'Group `%s` missing from the dict of groups!' % group
         )
-    
+
     _op = operator.sub if op == 'unique' else operator.and_
-    
+
     return _op(
         by_group[group] if group in by_group else set(),
         set.union(*(
@@ -1277,7 +1277,7 @@ def shared_elements(by_group, group):
     This method can be used among other things to find the shared entities
     across resources.
     """
-    
+
     return shared_unique(
         by_group = by_group,
         group = group,
@@ -1293,7 +1293,7 @@ def unique_elements(by_group, group):
     other keys. This method can be used among other things to find the
     unique entities across resources.
     """
-    
+
     return shared_unique(
         by_group = by_group,
         group = group,
@@ -1309,7 +1309,7 @@ def n_shared_elements(by_group, group):
     This method can be used among other things to count the shared entities
     across resources.
     """
-    
+
     return len(shared_elements(by_group = by_group, group = group))
 
 
@@ -1321,7 +1321,7 @@ def n_unique_elements(by_group, group):
     This method can be used among other things to count the unique entities
     across resources.
     """
-    
+
     return len(unique_elements(by_group = by_group, group = group))
 
 
@@ -1331,9 +1331,9 @@ def shared_unique_foreach(by_group, op = 'shared', counts = False):
     either shared or unique elements across all *set*s, depending on
     the operation ``op``.
     """
-    
+
     method = len if counts else lambda x: x
-    
+
     return dict(
         (
             label,
@@ -1351,7 +1351,7 @@ def n_shared_unique_foreach(by_group, op = 'shared'):
     the counts of either the shared or unique elements across all *set*s,
     depending on the operation ``op``.
     """
-    
+
     return shared_unique_foreach(
         by_group = by_group,
         op = 'shared',
@@ -1360,22 +1360,22 @@ def n_shared_unique_foreach(by_group, op = 'shared'):
 
 
 def shared_foreach(by_group):
-    
+
     return shared_unique_foreach(by_group = by_group, op = 'shared')
 
 
 def unique_foreach(by_group):
-    
+
     return shared_unique_foreach(by_group = by_group, op = 'unique')
 
 
 def n_shared_foreach(by_group):
-    
+
     return n_shared_unique_foreach(by_group = by_group, op = 'shared')
 
 
 def n_unique_foreach(by_group):
-    
+
     return n_shared_unique_foreach(by_group = by_group, op = 'unique')
 
 
@@ -1383,7 +1383,7 @@ def dict_union(dict_of_sets):
     """
     For a *dict* of *set*s returns the union of the values.
     """
-    
+
     return set.union(*dict_of_sets.values()) if dict_of_sets else set()
 
 
@@ -1391,10 +1391,10 @@ def dict_counts(dict_of_sets):
     """
     For a *dict* of *set*s or other values with ``__len__`` returns a
     *dict* of numbers with the length of each value in the original *dict*.
-    
+
     This function is recursively works on dicts of dicts.
     """
-    
+
     return dict(
         (
             key,
@@ -1411,7 +1411,7 @@ def dict_counts(dict_of_sets):
 def dict_expand_keys(dct, depth = 1, front = True):
     """
     From a *dict* with *tuple* keys builds a dict of dicts.
-    
+
     :arg dict dct:
         A *dict* with tuple keys (if keys are not tuples ``dct`` will be
         returned unchanged).
@@ -1423,37 +1423,37 @@ def dict_expand_keys(dct, depth = 1, front = True):
         If ``True`` the tuple keys will be chopped from the front, otherwise
         from their ends.
     """
-    
+
     if depth == 0:
-        
+
         return dct
-    
+
     new = {}
-    
+
     for key, val in iteritems(dct):
-        
+
         if not isinstance(key, tuple):
-            
+
             new[key] = val
-        
+
         elif len(key) == 1:
-            
+
             new[key[0]] = val
-        
+
         else:
-            
+
             outer_key = key[0] if front else key[:-1]
             inner_key = key[1:] if front else key[-1]
-            
+
             if len(inner_key) == 1:
-                
+
                 inner_key = inner_key[0]
-            
+
             sub_dct = new.setdefault(outer_key, {})
             sub_dct[inner_key] = val
-    
+
     if depth > 1:
-        
+
         new = (
             dict(
                 (
@@ -1465,7 +1465,7 @@ def dict_expand_keys(dct, depth = 1, front = True):
                 if front else
             dict_expand_keys(new, depth = depth - 1, front = False)
         )
-    
+
     return new
 
 
@@ -1477,7 +1477,7 @@ def dict_collapse_keys(
     ):
     """
     From a dict of dicts builds a dict with tuple keys.
-    
+
     :arg dict dct:
         A dict of dicts (if values are not dicts it will be returned
         unchanged).
@@ -1494,9 +1494,9 @@ def dict_collapse_keys(
         the outer key tuples. If ``False`` the inner tuple keys will be added
         as an element of the tuple key i.e. tuple in tuple.
     """
-    
+
     if not front:
-        
+
         # this is difficult to implement because we have no idea about
         # the depth; this version ensures an even key length for the
         # tuple keys; another alterntive would be to iterate recursively
@@ -1507,21 +1507,21 @@ def dict_collapse_keys(
             default = 0
         )
         return dict_expand_keys(dct, depth = maxdepth - depth, front = True)
-    
+
     if not any(isinstance(val, dict) for val in dct.values()):
-        
+
         return dct
-    
+
     new = {}
-    
+
     for key, val in iteritems(dct):
-        
+
         key = key if isinstance(key, tuple) else (key,)
-        
+
         if isinstance(val, dict):
-            
+
             for key1, val1 in iteritems(val):
-                
+
                 _key = key + (
                     key1
                         if (
@@ -1531,43 +1531,43 @@ def dict_collapse_keys(
                     (key1,)
                 )
                 new[_key] = val1
-            
+
         else:
-            
+
             new[key] = val
-    
+
     if depth > 1:
-        
+
         new = dict_collapse_keys(new, depth = depth - 1)
-    
+
     return new
 
 
 def shared_unique_total(by_group, op = 'shared'):
-    
+
     counts = collections.Counter(itertools.chain(*by_group.values()))
     _op = operator.eq if op == 'unique' else operator.gt
-    
+
     return {key for key, val in iteritems(counts) if _op(val, 1)}
 
 
 def shared_total(by_group):
-    
+
     return shared_unique_total(by_group = by_group, op = 'shared')
 
 
 def unique_total(by_group):
-    
+
     return shared_unique_total(by_group = by_group, op = 'unique')
 
 
 def n_shared_total(by_group):
-    
+
     return len(shared_total(by_group))
 
 
 def n_unique_total(by_group):
-    
+
     return len(unique_total(by_group))
 
 
@@ -1576,7 +1576,7 @@ def dict_subtotals(dct):
     For a dict of dicts of sets returns a dict with keys of the outer dict
     and values the union of the sets in each of the inner dicts.
     """
-    
+
     return dict(
         (
             key,
@@ -1590,7 +1590,7 @@ def dict_percent(dict_of_counts, total):
     """
     For a *dict* of counts and a total count creates a *dict* of percentages.
     """
-    
+
     return dict(
         (key, (val / total if total != 0 else 0) * 100)
         for key, val in iteritems(dict_of_counts)
@@ -1598,10 +1598,10 @@ def dict_percent(dict_of_counts, total):
 
 
 def dict_set_percent(dict_of_sets):
-    
+
     total = len(dict_union(dict_of_sets))
     counts = dict_counts(dict_of_sets)
-    
+
     return dict_percent(counts, total)
 
 
@@ -1610,9 +1610,9 @@ def df_memory_usage(df, deep = True):
     Returns the memory usage of a ``pandas.DataFrame`` as a string.
     Modified from ``pandas.DataFrame.info``.
     """
-    
+
     counts = df._data.get_dtype_counts()
-    
+
     size_qualifier = (
         '+'
             if (
@@ -1621,17 +1621,17 @@ def df_memory_usage(df, deep = True):
             ) else
         ''
     )
-    
+
     mem_usage = df.memory_usage(index = True, deep = deep).sum()
-    
+
     for unit in ['bytes', 'KB', 'MB', 'GB', 'TB']:
-        
+
         if mem_usage < 1024.0:
-            
+
             return '%3.1f%s %s' % (mem_usage, size_qualifier, unit)
-        
+
         mem_usage /= 1024.0
-    
+
     return '%3.1f%s PB' % (mem_usage, size_qualifier)
 
 
@@ -1640,12 +1640,12 @@ def sum_dicts(*args):
     For dicts of numbers returns a dict with the sum of the numbers from
     all dicts for all keys.
     """
-    
+
     args = [
         collections.defaultdict(int, d)
         for d in args
     ]
-    
+
     return dict(
         (
             key,
@@ -1716,9 +1716,9 @@ def combine_attrs(attrs, num_method = max):
     # merge numeric values
     if type(attrs[0]) in numeric_types and type(attrs[1]) in numeric_types:
         return num_method(attrs)
-    
+
     attrs = list(attrs)
-    
+
     # in case one is list other is set
     attrs[0], attrs[1] = list_or_set(attrs[0], attrs[1])
 
@@ -1775,18 +1775,18 @@ def combine_attrs(attrs, num_method = max):
 
     # in case the objects have `__add__()` method:
     if hasattr(attrs[0], '__add__'):
-        
+
         return attrs[0] + attrs[1]
 
 
 def _add_method(cls, method_name, method, signature = None, doc = None):
-    
+
     method.__name__ = method_name
-    
+
     if signature and hasattr(inspect, 'Signature'): # Py2
-        
+
         if not isinstance(signature, inspect.Signature):
-            
+
             signature = inspect.Signature([
                 inspect.Parameter(
                     name = param[0],
@@ -1799,29 +1799,29 @@ def _add_method(cls, method_name, method, signature = None, doc = None):
                 )
                 for param in signature
             ])
-        
+
         method.__signature__ = signature
-    
+
     if doc:
-        
+
         method.__doc__ = doc
-    
+
     setattr(cls, method_name, method)
 
 
 def sets_to_sorted_lists(obj):
-    
+
     if isinstance(obj, dict):
-        
+
         return dict(
             (k, sets_to_sorted_list(v))
             for k, v in iteritems(obj)
         )
-        
+
     elif isinstance(obj, (list, set, tuple)):
-        
+
         return sorted(obj)
-        
+
     else:
-        
+
         return obj
