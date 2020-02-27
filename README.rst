@@ -607,7 +607,7 @@ segment in **UniProt** protein sequences while being aware of isoforms.
 Tissue expression
 -----------------
 
-For 3 protein expression databases there are functions and modules for
+For three protein expression databases there are functions and modules for
 downloading and combining the expression data with the network. These are the
 Human Protein Atlas, the ProteomicsDB and GIANT. The ``giant`` and
 ``proteomicsdb`` modules can be used also as stand alone Python clients for
@@ -640,8 +640,8 @@ Technical
 
 The module ``pypath.curl`` provides a very flexible **download manager**
 built on top of ``pycurl``. The classes ``pypath.curl.Curl()`` and
-``pypath.curl.FileOpener`` accept numerous arguments, try to deal in a smart
-way with local **cache,** authentication, redirects, uncompression, character
+``pypath.curl.FileOpener`` accept numerous arguments to deal in a smart
+way with local **cache**, authentication, redirects, uncompression, character
 encodings, FTP and HTTP transactions, and many other stuff. Cache can grow to
 several GBs, and takes place in ``~/.pypath/cache`` by default. If you
 experience issues using ``pypath`` these are most often related to failed
@@ -657,7 +657,7 @@ The ``pypath.session`` and ``pypath.log`` modules take care of setting up
 session level parameters and logging. Each session has a random 5 character
 identifier e.g. ``y5jzx``. The default log file in this case is
 ``pypath_log/pypath-y5jzx.log``. The log messages are flushed every 2 seconds
-by default. You can always change these things by the ``settings`` module.
+by default. You can always change these things using the ``settings`` module.
 In this module you can get and set the values of various parameters using
 the ``pypath.settings.setup()`` and the ``pypath.settings.get()`` methods.
 

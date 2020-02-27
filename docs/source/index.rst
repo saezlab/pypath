@@ -2,28 +2,58 @@
 *pypath:* A Python module for molecular signaling prior knowledge processing
 ############################################################################
 
+    **Important:** New module structure and new network API
 
-:note: ``pypath`` supports both Python 2.7 and Python 3.6+. In the beginning,
-    pypath has been developed only for Python 2.7. Then the code have been
-    adjusted to Py3 and for a few years we develop and test ``pypath`` in
-    Python 3. Therefore this is the better supported Python variant.
+    Around the end of December we added a new network API to ``pypath`` which
+    is not based on ``igraph`` any more and provides a modular and versatile
+    access interface to the network data (since version ``0.9``). In January
+    we reorganized the submodules in ``pypath`` in order to create a clear
+    structure (since version ``0.10``). These are important milestones
+    towards version ``1.0`` and we hope they will make ``pypath`` more
+    convenient to use for everyone. By 18 February we merged these changes
+    to the master branch however the *pypath guide* is still to be updated.
+    Apologies for this inconvenience and please don't hesitate to ask
+    questions by opening an issue on github. The old ``igraph`` based network
+    class is still available in the ``pypath.legacy`` module.
+
+:Py2/3: Although we still keep the compatibility with Python 2, we don't
+        test ``pypath`` in this environment and very few people uses it
+        already. We highly recommend to use ``pypath`` in Python 3.6+.
 
 :documentation: http://saezlab.github.io/pypath
 :issues: https://github.com/saezlab/pypath/issues
+:contact: omnipathdb@gmail.com
+:developers: ``pypath`` is developed in the Saez Lab (http://saezlab.org) by
+  Olga Ivanova, Nicolàs Palacio and Dénes Türei; the R package and the
+  Cytoscape app are developed and maintained by Francesco Ceccarelli, Attila
+  Gábor, Alberto Valdeolivas and Nicolàs Palacio.
 
-.. toctree::
-    :maxdepth: 5
-    :caption: Contents:
+**pypath** is a Python module for processing molecular biology data resources,
+combining them into databases and providing a versatile interface in Python
+as well as exporting the data for access through other platforms such as
+the R (the OmnipathR R/Bioconductor package), web service (at
+http://omnipathdb.org), Cytoscape (the OmniPath Cytoscape app) and BEL
+(Biological Expression Language).
 
-    installation
-    reference
-    webservice
-    changelog
+**pypath** provides access to more than 100 resources! It builds 5 major
+combined databases and within these we can distinguish different datasets.
+The 5 major databases are interactions (molecular interaction network or
+pathways), enzyme-substrate relationships, protein complexes, molecular
+annotations (functional roles, localizations, and more) and inter-cellular
+communication roles.
 
-**pypath** consists of a number of submodules to build various databases.
-Most of these are provided as **pandas** data frames. The network database
-is built around igraph to work with molecular network representations e.g.
-protein, miRNA and drug compound interaction networks.
+**pypath** consists of a number of submodules and each of them again contains
+a number of submodules. Overall **pypath** consists of around 100 modules.
+The most important higher level submodules:
+
+* *pypath.core:* contains the database classes e.g. network, complex,
+  annotations, etc
+* *pypath.inputs:* contains the resource specific methods which directly
+  downlad and preprocess data from the original sources
+* *pypath.omnipath:* higher level applications, e.g. a database manager, a
+  web server
+* *pypath.utils:* stand alone useful utilities, e.g. identifier translator,
+  Gene Ontology processor, BioPax processor, etc
 
 
 Webservice
@@ -41,7 +71,7 @@ Query types
 -----------
 
 The webservice currently recognizes 7 types of queries: ``interactions``,
-``ptms``, ``annotations``, ``complexes``, ``intercell``, ``queries`` and
+``enz_sub``, ``annotations``, ``complexes``, ``intercell``, ``queries`` and
 ``info``.
 The query types ``resources``, ``network`` and ``about`` have not been
 implemented yet in the new webservice.
@@ -64,7 +94,7 @@ datasets. Each of them has a short name what you can use in the queries
 
 TF-target interactions from TF Regulons, a large collection additional
 enzyme-substrate interactions, and literature curated miRNA-mRNA interacions
-combined from 4 databases. 
+combined from 4 databases.
 
 Mouse and rat
 -------------
@@ -148,11 +178,11 @@ Enzyme-substrate interactions
 Another query type available is ``ptms`` which provides enzyme-substrate
 interactions. It is very similar to the ``interactions``:
 
-    http://omnipathdb.org/ptms?genesymbols=1&fields=sources,references,isoforms&enzymes=FYN
+    http://omnipathdb.org/enz_sub?genesymbols=1&fields=sources,references,isoforms&enzymes=FYN
 
 Is there any ubiquitination reaction?
 
-    http://omnipathdb.org/ptms?genesymbols=1&fields=sources,references&types=ubiquitination
+    http://omnipathdb.org/ens_sub?genesymbols=1&fields=sources,references&types=ubiquitination
 
 And acetylation in mouse?
 
@@ -161,7 +191,7 @@ And acetylation in mouse?
 Rat interactions, both directly from rat and homology translated from human,
 from the PhosphoSite database:
 
-    http://omnipathdb.org/ptms?genesymbols=1&fields=sources,references&organisms=10116&databases=PhosphoSite,PhosphoSite_noref
+    http://omnipathdb.org/enz_sub?genesymbols=1&fields=sources,references&organisms=10116&databases=PhosphoSite,PhosphoSite_noref
 
 
 Molecular complexes
@@ -192,7 +222,7 @@ annotations from SignaLink:
 
 Or the tissue expression of BMP7 from Human Protein Atlas:
 
-    http://omnipathdb.org/annotations?databases=HPA&proteins=BMP7
+    http://omnipathdb.org/annotations?databases=HPA_tissue&proteins=BMP7
 
 
 Roles in inter-cellular communication
@@ -227,13 +257,11 @@ Exploring possible parameters
 Sometimes the names and values of the query parameters are not intuitive,
 even though in many cases the server accepts multiple alternatives. To see
 the possible parameters with all possible values you can use the ``queries``
-query type. The server checks the paremeter names and values exactly against
+query type. The server checks the parameter names and values exactly against
 these rules and if any of them don't match you will get an error message
 instead of reply. To see the parameters for the ``interactions`` query:
 
     http://omnipathdb.org/queries/interactions
-
-
 
 
 Can I use OmniPath in R?
@@ -244,9 +272,6 @@ our colleague Attila Gabor we have a dedicated package for this:
 
     https://github.com/saezlab/OmnipathR
 
-Alternatively here is a very simple example:
-
-    https://github.com/saezlab/pypath/tree/master/r_import
 
 Installation
 ============
@@ -255,15 +280,16 @@ Linux
 -----
 
 In almost any up-to-date Linux distribution the dependencies of **pypath** are
-built-in, or provided by the distributors. You only need to install a couple
-of things in your package manager (cairo, py(2)cairo, igraph,
-python(2)-igraph, graphviz, pygraphviz), and after install **pypath** by *pip*
-(see below). If any module still missing, you can install them the usual way
-by *pip* or your package manager.
+built-in, or provided by the distributors. You can simply install **pypath**
+by **pip** (see below).
+If any non mandatory dependency is still missing, you can install them the
+usual way by *pip* or your package manager.
 
 igraph C library, cairo and pycairo
 -----------------------------------
 
+For the legacy network class or the ``igraph`` conversion from the current
+network class *python-igraph* must be installed.
 *python(2)-igraph* is a Python interface to use the igraph C library. The
 C library must be installed. The same goes for *cairo*, *py(2)cairo* and
 *graphviz*.
@@ -296,12 +322,16 @@ Clone the git repo, and run setup.py:
 Mac OS X
 --------
 
-On OS X installation is not straightforward primarily because cairo needs to
-be compiled from source. We provide 2 scripts here: the
-**mac-install-brew.sh** installs everything with HomeBrew, and
+Recently the installation on Mac should not be more complicated than on Linux:
+you can simply install by **pip** (see above).
+
+When ``igraph`` was a mandatory dependency and it didn't provide wheels
+the OS X installation was not straightforward primarily because cairo needs to
+be compiled from source. If you want igraph and cairo we provide two scripts
+`here <src/scripts>`_: the **mac-install-brew.sh** installs everything with HomeBrew and
 **mac-install-conda.sh** installs from Anaconda distribution. With these
-scripts installation of igraph, cairo and graphviz goes smoothly most of the
-time, and options are available for omitting the 2 latter. To know more see
+scripts, installation of igraph, cairo and graphviz goes smoothly most of the
+time and options are available to omit the last two. To know more, see
 the description in the script header. There is a third script
 **mac-install-source.sh** which compiles everything from source and presumes
 only Python 2.7 and Xcode installed. We do not recommend this as it is time
@@ -311,7 +341,7 @@ Troubleshooting
 ^^^^^^^^^^^^^^^
 
 * ``no module named ...`` when you try to load a module in Python. Did
-  theinstallation of the module run without error? Try to run again the specific
+  the installation of the module run without error? Try to run again the specific
   part from the mac install shell script to see if any error comes up. Is the
   path where the module has been installed in your ``$PYTHONPATH``? Try ``echo
   $PYTHONPATH`` to see the current paths. Add your local install directories if
@@ -383,10 +413,9 @@ external dependencies, after *pip* install should work. On Windows certain
 packages can not be installed by compiled from source by *pip*, instead the
 easiest to install them precompiled. These are in our case *fisher, lxml,
 numpy (mkl version), pycairo, igraph, pygraphviz, scipy and statsmodels*. The
-precompiled packages are available here:
-http://www.lfd.uci.edu/~gohlke/pythonlibs/. We tested the setup with Python
-3.4.3 and Python 2.7.11. The former should just work fine, while with the
-latter we have issues to be resolved.
+precompiled packages are available `here <http://www.lfd.uci.edu/~gohlke/pythonlibs/>`_.
+We tested the setup with Python 3.4.3 and Python 2.7.11. The former should just
+work fine, while with the latter we have issues to be resolved.
 
 Known issues
 ^^^^^^^^^^^^
@@ -398,7 +427,11 @@ Known issues
 * Encoding related exceptions in Python2: these might occur at some points in
   the module, please send the traceback if you encounter one, and we will fix
   as soon as possible.
-* For Mac OS X (v >= 10.11 El Capitan) import of pypath fails with error: "libcurl link-time ssl backend (openssl) is different from compile-time ssl backend (none/other)". To fix it, you may need to reinstall pycurl library using special flags. More information and steps can be found e.g. [here](https://cscheng.info/2018/01/26/installing-pycurl-on-macos-high-sierra.html)   
+* For Mac OS X (v >= 10.11 El Capitan) import of pypath fails with error:
+  "libcurl link-time ssl backend (openssl) is different from compile-time ssl
+  backend (none/other)". To fix it, you may need to reinstall pycurl library
+  using special flags. More information and steps can be found
+  `here <https://cscheng.info/2018/01/26/installing-pycurl-on-macos-high-sierra.html>`_.
 
 *Special thanks to Jorge Ferreira for testing pypath on Windows!*
 
@@ -490,7 +523,7 @@ Main improvements in the past releases:
   delete data to free memory
 * New interaction category in `data_formats`: `ligand_receptor`
 * Improved logging and control over verbosity
-* Better control over paremeters by the `settings` module
+* Better control over parameters by the `settings` module
 * Many methods in `dataio` have been improved or fixed, docs and code style largely improved
 * Started to add tests especially for methods in `dataio`
 
@@ -499,6 +532,11 @@ Main improvements in the past releases:
 * The network database is not dependent any more on `python-igraph` hence it
   has been removed from the mandatory dependencies
 * New API for the network, interactions, evidences, molecular entities
+
+0.10.0
+------
+* New module structure: modules grouped into `core`, `inputs`, `internals`,
+  `legacy`, `omnipath`, `resources`, `share` and `utils` submodules.
 
 Upcoming
 --------
@@ -511,6 +549,9 @@ Upcoming
 
 Features
 ========
+
+    *Warning:*
+    The sections below are outdated, will be updated soon
 
 In the beginning the primary aim of **pypath** was to build networks from
 multiple sources using an igraph object as the fundament of the integrated
@@ -528,8 +569,8 @@ rug compound data, searching drug targets and compounds in **ChEMBL**.
 ID conversion
 -------------
 
-The ID conversion module ``mapping`` can be used independently. It has the
-feature to translate secondary UniProt IDs to primaries, and Trembl IDs to
+The ID conversion module ``utils.mapping`` can be used independently. It has
+the feature to translate secondary UniProt IDs to primaries, and Trembl IDs to
 SwissProt, using primary Gene Symbols to find the connections. This module
 automatically loads and stores the necessary conversion tables. Many tables
 are predefined, such as all the IDs in **UniProt mapping service,** while
@@ -540,7 +581,7 @@ Pathways
 --------
 
 **pypath** includes data and predefined format descriptions for more than 25
-high quality, literature curated databases. The inut formats are defined in
+high quality, literature curated databases. The input formats are defined in
 the ``data_formats`` module. For some resources data downloaded on the fly,
 where it is not possible, data is redistributed with the module. Descriptions
 and comprehensive information about the resources is available in the
@@ -566,7 +607,7 @@ segment in **UniProt** protein sequences while being aware of isoforms.
 Tissue expression
 -----------------
 
-For 3 protein expression databases there are functions and modules for
+For three protein expression databases there are functions and modules for
 downloading and combining the expression data with the network. These are the
 Human Protein Atlas, the ProteomicsDB and GIANT. The ``giant`` and
 ``proteomicsdb`` modules can be used also as stand alone Python clients for
@@ -599,8 +640,8 @@ Technical
 
 The module ``pypath.curl`` provides a very flexible **download manager**
 built on top of ``pycurl``. The classes ``pypath.curl.Curl()`` and
-``pypath.curl.FileOpener`` accept numerous arguments, try to deal in a smart
-way with local **cache,** authentication, redirects, uncompression, character
+``pypath.curl.FileOpener`` accept numerous arguments to deal in a smart
+way with local **cache**, authentication, redirects, uncompression, character
 encodings, FTP and HTTP transactions, and many other stuff. Cache can grow to
 several GBs, and takes place in ``~/.pypath/cache`` by default. If you
 experience issues using ``pypath`` these are most often related to failed
@@ -610,13 +651,13 @@ the context managers in ``pypath.curl`` to show, delete or bypass the cache
 for some particular method calls (``pypath.curl.cache_print_on()``,
 ``pypath.curl.cache_delete_on()`` and ``pypath.curl.cache_off()``.
 You can always set up an alternative cache directory for the entire session
-using the ``pypath.settings`` module. 
+using the ``pypath.settings`` module.
 
 The ``pypath.session`` and ``pypath.log`` modules take care of setting up
 session level parameters and logging. Each session has a random 5 character
 identifier e.g. ``y5jzx``. The default log file in this case is
-``pypath_log/pypath-y5jzx.log``. The log messages flushed in every 2 seconds
-by default. You can always change these things by the ``settings`` module.
+``pypath_log/pypath-y5jzx.log``. The log messages are flushed every 2 seconds
+by default. You can always change these things using the ``settings`` module.
 In this module you can get and set the values of various parameters using
 the ``pypath.settings.setup()`` and the ``pypath.settings.get()`` methods.
 
