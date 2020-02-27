@@ -1162,22 +1162,20 @@ class Mapper(session_mod.Logger):
         Returns set of the target ID type.
 
         This function should be used to convert individual IDs.
-        It takes care about everything and ideally you don't need to think
-        on the details.
+        It takes care about everything and ideally you don't need to
+        think on the details.
 
         How does it work: looks up dictionaries between the original
-        and target ID type, if doesn't find, attempts to load from
-        the predefined inputs.
-        If the original name is genesymbol, first it looks up
-        among the preferred gene names from UniProt, if not
-        found, it takes an attempt with the alternative gene
-        names. If the gene symbol still couldn't be found, and
-        strict = False, the last attempt only the first 5 chara-
-        cters of the gene symbol matched. If the target name
-        type is uniprot, then it converts all the ACs to primary.
-        Then, for the Trembl IDs it looks up the preferred gene
-        names, and find Swissprot IDs with the same preferred
-        gene name.
+        and target ID type, if doesn't find, attempts to load from the
+        predefined inputs.
+        If the original name is genesymbol, first it looks up among the
+        preferred gene names from UniProt, if not found, it takes an
+        attempt with the alternative gene names. If the gene symbol
+        still couldn't be found, and strict = False, the last attempt
+        only the first 5 characters of the gene symbol matched. If the
+        target name type is uniprot, then it converts all the ACs to
+        primary. Then, for the Trembl IDs it looks up the preferred gene
+        names, and find Swissprot IDs with the same preferred gene name.
 
         name : str
             The original name to be converted.
@@ -1195,12 +1193,14 @@ class Mapper(session_mod.Logger):
             - embl (DDBJ/EMBL/GeneBank CDS accession)
             - embl_id (DDBJ/EMBL/GeneBank accession)
             To use other IDs, you need to define the input method
-            and load the table before calling :py:func:Mapper.map_name().
+            and load the table before calling
+            :py:func:Mapper.map_name().
         target_id_type : str
             The name type to translate to, more or less the same values
             are available as for ``id_type``.
         nameType : str
-            Deprecated. Synonym for ``id_type`` for backwards compatibility.
+            Deprecated. Synonym for ``id_type`` for backwards
+            compatibility.
         targetNameType : str
             Deprecated. Synonym for ``target_id_type``
             for backwards compatibility.
