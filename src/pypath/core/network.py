@@ -3143,7 +3143,7 @@ class Network(session_mod.Logger):
             zip(*param)
             for param in
             itertools.product(
-                *(iteritems(variety) for variety in  cls._partners_methods)
+                *(iteritems(variety) for variety in cls._partners_methods)
             )
         ):
 

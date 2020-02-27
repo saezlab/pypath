@@ -347,16 +347,16 @@ annotation_categories = [
 
 
 go_single_terms = {
-    
+
     # cellular component
     'C': {
         # junction
         'cell junction',
-        
+
         # extracellular
         'extracellular region',
         'extracellular region part',
-        
+
         # extracellular_matrix
         'extracellular matrix',
         'complex of collagen trimers',
@@ -365,44 +365,44 @@ go_single_terms = {
         'collagen beaded filament',
         'elastic fiber',
         'fibronectin fibril',
-        
+
         # exosome
         # could not find sub-term for their membrane or lumen
         'extracellular vesicle',
-        
+
         # cell_surface
         # only plasma membrane components facing outside
         'cell surface',
         'external side of plasma membrane',
-        
+
         # these contains also intracellular components
         'plasma membrane',
         'extrinsic component of plasma membrane',
         'intrinsic component of plasma membrane',
         'cytoplasmic side of plasma membrane',
-        
+
         'immunological synapse',
-        
+
         'clathrin-coated pit',
         'plasma membrane raft',
-        
+
         'presynaptic membrane',
         'presynaptic endocytic zone',
         'presynaptic endocytic zone membrane',
         'intrinsic component of presynaptic membrane',
         'extrinsic component of presynaptic membrane',
         'presynaptic active zone membrane',
-        
+
         'postsynaptic density membrane',
         'intrinsic component of postsynaptic density membrane',
         'extrinsic component of postsynaptic density membrane',
-        
+
         'synaptic vesicle',
         'intrinsic component of synaptic vesicle membrane',
         'synaptic vesicle lumen',
         'synaptic vesicle membrane',
         'extracellular matrix of synaptic cleft',
-        
+
         'axolemma',
         'neuron projection membrane',
         'neuronal cell body membrane',
@@ -410,12 +410,12 @@ go_single_terms = {
         'photoreceptor outer segment membrane',
         'stereocilium membrane',
         'stereocilia coupling link',
-        
+
     },
-    
+
     # molecular function
     'F': {
-        
+
         # upper level terms which help to categorize
         # molecular functions in the intercellular signaling
         'molecular carrier activity',
@@ -426,12 +426,12 @@ go_single_terms = {
         'negative regulation of binding',
         'protein folding chaperone',
         'antioxidant activity',
-        
+
         # upper level generic terms for regulation
         'regulation of molecular function',
         'negative regulation of molecular function',
         'positive regulation of molecular function',
-        
+
         # enzymes
         'catalytic activity',
         'regulation of catalytic activity',
@@ -469,20 +469,20 @@ go_single_terms = {
         'antigen binding',
         'hormone binding',
         'neurotransmitter binding',
-        
+
         # endocytosis
         'cargo adaptor activity',
-        
+
         # ECM, structural proteins
         'structural molecule activity',
         'extracellular matrix structural constituent',
         'structural constituent of bone',
-        
+
         # adhesion to base membrane and ECM
         'cell adhesion mediator activity',
         'extracellular matrix binding',
         'hydroxyapatite binding',
-        
+
         # transporters
         'transporter activity',
         'regulation of transporter activity',
@@ -503,10 +503,10 @@ go_single_terms = {
         'positive regulation of ion transmembrane transporter activity',
         'negative regulation of ion transmembrane transporter activity',
     },
-    
+
     # biological process
     'P': {
-        
+
         # cell adhesion
         'cell adhesion',
         'cell-cell adhesion',
@@ -516,18 +516,18 @@ go_single_terms = {
         'cellular response to cell-matrix adhesion',
         'contact inhibition',
         'establishment or maintenance of cell polarity'
-        
+
         # cellular responses
         'myofibroblast cell apoptotic process',
         'fibroblast apoptotic process',
         'epithelial cell apoptotic process',
-        
+
         # cell activation
         'cell activation',
         'endothelial cell activation',
         'fibroblast activation',
         'leukocyte activation',
-        
+
         # cell communication
         'cell communication',
         'cell communication by chemical coupling',
@@ -540,7 +540,7 @@ go_single_terms = {
         'cellular response to extracellular stimulus',
         'synaptic signaling',
         'cell-cell recognition',
-        
+
         # signal release
         'signal release',
         'hormone secretion',
@@ -549,24 +549,24 @@ go_single_terms = {
         'hormone metabolic process',
         'cytokine production',
         'cytokine secretion',
-        
+
         # receptors
         'regulation of receptor recycling',
         'receptor clustering',
         'receptor diffusion trapping',
         'membrane raft localization',
-        
+
         # exosomes
         'extracellular vesicle biogenesis',
         'extracellular exosome assembly',
         'vesicle-mediated intercellular transport',
-        
+
         # junction
         'cell junction assembly',
         'cell junction organization',
         'intercellular bridge organization',
         'gap junction-mediated intercellular transport',
-        
+
         # ECM
         'extracellular matrix assembly',
         'extracellular matrix organization',
@@ -574,7 +574,7 @@ go_single_terms = {
         'extracellular matrix-cell signaling',
         'cell-matrix recognition',
         'collagen metabolic process',
-        
+
         # motility
         'fibroblast migration',
         'epithelial cell migration',
@@ -587,23 +587,23 @@ go_single_terms = {
         'leukocyte chemotaxis',
         'epithelial structure maintenance',
         'connective tissue replacement', # this is fibrosis actually
-        
+
         # channels
         'ion channel activity',
-        
+
         # docking
         'membrane docking',
         'protein to membrane docking',
         'membrane to membrane docking',
-        
+
         # kidney specific stuff
         'nephron',
         'outer medulla of kidney',
         'inner medulla of kidney',
         'kidney pyramid',
-        
+
     },
-    
+
 }
 
 
@@ -1599,7 +1599,7 @@ resource_labels = {
 
 
 def get_label(key, exceptions):
-    
+
     return (
         exceptions[key]
             if key in exceptions else
@@ -1608,10 +1608,10 @@ def get_label(key, exceptions):
 
 
 def get_class_label(class_key):
-    
+
     return get_label(class_key, class_labels)
 
 
 def get_resource_label(resource_key):
-    
+
     return get_label(resource_key, resource_labels)

@@ -169,71 +169,71 @@ class AbstractComplexResource(resource.AbstractResource):
     def __len__(self):
 
         return len(self.complexes)
-    
-    
+
+
     def __repr__(self):
-        
+
         return '<Complex database: %u complexes>' % len(self)
-    
-    
+
+
     @property
     def numof_references(self):
-        
+
         return len(
             set.union(*(
                 cplex.references for cplex in self.complexes.values()
             ))
         )
-    
-    
+
+
     @property
     def curation_effort(self):
-        
+
         return len(
             set.union(*(
                 {(key, ref) for ref in cplex.references}
                 for key, cplex in iteritems(self.complexes)
             ))
         )
-    
-    
+
+
     @property
     def has_stoichiometry(self):
-        
+
         return any(
             cnt > 1
             for cplex in self.complexes.values()
             for cnt in cplex.components.values()
         )
-    
-    
+
+
     @property
     def all_sources(self):
-        
+
         return set.union(*(
             cplex.sources
             for cplex in self.complexes.values()
         ))
-    
-    
+
+
     @property
     def homomers(self):
-        
+
         return sum(
             1 for cplex in self.complexes.values()
             if len(cplex.components) == 1
         )
-    
-    
+
+
     @property
     def heteromers(self):
-        
+
         return sum(
             1 for cplex in self.complexes.values()
             if len(cplex.components) > 1
         )
-    
-    
+
+
     def make_df(self):
 
         colnames = [
@@ -245,9 +245,9 @@ class AbstractComplexResource(resource.AbstractResource):
             'references',
             'identifiers',
         ]
-        
+
         self._log('Creating a data frame of complexes.')
-        
+
         records = []
 
         for cplex in self.complexes.values():
@@ -270,7 +270,7 @@ class AbstractComplexResource(resource.AbstractResource):
             records,
             columns = colnames,
         )
-        
+
         self._log(
             'Created data frame of complexes. '
             'Memory usage: %s.' % common.df_memory_usage(self.df)
@@ -284,11 +284,11 @@ class AbstractComplexResource(resource.AbstractResource):
             self.complexes = self._from_dump
             delattr(self, '_from_dump')
             delattr(self, 'dump')
-    
-    
+
+
     @property
     def summary(self):
-        
+
         return {
             'n_complexes': self.__len__(),
             'n_references': self.numof_references,
@@ -299,14 +299,14 @@ class AbstractComplexResource(resource.AbstractResource):
             'homomers': self.homomers,
             'heteromers': self.heteromers,
         }
-    
-    
+
+
     @property
     def summary_str(self):
-        
+
         s = self.summary
         bar = '=' * 70
-        
+
         return (
             '\n%s\n'
             'Complex resource `%s`\n'
@@ -542,11 +542,11 @@ class ComplexAggregator(AbstractComplexResource):
                 elif hasattr(res, 'complexes'):
 
                     processor = res
-                
+
                 if hasattr(processor, 'summary'):
-                    
+
                     self.summaries[processor.name] = processor.summary
-                
+
                 for key, cplex in iteritems(processor.complexes):
 
                     if key in self.data:
@@ -571,33 +571,33 @@ class ComplexAggregator(AbstractComplexResource):
 
 
     def load_from_pickle(self, pickle_file):
-        
+
         self._log('Loading from pickle `%s`.' % pickle_file)
-        
+
         with open(pickle_file, 'rb') as fp:
 
             self.complexes, self.summaries = pickle.load(fp)
-        
+
         self._log('Loaded from pickle `%s`.' % pickle_file)
-    
-    
+
+
     def update_summaries(self):
-        
+
         for src in self.summaries.keys():
-            
+
             self.summaries[src]['unique_complexes'] = sum(
                 1 for cplex in self.complexes.values()
                 if len(cplex.sources) == 1 and src in cplex.sources
             )
-            
+
             self.summaries[src]['shared_complexes'] = sum(
                 1 for cplex in self.complexes.values()
                 if len(cplex.sources) > 1 and src in cplex.sources
             )
-    
-    
+
+
     def summaries_tab(self, outfile = None, return_table = False):
-        
+
         columns = (
             ('name', 'Resource'),
             ('n_complexes', 'All complexes'),
@@ -609,10 +609,10 @@ class ComplexAggregator(AbstractComplexResource):
             ('n_references', 'References'),
             ('curation_effort', 'Curation effort'),
         )
-        
+
         tab = []
         tab.append([f[1] for f in columns])
-        
+
         tab.extend([
             [
                 str(self.summaries[src][f[0]])
@@ -620,15 +620,15 @@ class ComplexAggregator(AbstractComplexResource):
             ]
             for src in sorted(self.summaries.keys())
         ])
-        
+
         if outfile:
-            
+
             with open(outfile, 'w') as fp:
-                
+
                 fp.write('\n'.join('\t'.join(row) for row in tab))
-        
+
         if return_table:
-            
+
             return tab
 
 
@@ -660,18 +660,18 @@ class ComplexAggregator(AbstractComplexResource):
 
 
     def save_to_pickle(self, pickle_file):
-        
+
         self._log('Saving to pickle `%s`.' % pickle_file)
-        
+
         self._update_complex_attribute_classes()
-        
+
         with open(pickle_file, 'wb') as fp:
 
             pickle.dump(
                 obj = (self.complexes, self.summaries),
                 file = fp,
             )
-        
+
         self._log('Saved to pickle `%s`.' % pickle_file)
 
 
