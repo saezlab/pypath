@@ -4287,12 +4287,24 @@ class AnnotationTable(session_mod.Logger):
             return tab
     
     
-    def get_entities(self):
+    def get_entities(self, entity_type = None):
         
-        return set.union(*(
+        entity_type = common.to_set(entity_type)
+        
+        entities = set.union(*(
             set(an.annot.keys())
             for an in self.annots.values()
         ))
+        
+        return (
+            entities
+                if not entity_type else
+            {
+                en
+                for en in entities
+                if entity.Entity._get_entity_type(en) in entity_type
+            }
+        )
     
     
     def numof_entities(self):
