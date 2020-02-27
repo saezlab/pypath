@@ -1,0 +1,59 @@
+{
+    "omnipath": {
+        "dbclass": "network",
+        "def": {
+            "init": "omnipath",
+            "args": {
+                "kinase_substrate_extra": true,
+                "ligand_receptor_extra": true,
+                "pathway_extra": true
+            }
+        }
+    },
+    "curated": {
+        "dbclass": "network",
+        "def": {
+            "prepare": {
+                "curated_ppi": "curated_ppi_resources"
+            },
+            "workflow": [
+                {
+                    "method": "load",
+                    "args": {
+                        "resources": "curated_ppi"
+                    }
+                }
+            ]
+        }
+    },
+    "tf_target": {
+        "dbclass": "network",
+        "def": {
+            "init": "transcription"
+        }
+    },
+    "mirna_mrna": {
+        "dbclass": "network",
+        "resources": "mirna_target"
+    },
+    "lncrna_mrna": {
+        "dbclass": "network",
+        "resources": "lncrna_mrna"
+    },
+    "tf_mirna": {
+        "dbclass": "network",
+        "resources": "tf_mirna"
+    },
+    "enz_sub": {
+        "dbclass": "enz_sub"
+    },
+    "complex": {
+        "dbclass": "complex"
+    },
+    "annotations": {
+        "dbclass": "annotations"
+    },
+    "intercell": {
+        "dbclass": "intercell"
+    }
+}

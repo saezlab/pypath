@@ -49,11 +49,16 @@ def init(**kwargs):
         'setting parameters in the `OP_DB_ARGS` global variable '
         'or by calling `init` again with keyword arguments or after '
         'setting values in the `pypath.share.settings` module.'
+        'You can define your own databases following the examples in '
+        '`pypath/omnipath/databases/builtins.json`. '
+        'See more details in `pypath/omnipath/databases/db_template.json` '
+        'and the code of method '
+        '`pypath.omnipath.app.DatabaseManager.load_dataset`.'
     )
 
     param.update(kwargs)
 
-    globals()['data'] = _app_mod.Database(**param)
+    globals()['db'] = _app_mod.DatabaseManager(**param)
 
 
 init()

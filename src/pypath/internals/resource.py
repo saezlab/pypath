@@ -58,11 +58,11 @@ class AbstractResource(session_mod.Logger):
         input_method : callable
             Method providing the input data.
         """
-        
+
         if not hasattr(self, '_log_name'):
-            
+
             session_mod.Logger.__init__(self, name = 'resource')
-        
+
         self.dump = dump
         self.name = name
         self._data_attr_name = data_attr_name or 'data'
@@ -75,9 +75,9 @@ class AbstractResource(session_mod.Logger):
 
         self.set_method()
         from_dump = self.from_dump()
-        
+
         if not from_dump:
-            
+
             self.load_data()
             self.process()
 
@@ -96,7 +96,7 @@ class AbstractResource(session_mod.Logger):
 
             self.input_method = self._input_method
 
-        else:
+        elif self._input_method:
 
             self.input_method = inputs.get_method(self._input_method)
 
@@ -105,11 +105,11 @@ class AbstractResource(session_mod.Logger):
         """
         Loads the data by calling ``input_method``.
         """
-        
+
         self._log('Loading data from `%s`.' % self.name)
-        
+
         self.set_method()
-        
+
         if hasattr(self, 'input_method'):
 
             self.data = self.input_method(**self.input_args)
@@ -119,7 +119,7 @@ class AbstractResource(session_mod.Logger):
         """
         Calls the ``_process_method``.
         """
-        
+
         self._log('Processing data from `%s`.' % self.name)
         self._process_method()
 
@@ -127,45 +127,45 @@ class AbstractResource(session_mod.Logger):
     def _process_method(self):
 
         pass
-    
-    
+
+
     def from_dump(self):
-        
+
         if self.dump is not None:
-            
+
             if (
                 isinstance(self.dump, common.basestring) and
                 os.path.exists(self.dump)
             ):
-                
+
                 with open(self.dump, 'rb') as fp:
-                    
+
                     self._from_dump = pickle.load(fp)
-                
+
             else:
-                
+
                 self._from_dump = self.dump
-            
+
             self._from_dump_callback()
-            
+
             return True
-        
+
         return False
-    
-    
+
+
     def _from_dump_callback(self):
-        
+
         if hasattr(self, '_from_dump'):
-            
+
             setattr(self, self._data_attr_name, self._from_dump)
             delattr(self, '_from_dump')
             delattr(self, 'dump')
-    
-    
+
+
     def save_to_pickle(self, pickle_file):
-        
+
         with open(pickle_file, 'wb') as fp:
-            
+
             pickle.dump(
                 obj = getattr(self, self._data_attr_name),
                 file = fp,
@@ -173,8 +173,8 @@ class AbstractResource(session_mod.Logger):
 
 
 class ResourceAttributes(object):
-    
-    
+
+
     def __init__(
             self,
             name,
@@ -182,27 +182,27 @@ class ResourceAttributes(object):
             evidence_types = None,
             **kwargs
         ):
-        
+
         self.name = name
         self.data_type = data_type
         self.evidence_types = evidence_types or set()
-        
+
         for attr, value in iteritems(kwargs):
-            
+
             setattr(self, attr, value)
-    
-    
+
+
     def __eq__(self, other):
-        
+
         return (
             self.name == other.name and self.data_type == other.data_type
                 if isinstance(other, self.__class__) else
             self.name == other
         )
-    
-    
+
+
     def __str__(self):
-        
+
         return self.name
 
 
@@ -219,11 +219,11 @@ NetworkResourceKey = collections.namedtuple(
 
 
 class NetworkResource(ResourceAttributes):
-    
-    
+
+
     _key = NetworkResourceKey
-    
-    
+
+
     def __init__(
             self,
             name,
@@ -231,9 +231,9 @@ class NetworkResource(ResourceAttributes):
             data_model = None,
             evidence_types = None,
             via = None,
-            **kwargs,
+            **kwargs
         ):
-        
+
         ResourceAttributes.__init__(
             self,
             name = name,
@@ -242,18 +242,18 @@ class NetworkResource(ResourceAttributes):
             evidence_types = evidence_types,
             data_model = data_model,
             via = via,
-            **kwargs,
+            **kwargs
         )
-    
-    
+
+
     def __hash__(self):
-        
+
         return hash(self.key)
-    
-    
+
+
     @property
     def key(self):
-        
+
         return self._key(
             name = self.name,
             data_type = self.data_type,
@@ -261,34 +261,34 @@ class NetworkResource(ResourceAttributes):
             data_model = self.data_model,
             via = self.via,
         )
-    
-    
+
+
     def __eq__(self, other):
-        
+
         return (
             self.name == other
                 if isinstance(other, common.basestring) else
             self.__hash__() == other.__hash__()
         )
-    
-    
+
+
     def __repr__(self):
-        
+
         return '<NetworkResource: %s (%s, %s)>' % (
             self.name,
             self.interaction_type,
             self.data_model,
         )
-    
-    
+
+
     def is_primary(self):
-        
+
         return self.via is None
-    
-    
+
+
     @property
     def data_model_label(self):
-        
+
         return (
             self.data_model.capitalize().replace('_', ' ')
                 if self.data_model else
@@ -307,11 +307,11 @@ EnzymeSubstrateResourceKey = collections.namedtuple(
 
 
 class EnzymeSubstrateResource(ResourceAttributes):
-    
-    
+
+
     _key = EnzymeSubstrateResourceKey
-    
-    
+
+
     def __init__(
             self,
             name,
@@ -324,9 +324,9 @@ class EnzymeSubstrateResource(ResourceAttributes):
             organisms = None,
             resource_attrs = None,
             extra_attrs = None,
-            **kwargs,
+            **kwargs
         ):
-        
+
         ResourceAttributes.__init__(
             self,
             name = name,
@@ -340,53 +340,53 @@ class EnzymeSubstrateResource(ResourceAttributes):
             organisms = organisms,
             resource_attrs = resource_attrs or {},
             extra_attrs = extra_attrs or {},
-            **kwargs,
+            **kwargs
         )
-    
-    
+
+
     def __hash__(self):
-        
+
         return hash(self.key)
-    
-    
+
+
     @property
     def key(self):
-        
+
         return self._key(
             name = self.name,
             data_type = self.data_type,
             via = self.via,
         )
-    
-    
+
+
     def __eq__(self, other):
-        
+
         return (
             self.name == other
                 if isinstance(other, common.basestring) else
             self.__hash__() == other.__hash__()
         )
-    
-    
+
+
     def __repr__(self):
-        
+
         return '<EnzymeSubstrateResource: %s>' % (
             self.name,
         )
-    
-    
+
+
     def is_primary(self):
-        
+
         return self.via is None
-    
-    
+
+
     def get_via(self, name):
         """
         Returns a copy of the same resource attributes but the ``name`` set
         to ``name`` and the ``via`` set to the original name. This means
         the data comes from the resource ``name`` via the resource ``via``.
         """
-        
+
         args = dict(
             (k, getattr(self, k))
             for k in self.__dir__()
@@ -399,5 +399,5 @@ class EnzymeSubstrateResource(ResourceAttributes):
         args['name'] = name
         _ = args.pop('data_type', None)
         _ = args.pop('key', None)
-        
+
         return EnzymeSubstrateResource(**args)

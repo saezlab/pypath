@@ -448,7 +448,7 @@ class MapReader(session_mod.Logger):
         else:
 
             infile = open(self.param.input, encoding = 'utf-8', mode = 'r')
-            total = os.path.getsize(param.input)
+            total = os.path.getsize(self.param.input)
 
         a_to_b = collections.defaultdict(set)
         b_to_a = collections.defaultdict(set)
@@ -822,10 +822,10 @@ class MappingTable(session_mod.Logger):
             target_id_type = self.target_id_type,
             ncbi_tax_id = self.ncbi_tax_id,
         )
-    
-    
+
+
     def __repr__(self):
-        
+
         return 'MappingTable from=`%s`, to=`%s`, taxon=`%u`' % self.key
 
 
@@ -851,31 +851,31 @@ class Mapper(session_mod.Logger):
         cleanup_period = (
             cleanup_period or settings.get('mapper_cleanup_interval')
         )
-        
+
         self._mapper_cleanup_timeloop = timeloop.Timeloop()
-        
+
         for job in self._mapper_cleanup_timeloop.jobs:
-            
+
             if job.is_alive():
-                
+
                 job.stop()
                 job.stopped.set()
-        
+
         self._mapper_cleanup_timeloop.jobs = []
-        
-        
+
+
         @self._mapper_cleanup_timeloop.job(
             interval = datetime.timedelta(
                 seconds = cleanup_period
             )
         )
         def _cleanup():
-            
+
             self.remove_expired()
-        
-        
+
+
         self._mapper_cleanup_timeloop.start(block = False)
-        
+
         self.reuniprot = re.compile(
             r'[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]'
             r'([A-Z][A-Z0-9]{2}[0-9]){1,2}'
@@ -1027,19 +1027,19 @@ class Mapper(session_mod.Logger):
                     target_id_type in input_formats.ac_mapping and
                     id_type != target_id_type
                 ):
-                    
+
                     if target_id_type == 'uniprot':
-                        
+
                         _id_type, _target_id_type = target_id_type, id_type
                         load_a_to_b = False
                         load_b_to_a = True
-                        
+
                     else:
-                        
+
                         _id_type, _target_id_type = id_type, target_id_type
                         load_a_to_b = True
                         load_b_to_a = False
-                    
+
                     # for uniprot/uploadlists
                     # we create here the mapping params
                     this_param = input_formats.UniprotListMapping(
@@ -1056,7 +1056,7 @@ class Mapper(session_mod.Logger):
                         uniprots = None,
                         lifetime = 300,
                     )
-                    
+
                     self.tables[tbl_key] = getattr(
                         reader,
                         'mapping_table_%s_to_%s' % (
@@ -1516,12 +1516,12 @@ class Mapper(session_mod.Logger):
         )
 
         return tbl[name] if tbl else set()
-    
+
     #
     # ID specific translation methods
     #
-    
-    
+
+
     def label(self, name, id_type = None, ncbi_tax_id = None):
         """
         For any kind of entity, either protein, miRNA or protein complex,
@@ -1529,35 +1529,35 @@ class Mapper(session_mod.Logger):
         Gene Symbols, for miRNAs miRNA names, for complexes a series of
         Gene Symbols.
         """
-        
+
         if hasattr(name, 'genesymbol_str'):
-            
+
             return name.genesymbol_str
-            
+
         elif isinstance(name, common.basestring):
-            
+
             ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
-            
+
             if name.startswith('MIMAT'):
-                
+
                 return map_name0(
                     name,
                     id_type or 'mirbase',
                     'mir-mat-name',
                     ncbi_tax_id = ncbi_tax_id,
                 ) or name
-                
+
             elif name.startswith('MI'):
-                
+
                 return self.map_name0(
                     name,
                     id_type or 'mir-pre',
                     'mir-name',
                     ncbi_tax_id = ncbi_tax_id,
                 ) or name
-                
+
             else:
-                
+
                 return self.map_name0(
                     name,
                     id_type or 'uniprot',
@@ -1605,7 +1605,7 @@ class Mapper(session_mod.Logger):
         swissprots = set()
 
         for uniprot in uniprots:
-            
+
             swissprot = None
             genesymbols = self.map_name(
                 name = uniprot,
@@ -1613,7 +1613,7 @@ class Mapper(session_mod.Logger):
                 target_id_type = 'genesymbol',
                 ncbi_tax_id = ncbi_tax_id,
             )
-            
+
             for genesymbol in genesymbols:
 
                 swissprot = self.map_name(
@@ -1622,15 +1622,15 @@ class Mapper(session_mod.Logger):
                     target_id_type = 'swissprot',
                     ncbi_tax_id = ncbi_tax_id
                 )
-            
+
             if not swissprot:
-                
+
                 swissprots.add(uniprot)
-                
+
             else:
-                
+
                 swissprots.update(swissprot)
-        
+
         return swissprots
 
     #
@@ -1787,6 +1787,7 @@ class Mapper(session_mod.Logger):
     def load_uniprot_static(
             self,
             keys,
+            ncbi_tax_id=None,
         ):
         """
         Loads mapping tables from the huge static mapping file from UniProt.
@@ -1841,32 +1842,30 @@ class Mapper(session_mod.Logger):
 
                 line = line.decode('ascii').strip().split('\t')
 
-                for ac_typ in ac_types:
+                if len(line) > 2 and line[1] in self.names_uniprot_static:
 
-                    if len(l) > 2 and l[1] in self.names_uniprot_static:
+                    id_type_a = self.names_uniprot_static[line[1]]
 
-                        id_type_a = self.names_uniprot_static[l[1]]
+                    key_a_to_b = MappingTableKey(
+                        id_type = id_type_a,
+                        target_id_type = id_type_b,
+                        ncbi_tax_id = ncbi_tax_id,
+                    )
+                    key_b_to_a = MappingTableKey(
+                        id_type = id_type_b,
+                        target_id_type = id_type_a,
+                        ncbi_tax_id = ncbi_tax_id,
+                    )
 
-                        key_a_to_b = MappingTableKey(
-                            id_type = id_type_a,
-                            target_id_type = id_type_b,
-                            ncbi_tax_id = ncbi_tax_id,
-                        )
-                        key_b_to_a = MappingTableKey(
-                            id_type = id_type_b,
-                            target_id_type = id_type_a,
-                            ncbi_tax_id = ncbi_tax_id,
-                        )
+                    this_uniprot = line[0].split('-')[0]
 
-                        this_uniprot = l[0].split('-')[0]
+                    if key_a_to_b in to_load:
 
-                        if key_a_to_b in to_load:
+                        data[key_a_to_b][line[2]].add(this_uniprot)
 
-                            data[key_a_to_b][l[2]].add(this_uniprot)
+                    if key_b_to_a in to_load:
 
-                        if key_b_to_a in to_load:
-
-                            data[key_b_to_a][this_uniprot].add(l[2])
+                        data[key_b_to_a][this_uniprot].add(line[2])
 
             prg.terminate()
 
@@ -1935,23 +1934,23 @@ class Mapper(session_mod.Logger):
 
 
     def __del__(self):
-        
+
         if hasattr(self._mapper_cleanup_timeloop, 'stop'):
-            
+
             for job in self._mapper_cleanup_timeloop.jobs:
-                
+
                 if job.is_alive():
-                    
+
                     job.stop()
                     job.stopped.set()
 
 
 def init(**kwargs):
-    
+
     if 'mapper' in globals():
-        
+
         globals()['mapper'].__del__()
-    
+
     globals()['mapper'] = Mapper(**kwargs)
 
 
@@ -2048,9 +2047,9 @@ def label(name, id_type = None, ncbi_tax_id = 9606):
     Gene Symbols, for miRNAs miRNA names, for complexes a series of
     Gene Symbols.
     """
-    
+
     mapper = get_mapper()
-    
+
     return mapper.label(
         name = name,
         id_type = id_type,

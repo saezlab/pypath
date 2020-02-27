@@ -519,6 +519,7 @@ class ComplexAggregator(AbstractComplexResource):
 
         if self.pickle_file:
 
+            self._log('Loading database from pickle `%s`.' % self.pickle_file)
             self.load_from_pickle(self.pickle_file)
             return
 
@@ -526,6 +527,8 @@ class ComplexAggregator(AbstractComplexResource):
         self.summaries = {}
 
         for res in self.resources:
+
+            self._log('Loading resource `%s`.' % str(res))
 
             try:
 
