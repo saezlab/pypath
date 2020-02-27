@@ -29,6 +29,7 @@ import json
 
 import pypath.share.session as session
 import pypath.share.common as common
+import pypath.omnipath.databases.build as build
 
 _logger = session.Logger(name = 'db_define')
 _log = _logger._log
@@ -119,6 +120,13 @@ class DatabaseDefinition(object):
             dct['label'] = label
 
         return cls(**dct)
+
+
+    def get(self, attr):
+        
+        if hasattr(self, attr):
+            
+            return getattr(self, attr)
 
 
 class DatabaseClass(object):
@@ -316,7 +324,7 @@ class DatabaseDefinitionManager(session.Logger):
         
         if db_class:
             
-            return db_class(**db_def)
+            return build.build(db_class, db_def)
     
     
     @staticmethod
