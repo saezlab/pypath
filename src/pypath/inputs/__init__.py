@@ -18,7 +18,6 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-
 import importlib
 
 
@@ -42,11 +41,11 @@ def get_method(module_name, method_name = None):
     )
     
     if not method_name:
-        
+
         module_method = module_name.rsplit('.', maxsplit = 1)
         method_name = module_method[-1]
         module_name = module_method[-2] if len(module_method) > 1 else 'main'
-    
+
     module_name = module_name.rsplit('.', maxsplit = 1)[-1]
     module_name = 'pypath.inputs.%s' % module_name
     
@@ -60,22 +59,22 @@ def get_method(module_name, method_name = None):
         
         _log('Importing module `%s`.' % module_name)
         mod = importlib.import_module(module_name)
-        
+
     except:
-        
+
         session.get_log().msg(
             msg = 'Could not import module `%s`.' % module_name,
             label = 'inputs',
         )
-        
+
     try:
-        
+
         method = getattr(mod, method_name)
-        
+
         return method
-        
+
     except:
-        
+
         session.get_log().msg(
             msg = 'Could not find method `%s` in module `%s`.' % (
                 method_name,

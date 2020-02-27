@@ -83,11 +83,11 @@ def deathdomain_interactions_rescued():
     """
 
     url = urls.urls['death']['url_alive']
-    
+
     c = curl.Curl(url, silent = False, large = True)
-    
+
     _ = next(c.result)
-    
+
     return [
         [i.strip() for i in line.split('\t')]
         for line in c.result

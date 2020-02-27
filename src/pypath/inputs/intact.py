@@ -80,9 +80,9 @@ def intact_interactions(
             uniprot, isoform = _try_isoform(
                 field.split(':')[1].replace('"', '')
             )
-            
+
             uniprot = uniprot.split('-')[0]
-            
+
             return uniprot, isoform
 
 

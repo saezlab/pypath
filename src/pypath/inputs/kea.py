@@ -19,7 +19,6 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-
 import re
 import collections
 import itertools
@@ -40,8 +39,8 @@ _resources = {
 
 
 def kea_interactions():
-    
-    
+
+
     KeaRecord = collections.namedtuple(
         'KeaRecord',
         [
@@ -53,32 +52,32 @@ def kea_interactions():
             'resource',
         ]
     )
-    
+
     resub = re.compile(r'(\w+)_([A-Z])([0-9]+)')
-    
+
     url = urls.urls['kea']['kinase_substrate']
-    
+
     c = curl.Curl(url, silent = False, large = True)
-    
+
     result = []
-    
+
     for rec in c.result:
-        
+
         rec = rec.strip().split('\t')
-        
+
         site = resub.match(rec[1].strip())
-        
+
         if not site:
-            
+
             continue
-        
+
         target, resaa, resnum = site.groups()
-        
+
         e_uniprots = mapping.map_name(rec[0], 'genesymbol', 'uniprot')
         s_uniprots = mapping.map_name(target, 'genesymbol', 'uniprot')
-        
+
         for enz, sub in itertools.product(e_uniprots, s_uniprots):
-            
+
             result.append(
                 KeaRecord(
                     enzyme = enz,
@@ -89,12 +88,12 @@ def kea_interactions():
                     resource = _resources[rec[3].strip()]
                 )
             )
-    
+
     return result
 
 
 def kea_enzyme_substrate():
-    
+
     return [
         {
             'start': None,

@@ -1,13 +1,13 @@
 # Contribution guidelines
 
-Here are some guidelines to affectively contribute to PyPath development.
+Here are some guidelines to effectively contribute to PyPath development.
 Please make sure you follow them as much as possible.
 
 ## Adding a new resource
 
 - Add all the required information in `descriptions.py`
 - Make sure which type of licensing the resource has.
-- Double check the formating of the data upon import - both in PyPath itself
+- Double check the formatting of the data upon import - both in PyPath itself
 as in the export table (e.g. web service).
 - Rebuild the webpage HTML.
 
@@ -45,19 +45,19 @@ elements (usually one or a few lines).
 ```python
 
 def function1(a = 1, b = 2):
-    
+
     a = a + 1
     b = b - 1
-    
+
     return a * b
 
 
 def function2(a, b):
-    
+
     for i in a:
-        
+
         if i // b:
-            
+
             yield i
 
 ```
@@ -71,7 +71,7 @@ We add commas after each element including the last one, except if it is
 `**kwargs` because comma after `**kwargs` is syntax error in Python 2.
 If the elements are statements separated by operators (e.g. `+` or `and`)
 we leave the operator at the end of the line and start the next statement
-in a new line. The closing parenthese returns to the upper indentation level
+in a new line. The closing parenthesis returns to the upper indentation level
 and left hanging in its own line.
 
 ```python
@@ -92,7 +92,7 @@ if (
     condition1 and
     condition2
 ):
-    
+
     do_something()
 
 ```
@@ -114,7 +114,7 @@ a = (
 If the contents of a list or other comprehension does not fit into one line
 or even if it fits but looks better if broken into multiple pieces, we start
 the value, each `for` and `if` statements in a new line. The closing
-parenthese has the original indentation level in a new line.
+parenthesis has the original indentation level in a new line.
 
 ```python
 
@@ -137,14 +137,14 @@ the closing quotes have their own line. Arguments are described as
 def function(a):
     """
     Does something.
-    
+
     :param int,float a:
         A number.
-    
+
     :returns:
         A list of integers.
     """
-    
+
     return [a, a + 1, a + 2]
 
 ```
@@ -158,7 +158,7 @@ lists within a line.
 ```python
 
 def function(a = 1):
-    
+
     a = a * 4 + 3
 
 ```
@@ -166,7 +166,6 @@ def function(a = 1):
 ### Quotes
 
 We use single quotes unless there is any strong reason to use double.
-
 
 ## Logging
 

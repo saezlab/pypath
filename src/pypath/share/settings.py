@@ -39,7 +39,7 @@ _defaults = {
     'path_root': '/',
     # The basedir for every files and directories in the followings.
     'basedir': os.getcwd(),
-    
+
     'progressbars': False,
     # verbosity for messages printed to console
     'console_verbosity': -1,
@@ -105,10 +105,10 @@ _defaults = {
     },
     'keep_noref': False,
     'msigdb_email': 'omnipathdb@gmail.com',
-    
+
     # parameters for pypath.omnipath
     'timestamp_format': '%Y%m%d',
-    
+
     # tfregulons levels
     'tfregulons_levels': {'A', 'B', 'C', 'D'},
 
@@ -125,7 +125,7 @@ _defaults = {
        'lncrna_mrna',
        'enz_sub',
     ],
-    
+
     'omnipath_mod': 'network',
     'curated_mod': 'network',
     'complex_mod': 'complex',
@@ -136,22 +136,22 @@ _defaults = {
     'tf_mirna_mod': 'network',
     'mirna_mrna_mod': 'network',
     'lncrna_mrna_mod': 'network',
-    
+
     'omnipath_args': {
         'use_omnipath': True,
         'kinase_substrate_extra': True,
         'ligand_receptor_extra': True,
         'pathway_extra': True,
     },
-    
+
     # only for pypath.omnipath.app and pypath.core.network
     'dorothea_expand_levels': True,
-    
+
     'dependencies': {
         'intercell': ('annotations',),
         'annotations': ('complex',),
     },
-    
+
     'omnipath_pickle': 'network_omnipath.pickle',
     'curated_pickle': 'network_curated.pickle',
     'complex_pickle': 'complexes.pickle',
@@ -162,20 +162,20 @@ _defaults = {
     'tf_mirna_pickle': 'tfmirna.pickle',
     'mirna_mrna_pickle': 'mirna_mrna.pickle',
     'lncrna_mrna_pickle': 'lncrna_mrna.pickle',
-    
+
     'pickle_dir': None,
-    
+
     # directory for exported tables
     'tables_dir': 'omnipath_tables',
-    
+
     # directory for figures
     'figures_dir': 'omnipath_figures',
-    
+
     # directory for LaTeX
     'latex_dir': 'omnipath_latex',
-    
+
     'timestamp_dirs': True,
-    
+
 }
 
 in_datadir = {
@@ -207,10 +207,10 @@ in_cachedir = {
 
 
 class Settings(object):
-    
-    
+
+
     def __init__(self, **kwargs):
-        
+
         self.__dict__.update(kwargs)
 
 
@@ -221,23 +221,23 @@ Defaults = collections.namedtuple(
 
 
 def reset_all():
-    
+
     settings = Settings()
-    
+
     for k in _defaults.keys():
-        
+
         val = getattr(defaults, k)
-        
+
         if k in in_datadir:
             val = os.path.join(ROOT, 'data', val)
-        
+
         setattr(settings, k, val)
-    
+
     # special director with built in default at user level
     for _key, _dir in (('cachedir', 'cache'), ('pickle_dir', 'pickles')):
-        
+
         if getattr(settings, _key) is None:
-            
+
             setattr(
                 settings,
                 _key,
@@ -247,37 +247,37 @@ def reset_all():
                     _dir,
                 )
             )
-    
+
     for k in in_cachedir:
-        
+
         setattr(settings, k, os.path.join(settings.cachedir, _defaults[k]))
-    
+
     globals()['settings'] = settings
 
 
 def setup(**kwargs):
-    
+
     for param, value in iteritems(kwargs):
-        
+
         setattr(settings, param, value)
 
 
 def get(param):
-    
+
     if hasattr(settings, param):
-        
+
         return getattr(settings, param)
 
 
 def get_default(param):
-    
+
     if hasattr(defaults, param):
-        
+
         return getattr(defaults, param)
 
 
 def reset(param):
-    
+
     setup(**{param: get_default(param)})
 
 

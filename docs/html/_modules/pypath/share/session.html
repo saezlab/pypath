@@ -85,14 +85,8 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Release history</a></li>
-</ul>
-
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
             
           
         </div>
@@ -229,22 +223,22 @@
 <span class="k">class</span> <span class="nc">Logger</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">get_log</span><span class="p">()</span>
-    
+
     <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes a message into the logfile.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_name</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">)</span>
-    
+
     <span class="k">def</span> <span class="nf">_console</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes a message to the console and also to the logfile.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">console</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="n">msg</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_name</span><span class="p">)</span>
 
 
@@ -252,13 +246,13 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates new session or returns the one already created.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="n">mod</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="vm">__name__</span><span class="p">]</span>
-    
+
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s1">&#39;session&#39;</span><span class="p">):</span>
-        
+
         <span class="n">new_session</span><span class="p">()</span>
-    
+
     <span class="k">return</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="vm">__name__</span><span class="p">]</span><span class="o">.</span><span class="n">session</span></div>
 
 
@@ -266,28 +260,28 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the ``log.Logger`` instance belonging to the session.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">return</span> <span class="n">get_session</span><span class="p">()</span><span class="o">.</span><span class="n">log</span></div>
 
 
 <div class="viewcode-block" id="new_session"><a class="viewcode-back" href="../../../reference.html#pypath.share.session.new_session">[docs]</a><span class="k">def</span> <span class="nf">new_session</span><span class="p">(</span><span class="n">label</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">log_verbosity</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a new session. In case one already exists it will be deleted.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    label : str</span>
 <span class="sd">        A custom name for the session.</span>
 <span class="sd">    log_verbosity : int</span>
-<span class="sd">        Verbositiy level passed to the logger.</span>
+<span class="sd">        Verbosity level passed to the logger.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="n">mod</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="vm">__name__</span><span class="p">]</span>
-    
+
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s1">&#39;session&#39;</span><span class="p">):</span>
-        
+
         <span class="nb">delattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s1">&#39;session&#39;</span><span class="p">)</span>
-    
+
     <span class="nb">setattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s1">&#39;session&#39;</span><span class="p">,</span> <span class="n">Session</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">log_verbosity</span><span class="p">))</span></div>
 </pre></div>
 

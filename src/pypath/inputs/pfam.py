@@ -45,18 +45,18 @@ def get_pfam(uniprots = None, organism = 9606):
 
     u_pfam = {}
     pfam_u = {}
-    
+
     if uniprots is not None:
-        
+
         prg = progress.Progress(
             len(uniprots) / 30,
             'Downloading data from UniProt',
             1,
         )
         data_all = []
-        
+
         for i in xrange(0, len(uniprots), 30):
-            
+
             to = i + 30
             thisPart = uniprots[i:to]
             thisPart = ' OR '.join(['accession:%s' % u for u in thisPart])
@@ -77,26 +77,26 @@ def get_pfam(uniprots = None, organism = 9606):
             del data[-1]
             data_all += data
             prg.step()
-        
+
         prg.terminate()
-        
+
     else:
-        
+
         organism = taxonomy.ensure_ncbi_tax_id(organism)
-        
+
         if not organism:
-            
+
             return None, None
-        
+
         organismQuery = 'organism:%u AND reviewed:yes' % organism
         get = {
             'query': organismQuery,
             'format': 'tab',
             'columns': 'id,database(Pfam)'
         }
-        
+
         for j in xrange(3):
-            
+
             c = curl.Curl(
                 urls.urls['uniprot_basic']['url'],
                 get = get,
@@ -106,33 +106,33 @@ def get_pfam(uniprots = None, organism = 9606):
             data_all = c.result
             if data_all is not None:
                 break
-        
+
         if data_all is None:
             return None
-        
+
         data_all = data_all.split('\n')
         del data_all[0]
-    
+
     for l in data_all:
-        
+
         l = l.split('\t')
-        
+
         pfams = re.sub(';$', '', l[1]).strip()
         pfams = pfams.split(';') if pfams else []
-        
+
         if l[0] not in u_pfam:
-            
+
             u_pfam[l[0]] = []
-        
+
         u_pfam[l[0]] += pfams
-        
+
         for pfam in pfams:
-            
+
             if pfam not in pfam_u:
                 pfam_u[pfam] = []
-            
+
             pfam_u[pfam].append(l[0])
-    
+
     return u_pfam, pfam_u
 
 
@@ -142,7 +142,7 @@ def get_pfam_regions(
         keepfile = False,
         dicts = 'both',
     ):
-    
+
     url = urls.urls['pfam_up']['url']
     outf = url.split('/')[-1]
     urlmd5 = common.md5(url)
@@ -153,7 +153,7 @@ def get_pfam_regions(
     pfam_u = {}
     uniprots = set(uniprots)
     pfams = set(pfams)
-    
+
     if not os.path.exists(cachefile):
         sys.stdout.write(
             '\t:: Downloading data from %s' %
@@ -164,23 +164,23 @@ def get_pfam_regions(
         else:
             urllib.request.urlretrieve(url, cachefile)
         sys.stdout.write('\n')
-    
+
     with open(cachefile, 'rb') as f:
         f.seek(-4, 2)
         gzsize = struct.unpack('<I', f.read())[0]
         prg = progress.Progress(gzsize, 'Processing Pfam domains', 11)
-    
+
     with gzip.open(cachefile, 'r') as f: # FIXME: Something went wrong here
-        
+
         for l in f:
-            
+
             prg.step(len(l))
             l = l.strip().split()
-            
+
             if l[0] in uniprots or l[4] in pfams:
-                
+
                 if dicts in ['uniprot', 'both']:
-                    
+
                     if l[0] not in u_pfam:
                         u_pfam[l[0]] = {}
                     if l[4] not in u_pfam[l[0]]:
@@ -190,9 +190,9 @@ def get_pfam_regions(
                         'start': int(l[5]),
                         'end': int(l[6])
                     })
-                
+
                 if dicts in ['pfam', 'both']:
-                    
+
                     if l[4] not in pfam_u:
                         pfam_u[l[4]] = {}
                     if l[0] not in pfam_u[l[4]]:
@@ -202,7 +202,7 @@ def get_pfam_regions(
                         'start': int(l[5]),
                         'end': int(l[6])
                     })
-    
+
     prg.terminate()
     if not keepfile:
         os.remove(cachefile)
@@ -215,7 +215,7 @@ def get_pfam_regions(
 
 
 def get_pfam_names():
-    
+
     c = curl.Curl(urls.urls['pfam_pdb']['url'], silent = False)
     data = c.result
     if data is None:
@@ -224,9 +224,9 @@ def get_pfam_names():
     pfam_dname = {}
     data = data.replace('\r', '').split('\n')
     del data[0]
-    
+
     for l in data:
-        
+
         l = l.split('\t')
         if len(l) > 5:
             pfam = l[4].split('.')[0]
@@ -237,35 +237,35 @@ def get_pfam_names():
                 dname_pfam[name] = []
             pfam_dname[pfam].append(name)
             dname_pfam[name].append(pfam)
-    
+
     for k, v in iteritems(pfam_dname):
         pfam_dname[k] = list(set(v))
     for k, v in iteritems(dname_pfam):
         dname_pfam[k] = list(set(v))
-    
+
     return dname_pfam, pfam_dname
 
 
 def get_pfam_pdb():
-    
+
     c = curl.Curl(urls.urls['pfam_pdb']['url'], silent = False)
     data = c.result
-    
+
     if data is None:
-        
+
         return None, None
-    
+
     pdb_pfam = {}
     pfam_pdb = {}
     data = data.replace('\r', '').split('\n')
     del data[0]
-    
+
     for l in data:
-        
+
         l = l.split('\t')
-        
+
         if len(l) > 4:
-            
+
             pfam = l[4].split('.')[0]
             pdb = l[0].lower()
             chain = l[1]
@@ -277,5 +277,5 @@ def get_pfam_pdb():
                 pfam_pdb[pfam] = {}
             pdb_pfam[pdb][pfam] = [chain, start, end]
             pfam_pdb[pfam][pdb] = [chain, start, end]
-    
+
     return pdb_pfam, pfam_pdb

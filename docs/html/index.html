@@ -36,8 +36,7 @@
 
     
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation" href="installation.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -86,14 +85,76 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="webservice.html">Webservice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changelog.html">Release history</a></li>
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a><ul>
+<li><a class="reference internal" href="#webservice">Webservice</a><ul>
+<li><a class="reference internal" href="#query-types">Query types</a></li>
+<li><a class="reference internal" href="#interaction-datasets">Interaction datasets</a></li>
+<li><a class="reference internal" href="#mouse-and-rat">Mouse and rat</a></li>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#molecular-interaction-network">Molecular interaction network</a></li>
+<li><a class="reference internal" href="#enzyme-substrate-interactions">Enzyme-substrate interactions</a></li>
+<li><a class="reference internal" href="#molecular-complexes">Molecular complexes</a></li>
+<li><a class="reference internal" href="#annotations">Annotations</a></li>
+<li><a class="reference internal" href="#roles-in-inter-cellular-communication">Roles in inter-cellular communication</a></li>
+<li><a class="reference internal" href="#exploring-possible-parameters">Exploring possible parameters</a></li>
 </ul>
-
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#can-i-use-omnipath-in-r">Can I use OmniPath in R?</a></li>
+<li><a class="reference internal" href="#installation">Installation</a><ul>
+<li><a class="reference internal" href="#linux">Linux</a></li>
+<li><a class="reference internal" href="#igraph-c-library-cairo-and-pycairo">igraph C library, cairo and pycairo</a></li>
+<li><a class="reference internal" href="#directly-from-git">Directly from git</a></li>
+<li><a class="reference internal" href="#with-pip">With pip</a></li>
+<li><a class="reference internal" href="#build-source-distribution">Build source distribution</a></li>
+<li><a class="reference internal" href="#mac-os-x">Mac OS X</a><ul>
+<li><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#microsoft-windows">Microsoft Windows</a><ul>
+<li><a class="reference internal" href="#with-anaconda">With Anaconda</a></li>
+<li><a class="reference internal" href="#with-other-python-distributions">With other Python distributions</a></li>
+<li><a class="reference internal" href="#known-issues">Known issues</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#release-history">Release History</a><ul>
+<li><a class="reference internal" href="#id3">0.1.0</a></li>
+<li><a class="reference internal" href="#id4">0.2.0</a></li>
+<li><a class="reference internal" href="#id5">0.3.0</a></li>
+<li><a class="reference internal" href="#id6">0.4.0</a></li>
+<li><a class="reference internal" href="#id7">0.5.0</a></li>
+<li><a class="reference internal" href="#id8">0.5.32</a></li>
+<li><a class="reference internal" href="#id9">0.6.31</a></li>
+<li><a class="reference internal" href="#id10">0.7.0</a></li>
+<li><a class="reference internal" href="#id11">0.7.74</a></li>
+<li><a class="reference internal" href="#id12">0.7.93</a></li>
+<li><a class="reference internal" href="#id13">0.7.110</a></li>
+<li><a class="reference internal" href="#id14">0.8</a></li>
+<li><a class="reference internal" href="#id15">0.9</a></li>
+<li><a class="reference internal" href="#id16">0.10.0</a></li>
+<li><a class="reference internal" href="#upcoming">Upcoming</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#features">Features</a><ul>
+<li><a class="reference internal" href="#id-conversion">ID conversion</a></li>
+<li><a class="reference internal" href="#pathways">Pathways</a></li>
+<li><a class="reference internal" href="#structural-features">Structural features</a></li>
+<li><a class="reference internal" href="#sequences">Sequences</a></li>
+<li><a class="reference internal" href="#tissue-expression">Tissue expression</a></li>
+<li><a class="reference internal" href="#functional-annotations">Functional annotations</a></li>
+<li><a class="reference internal" href="#drug-compounds">Drug compounds</a></li>
+<li><a class="reference internal" href="#technical">Technical</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
             
           
         </div>
@@ -159,12 +220,25 @@
             
   <div class="section" id="pypath-a-python-module-for-molecular-signaling-prior-knowledge-processing">
 <h1><em>pypath:</em> A Python module for molecular signaling prior knowledge processing<a class="headerlink" href="#pypath-a-python-module-for-molecular-signaling-prior-knowledge-processing" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><p><strong>Important:</strong> New module structure and new network API</p>
+<p>Around the end of December we added a new network API to <code class="docutils literal notranslate"><span class="pre">pypath</span></code> which
+is not based on <code class="docutils literal notranslate"><span class="pre">igraph</span></code> any more and provides a modular and versatile
+access interface to the network data (since version <code class="docutils literal notranslate"><span class="pre">0.9</span></code>). In January
+we reorganized the submodules in <code class="docutils literal notranslate"><span class="pre">pypath</span></code> in order to create a clear
+structure (since version <code class="docutils literal notranslate"><span class="pre">0.10</span></code>). These are important milestones
+towards version <code class="docutils literal notranslate"><span class="pre">1.0</span></code> and we hope they will make <code class="docutils literal notranslate"><span class="pre">pypath</span></code> more
+convenient to use for everyone. By 18 February we merged these changes
+to the master branch however the <em>pypath guide</em> is still to be updated.
+Apologies for this inconvenience and please don’t hesitate to ask
+questions by opening an issue on github. The old <code class="docutils literal notranslate"><span class="pre">igraph</span></code> based network
+class is still available in the <code class="docutils literal notranslate"><span class="pre">pypath.legacy</span></code> module.</p>
+</div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">note</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">pypath</span></code> supports both Python 2.7 and Python 3.6+. In the beginning,
-pypath has been developed only for Python 2.7. Then the code have been
-adjusted to Py3 and for a few years we develop and test <code class="docutils literal notranslate"><span class="pre">pypath</span></code> in
-Python 3. Therefore this is the better supported Python variant.</p>
+<dt class="field-odd">Py2/3</dt>
+<dd class="field-odd"><p>Although we still keep the compatibility with Python 2, we don’t
+test <code class="docutils literal notranslate"><span class="pre">pypath</span></code> in this environment and very few people uses it
+already. We highly recommend to use <code class="docutils literal notranslate"><span class="pre">pypath</span></code> in Python 3.6+.</p>
 </dd>
 <dt class="field-even">documentation</dt>
 <dd class="field-even"><p><a class="reference external" href="http://saezlab.github.io/pypath">http://saezlab.github.io/pypath</a></p>
@@ -172,104 +246,41 @@ Python 3. Therefore this is the better supported Python variant.</p>
 <dt class="field-odd">issues</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://github.com/saezlab/pypath/issues">https://github.com/saezlab/pypath/issues</a></p>
 </dd>
+<dt class="field-even">contact</dt>
+<dd class="field-even"><p><a class="reference external" href="mailto:omnipathdb&#37;&#52;&#48;gmail&#46;com">omnipathdb<span>&#64;</span>gmail<span>&#46;</span>com</a></p>
+</dd>
+<dt class="field-odd">developers</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">pypath</span></code> is developed in the Saez Lab (<a class="reference external" href="http://saezlab.org">http://saezlab.org</a>) by
+Olga Ivanova, Nicolàs Palacio and Dénes Türei; the R package and the
+Cytoscape app are developed and maintained by Francesco Ceccarelli, Attila
+Gábor, Alberto Valdeolivas and Nicolàs Palacio.</p>
+</dd>
 </dl>
-<div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#linux">Linux</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#igraph-c-library-cairo-and-pycairo">igraph C library, cairo and pycairo</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#directly-from-git">Directly from git</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#with-pip">With pip</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#build-source-distribution">Build source distribution</a></li>
+<p><strong>pypath</strong> is a Python module for processing molecular biology data resources,
+combining them into databases and providing a versatile interface in Python
+as well as exporting the data for access through other platforms such as
+the R (the OmnipathR R/Bioconductor package), web service (at
+<a class="reference external" href="http://omnipathdb.org">http://omnipathdb.org</a>), Cytoscape (the OmniPath Cytoscape app) and BEL
+(Biological Expression Language).</p>
+<p><strong>pypath</strong> provides access to more than 100 resources! It builds 5 major
+combined databases and within these we can distinguish different datasets.
+The 5 major databases are interactions (molecular interaction network or
+pathways), enzyme-substrate relationships, protein complexes, molecular
+annotations (functional roles, localizations, and more) and inter-cellular
+communication roles.</p>
+<p><strong>pypath</strong> consists of a number of submodules and each of them again contains
+a number of submodules. Overall <strong>pypath</strong> consists of around 100 modules.
+The most important higher level submodules:</p>
+<ul class="simple">
+<li><p><em>pypath.core:</em> contains the database classes e.g. network, complex,
+annotations, etc</p></li>
+<li><p><em>pypath.inputs:</em> contains the resource specific methods which directly
+downlad and preprocess data from the original sources</p></li>
+<li><p><em>pypath.omnipath:</em> higher level applications, e.g. a database manager, a
+web server</p></li>
+<li><p><em>pypath.utils:</em> stand alone useful utilities, e.g. identifier translator,
+Gene Ontology processor, BioPax processor, etc</p></li>
 </ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#mac-os-x">Mac OS X</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#troubleshooting">Troubleshooting</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#microsoft-windows">Microsoft Windows</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#with-anaconda">With Anaconda</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#with-other-python-distributions">With other Python distributions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#known-issues">Known issues</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#annot-formats">annot_formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.annot">annot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#bel">bel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.share.cache">cache</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#cellphonedb">cellphonedb</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.share.common">common</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.complex">complex</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.share.curl">curl</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.resources.data_formats">data_formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.inputs.main">dataio</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.resources.descriptions">descriptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.entity">entity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.evidence">evidence</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.omnipath.export">export</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.go">go</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.homology">homology</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.internals.input_formats">input_formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.interaction">interaction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.internals.intera">intera</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.intercell_annot">intercell_annot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.intercell">intercell</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.share.log">log</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.legacy.main">main</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.inputs.mirbase">mirbase</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.mapping">mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.internals.maps">maps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.network">network</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#omnipath">omnipath</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.pdb">pdb</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.visual.plot">plot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.share.progress">progress</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.core.enz_sub">enz_sub</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.pyreact">pyreact</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.reflists">reflists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.internals.refs">refs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.residues">residues</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.internals.resource">resource</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.seq">seq</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#server">server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.share.session">session</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.share.settings">settings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.taxonomy">taxonomy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.utils.unichem">unichem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#uniprot">uniprot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.resources.urls">urls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#module-pypath.omnipath.server.build">build</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#resources">resources</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference.html#id173">network</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="webservice.html">Webservice</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="webservice.html#mouse-and-rat">Mouse and rat</a></li>
-<li class="toctree-l2"><a class="reference internal" href="webservice.html#examples">Examples</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="changelog.html">Release history</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id1">0.1.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">0.2.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id3">0.3.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id4">0.4.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id5">0.5.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id6">0.7.74</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#upcoming">Upcoming</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<p><strong>pypath</strong> consists of a number of submodules to build various databases.
-Most of these are provided as <strong>pandas</strong> data frames. The network database
-is built around igraph to work with molecular network representations e.g.
-protein, miRNA and drug compound interaction networks.</p>
 <div class="section" id="webservice">
 <h2>Webservice<a class="headerlink" href="#webservice" title="Permalink to this headline">¶</a></h2>
 <p><strong>New webservice</strong> from 14 June 2018: the queries slightly changed, have been
@@ -281,7 +292,7 @@ add further GET parameters encoded in the URL.</p>
 <div class="section" id="query-types">
 <h3>Query types<a class="headerlink" href="#query-types" title="Permalink to this headline">¶</a></h3>
 <p>The webservice currently recognizes 7 types of queries: <code class="docutils literal notranslate"><span class="pre">interactions</span></code>,
-<code class="docutils literal notranslate"><span class="pre">ptms</span></code>, <code class="docutils literal notranslate"><span class="pre">annotations</span></code>, <code class="docutils literal notranslate"><span class="pre">complexes</span></code>, <code class="docutils literal notranslate"><span class="pre">intercell</span></code>, <code class="docutils literal notranslate"><span class="pre">queries</span></code> and
+<code class="docutils literal notranslate"><span class="pre">enz_sub</span></code>, <code class="docutils literal notranslate"><span class="pre">annotations</span></code>, <code class="docutils literal notranslate"><span class="pre">complexes</span></code>, <code class="docutils literal notranslate"><span class="pre">intercell</span></code>, <code class="docutils literal notranslate"><span class="pre">queries</span></code> and
 <code class="docutils literal notranslate"><span class="pre">info</span></code>.
 The query types <code class="docutils literal notranslate"><span class="pre">resources</span></code>, <code class="docutils literal notranslate"><span class="pre">network</span></code> and <code class="docutils literal notranslate"><span class="pre">about</span></code> have not been
 implemented yet in the new webservice.</p>
@@ -382,11 +393,11 @@ appear exactly in the order you provided in your query.</p>
 <p>Another query type available is <code class="docutils literal notranslate"><span class="pre">ptms</span></code> which provides enzyme-substrate
 interactions. It is very similar to the <code class="docutils literal notranslate"><span class="pre">interactions</span></code>:</p>
 <blockquote>
-<div><p><a class="reference external" href="http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references,isoforms&amp;enzymes=FYN">http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references,isoforms&amp;enzymes=FYN</a></p>
+<div><p><a class="reference external" href="http://omnipathdb.org/enz_sub?genesymbols=1&amp;fields=sources,references,isoforms&amp;enzymes=FYN">http://omnipathdb.org/enz_sub?genesymbols=1&amp;fields=sources,references,isoforms&amp;enzymes=FYN</a></p>
 </div></blockquote>
 <p>Is there any ubiquitination reaction?</p>
 <blockquote>
-<div><p><a class="reference external" href="http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;types=ubiquitination">http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;types=ubiquitination</a></p>
+<div><p><a class="reference external" href="http://omnipathdb.org/ens_sub?genesymbols=1&amp;fields=sources,references&amp;types=ubiquitination">http://omnipathdb.org/ens_sub?genesymbols=1&amp;fields=sources,references&amp;types=ubiquitination</a></p>
 </div></blockquote>
 <p>And acetylation in mouse?</p>
 <blockquote>
@@ -395,7 +406,7 @@ interactions. It is very similar to the <code class="docutils literal notranslat
 <p>Rat interactions, both directly from rat and homology translated from human,
 from the PhosphoSite database:</p>
 <blockquote>
-<div><p><a class="reference external" href="http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;organisms=10116&amp;databases=PhosphoSite,PhosphoSite_noref">http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;organisms=10116&amp;databases=PhosphoSite,PhosphoSite_noref</a></p>
+<div><p><a class="reference external" href="http://omnipathdb.org/enz_sub?genesymbols=1&amp;fields=sources,references&amp;organisms=10116&amp;databases=PhosphoSite,PhosphoSite_noref">http://omnipathdb.org/enz_sub?genesymbols=1&amp;fields=sources,references&amp;organisms=10116&amp;databases=PhosphoSite,PhosphoSite_noref</a></p>
 </div></blockquote>
 </div>
 <div class="section" id="molecular-complexes">
@@ -424,7 +435,7 @@ annotations from SignaLink:</p>
 </div></blockquote>
 <p>Or the tissue expression of BMP7 from Human Protein Atlas:</p>
 <blockquote>
-<div><p><a class="reference external" href="http://omnipathdb.org/annotations?databases=HPA&amp;proteins=BMP7">http://omnipathdb.org/annotations?databases=HPA&amp;proteins=BMP7</a></p>
+<div><p><a class="reference external" href="http://omnipathdb.org/annotations?databases=HPA_tissue&amp;proteins=BMP7">http://omnipathdb.org/annotations?databases=HPA_tissue&amp;proteins=BMP7</a></p>
 </div></blockquote>
 </div>
 <div class="section" id="roles-in-inter-cellular-communication">
@@ -457,7 +468,7 @@ proteins:</p>
 <p>Sometimes the names and values of the query parameters are not intuitive,
 even though in many cases the server accepts multiple alternatives. To see
 the possible parameters with all possible values you can use the <code class="docutils literal notranslate"><span class="pre">queries</span></code>
-query type. The server checks the paremeter names and values exactly against
+query type. The server checks the parameter names and values exactly against
 these rules and if any of them don’t match you will get an error message
 instead of reply. To see the parameters for the <code class="docutils literal notranslate"><span class="pre">interactions</span></code> query:</p>
 <blockquote>
@@ -473,25 +484,22 @@ our colleague Attila Gabor we have a dedicated package for this:</p>
 <blockquote>
 <div><p><a class="reference external" href="https://github.com/saezlab/OmnipathR">https://github.com/saezlab/OmnipathR</a></p>
 </div></blockquote>
-<p>Alternatively here is a very simple example:</p>
-<blockquote>
-<div><p><a class="reference external" href="https://github.com/saezlab/pypath/tree/master/r_import">https://github.com/saezlab/pypath/tree/master/r_import</a></p>
-</div></blockquote>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="linux">
 <h3>Linux<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h3>
 <p>In almost any up-to-date Linux distribution the dependencies of <strong>pypath</strong> are
-built-in, or provided by the distributors. You only need to install a couple
-of things in your package manager (cairo, py(2)cairo, igraph,
-python(2)-igraph, graphviz, pygraphviz), and after install <strong>pypath</strong> by <em>pip</em>
-(see below). If any module still missing, you can install them the usual way
-by <em>pip</em> or your package manager.</p>
+built-in, or provided by the distributors. You can simply install <strong>pypath</strong>
+by <strong>pip</strong> (see below).
+If any non mandatory dependency is still missing, you can install them the
+usual way by <em>pip</em> or your package manager.</p>
 </div>
 <div class="section" id="igraph-c-library-cairo-and-pycairo">
 <h3>igraph C library, cairo and pycairo<a class="headerlink" href="#igraph-c-library-cairo-and-pycairo" title="Permalink to this headline">¶</a></h3>
-<p><em>python(2)-igraph</em> is a Python interface to use the igraph C library. The
+<p>For the legacy network class or the <code class="docutils literal notranslate"><span class="pre">igraph</span></code> conversion from the current
+network class <em>python-igraph</em> must be installed.
+<em>python(2)-igraph</em> is a Python interface to use the igraph C library. The
 C library must be installed. The same goes for <em>cairo</em>, <em>py(2)cairo</em> and
 <em>graphviz</em>.</p>
 </div>
@@ -517,12 +525,15 @@ C library must be installed. The same goes for <em>cairo</em>, <em>py(2)cairo</e
 </div>
 <div class="section" id="mac-os-x">
 <h3>Mac OS X<a class="headerlink" href="#mac-os-x" title="Permalink to this headline">¶</a></h3>
-<p>On OS X installation is not straightforward primarily because cairo needs to
-be compiled from source. We provide 2 scripts here: the
-<strong>mac-install-brew.sh</strong> installs everything with HomeBrew, and
+<p>Recently the installation on Mac should not be more complicated than on Linux:
+you can simply install by <strong>pip</strong> (see above).</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">igraph</span></code> was a mandatory dependency and it didn’t provide wheels
+the OS X installation was not straightforward primarily because cairo needs to
+be compiled from source. If you want igraph and cairo we provide two scripts
+<a class="reference external" href="src/scripts">here</a>: the <strong>mac-install-brew.sh</strong> installs everything with HomeBrew and
 <strong>mac-install-conda.sh</strong> installs from Anaconda distribution. With these
-scripts installation of igraph, cairo and graphviz goes smoothly most of the
-time, and options are available for omitting the 2 latter. To know more see
+scripts, installation of igraph, cairo and graphviz goes smoothly most of the
+time and options are available to omit the last two. To know more, see
 the description in the script header. There is a third script
 <strong>mac-install-source.sh</strong> which compiles everything from source and presumes
 only Python 2.7 and Xcode installed. We do not recommend this as it is time
@@ -531,7 +542,7 @@ consuming and troubleshooting requires expertise.</p>
 <h4>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">no</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">...</span></code> when you try to load a module in Python. Did
-theinstallation of the module run without error? Try to run again the specific
+the installation of the module run without error? Try to run again the specific
 part from the mac install shell script to see if any error comes up. Is the
 path where the module has been installed in your <code class="docutils literal notranslate"><span class="pre">$PYTHONPATH</span></code>? Try <code class="docutils literal notranslate"><span class="pre">echo</span>
 <span class="pre">$PYTHONPATH</span></code> to see the current paths. Add your local install directories if
@@ -594,10 +605,9 @@ external dependencies, after <em>pip</em> install should work. On Windows certai
 packages can not be installed by compiled from source by <em>pip</em>, instead the
 easiest to install them precompiled. These are in our case <em>fisher, lxml,
 numpy (mkl version), pycairo, igraph, pygraphviz, scipy and statsmodels</em>. The
-precompiled packages are available here:
-<a class="reference external" href="http://www.lfd.uci.edu/~gohlke/pythonlibs/">http://www.lfd.uci.edu/~gohlke/pythonlibs/</a>. We tested the setup with Python
-3.4.3 and Python 2.7.11. The former should just work fine, while with the
-latter we have issues to be resolved.</p>
+precompiled packages are available <a class="reference external" href="http://www.lfd.uci.edu/~gohlke/pythonlibs/">here</a>.
+We tested the setup with Python 3.4.3 and Python 2.7.11. The former should just
+work fine, while with the latter we have issues to be resolved.</p>
 </div>
 <div class="section" id="known-issues">
 <h4>Known issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h4>
@@ -609,7 +619,11 @@ likely you won’t call those at all.</p></li>
 <li><p>Encoding related exceptions in Python2: these might occur at some points in
 the module, please send the traceback if you encounter one, and we will fix
 as soon as possible.</p></li>
-<li><p>For Mac OS X (v &gt;= 10.11 El Capitan) import of pypath fails with error: “libcurl link-time ssl backend (openssl) is different from compile-time ssl backend (none/other)”. To fix it, you may need to reinstall pycurl library using special flags. More information and steps can be found e.g. [here](<a class="reference external" href="https://cscheng.info/2018/01/26/installing-pycurl-on-macos-high-sierra.html">https://cscheng.info/2018/01/26/installing-pycurl-on-macos-high-sierra.html</a>)</p></li>
+<li><p>For Mac OS X (v &gt;= 10.11 El Capitan) import of pypath fails with error:
+“libcurl link-time ssl backend (openssl) is different from compile-time ssl
+backend (none/other)”. To fix it, you may need to reinstall pycurl library
+using special flags. More information and steps can be found
+<a class="reference external" href="https://cscheng.info/2018/01/26/installing-pycurl-on-macos-high-sierra.html">here</a>.</p></li>
 </ul>
 <p><em>Special thanks to Jorge Ferreira for testing pypath on Windows!</em></p>
 </div>
@@ -618,50 +632,50 @@ as soon as possible.</p></li>
 <div class="section" id="release-history">
 <h2>Release History<a class="headerlink" href="#release-history" title="Permalink to this headline">¶</a></h2>
 <p>Main improvements in the past releases:</p>
-<div class="section" id="id1">
-<h3>0.1.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<h3>0.1.0<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>First release of PyPath, for initial testing.</p></li>
 </ul>
 </div>
-<div class="section" id="id2">
-<h3>0.2.0<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id4">
+<h3>0.2.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Lots of small improvements in almost every module</p></li>
 <li><p>Networks can be read from local files, remote files, lists or provided by any function</p></li>
 <li><p>Almost all redistributed data have been removed, every source downloaded from the original provider.</p></li>
 </ul>
 </div>
-<div class="section" id="id3">
-<h3>0.3.0<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id5">
+<h3>0.3.0<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>First version with partial Python 3 support.</p></li>
 </ul>
 </div>
-<div class="section" id="id4">
-<h3>0.4.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id6">
+<h3>0.4.0<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><strong>pyreact</strong> module with <strong>BioPaxReader</strong> and <strong>PyReact</strong> classes added</p></li>
 <li><p>Process description databases, BioPax and PathwayCommons SIF conversion rules are supported</p></li>
 <li><p>Format definitions for 6 process description databases included.</p></li>
 </ul>
 </div>
-<div class="section" id="id5">
-<h3>0.5.0<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id7">
+<h3>0.5.0<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Many classes have been added to the <strong>plot</strong> module</p></li>
 <li><p>All figures and tables in the manuscript can be generated automatically</p></li>
 <li><p>This is supported by a new module, <strong>analysis</strong>, which implements a generic workflow in its <strong>Workflow</strong> class.</p></li>
 </ul>
 </div>
-<div class="section" id="id6">
-<h3>0.5.32<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id8">
+<h3>0.5.32<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><cite>chembl</cite>, <cite>unichem</cite>, <cite>mysql</cite> and <cite>mysql_connect</cite> modules made Python3 compatible</p></li>
 </ul>
 </div>
-<div class="section" id="id7">
-<h3>0.6.31<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id9">
+<h3>0.6.31<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Orthology translation of network</p></li>
 <li><p>Homologene UniProt dict to translate between different organisms UniProt-to-UniProt</p></li>
@@ -669,14 +683,14 @@ as soon as possible.</p></li>
 <li><p>Better processing of PhosphoSite regulatory sites</p></li>
 </ul>
 </div>
-<div class="section" id="id8">
-<h3>0.7.0<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id10">
+<h3>0.7.0<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>TF-target, miRNA-mRNA and TF-miRNA interactions from many databases</p></li>
 </ul>
 </div>
-<div class="section" id="id9">
-<h3>0.7.74<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id11">
+<h3>0.7.74<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>New web server based on <cite>pandas</cite> data frames</p></li>
 <li><p>New module <cite>export</cite> for generating data frames of interactions or enzyme-substrate interactions</p></li>
@@ -684,20 +698,20 @@ as soon as possible.</p></li>
 <li><p>TF-target interactions from DoRothEA</p></li>
 </ul>
 </div>
-<div class="section" id="id10">
-<h3>0.7.93<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id12">
+<h3>0.7.93<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>New <cite>dataio</cite> methods for Gene Ontology</p></li>
 </ul>
 </div>
-<div class="section" id="id11">
-<h3>0.7.110<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id13">
+<h3>0.7.110<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Many new docstrings</p></li>
 </ul>
 </div>
-<div class="section" id="id12">
-<h3>0.8<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id14">
+<h3>0.8<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>New module <cite>complex</cite>: a comprehensive database of complexes</p></li>
 <li><p>New module <cite>annot</cite>: database of protein annotations (function, location)</p></li>
@@ -711,17 +725,24 @@ these modules build databases and provide query methods, sometimes they even aut
 delete data to free memory</p></li>
 <li><p>New interaction category in <cite>data_formats</cite>: <cite>ligand_receptor</cite></p></li>
 <li><p>Improved logging and control over verbosity</p></li>
-<li><p>Better control over paremeters by the <cite>settings</cite> module</p></li>
+<li><p>Better control over parameters by the <cite>settings</cite> module</p></li>
 <li><p>Many methods in <cite>dataio</cite> have been improved or fixed, docs and code style largely improved</p></li>
 <li><p>Started to add tests especially for methods in <cite>dataio</cite></p></li>
 </ul>
 </div>
-<div class="section" id="id13">
-<h3>0.9<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id15">
+<h3>0.9<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>The network database is not dependent any more on <cite>python-igraph</cite> hence it
 has been removed from the mandatory dependencies</p></li>
 <li><p>New API for the network, interactions, evidences, molecular entities</p></li>
+</ul>
+</div>
+<div class="section" id="id16">
+<h3>0.10.0<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>New module structure: modules grouped into <cite>core</cite>, <cite>inputs</cite>, <cite>internals</cite>,
+<cite>legacy</cite>, <cite>omnipath</cite>, <cite>resources</cite>, <cite>share</cite> and <cite>utils</cite> submodules.</p></li>
 </ul>
 </div>
 <div class="section" id="upcoming">
@@ -737,6 +758,10 @@ has been removed from the mandatory dependencies</p></li>
 </div>
 <div class="section" id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p><em>Warning:</em>
+The sections below are outdated, will be updated soon</p>
+</div></blockquote>
 <p>In the beginning the primary aim of <strong>pypath</strong> was to build networks from
 multiple sources using an igraph object as the fundament of the integrated
 data structure. From version 0.7 and 0.8 this design principle started to
@@ -750,8 +775,8 @@ the ID conversion module <strong>pypath.mapping</strong>.</p>
 rug compound data, searching drug targets and compounds in <strong>ChEMBL</strong>.</p>
 <div class="section" id="id-conversion">
 <h3>ID conversion<a class="headerlink" href="#id-conversion" title="Permalink to this headline">¶</a></h3>
-<p>The ID conversion module <code class="docutils literal notranslate"><span class="pre">mapping</span></code> can be used independently. It has the
-feature to translate secondary UniProt IDs to primaries, and Trembl IDs to
+<p>The ID conversion module <code class="docutils literal notranslate"><span class="pre">utils.mapping</span></code> can be used independently. It has
+the feature to translate secondary UniProt IDs to primaries, and Trembl IDs to
 SwissProt, using primary Gene Symbols to find the connections. This module
 automatically loads and stores the necessary conversion tables. Many tables
 are predefined, such as all the IDs in <strong>UniProt mapping service,</strong> while
@@ -761,7 +786,7 @@ provided in the module <code class="docutils literal notranslate"><span class="p
 <div class="section" id="pathways">
 <h3>Pathways<a class="headerlink" href="#pathways" title="Permalink to this headline">¶</a></h3>
 <p><strong>pypath</strong> includes data and predefined format descriptions for more than 25
-high quality, literature curated databases. The inut formats are defined in
+high quality, literature curated databases. The input formats are defined in
 the <code class="docutils literal notranslate"><span class="pre">data_formats</span></code> module. For some resources data downloaded on the fly,
 where it is not possible, data is redistributed with the module. Descriptions
 and comprehensive information about the resources is available in the
@@ -784,7 +809,7 @@ segment in <strong>UniProt</strong> protein sequences while being aware of isofo
 </div>
 <div class="section" id="tissue-expression">
 <h3>Tissue expression<a class="headerlink" href="#tissue-expression" title="Permalink to this headline">¶</a></h3>
-<p>For 3 protein expression databases there are functions and modules for
+<p>For three protein expression databases there are functions and modules for
 downloading and combining the expression data with the network. These are the
 Human Protein Atlas, the ProteomicsDB and GIANT. The <code class="docutils literal notranslate"><span class="pre">giant</span></code> and
 <code class="docutils literal notranslate"><span class="pre">proteomicsdb</span></code> modules can be used also as stand alone Python clients for
@@ -813,8 +838,8 @@ You need to download the ChEMBL MySQL dump, and load into your own server.</p>
 <h3>Technical<a class="headerlink" href="#technical" title="Permalink to this headline">¶</a></h3>
 <p>The module <code class="docutils literal notranslate"><span class="pre">pypath.curl</span></code> provides a very flexible <strong>download manager</strong>
 built on top of <code class="docutils literal notranslate"><span class="pre">pycurl</span></code>. The classes <code class="docutils literal notranslate"><span class="pre">pypath.curl.Curl()</span></code> and
-<code class="docutils literal notranslate"><span class="pre">pypath.curl.FileOpener</span></code> accept numerous arguments, try to deal in a smart
-way with local <strong>cache,</strong> authentication, redirects, uncompression, character
+<code class="docutils literal notranslate"><span class="pre">pypath.curl.FileOpener</span></code> accept numerous arguments to deal in a smart
+way with local <strong>cache</strong>, authentication, redirects, uncompression, character
 encodings, FTP and HTTP transactions, and many other stuff. Cache can grow to
 several GBs, and takes place in <code class="docutils literal notranslate"><span class="pre">~/.pypath/cache</span></code> by default. If you
 experience issues using <code class="docutils literal notranslate"><span class="pre">pypath</span></code> these are most often related to failed
@@ -828,8 +853,8 @@ using the <code class="docutils literal notranslate"><span class="pre">pypath.se
 <p>The <code class="docutils literal notranslate"><span class="pre">pypath.session</span></code> and <code class="docutils literal notranslate"><span class="pre">pypath.log</span></code> modules take care of setting up
 session level parameters and logging. Each session has a random 5 character
 identifier e.g. <code class="docutils literal notranslate"><span class="pre">y5jzx</span></code>. The default log file in this case is
-<code class="docutils literal notranslate"><span class="pre">pypath_log/pypath-y5jzx.log</span></code>. The log messages flushed in every 2 seconds
-by default. You can always change these things by the <code class="docutils literal notranslate"><span class="pre">settings</span></code> module.
+<code class="docutils literal notranslate"><span class="pre">pypath_log/pypath-y5jzx.log</span></code>. The log messages are flushed every 2 seconds
+by default. You can always change these things using the <code class="docutils literal notranslate"><span class="pre">settings</span></code> module.
 In this module you can get and set the values of various parameters using
 the <code class="docutils literal notranslate"><span class="pre">pypath.settings.setup()</span></code> and the <code class="docutils literal notranslate"><span class="pre">pypath.settings.get()</span></code> methods.</p>
 <p>A simple <strong>webservice</strong> comes with this module: the <code class="docutils literal notranslate"><span class="pre">server</span></code> module based on
@@ -844,13 +869,6 @@ HTTP with REST style querying.</p>
            
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-    </div>
   
 
   <hr/>

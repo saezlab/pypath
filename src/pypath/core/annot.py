@@ -390,7 +390,7 @@ class CustomAnnotation(session_mod.Logger):
         """
 
         self._log('Creating data frame from custom annotation.')
-        
+
         header = [
             'category',
             'database',
@@ -398,7 +398,7 @@ class CustomAnnotation(session_mod.Logger):
             'genesymbol',
             'entity_type',
         ]
-        
+
         dtypes = {
             'category':    'category',
             'database':    'category',
@@ -1422,25 +1422,25 @@ class CustomAnnotation(session_mod.Logger):
                 self.entities_by_resource(entity_types = entity_types)
             )
         )
-    
-    
+
+
     def get_entities(self):
-        
+
         return set.union(*self.classes.values())
-    
-    
+
+
     def numof_entities(self):
-        
+
         return len(self.get_entities())
-    
-    
+
+
     def numof_classes(self):
-        
+
         return len(self.classes)
-    
-    
+
+
     def numof_records(self):
-        
+
         return sum(map(len, self.classes.values()))
 
 
@@ -2100,8 +2100,8 @@ class AnnotationBase(resource.AbstractResource):
 
         for i in xrange(len(fields)):
 
-            this_ifields = ifields[:i+1]
-            this_fields  =  fields[:i+1]
+            this_ifields = ifields[:i + 1]
+            this_fields  =  fields[:i + 1]
 
             value_combinations = set(
                 tuple(annot[j] for j in this_ifields)
@@ -2993,7 +2993,7 @@ class CellSurfaceProteinAtlas(AnnotationBase):
     def __init__(
             self,
             ncbi_tax_id = 9606,
-            **kwargs,
+            **kwargs
         ):
         """
         The name of this resource abbreviated as `CSPA`.
@@ -3008,7 +3008,7 @@ class CellSurfaceProteinAtlas(AnnotationBase):
             name = 'CSPA',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'get_cspa',
-            **kwargs,
+            **kwargs
         )
 
 
@@ -3413,7 +3413,7 @@ class CellPhoneDB(AnnotationBase):
     def _process_method(self, *args, **kwargs):
 
         self.annot = dict(
-            (uniprot, {annot,})
+            (uniprot, {annot, })
             for uniprot, annot in
             iteritems(self.data)
         )
@@ -3594,7 +3594,7 @@ class LigandReceptor(AnnotationBase):
         )
         original_id = record[i_id]
         uniprots = mapping.map_name(original_id, id_type, 'uniprot')
-        
+
         for uniprot in uniprots:
 
             annot[uniprot].add(
@@ -4056,7 +4056,7 @@ class AnnotationTable(session_mod.Logger):
         ])
 
         self.names = self.names[ikeep]
-        self.data  = self.data[:,ikeep]
+        self.data  = self.data[:, ikeep]
         self.set_cols()
 
 
@@ -4067,7 +4067,7 @@ class AnnotationTable(session_mod.Logger):
         self.sets = dict(
             (
                 name,
-                set(self.reference_set[self.data[:,i]])
+                set(self.reference_set[self.data[:, i]])
             )
             for i, name in enumerate(self.names)
         )
@@ -4308,20 +4308,20 @@ class AnnotationTable(session_mod.Logger):
     
     
     def numof_entities(self):
-        
+
         return len(self.get_entities())
-    
-    
+
+
     def numof_records(self):
-        
+
         return sum(an.numof_records() for an in self.annots.values())
-    
-    
+
+
     def numof_resources(self):
-        
+
         return len(self.annots)
-    
-    
+
+
     def __repr__(self):
 
         return (

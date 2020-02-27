@@ -85,14 +85,8 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Release history</a></li>
-</ul>
-
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
             
           
         </div>
@@ -360,7 +354,7 @@
 <span class="sd">    Tells if a string represents a floating point number,</span>
 <span class="sd">    i.e. it can be converted by `float`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">refloat</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">num</span><span class="p">))</span></div>
 
 
@@ -369,7 +363,7 @@
 <span class="sd">    Tells if a string represents an integer,</span>
 <span class="sd">    i.e. it can be converted by `int`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">reint</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">num</span><span class="p">))</span></div>
 
 
@@ -378,7 +372,7 @@
 <span class="sd">    Returns `num` converted from string to float if `num` represents a</span>
 <span class="sd">    float otherwise `numpy.nan`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_float</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span></div>
 
 
@@ -388,21 +382,21 @@
 <span class="sd">    otherwise it creates a single element set out of it.</span>
 <span class="sd">    If `var` is None returns empty set.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="n">var</span>
-        
+
     <span class="k">elif</span> <span class="n">var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        
+
         <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
-        
+
     <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">basestring</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s1">&#39;__iter__&#39;</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
-        
+
     <span class="k">else</span><span class="p">:</span>
-        
+
         <span class="k">return</span> <span class="p">{</span><span class="n">var</span><span class="p">}</span></div>
 
 
@@ -411,17 +405,17 @@
 <span class="sd">    Makes sure `var` is a list otherwise creates a single element list</span>
 <span class="sd">    out of it. If `var` is None returns empty list.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="n">var</span>
-        
+
     <span class="k">elif</span> <span class="n">var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        
+
         <span class="k">return</span> <span class="p">[]</span>
-        
+
     <span class="k">else</span><span class="p">:</span>
-        
+
         <span class="k">return</span> <span class="p">[</span><span class="n">var</span><span class="p">]</span></div>
 
 
@@ -1148,18 +1142,18 @@
     <span class="n">_d</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-        
+
         <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">vals</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span> <span class="ow">in</span> <span class="n">simple_types</span> <span class="k">else</span> <span class="n">vals</span>
-        
+
         <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">:</span>
-            
+
             <span class="k">if</span> <span class="n">val</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_d</span><span class="p">:</span>
                 <span class="n">_d</span><span class="p">[</span><span class="n">val</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
-            
+
             <span class="n">_d</span><span class="p">[</span><span class="n">val</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_d</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
-        
+
         <span class="n">_d</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">_d</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">_d</span>
@@ -1388,9 +1382,9 @@
 <span class="sd">    The last section might be shorter than ``size``.</span>
 <span class="sd">    Following https://stackoverflow.com/a/3744502/854988.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="o">//</span> <span class="n">size</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-        
+
         <span class="k">yield</span> <span class="n">lst</span><span class="p">[</span><span class="n">size</span> <span class="o">*</span> <span class="n">i</span><span class="p">:</span><span class="n">size</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
 
 
@@ -1402,19 +1396,19 @@
 <span class="sd">    assigned to the other keys, depending on the operator ``op``.</span>
 <span class="sd">    This method can be used among other things to find the shared and</span>
 <span class="sd">    unique entities across resources.</span>
-<span class="sd">    </span>
+
 <span class="sd">    :arg str op:</span>
 <span class="sd">        Either `shared` or `unique`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">if</span> <span class="n">group</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">by_group</span><span class="p">:</span>
-        
+
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s1">&#39;Group `</span><span class="si">%s</span><span class="s1">` missing from the dict of groups!&#39;</span> <span class="o">%</span> <span class="n">group</span>
         <span class="p">)</span>
-    
+
     <span class="n">_op</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">sub</span> <span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="s1">&#39;unique&#39;</span> <span class="k">else</span> <span class="n">operator</span><span class="o">.</span><span class="n">and_</span>
-    
+
     <span class="k">return</span> <span class="n">_op</span><span class="p">(</span>
         <span class="n">by_group</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="k">if</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">by_group</span> <span class="k">else</span> <span class="nb">set</span><span class="p">(),</span>
         <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
@@ -1434,7 +1428,7 @@
 <span class="sd">    This method can be used among other things to find the shared entities</span>
 <span class="sd">    across resources.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">return</span> <span class="n">shared_unique</span><span class="p">(</span>
         <span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span>
         <span class="n">group</span> <span class="o">=</span> <span class="n">group</span><span class="p">,</span>
@@ -1450,7 +1444,7 @@
 <span class="sd">    other keys. This method can be used among other things to find the</span>
 <span class="sd">    unique entities across resources.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">return</span> <span class="n">shared_unique</span><span class="p">(</span>
         <span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span>
         <span class="n">group</span> <span class="o">=</span> <span class="n">group</span><span class="p">,</span>
@@ -1466,7 +1460,7 @@
 <span class="sd">    This method can be used among other things to count the shared entities</span>
 <span class="sd">    across resources.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">shared_elements</span><span class="p">(</span><span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="n">group</span><span class="p">))</span>
 
 
@@ -1478,7 +1472,7 @@
 <span class="sd">    This method can be used among other things to count the unique entities</span>
 <span class="sd">    across resources.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_elements</span><span class="p">(</span><span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="n">group</span><span class="p">))</span>
 
 
@@ -1488,9 +1482,9 @@
 <span class="sd">    either shared or unique elements across all *set*s, depending on</span>
 <span class="sd">    the operation ``op``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="n">method</span> <span class="o">=</span> <span class="nb">len</span> <span class="k">if</span> <span class="n">counts</span> <span class="k">else</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
-    
+
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="p">(</span>
             <span class="n">label</span><span class="p">,</span>
@@ -1508,7 +1502,7 @@
 <span class="sd">    the counts of either the shared or unique elements across all *set*s,</span>
 <span class="sd">    depending on the operation ``op``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">return</span> <span class="n">shared_unique_foreach</span><span class="p">(</span>
         <span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span>
         <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;shared&#39;</span><span class="p">,</span>
@@ -1517,22 +1511,22 @@
 
 
 <span class="k">def</span> <span class="nf">shared_foreach</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
-    
+
     <span class="k">return</span> <span class="n">shared_unique_foreach</span><span class="p">(</span><span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;shared&#39;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">unique_foreach</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
-    
+
     <span class="k">return</span> <span class="n">shared_unique_foreach</span><span class="p">(</span><span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;unique&#39;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">n_shared_foreach</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
-    
+
     <span class="k">return</span> <span class="n">n_shared_unique_foreach</span><span class="p">(</span><span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;shared&#39;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">n_unique_foreach</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
-    
+
     <span class="k">return</span> <span class="n">n_shared_unique_foreach</span><span class="p">(</span><span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;unique&#39;</span><span class="p">)</span>
 
 
@@ -1540,7 +1534,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a *dict* of *set*s returns the union of the values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">return</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">dict_of_sets</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">if</span> <span class="n">dict_of_sets</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span>
 
 
@@ -1548,10 +1542,10 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a *dict* of *set*s or other values with ``__len__`` returns a</span>
 <span class="sd">    *dict* of numbers with the length of each value in the original *dict*.</span>
-<span class="sd">    </span>
+
 <span class="sd">    This function is recursively works on dicts of dicts.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="p">(</span>
             <span class="n">key</span><span class="p">,</span>
@@ -1568,7 +1562,7 @@
 <span class="k">def</span> <span class="nf">dict_expand_keys</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">front</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    From a *dict* with *tuple* keys builds a dict of dicts.</span>
-<span class="sd">    </span>
+
 <span class="sd">    :arg dict dct:</span>
 <span class="sd">        A *dict* with tuple keys (if keys are not tuples ``dct`` will be</span>
 <span class="sd">        returned unchanged).</span>
@@ -1580,37 +1574,37 @@
 <span class="sd">        If ``True`` the tuple keys will be chopped from the front, otherwise</span>
 <span class="sd">        from their ends.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        
+
         <span class="k">return</span> <span class="n">dct</span>
-    
+
     <span class="n">new</span> <span class="o">=</span> <span class="p">{}</span>
-    
+
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
-        
+
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-            
+
             <span class="n">new</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-        
+
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            
+
             <span class="n">new</span><span class="p">[</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">val</span>
-        
+
         <span class="k">else</span><span class="p">:</span>
-            
+
             <span class="n">outer_key</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">front</span> <span class="k">else</span> <span class="n">key</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">inner_key</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">front</span> <span class="k">else</span> <span class="n">key</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inner_key</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                
+
                 <span class="n">inner_key</span> <span class="o">=</span> <span class="n">inner_key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            
+
             <span class="n">sub_dct</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">outer_key</span><span class="p">,</span> <span class="p">{})</span>
             <span class="n">sub_dct</span><span class="p">[</span><span class="n">inner_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-    
+
     <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        
+
         <span class="n">new</span> <span class="o">=</span> <span class="p">(</span>
             <span class="nb">dict</span><span class="p">(</span>
                 <span class="p">(</span>
@@ -1622,7 +1616,7 @@
                 <span class="k">if</span> <span class="n">front</span> <span class="k">else</span>
             <span class="n">dict_expand_keys</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">front</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
         <span class="p">)</span>
-    
+
     <span class="k">return</span> <span class="n">new</span>
 
 
@@ -1634,7 +1628,7 @@
     <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    From a dict of dicts builds a dict with tuple keys.</span>
-<span class="sd">    </span>
+
 <span class="sd">    :arg dict dct:</span>
 <span class="sd">        A dict of dicts (if values are not dicts it will be returned</span>
 <span class="sd">        unchanged).</span>
@@ -1651,9 +1645,9 @@
 <span class="sd">        the outer key tuples. If ``False`` the inner tuple keys will be added</span>
 <span class="sd">        as an element of the tuple key i.e. tuple in tuple.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">if</span> <span class="ow">not</span> <span class="n">front</span><span class="p">:</span>
-        
+
         <span class="c1"># this is difficult to implement because we have no idea about</span>
         <span class="c1"># the depth; this version ensures an even key length for the</span>
         <span class="c1"># tuple keys; another alterntive would be to iterate recursively</span>
@@ -1664,21 +1658,21 @@
             <span class="n">default</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">dict_expand_keys</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="n">maxdepth</span> <span class="o">-</span> <span class="n">depth</span><span class="p">,</span> <span class="n">front</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-    
+
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">dct</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
-        
+
         <span class="k">return</span> <span class="n">dct</span>
-    
+
     <span class="n">new</span> <span class="o">=</span> <span class="p">{}</span>
-    
+
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
-        
+
         <span class="n">key</span> <span class="o">=</span> <span class="n">key</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="n">key</span><span class="p">,)</span>
-        
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            
+
             <span class="k">for</span> <span class="n">key1</span><span class="p">,</span> <span class="n">val1</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
-                
+
                 <span class="n">_key</span> <span class="o">=</span> <span class="n">key</span> <span class="o">+</span> <span class="p">(</span>
                     <span class="n">key1</span>
                         <span class="k">if</span> <span class="p">(</span>
@@ -1688,43 +1682,43 @@
                     <span class="p">(</span><span class="n">key1</span><span class="p">,)</span>
                 <span class="p">)</span>
                 <span class="n">new</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val1</span>
-            
+
         <span class="k">else</span><span class="p">:</span>
-            
+
             <span class="n">new</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-    
+
     <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        
+
         <span class="n">new</span> <span class="o">=</span> <span class="n">dict_collapse_keys</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-    
+
     <span class="k">return</span> <span class="n">new</span>
 
 
 <span class="k">def</span> <span class="nf">shared_unique_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;shared&#39;</span><span class="p">):</span>
-    
+
     <span class="n">counts</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">by_group</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
     <span class="n">_op</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">eq</span> <span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="s1">&#39;unique&#39;</span> <span class="k">else</span> <span class="n">operator</span><span class="o">.</span><span class="n">gt</span>
-    
+
     <span class="k">return</span> <span class="p">{</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span> <span class="k">if</span> <span class="n">_op</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="mi">1</span><span class="p">)}</span>
 
 
 <span class="k">def</span> <span class="nf">shared_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
-    
+
     <span class="k">return</span> <span class="n">shared_unique_total</span><span class="p">(</span><span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;shared&#39;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">unique_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
-    
+
     <span class="k">return</span> <span class="n">shared_unique_total</span><span class="p">(</span><span class="n">by_group</span> <span class="o">=</span> <span class="n">by_group</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;unique&#39;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">n_shared_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
-    
+
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">shared_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">))</span>
 
 
 <span class="k">def</span> <span class="nf">n_unique_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">):</span>
-    
+
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_total</span><span class="p">(</span><span class="n">by_group</span><span class="p">))</span>
 
 
@@ -1733,7 +1727,7 @@
 <span class="sd">    For a dict of dicts of sets returns a dict with keys of the outer dict</span>
 <span class="sd">    and values the union of the sets in each of the inner dicts.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="p">(</span>
             <span class="n">key</span><span class="p">,</span>
@@ -1747,7 +1741,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a *dict* of counts and a total count creates a *dict* of percentages.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">val</span> <span class="o">/</span> <span class="n">total</span> <span class="k">if</span> <span class="n">total</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">dict_of_counts</span><span class="p">)</span>
@@ -1755,10 +1749,10 @@
 
 
 <span class="k">def</span> <span class="nf">dict_set_percent</span><span class="p">(</span><span class="n">dict_of_sets</span><span class="p">):</span>
-    
+
     <span class="n">total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dict_union</span><span class="p">(</span><span class="n">dict_of_sets</span><span class="p">))</span>
     <span class="n">counts</span> <span class="o">=</span> <span class="n">dict_counts</span><span class="p">(</span><span class="n">dict_of_sets</span><span class="p">)</span>
-    
+
     <span class="k">return</span> <span class="n">dict_percent</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">total</span><span class="p">)</span>
 
 
@@ -1767,9 +1761,9 @@
 <span class="sd">    Returns the memory usage of a ``pandas.DataFrame`` as a string.</span>
 <span class="sd">    Modified from ``pandas.DataFrame.info``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="n">counts</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">get_dtype_counts</span><span class="p">()</span>
-    
+
     <span class="n">size_qualifier</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s1">&#39;+&#39;</span>
             <span class="k">if</span> <span class="p">(</span>
@@ -1778,17 +1772,17 @@
             <span class="p">)</span> <span class="k">else</span>
         <span class="s1">&#39;&#39;</span>
     <span class="p">)</span>
-    
+
     <span class="n">mem_usage</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">(</span><span class="n">index</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">deep</span> <span class="o">=</span> <span class="n">deep</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    
+
     <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;bytes&#39;</span><span class="p">,</span> <span class="s1">&#39;KB&#39;</span><span class="p">,</span> <span class="s1">&#39;MB&#39;</span><span class="p">,</span> <span class="s1">&#39;GB&#39;</span><span class="p">,</span> <span class="s1">&#39;TB&#39;</span><span class="p">]:</span>
-        
+
         <span class="k">if</span> <span class="n">mem_usage</span> <span class="o">&lt;</span> <span class="mf">1024.0</span><span class="p">:</span>
-            
+
             <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%3.1f%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mem_usage</span><span class="p">,</span> <span class="n">size_qualifier</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
-        
+
         <span class="n">mem_usage</span> <span class="o">/=</span> <span class="mf">1024.0</span>
-    
+
     <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%3.1f%s</span><span class="s1"> PB&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mem_usage</span><span class="p">,</span> <span class="n">size_qualifier</span><span class="p">)</span>
 
 
@@ -1797,12 +1791,12 @@
 <span class="sd">    For dicts of numbers returns a dict with the sum of the numbers from</span>
 <span class="sd">    all dicts for all keys.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="n">args</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">args</span>
     <span class="p">]</span>
-    
+
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="p">(</span>
             <span class="n">key</span><span class="p">,</span>
@@ -1873,9 +1867,9 @@
     <span class="c1"># merge numeric values</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">attrs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">in</span> <span class="n">numeric_types</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">attrs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">in</span> <span class="n">numeric_types</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">num_method</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
-    
+
     <span class="n">attrs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
-    
+
     <span class="c1"># in case one is list other is set</span>
     <span class="n">attrs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">attrs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">list_or_set</span><span class="p">(</span><span class="n">attrs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">attrs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
@@ -1932,18 +1926,18 @@
 
     <span class="c1"># in case the objects have `__add__()` method:</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">attrs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;__add__&#39;</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="n">attrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">attrs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
 
 <span class="k">def</span> <span class="nf">_add_method</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">signature</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    
+
     <span class="n">method</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">method_name</span>
-    
+
     <span class="k">if</span> <span class="n">signature</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">inspect</span><span class="p">,</span> <span class="s1">&#39;Signature&#39;</span><span class="p">):</span> <span class="c1"># Py2</span>
-        
+
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signature</span><span class="p">,</span> <span class="n">inspect</span><span class="o">.</span><span class="n">Signature</span><span class="p">):</span>
-            
+
             <span class="n">signature</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">Signature</span><span class="p">([</span>
                 <span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
                     <span class="n">name</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
@@ -1956,31 +1950,31 @@
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">signature</span>
             <span class="p">])</span>
-        
+
         <span class="n">method</span><span class="o">.</span><span class="n">__signature__</span> <span class="o">=</span> <span class="n">signature</span>
-    
+
     <span class="k">if</span> <span class="n">doc</span><span class="p">:</span>
-        
+
         <span class="n">method</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">doc</span>
-    
+
     <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">sets_to_sorted_lists</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-    
+
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">sets_to_sorted_list</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="p">)</span>
-        
+
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">set</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
-        
+
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-        
+
     <span class="k">else</span><span class="p">:</span>
-        
+
         <span class="k">return</span> <span class="n">obj</span>
 </pre></div>
 

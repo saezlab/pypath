@@ -94,7 +94,7 @@ datasets. Each of them has a short name what you can use in the queries
 
 TF-target interactions from TF Regulons, a large collection additional
 enzyme-substrate interactions, and literature curated miRNA-mRNA interacions
-combined from 4 databases. 
+combined from 4 databases.
 
 Mouse and rat
 -------------
@@ -257,7 +257,7 @@ Exploring possible parameters
 Sometimes the names and values of the query parameters are not intuitive,
 even though in many cases the server accepts multiple alternatives. To see
 the possible parameters with all possible values you can use the ``queries``
-query type. The server checks the paremeter names and values exactly against
+query type. The server checks the parameter names and values exactly against
 these rules and if any of them don't match you will get an error message
 instead of reply. To see the parameters for the ``interactions`` query:
 
@@ -327,11 +327,11 @@ you can simply install by **pip** (see above).
 
 When ``igraph`` was a mandatory dependency and it didn't provide wheels
 the OS X installation was not straightforward primarily because cairo needs to
-be compiled from source. If you want igraph and cairo we provide 2 scripts
-here: the **mac-install-brew.sh** installs everything with HomeBrew, and
+be compiled from source. If you want igraph and cairo we provide two scripts
+`here <src/scripts>`_: the **mac-install-brew.sh** installs everything with HomeBrew and
 **mac-install-conda.sh** installs from Anaconda distribution. With these
-scripts installation of igraph, cairo and graphviz goes smoothly most of the
-time, and options are available for omitting the 2 latter. To know more see
+scripts, installation of igraph, cairo and graphviz goes smoothly most of the
+time and options are available to omit the last two. To know more, see
 the description in the script header. There is a third script
 **mac-install-source.sh** which compiles everything from source and presumes
 only Python 2.7 and Xcode installed. We do not recommend this as it is time
@@ -341,7 +341,7 @@ Troubleshooting
 ^^^^^^^^^^^^^^^
 
 * ``no module named ...`` when you try to load a module in Python. Did
-  theinstallation of the module run without error? Try to run again the specific
+  the installation of the module run without error? Try to run again the specific
   part from the mac install shell script to see if any error comes up. Is the
   path where the module has been installed in your ``$PYTHONPATH``? Try ``echo
   $PYTHONPATH`` to see the current paths. Add your local install directories if
@@ -413,10 +413,9 @@ external dependencies, after *pip* install should work. On Windows certain
 packages can not be installed by compiled from source by *pip*, instead the
 easiest to install them precompiled. These are in our case *fisher, lxml,
 numpy (mkl version), pycairo, igraph, pygraphviz, scipy and statsmodels*. The
-precompiled packages are available here:
-http://www.lfd.uci.edu/~gohlke/pythonlibs/. We tested the setup with Python
-3.4.3 and Python 2.7.11. The former should just work fine, while with the
-latter we have issues to be resolved.
+precompiled packages are available `here <http://www.lfd.uci.edu/~gohlke/pythonlibs/>`_.
+We tested the setup with Python 3.4.3 and Python 2.7.11. The former should just
+work fine, while with the latter we have issues to be resolved.
 
 Known issues
 ^^^^^^^^^^^^
@@ -428,7 +427,11 @@ Known issues
 * Encoding related exceptions in Python2: these might occur at some points in
   the module, please send the traceback if you encounter one, and we will fix
   as soon as possible.
-* For Mac OS X (v >= 10.11 El Capitan) import of pypath fails with error: "libcurl link-time ssl backend (openssl) is different from compile-time ssl backend (none/other)". To fix it, you may need to reinstall pycurl library using special flags. More information and steps can be found e.g. [here](https://cscheng.info/2018/01/26/installing-pycurl-on-macos-high-sierra.html)   
+* For Mac OS X (v >= 10.11 El Capitan) import of pypath fails with error:
+  "libcurl link-time ssl backend (openssl) is different from compile-time ssl
+  backend (none/other)". To fix it, you may need to reinstall pycurl library
+  using special flags. More information and steps can be found
+  `here <https://cscheng.info/2018/01/26/installing-pycurl-on-macos-high-sierra.html>`_.
 
 *Special thanks to Jorge Ferreira for testing pypath on Windows!*
 
@@ -520,7 +523,7 @@ Main improvements in the past releases:
   delete data to free memory
 * New interaction category in `data_formats`: `ligand_receptor`
 * Improved logging and control over verbosity
-* Better control over paremeters by the `settings` module
+* Better control over parameters by the `settings` module
 * Many methods in `dataio` have been improved or fixed, docs and code style largely improved
 * Started to add tests especially for methods in `dataio`
 
@@ -578,7 +581,7 @@ Pathways
 --------
 
 **pypath** includes data and predefined format descriptions for more than 25
-high quality, literature curated databases. The inut formats are defined in
+high quality, literature curated databases. The input formats are defined in
 the ``data_formats`` module. For some resources data downloaded on the fly,
 where it is not possible, data is redistributed with the module. Descriptions
 and comprehensive information about the resources is available in the
@@ -604,7 +607,7 @@ segment in **UniProt** protein sequences while being aware of isoforms.
 Tissue expression
 -----------------
 
-For 3 protein expression databases there are functions and modules for
+For three protein expression databases there are functions and modules for
 downloading and combining the expression data with the network. These are the
 Human Protein Atlas, the ProteomicsDB and GIANT. The ``giant`` and
 ``proteomicsdb`` modules can be used also as stand alone Python clients for
@@ -637,8 +640,8 @@ Technical
 
 The module ``pypath.curl`` provides a very flexible **download manager**
 built on top of ``pycurl``. The classes ``pypath.curl.Curl()`` and
-``pypath.curl.FileOpener`` accept numerous arguments, try to deal in a smart
-way with local **cache,** authentication, redirects, uncompression, character
+``pypath.curl.FileOpener`` accept numerous arguments to deal in a smart
+way with local **cache**, authentication, redirects, uncompression, character
 encodings, FTP and HTTP transactions, and many other stuff. Cache can grow to
 several GBs, and takes place in ``~/.pypath/cache`` by default. If you
 experience issues using ``pypath`` these are most often related to failed
@@ -648,13 +651,13 @@ the context managers in ``pypath.curl`` to show, delete or bypass the cache
 for some particular method calls (``pypath.curl.cache_print_on()``,
 ``pypath.curl.cache_delete_on()`` and ``pypath.curl.cache_off()``.
 You can always set up an alternative cache directory for the entire session
-using the ``pypath.settings`` module. 
+using the ``pypath.settings`` module.
 
 The ``pypath.session`` and ``pypath.log`` modules take care of setting up
 session level parameters and logging. Each session has a random 5 character
 identifier e.g. ``y5jzx``. The default log file in this case is
-``pypath_log/pypath-y5jzx.log``. The log messages flushed in every 2 seconds
-by default. You can always change these things by the ``settings`` module.
+``pypath_log/pypath-y5jzx.log``. The log messages are flushed every 2 seconds
+by default. You can always change these things using the ``settings`` module.
 In this module you can get and set the values of various parameters using
 the ``pypath.settings.setup()`` and the ``pypath.settings.get()`` methods.
 

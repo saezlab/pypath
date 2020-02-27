@@ -85,14 +85,8 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Release history</a></li>
-</ul>
-
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
             
           
         </div>
@@ -238,7 +232,7 @@
 <span class="sd">    interactions i.e. with different direction or effect or type (e.g.</span>
 <span class="sd">    transcriptional regulation and post-translational regulation),</span>
 <span class="sd">    each supported by different evidences.</span>
-<span class="sd">    </span>
+
 <span class="sd">    :arg str,pypath.entity.Entity a,b:</span>
 <span class="sd">        The two interacting partners. If an :py:class:`pypath.entity.Entity`</span>
 <span class="sd">        objects provided the other attributes (entity_type, id_type, taxon)</span>
@@ -251,13 +245,13 @@
 <span class="sd">    :arg int taxon_a,taxon_b:</span>
 <span class="sd">        The NCBI Taxonomy Identifiers of partner ``a`` and ``b``</span>
 <span class="sd">        e.g. ``9606`` for human.</span>
-<span class="sd">    </span>
+
 <span class="sd">    :details:</span>
 <span class="sd">        The arguments ``a`` and ``b`` will be assigned to the attribute ``a``</span>
 <span class="sd">        and ``b`` in an alphabetical order, hence it&#39;s possible that</span>
 <span class="sd">        argument ``a`` becomes attribute ``b``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s1">&#39;a&#39;</span><span class="p">,</span>
         <span class="s1">&#39;b&#39;</span><span class="p">,</span>
@@ -271,7 +265,7 @@
         <span class="s1">&#39;negative&#39;</span><span class="p">,</span>
         <span class="s1">&#39;attrs&#39;</span><span class="p">,</span>
     <span class="p">]</span>
-    
+
     <span class="n">_get_methods</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;entities&#39;</span><span class="p">,</span>
         <span class="s1">&#39;evidences&#39;</span><span class="p">,</span>
@@ -295,7 +289,7 @@
         <span class="s1">&#39;resources_via&#39;</span><span class="p">,</span>
         <span class="s1">&#39;resource_names_via&#39;</span><span class="p">,</span>
     <span class="p">}</span>
-    
+
     <span class="n">_get_methods_autogen</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s1">&#39;references&#39;</span><span class="p">,</span>
         <span class="s1">&#39;resources&#39;</span><span class="p">,</span>
@@ -305,7 +299,7 @@
         <span class="s1">&#39;data_models&#39;</span><span class="p">,</span>
         <span class="s1">&#39;interaction_types&#39;</span><span class="p">,</span>
     <span class="p">)</span>
-    
+
     <span class="n">_by_methods</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s1">&#39;resource&#39;</span><span class="p">,</span>
         <span class="s1">&#39;reference&#39;</span><span class="p">,</span>
@@ -314,7 +308,7 @@
         <span class="s1">&#39;interaction_type_and_data_model&#39;</span><span class="p">,</span>
         <span class="s1">&#39;interaction_type_and_data_model_and_resource&#39;</span><span class="p">,</span>
     <span class="p">)</span>
-    
+
     <span class="n">_count_methods</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;references&#39;</span><span class="p">,</span>
         <span class="s1">&#39;resources&#39;</span><span class="p">,</span>
@@ -335,7 +329,7 @@
         <span class="s1">&#39;data_models&#39;</span><span class="p">,</span>
         <span class="s1">&#39;interaction_types&#39;</span><span class="p">,</span>
     <span class="p">}</span>
-    
+
     <span class="n">_get_method_signature</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="s1">&#39;direction&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;effect&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
@@ -345,13 +339,13 @@
         <span class="p">(</span><span class="s1">&#39;via&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;references&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
     <span class="p">]</span>
-    
+
     <span class="n">_degree_modes</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s1">&#39;ALL&#39;</span><span class="p">,</span>
         <span class="s1">&#39;IN&#39;</span><span class="p">,</span>
         <span class="s1">&#39;OUT&#39;</span><span class="p">,</span>
     <span class="p">)</span>
-    
+
     <span class="n">_degree_directions</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;undirected&#39;</span><span class="p">:</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
         <span class="s1">&#39;non_directed&#39;</span><span class="p">:</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
@@ -360,7 +354,7 @@
         <span class="s1">&#39;positive&#39;</span><span class="p">:</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;positive&#39;</span><span class="p">),</span>
         <span class="s1">&#39;negative&#39;</span><span class="p">:</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;negative&#39;</span><span class="p">),</span>
     <span class="p">}</span>
-    
+
     <span class="n">_entity_types</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;protein&#39;</span><span class="p">,</span>
         <span class="p">(</span><span class="s1">&#39;complex&#39;</span><span class="p">,</span> <span class="s1">&#39;complexes&#39;</span><span class="p">),</span>
@@ -369,14 +363,14 @@
         <span class="s1">&#39;small_molecule&#39;</span><span class="p">,</span>
         <span class="kc">None</span><span class="p">,</span>
     <span class="p">}</span>
-    
+
     <span class="n">_entity_values</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;identifiers&#39;</span><span class="p">,</span>
         <span class="s1">&#39;labels&#39;</span><span class="p">,</span>
         <span class="kc">None</span><span class="p">,</span>
     <span class="p">}</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">a</span><span class="p">,</span>
@@ -388,7 +382,7 @@
             <span class="n">taxon_a</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
             <span class="n">taxon_b</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
         <span class="p">):</span>
-        
+
         <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_entity</span><span class="p">(</span>
             <span class="n">identifier</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span>
             <span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type_a</span><span class="p">,</span>
@@ -401,16 +395,16 @@
             <span class="n">entity_type</span> <span class="o">=</span> <span class="n">entity_type_b</span><span class="p">,</span>
             <span class="n">taxon</span> <span class="o">=</span> <span class="n">taxon_b</span><span class="p">,</span>
         <span class="p">)</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">((</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">a_b</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">b_a</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span> <span class="o">=</span> <span class="n">pypath_evidence</span><span class="o">.</span><span class="n">Evidences</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="p">{</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">a_b</span><span class="p">:</span> <span class="n">pypath_evidence</span><span class="o">.</span><span class="n">Evidences</span><span class="p">(),</span>
@@ -425,10 +419,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">a_b</span><span class="p">:</span> <span class="n">pypath_evidence</span><span class="o">.</span><span class="n">Evidences</span><span class="p">(),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">b_a</span><span class="p">:</span> <span class="n">pypath_evidence</span><span class="o">.</span><span class="n">Evidences</span><span class="p">(),</span>
         <span class="p">}</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="p">{}</span>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.reload"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reloads the object from the module level.</span>
@@ -448,23 +442,23 @@
         <span class="n">evnew</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">evmod</span><span class="p">,</span> <span class="s1">&#39;Evidence&#39;</span><span class="p">)</span>
         <span class="n">ennew</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">enmod</span><span class="p">,</span> <span class="s1">&#39;Entity&#39;</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
-        
+
         <span class="k">for</span> <span class="n">evs</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evidences</span><span class="p">,),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span>
         <span class="p">):</span>
-            
+
             <span class="n">evs</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">evsnew</span>
-            
+
             <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">evs</span><span class="p">:</span>
-                
+
                 <span class="n">ev</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">evnew</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">ennew</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">ennew</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_generate_get_methods</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generate_count_methods</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generate_by_methods</span><span class="p">()</span></div>
@@ -477,16 +471,16 @@
             <span class="n">entity_type</span> <span class="o">=</span> <span class="s1">&#39;protein&#39;</span><span class="p">,</span>
             <span class="n">taxon</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
         <span class="p">):</span>
-        
+
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">Entity</span><span class="p">):</span>
-            
+
             <span class="n">identifier</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">Entity</span><span class="p">(</span>
                 <span class="n">identifier</span> <span class="o">=</span> <span class="n">identifier</span><span class="p">,</span>
                 <span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span>
                 <span class="n">entity_type</span> <span class="o">=</span> <span class="n">entity_type</span><span class="p">,</span>
                 <span class="n">taxon</span> <span class="o">=</span> <span class="n">taxon</span><span class="p">,</span>
             <span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">identifier</span>
 
 
@@ -527,7 +521,7 @@
 
 
     <span class="k">def</span> <span class="nf">id_to_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">a</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="n">identifier</span> <span class="k">else</span>
@@ -538,33 +532,33 @@
 
 
     <span class="k">def</span> <span class="nf">direction_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
-        
+
         <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span><span class="p">:</span>
-            
+
             <span class="k">return</span> <span class="n">direction</span>
-        
+
         <span class="n">direction</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id_to_entity</span><span class="p">,</span> <span class="n">direction</span><span class="p">))</span>
-        
+
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">direction</span>
                 <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">a_b</span> <span class="ow">or</span> <span class="n">direction</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_a</span> <span class="k">else</span>
             <span class="kc">None</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">direction_key_identifiers</span><span class="p">(</span><span class="n">direction</span><span class="p">):</span>
-        
+
         <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span><span class="p">:</span>
-            
+
             <span class="k">return</span> <span class="n">direction</span>
-        
+
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ent</span><span class="o">.</span><span class="n">identifier</span> <span class="k">for</span> <span class="n">ent</span> <span class="ow">in</span> <span class="n">direction</span><span class="p">)</span>
-    
-    
+
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_directed_key</span><span class="p">(</span><span class="n">direction</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="n">direction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">direction</span> <span class="o">!=</span> <span class="s1">&#39;undirected&#39;</span>
 
 
@@ -595,17 +589,17 @@
 <span class="sd">            A set of references, used only if the resource have been provided</span>
 <span class="sd">            as ``NetworkResource`` object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">direction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction_key</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            
+
             <span class="n">_log</span><span class="p">(</span>
                 <span class="s1">&#39;Attempting to add evidence with non matching &#39;</span>
                 <span class="s1">&#39;interaction partners.&#39;</span>
             <span class="p">)</span>
             <span class="k">return</span>
-        
+
         <span class="n">evidence</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">evidence</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
@@ -620,34 +614,34 @@
                 <span class="n">references</span> <span class="o">=</span> <span class="n">references</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span> <span class="o">+=</span> <span class="n">evidence</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">+=</span> <span class="n">evidence</span>
-        
+
         <span class="k">if</span> <span class="n">direction</span> <span class="o">!=</span> <span class="s1">&#39;undirected&#39;</span><span class="p">:</span>
-            
+
             <span class="k">if</span> <span class="n">effect</span> <span class="ow">in</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;positive&#39;</span><span class="p">,</span> <span class="s1">&#39;stimulation&#39;</span><span class="p">}:</span>
-                
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">+=</span> <span class="n">evidence</span>
-            
+
             <span class="k">elif</span> <span class="n">effect</span> <span class="ow">in</span> <span class="p">{</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;negative&#39;</span><span class="p">,</span> <span class="s1">&#39;inhibition&#39;</span><span class="p">}:</span>
-                
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">+=</span> <span class="n">evidence</span></div>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">key</span>
-    
-    
+
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="n">InteractionKey</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
@@ -655,71 +649,71 @@
 
 
     <span class="k">def</span> <span class="nf">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span> <span class="o">!=</span> <span class="n">other</span><span class="p">:</span>
-            
+
             <span class="n">_log</span><span class="p">(</span>
                 <span class="s1">&#39;Attempt to merge interactions with &#39;</span>
                 <span class="s1">&#39;non matching interaction partners.&#39;</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_merge_evidences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_attrs</span><span class="p">(</span><span class="o">**</span><span class="n">other</span><span class="o">.</span><span class="n">attrs</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">update_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
+
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">kwargs</span><span class="p">):</span>
-            
+
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
-                
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">combine_attrs</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">val</span><span class="p">))</span>
-                
+
             <span class="k">else</span><span class="p">:</span>
-                
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span>
-        
+
         <span class="n">new</span> <span class="o">+=</span> <span class="n">other</span>
-        
+
         <span class="k">return</span> <span class="n">new</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="n">new</span> <span class="o">=</span> <span class="n">Interaction</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
         <span class="n">new</span> <span class="o">+=</span> <span class="bp">self</span>
-        
+
         <span class="k">return</span> <span class="n">new</span>
-    
-    
+
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_merge_evidences</span><span class="p">(</span><span class="n">one</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="n">one</span><span class="o">.</span><span class="n">evidences</span> <span class="o">+=</span> <span class="n">other</span><span class="o">.</span><span class="n">evidences</span>
-        
+
         <span class="k">for</span> <span class="n">dir_key</span> <span class="ow">in</span> <span class="n">one</span><span class="o">.</span><span class="n">direction</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            
+
             <span class="n">one</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="n">dir_key</span><span class="p">]</span> <span class="o">+=</span> <span class="n">other</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="n">dir_key</span><span class="p">]</span>
-        
+
         <span class="k">for</span> <span class="n">eff_key</span> <span class="ow">in</span> <span class="n">one</span><span class="o">.</span><span class="n">positive</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            
+
             <span class="n">one</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">eff_key</span><span class="p">]</span> <span class="o">+=</span> <span class="n">other</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">eff_key</span><span class="p">]</span>
-        
+
         <span class="k">for</span> <span class="n">eff_key</span> <span class="ow">in</span> <span class="n">one</span><span class="o">.</span><span class="n">negative</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            
+
             <span class="n">one</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">eff_key</span><span class="p">]</span> <span class="o">+=</span> <span class="n">other</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">eff_key</span><span class="p">]</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="s1">&#39;&lt;Interaction: </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">=</span><span class="si">%s</span><span class="s1">=</span><span class="si">%s</span><span class="s1">=</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> [</span><span class="si">%s</span><span class="s1">]&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">label</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>
             <span class="s1">&#39;&lt;&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">b_a</span><span class="p">]</span> <span class="k">else</span> <span class="s1">&#39;=&#39;</span><span class="p">,</span>
@@ -745,25 +739,25 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">label</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&lt;&gt;&#39;</span><span class="p">),</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">other</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="ow">or</span> <span class="n">other</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">Entity</span><span class="p">)</span> <span class="k">else</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span><span class="o">.</span><span class="fm">__contains__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">has_data_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_model</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span><span class="o">.</span><span class="n">has_data_model</span><span class="p">(</span><span class="n">data_model</span><span class="p">)</span>
-    
-    
+
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">data_models</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="p">{</span>
             <span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">data_model</span>
             <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span>
@@ -795,11 +789,11 @@
 <span class="sd">            of the requested direction (or the list of resources if</span>
 <span class="sd">            specified). Returns ``None`` if *direction* is not valid.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">direction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction_key</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            
+
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_answer_type</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="n">direction</span><span class="p">],</span>
                 <span class="n">resources</span> <span class="o">=</span> <span class="n">resources</span><span class="p">,</span>
@@ -838,18 +832,18 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">tgt</span><span class="p">)</span>
-        
+
         <span class="n">answer_type_args</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;resources&#39;</span><span class="p">:</span> <span class="n">resources</span><span class="p">,</span>
             <span class="s1">&#39;evidences&#39;</span><span class="p">:</span> <span class="n">evidences</span><span class="p">,</span>
             <span class="s1">&#39;resource_names&#39;</span><span class="p">:</span> <span class="n">resource_names</span><span class="p">,</span>
             <span class="s1">&#39;sources&#39;</span><span class="p">:</span> <span class="n">sources</span><span class="p">,</span>
         <span class="p">}</span>
-        
+
         <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction_key</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="n">query</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            
+
             <span class="k">return</span> <span class="p">[</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_select_answer_type</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="n">query</span><span class="p">],</span>
@@ -864,7 +858,7 @@
                     <span class="o">**</span><span class="n">answer_type_args</span>
                 <span class="p">),</span>
             <span class="p">]</span>
-            
+
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
@@ -877,7 +871,7 @@
             <span class="n">resource_names</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">sources</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">answer</span>
                 <span class="k">if</span> <span class="n">evidences</span> <span class="k">else</span>
@@ -1013,28 +1007,28 @@
 <span class="sd">            which specific source(s) is(are) to be removed from</span>
 <span class="sd">            :py:attr:`sources` attribute in the specified *direction*.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">direction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction_key</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            
+
             <span class="n">attrs</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_effect_synonyms</span><span class="p">(</span><span class="n">only_sign</span><span class="p">),)</span>
                     <span class="k">if</span> <span class="n">only_sign</span> <span class="k">else</span>
                 <span class="p">(</span><span class="s1">&#39;direction&#39;</span><span class="p">,</span> <span class="s1">&#39;positive&#39;</span><span class="p">,</span> <span class="s1">&#39;negative&#39;</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="n">resource</span> <span class="o">=</span> <span class="n">resource</span> <span class="ow">or</span> <span class="n">source</span>
-            
+
             <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
-                
+
                 <span class="k">if</span> <span class="n">resource</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    
+
                     <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)[</span><span class="n">direction</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span>
                         <span class="n">resource</span> <span class="o">=</span> <span class="n">resource</span><span class="p">,</span>
                         <span class="n">interaction_type</span> <span class="o">=</span> <span class="n">interaction_type</span><span class="p">,</span>
                         <span class="n">via</span> <span class="o">=</span> <span class="n">via</span><span class="p">,</span>
                     <span class="p">)</span>
-                    
+
                 <span class="k">else</span><span class="p">:</span>
                     <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)[</span><span class="n">direction</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="n">pypath_evidence</span><span class="o">.</span><span class="n">Evidences</span><span class="p">()</span>
@@ -1073,7 +1067,7 @@
 <span class="sd">            which source(s) is(are) to be removed from the sources in</span>
 <span class="sd">            the specified *direction* and *sign*.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">unset_direction</span><span class="p">(</span>
             <span class="n">direction</span> <span class="o">=</span> <span class="n">direction</span><span class="p">,</span>
             <span class="n">only_sign</span> <span class="o">=</span> <span class="n">sign</span><span class="p">,</span>
@@ -1082,27 +1076,27 @@
             <span class="n">via</span> <span class="o">=</span> <span class="n">via</span><span class="p">,</span>
             <span class="n">source</span> <span class="o">=</span> <span class="n">source</span><span class="p">,</span>
         <span class="p">)</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.unset_interaction_type"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.unset_interaction_type">[docs]</a>    <span class="k">def</span> <span class="nf">unset_interaction_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interaction_type</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes all evidences with a certain ``interaction_type``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evidences</span><span class="p">):</span>
-            
+
             <span class="k">if</span> <span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">interaction_type</span> <span class="o">==</span> <span class="n">interaction_type</span><span class="p">:</span>
-                
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span> <span class="o">-=</span> <span class="n">ev</span>
-        
+
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;direction&#39;</span><span class="p">,</span> <span class="s1">&#39;positive&#39;</span><span class="p">,</span> <span class="s1">&#39;negative&#39;</span><span class="p">):</span>
-            
+
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">evs</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-                
+
                 <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">evs</span><span class="p">):</span>
-                    
+
                     <span class="k">if</span> <span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">interaction_type</span> <span class="o">==</span> <span class="n">interaction_type</span><span class="p">:</span>
-                        
+
                         <span class="n">evs</span> <span class="o">-=</span> <span class="n">ev</span></div>
 
 
@@ -1164,7 +1158,7 @@
 <span class="sd">        ``True`` if the interaction is a loop edge i.e. its endpoints are the</span>
 <span class="sd">        same node.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span></div>
 
 
@@ -1293,9 +1287,9 @@
 <span class="sd">            is not already a ``NetworkResource`` or ``Evidence``</span>
 <span class="sd">            instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">sign</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_effect_synonyms</span><span class="p">(</span><span class="n">sign</span><span class="p">)</span>
-        
+
         <span class="n">evidence</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">resource</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">pypath_evidence</span><span class="o">.</span><span class="n">Evidence</span><span class="p">)</span> <span class="k">else</span>
@@ -1315,11 +1309,11 @@
                 <span class="k">if</span> <span class="n">resource_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span>
             <span class="kc">None</span>
         <span class="p">)</span>
-        
+
         <span class="n">direction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction_key</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_directed_key</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="ow">and</span> <span class="n">evidence</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            
+
             <span class="n">ev_attr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sign</span><span class="p">)</span>
             <span class="n">ev_attr</span> <span class="o">+=</span> <span class="n">evidence</span></div>
 
@@ -1359,27 +1353,27 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">sign</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_effect_synonyms</span><span class="p">(</span><span class="n">sign</span><span class="p">)</span>
-        
+
         <span class="n">answer_type_args</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;resources&#39;</span><span class="p">:</span> <span class="n">resources</span><span class="p">,</span>
             <span class="s1">&#39;evidences&#39;</span><span class="p">:</span> <span class="n">evidences</span><span class="p">,</span>
             <span class="s1">&#39;resource_names&#39;</span><span class="p">:</span> <span class="n">resource_names</span><span class="p">,</span>
             <span class="s1">&#39;sources&#39;</span><span class="p">:</span> <span class="n">sources</span><span class="p">,</span>
         <span class="p">}</span>
-        
+
         <span class="n">direction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction_key</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_directed_key</span><span class="p">(</span><span class="n">direction</span><span class="p">):</span>
 
             <span class="k">return</span> <span class="p">(</span>
-                
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">_select_answer_type</span><span class="p">(</span>
                     <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sign</span><span class="p">)[</span><span class="n">direction</span><span class="p">],</span>
                     <span class="o">**</span><span class="n">answer_type_args</span>
                 <span class="p">)</span>
-                
+
                     <span class="k">if</span> <span class="n">sign</span> <span class="k">else</span>
-                
+
                 <span class="p">[</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_select_answer_type</span><span class="p">(</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">direction</span><span class="p">],</span>
@@ -1390,7 +1384,7 @@
                         <span class="o">**</span><span class="n">answer_type_args</span>
                     <span class="p">)</span>
                 <span class="p">]</span>
-                
+
             <span class="p">)</span></div>
 
 
@@ -1751,7 +1745,7 @@
 <span class="sd">            :py:attr:`b_a` directionality of the edge with a</span>
 <span class="sd">            negative sign.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">answer_type_args</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;resource_names&#39;</span><span class="p">:</span> <span class="kc">True</span>
         <span class="p">}</span>
@@ -1825,15 +1819,15 @@
 <span class="sd">            directionality information, ``&#39;undirected&#39;``` will be</span>
 <span class="sd">            returned.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
-        
+
+
         <span class="n">a_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">a_b</span><span class="p">]</span>
         <span class="n">b_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">b_a</span><span class="p">]</span>
-        
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">a_b</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">b_a</span><span class="p">:</span>
-            
+
             <span class="k">return</span> <span class="s1">&#39;undirected&#39;</span>
-        
+
         <span class="n">method</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s1">&#39;count_references&#39;</span>
                 <span class="k">if</span> <span class="n">by_references</span> <span class="k">else</span>
@@ -1841,7 +1835,7 @@
                 <span class="k">if</span> <span class="n">by_reference_resource_pairs</span> <span class="k">else</span>
             <span class="s1">&#39;count_resources&#39;</span>
         <span class="p">)</span>
-        
+
         <span class="n">n_a_b</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">a_b</span><span class="p">,</span> <span class="n">method</span><span class="p">)(</span>
             <span class="n">interaction_type</span> <span class="o">=</span> <span class="n">only_interaction_type</span><span class="p">,</span>
             <span class="n">via</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">only_primary</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
@@ -1850,7 +1844,7 @@
             <span class="n">interaction_type</span> <span class="o">=</span> <span class="n">only_interaction_type</span><span class="p">,</span>
             <span class="n">via</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">only_primary</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="p">(</span>
             <span class="s1">&#39;undirected&#39;</span>
                 <span class="k">if</span> <span class="n">n_a_b</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">n_b_a</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span>
@@ -1883,9 +1877,9 @@
 <span class="sd">            supporting sources for both signs in that direction is</span>
 <span class="sd">            equal.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
-        
+
         <span class="n">method</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s1">&#39;count_references&#39;</span>
                 <span class="k">if</span> <span class="n">by_references</span> <span class="k">else</span>
@@ -1893,9 +1887,9 @@
                 <span class="k">if</span> <span class="n">by_reference_resource_pairs</span> <span class="k">else</span>
             <span class="s1">&#39;count_resources&#39;</span>
         <span class="p">)</span>
-        
+
         <span class="k">for</span> <span class="n">_dir</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a_b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_a</span><span class="p">):</span>
-            
+
             <span class="n">n_pos</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">_dir</span><span class="p">],</span> <span class="n">method</span><span class="p">)(</span>
                 <span class="n">interaction_type</span> <span class="o">=</span> <span class="n">only_interaction_type</span><span class="p">,</span>
                 <span class="n">via</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">only_primary</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
@@ -1904,12 +1898,12 @@
                 <span class="n">interaction_type</span> <span class="o">=</span> <span class="n">only_interaction_type</span><span class="p">,</span>
                 <span class="n">via</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">only_primary</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">)</span>
-            
+
             <span class="n">result</span><span class="p">[</span><span class="n">_dir</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">n_pos</span> <span class="o">&gt;=</span> <span class="n">n_neg</span><span class="p">,</span>
                 <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">n_neg</span> <span class="o">&gt;=</span> <span class="n">n_pos</span><span class="p">,</span>
             <span class="p">]</span>
-        
+
         <span class="k">return</span> <span class="n">result</span></div>
 
 
@@ -1932,23 +1926,23 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-        
+
         <span class="n">_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">majority_dir</span><span class="p">(</span>
             <span class="n">only_interaction_type</span> <span class="o">=</span> <span class="n">only_interaction_type</span><span class="p">,</span>
             <span class="n">only_primary</span> <span class="o">=</span> <span class="n">only_primary</span><span class="p">,</span>
             <span class="n">by_references</span> <span class="o">=</span> <span class="n">by_references</span><span class="p">,</span>
             <span class="n">by_reference_resource_pairs</span> <span class="o">=</span> <span class="n">by_reference_resource_pairs</span><span class="p">,</span>
         <span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="n">_dir</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span> <span class="ow">or</span> <span class="n">_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            
+
             <span class="n">_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">majority_dir</span><span class="p">(</span>
                 <span class="n">only_interaction_type</span> <span class="o">=</span> <span class="n">only_interaction_type</span><span class="p">,</span>
                 <span class="n">only_primary</span> <span class="o">=</span> <span class="n">only_primary</span><span class="p">,</span>
                 <span class="n">by_references</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="n">by_reference_resource_pairs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
-        
+
         <span class="n">_effect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">majority_sign</span><span class="p">(</span>
             <span class="n">only_interaction_type</span> <span class="o">=</span> <span class="n">only_interaction_type</span><span class="p">,</span>
             <span class="n">only_primary</span> <span class="o">=</span> <span class="n">only_primary</span><span class="p">,</span>
@@ -1963,7 +1957,7 @@
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">_dir</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span><span class="p">:</span>
-            
+
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">a_b</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">a_b</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
@@ -1972,11 +1966,11 @@
             <span class="p">])</span>
 
         <span class="k">else</span><span class="p">:</span>
-            
+
             <span class="n">dirs</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a_b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_a</span><span class="p">)</span> <span class="k">if</span> <span class="n">_dir</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="n">_dir</span><span class="p">,)</span>
 
             <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
-                
+
                 <span class="n">d_effect</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">_effect</span><span class="p">[</span><span class="n">d</span><span class="p">]</span>
                         <span class="k">if</span> <span class="p">(</span>
@@ -1985,33 +1979,33 @@
                         <span class="p">)</span> <span class="k">else</span>
                     <span class="n">_effect_noref</span><span class="p">[</span><span class="n">d</span><span class="p">]</span>
                 <span class="p">)</span>
-                
+
                 <span class="k">if</span> <span class="n">d_effect</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    
+
                     <span class="c1"># index #0 is positive</span>
                     <span class="k">if</span> <span class="n">d_effect</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-                        
+
                         <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
                             <span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                             <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
                             <span class="s1">&#39;directed&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;positive&#39;</span><span class="p">,</span>
                         <span class="p">])</span>
-                    
+
                     <span class="c1"># can not be elif bc of the case of equal weight of</span>
                     <span class="c1"># evidences for both positive and negative</span>
                     <span class="k">if</span> <span class="n">d_effect</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
-                        
+
                         <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
                             <span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                             <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
                             <span class="s1">&#39;directed&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;negative&#39;</span><span class="p">,</span>
                         <span class="p">])</span>
-                
+
                 <span class="c1"># directed with unknown effect</span>
                 <span class="k">else</span><span class="p">:</span>
-                    
+
                     <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
                         <span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                         <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
@@ -2034,27 +2028,27 @@
 <span class="sd">        :arg pypath.interaction.Interaction other:</span>
 <span class="sd">            The new Interaction object to be merged with the current one.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
-        
+
+
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_nodes_key</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">nodes</span><span class="p">):</span>
-            
+
             <span class="n">_log</span><span class="p">(</span>
                 <span class="s1">&#39;Attempting to merge Interaction instances with different &#39;</span>
                 <span class="s1">&#39;interacting partners.&#39;</span>
             <span class="p">)</span>
             <span class="k">return</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span> <span class="o">+=</span> <span class="n">other</span><span class="o">.</span><span class="n">evidences</span>
-        
+
         <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">_dir</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span>
             <span class="p">(</span><span class="s1">&#39;direction&#39;</span><span class="p">,</span> <span class="s1">&#39;positive&#39;</span><span class="p">,</span> <span class="s1">&#39;negative&#39;</span><span class="p">),</span>
             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a_b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_a</span><span class="p">,</span> <span class="s1">&#39;undirected&#39;</span><span class="p">)</span>
         <span class="p">):</span>
-            
+
             <span class="k">if</span> <span class="n">attr</span> <span class="o">!=</span> <span class="s1">&#39;direction&#39;</span> <span class="ow">and</span> <span class="n">_dir</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span><span class="p">:</span>
-                
+
                 <span class="k">continue</span>
-            
+
             <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)[</span><span class="n">_dir</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">attr</span><span class="p">)[</span><span class="n">_dir</span><span class="p">]</span></div>
 
 
@@ -2083,7 +2077,7 @@
         <span class="n">new_b</span> <span class="o">=</span> <span class="n">ids</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
         <span class="n">new_ids</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">new_a</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">new_b</span><span class="p">}</span>
         <span class="n">to_old</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">swap_dict_simple</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
-        
+
         <span class="n">all_new_attrs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">label</span><span class="p">),</span>
@@ -2097,15 +2091,15 @@
             <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;id_type&#39;</span><span class="p">,</span> <span class="s1">&#39;entity_type&#39;</span><span class="p">,</span> <span class="s1">&#39;taxon&#39;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
         <span class="p">)</span>
-        
+
         <span class="n">new</span> <span class="o">=</span> <span class="n">Interaction</span><span class="p">(</span>
             <span class="n">a</span> <span class="o">=</span> <span class="n">new_a</span><span class="p">,</span>
             <span class="n">b</span> <span class="o">=</span> <span class="n">new_b</span><span class="p">,</span>
             <span class="o">**</span><span class="n">all_new_attrs</span>
         <span class="p">)</span>
-        
+
         <span class="n">new</span><span class="o">.</span><span class="n">evidences</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span>
-        
+
         <span class="n">to_old</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="n">new_id</span><span class="p">,</span>
@@ -2113,7 +2107,7 @@
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">new_id</span><span class="p">,</span> <span class="n">old_id</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">to_old</span><span class="p">)</span>
         <span class="p">)</span>
-        
+
         <span class="c1"># this is required to handle also loop edges</span>
         <span class="n">new_old_a_b</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">(</span>
@@ -2131,7 +2125,7 @@
                 <span class="k">if</span> <span class="n">new</span><span class="o">.</span><span class="n">a</span> <span class="o">!=</span> <span class="n">new</span><span class="o">.</span><span class="n">b</span> <span class="k">else</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">b_a</span>
         <span class="p">)</span>
-        
+
         <span class="k">for</span> <span class="p">(</span><span class="n">old_dir</span><span class="p">,</span> <span class="n">new_dir</span><span class="p">),</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span>
             <span class="nb">zip</span><span class="p">(</span>
                 <span class="p">(</span>
@@ -2147,18 +2141,18 @@
             <span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;direction&#39;</span><span class="p">,</span> <span class="s1">&#39;positive&#39;</span><span class="p">,</span> <span class="s1">&#39;negative&#39;</span><span class="p">),</span>
         <span class="p">):</span>
-            
+
             <span class="k">if</span> <span class="n">old_dir</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span> <span class="ow">and</span> <span class="n">attr</span> <span class="o">!=</span> <span class="s1">&#39;direction&#39;</span><span class="p">:</span>
-                
+
                 <span class="k">continue</span>
-            
+
             <span class="nb">getattr</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">attr</span><span class="p">)[</span><span class="n">new_dir</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)[</span><span class="n">old_dir</span><span class="p">]</span>
-        
+
         <span class="k">return</span> <span class="n">new</span></div>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">homology_translate_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_a</span><span class="p">,</span> <span class="n">id_b</span><span class="p">,</span> <span class="n">taxon</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span>
             <span class="n">ids</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">:</span> <span class="n">id_a</span><span class="p">,</span>
@@ -2181,13 +2175,13 @@
                 <span class="p">},</span>
             <span class="p">},</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">homology_translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taxon</span><span class="p">,</span> <span class="n">exclude</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        
+
         <span class="n">exclude</span> <span class="o">=</span> <span class="n">exclude</span> <span class="ow">or</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">exclude</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        
+
         <span class="k">for</span> <span class="n">new_a</span><span class="p">,</span> <span class="n">new_b</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span>
             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">identifier</span><span class="p">,)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">taxon</span> <span class="ow">in</span> <span class="n">exclude</span> <span class="k">else</span>
@@ -2204,14 +2198,14 @@
                 <span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">taxon</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">):</span>
-            
+
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">homology_translate_one</span><span class="p">(</span>
                 <span class="n">id_a</span> <span class="o">=</span> <span class="n">new_a</span><span class="p">,</span>
                 <span class="n">id_b</span> <span class="o">=</span> <span class="n">new_b</span><span class="p">,</span>
                 <span class="n">taxon</span> <span class="o">=</span> <span class="n">taxon</span><span class="p">,</span>
             <span class="p">)</span>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">get_evidences</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">direction</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2222,52 +2216,52 @@
             <span class="n">via</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">references</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        
+
         <span class="n">effect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_effect_synonyms</span><span class="p">(</span><span class="n">effect</span><span class="p">)</span>
-        
+
         <span class="n">evidences</span> <span class="o">=</span> <span class="p">(</span>
-            
+
             <span class="c1"># any signed</span>
             <span class="nb">sum</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span>
             <span class="p">))</span>
-                
+
                 <span class="k">if</span> <span class="n">effect</span> <span class="o">==</span> <span class="kc">True</span> <span class="k">else</span>
-                
+
             <span class="c1"># only positive</span>
             <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span>
                     <span class="k">if</span> <span class="n">direction</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive</span> <span class="k">else</span>
                 <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
             <span class="p">)</span>
-                
+
                 <span class="k">if</span> <span class="n">effect</span> <span class="o">==</span> <span class="s1">&#39;positive&#39;</span> <span class="k">else</span>
-                
+
             <span class="c1"># only negative</span>
             <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span>
                     <span class="k">if</span> <span class="n">direction</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative</span> <span class="k">else</span>
                 <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
             <span class="p">)</span>
-                
+
                 <span class="k">if</span> <span class="n">effect</span> <span class="o">==</span> <span class="s1">&#39;negative&#39;</span> <span class="k">else</span>
-                
+
             <span class="c1"># any directed</span>
             <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="n">_dir</span><span class="p">]</span> <span class="k">for</span> <span class="n">_dir</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">which_dirs</span><span class="p">())</span>
-                
+
                 <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="kc">True</span> <span class="k">else</span>
-                
+
             <span class="c1"># one specific direction</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span>
-                
+
                 <span class="k">if</span> <span class="n">direction</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="k">else</span>
-                
+
             <span class="c1"># all evidences (default)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">evidences</span>
-            
+
         <span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">pypath_evidence</span><span class="o">.</span><span class="n">Evidences</span><span class="p">(</span>
                 <span class="n">evidences</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
@@ -2279,8 +2273,8 @@
                 <span class="p">)</span>
             <span class="p">)</span>
         <span class="p">)</span>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.get_entities"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.get_entities">[docs]</a>    <span class="k">def</span> <span class="nf">get_entities</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">entity_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2299,7 +2293,7 @@
 <span class="sd">        *set*. This may not sound so useful at the level of this object but</span>
 <span class="sd">        becomes more useful once we want to collect entities having certain</span>
 <span class="sd">        kind of interactions across a series of `Interaction` objects.</span>
-<span class="sd">        </span>
+
 <span class="sd">        :arg str entity_type:</span>
 <span class="sd">            The type of the molecular entity. Possible values: `protein`,</span>
 <span class="sd">            `complex`, `mirna`, `small_molecule`.</span>
@@ -2308,24 +2302,24 @@
 <span class="sd">            py:class:``pypath.entity.Entity`` objects, alternatives are</span>
 <span class="sd">            ``labels``  ``identifiers``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="c1"># TODO: this method could be made slightly more efficient by using</span>
         <span class="c1"># not ``get_interactions`` but a simpler logic as here we don&#39;t need</span>
         <span class="c1"># to handle the directions separately; however this is not very</span>
         <span class="c1"># important and for the time being it&#39;s good as it is.</span>
-        
+
         <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()</span>
         <span class="n">_</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;self&#39;</span><span class="p">)</span>
         <span class="n">entity_type</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;entity_type&#39;</span><span class="p">))</span>
         <span class="n">return_type</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;return_type&#39;</span><span class="p">)</span>
-        
+
         <span class="n">return_types</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;entity&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s1">&#39;entities&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;identifier&#39;</span><span class="p">,</span>
             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;identifier&#39;</span><span class="p">,</span>
         <span class="p">}</span>
-        
+
         <span class="c1"># allow plurals</span>
         <span class="n">return_type</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">return_type</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -2341,7 +2335,7 @@
                 <span class="k">if</span> <span class="n">return_type</span> <span class="ow">in</span> <span class="n">return_types</span> <span class="k">else</span>
             <span class="n">return_type</span>
         <span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">set</span><span class="p">(</span>
                 <span class="p">(</span>
@@ -2356,38 +2350,38 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">entity_type</span> <span class="ow">or</span> <span class="n">en</span><span class="o">.</span><span class="n">entity_type</span> <span class="ow">in</span> <span class="n">entity_type</span>
             <span class="p">)</span>
         <span class="p">)</span></div>
-    
-    
+
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_generate_entity_methods</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        
+
         <span class="k">def</span> <span class="nf">_create_entity_method</span><span class="p">(</span><span class="n">entity_type</span><span class="p">,</span> <span class="n">return_type</span><span class="p">):</span>
-            
-            
+
+
             <span class="k">def</span> <span class="nf">_entity_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                
+
                 <span class="bp">self</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;entity_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entity_type</span>
                 <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;return_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">return_type</span>
-                
+
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_entities</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            
-            
+
+
             <span class="k">return</span> <span class="n">_entity_method</span>
-        
-        
+
+
         <span class="k">for</span> <span class="n">etype</span><span class="p">,</span> <span class="n">vtype</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_entity_types</span><span class="p">,</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_entity_values</span><span class="p">,</span>
         <span class="p">):</span>
-            
+
             <span class="k">if</span> <span class="n">etype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">vtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                
+
                 <span class="k">continue</span>
-            
+
             <span class="n">entity_type</span> <span class="o">=</span> <span class="n">etype</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">etype</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">etype</span>
             <span class="n">return_type</span> <span class="o">=</span> <span class="n">vtype</span>
-            
+
             <span class="n">etype_part</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="s1">&#39;&#39;</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">entity_type</span> <span class="k">else</span>
@@ -2398,7 +2392,7 @@
                 <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">s&#39;</span> <span class="o">%</span> <span class="n">entity_type</span>
             <span class="p">)</span>
             <span class="n">vtype_part</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">vtype</span> <span class="k">if</span> <span class="n">vtype</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
-            
+
             <span class="n">_method_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
                 <span class="n">etype_part</span><span class="p">,</span>
                 <span class="s1">&#39;_&#39;</span> <span class="k">if</span> <span class="n">etype_part</span> <span class="ow">and</span> <span class="n">vtype_part</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
@@ -2409,7 +2403,7 @@
                 <span class="n">entity_type</span> <span class="o">=</span> <span class="n">entity_type</span><span class="p">,</span>
                 <span class="n">return_type</span> <span class="o">=</span> <span class="n">return_type</span><span class="p">,</span>
             <span class="p">)</span>
-            
+
             <span class="bp">cls</span><span class="o">.</span><span class="n">_add_method</span><span class="p">(</span>
                 <span class="n">method_name</span><span class="p">,</span>
                 <span class="n">method</span><span class="p">,</span>
@@ -2422,8 +2416,8 @@
             <span class="p">)</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_get_methods</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_method_name</span><span class="p">)</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_count_methods</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_method_name</span><span class="p">)</span>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.get_interactions"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.get_interactions">[docs]</a>    <span class="k">def</span> <span class="nf">get_interactions</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">direction</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2441,7 +2435,7 @@
 <span class="sd">        Returns one or two tuples of the interacting partners: one if only</span>
 <span class="sd">        one direction, two if both directions match the query criteria.</span>
 <span class="sd">        The tuple will be empty if no evidence matches the criteria.</span>
-<span class="sd">        </span>
+
 <span class="sd">        :arg NontType,bool,tuple direction:</span>
 <span class="sd">            If `None` both undirected and directed, if `True` only directed,</span>
 <span class="sd">            if a *tuple* of entities only the interactions with that specific</span>
@@ -2475,26 +2469,26 @@
 <span class="sd">        :arg str target_entity_type:</span>
 <span class="sd">            Molecule type for the target entity.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">effect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_effect_synonyms</span><span class="p">(</span><span class="n">effect</span><span class="p">)</span>
         <span class="n">direction</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">direction_key</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span>
             <span class="n">direction</span>
         <span class="p">)</span>
-        
+
         <span class="n">entity_type</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">entity_type</span><span class="p">)</span>
         <span class="n">source_entity_type</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">source_entity_type</span><span class="p">)</span> <span class="ow">or</span> <span class="n">entity_type</span>
         <span class="n">target_entity_type</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">target_entity_type</span><span class="p">)</span> <span class="ow">or</span> <span class="n">entity_type</span>
-        
+
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
-            
+
             <span class="c1"># direction key</span>
             <span class="n">_dir</span>
-            
+
             <span class="c1"># possible directions</span>
             <span class="k">for</span> <span class="n">_dir</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a_b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_a</span><span class="p">)</span>
-            
+
             <span class="c1"># conditions by selecting and evaluating evidence collections</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="p">(</span>
@@ -2519,10 +2513,10 @@
                     <span class="n">references</span> <span class="o">=</span> <span class="n">references</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-            
+
         <span class="p">)</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.evaluate_evidences"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.evaluate_evidences">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_evidences</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">this_direction</span><span class="p">,</span>
@@ -2539,13 +2533,13 @@
 <span class="sd">        criteria and then evaluates if any of the evidences in these</span>
 <span class="sd">        collections match the evidence criteria.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()</span>
         <span class="n">_</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;self&#39;</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_match_evidences</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.iter_match_evidences"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.iter_match_evidences">[docs]</a>    <span class="k">def</span> <span class="nf">iter_match_evidences</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">this_direction</span><span class="p">,</span>
@@ -2561,13 +2555,13 @@
 <span class="sd">        Selects the evidence collections matching the direction and effect</span>
 <span class="sd">        criteria and yields collections matching the evidence criteria.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">for</span> <span class="n">evs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_evidences</span><span class="p">(</span>
             <span class="n">this_direction</span> <span class="o">=</span> <span class="n">this_direction</span><span class="p">,</span>
             <span class="n">direction</span> <span class="o">=</span> <span class="n">direction</span><span class="p">,</span>
             <span class="n">effect</span> <span class="o">=</span> <span class="n">effect</span><span class="p">,</span>
         <span class="p">):</span>
-            
+
             <span class="k">if</span> <span class="n">evs</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
                 <span class="n">resource</span> <span class="o">=</span> <span class="n">resources</span><span class="p">,</span>
                 <span class="n">data_model</span> <span class="o">=</span> <span class="n">data_model</span><span class="p">,</span>
@@ -2575,10 +2569,10 @@
                 <span class="n">via</span> <span class="o">=</span> <span class="n">via</span><span class="p">,</span>
                 <span class="n">references</span> <span class="o">=</span> <span class="n">references</span><span class="p">,</span>
             <span class="p">):</span>
-                
+
                 <span class="k">yield</span> <span class="n">evs</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.iter_evidences"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.iter_evidences">[docs]</a>    <span class="k">def</span> <span class="nf">iter_evidences</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">this_direction</span><span class="p">,</span>
@@ -2589,13 +2583,13 @@
 <span class="sd">        Selects and yields evidence collections matching the direction and</span>
 <span class="sd">        effect criteria.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="c1"># evidence keys</span>
         <span class="k">for</span> <span class="n">evs_key</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;undirected&#39;</span><span class="p">,</span> <span class="n">this_direction</span><span class="p">):</span>
-            
+
             <span class="c1"># evidence dicts</span>
             <span class="k">for</span> <span class="n">this_effect</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;direction&#39;</span><span class="p">,</span> <span class="s1">&#39;positive&#39;</span><span class="p">,</span> <span class="s1">&#39;negative&#39;</span><span class="p">):</span>
-                
+
                 <span class="k">if</span> <span class="p">(</span>
                     <span class="c1"># only undirected</span>
                     <span class="p">(</span>
@@ -2633,36 +2627,36 @@
                         <span class="p">)</span>
                     <span class="p">)</span>
                 <span class="p">):</span>
-                    
+
                     <span class="c1"># getting the evidence dict and the key from it</span>
                     <span class="k">yield</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">this_effect</span><span class="p">)[</span><span class="n">evs_key</span><span class="p">]</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.get_interactions_0"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.get_interactions_0">[docs]</a>    <span class="k">def</span> <span class="nf">get_interactions_0</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns unique interacting pairs without being aware of the direction.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;effect&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        
+
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_interactions</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">result</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="p">()</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.get_interactions_directed"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.get_interactions_directed">[docs]</a>    <span class="k">def</span> <span class="nf">get_interactions_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        **kwargs: see the docs of method ``get_interactions``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">if</span> <span class="s1">&#39;direction&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;direction&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            
+
             <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_interactions</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.get_interactions_undirected"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.get_interactions_undirected">[docs]</a>    <span class="k">def</span> <span class="nf">get_interactions_undirected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Only the undirected interactions will be considered, if any resource</span>
@@ -2670,29 +2664,29 @@
 <span class="sd">        returned, no matter if certain resources provide direction. However</span>
 <span class="sd">        the ``count_interactions_undirected`` method will return `1` in this</span>
 <span class="sd">        case.</span>
-<span class="sd">        </span>
+
 <span class="sd">        **kwargs: see the docs of method ``get_interactions``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_interactions</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.get_interactions_undirected_0"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.get_interactions_undirected_0">[docs]</a>    <span class="k">def</span> <span class="nf">get_interactions_undirected_0</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Only the undirected interactions will be considered, if any resource</span>
 <span class="sd">        annotates this interaction as undirected the interacting pair as</span>
 <span class="sd">        a sorted tuple will be returned inside a one element tuple.</span>
-<span class="sd">        </span>
+
 <span class="sd">        **kwargs: see the docs of method ``get_interactions``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">undir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_interactions_undirected</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">undir</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">undir</span> <span class="k">else</span> <span class="p">()</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.get_interactions_non_directed"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.get_interactions_non_directed">[docs]</a>    <span class="k">def</span> <span class="nf">get_interactions_non_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Only the undirected interactions will be considered, if any resource</span>
@@ -2700,127 +2694,127 @@
 <span class="sd">        returned, but only if no resource provide direction. However</span>
 <span class="sd">        the ``count_interactions_non_directed`` method will return `1` in</span>
 <span class="sd">        this case.</span>
-<span class="sd">        </span>
+
 <span class="sd">        **kwargs: see the docs of method ``get_interactions``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        
+
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_interactions_undirected</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_interactions</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">else</span>
             <span class="p">()</span>
         <span class="p">)</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.get_interactions_non_directed_0"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.get_interactions_non_directed_0">[docs]</a>    <span class="k">def</span> <span class="nf">get_interactions_non_directed_0</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Only the undirected interactions will be considered, if any resource</span>
 <span class="sd">        annotates this interaction as undirected and none as directed, the</span>
 <span class="sd">        interacting pair as a sorted tuple will be returned inside a one</span>
 <span class="sd">        element tuple.</span>
-<span class="sd">        </span>
+
 <span class="sd">        **kwargs: see the docs of method ``get_interactions``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">nondir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_interactions_non_directed</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">nondir</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">nondir</span> <span class="k">else</span> <span class="p">()</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.get_interactions_signed"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.get_interactions_signed">[docs]</a>    <span class="k">def</span> <span class="nf">get_interactions_signed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        **kwargs: see the docs of method ``get_interactions``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">if</span> <span class="s1">&#39;effect&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;effect&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            
+
             <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;effect&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_interactions</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.get_interactions_positive"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.get_interactions_positive">[docs]</a>    <span class="k">def</span> <span class="nf">get_interactions_positive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        **kwargs: see the docs of method ``get_interactions``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;effect&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;positive&#39;</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_interactions</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.get_interactions_negative"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.get_interactions_negative">[docs]</a>    <span class="k">def</span> <span class="nf">get_interactions_negative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        **kwargs: see the docs of method ``get_interactions``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;effect&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;negative&#39;</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_interactions</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.get_interactions_mutual"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.get_interactions_mutual">[docs]</a>    <span class="k">def</span> <span class="nf">get_interactions_mutual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Note: undirected interactions does not count as mutual but only</span>
 <span class="sd">        interactions with explicit direction information for both directions.</span>
-<span class="sd">        </span>
+
 <span class="sd">        **kwargs: see the docs of method ``get_interactions``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">if</span> <span class="s1">&#39;direction&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;direction&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            
+
             <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        
+
         <span class="n">interactions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_interactions</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">interactions</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">interactions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="p">()</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.is_mutual"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.is_mutual">[docs]</a>    <span class="k">def</span> <span class="nf">is_mutual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Note: undirected interactions does not count as mutual but only</span>
 <span class="sd">        interactions with explicit direction information for both directions.</span>
-<span class="sd">        </span>
+
 <span class="sd">        **kwargs: see the docs of method ``get_interactions``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_interactions_mutual</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.count_interactions_mutual"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.count_interactions_mutual">[docs]</a>    <span class="k">def</span> <span class="nf">count_interactions_mutual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Note: undirected interactions does not count as mutual but only</span>
 <span class="sd">        interactions with explicit direction information for both directions.</span>
-<span class="sd">        </span>
+
 <span class="sd">        **kwargs: see the docs of method ``get_interactions``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_mutual</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.count_interactions_undirected"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.count_interactions_undirected">[docs]</a>    <span class="k">def</span> <span class="nf">count_interactions_undirected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns `True` if any resource annotates this interaction without</span>
 <span class="sd">        direction.</span>
-<span class="sd">        </span>
+
 <span class="sd">        **kwargs: see the docs of method ``get_interactions``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_interactions_undirected</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.count_interactions_non_directed"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.count_interactions_non_directed">[docs]</a>    <span class="k">def</span> <span class="nf">count_interactions_non_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns `True` if any resource annotates this interaction without</span>
 <span class="sd">        and no resource with direction.</span>
-<span class="sd">        </span>
+
 <span class="sd">        **kwargs: see the docs of method ``get_interactions``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_interactions_non_directed</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.get_degrees"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.get_degrees">[docs]</a>    <span class="k">def</span> <span class="nf">get_degrees</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">mode</span><span class="p">,</span>
@@ -2837,7 +2831,7 @@
 <span class="sd">        effect and evidence criteria. E.g. if the query concerns the incoming</span>
 <span class="sd">        degrees with positive effect and the matching evidences show A</span>
 <span class="sd">        activates B, but not the other way around, only &quot;B&quot; will be returned.</span>
-<span class="sd">        </span>
+
 <span class="sd">        :arg str mode:</span>
 <span class="sd">            The type of degrees to be considered. Three possible values are</span>
 <span class="sd">            ``&#39;IN&#39;``, `&#39;OUT&#39;`` and ``&#39;ALL&#39;`` for incoming, outgoing and all</span>
@@ -2847,94 +2841,94 @@
 <span class="sd">            overwrite the undirected evidences and only the directed result</span>
 <span class="sd">            will be returned.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()</span>
         <span class="n">_</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;self&#39;</span><span class="p">)</span>
         <span class="n">mode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;mode&#39;</span><span class="p">)</span>
-        
+
         <span class="n">idx</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;ALL&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
             <span class="s1">&#39;OUT&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
             <span class="s1">&#39;IN&#39;</span><span class="p">:</span>  <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
         <span class="p">}</span>
-        
+
         <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
-            
+
             <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;ALL&#39;</span>
-        
+
         <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">effect</span><span class="p">:</span>
-            
+
             <span class="n">_</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;direction&#39;</span><span class="p">)</span>
-            
+
             <span class="k">return</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">get_degrees</span><span class="p">(</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span><span class="p">,</span> <span class="n">direction</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="ow">or</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">get_degrees</span><span class="p">(</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span><span class="p">,</span> <span class="n">direction</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="p">)</span>
-        
+
         <span class="n">result</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        
+
         <span class="n">node_pairs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_interactions</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        
+
         <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">node_pairs</span><span class="p">:</span>
-            
+
             <span class="n">result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="n">pair</span><span class="p">[</span>
                     <span class="n">idx</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
                     <span class="n">idx</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
                 <span class="p">]</span>
             <span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">result</span></div>
-    
-    
+
+
     <span class="k">def</span> <span class="nf">get_curation_effort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">ref</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">res</span><span class="p">,</span> <span class="n">refs</span> <span class="ow">in</span>
             <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">references_by_resource</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">refs</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
+
         <span class="n">via</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;via&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;via&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="kc">False</span>
-        
+
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_evidences</span><span class="p">(</span>
                 <span class="o">**</span><span class="n">kwargs</span>
             <span class="p">),</span>
             <span class="s1">&#39;get_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">method</span><span class="p">,</span>
         <span class="p">)(</span><span class="n">via</span> <span class="o">=</span> <span class="n">via</span><span class="p">)</span>
-    
-    
+
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_count</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
-        
+
         <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">count_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            
+
             <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-        
+
         <span class="k">return</span> <span class="n">count_method</span>
-    
-    
+
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_by</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">by</span> <span class="o">=</span> <span class="s1">&#39;resources&#39;</span><span class="p">):</span>
-        
+
         <span class="n">by</span> <span class="o">=</span> <span class="p">(</span><span class="n">by</span><span class="p">,)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">by</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">)</span> <span class="k">else</span> <span class="n">by</span>
-        
+
         <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">by_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">name_keys</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            
+
             <span class="bp">self</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            
+
             <span class="k">for</span> <span class="n">_by</span> <span class="ow">in</span> <span class="n">by</span><span class="p">:</span>
-                
+
                 <span class="n">_</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">_by</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            
+
             <span class="n">levels_methods</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="s1">&#39;get_</span><span class="si">%s%s</span><span class="s1">s&#39;</span> <span class="o">%</span> <span class="p">(</span>
                     <span class="n">_by</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">_by</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;resources&#39;</span><span class="p">,</span> <span class="s1">&#39;references&#39;</span><span class="p">}</span> <span class="k">else</span> <span class="n">_by</span><span class="p">,</span>
@@ -2942,12 +2936,12 @@
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">_by</span> <span class="ow">in</span> <span class="n">by</span>
             <span class="p">)</span>
-            
+
             <span class="n">levels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
                 <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">levels_method</span><span class="p">)()</span>
                 <span class="k">for</span> <span class="n">levels_method</span> <span class="ow">in</span> <span class="n">levels_methods</span>
             <span class="p">)))</span>
-            
+
             <span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
                 <span class="p">(</span>
                     <span class="n">_levels</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_levels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">_levels</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
@@ -2959,69 +2953,69 @@
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">_levels</span> <span class="ow">in</span> <span class="n">levels</span>
             <span class="p">)</span>
-            
+
             <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">by_method</span>
-    
-    
+
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_by_resource</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_by</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">by</span> <span class="o">=</span> <span class="s1">&#39;resources&#39;</span><span class="p">)</span>
-    
-    
+
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_by_data_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_by</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">by</span> <span class="o">=</span> <span class="s1">&#39;data_model&#39;</span><span class="p">)</span>
-    
-    
+
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_by_interaction_type_and_data_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_by</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">by</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;interaction_type&#39;</span><span class="p">,</span> <span class="s1">&#39;data_model&#39;</span><span class="p">))</span>
-    
-    
+
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_by_interaction_type_and_data_model_and_resource</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_by</span><span class="p">(</span>
             <span class="n">method</span><span class="p">,</span>
             <span class="n">by</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;interaction_type&#39;</span><span class="p">,</span> <span class="s1">&#39;data_model&#39;</span><span class="p">,</span> <span class="s1">&#39;resources&#39;</span><span class="p">),</span>
         <span class="p">)</span>
-    
-    
+
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_by_interaction_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_by</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">by</span> <span class="o">=</span> <span class="s1">&#39;interaction_type&#39;</span><span class="p">)</span>
-    
-    
+
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_by_reference</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-        
+
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_by</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">by</span> <span class="o">=</span> <span class="s1">&#39;references&#39;</span><span class="p">)</span>
-    
-    
+
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_generate_get_methods</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        
+
         <span class="k">def</span> <span class="nf">_create_get_method</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
-            
+
             <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
             <span class="k">def</span> <span class="nf">_get_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                
+
                 <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="bp">self</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">method</span> <span class="o">=</span> <span class="n">method</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            
+
             <span class="k">return</span> <span class="n">_get_method</span>
-        
+
         <span class="k">for</span> <span class="n">_get</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_methods_autogen</span><span class="p">:</span>
-            
+
             <span class="n">method_name</span> <span class="o">=</span> <span class="s1">&#39;get_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_get</span>
-            
+
             <span class="n">signature</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_update_get_method_signature</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>
-            
+
             <span class="bp">cls</span><span class="o">.</span><span class="n">_add_method</span><span class="p">(</span>
                 <span class="n">method_name</span> <span class="o">=</span> <span class="n">method_name</span><span class="p">,</span>
                 <span class="n">method</span> <span class="o">=</span> <span class="n">_create_get_method</span><span class="p">(</span><span class="n">_get</span><span class="p">),</span>
@@ -3033,110 +3027,110 @@
                     <span class="p">)</span>
                 <span class="p">),</span>
             <span class="p">)</span>
-    
-    
+
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_generate_degree_methods</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        
+
         <span class="k">def</span> <span class="nf">_create_degree_method</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">effect</span><span class="p">):</span>
-            
+
             <span class="k">def</span> <span class="nf">_degree_method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                
+
                 <span class="n">mode</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">effect</span> <span class="o">=</span> <span class="n">wrap_args</span>
-                
+
                 <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">direction</span>
                 <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;effect&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">effect</span>
-                
+
                 <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_degrees</span><span class="p">(</span><span class="bp">self</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            
+
             <span class="k">return</span> <span class="n">_degree_method</span>
-        
+
         <span class="k">for</span> <span class="n">mode</span><span class="p">,</span> <span class="p">(</span><span class="n">dir_label</span><span class="p">,</span> <span class="n">dir_args</span><span class="p">)</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_degree_modes</span><span class="p">,</span>
             <span class="n">iteritems</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_degree_directions</span><span class="p">)</span>
         <span class="p">):</span>
-            
+
             <span class="k">if</span> <span class="n">dir_label</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;undirected&#39;</span><span class="p">,</span> <span class="s1">&#39;non_directed&#39;</span><span class="p">}</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;ALL&#39;</span><span class="p">:</span>
-                
+
                 <span class="k">continue</span>
-            
+
             <span class="n">method_name</span> <span class="o">=</span> <span class="s1">&#39;degrees_</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
                 <span class="n">dir_label</span><span class="p">,</span>
                 <span class="s1">&#39;_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;ALL&#39;</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
             <span class="p">)</span>
-            
+
             <span class="bp">cls</span><span class="o">.</span><span class="n">_count_methods</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_get_methods</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>
-            
+
             <span class="n">method</span> <span class="o">=</span> <span class="n">_create_degree_method</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="o">*</span><span class="n">dir_args</span><span class="p">)</span>
             <span class="n">_method_name</span> <span class="o">=</span> <span class="s1">&#39;get_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">method_name</span>
-            
+
             <span class="bp">cls</span><span class="o">.</span><span class="n">_add_method</span><span class="p">(</span>
                 <span class="n">method_name</span> <span class="o">=</span> <span class="n">_method_name</span><span class="p">,</span>
                 <span class="n">method</span> <span class="o">=</span> <span class="n">method</span><span class="p">,</span>
                 <span class="n">signature</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_method_signature</span><span class="p">,</span>
                 <span class="n">doc</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_degrees</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
             <span class="p">)</span>
-    
-    
+
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_generate_count_methods</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        
+
         <span class="k">for</span> <span class="n">_get</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_count_methods</span><span class="p">:</span>
-            
+
             <span class="n">_get_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;get_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_get</span><span class="p">)</span>
-            
+
             <span class="n">method_name</span> <span class="o">=</span> <span class="s1">&#39;count_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_get</span>
-            
+
             <span class="n">signature</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_update_get_method_signature</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>
-            
+
             <span class="bp">cls</span><span class="o">.</span><span class="n">_add_method</span><span class="p">(</span>
                 <span class="n">method_name</span> <span class="o">=</span> <span class="n">method_name</span><span class="p">,</span>
                 <span class="n">method</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">_get_method</span><span class="p">),</span>
                 <span class="n">signature</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_method_signature</span><span class="p">,</span>
                 <span class="n">doc</span> <span class="o">=</span> <span class="n">_get_method</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
             <span class="p">)</span>
-    
-    
+
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_update_get_method_signature</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method_name</span><span class="p">):</span>
-        
+
         <span class="n">signature</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_method_signature</span>
-        
+
         <span class="k">if</span> <span class="s1">&#39;interaction&#39;</span> <span class="ow">in</span> <span class="n">method_name</span><span class="p">:</span>
-            
+
             <span class="n">signature</span> <span class="o">=</span> <span class="n">signature</span> <span class="o">+</span> <span class="p">[</span>
                 <span class="p">(</span><span class="s1">&#39;entity_type&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
                 <span class="p">(</span><span class="s1">&#39;source_entity_type&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
                 <span class="p">(</span><span class="s1">&#39;target_entity_type&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
             <span class="p">]</span>
-        
+
         <span class="k">return</span> <span class="n">signature</span>
-    
-    
+
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_generate_by_methods</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        
+
         <span class="k">for</span> <span class="n">_get</span><span class="p">,</span> <span class="n">_by</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_get_methods</span><span class="p">,</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_by_methods</span><span class="p">,</span>
         <span class="p">):</span>
-            
+
             <span class="n">_get_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;get_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_get</span><span class="p">)</span>
             <span class="n">method_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_by_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">_get</span><span class="p">,</span> <span class="n">_by</span><span class="p">)</span>
             <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;_by_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">_by</span><span class="p">)(</span><span class="n">_get_method</span><span class="p">)</span>
-            
+
             <span class="bp">cls</span><span class="o">.</span><span class="n">_add_method</span><span class="p">(</span>
                 <span class="n">method_name</span> <span class="o">=</span> <span class="n">method_name</span><span class="p">,</span>
                 <span class="n">method</span> <span class="o">=</span> <span class="n">method</span><span class="p">,</span>
                 <span class="n">signature</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_method_signature</span><span class="p">,</span>
                 <span class="n">doc</span> <span class="o">=</span> <span class="n">_get_method</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
             <span class="p">)</span>
-    
-    
+
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_add_method</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">signature</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        
+
         <span class="n">common</span><span class="o">.</span><span class="n">_add_method</span><span class="p">(</span>
             <span class="bp">cls</span><span class="p">,</span>
             <span class="n">method_name</span><span class="p">,</span>
@@ -3144,8 +3138,8 @@
             <span class="n">signature</span> <span class="o">=</span> <span class="n">signature</span><span class="p">,</span>
             <span class="n">doc</span> <span class="o">=</span> <span class="n">doc</span><span class="p">,</span>
         <span class="p">)</span>
-    
-    
+
+
 <div class="viewcode-block" id="Interaction.generate_df_records"><a class="viewcode-back" href="../../../reference.html#pypath.core.interaction.Interaction.generate_df_records">[docs]</a>    <span class="k">def</span> <span class="nf">generate_df_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by_source</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">with_references</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Yields interaction records. It is a generator because one edge can</span>
@@ -3164,20 +3158,20 @@
 <span class="sd">            because you rarely need these and they increase the data size</span>
 <span class="sd">            significantly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">def</span> <span class="nf">source_add_via</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">via</span><span class="p">):</span>
-            
+
             <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s1">&#39;_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">via</span> <span class="k">if</span> <span class="n">via</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-        
-        
+
+
         <span class="k">def</span> <span class="nf">iter_sources</span><span class="p">(</span><span class="n">evs</span><span class="p">):</span>
-            
+
             <span class="n">sources</span> <span class="o">=</span> <span class="n">evs</span><span class="o">.</span><span class="n">get_resource_names_via</span><span class="p">()</span>
-            
+
             <span class="k">if</span> <span class="n">by_source</span><span class="p">:</span>
-                
+
                 <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">via</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
-                    
+
                     <span class="n">refs</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="p">{</span>
                             <span class="n">ref</span><span class="o">.</span><span class="n">pmid</span>
@@ -3191,18 +3185,18 @@
                             <span class="k">if</span> <span class="n">with_references</span> <span class="k">else</span>
                         <span class="kc">None</span>
                     <span class="p">)</span>
-                    
+
                     <span class="n">_source</span> <span class="o">=</span> <span class="n">source_add_via</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">via</span><span class="p">)</span>
-                    
+
                     <span class="k">yield</span> <span class="n">_source</span><span class="p">,</span> <span class="n">refs</span>
-                    
+
             <span class="k">else</span><span class="p">:</span>
-                
+
                 <span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="n">source_add_via</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">via</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">via</span> <span class="ow">in</span> <span class="n">sources</span>
                 <span class="p">}</span>
-                
+
                 <span class="n">refs</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="p">{</span>
                         <span class="n">ref</span><span class="o">.</span><span class="n">pmid</span>
@@ -3215,41 +3209,41 @@
                         <span class="k">if</span> <span class="n">with_references</span> <span class="k">else</span>
                     <span class="kc">None</span>
                 <span class="p">)</span>
-                
+
                 <span class="k">if</span> <span class="n">_sources</span><span class="p">:</span>
-                    
+
                     <span class="k">yield</span> <span class="n">_sources</span><span class="p">,</span> <span class="n">refs</span>
-        
-        
+
+
         <span class="k">for</span> <span class="n">interaction_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_interaction_types</span><span class="p">():</span>
-            
+
             <span class="n">dmodels</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">get_data_models</span><span class="p">(</span><span class="n">interaction_type</span> <span class="o">=</span> <span class="n">interaction_type</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="n">dmodels</span> <span class="o">=</span> <span class="n">dmodels</span> <span class="k">if</span> <span class="n">by_source</span> <span class="k">else</span> <span class="p">(</span><span class="n">dmodels</span><span class="p">,)</span>
-            
+
             <span class="k">for</span> <span class="n">data_model</span> <span class="ow">in</span> <span class="n">dmodels</span><span class="p">:</span>
-                
+
                 <span class="n">evs_undirected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_evidences</span><span class="p">(</span>
                     <span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;undirected&#39;</span><span class="p">,</span>
                     <span class="n">interaction_type</span> <span class="o">=</span> <span class="n">interaction_type</span><span class="p">,</span>
                     <span class="n">data_model</span> <span class="o">=</span> <span class="n">data_model</span><span class="p">,</span>
                 <span class="p">)</span>
-                
+
                 <span class="k">for</span> <span class="n">_dir</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a_b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_a</span><span class="p">):</span>
-                    
+
                     <span class="n">evs_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_evidences</span><span class="p">(</span>
                         <span class="n">direction</span> <span class="o">=</span> <span class="n">_dir</span><span class="p">,</span>
                         <span class="n">interaction_type</span> <span class="o">=</span> <span class="n">interaction_type</span><span class="p">,</span>
                         <span class="n">data_model</span> <span class="o">=</span> <span class="n">data_model</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="n">evs_without_sign</span> <span class="o">=</span> <span class="n">evs_dir</span><span class="o">.</span><span class="n">__copy__</span><span class="p">()</span>
-                    
+
                     <span class="k">for</span> <span class="n">_effect</span><span class="p">,</span> <span class="n">effect</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
                         <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
                         <span class="p">(</span><span class="s1">&#39;positive&#39;</span><span class="p">,</span> <span class="s1">&#39;negative&#39;</span><span class="p">)</span>
                     <span class="p">):</span>
-                        
+
                         <span class="n">evs_sign</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_evidences</span><span class="p">(</span>
                             <span class="n">direction</span> <span class="o">=</span> <span class="n">_dir</span><span class="p">,</span>
                             <span class="n">effect</span> <span class="o">=</span> <span class="n">effect</span><span class="p">,</span>
@@ -3260,9 +3254,9 @@
                         <span class="n">evs_sign</span> <span class="o">+=</span> <span class="n">evs_sign</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">evs_dir</span><span class="p">)</span>
                         <span class="n">evs_without_sign</span> <span class="o">-=</span> <span class="n">evs_sign</span>
                         <span class="n">evs_undirected</span> <span class="o">-=</span> <span class="n">evs_sign</span>
-                        
+
                         <span class="k">for</span> <span class="n">sources</span><span class="p">,</span> <span class="n">refs</span> <span class="ow">in</span> <span class="n">iter_sources</span><span class="p">(</span><span class="n">evs_sign</span><span class="p">):</span>
-                            
+
                             <span class="k">yield</span> <span class="n">InteractionDataFrameRecord</span><span class="p">(</span>
                                 <span class="n">id_a</span> <span class="o">=</span> <span class="n">_dir</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>
                                 <span class="n">id_b</span> <span class="o">=</span> <span class="n">_dir</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>
@@ -3275,13 +3269,13 @@
                                 <span class="n">sources</span> <span class="o">=</span> <span class="n">sources</span><span class="p">,</span>
                                 <span class="n">references</span> <span class="o">=</span> <span class="n">refs</span><span class="p">,</span>
                             <span class="p">)</span>
-                    
+
                     <span class="k">if</span> <span class="n">evs_without_sign</span><span class="p">:</span>
-                        
+
                         <span class="n">evs_undirected</span> <span class="o">-=</span> <span class="n">evs_without_sign</span>
-                        
+
                         <span class="k">for</span> <span class="n">sources</span><span class="p">,</span> <span class="n">refs</span> <span class="ow">in</span> <span class="n">iter_sources</span><span class="p">(</span><span class="n">evs_without_sign</span><span class="p">):</span>
-                            
+
                             <span class="k">yield</span> <span class="n">InteractionDataFrameRecord</span><span class="p">(</span>
                                 <span class="n">id_a</span> <span class="o">=</span> <span class="n">_dir</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>
                                 <span class="n">id_b</span> <span class="o">=</span> <span class="n">_dir</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>
@@ -3294,11 +3288,11 @@
                                 <span class="n">sources</span> <span class="o">=</span> <span class="n">sources</span><span class="p">,</span>
                                 <span class="n">references</span> <span class="o">=</span> <span class="n">refs</span><span class="p">,</span>
                             <span class="p">)</span>
-                    
+
                 <span class="k">if</span> <span class="n">evs_undirected</span><span class="p">:</span>
-                    
+
                     <span class="k">for</span> <span class="n">sources</span><span class="p">,</span> <span class="n">refs</span> <span class="ow">in</span> <span class="n">iter_sources</span><span class="p">(</span><span class="n">evs_undirected</span><span class="p">):</span>
-                        
+
                         <span class="k">yield</span> <span class="n">InteractionDataFrameRecord</span><span class="p">(</span>
                             <span class="n">id_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>
                             <span class="n">id_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>

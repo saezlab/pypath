@@ -65,7 +65,7 @@ class EnzymeSubstrateProcessor(
         ):
         """
         Processes enzyme-substrate interaction data from various databases.
-        Provedes generators to iterate over these interactions.
+        Provides generators to iterate over these interactions.
         For organisms other than human obtains the organism specific
         interactions from databases.
 
@@ -797,11 +797,11 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                     self.enz_sub[key] = []
 
                 self.enz_sub[key].append(es)
-                
+
                 for ev in es.evidences:
-                    
+
                     resource_key = (ev.resource.name, ev.resource.via)
-                    
+
                     self.references[resource_key][es.key()].update(
                         ev.references
                     )
@@ -812,19 +812,19 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         )
 
         for input_param in self.input_param:
-            
+
             name = (
                 input_param['name']
                     if isinstance(input_param, dict) else
                 input_param.name
             )
-            
+
             input_method = (
                 input_param['input_method']
                     if isinstance(input_param, dict) else
                 input_param.input_method
             )
-            
+
             self._log(
                 'Loading enzyme-substrate interactions '
                 'from resource `%s` by method `%s`.' % (

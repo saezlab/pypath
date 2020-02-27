@@ -29,9 +29,9 @@ def get_cachedir(cachedir = None):
     """
     Ensures the cache directory exists and returns its path.
     """
-    
+
     cachedir = cachedir or settings.get('cachedir')
-    
+
     os.makedirs(cachedir, exist_ok = True)
-    
+
     return cachedir

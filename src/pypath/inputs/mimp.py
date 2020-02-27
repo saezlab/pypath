@@ -26,12 +26,12 @@ import pypath.resources.urls as urls
 
 
 def mimp_enzyme_substrate():
-    
+
     db_names = {
         'PhosphoSitePlus': 'PhosphoSite',
         'PhosphoELM': 'phosphoELM',
     }
-    
+
     result = []
     non_digit = re.compile(r'[^\d.-]+')
     motre = re.compile(r'(-*)([A-Za-z]+)(-*)')
@@ -43,14 +43,14 @@ def mimp_enzyme_substrate():
         return None
     data = [x.split('\t') for x in data.split('\n')]
     del data[0]
-    
+
     for l in data:
-        
+
         if len(l) > 6 and len(l[2]) > 0:
-            
+
             kinases = l[2].split(';')
             kinases_gnames = []
-            
+
             for k in kinases:
                 if k.endswith('GROUP'):
                     grp = k.split('_')[0]
@@ -62,14 +62,14 @@ def mimp_enzyme_substrate():
                         kinases_gnames += kclass['subfamilies'][grp]
                 else:
                     kinases_gnames.append(k)
-            
+
             mot = motre.match(l[4])
-            
+
             for k in kinases_gnames:
-                
+
                 resaa = l[4][7]
                 resnum = int(non_digit.sub('', l[3]))
-                
+
                 if mot:
                     start = resnum - 7 + len(mot.groups()[0])
                     end = resnum + 7 - len(mot.groups()[2])
@@ -78,12 +78,12 @@ def mimp_enzyme_substrate():
                     start = None
                     end = None
                     instance = l[4]
-                
+
                 databases = [
                     db_names[db] if db in db_names else db
                     for db in l[6].split(';')
                 ]
-                
+
                 result.append({
                     'instance': instance,
                     'kinase': k.upper(),
@@ -96,7 +96,7 @@ def mimp_enzyme_substrate():
                     'end': end,
                     'databases': databases,
                 })
-    
+
     return result
 
 
@@ -134,7 +134,7 @@ def get_kinase_class():
                 'family': family,
                 'subfamily': subfamily
             }
-    
+
     return result
 
 
