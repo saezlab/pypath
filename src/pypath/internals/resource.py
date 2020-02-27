@@ -96,7 +96,7 @@ class AbstractResource(session_mod.Logger):
 
             self.input_method = self._input_method
 
-        else:
+        elif self._input_method:
 
             self.input_method = inputs.get_method(self._input_method)
 
