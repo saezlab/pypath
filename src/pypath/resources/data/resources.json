@@ -4285,8 +4285,8 @@
   },
   "CacncerSEA": {
     "license": {
-        "name": "No license.",
-        "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
+        "name": "CC Attribution-NonCommercial 4.0.",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
         "commercial_use": false
     },
     "emails": ["xiaoyun@ems.hrbmu.edu.cn", "Yun Xiao"]
