@@ -20,7 +20,6 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-
 import pypath.share.common as common
 import pypath.share.session as session_mod
 
@@ -188,12 +187,27 @@ def ensure_ncbi_tax_id(taxon_id):
         
     else:
         
-        ncbi_tax_id = (
-            taxid_from_common_name(taxon_id) or
-            taxid_from_latin_name(taxon_id) or
-            taxid_from_dbptm_taxon_name(taxon_id) or
-            taxid_from_nonstandard(taxon_id)
-        )
+        if '(' in taxon_id:
+            
+            part0, part1 = taxon_id.split('(', maxsplit = 1)
+            
+            ncbi_tax_id = (
+                ensure_ncbi_tax_id(part0) or
+                ensure_ncbi_tax_id(part1.split(')', maxsplit = 1)[0])
+            )
+            
+        elif hasattr(taxon_id, 'isdigit') and taxon_id.isdigit():
+            
+            nxbi_tax_id = int(taxon_id)
+            
+        else:
+            
+            ncbi_tax_id = (
+                taxid_from_common_name(taxon_id) or
+                taxid_from_latin_name(taxon_id) or
+                taxid_from_dbptm_taxon_name(taxon_id) or
+                taxid_from_nonstandard(taxon_id)
+            )
         
         if not ncbi_tax_id:
             
