@@ -1136,6 +1136,12 @@ urls = {
         'kinase_substrate': 'https://www.maayanlab.net/KEA2/gsl/'
             'kinase_substrate_phospho-site_level_pmid_resource_database.txt',
     },
+    'iptmnet': {
+        'label': 'A database of PTMs and enzyme-substrate interactions '
+            'integrated from other resources and text mining',
+        'url': 'https://research.bioinformatics.udel.edu/iptmnet_data/'
+            'files/current/ptm.txt',
+    },
 }
 
 
