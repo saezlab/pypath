@@ -198,7 +198,7 @@ def ensure_ncbi_tax_id(taxon_id):
             
         elif hasattr(taxon_id, 'isdigit') and taxon_id.isdigit():
             
-            nxbi_tax_id = int(taxon_id)
+            ncbi_tax_id = int(taxon_id)
             
         else:
             

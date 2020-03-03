@@ -1139,8 +1139,12 @@ urls = {
     'iptmnet': {
         'label': 'A database of PTMs and enzyme-substrate interactions '
             'integrated from other resources and text mining',
-        'url': 'https://research.bioinformatics.udel.edu/iptmnet_data/'
+        'ptms': 'https://research.bioinformatics.udel.edu/iptmnet_data/'
             'files/current/ptm.txt',
+        'scores': 'https://research.bioinformatics.udel.edu/iptmnet_data/'
+            'files/current/score.txt',
+        'proteins': 'https://research.bioinformatics.udel.edu/iptmnet_data/'
+            'files/current/protein.txt',
     },
 }
 
