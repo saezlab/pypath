@@ -3915,7 +3915,9 @@
   },
   "Matrisome": {
     "license": {
-      "comment": "License information was requested but not received yet."
+        "name": "CC Attribution-NonCommercial 4.0",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "commercial_use": false
     }
   },
   "CSPA": {
