@@ -1146,6 +1146,12 @@ urls = {
         'proteins': 'https://research.bioinformatics.udel.edu/iptmnet_data/'
             'files/current/protein.txt',
     },
+    'icellnet': {
+        'label': 'A literature curated collection of '
+            'ligand-receptor interactions.',
+        'url': 'https://www.biorxiv.org/content/biorxiv/early/2020/03/05/'
+            '2020.03.05.976878/DC2/embed/media-2.xlsx?download=true',
+    },
 }
 
 
