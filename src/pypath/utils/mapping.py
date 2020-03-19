@@ -131,10 +131,19 @@ class MapReader(session_mod.Logger):
         """
 
         session_mod.Logger.__init__(self, name = 'mapping')
+        
+        self.ncbi_tax_id = (
+            ncbi_tax_id or
+            param.ncbi_tax_id or
+            settings.get('default_organism')
+        )
+        
         self._log(
             'Reader created for ID translation table, parameters: '
-            '`id_a=%s, id_b=%s, load_a_to_b=%u, load_b_to_a=%u, '
+            '`ncbi_tax_id=%u, id_a=%s, id_b=%s, '
+            'load_a_to_b=%u, load_b_to_a=%u, '
             'input_type=%s (%s)`.' % (
+                self.ncbi_tax_id,
                 param.id_type_a,
                 param.id_type_b,
                 load_a_to_b,
@@ -156,11 +165,6 @@ class MapReader(session_mod.Logger):
         self.lifetime = lifetime
         self.a_to_b = None
         self.b_to_a = None
-        self.ncbi_tax_id = (
-            ncbi_tax_id or
-            param.ncbi_tax_id or
-            settings.get('default_organism')
-        )
         self.uniprots = uniprots
 
         self.load()
@@ -679,7 +683,10 @@ class MapReader(session_mod.Logger):
 
         url = '%s?%s' % (url, urllib.urlencode(post))
         c = curl.Curl(url, silent = False)
-        data = c.result
+        # fallback to empty string: Curl returns None in case of
+        # empty file but in case of UniProt, especially for under-researched
+        # taxons it can happen there is no result for certain queries
+        data = c.result or ''
 
         data = [
             [
@@ -1206,6 +1213,10 @@ class Mapper(session_mod.Logger):
             for backwards compatibility.
         """
 
+        if not name:
+
+            return set()
+
         id_type = id_type or nameType
         target_id_type = target_id_type or targetNameType
 
@@ -1684,8 +1695,12 @@ class Mapper(session_mod.Logger):
             return
 
         self._log(
-            'Loading mapping table with identifiers `%s` and `%s`, '
+            'Loading mapping table for organism `%s` '
+            'with identifiers `%s` and `%s`, '
             'input type `%s`' % (
+                kwargs['ncbi_tax_id']
+                    if 'ncbi_tax_id' in kwargs else
+                resource.ncbi_tax_id,
                 resource.id_type_a,
                 resource.id_type_b,
                 resource.type,
