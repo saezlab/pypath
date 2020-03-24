@@ -30,92 +30,125 @@ import pypath.resources.urls as urls
 import pypath.share.common as common
 
 
-def signalink_interactions():
+def signalink_interactions(organism = 9606, exclude_secondary = True):
     """
     Reads and processes SignaLink3 interactions from local file.
     Returns list of interactions.
     """
 
-    repar = re.compile(r'.*\(([a-z\s]+)\)')
+    SignalinkInteraction = collections.namedtuple(
+        'SignalinkInteraction',
+        [
+            'id_a',
+            'id_b',
+            'is_direct',
+            'is_directed',
+            'is_stimulation',
+            'is_inhibition',
+            'pathways_a',
+            'pathways_b',
+            'functions_a',
+            'functions_b',
+            'references',
+            'resources',
+        ]
+    )
+
+    signalink_sources = {
+        'SLKv2.0',
+        'SLKv2.1',
+        'SLKv3.0',
+        'SignaFish',
+        'TCRcuration',
+    }
     repref = re.compile(r'(?:.*:)?((?:[\w]+[^\s])?)\s?')
-    notNeeded = set(['acsn', 'reactome'])
-    nodes = {}
+    nodes_pathways = {}
+    nodes_organism = {}
+    nodes_functions = {}
     interactions = []
 
-    def _get_attr(attrs, attrName):
-        return _process_attr(attrs[attrName]) if attrName in attrs else ''
 
-    def _process_attr(attr):
-        m = repar.match(attr)
+    def get_value(field):
 
-        if m is not None:
-            return m.groups()[0]
+        return repref.sub('\\1', field)
 
-        else:
-            return attr
+
+    def get_values(field):
+
+        return [get_value(f) for f in field.split('|')]
+
 
     url_nodes = urls.urls['signalink']['nodes']
     c_nodes = curl.Curl(url_nodes, silent = False, large = True)
     url_edges = urls.urls['signalink']['edges']
     c_edges = curl.Curl(url_edges, silent = False, large = True)
 
+    _ = next(c_nodes.result)
+
     for l in c_nodes.result:
-        if len(l) > 0:
+
+        l = l.strip('\n\r')
+
+        if l:
+
             l = l.split('\t')
             _id = int(l[0])
-            uniprot = repref.sub('\\1', l[1])
-            pathways = [
-                pw.split(':')[-1].strip() for pw in l[4].split('|')
-                if pw.split(':')[0] not in notNeeded
-            ]
-            nodes[_id] = [uniprot, pathways]
+            uniprot = get_value(l[1])
+            pathways = l[4].split('|') if l[4] else []
+            _organism = int(get_value(l[3]))
+            nodes_pathways[uniprot] = pathways
+            nodes_organism[uniprot] = _organism
+            nodes_functions[uniprot] = l[6].split('|') if l[6] else []
 
-    lPrev = None
+    _ = next(c_edges.result)
 
     for l in c_edges.result:
+
         l = l.strip().split('\t')
 
-        if lPrev is not None:
-            l = lPrev + l[1:]
-            lPrev = None
+        if exclude_secondary and not set(l[6].split('|')) & signalink_sources:
 
-        if len(l) == 13:
-            if l[-1] == '0':
+            continue
 
-                dbs = [
-                    _process_attr(db.split(':')[-1])
-                    for db in l[9].replace('"', '').split('|')
-                ]
-                dbs = list(set(dbs) - notNeeded)
+        id_a = get_value(l[0])
+        id_b = get_value(l[1])
 
-                if len(dbs) == 0:
-                    continue
+        if (
+            nodes_organism[id_a] != organism or
+            nodes_organism[id_b] != organism
+        ):
+            continue
 
-                idSrc = int(l[1])
-                idTgt = int(l[2])
+        resources = [
+            res for res in get_values(l[6])
+            if not res.startswith('SLK')
+        ]
 
-                uniprotSrc = repref.sub('\\1', l[3])
-                uniprotTgt = repref.sub('\\1', l[4])
+        interaction_attrs = {
+            tuple(iattr.split(':'))
+            for iattr in l[5].split('|')
+        }
 
-                if not uniprotSrc or not uniprotTgt:
-
-                    continue
-
-                refs = [ref.split(':')[-1] for ref in l[7].split('|')]
-                attrs = dict(
-                    tuple(attr.strip().split(':', 1))
-                    for attr in l[8].replace('"', '').split('|'))
-                interactions.append([
-                    uniprotSrc, uniprotTgt, ';'.join(refs), ';'.join(dbs),
-                    _get_attr(attrs, 'effect'),
-                    _get_attr(attrs, 'is_direct'),
-                    _get_attr(attrs, 'is_directed'),
-                    _get_attr(attrs, 'molecular_background'),
-                    ';'.join(nodes[idSrc][1]), ';'.join(nodes[idTgt][1])
-                ])
-
-        else:
-            lPrev = l
+        interactions.append(
+            SignalinkInteraction(
+                id_a = id_a,
+                id_b = id_a,
+                is_direct = ('is_direct', 'true') in interaction_attrs,
+                is_directed = ('is_directed', 'true') in interaction_attrs,
+                is_stimulation = (
+                    ('MI', '0624(stimulation)') in interaction_attrs
+                ),
+                is_inhibition = (
+                    ('MI', '0623(inhibition)') in interaction_attrs
+                ),
+                pathways_a = nodes_pathways[id_a],
+                pathways_b = nodes_pathways[id_b],
+                functions_a = nodes_functions[id_a],
+                functions_b = nodes_functions[id_b],
+                references = get_values(l[4]),
+                resources = resources,
+            )
+        )
 
     return interactions
 
