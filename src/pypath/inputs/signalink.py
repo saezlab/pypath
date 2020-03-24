@@ -24,10 +24,12 @@ from future.utils import iteritems
 import sys
 import re
 import collections
+import itertools
 
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.share.common as common
+import pypath.utils import mapping
 
 
 def signalink_interactions(organism = 9606, exclude_secondary = True):
@@ -153,31 +155,41 @@ def signalink_interactions(organism = 9606, exclude_secondary = True):
     return interactions
 
 
-def signalink_pathway_annotations():
+def signalink_annotations(organism = 9606):
 
     SignalinkPathway = collections.namedtuple(
         'SignalinkPathway',
-        ['pathway', 'core'],
+        [
+            'pathway',
+            'function',
+        ]
     )
 
 
     result = collections.defaultdict(set)
 
-    interactions = signalink_interactions()
+    interactions = signalink_interactions(organism = organism)
 
     for i in interactions:
-        for idx in (0, 1):
-            for pathway in i[idx + 8].split(';'):
 
-                core = 'non-core' not in pathway
-                pathway = (
-                    pathway.split('(')[0].strip().replace('/Wingless', '')
-                )
+        for postfix in ('_a', '_b'):
 
-                for uniprot in mapping.map_name(i[idx], 'uniprot', 'uniprot'):
+            _id = getattr(i, 'id%s' % postfix)
+            pathways = getattr(i, 'pathways%s' % postfix)
+            functions = getattr(i, 'functions%s' % postfix)
+
+            for uniprot in mapping.map_name(i[idx], 'uniprot', 'uniprot'):
+
+                for (
+                    pathway, function in
+                    itertools.product(pathways, functions)
+                ):
 
                     result[uniprot].add(
-                        SignalinkPathway(pathway = pathway, core = core)
+                        SignalinkPathway(
+                            pathway = pathway,
+                            function = function,
+                        )
                     )
 
     return result
