@@ -315,7 +315,7 @@ class CustomAnnotation(session_mod.Logger):
         return annotop.op(*annots)
 
 
-    def get_class(self, name, entity_type = None):
+    def get_class(self, name, entity_types = None):
         """
         Retrieves a class by its name and loads it if hasn't been loaded yet
         but the name present in the class definitions.
@@ -327,16 +327,9 @@ class CustomAnnotation(session_mod.Logger):
 
         if name in self.classes:
 
-            entity_type = common.to_set(entity_type)
-
-            return (
-                self.classes[name]
-                    if not entity_type else
-                {
-                    e
-                    for e in self.classes[name]
-                    if entity.Entity._get_entity_type(e) in entity_type
-                }
+            return entity.Entity.filter_entity_type(
+                self.classes[name],
+                entity_type = entity_types,
             )
 
         self._log('No such annotation class: `%s`' % name)
@@ -1367,11 +1360,9 @@ class CustomAnnotation(session_mod.Logger):
         return dict(
             (
                 name,
-                len(members)
-                    if not entity_type else
-                sum(
-                    1 for m in members
-                    if entity.Entity._get_entity_type(m) in entity_type
+                entity.Entity.count_entity_type(
+                    members,
+                    entity_type = entity_type,
                 )
             )
             for name, members in iteritems(self.classes)
@@ -1393,19 +1384,17 @@ class CustomAnnotation(session_mod.Logger):
 
     def entities_by_resource(self, entity_types = None):
 
-        entity_types = common.to_set(entity_types)
         by_resource = collections.defaultdict(set)
 
         for key, resource in iteritems(self.resource_labels):
 
             by_resource[resource].update(
-                self.classes[key]
-                    if not entity_types else
-                {
-                    entity
-                    for entity in self.classes[key]
-                    if AnnotationBase.get_entity_type(entity) in entity_types
-                }
+                set(
+                    entity.Entity.filter_entity_type(
+                        self.classes[key],
+                        entity_type = entity_types,
+                    )
+                )
             )
 
         return dict(by_resource)
@@ -1424,14 +1413,17 @@ class CustomAnnotation(session_mod.Logger):
         )
 
 
-    def get_entities(self):
+    def get_entities(self, entity_types = None):
 
-        return set.union(*self.classes.values())
+        return entity.Entity.filter_entity_type(
+            set.union(*self.classes.values()),
+            entity_type = entity_types,
+        )
 
 
-    def numof_entities(self):
+    def numof_entities(self, entity_types = None):
 
-        return len(self.get_entities())
+        return len(self.get_entities(entity_types = entity_types))
 
 
     def numof_classes(self):
@@ -1439,9 +1431,15 @@ class CustomAnnotation(session_mod.Logger):
         return len(self.classes)
 
 
-    def numof_records(self):
+    def numof_records(self, entity_types = None):
 
-        return sum(map(len, self.classes.values()))
+        return sum(
+            entity.Entity.count_entity_type(
+                members,
+                entity_type = entity_types
+            )
+            for members in self.classes.values()
+        )
 
 
     def update_summaries(self):
