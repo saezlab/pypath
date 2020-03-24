@@ -235,6 +235,10 @@ class Entity(session_mod.Logger):
             list, set or tuple, otherwise a generator.
         """
         
+        if not entity_type:
+            
+            return entities
+        
         entity_type = common.to_set(entity_type)
         obj_type = (
             type(entities)
@@ -248,6 +252,35 @@ class Entity(session_mod.Logger):
             if cls._get_entity_type(e) in entity_type
         )
 
+
+    @classmethod
+    def count_entity_type(cls, entities, entity_type):
+        """
+        Counts elements in an iterable of entities or identifiers of type(s)
+        in ``entity_type``.
+        
+        :param iterable entities:
+            A list, set, tuple or other iterable yielding entities or
+            identifiers.
+        :param str,set entity_type:
+            One or more entity types e.g. ``{'protein', 'mirna'}``.
+        
+        :returns:
+            int
+        """
+        
+        entities = (
+            entities
+                if isinstance(entities, common.list_like) else
+            list(entities)
+        )
+        
+        return len(
+            cls.filter_entity_type(
+                entities,
+                entity_type = entity_type,
+            )
+        )
 
 
     @property
