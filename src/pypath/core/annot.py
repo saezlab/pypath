@@ -4289,36 +4289,64 @@ class AnnotationTable(session_mod.Logger):
         if return_table:
 
             return tab
-    
-    
+
+
     def get_entities(self, entity_type = None):
-        
+
         entity_type = common.to_set(entity_type)
-        
+
         entities = set.union(*(
             set(an.annot.keys())
             for an in self.annots.values()
         ))
-        
-        return (
-            entities
-                if not entity_type else
-            {
-                en
-                for en in entities
-                if entity.Entity._get_entity_type(en) in entity_type
-            }
+
+        return entity.Entity.filter_entity_type(
+            entities,
+            entity_type = entity_type,
         )
-    
-    
-    def numof_entities(self):
-
-        return len(self.get_entities())
 
 
-    def numof_records(self):
+    def get_proteins(self):
 
-        return sum(an.numof_records() for an in self.annots.values())
+        return self.get_entities(entity_type = 'protein')
+
+
+    def get_complexes(self):
+
+        return self.get_entities(entity_type = 'complex')
+
+
+    def get_mirnas(self):
+
+        return self.get_entities(entity_type = 'mirna')
+
+
+    def numof_entities(self, entity_type = None):
+
+        return len(self.get_entities(entity_type = entity_type))
+
+
+    def numof_proteins(self):
+
+        return len(self.get_proteins())
+
+
+    def numof_complexes(self):
+
+        return len(self.get_complexes())
+
+
+    def numof_mirnas(self):
+
+        return len(self.get_mirnas())
+
+
+    def numof_records(self, entity_type = None):
+
+        return sum(
+            an.numof_records(entity_types = entity_type)
+            for an in self.annots.values()
+        )
 
 
     def numof_resources(self):
