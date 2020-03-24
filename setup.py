@@ -22,7 +22,7 @@
 __revision__ = "$Id$"
 import os
 from setuptools import setup, find_packages
-import imp
+import importlib as imp
 
 from setuptools.command.install import install as _install
 

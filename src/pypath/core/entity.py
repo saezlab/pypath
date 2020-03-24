@@ -218,6 +218,38 @@ class Entity(session_mod.Logger):
         return self._get_entity_type(self.identifier)
 
 
+    @classmethod
+    def filter_entity_type(cls, entities, entity_type):
+        """
+        Filters an iterable of entities or identifiers keeping only the ones
+        of type(s) in ``entity_type``.
+        
+        :param iterable entities:
+            A list, set, tuple or other iterable yielding entities or
+            identifiers.
+        :param str,set entity_type:
+            One or more entity types e.g. ``{'protein', 'mirna'}``.
+        
+        :returns:
+            Same type of object as ``entities`` if the type of the object is
+            list, set or tuple, otherwise a generator.
+        """
+        
+        entity_type = common.to_set(entity_type)
+        obj_type = (
+            type(entities)
+                if isinstance(entities, common.list_like) else
+            lambda x: x
+        )
+        
+        return obj_type(
+            e
+            for e in entities
+            if cls._get_entity_type(e) in entity_type
+        )
+
+
+
     @property
     def _key(self):
 
