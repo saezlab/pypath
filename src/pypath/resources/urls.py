@@ -1085,8 +1085,8 @@ urls = {
     },
     'signalink': {
         'label': 'Literature curated activity flow signaling network',
-        'nodes': 'http://rescued.omnipathdb.org/signalink3_nodes.tsv',
-        'edges': 'http://rescued.omnipathdb.org/signalink3_edges.tsv',
+        'nodes': 'http://rescued.omnipathdb.org/SLK3_nodes_2020_03_23.csv',
+        'edges': 'http://rescued.omnipathdb.org/SLK3_layer0_2020_03_23.csv',
     },
     'zhong2015': {
         'url': 'http://rescued.omnipathdb.org/zhong2015_S1.tsv',
