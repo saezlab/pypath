@@ -1400,6 +1400,21 @@ class CustomAnnotation(session_mod.Logger):
 
         return dict(by_resource)
 
+    # TODO: this kind of methods should be implemented by metaprogramming
+    def proteins_by_resource(self):
+
+        return self.entities_by_resource(entity_types = 'protein')
+
+
+    def complexes_by_resource(self):
+
+        return self.entities_by_resource(entity_types = 'complex')
+
+
+    def mirnas_by_resource(self):
+
+        return self.entities_by_resource(entity_types = 'mirna')
+
 
     def counts_by_resource(self, entity_types = None):
 
@@ -1422,9 +1437,41 @@ class CustomAnnotation(session_mod.Logger):
         )
 
 
+    # TODO: this kind of methods should be implemented by metaprogramming
+    def get_proteins(self):
+
+        return self.get_entities(entity_types = 'protein')
+
+
+    def get_complexes(self):
+
+        return self.get_entities(entity_types = 'complex')
+
+
+    def get_mirnas(self):
+
+        return self.get_entities(entity_types = 'mirna')
+
+
     def numof_entities(self, entity_types = None):
 
         return len(self.get_entities(entity_types = entity_types))
+
+
+    # TODO: this kind of methods should be implemented by metaprogramming
+    def numof_proteins(self):
+
+        return self.numof_entities(entity_types = 'protein')
+
+
+    def numof_complexes(self):
+
+        return self.numof_entities(entity_types = 'complex')
+
+
+    def numof_mirnas(self):
+
+        return self.numof_entities(entity_types = 'mirna')
 
 
     def numof_classes(self):
@@ -1441,6 +1488,22 @@ class CustomAnnotation(session_mod.Logger):
             )
             for members in self.classes.values()
         )
+
+
+    # TODO: this kind of methods should be implemented by metaprogramming
+    def numof_protein_recordss(self):
+
+        return self.numof_records(entity_types = 'protein')
+
+
+    def numof_complex_records(self):
+
+        return self.numof_records(entity_types = 'complex')
+
+
+    def numof_mirna_records(self):
+
+        return self.numof_records(entity_types = 'mirna')
 
 
     def update_summaries(self):
