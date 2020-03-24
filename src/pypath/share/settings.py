@@ -106,6 +106,8 @@ _defaults = {
     'keep_noref': False,
     'msigdb_email': 'omnipathdb@gmail.com',
 
+    'annot_infer_complexes': True,
+
     # parameters for pypath.omnipath
     'timestamp_format': '%Y%m%d',
 

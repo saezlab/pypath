@@ -41,6 +41,7 @@ import pandas as pd
 
 import pypath.inputs.main as dataio
 import pypath.share.common as common
+import pypath.share.settings as settings
 import pypath.utils.mapping as mapping
 import pypath.utils.reflists as reflists
 import pypath.internals.resource as resource
@@ -1534,7 +1535,7 @@ class AnnotationBase(resource.AbstractResource):
             proteins = (),
             complexes = (),
             reference_set = (),
-            infer_complexes = True,
+            infer_complexes = None,
             dump = None,
             **kwargs
         ):
@@ -1571,6 +1572,11 @@ class AnnotationBase(resource.AbstractResource):
         )
 
         self.entity_type = entity_type
+        infer_complexes = (
+            infer_complexes
+                if isinstance(infer_complexes, bool) else
+            settings.get('annot_infer_complexes')
+        )
         self.infer_complexes = (
             infer_complexes and
             self.entity_type == 'protein'
