@@ -973,7 +973,9 @@ class Network(session_mod.Logger):
                     if isinstance(networkinput.refs, tuple) else
                 ';'
             )
+            # column index of the sign
             sig_col = None if not isinstance(sign, tuple) else sign[0]
+            # column index and value(s) for the direction
             dir_col = None
             dir_val = None
             dir_sep = None
@@ -988,8 +990,11 @@ class Network(session_mod.Logger):
 
                 dir_col = sign[0]
                 dir_val = sign[1:3]
-                dir_val = dir_val if type(dir_val[
-                    0]) in common.simple_types else common.flat_list(dir_val)
+                dir_val = (
+                    dir_val
+                        if type(dir_val[0]) in common.simple_types else
+                    common.flat_list(dir_val)
+                )
                 dir_sep = sign[3] if len(sign) > 3 else None
 
             dir_val = common.to_set(dir_val)
@@ -1148,6 +1153,7 @@ class Network(session_mod.Logger):
                 negative = False
 
                 if isinstance(sign, tuple):
+
                     positive, negative = (
                         self._process_sign(line[sign[0]], sign)
                     )
