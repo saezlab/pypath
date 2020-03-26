@@ -26,25 +26,46 @@ preprocessed data.
 
 from future.utils import iteritems
 
+import pypath.share.common as common
+
 
 class Field(object):
     """
     Generic field processor, base class for more specific field processors.
     The default behaviour is to return the value at a specific index from
     each record.
+    
+    :param int,list idx:
+        One or more index or indices.
+    :param tuple,list,dict compact:
+        Special compact definitions which make it easier to describe field
+        definitions in a concise way.
+    :param dict mapping:
+        Mapping rules for extracting values from the raw field content.
+    :param str,NoneType sep:
+        Within field separator (to split the field content).
+    :param callable method:
+        A method for processing - in case the built in ways are not
+        satisfying, for greatest flexibility.
     """
     
     def __init__(
             self,
-            idx,
+            idx = None,
+            compact = None,
             mapping = None,
+            sep = None,
+            method = None,
+            **kwargs
         ):
         
-        print(locals())
-        self.setup(locals())
+        self.param = locals()
+        _ = self.param.pop('self')
+        self.param.update(kwargs)
+        self.setup()
     
     
-    def setup(self, param):
+    def setup(self):
         
         for k, v in iteritems(param):
             
@@ -59,7 +80,39 @@ class Field(object):
             One record (row) to be processed.
         
         :returns:
-            The processed value of the field.
+            The processed value of the field as a ``FieldContent`` object.
+            This object either provides the processed value or iterates
+            through values if possibly more than one value available from
+            the field.
         """
         
-        return record[self.idx]
+        return FieldContent(record[self.idx])
+
+
+class FieldContent(object):
+    """
+    Provides a unified interface for accessing processed field contents
+    either as a single value or as an iterable.
+    """
+    
+    
+    def __init__(self, content):
+        
+        self.content = content
+    
+    
+    @property
+    def value(self):
+        
+        return self.content
+    
+    
+    def __iter__(self):
+        
+        for value in (
+            self.content
+                if isinstance(self.content, common.list_like) else
+            (self.content,)
+        ):
+            
+            yield value
