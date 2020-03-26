@@ -56,6 +56,7 @@ class Field(object):
             mapping = None,
             sep = None,
             method = None,
+            value_type = None,
             **kwargs
         ):
         
@@ -67,9 +68,30 @@ class Field(object):
     
     def setup(self):
         
-        for k, v in iteritems(param):
+        for k, v in iteritems(self.param):
             
             setattr(self, k, v)
+        
+        self._from_compact()
+    
+    
+    def _from_compact(self):
+        
+        if self.compact:
+            
+            if isinstance(self.compact, int):
+                
+                self.idx = self.compact
+            
+            if isinstance(self.compact, tuple):
+                
+                if len(self.compact) == 2:
+                    
+                    self.idx, self.sep = self.compact
+                    
+                if len(self.compact) == 3:
+                    
+                    self.idx, self.sep, self.mapping = self.compact
     
     
     def process(self, record):
@@ -86,7 +108,41 @@ class Field(object):
             the field.
         """
         
-        return FieldContent(record[self.idx])
+        return FieldContent(self._process(record))
+    
+    
+    def _process(self, record):
+        
+        value = record[self.idx]
+        
+        if isinstance(self.sep, common.basestring):
+            
+            value = value.split(self.sep)
+        
+        value = (
+                [self._process_one(val) for val in value]
+                    if isinstance(value, list) else
+                self._process_one(value)
+            )
+        
+        return value
+    
+    
+    def _process_one(self, value):
+        
+        if self.value_type:
+            
+            value = value_type[value]
+        
+        if isinstance(self.mapping, common.list_like):
+            
+            value = value in self.mapping
+            
+        if isinstance(self.mapping, dict):
+            
+            value = self.mapping[value] if value in self.mapping else None
+        
+        return value
 
 
 class FieldContent(object):
