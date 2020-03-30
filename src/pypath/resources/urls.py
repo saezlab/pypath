@@ -1152,6 +1152,13 @@ urls = {
         'url': 'https://www.biorxiv.org/content/biorxiv/early/2020/03/05/'
             '2020.03.05.976878/DC2/embed/media-2.xlsx?download=true',
     },
+    'phobius': {
+        'label': (
+            'Plasma membrane protein orientation prediction for the '
+            'human proteome'
+        ),
+        'url': 'http://rescued.omnipathdb.org/phobius_human_proteome.tsv',
+    },
 }
 
 
