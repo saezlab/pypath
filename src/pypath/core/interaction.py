@@ -230,6 +230,7 @@ class Interaction(object):
             entity_type_b = 'protein',
             taxon_a = 9606,
             taxon_b = 9606,
+            attrs = None,
         ):
 
         a = self._get_entity(
@@ -269,7 +270,7 @@ class Interaction(object):
             self.b_a: pypath_evidence.Evidences(),
         }
 
-        self.attrs = {}
+        self.attrs = attrs or {}
 
 
     def reload(self):
@@ -1939,6 +1940,10 @@ class Interaction(object):
             )
             for attr in ('id_type', 'entity_type', 'taxon')
             for label in ('a', 'b')
+        )
+
+        all_new_attrs['attrs'] = (
+            new_attrs['attrs'] if 'attrs' in new_attrs else self.attrs
         )
 
         new = Interaction(
