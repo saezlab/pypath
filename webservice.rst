@@ -13,7 +13,7 @@ Query types
 -----------
 
 The webservice currently recognizes 7 types of queries: ``interactions``,
-``ptms``, ``annotations``, ``complexes``, ``intercell``, ``queries`` and
+``enz_sub``, ``annotations``, ``complexes``, ``intercell``, ``queries`` and
 ``info``.
 The query types ``resources``, ``network`` and ``about`` have not been
 implemented yet in the new webservice.
@@ -31,12 +31,14 @@ datasets. Each of them has a short name what you can use in the queries
 * ``pathwayextra``: activity flow interactions without literature reference
 * ``kinaseextra``: enzyme-substrate interactions without literature reference
 * ``ligrecextra``: ligand-receptor interactions without literature reference
-* ``tfregulons``: transcription factor (TF)-target interactions from DoRothEA
+* ``dorothea``: transcription factor (TF)-target interactions from DoRothEA
+* ``tf_target``: transcription factor (TF)-target interactions from other
+  sources
 * ``mirnatarget``: miRNA-mRNA and TF-miRNA interactions
 
-TF-target interactions from TF Regulons, a large collection additional
+TF-target interactions from DoRothEA, a large collection additional
 enzyme-substrate interactions, and literature curated miRNA-mRNA interacions
-combined from 4 databases. 
+combined from 4 databases.
 
 Mouse and rat
 -------------
@@ -75,17 +77,17 @@ sources and references listed.
 By default only the OmniPath dataset used, to include any other dataset you
 have to set additional parameters. For example to query the transcriptional regulators of EGFR:
 
-    http://omnipathdb.org/interactions/?targets=EGFR&types=TF
+    http://omnipathdb.org/interactions/?targets=EGFR&types=transcriptional
 
-The TF Regulons database assigns confidence levels to the interactions. You
+The DoRothEA database assigns confidence levels to the interactions. You
 might want to select only the highest confidence, *A* category:
 
-    http://omnipathdb.org/interactions/?targets=EGFR&types=TF&tfregulons_levels=A
+    http://omnipathdb.org/interactions/?targets=EGFR&types=transcriptional&dorothea_levels=A
 
 Show the transcriptional targets of Smad2 homology translated to rat including
 the confidence levels from TF Regulons:
 
-    http://omnipathdb.org/interactions/?genesymbols=1&fields=type,ncbi_tax_id,tfregulons_level&organisms=10116&sources=Smad2&types=TF
+    http://omnipathdb.org/interactions/?genesymbols=1&fields=type,ncbi_tax_id,dorothea_level&organisms=10116&sources=Smad2&types=transcriptional
 
 Query interactions from PhosphoNetworks which is part of the *kinaseextra*
 dataset:
@@ -120,11 +122,11 @@ Enzyme-substrate interactions
 Another query type available is ``ptms`` which provides enzyme-substrate
 interactions. It is very similar to the ``interactions``:
 
-    http://omnipathdb.org/ptms?genesymbols=1&fields=sources,references,isoforms&enzymes=FYN
+    http://omnipathdb.org/enz_sub?genesymbols=1&fields=sources,references,isoforms&enzymes=FYN
 
 Is there any ubiquitination reaction?
 
-    http://omnipathdb.org/ptms?genesymbols=1&fields=sources,references&types=ubiquitination
+    http://omnipathdb.org/ens_sub?genesymbols=1&fields=sources,references&types=ubiquitination
 
 And acetylation in mouse?
 
@@ -133,7 +135,7 @@ And acetylation in mouse?
 Rat interactions, both directly from rat and homology translated from human,
 from the PhosphoSite database:
 
-    http://omnipathdb.org/ptms?genesymbols=1&fields=sources,references&organisms=10116&databases=PhosphoSite,PhosphoSite_noref
+    http://omnipathdb.org/enz_sub?genesymbols=1&fields=sources,references&organisms=10116&databases=PhosphoSite,PhosphoSite_noref
 
 
 Molecular complexes
@@ -164,7 +166,7 @@ annotations from SignaLink:
 
 Or the tissue expression of BMP7 from Human Protein Atlas:
 
-     http://omnipathdb.org/annotations?databases=HPA_tissue&proteins=BMP7
+    http://omnipathdb.org/annotations?databases=HPA_tissue&proteins=BMP7
 
 
 Roles in inter-cellular communication
@@ -199,7 +201,7 @@ Exploring possible parameters
 Sometimes the names and values of the query parameters are not intuitive,
 even though in many cases the server accepts multiple alternatives. To see
 the possible parameters with all possible values you can use the ``queries``
-query type. The server checks the paremeter names and values exactly against
+query type. The server checks the parameter names and values exactly against
 these rules and if any of them don't match you will get an error message
 instead of reply. To see the parameters for the ``interactions`` query:
 

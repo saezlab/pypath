@@ -89,10 +89,12 @@ datasets. Each of them has a short name what you can use in the queries
 * ``pathwayextra``: activity flow interactions without literature reference
 * ``kinaseextra``: enzyme-substrate interactions without literature reference
 * ``ligrecextra``: ligand-receptor interactions without literature reference
-* ``tfregulons``: transcription factor (TF)-target interactions from DoRothEA
+* ``dorothea``: transcription factor (TF)-target interactions from DoRothEA
+* ``tf_target``: transcription factor (TF)-target interactions from other
+  sources
 * ``mirnatarget``: miRNA-mRNA and TF-miRNA interactions
 
-TF-target interactions from TF Regulons, a large collection additional
+TF-target interactions from DoRothEA, a large collection additional
 enzyme-substrate interactions, and literature curated miRNA-mRNA interacions
 combined from 4 databases.
 
@@ -133,17 +135,17 @@ sources and references listed.
 By default only the OmniPath dataset used, to include any other dataset you
 have to set additional parameters. For example to query the transcriptional regulators of EGFR:
 
-    http://omnipathdb.org/interactions/?targets=EGFR&types=TF
+    http://omnipathdb.org/interactions/?targets=EGFR&types=transcriptional
 
-The TF Regulons database assigns confidence levels to the interactions. You
+The DoRothEA database assigns confidence levels to the interactions. You
 might want to select only the highest confidence, *A* category:
 
-    http://omnipathdb.org/interactions/?targets=EGFR&types=TF&tfregulons_levels=A
+    http://omnipathdb.org/interactions/?targets=EGFR&types=transcriptional&dorothea_levels=A
 
 Show the transcriptional targets of Smad2 homology translated to rat including
 the confidence levels from TF Regulons:
 
-    http://omnipathdb.org/interactions/?genesymbols=1&fields=type,ncbi_tax_id,tfregulons_level&organisms=10116&sources=Smad2&types=TF
+    http://omnipathdb.org/interactions/?genesymbols=1&fields=type,ncbi_tax_id,dorothea_level&organisms=10116&sources=Smad2&types=transcriptional
 
 Query interactions from PhosphoNetworks which is part of the *kinaseextra*
 dataset:
