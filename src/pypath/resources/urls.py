@@ -928,13 +928,13 @@ urls = {
         'url': r'https://www.embopress.org/action/downloadSupplement?doi='\
             r'10.1038%2Fmsb.2010.71&file=msb201071-sup-0003.xls'
     },
-    'tfregulons': {
+    'dorothea': {
         'label': 'A comprehensive resource of TF-target interactions',
         'url': 'http://saezlab.org/tfregulons/tfregulons_database_v01_'\
             '20180216__%s.tsv'
     },
-    'tfregulons_git': {
-        'label': 'TF Regulons TF-taget database from its git repo',
+    'dorothea_git': {
+        'label': 'DoRothEA TF-taget database from its git repo',
         'url': 'https://github.com/saezlab/DoRothEA/raw/master/data/'
             'TFregulons/consensus/table/database_normal_20180915.csv.zip',
     },

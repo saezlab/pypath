@@ -347,6 +347,8 @@ class TableServer(BaseServer):
             'datasets': {
                 'omnipath',
                 'tfregulons',
+                'dorothea',
+                'tf_target',
                 'kinaseextra',
                 'ligrecextra',
                 'pathwayextra',
@@ -369,6 +371,11 @@ class TableServer(BaseServer):
                 'tfregulons_chipseq',
                 'tfregulons_tfbs',
                 'tfregulons_coexp',
+                'dorothea_level',
+                'dorothea_curated',
+                'dorothea_chipseq',
+                'dorothea_tfbs',
+                'dorothea_coexp',
                 'type',
                 'ncbi_tax_id',
                 'databases',
@@ -377,6 +384,13 @@ class TableServer(BaseServer):
             },
             'tfregulons_levels':  {'A', 'B', 'C', 'D', 'E'},
             'tfregulons_methods': {
+                'curated',
+                'chipseq',
+                'coexp',
+                'tfbs',
+            },
+            'dorothea_levels':  {'A', 'B', 'C', 'D', 'E'},
+            'dorothea_methods': {
                 'curated',
                 'chipseq',
                 'coexp',
@@ -563,25 +577,31 @@ class TableServer(BaseServer):
     datasets_ = {
         'omnipath',
         'tfregulons',
+        'dorothea',
+        'tf_target',
         'kinaseextra',
         'ligrecextra',
         'pathwayextra',
         'mirnatarget',
     }
-    tfregulons_methods = {'curated', 'coexp', 'chipseq', 'tfbs'}
+    dorothea_methods = {'curated', 'coexp', 'chipseq', 'tfbs'}
     dataset2type = {
         'omnipath': 'post_translational',
         'tfregulons': 'transcriptional',
+        'dorothea': 'transcriptional',
+        'tf_target': 'transcriptional',
         'kinaseextra': 'post_translational',
         'ligrecextra': 'post_translational',
         'pathwayextra': 'post_translational',
         'mirnatarget': 'post_transcriptional'
     }
     interaction_fields = {
-        'references', 'sources', 'tfregulons_level',
-        'tfregulons_curated', 'tfregulons_chipseq',
-        'tfregulons_tfbs', 'tfregulons_coexp', 'type',
-        'ncbi_tax_id', 'databases', 'organism',
+        'references', 'sources', 'dorothea_level',
+        'dorothea_curated', 'dorothea_chipseq',
+        'dorothea_tfbs', 'dorothea_coexp',
+        'tfregulons_level', 'tfregulons_curated',
+        'tfregulons_chipseq', 'tfregulons_tfbs', 'tfregulons_coexp',
+        'type', 'ncbi_tax_id', 'databases', 'organism',
         'curation_effort',
     }
     enzsub_fields = {
@@ -612,11 +632,11 @@ class TableServer(BaseServer):
             'sources': 'category',
             'references': 'category',
             'dip_url': 'category',
-            'tfregulons_curated': 'category',
-            'tfregulons_chipseq': 'category',
-            'tfregulons_tfbs': 'category',
-            'tfregulons_coexp': 'category',
-            'tfregulons_level': 'category',
+            'dorothea_curated': 'category',
+            'dorothea_chipseq': 'category',
+            'dorothea_tfbs': 'category',
+            'dorothea_coexp': 'category',
+            'dorothea_level': 'category',
             'type': 'category',
             'ncbi_tax_id_source': 'int16',
             'ncbi_tax_id_target': 'int16',
@@ -839,12 +859,12 @@ class TableServer(BaseServer):
         tbl['set_sources'] = pd.Series(
             [set(s.split(';')) for s in tbl.sources]
         )
-        tbl['set_tfregulons_level'] = pd.Series(
+        tbl['set_dorothea_level'] = pd.Series(
             [
                 set(s.split(';'))
                 if not pd.isnull(s) else
                 set([])
-                for s in tbl.tfregulons_level
+                for s in tbl.dorothea_level
             ]
         )
     
@@ -1280,7 +1300,7 @@ class TableServer(BaseServer):
             req,
             datasets  = {'omnipath'},
             databases = None,
-            tfregulons_levels = {'A', 'B'},
+            dorothea_levels = {'A', 'B'},
             organisms = {9606},
             source_target = 'OR'
         ):
@@ -1309,12 +1329,21 @@ class TableServer(BaseServer):
                 req.args[b'source_target'][0].decode('utf-8').upper()
             )
         
+        # changes the old, "tfregulons" names to new "dorothea"
+        self._tfregulons_dorothea(req)
+        
         args = {}
         
         for arg in (
-            'datasets', 'types', 'tfregulons_levels',
-            'sources', 'targets', 'partners', 'databases',
-            'tfregulons_methods', 'organisms'
+            'datasets',
+            'types',
+            'sources',
+            'targets',
+            'partners',
+            'databases',
+            'organisms',
+            'dorothea_levels',
+            'dorothea_methods',
         ):
             
             args[arg] = self._args_set(req, arg)
@@ -1322,8 +1351,12 @@ class TableServer(BaseServer):
         # if user requested TF type interactions
         # they likely want the tfregulons dataset
         if 'transcriptional' in args['types']:
-            args['datasets'].add('tfregulons')
+            
+            args['datasets'].add('dorothea')
+            args['datasets'].add('tf_target')
+        
         if 'post_transcriptional' in args['types']:
+            
             args['datasets'].add('mirnatarget')
         
         # here adjust on the defaults otherwise we serve empty
@@ -1338,11 +1371,12 @@ class TableServer(BaseServer):
         
         # do not allow impossible values
         # those would result KeyError later
-        args['tfregulons_levels'] = (
-            args['tfregulons_levels'] or tfregulons_levels
+        args['dorothea_levels'] = (
+            args['dorothea_levels'] or
+            dorothea_levels
         )
-        args['tfregulons_methods'] = (
-            args['tfregulons_methods'] & self.tfregulons_methods
+        args['dorothea_methods'] = (
+            args['dorothea_methods'] & self.dorothea_methods
         )
         
         # provide genesymbols: yes or no
@@ -1360,9 +1394,12 @@ class TableServer(BaseServer):
         # to serve TF-target interactions
         # but if they requested other types, then we
         # serve those as well
-        if 'tfregulons' in args['datasets']:
+        if 'dorothea' in args['datasets'] or 'tf_target' in args['datasets']:
+            
             args['types'].add('transcriptional')
+        
         if 'mirnatarget' in args['datasets']:
+            
             args['types'].add('post_transcriptional')
         
         # if no types provided we collect the types
@@ -1371,9 +1408,9 @@ class TableServer(BaseServer):
         # which belongs to the 'PPI' type
         if not args['types'] or args['datasets']:
             
-            args['types'].update(set(
-                self.dataset2type[ds] for ds in args['datasets']
-            ))
+            args['types'].update(
+                {self.dataset2type[ds] for ds in args['datasets']}
+            )
         
         # starting from the entire dataset
         tbl = self.data['interactions']
@@ -1414,6 +1451,7 @@ class TableServer(BaseServer):
         
         # filter by datasets
         if args['datasets']:
+            
             tbl = tbl.query(' or '.join(args['datasets']))
         
         # filter by organism
@@ -1422,14 +1460,14 @@ class TableServer(BaseServer):
             tbl.ncbi_tax_id_target.isin(args['organisms'])
         ]
         
-        # filter by TG Regulons confidence levels
-        if 'transcriptional' in args['types'] and args['tfregulons_levels']:
+        # filter by DoRothEA confidence levels
+        if 'transcriptional' in args['types'] and args['dorothea_levels']:
             
             tbl = tbl[
-                np.logical_not(tbl.tfregulons) |
+                np.logical_not(tbl.dorothea) |
                 [
-                    bool(levels & args['tfregulons_levels'])
-                    for levels in tbl.set_tfregulons_level
+                    bool(levels & args['dorothea_levels'])
+                    for levels in tbl.set_dorothea_level
                 ]
             ]
         
@@ -1443,13 +1481,14 @@ class TableServer(BaseServer):
                 ]
             ]
         
-        # filtering by TF Regulons methods
-        if 'transcriptional' in args['types'] and args['tfregulons_methods']:
+        # filtering by DoRothEA methods
+        if 'transcriptional' in args['types'] and args['dorothea_methods']:
             
-            q = ['tfregulons_%s' % m for m in args['tfregulons_methods']]
+            q = ['dorothea_%s' % m for m in args['dorothea_methods']]
             
             tbl = tbl[
-                tbl[q].any(1) | np.logical_not(tbl.tfregulons)
+                tbl[q].any(1) |
+                np.logical_not(tbl.dorothea)
             ]
         
         # filter directed & signed
@@ -1496,6 +1535,27 @@ class TableServer(BaseServer):
         tbl = tbl.loc[:,hdr]
         
         return self._serve_dataframe(tbl, req)
+    
+    
+    def _tfregulons_dorothea(self, req):
+        
+        for arg in (b'datasets', b'fields'):
+            
+            if arg in req.args:
+                
+                req.args[arg] = (
+                    req.args[arg].replace(b'tfregulons', b'dorothea')
+                )
+        
+        for postfix in (b'levels', b'methods'):
+            
+            key = b'tfregulons_%s' % postfix
+            new_key = b'dorothea_%s' % postfix
+            
+            if key in req.args and new_key not in req.args:
+                
+                req.args[new_key] = req.args[key]
+                _ = req.args.pop(key)
     
     
     def enzsub(
@@ -1942,7 +2002,7 @@ class TableServer(BaseServer):
         return (
             set(req.args[arg][0].decode('utf-8').split(','))
             if arg in req.args
-            else set([])
+            else set()
         )
 
 

@@ -843,7 +843,7 @@ class Export(session.Logger):
                         e.get_interaction_types(direction = d)
                     )
                 ),
-                'tfregulons': lambda e, d: (
+                'dorothea': lambda e, d: (
                     bool(
                         e.get_resources(
                             direction = d,
@@ -851,11 +851,11 @@ class Export(session.Logger):
                         )
                     )
                 ),
-                'tfregulons_curated': 'tfregulons_curated',
-                'tfregulons_chipseq': 'tfregulons_chipseq',
-                'tfregulons_tfbs':    'tfregulons_tfbs',
-                'tfregulons_coexp':   'tfregulons_coexp',
-                'tfregulons_level':   'tfregulons_level',
+                'dorothea_curated': 'dorothea_curated',
+                'dorothea_chipseq': 'dorothea_chipseq',
+                'dorothea_tfbs':    'dorothea_tfbs',
+                'dorothea_coexp':   'dorothea_coexp',
+                'dorothea_level':   'dorothea_level',
                 'type': lambda e, d: (
                     list(e.get_interaction_types(direction = d))[0]
                 ),
@@ -927,19 +927,19 @@ class Export(session.Logger):
                     bool(e['dirs'].sources[d] & sources_mirna) and
                     'MTI' in e['type']
                 ),
-                'tfregulons': lambda e, d: (
+                'dorothea': lambda e, d: (
                     'TF' in e['sources_by_type'] and bool(
                         e['sources_by_type']['TF'] &
                         e['dirs'].sources[d]
                     )
                 ),
-                'tfregulons_curated': 'tfregulons_curated',
-                'tfregulons_chipseq': 'tfregulons_chipseq',
-                'tfregulons_tfbs':    'tfregulons_tfbs',
-                'tfregulons_coexp':   'tfregulons_coexp',
-                'tfregulons_level': lambda e, d: (
-                    ';'.join(sorted(e['tfregulons_level'])) if
-                    'tfregulons_level' in e.attributes() and
+                'dorothea_curated': 'dorothea_curated',
+                'dorothea_chipseq': 'dorothea_chipseq',
+                'dorothea_tfbs':    'dorothea_tfbs',
+                'dorothea_coexp':   'dorothea_coexp',
+                'dorothea_level': lambda e, d: (
+                    ';'.join(sorted(e['dorothea_level'])) if
+                    'dorothea_level' in e.attributes() and
                     'TF' in e['sources_by_type'] and bool(
                         e['sources_by_type']['TF'] &
                         e['dirs'].sources[d]
