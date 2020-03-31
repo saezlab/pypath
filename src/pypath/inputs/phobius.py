@@ -20,6 +20,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import re
 import collections
 
 import pypath.share.curl as curl
@@ -27,6 +28,8 @@ import pypath.resources.urls as urls
 
 
 def phobius_annotations():
+    
+    rewrongtab = re.compile(r'(\t[A-Z\d]+_[A-Z]+)\t([A-Z]+)\s+(\d)')
     
     PhobiusAnnotation = collections.namedtuple(
         'PhobiusAnnotation',
@@ -48,6 +51,7 @@ def phobius_annotations():
     
     for line in c.result:
         
+        line = rewrongtab.sub(r'\1\2\t\3', line)
         line = line.strip().split('\t')
         
         result[line[2]].add(
@@ -59,4 +63,4 @@ def phobius_annotations():
             )
         )
     
-    return result
+    return dict(result)
