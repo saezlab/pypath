@@ -96,6 +96,7 @@ protein_sources_default = {
     'Msigdb',
     'Lrdb',
     'Baccin2019',
+    'Phobius',
 }
 
 #TODO this should be part of json files
@@ -2757,6 +2758,32 @@ class Opm(AnnotationBase):
             self,
             name = 'OPM',
             input_method = 'opm_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        self.annot = self.data
+        delattr(self, 'data')
+
+
+class Phobius(AnnotationBase):
+
+    _eq_fields = (
+        'tm_helices',
+        'signal_peptide',
+        'cytoplasmic',
+        'non_cytoplasmic',
+    )
+
+
+    def __init__(self, **kwargs):
+
+        AnnotationBase.__init__(
+            self,
+            name = 'Phobius',
+            input_method = 'phobius.phobius_annotations',
             **kwargs
         )
 

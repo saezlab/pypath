@@ -54,7 +54,7 @@ def phobius_annotations():
         line = rewrongtab.sub(r'\1\2\t\3', line)
         line = line.strip().split('\t')
         
-        result[line[2]].add(
+        result[line[1]].add(
             PhobiusAnnotation(
                 tm_helices = int(line[3]),
                 signal_peptide = line[4] == 'Y',
