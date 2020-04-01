@@ -497,6 +497,7 @@ class TableServer(BaseServer):
                 'above_main',
             },
             'categories': None,
+            'mainclass': None,
             'proteins': None,
             'fields': None,
             'entity_types': {
@@ -1832,6 +1833,12 @@ class TableServer(BaseServer):
             entity_types = self._args_set(req, 'entity_types')
             
             tbl = tbl[tbl.entity_type.isin(entity_types)]
+        
+        if b'mainclasses' in req.args:
+            
+            mainclasses =  = self._args_set(req, 'mainclasses')
+            
+            tbl = tbl[tbl.mainclass.isin(mainclasses)]
         
         # filtering for proteins
         if b'proteins' in req.args:
