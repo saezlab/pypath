@@ -1159,6 +1159,12 @@ urls = {
         ),
         'url': 'http://rescued.omnipathdb.org/phobius_human_proteome.tsv',
     },
+    'pro': {
+        'label': 'The Protein Ontology',
+        'url': 'https://proconsortium.org/download/current/pro_reasoned.obo',
+        'mapping': 'https://proconsortium.org/download/current/'
+            'promapping.txt',
+    },
 }
 
 
