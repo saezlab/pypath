@@ -385,10 +385,10 @@ pathway = {
         entity_type_a = 'protein',
         entity_type_b = 'protein',
         is_directed = (6, 'directed'),
-        sign = ,
+        sign = None,
         input = 'signalink.signalink_interactions',
         references = 10,
-        resources = 11,
+        resource = 11,
         ncbi_tax_id = 9606,
         extra_edge_attrs = {
             'netbiol_is_stimulation': 4,
@@ -616,6 +616,26 @@ pathway = {
         sign = (2, '+', '_'),
         input = 'adhesome_interactions',
         references = 4,
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
+    'icellnet': input_formats.NetworkInput(
+        name = "ICELLNET",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        ncbi_tax_id = 9606,
+        is_directed = True,
+        sign = None,
+        input = 'icellnet.icellnet_interactions',
+        references = 6,
+        resource = 5,
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
@@ -2378,6 +2398,10 @@ small_molecule_protein = {
 
 ligand_receptor['guide2pharma'] = copy.deepcopy(pathway['guide2pharma'])
 ligand_receptor['guide2pharma'].data_model = 'ligand_receptor'
+ligand_receptor['icellnet'] = copy.deepcopy(pathway['icellnet'])
+ligand_receptor['icellnet'].must_have_references = False
+ligand_receptor['icellnet'].data_model = 'ligand_receptor'
+
 pathway['hpmr'] = copy.deepcopy(ligand_receptor['hpmr'])
 pathway['hpmr'].data_model = 'activity_flow'
 pathway['hpmr'].must_have_references = True
