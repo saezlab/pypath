@@ -28,6 +28,7 @@ import pypath.share.curl as curl
 import pypath.inputs.common as inputs_common
 import pypath.utils.mapping as mapping
 import pypath.internals.intera as intera
+import pypath.core.entity as entity
 
 
 IcellnetRecord = collections.namedtuple(
@@ -77,7 +78,7 @@ def icellnet_interactions():
             subfamily = line[7].strip() or None,
             classification = (
                 [
-                    cls.strip().replace('.', '')
+                    cls.strip().replace('.', '').capitalize()
                     for cls in
                     line[8].split('/')
                 ]
@@ -119,6 +120,71 @@ def icellnet_complexes():
                     complexes[cplex_str] = cplex
     
     return complexes
+
+
+def icellnet_annotations(complexes = None):
+    
+    IcellnetAnnotation = collections.namedtuple(
+        'IcellnetAnnotation',
+        [
+            'role',
+            'family',
+            'subfamily',
+            'classification',
+        ]
+    )
+    
+    
+    def get_entities(ia, entity_attr, complexes):
+        
+        entities = getattr(ia, entity_attr)
+        
+        if not entities:
+            
+            return ()
+        
+        complex_entities = (
+            (entities,)
+                if entity.Entity._is_complex(entities) else
+            ()
+        )
+        protein_entities = (
+            (entities,)
+                if entity.Entity._is_protein(entities) else
+            tuple(entities.components.keys())
+        )
+        
+        return (
+            complex_entities
+                if complexes == True else
+            protein_entities
+                if complexes == False else
+            complex_entities + protein_entities
+        )
+    
+    
+    annotations = collections.defaultdict(set)
+    
+    for ia in icellnet_interactions():
+        
+        for role in ('ligand', 'receptor'):
+            
+            for en in get_entities(ia, role, complexes):
+                
+                annotations[en].add(
+                    IcellnetAnnotation(
+                        role = role,
+                        family = ia.family,
+                        subfamily = ia.subfamily,
+                        classification = (
+                            tuple(sorted(ia.classification))
+                                if ia.classification else
+                            None
+                        ),
+                    )
+                )
+    
+    return annotations
 
 
 def _icellnet_get_components(line, idx):

@@ -97,6 +97,7 @@ protein_sources_default = {
     'Lrdb',
     'Baccin2019',
     'Phobius',
+    'Icellnet',
 }
 
 #TODO this should be part of json files
@@ -105,6 +106,7 @@ complex_sources_default = {
     'CorumFuncat',
     'CorumGO',
     'HpmrComplex',
+    'IcellnetComplex',
 }
 
 #TODO this should be part of json files
@@ -3516,6 +3518,58 @@ class CellPhoneDB(AnnotationBase):
     def _eq_fields(self, *args):
 
         return self.record(*tuple(all(a) for a in zip(*args)))
+
+
+class Icellnet(AnnotationBase):
+
+    _eq_fields = ('role',)
+
+
+    def __init__(self, **kwargs):
+
+        _ = kwargs.pop('ncbi_tax_id', None)
+
+        AnnotationBase.__init__(
+            self,
+            name = 'ICELLNET',
+            input_method = 'icellnet.icellnet_annotations',
+            ncbi_tax_id = 9606,
+            complexes = False,
+        )
+
+
+    def _process_method(self, *args, **kwargs):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class IcellnetComplex(AnnotationBase):
+
+    _eq_fields = ('role',)
+
+
+    def __init__(self, **kwargs):
+
+        _ = kwargs.pop('ncbi_tax_id', None)
+
+        AnnotationBase.__init__(
+            self,
+            name = 'ICELLNET',
+            input_method = 'icellnet.icellnet_annotations',
+            ncbi_tax_id = 9606,
+            complexes = True,
+        )
+
+
+    def _process_method(self, *args, **kwargs):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
 
 
 class CellPhoneDBComplex(CellPhoneDB):
