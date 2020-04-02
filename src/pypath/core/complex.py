@@ -56,6 +56,7 @@ complex_resources = (
     'Hpmr',
     'GuideToPharmacology',
     'Humap',
+    'Icellnet',
 )
 
 
@@ -474,6 +475,21 @@ class GuideToPharmacology(AbstractComplexResource):
             self,
             name = 'Guide2Pharma',
             input_method = 'guide2pharma_complexes',
+            input_args = input_args or {},
+        )
+
+
+class Icellnet(AbstractComplexResource):
+    
+    
+    def __init__(self, input_args = None, **kwargs):
+
+        input_args = input_args or {}
+
+        AbstractComplexResource.__init__(
+            self,
+            name = 'ICELLNET',
+            input_method = 'icellnet.icellnet_complexes',
             input_args = input_args or {},
         )
 

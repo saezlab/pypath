@@ -97,6 +97,30 @@ def icellnet_interactions():
         )
 
 
+def icellnet_complexes():
+    
+    complexes = {}
+    
+    for ia in icellnet_interactions():
+        
+        for attr in ('ligand', 'receptor'):
+            
+            if hasattr(getattr(ia, attr), 'components'):
+                
+                cplex = getattr(ia, attr)
+                cplex_str = cplex.__str__()
+                
+                if cplex_str in complexes:
+                    
+                    complexes[cplex_str] += cplex
+                    
+                else:
+                    
+                    complexes[cplex_str] = cplex
+    
+    return complexes
+
+
 def _icellnet_get_components(line, idx):
     
     return [
