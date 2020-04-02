@@ -30,6 +30,7 @@ import pypath.reader.network as network
 __all__ = [
     'FileMapping', 'PickleMapping', 'NetworkInput', 'ReadList',
     'Reference', 'UniprotListMapping',
+    'ProMapping',
 ]
 
 
@@ -151,7 +152,25 @@ class UniprotMapping(MappingInput):
 
 
 class UniprotListMapping(MappingInput):
+    """
+    Provides parameters for downloading mapping table from UniProt
+    `Upload Lists` webservice.
 
+    :arg str id_type_a:
+        Custom name for one of the ID types.
+    :arg str id_type_a:
+        Custom name for the other ID type.
+    :arg str uniprot_id_type_a:
+        This is the symbol the UniProt webservice uses for the first
+        name type. These are included in the module and set
+        automatically, the argument only gives a way to override this.
+    :arg str uniprot_id_type_b:
+        Same as above just for the other ID type.
+    :arg bool swissprot:
+        DOwnload data only for SwissProt IDs.
+    """
+    
+    
     def __init__(
             self,
             id_type_a,
@@ -161,23 +180,6 @@ class UniprotListMapping(MappingInput):
             ncbi_tax_id = 9606,
             swissprot = True,
         ):
-        """
-        Provides parameters for downloading mapping table from UniProt
-        `Upload Lists` webservice.
-
-        :arg str id_type_a:
-            Custom name for one of the ID types.
-        :arg str id_type_a:
-            Custom name for the other ID type.
-        :arg str uniprot_id_type_a:
-            This is the symbol the UniProt webservice uses for the first
-            name type. These are included in the module and set
-            automatically, the argument only gives a way to override this.
-        :arg str uniprot_id_type_b:
-            Same as above just for the other ID type.
-        :arg bool swissprot:
-            DOwnload data only for SwissProt IDs.
-        """
 
         MappingInput.__init__(
             self,
@@ -205,6 +207,52 @@ class UniprotListMapping(MappingInput):
         other_organism = copy.deepcopy(self)
         other_organism.ncbi_tax_id = ncbi_tax_id
         return other_organism
+
+
+class ProMapping(MappingInput):
+    """
+    Provides parameters for mapping table from the Protein Ontology
+    Consortium.
+
+    :arg str id_type_a:
+        Custom name for one of the ID types.
+    :arg str id_type_a:
+        Custom name for the other ID type.
+    :arg str pro_id_type_a:
+        This is the symbol PRO uses to label the IDs.
+        These are included in the module and set
+        automatically, the argument only gives a way to override this.
+    :arg str pro_id_type_b:
+        Same as above just for the other ID type.
+    """
+    
+    
+    def __init__(
+            self,
+            id_type_a,
+            id_type_b,
+            pro_id_type_a = None,
+            pro_id_type_b = None,
+        ):
+        
+        MappingInput.__init__(
+            self,
+            type_ = 'pro',
+            id_type_a = id_type_a,
+            id_type_b = id_type_b,
+            ncbi_tax_id = None,
+        )
+        
+        self.pro_mapping = pro_mapping
+        
+        self.uniprot_id_type_a = (
+            uniprot_id_type_a or self.pro_mapping[self.id_type_a]
+        )
+        self.uniprot_id_type_b = (
+            uniprot_id_type_b or self.pro_mapping[self.id_type_b]
+        )
+        
+        self.entity_type = 'protein'
 
 
 class PickleMapping(MappingInput):
@@ -369,4 +417,34 @@ ac_mapping = {
     'ensgp': 'ENSEMBLGENOME_PRO_ID',
     'ensgt': 'ENSEMBLGENOME_TRS_ID',
     'hgnc': 'HGNC_ID'
+}
+
+pro_mapping = {
+    'alzforum': 'Alzforum_mut',
+    'araport': 'Araport',
+    'cgnc': 'CGNC',
+    'dictybase': 'dictyBase',
+    'dto': 'DTO',
+    'ecocyc': 'EcoCyc',
+    'ecogene': 'EcoGene',
+    'ensembl': 'Ensembl',
+    'ensembl-bacteria': 'EnsemblBacteria',
+    'flybase': 'FlyBase',
+    'hgnc': 'HGNC',
+    'iuphar-fam': 'IUPHARfam',
+    'iuphar': 'IUPHARobj',
+    'mgi': 'MGI',
+    'mro': 'MRO',
+    'ncbi-gene': 'NCBIGene',
+    'pbd': 'PDB',
+    'pombase': 'PomBase',
+    'interpro': 'PRO',
+    'reactome': 'Reactome',
+    'rgd': 'RGD',
+    'sgd': 'SGD',
+    'tdr': 'TDR',
+    'uniprot': 'UniProtKB',
+    'uniprot-var': 'UniProtKB_VAR',
+    'wormbase': 'WormBase',
+    'zfin': 'ZFIN',
 }

@@ -957,6 +957,10 @@ class Mapper(session_mod.Logger):
 
         tbl = None
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+        
+        if id_type == 'pro' or target_id_type == 'pro':
+            
+            ncbi_tax_id = None
 
         def check_loaded():
 
@@ -1028,51 +1032,89 @@ class Mapper(session_mod.Logger):
                     break
 
             if tbl is None:
-
-                if (
-                    id_type in input_formats.ac_mapping and
-                    target_id_type in input_formats.ac_mapping and
-                    id_type != target_id_type
+                
+                for service_ids, service_id_type, input_cls in (
+                    (
+                        input_formats.ac_mapping,
+                        'uniprot',
+                        UniprotListMapping,
+                    ),
+                    (
+                        input_formats.pro_mapping,
+                        'pro',
+                        input_formats.ProMapping,
+                    ),
                 ):
 
-                    if target_id_type == 'uniprot':
-
-                        _id_type, _target_id_type = target_id_type, id_type
-                        load_a_to_b = False
-                        load_b_to_a = True
-
-                    else:
-
-                        _id_type, _target_id_type = id_type, target_id_type
-                        load_a_to_b = True
-                        load_b_to_a = False
-
-                    # for uniprot/uploadlists
-                    # we create here the mapping params
-                    this_param = input_formats.UniprotListMapping(
-                        id_type_a = _id_type,
-                        id_type_b = _target_id_type,
-                        ncbi_tax_id = ncbi_tax_id,
-                    )
-
-                    reader = MapReader(
-                        param = this_param,
-                        ncbi_tax_id = ncbi_tax_id,
-                        load_a_to_b = load_a_to_b,
-                        load_b_to_a = load_b_to_a,
-                        uniprots = None,
-                        lifetime = 300,
-                    )
-
-                    self.tables[tbl_key] = getattr(
-                        reader,
-                        'mapping_table_%s_to_%s' % (
-                            reader.id_type_side(tbl_key.id_type),
-                            reader.id_type_side(tbl_key.target_id_type),
+                    if (
+                        (
+                            service_id_type == 'uniprot' and (
+                                id_type in service_ids and
+                                target_id_type in service_ids and
+                                id_type != target_id_type
+                            )
+                        ) or (
+                            service_id_type == 'pro' and (
+                                (
+                                    id_type in service_ids or
+                                    target_id_type in service_ids
+                                ) and
+                                (
+                                    id_type == service_id_type or
+                                    target_id_type == service_id_type
+                                )
+                            )
                         )
-                    )
+                    ):
 
-                tbl = check_loaded()
+                        if target_id_type == service_id_type:
+
+                            _id_type, _target_id_type = (
+                                target_id_type,
+                                id_type,
+                            )
+                            load_a_to_b = False
+                            load_b_to_a = True
+
+                        else:
+
+                            _id_type, _target_id_type = (
+                                id_type,
+                                target_id_type,
+                            )
+                            load_a_to_b = True
+                            load_b_to_a = False
+
+                        # for uniprot/uploadlists or PRO
+                        # we create here the mapping params
+                        this_param = input_cls(
+                            id_type_a = _id_type,
+                            id_type_b = _target_id_type,
+                            ncbi_tax_id = ncbi_tax_id,
+                        )
+
+                        reader = MapReader(
+                            param = this_param,
+                            ncbi_tax_id = ncbi_tax_id,
+                            load_a_to_b = load_a_to_b,
+                            load_b_to_a = load_b_to_a,
+                            uniprots = None,
+                            lifetime = 300,
+                        )
+
+                        self.tables[tbl_key] = getattr(
+                            reader,
+                            'mapping_table_%s_to_%s' % (
+                                reader.id_type_side(tbl_key.id_type),
+                                reader.id_type_side(tbl_key.target_id_type),
+                            )
+                        )
+
+                    tbl = check_loaded()
+
+                    if tbl:
+
+                        break
 
             if tbl is None and id_type == 'genesymbol5':
 
