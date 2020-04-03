@@ -32,8 +32,8 @@ import pypath.inputs.common as inputs_common
 resite = re.compile('([A-Z])(\d+)')
 
 
-IptmnetRecord = collections.namedtuple(
-    'IptmnetRecord',
+IptmnetInteraction = collections.namedtuple(
+    'IptmnetInteraction',
     [
         'enzyme',
         'substrate',
@@ -48,7 +48,7 @@ IptmnetRecord = collections.namedtuple(
 )
 
 
-def iptmnet(organism = 9606):
+def iptmnet_interactions(organism = 9606):
     
     ptm_url = urls.urls['iptmnet']['ptms']
     score_url = urls.urls['iptmnet']['scores']
@@ -137,7 +137,7 @@ def iptmnet(organism = 9606):
         
         for _enzyme in enzyme_ids:
             
-            yield IptmnetRecord(
+            yield IptmnetInteraction(
                 enzyme = _enzyme,
                 substrate = substrate,
                 enzyme_isoform = e_isoform,
