@@ -63,6 +63,7 @@ import pypath.inputs.mirbase as mirbase_input
 import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.pro as pro_input
 import pypath.internals.input_formats as input_formats
+import pypath.utils.reflists as reflists
 import pypath.share.settings as settings
 import pypath.share.session as session_mod
 _logger = session_mod.get_log()
@@ -1354,6 +1355,18 @@ class Mapper(session_mod.Logger):
                 id_type = id_type,
                 target_id_type = target_id_type,
                 ncbi_tax_id = ncbi_tax_id,
+            )
+
+        # as ID translation tables for PRO IDs are not organism specific
+        # we need an extra step to limit the results for the target organism
+        if id_type == 'pro' and target_id_type == 'uniprot':
+
+            mapped_names = (
+                mapped_names &
+                reflists.get_reflist(
+                    id_type = 'uniprot',
+                    ncbi_tax_id = ncbi_tax_id,
+                )
             )
 
         # further attempts to set it right if
