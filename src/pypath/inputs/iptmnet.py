@@ -25,6 +25,7 @@ import collections
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.utils.taxonomy as taxonomy
+import pypath.utils.mapping as mapping
 import pypath.inputs.common as inputs_common
 
 
@@ -36,6 +37,7 @@ IptmnetRecord = collections.namedtuple(
     [
         'enzyme',
         'substrate',
+        'enzyme_isoform',
         'substrate_isoform',
         'ptm_type',
         'resaa',
@@ -49,19 +51,6 @@ def iptmnet(organism = 9606):
     
     ptm_url = urls.urls['iptmnet']['ptms']
     score_url = urls.urls['iptmnet']['scores']
-    protein_url = urls.urls['iptmnet']['proteins']
-    
-    c = curl.Curl(protein_url, large = True, silent = False)
-    
-    pr_ids = {}
-    
-    for line in c.result:
-        
-        line = line.strip('\n\r').split('\t')
-        
-        if line[5]:
-            
-            pr_ids[line[5]] = line[0]
     
     c = curl.Curl(score_url, large = True, silent = False)
     
@@ -86,8 +75,7 @@ def iptmnet(organism = 9606):
         resnum = int(resnum)
         score = int(line[4])
         substrate, isoform = inputs_common._try_isoform(line[0])
-        substrate = pr_ids[substrate] if substrate in pr_ids else substrate
-        enzyme = pr_ids[line[2]] if line[2] in pr_ids else line[2]
+        enzyme = line[2]
         
         key = (
             enzyme,
@@ -116,15 +104,27 @@ def iptmnet(organism = 9606):
             
             continue
         
-        substrate, isoform = inputs_common._try_isoform(line[2])
-        substrate = pr_ids[substrate] if substrate in pr_ids else substrate
+        substrate, s_isoform = inputs_common._try_isoform(line[2])
         ptm_type = line[0].lower()
-        enzyme = pr_ids[line[6]] if line[6] in pr_ids else line[6]
+        
+        enzyme, e_isoform = inputs_common._try_isoform(line[6])
+        
+        enzyme_ids = (
+            mapping.map_name(
+                line[6],
+                'pro',
+                'uniprot',
+                ncbi_tax_id = organism,
+            )
+                if line[6].startswith('PR:') else
+            (enzyme,)
+        )
+        
         refs = line[8].split(',')
         resnum, resaa = resite.match(line[5]).groups()
         
         key = (
-            enzyme,
+            line[6],
             substrate,
             isoform,
             ptm_type,
@@ -134,12 +134,15 @@ def iptmnet(organism = 9606):
         
         score = scores[key] if key in scores else None
         
-        yield IptmnetRecord(
-            enzyme = enzyme,
-            substrate = substrate,
-            substrate_isoform = isoform,
-            ptm_type = ptm_type,
-            resaa = resaa,
-            resnum = resnum,
-            score = score,
-        )
+        for _enzyme in enzyme_ids:
+            
+            yield IptmnetRecord(
+                enzyme = _enzyme,
+                substrate = substrate,
+                enzyme_isoform = e_isoform,
+                substrate_isoform = s_isoform,
+                ptm_type = ptm_type,
+                resaa = resaa,
+                resnum = resnum,
+                score = score,
+            )
