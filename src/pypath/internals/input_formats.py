@@ -158,7 +158,7 @@ class UniprotListMapping(MappingInput):
 
     :arg str id_type_a:
         Custom name for one of the ID types.
-    :arg str id_type_a:
+    :arg str id_type_b:
         Custom name for the other ID type.
     :arg str uniprot_id_type_a:
         This is the symbol the UniProt webservice uses for the first
@@ -216,7 +216,7 @@ class ProMapping(MappingInput):
 
     :arg str id_type_a:
         Custom name for one of the ID types.
-    :arg str id_type_a:
+    :arg str id_type_b:
         Custom name for the other ID type.
     :arg str pro_id_type_a:
         This is the symbol PRO uses to label the IDs.
@@ -230,27 +230,31 @@ class ProMapping(MappingInput):
     def __init__(
             self,
             id_type_a,
-            id_type_b,
+            id_type_b = None,
             pro_id_type_a = None,
             pro_id_type_b = None,
+            ncbi_tax_id = -1,
         ):
+        
+        to_pro = id_type_a != 'pro'
+        id_type = id_type_a if to_pro else id_type_b
+        pro_id_type = (
+            pro_id_type_a if to_pro else pro_id_type_b
+        )
         
         MappingInput.__init__(
             self,
             type_ = 'pro',
-            id_type_a = id_type_a,
-            id_type_b = id_type_b,
-            ncbi_tax_id = None,
+            id_type_a = 'pro',
+            id_type_b = id_type,
+            ncbi_tax_id = -1,
         )
+        self.to_pro = to_pro
+        self.id_type = id_type
         
         self.pro_mapping = pro_mapping
         
-        self.uniprot_id_type_a = (
-            uniprot_id_type_a or self.pro_mapping[self.id_type_a]
-        )
-        self.uniprot_id_type_b = (
-            uniprot_id_type_b or self.pro_mapping[self.id_type_b]
-        )
+        self.pro_id_type = pro_id_type or self.pro_mapping[self.id_type_b]
         
         self.entity_type = 'protein'
 

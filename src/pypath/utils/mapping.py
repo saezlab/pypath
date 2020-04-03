@@ -61,6 +61,7 @@ import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.inputs.mirbase as mirbase_input
 import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.pro as pro_input
 import pypath.internals.input_formats as input_formats
 import pypath.share.settings as settings
 import pypath.share.session as session_mod
@@ -339,17 +340,11 @@ class MapReader(session_mod.Logger):
         Reads the ID translation data from the original source.
         """
 
-        if self.source_type == 'file':
+        method = 'read_mapping_%s' % self.source_type
 
-            self.read_mapping_file()
+        if hasattr(self, method):
 
-        elif self.source_type == 'uniprot':
-
-            self.read_mapping_uniprot()
-
-        elif self.source_type == 'uniprot_list':
-
-            self.read_mapping_uniprot_list()
+            getattr(self, method)()
 
 
     def setup_cache(self):
@@ -729,6 +724,32 @@ class MapReader(session_mod.Logger):
         self.b_to_a = b_to_a if self.load_b_to_a else None
 
 
+    def read_mapping_pro(self):
+
+        pro_data = pro_input.pro_mapping(target_id_type = self.param.id_type)
+        
+        pro_to_other = collections.defaultdict(set)
+        
+        for pro, other in pro_data:
+            
+            pro_to_other[pro].add(other)
+        
+        self.a_to_b = (
+            None
+                if not self.load_a_to_b else
+            common.swap_dict(pro_to_other)
+                if self.param.to_pro else
+            dict(pro_to_other)
+        )
+        self.b_to_a = (
+            None
+                if not self.load_b_to_a else
+            dict(pro_to_other)
+                if self.param.to_pro else
+            common.swap_dict(pro_to_other)
+        )
+
+
     @staticmethod
     def _process_protein_name(name):
 
@@ -957,10 +978,6 @@ class Mapper(session_mod.Logger):
 
         tbl = None
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
-        
-        if id_type == 'pro' or target_id_type == 'pro':
-            
-            ncbi_tax_id = None
 
         def check_loaded():
 
@@ -976,21 +993,32 @@ class Mapper(session_mod.Logger):
             target_id_type = target_id_type,
             ncbi_tax_id = ncbi_tax_id,
         )
+        tbl_key_noorganism = tbl_key[:-1] + (-1,)
 
         tbl_key_rev = self.get_table_key(
             target_id_type = target_id_type,
             id_type = id_type,
             ncbi_tax_id = ncbi_tax_id,
         )
+        tbl_key_rev_noorganism = tbl_key_rev[:-1] + (-1,)
 
         if tbl_key in self.tables:
 
             tbl = self.tables[tbl_key]
 
+        elif tbl_key_noorganism in self.tables:
+
+            tbl = self.tables[tbl_key_noorganism]
+
         elif tbl_key_rev in self.tables:
 
             self.create_reverse(tbl_key_rev)
             tbl = self.tables[tbl_key]
+
+        elif tbl_key_rev_noorganism in self.tables:
+
+            self.create_reverse(tbl_key_rev_noorganism)
+            tbl = self.tables[tbl_key_rev_noorganism]
 
         elif load:
 
@@ -1032,12 +1060,12 @@ class Mapper(session_mod.Logger):
                     break
 
             if tbl is None:
-                
+
                 for service_ids, service_id_type, input_cls in (
                     (
                         input_formats.ac_mapping,
                         'uniprot',
-                        UniprotListMapping,
+                        input_formats.UniprotListMapping,
                     ),
                     (
                         input_formats.pro_mapping,
