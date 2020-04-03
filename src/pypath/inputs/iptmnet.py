@@ -43,6 +43,7 @@ IptmnetRecord = collections.namedtuple(
         'resaa',
         'resnum',
         'score',
+        'references',
     ]
 )
 
@@ -98,7 +99,7 @@ def iptmnet(organism = 9606):
             
             continue
         
-        ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(line[4])
+        ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(line[4].strip())
         
         if organism and ncbi_tax_id != organism:
             
@@ -120,7 +121,7 @@ def iptmnet(organism = 9606):
             (enzyme,)
         )
         
-        refs = line[8].split(',')
+        refs = line[9].split(',')
         resnum, resaa = resite.match(line[5]).groups()
         
         key = (
@@ -145,4 +146,5 @@ def iptmnet(organism = 9606):
                 resaa = resaa,
                 resnum = resnum,
                 score = score,
+                references = refs,
             )
