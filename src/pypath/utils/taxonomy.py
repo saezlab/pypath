@@ -187,6 +187,10 @@ def ensure_ncbi_tax_id(taxon_id):
         
     else:
         
+        if hasattr(taxon_id, 'strip'):
+            
+            taxon_id = taxon_id.strip()
+        
         if '(' in taxon_id:
             
             part0, part1 = taxon_id.split('(', maxsplit = 1)
