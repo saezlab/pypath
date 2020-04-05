@@ -29,7 +29,7 @@ import itertools
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.share.common as common
-import pypath.utils import mapping
+import pypath.utils.mapping as mapping
 
 
 def signalink_interactions(organism = 9606, exclude_secondary = True):
@@ -149,7 +149,7 @@ def signalink_interactions(organism = 9606, exclude_secondary = True):
             interactions.append(
                 SignalinkInteraction(
                     id_a = id_a,
-                    id_b = id_a,
+                    id_b = id_b,
                     is_direct = ('is_direct', 'true') in interaction_attrs,
                     is_directed = ('is_directed', 'true') in interaction_attrs,
                     effect = effect,
@@ -190,8 +190,7 @@ def signalink_annotations(organism = 9606):
 
             for uniprot in mapping.map_name(i[idx], 'uniprot', 'uniprot'):
 
-                for (
-                    pathway, function in
+                for pathway, function in (
                     itertools.product(pathways, functions)
                 ):
 
