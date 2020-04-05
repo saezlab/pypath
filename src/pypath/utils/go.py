@@ -44,9 +44,6 @@ from pypath.share.common import *
 import pypath.share.session as session_mod
 import pypath.share.settings as settings
 
-
-#TODO may be separate this module from pypath?
-
 # this is for GO terms parsing:
 _reexprterm = re.compile(r'and|or|not|\(|\)|GO:[0-9]{7}')
 _reexprname = re.compile(
@@ -61,8 +58,12 @@ _reexprname = re.compile(
 class GeneOntology(session_mod.Logger):
     
     all_relations = {
-        'is_a', 'part_of', 'occurs_in', 'regulates',
-        'positively_regulates', 'negatively_regulates',
+        'is_a',
+        'part_of',
+        'occurs_in',
+        'regulates',
+        'positively_regulates',
+        'negatively_regulates',
     }
     
     
@@ -87,7 +88,7 @@ class GeneOntology(session_mod.Logger):
         self._aspect_provided = aspect
         self._term_provided = term
         self._name_provided = name
-        
+
         self._load()
     
     
