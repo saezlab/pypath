@@ -1429,7 +1429,8 @@ class Network(session_mod.Logger):
         positive = False
         negative = False
         sign_sep = sign_def[3] if len(sign_def) > 3 else None
-        sign_data = set(str(sign_data).split(sign_sep))
+        sign_data = sign_data.split(sign_sep) if sign_sep else sign_data
+        sign_data = common.to_set(sign_data)
         pos = common.to_set(sign_def[1])
         neg = common.to_set(sign_def[2])
 
@@ -1467,14 +1468,28 @@ class Network(session_mod.Logger):
             directed or not.
         """
 
+        if isinstance(dir_col, bool):
+
+            return dic_col
+
+        if (
+            dir_val is None and
+            isinstance(dir_col, int) and
+            isinstance(line[dir_col], bool)
+        ):
+
+            return line[dir_col]
+
         if dir_col is None or dir_val is None:
 
             return False
 
         else:
 
-            this_directed = set(line[dir_col].split(dir_sep))
-            return bool(this_directed & dir_val)
+            value = value.split(dir_sep) if dir_sep else line[dir_col]
+            value = common.to_set(value)
+
+            return bool(value & dir_val)
 
 
     def _map_list(
