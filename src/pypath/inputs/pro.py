@@ -24,6 +24,7 @@ import re
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.inputs.common as inputs_common
+import pypath.formats.obo as obo
 
 
 def get_pro():
@@ -33,9 +34,9 @@ def get_pro():
     
     url = urls.urls['pro']['url']
     
-    c = curl.Curl(url, large = True, silent = False)
+    reader = obo.Obo(url)
     
-    return c
+    return reader
 
 
 def pro_mapping(target_id_type = 'UniProtKB', uniprot_isoforms = False):
