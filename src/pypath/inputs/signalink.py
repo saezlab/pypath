@@ -45,8 +45,7 @@ def signalink_interactions(organism = 9606, exclude_secondary = True):
             'id_b',
             'is_direct',
             'is_directed',
-            'is_stimulation',
-            'is_inhibition',
+            'effect',
             'pathways_a',
             'pathways_b',
             'functions_a',
@@ -131,26 +130,37 @@ def signalink_interactions(organism = 9606, exclude_secondary = True):
             for iattr in l[5].split('|')
         }
 
-        interactions.append(
-            SignalinkInteraction(
-                id_a = id_a,
-                id_b = id_a,
-                is_direct = ('is_direct', 'true') in interaction_attrs,
-                is_directed = ('is_directed', 'true') in interaction_attrs,
-                is_stimulation = (
-                    ('MI', '0624(stimulation)') in interaction_attrs
-                ),
-                is_inhibition = (
-                    ('MI', '0623(inhibition)') in interaction_attrs
-                ),
-                pathways_a = nodes_pathways[id_a],
-                pathways_b = nodes_pathways[id_b],
-                functions_a = nodes_functions[id_a],
-                functions_b = nodes_functions[id_b],
-                references = get_values(l[4]),
-                resources = resources,
+        effects = []
+
+        if ('MI', '0624(stimulation)') in interaction_attrs:
+
+            effects.append(1)
+
+        if ('MI', '0623(inhibition)') in interaction_attrs:
+
+            effects.append(-1)
+
+        if not effects:
+
+            effects.append(0)
+
+        for effect in effects:
+
+            interactions.append(
+                SignalinkInteraction(
+                    id_a = id_a,
+                    id_b = id_a,
+                    is_direct = ('is_direct', 'true') in interaction_attrs,
+                    is_directed = ('is_directed', 'true') in interaction_attrs,
+                    effect = effect,
+                    pathways_a = nodes_pathways[id_a],
+                    pathways_b = nodes_pathways[id_b],
+                    functions_a = nodes_functions[id_a],
+                    functions_b = nodes_functions[id_b],
+                    references = get_values(l[4]),
+                    resources = resources,
+                )
             )
-        )
 
     return interactions
 
