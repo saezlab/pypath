@@ -40,6 +40,10 @@ def get_method(module_name, method_name = None):
         )
     )
     
+    if callable(module_name):
+        
+        return module_name
+    
     if not method_name:
 
         module_method = module_name.rsplit('.', maxsplit = 1)
