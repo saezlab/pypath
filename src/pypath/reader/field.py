@@ -79,11 +79,15 @@ class Field(object):
         
         if self.compact:
             
-            if isinstance(self.compact, int):
+            if isinstance(self.compact, bool):
+                
+                self._fix_value = self.compact
+            
+            elif isinstance(self.compact, int):
                 
                 self.idx = self.compact
             
-            if isinstance(self.compact, tuple):
+            elif isinstance(self.compact, tuple):
                 
                 if len(self.compact) == 2:
                     
@@ -112,6 +116,10 @@ class Field(object):
     
     
     def _process(self, record):
+        
+        if hasattr(self, '_fix_value'):
+            
+            return self._fix_value
         
         value = record[self.idx]
         

@@ -558,11 +558,13 @@ pathway = {
         negative_filters = [(7, 'transcriptional regulation')],
         entity_type_a = "protein",
         entity_type_b = "protein",
-        ncbi_tax_id = {'col': 8,
-                   'dict': {
-                       '9606;9606': 9606,
-                       '9606': 9606
-                   }},
+        ncbi_tax_id = {
+            'col': 8,
+            'dict': {
+                '9606;9606': 9606,
+                '9606': 9606
+            },
+        },
         is_directed = (
             6,
             {
@@ -2376,7 +2378,7 @@ ligand_receptor = {
 }
 
 small_molecule_protein = {
-        'signor': input_formats.NetworkInput(
+    'signor': input_formats.NetworkInput(
         name = "SIGNOR",
         separator = None,
         id_col_a = 0,
@@ -2394,19 +2396,30 @@ small_molecule_protein = {
                        '9606;9606': 9606,
                        '9606': 9606
                    }},
-        is_directed = (6, [
-            'up-regulates', 'up-regulates activity',
-            'up-regulates quantity by stabilization', 'down-regulates',
-            'down-regulates activity',
-            'down-regulates quantity by destabilization'
-        ]),
-        sign = (6, [
-            'up-regulates', 'up-regulates activity',
-            'up-regulates quantity by stabilization'
-        ], [
-            'down-regulates', 'down-regulates activity',
-            'down-regulates quantity by destabilization'
-        ]),
+        is_directed = (
+            6,
+            [
+                'up-regulates',
+                'up-regulates activity',
+                'up-regulates quantity by stabilization',
+                'down-regulates',
+                'down-regulates activity',
+                'down-regulates quantity by destabilization',
+            ]
+        ),
+        sign = (
+            6,
+            [
+                'up-regulates',
+                'up-regulates activity',
+                'up-regulates quantity by stabilization',
+            ],
+            [
+                'down-regulates',
+                'down-regulates activity',
+                'down-regulates quantity by destabilization',
+            ]
+        ),
         input = 'signor.signor_interactions',
         references = (9, ";"),
         header = True,

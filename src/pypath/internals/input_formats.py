@@ -334,7 +334,7 @@ class NetworkInput:
         self.id_col_b = id_col_b
         self.id_type_a = id_type_a
         self.id_type_b = id_type_b
-        self.is_directed = self._field(is_directed, network.Direction)
+        self.is_directed = is_directed
         self.input = input
         self.extra_edge_attrs = extra_edge_attrs or {}
         self.extra_node_attrs_a = extra_node_attrs_a or {}
@@ -343,7 +343,7 @@ class NetworkInput:
         self.separator = separator
         self.header = header
         self.refs = references
-        self.sign = self._field(sign, network.Sign)
+        self.sign = sign
         self.taxon_a = taxon_a
         self.taxon_b = taxon_b
         self.ncbi_tax_id = ncbi_tax_id
