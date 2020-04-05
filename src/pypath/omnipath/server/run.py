@@ -1494,7 +1494,7 @@ class TableServer(BaseServer):
         
         # filter directed & signed
         if (
-            b'directed' in req.args and
+            b'directed' not in req.args or
             self._parse_arg(req.args[b'directed'])
         ):
             
