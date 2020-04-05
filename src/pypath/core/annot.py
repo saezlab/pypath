@@ -83,6 +83,7 @@ protein_sources_default = {
     'Comppi',
     'SignorPathways',
     'SignalinkPathways',
+    'SignalinkFunctions',
     'KeggPathways',
     'NetpathPathways',
     'Cpad',
@@ -3283,7 +3284,7 @@ class SignorPathways(AnnotationBase):
 
 class SignalinkPathways(AnnotationBase):
 
-    _eq_fields = ('pathway', 'core')
+    _eq_fields = ('pathway',)
 
 
     def __init__(self, ncbi_tax_id = 9606, **kwargs):
@@ -3293,9 +3294,36 @@ class SignalinkPathways(AnnotationBase):
 
         AnnotationBase.__init__(
             self,
-            name = 'SignaLink3',
+            name = 'SignaLink3_pathway',
             ncbi_tax_id = ncbi_tax_id,
-            input_method = 'signalink_pathway_annotations',
+            input_method = 'signalink.signalink_pathway_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class SignalinkFunctions(AnnotationBase):
+
+    _eq_fields = ('function',)
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Functional annotations from SignaLink.
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'SignaLink3_function',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'signalink.signalink_function_annotations',
             **kwargs
         )
 

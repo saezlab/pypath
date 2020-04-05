@@ -95,7 +95,9 @@ def signalink_interactions(organism = 9606, exclude_secondary = True):
             l = l.split('\t')
             _id = int(l[0])
             uniprot = get_value(l[1])
-            pathways = l[4].split('|') if l[4] else []
+            pathways = (
+                l[4].replace('/Wingless', '').split('|') if l[4] else []
+            )
             _organism = int(get_value(l[3]))
             nodes_pathways[uniprot] = pathways
             nodes_organism[uniprot] = _organism
@@ -171,12 +173,21 @@ def signalink_annotations(organism = 9606):
         'SignalinkPathway',
         [
             'pathway',
+        ]
+    )
+
+    SignalinkFunction = collections.namedtuple(
+        'SignalinkFunction',
+        [
             'function',
         ]
     )
 
 
-    result = collections.defaultdict(set)
+    result = {
+        'pathway': collections.defaultdict(set),
+        'function': collections.defaultdict(set),
+    }
 
     interactions = signalink_interactions(organism = organism)
 
@@ -185,20 +196,30 @@ def signalink_annotations(organism = 9606):
         for postfix in ('_a', '_b'):
 
             _id = getattr(i, 'id%s' % postfix)
-            pathways = getattr(i, 'pathways%s' % postfix)
-            functions = getattr(i, 'functions%s' % postfix)
 
-            for uniprot in mapping.map_name(i[idx], 'uniprot', 'uniprot'):
+            for uniprot in mapping.map_name(_id, 'uniprot', 'uniprot'):
 
-                for pathway, function in (
-                    itertools.product(pathways, functions)
+                for attr, record in zip(
+                    ('pathway', 'function'),
+                    (SignalinkPathway, SignalinkFunction),
                 ):
 
-                    result[uniprot].add(
-                        SignalinkPathway(
-                            pathway = pathway,
-                            function = function,
+                    values = getattr(i, '%ss%s' % (attr, postfix))
+
+                    for value in values:
+
+                        result[attr][uniprot].add(
+                            record(value)
                         )
-                    )
 
     return result
+
+
+def signalink_pathway_annotations(organism = 9606):
+
+    return signalink_annotations(organism = organism)['pathway']
+
+
+def signalink_function_annotations(organism = 9606):
+
+    return signalink_annotations(organism = organism)['function']
