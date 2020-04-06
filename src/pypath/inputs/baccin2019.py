@@ -1,0 +1,192 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+#  This file is part of the `pypath` python module
+#  Helps to translate from the mouse data to human data
+#
+#  Copyright
+#  2014-2020
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  File author(s): Dénes Türei (turei.denes@gmail.com)
+#                  Nicolàs Palacio
+#                  Olga Ivanova
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
+
+import collections
+import itertools
+
+import pypath.share.curl as curl
+import pypath.resources.urls as urls
+import pypath.utils.mapping as mapping
+import pypath.utils.homology as homology_mod
+import pypath.internals.intera as intera
+import pypath.inputs.common as inputs_common
+
+
+def baccin2019_interactions(ncbi_tax_id = 9606):
+
+
+    def id_translate(mouse_gs):
+
+        uniprots = mapping.map_name(
+            mouse_gs,
+            'genesymbol',
+            'uniprot',
+            10090,
+        )
+
+        if ncbi_tax_id != 10090:
+            uniprots = set(
+                itertools.chain(*(
+                    homology.translate(uniprot)
+                    for uniprot in uniprots
+                ))
+            )
+
+        return uniprots
+
+
+    def raw_to_uniprots(raw):
+
+        components = raw.split('&')
+
+        return set(
+            itertools.product(
+                *(id_translate(comp) for comp in components)
+            )
+        )
+
+
+    def get_partners(components, sources, references):
+
+        return {
+            (
+                comp[0]
+                    if len(comp) == 1 else
+                intera.Complex(
+                    components = comp,
+                    sources = sources,
+                    references = references,
+                )
+            )
+            for comp in components
+        }
+
+
+    Baccin2019Interaction = collections.namedtuple(
+        'Baccin2019Interaction',
+        [
+            'ligand',
+            'receptor',
+            'correct',
+            'ligand_location',
+            'ligand_category',
+            'resources',
+            'references',
+        ]
+    )
+
+
+    source_names = {
+        'Baccin': 'Baccin2019',
+        'Ramilowski': 'Ramilowski2015',
+    }
+
+    url = urls.urls['baccin2019']['url']
+    c = curl.Curl(url, silent = False, large = True)
+    data = inputs_common.read_xls(c.fileobj.name, sheet = 'SuppTable3')
+
+    result = []
+
+    if ncbi_tax_id != 10090:
+        homology = homology_mod.ProteinHomology(
+            target = ncbi_tax_id,
+            source = 10090,
+        )
+
+    for rec in data[3:]:
+        ligand_components = raw_to_uniprots(rec[1])
+
+        if not ligand_components:
+            continue
+
+        receptor_components = raw_to_uniprots(rec[2])
+
+        if not receptor_components:
+            continue
+
+        sources = {'Baccin2019', rec[3].strip()}
+        sources = {
+            source_names[s] if s in source_names else s
+            for s in sources
+        }
+
+        references = {
+            _ref for _ref in
+            (
+                ref.strip().replace('.0', '')
+                for ref in rec[7].split(',')
+            )
+            if _ref.isdigit()
+        }
+
+        ligands = get_partners(ligand_components, sources, references)
+        receptors = get_partners(receptor_components, sources, references)
+
+        for ligand, receptor in itertools.product(ligands, receptors):
+            result.append(
+                Baccin2019Interaction(
+                    ligand = ligand,
+                    receptor = receptor,
+                    correct = rec[4].strip(),
+                    ligand_location = rec[5].strip(),
+                    ligand_category = rec[6].strip(),
+                    resources = sources,
+                    references = references,
+                )
+            )
+
+    return result
+
+
+def baccin2019_annotations(ncbi_tax_id = 9606):
+    Baccin2019Annotation = collections.namedtuple(
+        'Baccin2019Annotation',
+        [
+            'mainclass',
+            'subclass',
+        ]
+    )
+
+    ia_all = baccin2019_interactions(ncbi_tax_id = ncbi_tax_id)
+
+    result = collections.defaultdict(set)
+
+    for ia in ia_all:
+        result[ia.ligand].add(
+            Baccin2019Annotation(
+                mainclass = 'ligand',
+                subclass = ia.ligand_category,
+            )
+        )
+
+        result[ia.receptor].add(
+            Baccin2019Annotation(
+                mainclass = 'receptor',
+                subclass = (
+                    '%sReceptor' % ia.ligand
+                        if ia.ligand_category != 'Other' else
+                    None
+                ),
+            )
+        )
+
+    return dict(result)

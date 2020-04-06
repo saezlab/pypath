@@ -2623,7 +2623,7 @@ class Baccin2019(AnnotationBase):
             self,
             name = 'Baccin2019',
             ncbi_tax_id = ncbi_tax_id,
-            input_method = 'baccin2019_annotations',
+            input_method = 'baccin2019.baccin2019_annotations',
             **kwargs
         )
 
