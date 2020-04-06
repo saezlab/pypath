@@ -611,6 +611,26 @@ go_single_terms = {
 Higher level classes of intercellular communication roles.
 """
 annot_combined_classes = (
+    af.AnnotDef(
+        name = 'adaptor_adhesome',
+        source = 'Adhesome',
+        args = {'mainclass': 'Adaptor'},
+    ),
+    af.AnnotDef(
+        name = 'channel_adhesome',
+        source = 'Adhesome',
+        args = {'mainclass': 'Channel'},
+    ),
+    af.AnnotDef(
+        name = 'actin_regulation_adhesome',
+        source = 'Adhesome',
+        args = {'mainclass': 'Actin regulation'},
+    ),
+    af.AnnotDef(
+        name = 'adhesion_receptor_adhesome',
+        source = 'Adhesome',
+        args = {'mainclass': 'Adhesion receptor'},
+    ),
     # receptor
     af.AnnotDef(
         name = 'receptor',
@@ -1273,7 +1293,12 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'adhesion_adhesome',
-        source = 'Adhesome',
+        source = af.AnnotOp(
+            annots = (
+                'adhesion_receptor_adhesome',
+            ),
+            op = set.union,
+        ),
     ),
     # surface enzyme
     af.AnnotDef(
