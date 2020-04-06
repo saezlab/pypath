@@ -364,6 +364,7 @@ class TableServer(BaseServer):
             'partners': None,
             'genesymbols': {'1', '0', 'no', 'yes'},
             'fields': {
+                'entity_type',
                 'references',
                 'sources',
                 'tfregulons_level',
@@ -410,6 +411,13 @@ class TableServer(BaseServer):
             },
             'directed': {'1', '0', 'no', 'yes'},
             'signed': {'1', '0', 'no', 'yes'},
+            'entity_types': {
+                'protein',
+                'complex',
+                'mirna',
+                'lncrna',
+                'small_molecule',
+            },
         },
         'enzsub': {
             'header':      None,
@@ -466,6 +474,8 @@ class TableServer(BaseServer):
                 'protein',
                 'complex',
                 'mirna',
+                'lncrna',
+                'small_molecule',
             },
         },
         'annotations_summary': {
@@ -504,6 +514,8 @@ class TableServer(BaseServer):
                 'protein',
                 'complex',
                 'mirna',
+                'lncrna',
+                'small_molecule',
             },
         },
         'intercell_summary': {
@@ -572,6 +584,9 @@ class TableServer(BaseServer):
         'annotation': 'annotations',
         'annot': 'annotations',
         'intercell': 'intercell',
+        'intercellular': 'intercell',
+        'inter_cell': 'intercell',
+        'inter-cell': 'intercell',
         'complex': 'complexes',
         'complexes': 'complexes',
     }
@@ -1482,6 +1497,16 @@ class TableServer(BaseServer):
                 ]
             ]
         
+         # filtering for entity types
+        if b'entity_types' in req.args:
+            
+            entity_types = self._args_set(req, 'entity_types')
+            
+            tbl = tbl[
+                tbl.source_entity_type.isin(entity_types) |
+                tbl.target_entity_type.isin(entity_types)
+            ]
+        
         # filtering by DoRothEA methods
         if 'transcriptional' in args['types'] and args['dorothea_methods']:
             
@@ -1524,6 +1549,11 @@ class TableServer(BaseServer):
                     
                     hdr.append('ncbi_tax_id_source')
                     hdr.append('ncbi_tax_id_target')
+                    
+                elif f == 'entity_type':
+                    
+                    hdr.append('source_entity_type')
+                    hdr.append('target_entity_type')
                     
                 elif f == 'databases':
                     
