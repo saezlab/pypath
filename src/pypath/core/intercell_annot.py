@@ -754,6 +754,7 @@ annot_combined_classes = (
                 'ecm_matrixdb',
                 'ecm_matrisome',
                 'ecm_go',
+                'ecm_ramilowski',
             ),
             op = set.union,
         ),
@@ -799,6 +800,16 @@ annot_combined_classes = (
         source = 'GO_Intercell',
         args = {
             'mainclass': 'ecm structure',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ecm_ramilowski',
+        source = 'Ramilowski_location',
+        args = {
+            'location': {
+                'extracellular matrix',
+                'basement membrane',
+            },
         },
     ),
     # ligand
@@ -1047,7 +1058,6 @@ annot_combined_classes = (
                 'extracellular_hpmr',
                 'extracellular_cellphonedb',
                 'extracellular_hpa',
-                #'extracellular_comppi',
             ),
             op = set.union,
         ),
@@ -1130,6 +1140,16 @@ annot_combined_classes = (
             'secreted': bool,
         },
     ),
+    af.AnnotDef(
+        name = 'extracellular_ramilowski',
+        source = 'Ramilowski_location',
+        args = {
+            'location': {
+                'secreted',
+                ''
+            },
+        },
+    ),
     # cell surface
     af.AnnotDef(
         name = 'cell_surface',
@@ -1142,6 +1162,7 @@ annot_combined_classes = (
                 'cell_surface_cspa',
                 'cell_surface_cellphonedb',
                 'cell_surface_dgidb',
+                'cell_surface_ramilowski',
             ),
             op = set.union,
         ),
@@ -1190,6 +1211,13 @@ annot_combined_classes = (
             'category': {'CELL SURFACE', 'EXTERNAL SIDE OF PLASMA MEMBRANE'},
         },
     ),
+    af.AnnotDef(
+        name = 'cell_surface_ramilowski',
+        source = 'Ramilowski_location',
+        args = {
+            'location': 'cell surface',
+        },
+    ),
     # transmembrane
     af.AnnotDef(
         name = 'transmembrane',
@@ -1200,6 +1228,7 @@ annot_combined_classes = (
                 'transmembrane_opm',
                 'transmembrane_locate',
                 'transmembrane_topdb',
+                'transmembrane_ramilowski',
             ),
             op = set.union,
         ),
@@ -1243,6 +1272,13 @@ annot_combined_classes = (
             },
         },
     ),
+    af.AnnotDef(
+        name = 'transmembrane_ramilowski',
+        source = 'Ramilowski_location',
+        args = {
+            'tmh': bool,
+        },
+    ),
     # adhesion
     af.AnnotDef(
         name = 'adhesion',
@@ -1255,6 +1291,7 @@ annot_combined_classes = (
                 'adhesion_integrins',
                 'adhesion_zhong2015',
                 'adhesion_adhesome',
+                'focal_adhesion_ramilowski',
             ),
             op = set.union,
         ),
@@ -1334,6 +1371,13 @@ annot_combined_classes = (
             ),
             op = set.union,
         ),
+    ),
+    af.AnnotDef(
+        name = 'focal_adhesion_ramilowski'
+        source = 'Ramilowski_location',
+        args = {
+            'location': 'focal adhesion',
+        },
     ),
     # surface enzyme
     af.AnnotDef(
@@ -1577,16 +1621,93 @@ annot_combined_classes = (
     # junctions
     af.AnnotDef(
         name = 'gap_junction',
+        source = af.AnnotOp(
+            annots = (
+                'gap_junction_go',
+                'gap_junction_ramilowski',
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'gap_junction_go',
         source = 'GO_Intercell',
         args = {
             'mainclass': 'gap junction',
         },
     ),
     af.AnnotDef(
+        name = 'gap_junction_ramilowski',
+        source = 'Ramilowski_location',
+        args = {
+            'location': 'gap junction',
+        },
+    ),
+    af.AnnotDef(
         name = 'tight_junction',
+        source = af.AnnotOp(
+            annots = (
+                'tight_junction_go',
+                'tight_junction_ramilowski',
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'tight_junction_go',
         source = 'GO_Intercell',
         args = {
             'mainclass': 'tight junction',
+        },
+    ),
+    af.AnnotDef(
+        name = 'tight_junction_ramilowski',
+        source = 'Ramilowski_location',
+        args = {
+            'location': 'tight junction',
+        },
+    ),
+    af.AnnotDef(
+        name = 'adherens_junction_ramilowski',
+        source = 'Ramilowski_location',
+        args = {
+            'location': 'adherens junction',
+        },
+    ),
+    # plasma membrane regions
+    af.AnnotDef(
+        name = 'basolateral_cell_membrane_ramilowski',
+        source = 'Ramilowski_location',
+        args = {
+            'location': 'basolateral cell membrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'basal_cell_membrane_ramilowski',
+        source = 'Ramilowski_location',
+        args = {
+            'location': 'basal cell membrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'basal_cell_membrane_ramilowski',
+        source = 'Ramilowski_location',
+        args = {
+            'location': 'basal cell membrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'apical_cell_membrane_ramilowski',
+        source = 'Ramilowski_location',
+        args = {
+            'location': 'apical cell membrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'lateral_cell_membrane_ramilowski',
+        source = 'Ramilowski_location',
+        args = {
+            'location': 'lateral cell membrane',
         },
     ),
 )
