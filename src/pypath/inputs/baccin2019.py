@@ -20,6 +20,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import re
 import collections
 import itertools
 
@@ -32,6 +33,22 @@ import pypath.inputs.common as inputs_common
 
 
 def baccin2019_interactions(ncbi_tax_id = 9606):
+
+    recamel = re.compile(r'(.+?)([A-Z][a-z])')
+    recap = re.compile(r'(^[A-Z][a-z]|_[A-Z][a-z])(.+)')
+
+
+    def camel_to_snake(value):
+
+        return (
+            recap.sub(
+                lambda m: m.group(1).lower() + m.group(2),
+                recamel.sub(
+                    lambda m: m.group(1).lower() + '_' + m.group(2),
+                    value.strip()
+                )
+            )
+        )
 
 
     def id_translate(mouse_gs):
@@ -147,8 +164,8 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
                     ligand = ligand,
                     receptor = receptor,
                     correct = rec[4].strip(),
-                    ligand_location = rec[5].strip(),
-                    ligand_category = rec[6].strip(),
+                    ligand_location = camel_to_snake(rec[5]),
+                    ligand_category = camel_to_snake(rec[6]),
                     resources = sources,
                     references = references,
                 )
@@ -158,6 +175,8 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
 
 
 def baccin2019_annotations(ncbi_tax_id = 9606):
+
+
     Baccin2019Annotation = collections.namedtuple(
         'Baccin2019Annotation',
         [
@@ -166,11 +185,13 @@ def baccin2019_annotations(ncbi_tax_id = 9606):
         ]
     )
 
+
     ia_all = baccin2019_interactions(ncbi_tax_id = ncbi_tax_id)
 
     result = collections.defaultdict(set)
 
     for ia in ia_all:
+
         result[ia.ligand].add(
             Baccin2019Annotation(
                 mainclass = 'ligand',
@@ -182,8 +203,8 @@ def baccin2019_annotations(ncbi_tax_id = 9606):
             Baccin2019Annotation(
                 mainclass = 'receptor',
                 subclass = (
-                    '%sReceptor' % ia.ligand
-                        if ia.ligand_category != 'Other' else
+                    '%s_receptor' % ia.ligand_category
+                        if ia.ligand_category != 'other' else
                     None
                 ),
             )
