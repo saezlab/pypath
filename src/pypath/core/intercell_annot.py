@@ -654,13 +654,13 @@ annot_combined_classes = (
         name = 'receptor_hgnc',
         source = af.AnnotOp(
             annots = (
-                'interleukin_receptors_hgnc',
+                'interleukin_receptor_hgnc',
             ),
             op = set.union,
         ),
     ),
     af.AnnotDef(
-        name = 'interleukin_receptors_hgnc',
+        name = 'interleukin_receptor_hgnc',
         source = 'HGNC',
         args = {
             'mainclass': 'Interleukin receptors',
@@ -814,22 +814,22 @@ annot_combined_classes = (
         name = 'ligand_hgnc',
         source = af.AnnotOp(
             annots = (
-                'interleukins_hgnc',
-                'endogenous_ligands_hgnc',
-                'chemokine_ligands_hgnc',
+                'interleukin_hgnc',
+                'endogenous_ligand_hgnc',
+                'chemokine_ligand_hgnc',
             ),
             op = set.union,
         ),
     ),
     af.AnnotDef(
-        name = 'interleukins_hgnc',
+        name = 'interleukin_hgnc',
         source = 'HGNC',
         args = {
             'mainclass': 'Interleukins',
         },
     ),
     af.AnnotDef(
-        name = 'endogenous_ligands_hgnc',
+        name = 'endogenous_ligand_hgnc',
         source = 'HGNC',
         args = {
             'mainclass': {
@@ -840,7 +840,7 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'chemokine_ligands_hgnc',
+        name = 'chemokine_ligand_hgnc',
         source = 'HGNC',
         args = {
             'mainclass': 'Chemokine ligands',
@@ -1582,20 +1582,20 @@ class_types = {
     },
     'misc': {
         'extracellular_peptidase',
-        'interleukin_receptors_hgnc',
-        'interleukins_hgnc',
-        'chemokine_ligands_hgnc',
-        'endogenous_ligands_hgnc',
+        'interleukin_receptor_hgnc',
+        'interleukin_hgnc',
+        'chemokine_ligand_hgnc',
+        'endogenous_ligand_hgnc',
     },
 }
 
 
 class_labels = {
     'ecm': 'Extracellular matrix',
-    'interleukins_hgnc': 'Interleukins (HGNC)',
-    'chemokine_ligands_hgnc': 'Chemokine ligands (HGNC)',
-    'endogenous_ligands_hgnc': 'Endogenous ligands (HGNC)',
-    'interleukin_receptors_hgnc': 'Interleukin receptors (HGNC)',
+    'interleukin_hgnc': 'Interleukins (HGNC)',
+    'chemokine_ligand_hgnc': 'Chemokine ligands (HGNC)',
+    'endogenous_ligand_hgnc': 'Endogenous ligands (HGNC)',
+    'interleukin_receptor_hgnc': 'Interleukin receptors (HGNC)',
 }
 
 
