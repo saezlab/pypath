@@ -1803,6 +1803,13 @@ class AnnotationBase(resource.AbstractResource):
                 )
             )
 
+        elif hasattr(self, '_merge'):
+
+            return self._merge(*(
+                self.annot[comp]
+                for comp in cplex.components.keys()
+            ))
+
         else:
 
             groups = collections.defaultdict(set)
@@ -2954,7 +2961,7 @@ class Integrins(AnnotationBase):
 class Lrdb(AnnotationBase):
 
 
-    record = lrdb.LrdbAnnotation
+    _eq_fields = ('role',)
 
 
     def __init__(self, **kwargs):
@@ -2971,33 +2978,6 @@ class Lrdb(AnnotationBase):
 
         self.annot = self.data
         delattr(self, 'data')
-
-
-    def _eq_fields(self, *args):
-
-        def merge_tuples(role, args, attr):
-
-            return tuple(sorted(set(
-                itertools.chain(*(
-                    getattr(a, attr) for a in args if a.role == role
-                ))
-            )))
-
-
-        role_cell = {
-            (a.role, a.cell_type)
-            for a in args
-        }
-
-        return {
-            record(
-                role = role,
-                cell_type = cell_type,
-                sources = merge(role, args, 'sources'),
-                sources = merge(role, args, 'references'),
-            )
-            for role, cell_type in role_cell
-        }
 
 
 class HumanProteinAtlas(AnnotationBase):
