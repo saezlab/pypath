@@ -3295,7 +3295,7 @@ class SignalinkPathways(AnnotationBase):
 
         AnnotationBase.__init__(
             self,
-            name = 'SignaLink3_pathway',
+            name = 'SignaLink_pathway',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'signalink.signalink_pathway_annotations',
             **kwargs
@@ -3322,7 +3322,7 @@ class SignalinkFunctions(AnnotationBase):
 
         AnnotationBase.__init__(
             self,
-            name = 'SignaLink3_function',
+            name = 'SignaLink_function',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'signalink.signalink_function_annotations',
             **kwargs
@@ -3595,10 +3595,10 @@ class IcellnetComplex(AnnotationBase):
 
         AnnotationBase.__init__(
             self,
-            name = 'ICELLNET',
+            name = 'ICELLNET_complex',
             input_method = 'icellnet.icellnet_annotations',
             ncbi_tax_id = 9606,
-            complexes = True,
+            entity_type = 'complex',
         )
 
 
