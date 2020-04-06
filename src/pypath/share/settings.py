@@ -106,7 +106,13 @@ _defaults = {
     'keep_noref': False,
     'msigdb_email': 'omnipathdb@gmail.com',
 
+    # the annotation classes should infer complex annotations
+    # from protein annotations
     'annot_infer_complexes': True,
+
+    # load small, specific categories from CellPhoneDB
+    # in the intercell database
+    'intercell_cellphonedb_categories': True,
 
     # parameters for pypath.omnipath
     'timestamp_format': '%Y%m%d',

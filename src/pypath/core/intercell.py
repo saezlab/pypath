@@ -29,10 +29,11 @@ import itertools
 import numpy as np
 import pandas as pd
 
-import pypath.share.session as session_mod
+import pypath.share.settings as settings
 import pypath.core.annot as annot
 import pypath.core.intercell_annot as intercell_annot
 import pypath.core.network as network_mod
+import pypath.internals.annot_formats as af
 
 
 IntercellRole = collections.namedtuple(
@@ -44,10 +45,20 @@ IntercellRole = collections.namedtuple(
 class IntercellAnnotation(annot.CustomAnnotation):
 
 
-    def __init__(self, class_definitions = None, **kwargs):
+    def __init__(
+            self,
+            class_definitions = None,
+            cellphonedb_categories = None,
+            **kwargs
+        ):
 
         class_definitions = (
-            class_definitions or intercell_annot.annot_combined_classes
+            class_definitions or
+            intercell_annot.annot_combined_classes
+        )
+        self.cellphonedb_categories = (
+            cellphonedb_categories or
+            settings.get('intercell_cellphonedb_categories')
         )
 
         annot.CustomAnnotation.__init__(
@@ -55,8 +66,6 @@ class IntercellAnnotation(annot.CustomAnnotation):
             class_definitions = class_definitions,
             **kwargs
         )
-
-        self.make_df()
 
 
     def reload(self):
@@ -201,6 +210,55 @@ class IntercellAnnotation(annot.CustomAnnotation):
         self.set_classes()
         self.add_classes_to_df()
         self.collect_classes()
+
+
+    def pre_build(self):
+
+        self.add_extra_categories()
+
+
+    def add_extra_categories(self):
+
+        self.add_cellphonedb_categories()
+
+
+    def add_cellphonedb_categories(self):
+
+        if self.cellphonedb_categories:
+
+            self.ensure_annotdb()
+
+            cellphonedb_categories = []
+
+            for mainclass in ('receptor', 'secreted'):
+
+                cpdb = self.annotdb.annots['CellPhoneDB']
+                attr = '%s_class' % mainclass
+
+                categories = set(
+                    itertools.chain(*(
+                        getattr(c, attr)
+                        for cc in cpdb.annot.values()
+                        for c in cc
+                    ))
+                )
+
+                for category in categories:
+
+                    cellphonedb_categories.append(
+                        af.AnnotDef(
+                            name = '%s_cellphonedb' % category,
+                            source = 'CellPhoneDB',
+                            args = {attr: category},
+                        )
+                    )
+
+            self._class_definitions_provided += tuple(cellphonedb_categories)
+
+
+    def post_load(self):
+
+        self.make_df()
 
 
     def __repr__(self):

@@ -167,14 +167,10 @@ class CustomAnnotation(session_mod.Logger):
 
         self.pickle_file = pickle_file
         self.annotdb_pickle_file = annotdb_pickle_file
-        self.annotdb = get_db(pickle_file = self.annotdb_pickle_file)
-
-        self._class_definitions = {}
-        self.add_class_definitions(class_definitions or {})
-
-        self.classes = {}
-        self.populate_classes()
+        self._class_definitions_provided = class_definitions
         self.network = None
+
+        self.load()
 
 
     def reload(self):
@@ -187,6 +183,46 @@ class CustomAnnotation(session_mod.Logger):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+
+
+    def load(self):
+
+        if self.pickle_file and os.path.exists(self.pickle_file):
+
+            self.load_from_pickle(pickle_file = pickle_file)
+
+        else:
+
+            self.pre_build()
+            self.build()
+
+        self.post_load()
+
+
+    def pre_build(self):
+
+        pass
+
+
+    def build(self):
+
+        self.ensure_annotdb()
+
+        self._class_definitions = {}
+        self.add_class_definitions(self._class_definitions_provided or {})
+
+        self.classes = {}
+        self.populate_classes()
+
+
+    def post_load(self):
+
+        pass
+
+
+    def ensure_annotdb(self):
+
+        self.annotdb = get_db(pickle_file = self.annotdb_pickle_file)
 
 
     def add_class_definitions(self, class_definitions):
@@ -3551,7 +3587,7 @@ class CellPhoneDB(AnnotationBase):
                 all(a)
                     if all(isinstance(aa, bool) for aa in a) else
                 tuple(sorted(set(
-                    itertools.chain(*(aa for aa in a if aa is not None))
+                    itertools.chain(*a)
                 )))
                 for a in zip(*args)
             )

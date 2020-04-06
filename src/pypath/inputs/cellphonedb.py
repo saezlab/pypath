@@ -133,10 +133,10 @@ def _cellphonedb_annotations(url, name_method):
 
             annot[name] = record(
                 receptor = get_bool(rec, 'receptor'),
-                receptor_class = get_desc(rec, 'receptor') or None,
+                receptor_class = get_desc(rec, 'receptor'),
                 peripheral = get_bool(rec, 'peripheral'),
                 secreted = get_bool(rec, 'secreted'),
-                secreted_class = get_desc(rec, 'secreted') or None,
+                secreted_class = get_desc(rec, 'secreted'),
                 transmembrane = get_bool(rec, 'transmembrane'),
                 integrin = get_bool(rec, 'integrin'),
             )
