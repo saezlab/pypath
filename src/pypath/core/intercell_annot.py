@@ -728,6 +728,7 @@ annot_combined_classes = (
         source = 'LRdb',
         args = {
             'role': 'receptor',
+            'references': bool,
         },
     ),
     af.AnnotDef(
@@ -900,6 +901,7 @@ annot_combined_classes = (
         source = 'LRdb',
         args = {
             'role': 'ligand',
+            'references': bool,
         },
     ),
     af.AnnotDef(
