@@ -245,6 +245,10 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
                 for category in categories:
 
+                    if category in {'secreted', 'receptor'}:
+
+                        continue
+
                     cellphonedb_categories.append(
                         af.AnnotDef(
                             name = '%s_cellphonedb' % category,
