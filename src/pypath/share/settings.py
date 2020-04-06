@@ -113,6 +113,8 @@ _defaults = {
     # load small, specific categories from CellPhoneDB
     # in the intercell database
     'intercell_cellphonedb_categories': True,
+    # same for Baccin2019
+    'intercell_baccin_categories': True,
 
     # parameters for pypath.omnipath
     'timestamp_format': '%Y%m%d',

@@ -41,13 +41,10 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
     def camel_to_snake(value):
 
         return (
-            recap.sub(
-                lambda m: m.group(1).lower() + m.group(2),
-                recamel.sub(
-                    lambda m: m.group(1).lower() + '_' + m.group(2),
-                    value.strip()
-                )
-            )
+            recamel.sub(
+                lambda m: m.group(1).lower() + '_' + m.group(2),
+                value.strip()
+            ).lower()
         )
 
 

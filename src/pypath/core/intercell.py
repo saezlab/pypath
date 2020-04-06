@@ -49,6 +49,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             self,
             class_definitions = None,
             cellphonedb_categories = None,
+            baccin_categories = None,
             **kwargs
         ):
 
@@ -56,9 +57,15 @@ class IntercellAnnotation(annot.CustomAnnotation):
             class_definitions or
             intercell_annot.annot_combined_classes
         )
-        self.cellphonedb_categories = (
-            cellphonedb_categories or
-            settings.get('intercell_cellphonedb_categories')
+
+        locals_ = locals()
+        self._resource_categories = dict(
+            (
+                res,
+                locals_['%s_categories' % res] or
+                settings.get('intercell_%s_categories' % res)
+            )
+            for res in ('baccin', 'cellphonedb')
         )
 
         annot.CustomAnnotation.__init__(
@@ -220,11 +227,12 @@ class IntercellAnnotation(annot.CustomAnnotation):
     def add_extra_categories(self):
 
         self.add_cellphonedb_categories()
+        self.add_baccin_categories()
 
 
     def add_cellphonedb_categories(self):
 
-        if self.cellphonedb_categories:
+        if self._resource_categories['cellphonedb']:
 
             self.ensure_annotdb()
 
@@ -258,6 +266,54 @@ class IntercellAnnotation(annot.CustomAnnotation):
                     )
 
             self._class_definitions_provided += tuple(cellphonedb_categories)
+
+
+    def add_baccin_categories(self):
+
+        if self._resource_categories['baccin']:
+
+            self.ensure_annotdb()
+
+            baccin_categories = []
+
+            for attr in ('subclass', 'location'):
+
+                baccin = self.annotdb.annots['Baccin2019']
+
+                categories = set(
+                    getattr(c, attr)
+                    for cc in baccin.annot.values()
+                    for c in cc
+                )
+
+                for category in categories:
+
+                    if category in {'other', None}:
+
+                        continue
+
+                    names = (
+                        (
+                            'membrane_ligand_baccin',
+                            'secreted_ligand_baccin',
+                        )
+                            if category == 'both' else
+                        ('%s_ligand_baccin' % category,)
+                            if attr == 'location' else
+                        ('%s_baccin' % category,)
+                    )
+
+                    for name in names:
+
+                        baccin_categories.append(
+                            af.AnnotDef(
+                                name = name,
+                                source = 'Baccin2019',
+                                args = {attr: category},
+                            )
+                        )
+
+            self._class_definitions_provided += tuple(baccin_categories)
 
 
     def post_load(self):
