@@ -2708,7 +2708,7 @@ class Adhesome(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'Adhesome',
-            input_method = 'adhesome_annotations',
+            input_method = 'adhesome.adhesome_annotations',
             **kwargs
         )
 

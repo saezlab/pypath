@@ -4833,34 +4833,6 @@ def hpmr_annotations(use_cache = None):
     return dict(annot)
 
 
-def adhesome_interactions():
-    AdhesomeInteraction = collections.namedtuple(
-        'AdhesomeInteraction',
-        ['source', 'target', 'effect', 'type', 'pmid'],
-    )
-
-    url = urls.urls['adhesome']['interactions']
-
-    c = curl.Curl(url, large = True, silent = False)
-
-    data = csv.DictReader(c.result, delimiter = ',')
-
-    result = []
-
-    for rec in data:
-        result.append(
-            AdhesomeInteraction(
-                source = rec['Source'],
-                target = rec['Target'],
-                effect = rec['Effect'],
-                type   = rec['Type'],
-                pmid   = rec['PMID'],
-            )
-        )
-
-    return result
-
-
 def get_cpad():
     url = urls.urls['cpad']['url']
     c = curl.Curl(url, silent = False, large = True, encoding = 'iso-8859-1')
@@ -9127,37 +9099,6 @@ def zhong2015_annotations():
             result[uniprot].add(
                 Zhong2015Annotation(type = types[rec[2]])
             )
-
-    return result
-
-
-def adhesome_annotations():
-    AdhesomeAnnotation = collections.namedtuple(
-        'AdhesomeAnnotation',
-        ['mainclass', 'intrinsic'],
-    )
-
-    result = collections.defaultdict(set)
-
-    url = urls.urls['adhesome']['components']
-    c = curl.Curl(url, large = True, silent = False)
-
-    data = csv.DictReader(c.result, delimiter = ',')
-
-    for rec in data:
-        uniprots = rec['Swiss-Prot ID']
-
-        for uniprot in uniprots.split(','):
-            uniprot = uniprot.strip()
-
-            if uniprot == 'null':
-                continue
-
-            for _uniprot in mapping.map_name(uniprot, 'uniprot', 'uniprot'):
-                result[uniprot].add(AdhesomeAnnotation(
-                    mainclass = rec['Functional Category'].strip(),
-                    intrinsic = rec['FA'].strip() == 'Intrinsic Proteins',
-                ))
 
     return result
 
