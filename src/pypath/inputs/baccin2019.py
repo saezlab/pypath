@@ -182,6 +182,7 @@ def baccin2019_annotations(ncbi_tax_id = 9606):
         [
             'mainclass',
             'subclass',
+            'location',
         ]
     )
 
@@ -196,6 +197,7 @@ def baccin2019_annotations(ncbi_tax_id = 9606):
             Baccin2019Annotation(
                 mainclass = 'ligand',
                 subclass = ia.ligand_category,
+                location = ia.ligand_location,
             )
         )
 
@@ -207,6 +209,7 @@ def baccin2019_annotations(ncbi_tax_id = 9606):
                         if ia.ligand_category != 'other' else
                     None
                 ),
+                location = None,
             )
         )
 

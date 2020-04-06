@@ -2614,7 +2614,7 @@ class Vesiclepedia(Exocarta):
 
 class Baccin2019(AnnotationBase):
 
-    _eq_fields = ('mainclass',)
+    _eq_fields = ('mainclass', 'subclass', 'location')
 
 
     def __init__(self, ncbi_tax_id = 9606, **kwargs):
