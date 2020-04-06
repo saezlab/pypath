@@ -21,6 +21,7 @@
 #
 
 from future.utils import iteritems
+from past.builtins import xrange, range
 
 import re
 import csv
@@ -31,6 +32,21 @@ import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 import pypath.internals.intera as intera
+import pypath.share.common as common
+
+
+CellPhoneDBAnnotation = collections.namedtuple(
+    'CellPhoneDBAnnotation',
+    (
+        'receptor',
+        'receptor_class',
+        'peripheral',
+        'secreted',
+        'secreted_class',
+        'transmembrane',
+        'integrin',
+    )
+)
 
 
 def cellphonedb_ligands_receptors():
@@ -65,20 +81,38 @@ def cellphonedb_ligands_receptors():
 
 def _cellphonedb_annotations(url, name_method):
 
+    replacements = {
+        '_add': '',
+        ' | ': ',',
+        ' ': '_',
+    }
+
     def get_bool(rec, attr):
+
         return attr in rec and rec[attr] == 'True'
 
     def get_desc(rec, attr):
+
         desc = '%s_desc' % attr
 
-        return (
-            '' if (
-                attr in rec and rec[attr] == 'False' or
-                attr not in rec and not rec[desc]
-            ) else
-            rec[desc] if rec[desc] else
-            attr.capitalize()
+        value = (
+            ''
+                if (
+                    attr in rec and rec[attr] == 'False' or
+                    attr not in rec and not rec[desc]
+                ) else
+            rec[desc]
+                if rec[desc] else
+            attr
         )
+
+        for pattern, repl in iteritems(replacements):
+
+            value = value.replace(pattern, repl)
+
+        value = value.lower().split(',') if value else None
+
+        return tuple(sorted(common.to_set(value)))
 
     record = CellPhoneDBAnnotation
 
@@ -88,24 +122,21 @@ def _cellphonedb_annotations(url, name_method):
     tab = list(csv.DictReader(c.result))
 
     for rec in tab:
+
         names = name_method(rec)
 
         if isinstance(names, (common.basestring, intera.Complex)):
+
             names = (names,)
 
         for name in names:
+
             annot[name] = record(
                 receptor = get_bool(rec, 'receptor'),
-                receptor_class = (
-                    get_desc(rec, 'receptor').replace('_add', '').lower() or
-                    None
-                ),
+                receptor_class = get_desc(rec, 'receptor') or None,
                 peripheral = get_bool(rec, 'peripheral'),
                 secreted = get_bool(rec, 'secreted'),
-                secreted_class = (
-                    get_desc(rec, 'secreted').replace(' | ', ',').lower() or
-                    None
-                ),
+                secreted_class = get_desc(rec, 'secreted') or None,
                 transmembrane = get_bool(rec, 'transmembrane'),
                 integrin = get_bool(rec, 'integrin'),
             )
@@ -132,11 +163,15 @@ def cellphonedb_protein_annotations(add_complex_annotations = True):
     )
 
     if add_complex_annotations:
+
         complex_annotations = cellphonedb_complex_annotations()
 
         for cplex, a_cplex in iteritems(complex_annotations):
+
             for uniprot in cplex.components.keys():
+
                 if uniprot in protein_annotations:
+
                     protein_annotations[uniprot] = CellPhoneDBAnnotation(
                         *(
                             p or c if isinstance(p, bool) else p
@@ -149,6 +184,7 @@ def cellphonedb_protein_annotations(add_complex_annotations = True):
                     )
 
                 else:
+
                     protein_annotations[uniprot].add(a_cplex)
 
     return protein_annotations
@@ -272,6 +308,7 @@ def cellphonedb_interactions():
     reader = csv.DictReader(c.result)
 
     for rec in reader:
+
         _partner_a = _cellphonedb_get_entity(
             rec['partner_a'],
             complexes = complexes,
@@ -282,6 +319,7 @@ def cellphonedb_interactions():
         )
 
         for partner_a, partner_b in itertools.product(_partner_a, _partner_b):
+
             type_a = get_type(partner_a)
             type_b = get_type(partner_b)
             rev = partner_b == 'ligand' and partner_b == 'receptor'
@@ -308,7 +346,7 @@ def cellphonedb_interactions():
 
             type_b if rev else type_b
 
-            yield(
+            yield (
                 CellphonedbInteraction(
                     id_a = partner_b if rev else partner_a,
                     id_b = partner_a if rev else partner_b,

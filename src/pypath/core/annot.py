@@ -40,6 +40,7 @@ import numpy as np
 import pandas as pd
 
 import pypath.inputs.main as dataio
+import pypath.inputs.cellphonedb as cellphonedb
 import pypath.share.common as common
 import pypath.share.settings as settings
 import pypath.utils.mapping as mapping
@@ -3518,7 +3519,7 @@ class GOIntercell(AnnotationBase):
 class CellPhoneDB(AnnotationBase):
 
 
-    record = dataio.CellPhoneDBAnnotation
+    record = cellphonedb.CellPhoneDBAnnotation
 
 
     def __init__(self, **kwargs):
@@ -3528,7 +3529,7 @@ class CellPhoneDB(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'CellPhoneDB',
-            input_method = 'cellphonedb_protein_annotations',
+            input_method = 'cellphonedb.cellphonedb_protein_annotations',
             ncbi_tax_id = 9606,
             **kwargs
         )
@@ -3545,7 +3546,16 @@ class CellPhoneDB(AnnotationBase):
 
     def _eq_fields(self, *args):
 
-        return self.record(*tuple(all(a) for a in zip(*args)))
+        return self.record(
+            *tuple(
+                all(a)
+                    if all(isinstance(aa, bool) for aa in a) else
+                tuple(sorted(set(
+                    itertools.chain(*(aa for aa in a if aa is not None))
+                )))
+                for a in zip(*args)
+            )
+        )
 
 
 class Icellnet(AnnotationBase):
@@ -3610,7 +3620,7 @@ class CellPhoneDBComplex(CellPhoneDB):
         AnnotationBase.__init__(
             self,
             name = 'CellPhoneDB_complex',
-            input_method = 'cellphonedb_complex_annotations',
+            input_method = 'cellphonedb.cellphonedb_complex_annotations',
             ncbi_tax_id = 9606,
             entity_type = 'complex',
             **kwargs
