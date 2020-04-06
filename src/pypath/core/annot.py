@@ -41,6 +41,7 @@ import pandas as pd
 
 import pypath.inputs.main as dataio
 import pypath.inputs.cellphonedb as cellphonedb
+import pypath.inputs.lrdb as lrdb
 import pypath.share.common as common
 import pypath.share.settings as settings
 import pypath.utils.mapping as mapping
@@ -2952,7 +2953,8 @@ class Integrins(AnnotationBase):
 
 class Lrdb(AnnotationBase):
 
-    _eq_fields = ('role',)
+
+    record = lrdb.LrdbAnnotation
 
 
     def __init__(self, **kwargs):
@@ -2969,6 +2971,33 @@ class Lrdb(AnnotationBase):
 
         self.annot = self.data
         delattr(self, 'data')
+
+
+    def _eq_fields(self, *args):
+
+        def merge_tuples(role, args, attr):
+
+            return tuple(sorted(set(
+                itertools.chain(*(
+                    getattr(a, attr) for a in args if a.role == role
+                ))
+            )))
+
+
+        role_cell = {
+            (a.role, a.cell_type)
+            for a in args
+        }
+
+        return {
+            record(
+                role = role,
+                cell_type = cell_type,
+                sources = merge(role, args, 'sources'),
+                sources = merge(role, args, 'references'),
+            )
+            for role, cell_type in role_cell
+        }
 
 
 class HumanProteinAtlas(AnnotationBase):

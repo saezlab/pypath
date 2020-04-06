@@ -29,6 +29,17 @@ import pypath.utils.mapping as mapping
 import pypath.share.common as common
 
 
+LrdbAnnotation = collections.namedtuple(
+    'LrdbAnnotation',
+    [
+        'role',
+        'cell_type',
+        'sources',
+        'references',
+    ],
+)
+
+
 def lrdb_interactions():
 
     resource_names = {
@@ -91,16 +102,6 @@ def lrdb_interactions():
 
 
 def lrdb_annotations():
-
-    LrdbAnnotation = collections.namedtuple(
-        'LrdbAnnotation',
-        [
-            'role',
-            'cell_type',
-            'sources',
-            'references',
-        ],
-    )
 
     result = collections.defaultdict(set)
 
