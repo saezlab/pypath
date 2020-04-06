@@ -656,6 +656,8 @@ class TableServer(BaseServer):
             'type': 'category',
             'ncbi_tax_id_source': 'int16',
             'ncbi_tax_id_target': 'int16',
+            'entity_type_source': 'category',
+            'entity_type_target': 'category',
             'curation_effort': 'int16',
         },
         annotations = {
@@ -1503,8 +1505,8 @@ class TableServer(BaseServer):
             entity_types = self._args_set(req, 'entity_types')
             
             tbl = tbl[
-                tbl.source_entity_type.isin(entity_types) |
-                tbl.target_entity_type.isin(entity_types)
+                tbl.entity_type_source.isin(entity_types) |
+                tbl.entity_type_target.isin(entity_types)
             ]
         
         # filtering by DoRothEA methods
@@ -1552,8 +1554,8 @@ class TableServer(BaseServer):
                     
                 elif f == 'entity_type':
                     
-                    hdr.append('source_entity_type')
-                    hdr.append('target_entity_type')
+                    hdr.append('entity_type_source')
+                    hdr.append('entity_type_target')
                     
                 elif f == 'databases':
                     

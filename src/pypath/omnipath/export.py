@@ -92,6 +92,8 @@ class Export(session.Logger):
         'sources': 'category',
         'references': 'category',
         'curation_effort': 'int16',
+        'entity_type_source': 'category',
+        'entity_type_target': 'category',
     }
 
     def __init__(
@@ -738,6 +740,7 @@ class Export(session.Logger):
 
         self.write(outfile = outfile)
 
+
     def write(self, outfile = None):
 
         outfile = outfile or self.outfile or os.path.join(
@@ -784,6 +787,7 @@ class Export(session.Logger):
             unique_pairs = False,
             extra_node_attrs = {
                 'ncbi_tax_id': 'taxon',
+                'entity_type': 'entity_type',
             },
             extra_edge_attrs = {
                 'omnipath': lambda e, d: (
