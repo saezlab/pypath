@@ -343,7 +343,7 @@ class CellPhoneDB(AbstractComplexResource):
         AbstractComplexResource.__init__(
             self,
             name = 'CellPhoneDB',
-            input_method = 'cellphonedb_complexes',
+            input_method = 'cellphonedb.cellphonedb_complexes',
         )
 
 
