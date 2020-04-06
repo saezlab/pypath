@@ -900,11 +900,28 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'ligand_dgidb',
+        source = af.AnnotOp(
+            annots = (
+                'growth_factor_dgidb',
+                'hormone_dgidb',
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'growth_factor_dgidb',
         source = 'DGIdb',
         args = {
-            'category': {'GROWTH FACTOR', 'HORMONE ACTIVITY'},
+            'category': 'GROWTH FACTOR',
         },
     ),
+    af.AnnotDef(
+        'hormone_dgidb',
+        source = 'DGIdb',
+        args = {
+            'category': 'HORMONE ACTIVITY',
+        },
+    )
     af.AnnotDef(
         name = 'ligand_lrdb',
         source = 'LRdb',
