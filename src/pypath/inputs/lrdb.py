@@ -97,6 +97,8 @@ def lrdb_annotations():
         [
             'role',
             'cell_type',
+            'sources',
+            'references',
         ],
     )
 
@@ -105,7 +107,9 @@ def lrdb_annotations():
     lrdb = lrdb_interactions()
 
     for rec in lrdb:
+
         for role in ('ligand', 'receptor'):
+
             uniprots = mapping.map_name(
                 getattr(rec, '%s_genesymbol' % role),
                 'genesymbol',
@@ -113,9 +117,11 @@ def lrdb_annotations():
             )
 
             for uniprot in uniprots:
+
                 cell_types = getattr(rec, '%s_cells' % role) or (None,)
 
                 for cell_type in cell_types:
+
                     cell_type = (
                         'T lymphocyte'
                             if cell_type == 'tymphocyte' else
@@ -128,6 +134,8 @@ def lrdb_annotations():
                         LrdbAnnotation(
                             role = role,
                             cell_type = cell_type,
+                            sources = tuple(sorted(rec.sources)),
+                            references = tuple(sorted(rec.references)),
                         )
                     )
 
