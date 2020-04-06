@@ -2960,7 +2960,7 @@ class Lrdb(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'LRdb',
-            input_method = 'lrdb_annotations',
+            input_method = 'lrdb.lrdb_annotations',
             **kwargs
         )
 
