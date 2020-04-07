@@ -41,7 +41,7 @@ _lifetime = 300
 _last_used = {}
 
 
-_redatasheet = re.compile(r'([A-Z]{2})([^\n\r]+)[\n\r]+')
+_redatasheet = re.compile(r'([A-Z\s]{2})\s*([^\n\r]+)[\n\r]+')
 
 
 def _all_uniprots(organism = 9606, swissprot = None):
