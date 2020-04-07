@@ -41,6 +41,9 @@ _lifetime = 300
 _last_used = {}
 
 
+_redatasheet = re.compile(r'([A-Z]{2})([^\n\r]+)[\n\r]+')
+
+
 def _all_uniprots(organism = 9606, swissprot = None):
 
     swissprot = 'yes' if swissprot == True else swissprot
@@ -140,3 +143,11 @@ def _remove(key):
     if key in globals()['_last_used']:
 
         del globals()['_last_used'][key]
+
+
+def protein_datasheet(identifier):
+
+    url = urls.urls['uniprot_basic']['datasheet'] % identifier
+    c = curl.Curl(url, silent = True, large = False)
+
+    return _redatasheet.findall(c.result)
