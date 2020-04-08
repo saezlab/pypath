@@ -33,6 +33,7 @@ import pypath.share.common as common
 from pypath.internals import intera
 import pypath.share.session as session_mod
 import pypath.utils.mapping as mapping
+import pypath.utils.uniprot as uniprot
 
 
 EntityKey = collections.namedtuple(
@@ -360,6 +361,14 @@ class Entity(session_mod.Logger):
             else:
 
                 self.attrs[key] = val
+
+
+    @classmethod
+    def info(cls, identifier):
+
+        if cls._is_protein(identifier):
+
+            return utils_uniprot.info(identifier)
 
 
 class EntityList(object):

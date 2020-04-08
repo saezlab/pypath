@@ -1533,7 +1533,7 @@ class CustomAnnotation(session_mod.Logger):
 
 
     # TODO: this kind of methods should be implemented by metaprogramming
-    def numof_protein_recordss(self):
+    def numof_protein_records(self):
 
         return self.numof_records(entity_types = 'protein')
 

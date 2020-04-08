@@ -437,6 +437,19 @@ def query(*uniprot_ids):
 
 
 def collect(uniprot_ids, *features):
+    """
+    Collects data about one or more UniProt IDs.
+    
+    :param str,list uniprot_ids:
+        One or more UniProt IDs.
+    :param *str,list features:
+        Features to query: these must be method (property) names of the
+        ``UniprotProtein`` class. E.g. ``['ac', 'genesymbol', 'function']``.
+    
+    :return:
+        A ``collections.OrderedDict`` object with feature names as keys and
+        list of values for each UniProt ID as values.
+    """
     
     resources = [
         UniprotProtein(uniprot_id)
@@ -467,7 +480,21 @@ def features_table(
         width = 40,
         maxlen = 180,
         tablefmt = 'fancy_grid',
+        **kwargs
     ):
+    """
+    Returns a table with the requested features of a list of UniProt IDs.
+    The underlying table formatting module is ``tabulate``, a versatile
+    module to export various ascii tables as well as HTML or LaTeX --
+    check the docs for formatting options:
+    https://github.com/astanin/python-tabulate
+    
+    :param **kwargs:
+        Passed to ``tabulate.tabulate``.
+    
+    :return:
+        The table as a string.
+    """
     
     tbl = collect(uniprot_ids, *features)
     
@@ -476,6 +503,7 @@ def features_table(
         width = width,
         maxlen = maxlen,
         tablefmt = tablefmt,
+        **kwargs
     )
 
 
@@ -485,7 +513,21 @@ def print_features(
         width = 40,
         maxlen = 200,
         tablefmt = 'fancy_grid',
+        **kwargs
     ):
+    """
+    Prints a table with the requested features of a list of UniProt IDs.
+    The underlying table formatting module is ``tabulate``, a versatile
+    module to export various ascii tables as well as HTML or LaTeX --
+    check the docs for formatting options:
+    https://github.com/astanin/python-tabulate
+    
+    :param **kwargs:
+        Passed to ``tabulate.tabulate``.
+    
+    :return:
+        None.
+    """
     
     sys.stdout.write(
         features_table(
@@ -494,6 +536,7 @@ def print_features(
             width = width,
             maxlen = maxlen,
             tablefmt = tablefmt,
+            **kwargs
         )
     )
     sys.stdout.write(os.linesep)
@@ -501,6 +544,10 @@ def print_features(
 
 
 def info(*uniprot_ids, **kwargs):
+    """
+    Prints a table with the most important (or the requested) features of a
+    list of UniProt IDs.
+    """
     
     if (
         len(uniprot_ids) == 1 and
@@ -510,14 +557,18 @@ def info(*uniprot_ids, **kwargs):
         uniprot_ids = uniprot_ids[0]
     
     features = (
-        'ac',
-        'genesymbol',
-        'length',
-        'weight',
-        'full_name',
-        'function',
-        'keywords',
-        'subcellular_location',
+        kwargs['features']
+            if 'features' in kwargs else
+        (
+            'ac',
+            'genesymbol',
+            'length',
+            'weight',
+            'full_name',
+            'function',
+            'keywords',
+            'subcellular_location',
+        )
     )
     
     print_features(

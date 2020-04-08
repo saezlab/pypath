@@ -1887,7 +1887,13 @@ def table_textwrap(tbl, width = None, maxlen = None):
     )
 
 
-def table_format(tbl, width = None, maxlen = None, tablefmt = 'fancy_grid'):
+def table_format(
+        tbl,
+        width = None,
+        maxlen = None,
+        tablefmt = 'fancy_grid',
+        **kwargs
+    ):
     
     tbl = table_textwrap(tbl, width = width, maxlen = maxlen)
     
@@ -1895,13 +1901,26 @@ def table_format(tbl, width = None, maxlen = None, tablefmt = 'fancy_grid'):
         zip(*tbl.values()),
         tbl.keys(),
         tablefmt = tablefmt,
+        **kwargs
     )
 
 
-def print_table(tbl, width = None, maxlen = None, tablefmt = 'fancy_grid'):
+def print_table(
+        tbl,
+        width = None,
+        maxlen = None,
+        tablefmt = 'fancy_grid',
+        **kwargs
+    ):
     
     sys.stdout.write(
-        table_format(tbl, width = width, maxlen = wifth, tablefmt = tablefmt)
+        table_format(
+            tbl,
+            width = width,
+            maxlen = wifth,
+            tablefmt = tablefmt,
+            **kwargs
+        )
     )
     sys.stdout.write(os.linesep)
     sys.stdout.flush()
