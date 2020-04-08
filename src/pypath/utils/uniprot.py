@@ -510,7 +510,7 @@ def features_table(
 def print_features(
         uniprot_ids,
         *features,
-        width = 40,
+        width = None,
         maxlen = 200,
         tablefmt = 'fancy_grid',
         **kwargs
@@ -528,6 +528,9 @@ def print_features(
     :return:
         None.
     """
+    
+    term_width = (os.get_terminal_size().columns - 120) * 2.3 + 120
+    width = width or int(term_width / len(features)) if term_width else 40
     
     sys.stdout.write(
         features_table(
