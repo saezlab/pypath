@@ -746,6 +746,98 @@ annot_combined_classes = (
             'function': 'Receptor',
         },
     ),
+    # receptor subclasses from HGNC
+    af.AnnotDef(
+        name = 'immunoglobulin_like_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Activating leukocyte immunoglobulin like receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'adiponectin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Adiponectin receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'adrenalin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Adrenoceptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'angiotensin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Angiotensin receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'vasopressin_oxytocin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Arginine vasopressin and oxytocin receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'atypical_chemokine_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Atypical chemokine receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'basigin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Basigin family',
+        },
+    ),
+    af.AnnotDef(
+        name = 'bombesin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Bombesin receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'bradykinin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Bradykinin receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'butyrophilin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Butyrophilins',
+        },
+    ),
+    af.AnnotDef(
+        name = 'cc_chemokine_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'C-C motif chemokine receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'cx3c_chemokine_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'C-X-3-C motif chemokine receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'cxc_chemokine_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'C-X-C motif chemokine receptors',
+        },
+    ),
     # ECM
     af.AnnotDef(
         name = 'ecm',
@@ -953,6 +1045,28 @@ annot_combined_classes = (
         source = 'SignaLink_function',
         args = {
             'function': 'Ligand',
+        },
+    ),
+    # ligands from HGNC
+    af.AnnotDef(
+        name = 'angiopoietin_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Angiopoietin like family',
+        },
+    ),
+    af.AnnotDef(
+        name = 'basigin_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Basigin family',
+        },
+    ),
+    af.AnnotDef(
+        name = 'bmp_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Bone morphogenetic proteins',
         },
     ),
     # intracellular
@@ -1379,6 +1493,23 @@ annot_combined_classes = (
             'location': 'focal adhesion',
         },
     ),
+    af.AnnotDef(
+        name = 'adhesion_gprotein_coupled_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': {
+                'Adhesion G protein-coupled receptors, subfamily A',
+                'Adhesion G protein-coupled receptors, subfamily B',
+                'Adhesion G protein-coupled receptors, subfamily C',
+                'Adhesion G protein-coupled receptors, subfamily D',
+                'Adhesion G protein-coupled receptors, subfamily E',
+                'Adhesion G protein-coupled receptors, subfamily F',
+                'Adhesion G protein-coupled receptors, subfamily G',
+                'Adhesion G protein-coupled receptors, subfamily L',
+                'Adhesion G protein-coupled receptors, subfamily V',
+            },
+        }, # cell-matrix adhesion
+    ),
     # surface enzyme
     af.AnnotDef(
         name = 'surface_enzyme',
@@ -1453,6 +1584,21 @@ annot_combined_classes = (
             ),
         },
     ),
+    # surface ligand subclasses from HGNC
+    af.AnnotDef(
+        name = 'b7_family_surface_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'B7 family',
+        },
+    ),
+    af.AnnotDef(
+        name = 'butyrophilin_surface_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Butyrophilins',
+        },
+    ),
     # transporter
     af.AnnotDef(
         name = 'transporter',
@@ -1476,14 +1622,36 @@ annot_combined_classes = (
         name = 'transporter_go',
         source = 'GO_Intercell',
         args = {
-            'mainclass': {'transport', 'ion channels'},
+            'mainclass': {
+                'transport',
+                'ion channels',
+            },
         },
     ),
     af.AnnotDef(
         name = 'transporter_dgidb',
         source = 'DGIdb',
         args = {
-            'category': {'ABC TRANSPORTER', 'TRANSPORTER', 'ION CHANNEL'},
+            'category': {
+                'ABC TRANSPORTER',
+                'TRANSPORTER',
+                'ION CHANNEL',
+            },
+        },
+    ),
+    # transporters from HGNC
+    af.AnnotDef(
+        name = 'water_transporter_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Aquaporins',
+        },
+    ),
+    af.AnnotDef(
+        name = 'bestrophin_transporter_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Bestrophins',
         },
     ),
     # extracellular enzyme
