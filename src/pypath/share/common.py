@@ -38,6 +38,8 @@ import warnings
 import textwrap
 import hashlib
 import inspect
+import textwrap
+import tabulate
 
 import numpy as np
 
@@ -1825,3 +1827,81 @@ def sets_to_sorted_lists(obj):
     else:
 
         return obj
+
+
+def wrap_truncate(text, width = None, maxlen = None):
+    
+    if isinstance(text, list_like):
+        
+        text = ', '.join(text)
+    
+    if not isinstance(text, basestring):
+        
+        text = str(text)
+    
+    if maxlen:
+        
+        text = textwrap.shorten(text, width = maxlen)
+    
+    if width:
+        
+        text = textwrap.wrap(text, width = width)
+    
+    return os.linesep.join(text)
+
+
+def table_textwrap(tbl, width = None, maxlen = None):
+    """
+    Wraps and truncates the text content of cells in a table.
+    The table is an ``OrderedDict`` with column titles as keys and column
+    contents as lists.
+    """
+    
+    def get_width(i):
+        
+        return (
+            width[i]
+                if (
+                    isinstance(width, list_like) or
+                    isinstance(width, dict) and
+                    i in width
+                ) else
+            width['default']
+                if (
+                    isinstance(width, dict) and
+                    'default' in width
+                ) else
+            width
+        )
+    
+    
+    return collections.OrderedDict(
+        (
+            wrap_truncate(title, width = get_width(i), maxlen = maxlen),
+            [
+                wrap_truncate(cell, width = width, maxlen = maxlen)
+                for cell in column
+            ]
+        )
+        for i, (title, column) in enumerate(iteritems(tbl))
+    )
+
+
+def table_format(tbl, width = None, maxlen = None, tablefmt = 'fancy_grid'):
+    
+    tbl = table_textwrap(tbl, width = width, maxlen = maxlen)
+    
+    return tabulate.tabulate(
+        zip(*tbl.values()),
+        tbl.keys(),
+        tablefmt = tablefmt,
+    )
+
+
+def print_table(tbl, width = None, maxlen = None, tablefmt = 'fancy_grid'):
+    
+    sys.stdout.write(
+        table_format(tbl, width = width, maxlen = wifth, tablefmt = tablefmt)
+    )
+    sys.stdout.write(os.linesep)
+    sys.stdout.flush()
