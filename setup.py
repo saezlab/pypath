@@ -102,6 +102,7 @@ setup(
         'tqdm',
         'fabric3',
         'timeloop',
+        'tabulate',
     ],
     extras_require = {
         'tests': [
