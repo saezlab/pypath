@@ -25,6 +25,7 @@ Interface to UniProt protein datasheets.
 
 from future.utils import iteritems
 
+import os
 import sys
 import re
 import importlib as imp
@@ -412,3 +413,115 @@ def _update_methods():
 
 
 _update_methods()
+
+
+def query(*uniprot_ids):
+    """
+    Queries the datasheet of one or more UniProt IDs.
+    Returns a single ``UniprotProtein`` object or a list of those objects.
+    """
+    
+    if (
+        len(uniprot_ids) == 1 and
+        isinstance(uniprot_ids, common.list_like)
+    ):
+        
+        uniprot_ids = uniprot_ids[0]
+    
+    result = [
+        UniprotProtein(uniprot_id)
+        for uniprot_id in uniprot_ids
+    ]
+    
+    return result[0] if len(result) == 1 else result
+
+
+def collect(uniprot_ids, *features):
+    
+    resources = [
+        UniprotProtein(uniprot_id)
+        for uniprot_id in uniprot_ids
+    ]
+    
+    if 'ac' not in features:
+        
+        features = ['ac'] + list(*features)
+    
+    table = collections.OrderedDict(
+        (
+            feature_name,
+            [
+                getattr(resource, feature_name)
+                for resource in resources
+            ]
+        )
+        for feature_name in features
+    )
+    
+    return table
+
+
+def features_table(
+        uniprot_ids,
+        *features,
+        width = 40,
+        maxlen = 180,
+        tablefmt = 'fancy_grid',
+    ):
+    
+    tbl = collect(uniprot_ids, *features)
+    
+    return common.table_format(
+        tbl,
+        width = width,
+        maxlen = maxlen,
+        tablefmt = tablefmt,
+    )
+
+
+def print_features(
+        uniprot_ids,
+        *features,
+        width = 40,
+        maxlen = 200,
+        tablefmt = 'fancy_grid',
+    ):
+    
+    sys.stdout.write(
+        features_table(
+            uniprot_ids,
+            *features,
+            width = width,
+            maxlen = maxlen,
+            tablefmt = tablefmt,
+        )
+    )
+    sys.stdout.write(os.linesep)
+    sys.stdout.flush()
+
+
+def info(*uniprot_ids, **kwargs):
+    
+    if (
+        len(uniprot_ids) == 1 and
+        isinstance(uniprot_ids, common.list_like)
+    ):
+        
+        uniprot_ids = uniprot_ids[0]
+    
+    features = (
+        'ac',
+        'genesymbol',
+        'length',
+        'weight',
+        'full_name',
+        'function',
+        'keywords',
+        'subcellular_location',
+    )
+    
+    print_features(
+        uniprot_ids,
+        *features,
+        **kwargs
+    )
