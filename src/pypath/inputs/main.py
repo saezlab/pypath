@@ -143,6 +143,21 @@ reupi = re.compile(r'([\w]{6,10})(?:-([0-9]{1,2}))?')
 # thanks for http://stackoverflow.com/a/3239248/854988
 #
 
+
+CellPhoneDBAnnotation = collections.namedtuple(
+    'CellPhoneDBAnnotation',
+    (
+        'receptor',
+        'receptor_class',
+        'peripheral',
+        'secreted',
+        'secreted_class',
+        'transmembrane',
+        'integrin',
+    )
+)
+
+
 def all_uniprots(organism = 9606, swissprot = None):
     return uniprot_input.all_uniprots(organism, swissprot)
 
