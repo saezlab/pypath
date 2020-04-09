@@ -150,4 +150,4 @@ def protein_datasheet(identifier):
     url = urls.urls['uniprot_basic']['datasheet'] % identifier
     c = curl.Curl(url, silent = True, large = False)
 
-    return _redatasheet.findall(c.result)
+    return _redatasheet.findall(c.result) if c.result else []
