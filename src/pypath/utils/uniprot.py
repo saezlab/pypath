@@ -34,12 +34,13 @@ import itertools
 
 import pypath.inputs.uniprot as uniprot_input
 import pypath.share.common as common
+import pypath.core.entity as entity
 
 
 class UniprotProtein(object):
     
     _relength = re.compile(r'([0-9]+) AA')
-    _rename = re.compile(r'Name=(\w+);')
+    _rename = re.compile(r'Name=(\w+)\W')
     _rerecname = re.compile(r'RecName: Full=([^;]+);')
     _recc = re.compile(r'-!- ([A-Z ]+):\s?(.*)')
     _remw = re.compile(r'([0-9]+) MW')
@@ -311,7 +312,9 @@ class UniprotProtein(object):
     @property
     def genesymbol(self):
         
-        return self._rename.search(next(self.itertag('GN'))).groups()[0]
+        m = self._rename.search(next(self.itertag('GN')))
+        
+        return m.groups()[0] if m else self.ac
     
     
     @property
@@ -428,6 +431,8 @@ def query(*uniprot_ids):
         
         uniprot_ids = uniprot_ids[0]
     
+    uniprot_ids = entity.Entity.only_proteins(uniprot_ids)
+    
     result = [
         UniprotProtein(uniprot_id)
         for uniprot_id in uniprot_ids
@@ -450,6 +455,8 @@ def collect(uniprot_ids, *features):
         A ``collections.OrderedDict`` object with feature names as keys and
         list of values for each UniProt ID as values.
     """
+    
+    uniprot_ids = entity.Entity.only_proteins(uniprot_ids)
     
     resources = [
         UniprotProtein(uniprot_id)
@@ -529,7 +536,7 @@ def print_features(
         None.
     """
     
-    term_width = (os.get_terminal_size().columns - 120) * 2.3 + 120
+    term_width = (os.get_terminal_size().columns - 120) * 2 + 120
     width = width or int(term_width / len(features)) if term_width else 40
     
     sys.stdout.write(
