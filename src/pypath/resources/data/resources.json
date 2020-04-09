@@ -3056,9 +3056,9 @@
       "Chunhua Yan"
     ],
     "license": {
-      "name": "No license.",
-      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
-      "commercial_use": false
+      "name": "BSD",
+      "url": "https://opensource.org/licenses/BSD-3-Clause",
+      "commercial_use": true
     },
     "pypath": {
       "data": ["pypath.urls.urls[\"nci-pid\"][\"biopax_l3\"]"],
@@ -3875,7 +3875,9 @@
   },
   "RegNetwork": {
     "license": {
-      "comment": "License information was requested but not received yet."
+        "name": "GNU-LGPLv3",
+        "url": "https://www.gnu.org/licenses/gpl-3.0.en.html",
+        "commercial_use": true
     }
   },
   "TfactS": {
@@ -3913,7 +3915,9 @@
   },
   "Matrisome": {
     "license": {
-      "comment": "License information was requested but not received yet."
+        "name": "CC Attribution-NonCommercial 4.0",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "commercial_use": false
     }
   },
   "CSPA": {
@@ -4285,8 +4289,8 @@
   },
   "CacncerSEA": {
     "license": {
-        "name": "No license.",
-        "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
+        "name": "CC Attribution-NonCommercial 4.0.",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
         "commercial_use": false
     },
     "emails": ["xiaoyun@ems.hrbmu.edu.cn", "Yun Xiao"]
