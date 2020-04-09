@@ -252,6 +252,24 @@ class Entity(session_mod.Logger):
             for e in entities
             if cls._get_entity_type(e) in entity_type
         )
+    
+    
+    @classmethod
+    def only_proteins(cls, entities):
+        
+        return cls.filter_entity_type(entities, entity_type = 'protein')
+    
+    
+    @classmethod
+    def only_complexes(cls, entities):
+        
+        return cls.filter_entity_type(entities, entity_type = 'complex')
+    
+    
+    @classmethod
+    def only_mirnas(cls, entities):
+        
+        return cls.filter_entity_type(entities, entity_type = 'mirna')
 
 
     @classmethod
