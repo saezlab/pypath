@@ -24,7 +24,7 @@
 from future.utils import iteritems
 from past.builtins import xrange, range, reduce
 
-
+import os
 import sys
 import importlib as imp
 import collections
@@ -190,7 +190,7 @@ class CustomAnnotation(session_mod.Logger):
 
         if self.pickle_file and os.path.exists(self.pickle_file):
 
-            self.load_from_pickle(pickle_file = pickle_file)
+            self.load_from_pickle(pickle_file = self.pickle_file)
 
         else:
 
@@ -4062,8 +4062,17 @@ class AnnotationTable(session_mod.Logger):
 
                 if record_cls is not None:
 
+                    modname = record_cls['module']
+
+                    if modname not in sys.modules:
+
+                        mod = __import__(
+                            modname,
+                            fromlist = [modname.split('.')[0]],
+                        )
+
                     setattr(
-                        sys.modules[record_cls['module']],
+                        sys.modules[modname],
                         record_cls['name'],
                         collections.namedtuple(
                             record_cls['name'],
@@ -4072,7 +4081,7 @@ class AnnotationTable(session_mod.Logger):
                     )
 
                     record_cls_new = getattr(
-                        sys.modules[record_cls['module']],
+                        sys.modules[modname],
                         record_cls['name'],
                     )
 
