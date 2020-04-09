@@ -838,6 +838,41 @@ annot_combined_classes = (
             'mainclass': 'C-X-C motif chemokine receptors',
         },
     ),
+    af.AnnotDef(
+        name = 'celsr_cadherin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'CELSR cadherins',
+        },
+    ),
+    af.AnnotDef(
+        name = '5ht_gprotein_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': '5-hydroxytryptamine receptors, G protein-coupled',
+        },
+    ),
+    af.AnnotDef(
+        name = '5ht_ionotropic_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': '5-hydroxytryptamine receptors, ionotropic',
+        },
+    ),
+    af.AnnotDef(
+        name = 'activating_leukocyte_ig_like_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Activating leukocyte immunoglobulin like receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'adenosine_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Adenosine receptors',
+        },
+    ),
     # ECM
     af.AnnotDef(
         name = 'ecm',
@@ -1024,7 +1059,7 @@ annot_combined_classes = (
         args = {
             'category': 'HORMONE ACTIVITY',
         },
-    )
+    ),
     af.AnnotDef(
         name = 'ligand_lrdb',
         source = 'LRdb',
@@ -1067,6 +1102,13 @@ annot_combined_classes = (
         source = 'HGNC',
         args = {
             'mainclass': 'Bone morphogenetic proteins',
+        },
+    ),
+    af.AnnotDef(
+        name = 'c1q_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'C1q and TNF related',
         },
     ),
     # intracellular
@@ -1465,7 +1507,7 @@ annot_combined_classes = (
         source = af.AnnotOp(
             annots = (
                 af.AnnotDef(
-                    name = 'ecm_matrisome_affiliated',
+                    name = 'ecm_affiliated_matrisome',
                     source = 'Matrisome',
                     args = {
                         'mainclass': 'Matrisome-associated',
@@ -1487,7 +1529,7 @@ annot_combined_classes = (
         ),
     ),
     af.AnnotDef(
-        name = 'focal_adhesion_ramilowski'
+        name = 'focal_adhesion_ramilowski',
         source = 'Ramilowski_location',
         args = {
             'location': 'focal adhesion',
@@ -1510,6 +1552,13 @@ annot_combined_classes = (
             },
         }, # cell-matrix adhesion
     ),
+    af.AnnotDef(
+        name = '7d_cadherin_cell_adhesion_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': '7D cadherins',
+        },
+    ), # cell-cell adhesion
     # surface enzyme
     af.AnnotDef(
         name = 'surface_enzyme',
@@ -1654,6 +1703,41 @@ annot_combined_classes = (
             'mainclass': 'Bestrophins',
         },
     ),
+    af.AnnotDef(
+        name = 'abcc_transporter_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'ATP binding cassette subfamily C',
+        },
+    ),
+    af.AnnotDef(
+        name = 'abcg_transporter_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'ATP binding cassette subfamily G',
+        },
+    ),
+    af.AnnotDef(
+        name = 'hk_atpase_transporter_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'ATPase H+/K+ transporting',
+        },
+    ),
+    af.AnnotDef(
+        name = 'nak_atpase_transporter_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'ATPase Na+/K+ transporting subunits',
+        },
+    ),
+    af.AnnotDef(
+        name = 'acid_sensing_ion_channel_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Acid sensing ion channel subunits',
+        },
+    ),
     # extracellular enzyme
     af.AnnotDef(
         name = 'extracellular_enzyme',
@@ -1704,9 +1788,26 @@ annot_combined_classes = (
             'subclass': 'ECM Regulators',
         },
     ),
+    # subclasses from HGNC
+    af.AnnotDef(
+        name = 'adamts_extracellular_peptidase_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': (
+                'ADAM metallopeptidases with thrombospondin type 1 motif'
+            ),
+        },
+    ),
+    af.AnnotDef(
+        name = 'adamts_like_extracellular_peptidase_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'ADAMTS like',
+        },
+    ),
     # extracellular peptidase
     af.AnnotDef(
-        name = 'extracellular_peptidase',
+        name = 'extracellular_peptidase_go',
         source = af.AnnotOp(
             annots = (
                 'extracellular',
@@ -1784,6 +1885,14 @@ annot_combined_classes = (
         source = 'CellPhoneDB',
         args = {
             'secreted': bool,
+        },
+    ),
+    # specific subclasses from HGNC
+    af.AnnotDef(
+        name = 'bpi_secreted_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'BPI fold containing',
         },
     ),
     # junctions
@@ -1876,6 +1985,22 @@ annot_combined_classes = (
         source = 'Ramilowski_location',
         args = {
             'location': 'lateral cell membrane',
+        },
+    ),
+    # miscellanous from HGNC
+    af.AnnotDef(
+        name = 'cd_molecule_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'CD molecules',
+        },
+    ),
+    # to be decided
+    af.AnnotDef(
+        name = 'bage_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'BAGE family',
         },
     ),
 )
