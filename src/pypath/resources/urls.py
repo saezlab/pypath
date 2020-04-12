@@ -1166,6 +1166,14 @@ urls = {
         'mapping': 'https://proconsortium.org/download/current/'
             'promapping.txt',
     },
+    'genecards': {
+        'label': (
+            'GeneCards provides a comprehensive summary about the function, '
+            'lovalization, expression, variants and other properties of '
+            'genes and their products',
+        ),
+        'url': 'https://www.genecards.org/cgi-bin/carddisp.pl?gene=%s',
+    },
 }
 
 
