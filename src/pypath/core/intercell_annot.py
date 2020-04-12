@@ -943,6 +943,88 @@ annot_combined_classes = (
             'mainclass': 'Corticotropin releasing hormone receptors',
         },
     ),
+    af.AnnotDef(
+        name = 'dopamine_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Dopamine receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ephrin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'EPH receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'endothelin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Endothelin receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'erbb_rtk_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Erb-b2 receptor tyrosine kinases',
+        },
+    ),
+    af.AnnotDef(
+        name = 'f2r_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'F2R receptors',
+        },
+    ), # GPCRs for thrombin and trypsin
+    af.AnnotDef(
+        name = 'formyl_peptide_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Formyl peptide receptors',
+        },
+    ), # formyl-methionyl peptides are neutrophil chemoattractants
+    af.AnnotDef(
+        name = 'free_fatty_acid_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Free fatty acid receptors',
+        },
+    ),  # intestinal short chain fatty acid GPCRs, regulating
+        # whole-body energy homeostasis
+    af.AnnotDef(
+        name = 'bile_acid_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'G protein-coupled bile acid receptor',
+        },
+    ),  # GPCR for bile acid
+    af.AnnotDef(
+        name = 'estrogen_gpcr_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'G protein-coupled estrogen receptor',
+        },
+    ),  # although this receptor is intracellular, there is no reason we
+        # shouldn't treat it the same way as plasma membrane receptors
+    af.AnnotDef(
+        name = 'gpcr_orphan_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': {
+                'G protein-coupled receptors, Class A orphans',
+                'G protein-coupled receptors, Class C orphans',
+        },
+    ),  # GPCRs mostly without known ligand, all in the cell membrane
+    af.AnnotDef(
+        name = 'frizzled_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'G protein-coupled receptors, Class F frizzled',
+        },
+    ),  # GPCRs for Wnt
+    
 
     # ECM
     af.AnnotDef(
@@ -1024,6 +1106,29 @@ annot_combined_classes = (
             'mainclass': 'Collagens',
         },
     ),
+    af.AnnotDef(
+        name = 'emi_ecm_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'EMI domain containing',
+        },
+    ),  # this could be also cell-matrix adhesion, although these proteins
+        # are not in the cell membrane but all secreted
+    af.AnnotDef(
+        name = 'fibrillin_ecm_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Fibrillins',
+        },
+    ),
+    af.AnnotDef(
+        name = 'fibulin_ecm_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Fibulins',
+        },
+    ),  # parts of ECM, especially elastic fibers, one of them is a ligand
+        # for EGFR (but still an EVM protein at the same time)
 
     # ligand
     af.AnnotDef(
@@ -1192,7 +1297,7 @@ annot_combined_classes = (
         args = {
             'mainclass': 'Endogenous ligands',
         },
-    ),
+    ), # a very few among these are actually not secreted
     af.AnnotDef(
         name = 'chemokine_ligand_hgnc',
         source = 'HGNC',
@@ -1235,6 +1340,20 @@ annot_combined_classes = (
             'mainclass': 'DAN family',
         },
     ), # TGF & BMP signaling agonists and antagonists
+    af.AnnotDef(
+        name = 'fgf_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Fibroblast growth factor family',
+        },
+    ), # with the exception of FGF13: that's not secreted
+    af.AnnotDef(
+        name = 'gdnf_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'GDNF family ligands',
+        },
+    ), # neurotrophic ligands
 
     # intracellular
     af.AnnotDef(
@@ -1760,6 +1879,15 @@ annot_combined_classes = (
             'mainclass': 'Enzymes',
         },
     ),
+    af.AnnotDef(
+        name = 'enpp_surface_enzyme_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': (
+                'Ectonucleotide pyrophosphatase/phosphodiesterase family'
+            ),
+        },
+    ), # maybe not all bound to the surface but most of them
 
     # surface ligand
     af.AnnotDef(
@@ -1807,6 +1935,13 @@ annot_combined_classes = (
         source = 'HGNC',
         args = {
             'mainclass': 'Butyrophilins',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ephrin_surface_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Ephrins',
         },
     ),
 
@@ -2352,12 +2487,80 @@ annot_combined_classes = (
     ),  # secreted regulators or membrane bound receptors or inhibitors
         # in the complement system downstream signaling
     af.AnnotDef(
+        name = 'fibrinogen_c_domain_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Fibrinogen C domain containing',
+        },
+    ),  # all are secreted, some of them are ligands, enzymes, other kind of
+        # regulators for receptors or adhesion, or ECM proteins
+    af.AnnotDef(
+        name = 'fibronectin_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Fibronectin type III domain containing',
+        },
+    ),  # a mixture of plasma membrane transmembrane receptors or adhesion
+        # proteins, and also ECM proteins;
+        # a few of them are not extracellular at all
+
+    # intracellular protein classes in close relation to intercellular
+    # communication
+    af.AnnotDef(
         name = 'crumbs_complex_intracell_hgnc',
         source = 'HGNC',
         args = {
             'mainclass': 'Crumbs complex',
         },
     ),  # scaffolds and regulators for plasma membrane proteins
+    af.AnnotDef(
+        name = 'engulfment_motility_intracell_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Engulfment and cell motility proteins',
+        },
+    ),  # some intracellular proteins involved in endocytosis
+    af.AnnotDef(
+        name = 'fbar_actin_dynamics_endocytosis_intracell_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'F-BAR domain containing',
+        },
+    ),  # intracellular proteins, most of them regulate the
+        # actin dynamics in endocytosis
+    af.AnnotDef(
+        name = 'ferm_domain_intracell_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'FERM domain containing',
+        },
+    ),  # intracellular proteins, most of these regulate adhesion and
+        # membrane-cytoskeleton interactions; maybe not all related closely
+        # to intercellular communication processes
+    af.AnnotDef(
+        name = 'ferlin_intracell_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Ferlin family',
+        },
+    ),  # intracellular proteins involved in plasma membrane repair
+        # and synaptic vesicle fusion
+    af.AnnotDef(
+        name = 'fermitin_intracell_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Fermitins',
+        },
+    ),  # intracellular proteins, peripheral membrane proteins on the
+        # cytoplasmic side of the plasma membrane;
+        # involved in cell-cell adhesion
+    af.AnnotDef(
+        name = 'flotillin_intracell_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Flotillins',
+        },
+    ),  # intracellular proteins with a role in endocytosis
 
 )
 
