@@ -92,6 +92,8 @@ def genecards_summaries(gene):
         A Gene Symbol or UniProt ID.
     """
     
+    result = {}
+    
     soup = genecards_soup(gene)
     
     summaries = soup.select_one('section#summaries')

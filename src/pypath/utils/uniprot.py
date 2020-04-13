@@ -33,6 +33,7 @@ import collections
 import itertools
 
 import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.genecards as genecards_input
 import pypath.share.common as common
 import pypath.core.entity as entity
 
@@ -149,9 +150,35 @@ class UniprotProtein(object):
     
     
     @property
+    def function_genecards(self):
+        
+        summaries = genecards_input.genecards_summaries(self.genesymbol)
+        
+        return ' '.join(
+            '%s: %s' % (resource, summary)
+            for resource, summary in iteritems(summaries)
+        )
+    
+    
+    @property
     def function(self):
         
         return self.info_section('FUNCTION')
+    
+    
+    @property
+    def function_with_genecards(self):
+        
+        return '%s %s' % (
+            self.function,
+            self.function_genecards,
+        )
+    
+    
+    @property
+    def function_or_genecards(self):
+        
+        return self.function or self.function_genecards
     
     
     @property
@@ -437,6 +464,7 @@ def query(*uniprot_ids):
         UniprotProtein(uniprot_id)
         for uniprot_id in uniprot_ids
     ]
+    result = [u for u in result if u.raw]
     
     return result[0] if len(result) == 1 else result
 
@@ -462,6 +490,10 @@ def collect(uniprot_ids, *features):
         UniprotProtein(uniprot_id)
         for uniprot_id in uniprot_ids
     ]
+    # this is mainly for removal of obsolate records
+    # where the response from the server is empty
+    # most of the times it removes nothing
+    resources = [u for u in resources if u.raw]
     
     if 'ac' not in features:
         
@@ -575,7 +607,7 @@ def info(*uniprot_ids, **kwargs):
             'length',
             'weight',
             'full_name',
-            'function',
+            'function_or_genecards',
             'keywords',
             'subcellular_location',
         )
