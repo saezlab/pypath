@@ -1024,7 +1024,63 @@ annot_combined_classes = (
             'mainclass': 'G protein-coupled receptors, Class F frizzled',
         },
     ),  # GPCRs for Wnt
-    
+    af.AnnotDef(
+        name = 'galanin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Galanin receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'gaba_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': {
+                'Gamma-aminobutyric acid type A receptor subunits',
+                'Gamma-aminobutyric acid type B receptor subunits',
+            }
+        },
+    ),
+    af.AnnotDef(
+        name = 'glucagon_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Glucagon receptor family',
+        },
+    ),
+    af.AnnotDef(
+        name = 'glutamate_ionotropic_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': {
+                'Glutamate ionotropic receptor AMPA type subunits',
+                'Glutamate ionotropic receptor NMDA type subunits',
+                'Glutamate ionotropic receptor delta type subunits',
+                'Glutamate ionotropic receptor kainate type subunits',
+            }
+        },
+    ),
+    af.AnnotDef(
+        name = 'glutamate_metabotropic_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Glutamate metabotropic receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'glycine_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Glycine receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'glycoprotein_hormone_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Glycoprotein hormone receptors',
+        },
+    ),  # receptors for TSH, FSH and LH
 
     # ECM
     af.AnnotDef(
@@ -1619,6 +1675,14 @@ annot_combined_classes = (
             'location': 'cell surface',
         },
     ),
+    # specific subclasses from HGNC
+    af.AnnotDef(
+        name = 'glypican_cell_surface_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Glypicans',
+        },
+    ),
 
     # transmembrane
     af.AnnotDef(
@@ -2169,6 +2233,10 @@ annot_combined_classes = (
         },
     ), # permeabilizing microorganism membranes or
        # binding to microorganism surfaces
+    af.AnnotDef(
+        name = 'galactosidase_extracellular_enyzme_omnipath',
+        source = {'Q6UWU2', 'Q8IW92'},
+    ),  # secreted galactosidases
 
     # extracellular peptidase
     af.AnnotDef(
@@ -2341,6 +2409,13 @@ annot_combined_classes = (
             'mainclass': 'Desmosomal cadherins',
         },
     ),
+    af.AnnotDef(
+        name = 'gap_junction_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Gap junction proteins',
+        },
+    ),
 
     # plasma membrane regions
     af.AnnotDef(
@@ -2503,6 +2578,14 @@ annot_combined_classes = (
     ),  # a mixture of plasma membrane transmembrane receptors or adhesion
         # proteins, and also ECM proteins;
         # a few of them are not extracellular at all
+    af.AnnotDef(
+        name = 'gla_domain_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Gla domain containing',
+        },
+    ),  # all secreted, various regulators of blood coagulation, ECM,
+        # some enzymes or ligands or regulators of other ligands
 
     # intracellular protein classes in close relation to intercellular
     # communication
@@ -2561,6 +2644,10 @@ annot_combined_classes = (
             'mainclass': 'Flotillins',
         },
     ),  # intracellular proteins with a role in endocytosis
+    af.AnnotDef(
+        name = 'arc_intracell_omnipath',
+        source = {'Q7LC44'},
+    ),  # intercellular RNA transfer
 
 )
 
