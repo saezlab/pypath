@@ -37,28 +37,62 @@ _respace = re.compile(r'\s+')
 _summary_sources = {
     'Gene Wiki': 'GeneWiki',
     'UniProtKB/Swiss-Prot': 'UniProt',
-    'GeneCards': 'GeneCards',
 }
 
 
-def card(gene):
+def genecards_datasheet(gene):
+    """
+    Retrieves a gene (protein) datasheet from GeneCards.
+    Returns HTML as string.
+    
+    :param str gene:
+        A Gene Symbol or UniProt ID.
+    """
     
     url = urls.urls['genecards']['url'] % gene
     
-    c = curl.Curl(url, silent = True, large = True)
-    
-    result = {}
+    c = curl.Curl(url, silent = True, large = False)
     
     if c.status not in {0, 200}:
         
         _log('Failed to retrieve gene card for ID `%s`.' % gene)
         
-        return result
+        return None
     
-    with warnings.catch_warnings():
+    return c.result
+
+
+def genecards_soup(gene):
+    """
+    Retrieves a gene (protein) datasheet from GeneCards.
+    Returns ``bs4.BeautifulSoup`` object.
+    
+    :param str gene:
+        A Gene Symbol or UniProt ID.
+    """
+    
+    html = genecards_datasheet(gene)
+    
+    if html:
         
-        warnings.simplefilter('ignore')
-        soup = bs4.BeautifulSoup(c.fileobj)
+        with warnings.catch_warnings():
+            
+            warnings.simplefilter('ignore')
+            soup = bs4.BeautifulSoup(html)
+        
+        return soup
+
+
+def genecards_summaries(gene):
+    """
+    Retrieves the summaries from a GeneCards datasheet. Returns a dict with
+    the resource names as keys and the summary texts as values.
+    
+    :param str gene:
+        A Gene Symbol or UniProt ID.
+    """
+    
+    soup = genecards_soup(gene)
     
     summaries = soup.select_one('section#summaries')
     
@@ -84,6 +118,8 @@ def card(gene):
                 
                 title = name
                 break
+            
+            title = title.split(maxsplit = 1)[0]
         
         if content:
             
