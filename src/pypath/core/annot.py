@@ -99,6 +99,7 @@ protein_sources_default = {
     'Msigdb',
     'Lrdb',
     'Baccin2019',
+    'Almen2009',
     'Phobius',
     'Icellnet',
 }
@@ -2632,6 +2633,28 @@ class Baccin2019(AnnotationBase):
             name = 'Baccin2019',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'baccin2019.baccin2019_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        self.annot = self.data
+        delattr(self, 'data')
+
+
+class Almen2009(AnnotationBase):
+
+    _eq_fields = ('mainclass',)
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+
+        AnnotationBase.__init__(
+            self,
+            name = 'Almen2019',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'almen2009.almen2009_annotations',
             **kwargs
         )
 
