@@ -4321,5 +4321,30 @@
         "extra_attrs": {}
       }
     }
-  }
+  },
+  "iTALK": {
+    "license": {
+      "name": "CC Attribution-NonCommercial-ShareAlike",
+      "url": "ttp://creativecommons.org/licenses/by-nc-sa/3.0/",
+      "commercial_use": false
+    },
+    "emails": ["ywang65@mdanderson.org", "Yuanxin Wang"]
+  },
+  "ICELLNET": {
+    "license": {
+      "name": "No license",
+      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
+      "commercial_use": false
+    },
+    "emails": ["vassili.soumelis@aphp.fr", "Vassili Soumelis"]
+  },
+  "CellCellInteractions": {
+    "license": {
+      "name": "No license",
+      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
+      "commercial_use": false
+    },
+    "authors": ["Bader Lab"],
+    "emails": ["gary.bader@utoronto.ca", "Gary Bader"]
+  },
 }
