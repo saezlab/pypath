@@ -136,7 +136,11 @@ def li2012_dmi():
         subs_protein = l[1].split('/')[0]
         tk_protein = l[2].split()[0]
         reader_protein = l[3].split()[0]
-        subs_uniprots = mapping.map_name(subs_protein, 'genesymbol', 'uniprot')
+        subs_uniprots = mapping.map_name(
+            subs_protein,
+            'genesymbol',
+            'uniprot',
+        )
         tk_uniprots = mapping.map_name(tk_protein, 'genesymbol', 'uniprot')
         reader_uniprots = mapping.map_name(reader_protein, 'genesymbol',
                                           'uniprot')
@@ -160,12 +164,19 @@ def li2012_dmi():
                             start,
                             end,
                             isoform = subs_iso,
-                            instance = se[su].get(start, end, isoform = subs_iso))
-                        ptm = intera.Ptm(su,
-                                         motif = mot,
-                                         residue = res,
-                                         isoform = subs_iso,
-                                         source = 'Li2012')
+                            instance = se[su].get(
+                                start,
+                                end,
+                                isoform = subs_iso
+                            )
+                        )
+                        ptm = intera.Ptm(
+                            su,
+                            motif = mot,
+                            residue = res,
+                            isoform = subs_iso,
+                            source = 'Li2012'
+                        )
                         dom = intera.Domain(ku)
                         dommot = intera.DomainMotif(
                             domain = dom, ptm = ptm, sources = ['Li2012'])

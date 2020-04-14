@@ -1175,6 +1175,7 @@ class Curl(FileOpener):
         self.curl.setopt(self.curl.URL, url)
 
     def set_target(self):
+
         self.target = open(self.cache_file_name, 'wb')
         self.curl.setopt(self.curl.WRITEFUNCTION, self.target.write)
 
@@ -1197,17 +1198,20 @@ class Curl(FileOpener):
         self.curl.setopt(self.curl.HEADERFUNCTION, self.resp_headers.append)
 
     def set_debug(self):
+
         if self.debug:
             self.curl.setopt(pycurl.VERBOSE, 1)
             self.curl.setopt(pycurl.DEBUGFUNCTION, self.print_debug_info)
 
 
     def set_compressed(self):
+
         if self.compressed:
             self.curl.setopt(pycurl.ENCODING, 'gzip, deflate')
 
 
     def curl_setup(self, url = False):
+
         self.curl_init(url = url)
         self.curl_progress_setup()
         self.set_target()
@@ -1271,7 +1275,10 @@ class Curl(FileOpener):
             self.download_failed = True
             self._log('Download error: HTTP %u' % self.status)
 
-        if os.stat(self.cache_file_name).st_size == 0:
+        if (
+            os.stat(self.cache_file_name).st_size == 0 and
+            self.status != 302
+        ):
             self.status = 500
             self.download_failed = True
             self._log('Download error: empty file retrieved.')

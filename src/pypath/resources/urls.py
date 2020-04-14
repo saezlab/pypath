@@ -1206,6 +1206,14 @@ urls = {
             'data/LR_database.rda?raw=true'
         ),
     },
+    'embrace': {
+        'label': 'Ligand-receptor interactions from embryonic brain '
+            'cell extraction by FACS (EMBRACE)',
+        'article': 'https://www.cell.com/iscience/fulltext/'
+            'S2589-0042(19)30405-5',
+        'url': 'https://www.cell.com/cms/10.1016/j.isci.2019.10.026/'
+            'attachment/a1f66cee-15cb-4690-b95d-2480fa576b86/mmc2.xlsx',
+    },
 }
 
 
