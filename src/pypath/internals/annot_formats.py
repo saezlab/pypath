@@ -37,9 +37,9 @@ will be passed to the ``get_subset`` method. If ``source`` is callable,
 """
 AnnotDef = collections.namedtuple(
     'AnnotDef',
-    ['name', 'source', 'args'],
+    ['name', 'source', 'args', 'exclude'],
 )
-AnnotDef.__new__.__defaults__ = (None,)
+AnnotDef.__new__.__defaults__ = (None, None)
 
 """
 Annotation operations consist of list of annotation definitions or names as
