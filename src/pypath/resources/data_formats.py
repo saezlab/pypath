@@ -2381,6 +2381,23 @@ ligand_receptor = {
         header = False,
         data_model = 'ligand_receptor',
     ),
+    'italk': input_formats.NetworkInput(
+        name = 'iTALK',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = True,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'italk.italk_interactions',
+        must_have_references = False,
+        header = False,
+        data_model = 'ligand_receptor',
+    ),
 }
 
 small_molecule_protein = {
