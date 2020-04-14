@@ -1174,6 +1174,24 @@ urls = {
         ),
         'url': 'https://www.genecards.org/cgi-bin/carddisp.pl?gene=%s',
     },
+    'almen2009': {
+        'label': 'Classification of membrane proteins 10.1186/1741-7007-7-50',
+        'url': (
+            r'https://static-content.springer.com/esm/'
+            r'art%3A10.1186%2F1741-7007-7-50/MediaObjects/'
+            r'12915_2009_258_MOESM1_ESM.xls'
+        ),
+    },
+    'ipi': {
+        'label': (
+            'International Protein Index, a protein reference database '
+            'which has been shut down by 2012'
+        ),
+        'url': (
+            'ftp://ftp.ebi.ac.uk/pub/databases/IPI/last_release/'
+            'current/ipi.HUMAN.xrefs.gz'
+        ),
+    },
 }
 
 
