@@ -4332,11 +4332,15 @@
   },
   "ICELLNET": {
     "license": {
-      "name": "No license",
-      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
-      "commercial_use": false
+      "name": "GNU GPLv3",
+      "url": "https://www.gnu.org/licenses/gpl-3.0.en.html",
+      "commercial_use": true
     },
-    "emails": ["vassili.soumelis@aphp.fr", "Vassili Soumelis"]
+    "emails": [
+        "vassili.soumelis@aphp.fr", "Vassili Soumelis",
+        "lucile.massenet@espci.org", "Lucile Massenet-Regad",
+        "floriane.noel@inserm.fr", "Floriane Noël"
+    ]
   },
   "CellCellInteractions": {
     "license": {
