@@ -164,7 +164,7 @@ mirbase = {
         input_formats.FileMapping(
             id_type_a = 'mir-mat-name',
             id_type_b = 'mirbase',
-            input_ = 'mirbase_mature',
+            input_ = 'mirbase.mirbase_mature',
             col_a = 1,
             col_b = 0,
             separator = None,
@@ -174,7 +174,7 @@ mirbase = {
         input_formats.FileMapping(
             id_type_a = 'mir-name',
             id_type_b = 'mir-pre',
-            input_ = 'mirbase_precursor',
+            input_ = 'mirbase.mirbase_precursor',
             col_a = 1,
             col_b = 0,
             separator = None,
@@ -184,7 +184,7 @@ mirbase = {
         input_formats.FileMapping(
             id_type_a = 'mir-pre',
             id_type_b = 'mirbase',
-            input_ = 'mirbase_ids',
+            input_ = 'mirbase.mirbase_ids',
             col_a = 1,
             col_b = 0,
             separator = None,
@@ -194,12 +194,26 @@ mirbase = {
         input_formats.FileMapping(
             id_type_a = 'mir-name',
             id_type_b = 'mirbase',
-            input_ = 'mirbase_precursor_to_mature',
+            input_ = 'mirbase.mirbase_precursor_to_mature',
             col_a = 0,
             col_b = 1,
             separator = None,
             header = 0,
         ),
+}
+
+
+ipi = {
+    ('ipi', 'uniprot'):
+        input_formats.FileMapping(
+            id_type_a = 'ipi',
+            id_type_b = 'uniprot',
+            input_ = 'ipi._ipi_uniprot_pairs',
+            col_a = 0,
+            col_b = 1,
+            separator = None,
+            header = 0,
+        )
 }
 
 

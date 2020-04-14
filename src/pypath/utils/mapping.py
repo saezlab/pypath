@@ -59,7 +59,7 @@ import pypath.share.cache as cache_mod
 import pypath.internals.maps as maps
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
-import pypath.inputs.mirbase as mirbase_input
+import pypath.inputs as inputs
 import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.pro as pro_input
 import pypath.internals.input_formats as input_formats
@@ -428,22 +428,22 @@ class MapReader(session_mod.Logger):
 
     def read_mapping_file(self):
 
-        if (
-            not os.path.exists(self.param.input) and
-            not hasattr(mirbase_input, self.param.input)
-        ):
+        if not os.path.exists(self.param.input):
 
-            return {}
+            method = inputs.get_method(self.param.input)
 
-        if hasattr(mirbase_input, self.param.input):
+            if not method:
 
-            to_call = getattr(mirbase_input, self.param.input)
-            input_args = (
-                self.param.input_args
-                    if hasattr(self.param, 'input_args') else
-                {}
-            )
-            infile = to_call(**input_args)
+                return {}
+
+            else:
+
+                input_args = (
+                    self.param.input_args
+                        if hasattr(self.param, 'input_args') else
+                    {}
+                )
+                infile = method(**input_args)
 
         else:
 
@@ -1027,7 +1027,7 @@ class Mapper(session_mod.Logger):
             id_types_rev = tuple(reversed(id_types))
             resource = None
 
-            for resource_attr in ['uniprot', 'basic', 'mirbase']:
+            for resource_attr in ['uniprot', 'basic', 'mirbase', 'ipi']:
 
                 resources = getattr(maps, resource_attr)
 
@@ -1767,7 +1767,7 @@ class Mapper(session_mod.Logger):
             resource.type in {'file', 'pickle'} and
             not (
                 os.path.exists(resource.input) or
-                hasattr(mirbase_input, resource.input)
+                inputs.get_method(resource.input)
             )
         ):
 

@@ -19,6 +19,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
 import collections
 
 import pypath.inputs.common as inputs_common
@@ -61,3 +63,12 @@ def ipi_uniprot():
             result[ipi_id].add(uniprot)
     
     return dict(result)
+
+
+def _ipi_uniprot_pairs(*args, **kwargs):
+    
+    for ipi, uniprots in iteritems(ipi_uniprot()):
+        
+        for uniprot in uniprots:
+            
+            yield ipi, uniprot
