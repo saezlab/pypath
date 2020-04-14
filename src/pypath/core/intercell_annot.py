@@ -1081,6 +1081,77 @@ annot_combined_classes = (
             'mainclass': 'Glycoprotein hormone receptors',
         },
     ),  # receptors for TSH, FSH and LH
+    af.AnnotDef(
+        name = 'gonadotropin_releasing_hormone_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Gonadotropin releasing hormone receptors',
+        },
+    ),  # receptors for GnRH
+    af.AnnotDef(
+        name = 'natriuretic_peptide_receptor_omnipath',
+        source = {'P16066', 'P20594'},
+    ),
+    af.AnnotDef(
+        name = 'guanilyn_receptor_omnipath',
+        source = {'P25092'},
+    ),
+    af.AnnotDef(
+        name = 'histamine_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Histamine receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'hydroxycarboxylic_acid_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Hydroxy-carboxylic acid receptors',
+        },
+    ),  # receptors for lactate, niacin, etc
+    af.AnnotDef(
+        name = 'orexin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Hypocretin receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'inhibitory_leukocyte_ig_like_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Inhibitory leukocyte immunoglobulin like receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'interferon_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Interferon receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'interleukin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Interleukin receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'killer_cell_ig_like_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Killer cell immunoglobulin like receptors',
+        },
+    ),  # receptors for HLAs
+    af.AnnotDef(
+        name = 'killer_cell_lectin_like_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Killer cell lectin like receptors',
+        },
+    ),  # receptors mostly for HLAs
 
     # ECM
     af.AnnotDef(
@@ -1185,6 +1256,13 @@ annot_combined_classes = (
         },
     ),  # parts of ECM, especially elastic fibers, one of them is a ligand
         # for EGFR (but still an EVM protein at the same time)
+    af.AnnotDef(
+        name = 'hyalectan_proteoglycan_ecm_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Hyalectan proteoglycans',
+        },
+    ),
 
     # ligand
     af.AnnotDef(
@@ -1410,6 +1488,66 @@ annot_combined_classes = (
             'mainclass': 'GDNF family ligands',
         },
     ), # neurotrophic ligands
+    af.AnnotDef(
+        name = 'growth_hormone_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Growth hormone family',
+        },
+    ),
+    af.AnnotDef(
+        name = 'hedgehog_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Hedgehog signaling molecule family',
+        },
+    ),  # hedgehog proteins are initially membrane bound and can be
+        # solubilized later
+    af.AnnotDef(
+        name = 'hdgf_ligand_omnipath',
+        source = {'P51858'},
+    ),  # hepatoma-derived growth factor (HDGFL1 is not included because
+        # little is known about its role and whether it's secreted)
+    af.AnnotDef(
+        name = 'igf_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'IGF like family',
+        },
+    ),
+    af.AnnotDef(
+        name = 'izumo_ligand_omnipath',
+        source = {'Q1ZYL8'},
+    ),  # ligands in sperm-egg fusion
+    af.AnnotDef(
+        name = 'inhibin_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Inhibin subunits',
+        },
+    ),
+    af.AnnotDef(
+        name = 'interleukin6_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Interleukin 6 type cytokine family',
+        },
+    ),
+    af.AnnotDef(
+        name = 'interleukin_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Interleukins',
+        },
+    ),
+    af.AnnotDef(
+        name = 'leucine_rich_glioma_inactivated_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'LGI family',
+        },
+    ),  # maybe not ligands in a strict sense but don't fit either
+        # in other categories
 
     # intracellular
     af.AnnotDef(
@@ -1606,6 +1744,38 @@ annot_combined_classes = (
             },
         },
     ),
+    af.AnnotDef(
+        name = 'histatin_extracellular_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Histatins and statherin',
+        },
+    ),  # secreted into saliva
+    af.AnnotDef(
+        name = 'iglon5_extracellular_omnipath',
+        source = {'A6NGN9'},
+    ),  # function is not clear for me
+    af.AnnotDef(
+        name = 'immunoglobulin_heavy_extracellular_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Immunoglobulin heavy locus at 14q32.33',
+        },
+    ),  # immunoglobulin heavy chain
+    af.AnnotDef(
+        name = 'immunoglobulin_kappa_extracellular_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Immunoglobulin kappa locus at 2p11.2',
+        },
+    ),  # immunoglobulin V region
+    af.AnnotDef(
+        name = 'immunoglobulin_lambda_extracellular_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Immunoglobulin lambda locus at 22q11.2',
+        },
+    ),  # immunoglobulin V region
 
     # cell surface
     af.AnnotDef(
@@ -1681,6 +1851,41 @@ annot_combined_classes = (
         source = 'HGNC',
         args = {
             'mainclass': 'Glypicans',
+        },
+    ),
+    af.AnnotDef(
+        name = 'immunoglobulin_heavy_cell_surface_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Immunoglobulin heavy locus at 14q32.33',
+        },
+    ),  # immunoglobulin heavy chain
+    af.AnnotDef(
+        name = 'immunoglobulin_kappa_cell_surface_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Immunoglobulin kappa locus at 2p11.2',
+        },
+    ),  # immunoglobulin V region
+    af.AnnotDef(
+        name = 'immunoglobulin_lambda_cell_surface_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Immunoglobulin lambda locus at 22q11.2',
+        },
+    ),  # immunoglobulin V region
+    af.AnnotDef(
+        name = 'ifn_induced_cell_surface_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Interferon induced transmembrane proteins',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ifn_induced_endocytosis_exocytosis_regulator_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Interferon induced transmembrane proteins',
         },
     ),
 
@@ -1893,14 +2098,57 @@ annot_combined_classes = (
         args = {
             'mainclass': 'Clarins',
         },
-    ), # regulation of cell-cell adhesion and synapsis in ear and retina
+    ),  # regulation of cell-cell adhesion and synapsis in ear and retina
     af.AnnotDef(
         name = 'protocadherin_cell_adhesion_hgnc',
         source = 'HGNC',
         args = {
             'mainclass': 'Clustered protocadherins',
         },
-    ), # cell-cell adhesion in brain neuronal connections
+    ),  # cell-cell adhesion in brain neuronal connections
+    af.AnnotDef(
+        name = 'ig_like_cell_adhesion_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Ig-like cell adhesion molecule family',
+        },
+        exclude = {'Q9HCN6', 'Q14CZ8'},
+    ),
+    af.AnnotDef(
+        name = 'matrix_adhesion_omnipath',
+        source = {'Q9HCN6', 'Q14CZ8'},
+    ),
+    af.AnnotDef(
+        name = 'igcam_cxadr_like_cell_adhesion_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'IgCAM CXADR-related subfamily',
+        },
+    ),
+    af.AnnotDef(
+        name = 'iglon_cell_adhesion_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'IgLON cell adhesion molecules',
+        },
+        exclude = {'A6NGN9'},
+    ),
+    af.AnnotDef(
+        name = 'integrin_cell_adhesion_omnipath',
+        source = {
+            'P23229', 'Q13349', 'Q13797', 'P20701', 'P38570', 'P05107',
+            'P26010',
+        },
+    ),
+    af.AnnotDef(
+        name = 'integrin_matrix_adhesion_omnipath',
+        source = {
+            'P06756', 'Q9UKX5', 'P08648', 'P11215', 'P26006', 'Q13683',
+            'P20702', 'O75578', 'P13612', 'P17301', 'P56199', 'P08514',
+            'P18564', 'O95965', 'P18084', 'P05556', 'P26012', 'P16144',
+            'P05106',
+        },
+    ),
 
     # surface enzyme
     af.AnnotDef(
@@ -1951,7 +2199,11 @@ annot_combined_classes = (
                 'Ectonucleotide pyrophosphatase/phosphodiesterase family'
             ),
         },
-    ), # maybe not all bound to the surface but most of them
+    ),  # maybe not all bound to the surface but most of them
+    af.AnnotDef(
+        name = 'hyaluronidase_surface_enzyme_omnipath',
+        source = {'Q9UHN6', 'Q12891', 'P38567', 'Q2M3T9'},
+    ),
 
     # surface ligand
     af.AnnotDef(
@@ -2008,6 +2260,19 @@ annot_combined_classes = (
             'mainclass': 'Ephrins',
         },
     ),
+    af.AnnotDef(
+        name = 'hedgehog_surface_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Hedgehog signaling molecule family',
+        },
+    ),  # hedgehog proteins are initially membrane bound and can be
+        # solubilized later
+    af.AnnotDef(
+        name = 'izumo_surface_ligand_hgnc',
+        source = {'Q8IYV9', 'Q6UXV1', 'Q5VZ72'},
+    ),  # ligands in sperm-egg fusion
+    
 
     # transporter
     af.AnnotDef(
@@ -2154,6 +2419,13 @@ annot_combined_classes = (
         },
     ),  # channels gated by various cyclic nucleotides, playing roles in
         # mostly in visual and olfactory signaling
+    af.AnnotDef(
+        name = 'hydrogen_voltage_gated_ion_channel_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Hydrogen voltage gated channels',
+        },
+    ),
 
     # extracellular enzyme
     af.AnnotDef(
@@ -2223,6 +2495,13 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
+        name = 'heparanase_extracellular_peptidase_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Heparanases',
+        },
+    ),  # act on heparin and heparane-sulphate
+    af.AnnotDef(
         name = 'defensin_extracellular_enyzme_hgnc',
         source = 'HGNC',
         args = {
@@ -2231,12 +2510,35 @@ annot_combined_classes = (
                 'Defensins, beta',
             },
         },
-    ), # permeabilizing microorganism membranes or
-       # binding to microorganism surfaces
+    ),  # permeabilizing microorganism membranes or
+        # binding to microorganism surfaces
     af.AnnotDef(
         name = 'galactosidase_extracellular_enyzme_omnipath',
         source = {'Q6UWU2', 'Q8IW92'},
     ),  # secreted galactosidases
+    af.AnnotDef(
+        name = 'immune_serin_protease_extracellular_peptidase_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': (
+                'Granule associated serine proteases of immune defence'
+            ),
+        },
+    ),  # secreted by granulocytes as part of the immune response
+    af.AnnotDef(
+        name = 'hyaluronidase_extracellular_enzyme_omnipath',
+        source = {'Q12794', 'Q8WUJ3', 'O43820'},
+    ),
+    af.AnnotDef(
+        name = (
+            'inter_alpha_trypsin_inhibitor_'
+            'extracellular_enyzme_regulator_hgnc'
+        ),
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Inter-alpha-trypsin inhibitor heavy chains',
+        },
+    ),  # protease inhibitors in plasma
 
     # extracellular peptidase
     af.AnnotDef(
@@ -2261,7 +2563,14 @@ annot_combined_classes = (
         args = {
             'mainclass': 'Chymotrypsin like elastases',
         },
-    ), # involved in ECM dynamics and remodeling
+    ),  # involved in ECM dynamics and remodeling
+    af.AnnotDef(
+        name = 'kallikrein_extracellular_peptidase_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Kallikreins',
+        },
+    ),  # extracellular serine proteases, involved in ECM dynamics
 
     # growth factor binder or regulator
     af.AnnotDef(
@@ -2293,6 +2602,13 @@ annot_combined_classes = (
             ),
             op = set.intersection,
         ),
+    ),
+    af.AnnotDef(
+        name = 'igf_binding_growth_factor_regulator_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Insulin like growth factor binding proteins',
+        },
     ),
 
     # secreted
@@ -2512,7 +2828,7 @@ annot_combined_classes = (
     ),  # transmembrane in plasma membrane; regulate calcium channels and
         # glutamate receptors
     af.AnnotDef(
-        name = 'calhm_ion_channel_hgnc',
+        name = 'calcium_homeostasis_ion_channel_hgnc',
         source = 'HGNC',
         args = {
             'mainclass': 'Calcium homeostasis modulators',
@@ -2570,7 +2886,7 @@ annot_combined_classes = (
     ),  # all are secreted, some of them are ligands, enzymes, other kind of
         # regulators for receptors or adhesion, or ECM proteins
     af.AnnotDef(
-        name = 'fibronectin_hgnc',
+        name = 'fibronectin_type_iii_hgnc',
         source = 'HGNC',
         args = {
             'mainclass': 'Fibronectin type III domain containing',
@@ -2578,6 +2894,19 @@ annot_combined_classes = (
     ),  # a mixture of plasma membrane transmembrane receptors or adhesion
         # proteins, and also ECM proteins;
         # a few of them are not extracellular at all
+        # probably are annotated in other, more specific categories,
+        # especially the `Ig-like cell adhesion molecule family`
+    af.AnnotDef(
+        name = 'immunoglobulin_like_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Immunoglobulin like domain containing',
+        },
+    ),  # a mixture of plasma membrane transmembrane receptors or adhesion
+        # proteins, and also ECM proteins;
+        # a few of them are not extracellular at all
+        # probably are annotated in other, more specific categories,
+        # especially the `Ig-like cell adhesion molecule family`
     af.AnnotDef(
         name = 'gla_domain_hgnc',
         source = 'HGNC',
@@ -2586,6 +2915,14 @@ annot_combined_classes = (
         },
     ),  # all secreted, various regulators of blood coagulation, ECM,
         # some enzymes or ligands or regulators of other ligands
+    af.AnnotDef(
+        name = 'hla_surface_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Histocompatibility complex',
+        },
+    ),  # histocompatibility antigen complex members for presenting
+        # antigens on the cell surface
 
     # intracellular protein classes in close relation to intercellular
     # communication
@@ -2648,6 +2985,22 @@ annot_combined_classes = (
         name = 'arc_intracell_omnipath',
         source = {'Q7LC44'},
     ),  # intercellular RNA transfer
+    af.AnnotDef(
+        name = 'interferon_regulator_intracell_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Interferon regulatory factors',
+        },
+    ),  # intracellular proteins mostly transcriptionally 
+        # regulating interferons
+    af.AnnotDef(
+        name = 'junctophilin_intracell_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Junctophilins',
+        },
+    ),  # intracellularily connect the plasma membrane and ER to
+        # ensure quick response to membrane potential change
 
 )
 

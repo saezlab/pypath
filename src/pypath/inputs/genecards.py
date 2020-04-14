@@ -96,35 +96,41 @@ def genecards_summaries(gene):
     
     soup = genecards_soup(gene)
     
+    if not soup:
+        
+        return result
+    
     summaries = soup.select_one('section#summaries')
     
-    for summary in summaries.select('div.gc-subsection'):
+    if summaries:
         
-        title = summary.select_one('h3').text.strip('\r\n ')
-        
-        if title[:7] in {'No data', 'Additio'}:
+        for summary in summaries.select('div.gc-subsection'):
             
-            continue
-        
-        content = _respace.sub(
-            ' ',
-            ' '.join(
-                par.text
-                for par in summary.select(':not(:nth-child(1))')
-            )
-        ).strip('\n\r ')
-        
-        for gc_name, name in iteritems(_summary_sources):
+            title = summary.select_one('h3').text.strip('\r\n ')
             
-            if title.startswith(gc_name):
+            if title[:7] in {'No data', 'Additio'}:
                 
-                title = name
-                break
+                continue
             
-            title = title.split(maxsplit = 1)[0]
-        
-        if content:
+            content = _respace.sub(
+                ' ',
+                ' '.join(
+                    par.text
+                    for par in summary.select(':not(:nth-child(1))')
+                )
+            ).strip('\n\r ')
             
-            result[title] = content
+            for gc_name, name in iteritems(_summary_sources):
+                
+                if title.startswith(gc_name):
+                    
+                    title = name
+                    break
+                
+                title = title.split(maxsplit = 1)[0]
+            
+            if content:
+                
+                result[title] = content
     
     return result
