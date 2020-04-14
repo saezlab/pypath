@@ -94,6 +94,7 @@ setup(
         'scipy',
         'matplotlib',
         'pandas',
+        'pyreadr',
         'statsmodels',
         'pycurl',
         'lxml',

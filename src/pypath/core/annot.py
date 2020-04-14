@@ -103,6 +103,7 @@ protein_sources_default = {
     'Phobius',
     'Icellnet',
     'Cellcellinteractions',
+    'Italk',
 }
 
 #TODO this should be part of json files
@@ -2017,7 +2018,7 @@ class AnnotationBase(resource.AbstractResource):
 
 
     # synonym for old name
-    gets_subset = select
+    get_subset = select
 
 
     def get_subset_bool_array(self, reference_set = None, **kwargs):
@@ -2666,6 +2667,28 @@ class Almen2009(AnnotationBase):
             name = 'Almen2019',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'almen2009.almen2009_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        self.annot = self.data
+        delattr(self, 'data')
+
+
+class Italk(AnnotationBase):
+
+    _eq_fields = ('mainclass', 'subclass')
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+
+        AnnotationBase.__init__(
+            self,
+            name = 'iTALK',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'italk.italk_annotations',
             **kwargs
         )
 

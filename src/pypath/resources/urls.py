@@ -1199,6 +1199,13 @@ urls = {
             'action=AttachFile&do=get&target=protein_types.txt'
         ),
     },
+    'italk': {
+        'label': 'Intercellular communication database from iTalk',
+        'url': (
+            'https://github.com/Coolgenome/iTALK/blob/master/'
+            'data/LR_database.rda?raw=true'
+        ),
+    },
 }
 
 

@@ -10,6 +10,7 @@ timeloop
 matplotlib
 statsmodels
 pycurl
+pyreadr
 lxml
 xlrd
 future
