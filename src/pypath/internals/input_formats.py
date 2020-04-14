@@ -259,6 +259,31 @@ class ProMapping(MappingInput):
         self.entity_type = 'protein'
 
 
+class IpiMapping(MappingInput):
+
+
+    def __init__(
+            self,
+            ncbi_tax_id = 9606,
+        ):
+        
+        if ncbi_tax_id != 9606:
+            
+            raise NotImplementedError(
+                'IPI ID translation supports only human.'
+            )
+        
+        MappingInput.__init__(
+            self,
+            type_ = 'ipi',
+            id_type_a = 'ipi',
+            id_type_b = 'uniprot',
+            ncbi_tax_id = 9606,
+        )
+        
+        self.entity_type = 'protein'
+
+
 class PickleMapping(MappingInput):
 
 
