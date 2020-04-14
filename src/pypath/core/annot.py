@@ -1944,7 +1944,7 @@ class AnnotationBase(resource.AbstractResource):
         self.annot = dict((u, set()) for u in self.data)
 
 
-    def get_subset(self, method = None, **kwargs):
+    def select(self, method = None, **kwargs):
         """
         Retrieves a subset by filtering based on ``kwargs``.
         Each argument should be a name and a value or set of values.
@@ -1982,7 +1982,7 @@ class AnnotationBase(resource.AbstractResource):
                         # any in common
                         or
                         (
-                            isinstance(getattr(a, name), (tuple, list, set))
+                            isinstance(getattr(a, name), common.list_like)
                             and
                             isinstance(value, set)
                             and
@@ -2001,7 +2001,7 @@ class AnnotationBase(resource.AbstractResource):
                         # the search value
                         or
                         (
-                            isinstance(getattr(a, name), (tuple, list, set))
+                            isinstance(getattr(a, name), common.list_like)
                             and
                             value in getattr(a, name)
                         )
@@ -2013,6 +2013,10 @@ class AnnotationBase(resource.AbstractResource):
                     break
 
         return result
+
+
+    # synonym for old name
+    gets_subset = select
 
 
     def get_subset_bool_array(self, reference_set = None, **kwargs):
@@ -2387,11 +2391,17 @@ class AnnotationBase(resource.AbstractResource):
 
     def get_values(self, name, exclude_none = True):
 
-        values =  set(
-            getattr(a, name)
+        values =  {
+            val
             for aset in self.annot.values()
             for a in aset
-        )
+            for val in (
+                # to support tuple values
+                getattr(a, name)
+                    if isinstance(getattr(a, name), common.list_like) else
+                (getattr(a, name),)
+            )
+        }
 
         if exclude_none:
 

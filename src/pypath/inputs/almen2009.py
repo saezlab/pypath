@@ -21,6 +21,7 @@
 
 from future.utils import iteritems
 
+import re
 import collections
 
 import pypath.inputs.common as inputs_common
@@ -30,6 +31,9 @@ import pypath.utils.mapping as mapping
 
 
 def almen2009_annotations():
+    
+    
+    resep = re.compile(r'[;/]')
     
     
     Almen2009Annotation = collections.namedtuple(
@@ -43,7 +47,6 @@ def almen2009_annotations():
             'tmhmm_transmembrane',
         ]
     )
-
     
     
     url = urls.urls['almen2009']['url']
@@ -62,7 +65,7 @@ def almen2009_annotations():
         uniprots = mapping.map_name(row[0], 'ipi', 'uniprot')
         
         mainclass = row[2]
-        classes = tuple(sorted(row[3].split(';')))
+        classes = tuple(sorted(resep.split(row[3])))
         phobius_transmembrane = int(float(row[5]))
         phobius_secreted = row[6] == 'Y'
         sosui_transmembrane = int(float(row[8])) if row[8] != 'ERROR' else 0
