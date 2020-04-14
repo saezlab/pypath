@@ -33,41 +33,6 @@ import pypath.share.common as common
 import pypath.utils.taxonomy as taxonomy
 
 
-# this function to be moved to pypath.inputs.uniprot
-def get_uniprot_sec(organism=9606):
-    """
-    Downloads and processes the mapping between secondary and
-    primary UniProt IDs.
-
-    Yields pairs of secondary and primary UniProt IDs.
-
-    :param int organism:
-        NCBI Taxonomy ID of the organism.
-    """
-
-    if organism is not None:
-        proteome = uniprot_input.all_uniprots(organism=organism)
-        proteome = set(proteome)
-    sec_pri = []
-    url = urls.urls['uniprot_sec']['url']
-    c = curl.Curl(url, silent = False, large = True, timeout = 2400)
-
-    for line in filter(
-        lambda line:
-            len(line) == 2 and (organism is None or line[1] in proteome),
-            map(
-                lambda i:
-                    i[1].split(),
-                filter(
-                    lambda i: i[0] >= 30,
-                    enumerate(c.result)
-                )
-            )
-        ):
-
-        yield line
-
-
 def get_mirbase_aliases(organism = 9606):
     """
     Downloads and processes mapping tables from miRBase.

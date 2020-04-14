@@ -150,3 +150,38 @@ def protein_datasheet(identifier):
     c = curl.Curl(url, silent = True, large = False)
 
     return _redatasheet.findall(c.result) if c.result else []
+
+
+def get_uniprot_sec(organism = 9606):
+    """
+    Downloads and processes the mapping between secondary and
+    primary UniProt IDs.
+
+    Yields pairs of secondary and primary UniProt IDs.
+
+    :param int organism:
+        NCBI Taxonomy ID of the organism.
+    """
+
+    if organism is not None:
+        proteome = all_uniprots(organism=organism)
+        proteome = set(proteome)
+
+    sec_pri = []
+    url = urls.urls['uniprot_sec']['url']
+    c = curl.Curl(url, silent = False, large = True, timeout = 2400)
+
+    for line in filter(
+        lambda line:
+            len(line) == 2 and (organism is None or line[1] in proteome),
+            map(
+                lambda i:
+                    i[1].split(),
+                filter(
+                    lambda i: i[0] >= 30,
+                    enumerate(c.result)
+                )
+            )
+        ):
+
+        yield line

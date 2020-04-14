@@ -222,7 +222,7 @@ basic = {
         input_formats.FileMapping(
             id_type_a = 'uniprot-sec',
             id_type_b = 'uniprot-pri',
-            input_ = 'get_uniprot_sec',
+            input_ = 'uniprot.get_uniprot_sec',
             col_a = 0,
             col_b = 1,
             separator = None,
