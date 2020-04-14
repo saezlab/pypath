@@ -1015,6 +1015,7 @@ annot_combined_classes = (
             'mainclass': {
                 'G protein-coupled receptors, Class A orphans',
                 'G protein-coupled receptors, Class C orphans',
+            },
         },
     ),  # GPCRs mostly without known ligand, all in the cell membrane
     af.AnnotDef(
