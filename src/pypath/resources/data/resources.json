@@ -4325,7 +4325,7 @@
   "iTALK": {
     "license": {
       "name": "CC Attribution-NonCommercial-ShareAlike",
-      "url": "ttp://creativecommons.org/licenses/by-nc-sa/3.0/",
+      "url": "http://creativecommons.org/licenses/by-nc-sa/3.0/",
       "commercial_use": false
     },
     "emails": ["ywang65@mdanderson.org", "Yuanxin Wang"]
@@ -4346,5 +4346,16 @@
     },
     "authors": ["Bader Lab"],
     "emails": ["gary.bader@utoronto.ca", "Gary Bader"]
+  },
+  "EMBRACE": {
+    "license": {
+      "name": "CC Attribution",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "commercial_use": true
+    },
+    "emails": [
+      "sheikh@ie-freiburg.mpg.de", "Bilal N. Sheikh",
+      "akhtar@ie-freiburg.mpg.de", "Asifa Akhtar"
+    ]
   },
 }
