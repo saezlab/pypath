@@ -104,6 +104,7 @@ protein_sources_default = {
     'Icellnet',
     'Cellcellinteractions',
     'Italk',
+    'Embrace',
 }
 
 #TODO this should be part of json files
@@ -2631,6 +2632,28 @@ class Vesiclepedia(Exocarta):
             database = 'vesiclepedia',
             **kwargs
         )
+
+
+class Embrace(AnnotationBase):
+
+    _eq_fields = ('mainclass',)
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+
+        AnnotationBase.__init__(
+            self,
+            name = 'EMBRACE',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'embrace.embrace_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        self.annot = self.data
+        delattr(self, 'data')
 
 
 class Baccin2019(AnnotationBase):
