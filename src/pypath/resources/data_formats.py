@@ -2364,6 +2364,23 @@ ligand_receptor = {
         },
         data_model = 'ligand_receptor',
     ),
+    'embrace': input_formats.NetworkInput(
+        name = 'EMBRACE',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = True,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'embrace.embrace_interactions',
+        must_have_references = False,
+        header = False,
+        data_model = 'ligand_receptor',
+    ),
 }
 
 small_molecule_protein = {
