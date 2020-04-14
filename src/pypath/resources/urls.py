@@ -1192,6 +1192,13 @@ urls = {
             'current/ipi.HUMAN.xrefs.gz'
         ),
     },
+    'cellcellinteractions': {
+        'label': 'Cell-cell Interaction Database from Bader lab',
+        'url': (
+            'https://baderlab.org/CellCellInteractions?'
+            'action=AttachFile&do=get&target=protein_types.txt'
+        ),
+    },
 }
 
 

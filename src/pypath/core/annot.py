@@ -102,6 +102,7 @@ protein_sources_default = {
     'Almen2009',
     'Phobius',
     'Icellnet',
+    'Cellcellinteractions',
 }
 
 #TODO this should be part of json files
@@ -2665,6 +2666,31 @@ class Almen2009(AnnotationBase):
             name = 'Almen2019',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'almen2009.almen2009_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        self.annot = self.data
+        delattr(self, 'data')
+
+
+class Cellcellinteractions(AnnotationBase):
+
+    _eq_fields = ('mainclass',)
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+
+        AnnotationBase.__init__(
+            self,
+            name = 'CellCellInteractions',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = (
+                'cellcellinteractions.'
+                'cellcellinteractions_annotations'
+            ),
             **kwargs
         )
 
