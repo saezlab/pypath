@@ -476,6 +476,15 @@ class ProteinHomology(Proteomes):
         from the target organism.
         """
 
+        if isinstance(protein, common.list_like):
+
+            return list(set(
+                itertools.chain(*(
+                    self.translate(p, source = source)
+                    for p in protein
+                ))
+            ))
+
         if self.get_taxon(protein) == self.target:
             return [protein]
 
