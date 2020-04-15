@@ -46,6 +46,7 @@ import pypath.share.common as common
 import pypath.share.settings as settings
 import pypath.utils.mapping as mapping
 import pypath.utils.reflists as reflists
+import pypath.utils.uniprot as utils_uniprot
 import pypath.internals.resource as resource
 import pypath.utils.go as go
 import pypath.core.intercell_annot as intercell_annot
@@ -1624,12 +1625,58 @@ class CustomAnnotation(session_mod.Logger):
     def __getitem__(self, item):
 
         if isinstance(item, common.simple_types) and item in self.classes:
-            
+
             return self.classes[item]
+
+        else:
+
+            return self.classes_by_entity(item)
+
+
+    def browse(self, classes = None, **kwargs):
+        """
+        Presents information about annotation classes as ascii tables printed
+        in the terminal. If one class provided, prints one table. If multiple
+        classes provided, prints a table for each of them one by one
+        proceeding to the next one once you hit return. If no classes
+        provided goes through all classes.
+        
+        **kwargs passed to ``pypath.utils.uniprot.info``.
+        """
+        
+        if isinstance(classes, common.simple_types) and classes in self:
+            
+            utils_uniprot.info(classes, **kwargs)
             
         else:
             
-            return self.classes_by_entity(item)
+            classes = classes or sorted(self.classes.keys())
+            
+            n_classes = len(classes)
+            
+            for n, cls in enumerate(classes):
+                
+                if cls not in self.classes:
+                    
+                    continue
+                
+                uniprots = self.classes[cls]
+                uniprots = entity.Entity.only_proteins(uniprots)
+                
+                sys.stdout.write(
+                    '[%u/%u] =====> %s <===== [%u proteins]' % (
+                        n,
+                        n_classes,
+                        cls,
+                        len(uniprots)
+                    )
+                )
+                
+                utils_uniprot.info(classes, **kwargs)
+                
+                input()
+                
+                sys.stdout.write('\n\n')
 
 
 
