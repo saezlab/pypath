@@ -80,6 +80,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
         Reloads the object from the module level.
         """
 
+        imp.reload(annot)
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
