@@ -1422,10 +1422,12 @@ class CustomAnnotation(session_mod.Logger):
 
     def classes_by_entity(self, element):
 
+        element = common.to_set(element)
+
         return set(
             cls
             for cls, elements in iteritems(self.classes)
-            if element in elements
+            if element & elements
         )
 
 
@@ -1619,6 +1621,17 @@ class CustomAnnotation(session_mod.Logger):
             return tab
 
 
+    def __getitem__(self, item):
+
+        if isinstance(item, common.simple_types) and item in self.classes:
+            
+            return self.classes[item]
+            
+        else:
+            
+            return self.classes_by_entity(item)
+
+
 
 class AnnotationBase(resource.AbstractResource):
 
@@ -1646,6 +1659,7 @@ class AnnotationBase(resource.AbstractResource):
             reference_set = (),
             infer_complexes = None,
             dump = None,
+            primary_field = None,
             **kwargs
         ):
         """
@@ -1681,6 +1695,7 @@ class AnnotationBase(resource.AbstractResource):
         )
 
         self.entity_type = entity_type
+        self.primary_field = primary_field
         infer_complexes = (
             infer_complexes
                 if isinstance(infer_complexes, bool) else
@@ -1710,15 +1725,32 @@ class AnnotationBase(resource.AbstractResource):
 
 
     def load(self):
+        """
+        Loads the annotation data by calling the input method.
+        Infers annotations for complexes in the complex database if
+        py:attr:``infer_complexes`` is True.
+        """
 
         self._log('Loading annotations from `%s`.' % self.name)
 
         self.set_reference_set()
         resource.AbstractResource.load(self)
 
+        self._update_primary_field()
+
         if self.infer_complexes:
 
             self.add_complexes_by_inference()
+
+
+    def _update_primary_field(self):
+
+        self.primary_field = (
+            self.primary_field or
+            self.get_names()[0]
+                if self.get_names() else
+            None
+        )
 
 
     def add_complexes_by_inference(self, complexes = None):
@@ -1880,6 +1912,12 @@ class AnnotationBase(resource.AbstractResource):
             ncbi_tax_id = 9606,
             swissprot_only = True,
         ):
+        """
+        Retrieves the reference set i.e. the set of all entities which
+        potentially have annotation in this resource. Typically this is the
+        proteome of the organism from UniProt optionally with all the protein
+        complexes from the complex database.
+        """
 
         proteins = (
             proteins or
@@ -1922,6 +1960,13 @@ class AnnotationBase(resource.AbstractResource):
 
 
     def set_reference_set(self):
+        """
+        Assigns the reference set to the :py:attr``reference_set`` attribute.
+        The reference set is the set of all entities which
+        potentially have annotation in this resource. Typically this is the
+        proteome of the organism from UniProt optionally with all the protein
+        complexes from the complex database.
+        """
 
         if not self.reference_set:
 
@@ -2023,6 +2068,13 @@ class AnnotationBase(resource.AbstractResource):
 
 
     def get_subset_bool_array(self, reference_set = None, **kwargs):
+        """
+        Returns a boolean vector with True and False values for each entity
+        in the reference set. The values represent presence absence data
+        in the simplest case, but by providing **kwargs any kind of matching
+        and filtering is possible. **kwargs are passed to the ``select``
+        method.
+        """
 
         reference_set = reference_set or self.reference_set
 
@@ -2035,6 +2087,9 @@ class AnnotationBase(resource.AbstractResource):
 
 
     def to_bool_array(self, reference_set):
+        """
+        Returns a presence/absence boolean array for a reference set.
+        """
 
         total = self.to_set()
 
@@ -2045,6 +2100,9 @@ class AnnotationBase(resource.AbstractResource):
 
 
     def to_set(self):
+        """
+        Returns the entities present in this annotation resource as a set.
+        """
 
         return set(self.annot.keys())
 
@@ -2060,6 +2118,9 @@ class AnnotationBase(resource.AbstractResource):
 
 
     def all_entities(self, entity_types = None):
+        """
+        All entities annotated in this resource.
+        """
 
         entity_types = self._entity_types(entity_types)
 
@@ -2081,6 +2142,9 @@ class AnnotationBase(resource.AbstractResource):
 
 
     def all_complexes(self):
+        """
+        All protein complexes annotated in this resource.
+        """
 
         return sorted((
             k
@@ -2090,6 +2154,9 @@ class AnnotationBase(resource.AbstractResource):
 
 
     def all_mirnas(self):
+        """
+        All miRNAs annotated in this resource.
+        """
 
         return sorted((
             k for k in self.annot.keys()
@@ -2128,6 +2195,9 @@ class AnnotationBase(resource.AbstractResource):
 
 
     def numof_records(self, entity_types = None):
+        """
+        The total number of annotation records.
+        """
 
         entity_types = self._entity_types(entity_types)
 
@@ -2154,6 +2224,9 @@ class AnnotationBase(resource.AbstractResource):
 
 
     def numof_entities(self):
+        """
+        The number of annotated entities in the resource.
+        """
 
         return len(self.annot)
 
@@ -2195,6 +2268,10 @@ class AnnotationBase(resource.AbstractResource):
 
 
     def to_array(self, reference_set = None, use_fields = None):
+        """
+        Returns an entity vs feature array. In case of more complex
+        annotations this might be huge.
+        """
 
         use_fields = (
             use_fields or (
@@ -2284,6 +2361,10 @@ class AnnotationBase(resource.AbstractResource):
 
 
     def make_df(self, rebuild = False):
+        """
+        Compiles a ``pandas.DataFrame`` from the annotation data.
+        The data frame will be assigned to :py:attr``df``.
+        """
 
         self._log('Creating dataframe from `%s` annotations.' % self.name)
 
@@ -2372,6 +2453,11 @@ class AnnotationBase(resource.AbstractResource):
 
 
     def coverage(self, other):
+        """
+        Calculates the coverage of the annotation i.e. the proportion of
+        entities having at least one record in this annotation resource
+        for an arbitrary set of entities.
+        """
 
         other = other if isinstance(other, set) else set(other)
 
@@ -2386,6 +2472,11 @@ class AnnotationBase(resource.AbstractResource):
 
 
     def subset_intersection(self, universe, **kwargs):
+        """
+        Calculates the proportion of entities in a subset occuring in the
+        set ``universe``. The subset is selected by passing **kwargs to the
+        ``select`` method.
+        """
 
         subset = self.get_subset(**kwargs)
 
@@ -2393,6 +2484,12 @@ class AnnotationBase(resource.AbstractResource):
 
 
     def get_values(self, name, exclude_none = True):
+        """
+        Returns the set of all possible values of a field. E.g. if the
+        records of this annotation have a field ``cell_type`` then calling
+        this method can tell you that across all records the values of
+        this field might be ``{'macrophage', 'epithelial_cell', ...}``.
+        """
 
         values =  {
             val
@@ -2414,6 +2511,12 @@ class AnnotationBase(resource.AbstractResource):
 
 
     def get_names(self):
+        """
+        Returns the list of field names in the records. The annotation
+        consists of uniform records and each entity might be annotated
+        with one or more records. Each record is a tuple of fields, for
+        example ``('cell_type', 'expression_level', 'score')``.
+        """
 
         names = ()
 
@@ -2429,18 +2532,6 @@ class AnnotationBase(resource.AbstractResource):
             break
 
         return names
-
-
-    def __contains__(self, uniprot):
-
-        return uniprot in self.annot
-
-
-    def __getitem__(self, uniprot):
-
-        if uniprot in self:
-
-            return self.annot[uniprot]
 
 
     def __and__(self, other):
@@ -2463,17 +2554,56 @@ class AnnotationBase(resource.AbstractResource):
         return self.numof_entities()
 
 
+    def __getitem__(self, item):
+
+        if not isinstance(item, common.simple_types):
+
+            return set.union(
+                *(
+                    self.annot[it]
+                    for it in item
+                    if it in self
+                )
+            )
+
+        elif item in self:
+
+            return self.annot[item]
+
+        elif self.primary_field:
+
+            return self.select(**{self.primary_field: item})
+
+
+    def __contains__(self, item):
+
+        return item in self.annot
+
+
     def numof_references(self):
+        """
+        Some annotations contain references. The field name for references
+        is always ``pmid`` (PubMed ID). This method collects and counts the
+        references across all records.
+        """
 
         return len(set(self.all_refs()))
 
 
     def curation_effort(self):
+        """
+        Counts the reference-record pairs.
+        """
 
         return len(self.all_refs())
 
 
     def all_refs(self):
+        """
+        Some annotations contain references. The field name for references
+        is always ``pmid`` (PubMed ID). This method collects the references
+        across all records. Returns *list*.
+        """
 
         if 'pmid' in self.get_names():
 
@@ -4704,6 +4834,34 @@ class AnnotationTable(session_mod.Logger):
                 self.numof_entities(),
                 self.numof_resources(),
             )
+        )
+
+
+    def __getitem__(self, item):
+
+        if isinstance(item, common.simple_types):
+
+            if item in self.annots:
+
+                return self.annots[item]
+
+            elif item in self:
+
+                return self.search(item)
+
+        else:
+
+            return dict(
+                (it, self[it])
+                for it in item
+            )
+
+
+    def __contains__(self, item):
+
+        return (
+            item in self.annots or
+            any(item in a for a in self.annots.values())
         )
 
 
