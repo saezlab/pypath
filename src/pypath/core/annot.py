@@ -2052,6 +2052,15 @@ class AnnotationBase(resource.AbstractResource):
         """
 
         result = set()
+        
+        names = set(self.get_names())
+        
+        if not all(k in names for k in kwargs.keys()):
+            
+            raise ValueError('Unknown field names: %s' % (
+                    ', '.join(sorted(set(kwargs.keys()) - names))
+                )
+            )
 
         for uniprot, annot in iteritems(self.annot):
 
