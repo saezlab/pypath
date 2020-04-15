@@ -647,9 +647,41 @@ annot_combined_classes = (
                 'receptor_dgidb',
                 'receptor_baccin',
                 'receptor_signalink',
+                'receptor_embrace',
+                'receptor_italk',
+                'receptor_cellcellinteractions',
+                'receptor_almen',
             ),
             op = set.union,
         ),
+    ),
+    af.AnnotDef(
+        name = 'receptor_italk',
+        source = 'iTALK',
+        args = {
+            'mainclass': 'receptor',
+        },
+    ),
+    af.AnnotDef(
+        name = 'receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'mainclass': 'Receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'receptor_cellcellinteractions',
+        source = 'CellCellInteractions',
+        args = {
+            'mainclass': 'Receptor',
+        },
+    ),
+    af.AnnotDef(
+        name = 'receptor_embrace',
+        source = 'EMBRACE',
+        args = {
+            'mainclass': 'receptor',
+        },
     ),
     af.AnnotDef(
         name = 'receptor_hgnc',
@@ -1163,6 +1195,7 @@ annot_combined_classes = (
                 'ecm_matrisome',
                 'ecm_go',
                 'ecm_ramilowski',
+                'ecm_cellcellinteractions',
             ),
             op = set.union,
         ),
@@ -1264,6 +1297,13 @@ annot_combined_classes = (
             'mainclass': 'Hyalectan proteoglycans',
         },
     ),
+    af.AnnotDef(
+        name = 'ecm_cellcellinteractions',
+        source = 'CellCellInteractions',
+        args = {
+            'mainclass': 'ECM',
+        },
+    ),
 
     # ligand
     af.AnnotDef(
@@ -1280,9 +1320,33 @@ annot_combined_classes = (
                 'ligand_dgidb',
                 'ligand_baccin',
                 'ligand_signalink',
+                'ligand_italk',
+                'ligand_cellcellinteractions',
+                'ligand_embrace',
             ),
             op = set.union,
         ),
+    ),
+    af.AnnotDef(
+        name = 'ligand_italk',
+        source = 'iTALK',
+        args = {
+            'mainclass': 'ligand',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand_cellcellinteractions',
+        source = 'CellCellInteractions',
+        args = {
+            'mainclass': 'Ligand',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand_embrace',
+        source = 'EMBRACE',
+        args = {
+            'mainclass': 'ligand',
+        },
     ),
     af.AnnotDef(
         name = 'ligand_hgnc',
@@ -1901,9 +1965,42 @@ annot_combined_classes = (
                 'transmembrane_locate',
                 'transmembrane_topdb',
                 'transmembrane_ramilowski',
+                'transmembrane_almen',
             ),
             op = set.union,
         ),
+    ),
+    af.AnnotDef(
+        name = 'transmembrane_almen',
+        source = af.AnnotOp(
+            annots = (
+                'transmembrane_phobius_almen',
+                'transmembrane_sosui_almen',
+                'transmembrane_tmhmm_almen',
+            ),
+            op = set.union
+        ),
+    ),
+    af.AnnotDef(
+        name = 'transmembrane_phobius_almen',
+        source = 'Almen2009',
+        args = {
+            'transmembrane_phobius': True,
+        },
+    ),
+    af.AnnotDef(
+        name = 'transmembrane_sosui_almen',
+        source = 'Almen2009',
+        args = {
+            'transmembrane_sosui': True,
+        },
+    ),
+    af.AnnotDef(
+        name = 'transmembrane_tmhmm_almen',
+        source = 'Almen2009',
+        args = {
+            'transmembrane_tmhmm': True,
+        },
     ),
     af.AnnotDef(
         name = 'transmembrane_go',
