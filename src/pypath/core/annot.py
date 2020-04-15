@@ -1646,7 +1646,10 @@ class CustomAnnotation(session_mod.Logger):
         
         if isinstance(classes, common.simple_types) and classes in self:
             
-            utils_uniprot.info(classes, **kwargs)
+            if classes in self:
+                
+                uniprots = entity.Entity.only_proteins(self.classes[classes])
+                utils_uniprot.info(uniprots, **kwargs)
             
         else:
             
@@ -1664,7 +1667,7 @@ class CustomAnnotation(session_mod.Logger):
                 uniprots = entity.Entity.only_proteins(uniprots)
                 
                 sys.stdout.write(
-                    '[%u/%u] =====> %s <===== [%u proteins]' % (
+                    '[%u/%u] =====> %s <===== [%u proteins]\n' % (
                         n,
                         n_classes,
                         cls,
@@ -1672,7 +1675,7 @@ class CustomAnnotation(session_mod.Logger):
                     )
                 )
                 
-                utils_uniprot.info(classes, **kwargs)
+                utils_uniprot.info(uniprots, **kwargs)
                 
                 input()
                 
@@ -2696,6 +2699,140 @@ class AnnotationBase(resource.AbstractResource):
             'fields': ', '.join(self.get_names()),
             'name': self.name,
         }
+
+
+    def browse(self, field = None, start = 0, **kwargs):
+        """
+        Presents information about annotation categories as ascii tables
+        printed in the terminal.
+        If one category provided, prints one table. If multiple
+        categories provided, prints a table for each of them one by one
+        proceeding to the next one once you hit return. If no categories
+        provided goes through all levels of the primary category.
+        
+        :param NoneType,str,list,dict field:
+            The field to browse categories by.
+            * If None the primary field will be selected.
+              If this annotation resource doesn't have fields, all proteins
+              will be presented as one single category.
+            * If a string it will be considered a field name and it will
+              browse through all levels of this field.
+            * If a list, set or tuple, it will be considered either a list
+              of field names or a list of values from the primary field.
+              In the former case all combinations of the values of the
+              fields will be presented, in the latter case the browsing
+              will be limited to the levels of the primary field contained
+              in ``field``.
+            * If a dict, keys are supposed to be field names and values
+              as list of levels. If any of the values are None, all levels
+              from that field will be used.
+        :param int start:
+            Start browsing from this category. E.g. if there are 500
+            categories and start is 250 it will skip everything before the
+            250th.
+        **kwargs passed to ``pypath.utils.uniprot.info``.
+        """
+        
+        if not field and not self.primary_field:
+            
+            uniprots = entity.Entity.only_proteins(self.to_set())
+            
+            utils_uniprot.info(uniprots, **kwargs)
+            
+        else:
+            
+            field = field or self.primary_field
+            
+            if isinstance(field, common.basestring):
+                
+                # all values of the field
+                field = {field: self.get_values(field)}
+                
+            elif isinstance(field, common.list_like):
+                
+                if set(field) & set(self.get_names()):
+                    
+                    # a set of fields provided
+                    field = dict(
+                        (
+                            fi,
+                            self.get_values(fi)
+                        )
+                        for fi in field
+                    )
+                    
+                else:
+                    
+                    # a set of values provided
+                    field = {self.primary_field: field}
+                
+            elif isinstance(field, dict):
+                
+                field = dict(
+                    (
+                        fi,
+                        vals or self.get_values(fi)
+                    )
+                    for fi, vals in iteritems(field)
+                )
+                
+            else:
+                
+                sys.stdout.write(
+                    'Could not recognize field definition, '
+                    'please refer to the docs.\n'
+                )
+                sys.stdout.flush()
+                return
+            
+            # otherwise we assume `field` is a dict of fields and values
+        
+        field_keys = list(field.keys())
+        field_values = [field[k] for k in field_keys]
+        
+        values = sorted(itertools.product(*field_values))
+        total = len(values)
+        
+        for n, vals in enumerate(values):
+            
+            if n < start:
+                
+                continue
+            
+            args = dict(zip(field_keys, vals))
+            
+            proteins = entity.Entity.only_proteins(self.select(**args))
+            
+            if not proteins:
+                
+                continue
+            
+            label = (
+                vals[0]
+                    if len(vals) == 1 else
+                ', '.join(
+                    '%s: %s' % (
+                        key,
+                        str(val)
+                    )
+                    for key, val in iteritems(args)
+                )
+            )
+            
+            sys.stdout.write(
+                '[%u/%u] =====> %s <===== [%u proteins]\n' % (
+                    n,
+                    total or 0,
+                    label,
+                    len(proteins)
+                )
+            )
+            
+            utils_uniprot.info(proteins, **kwargs)
+            
+            input()
+            
+            sys.stdout.write('\n\n')
 
 
 class Membranome(AnnotationBase):
