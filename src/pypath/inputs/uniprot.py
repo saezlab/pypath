@@ -185,3 +185,56 @@ def get_uniprot_sec(organism = 9606):
         ):
 
         yield line
+
+
+_uniprot_fields = {
+    'function': 'comment(FUNCTION)',
+    'activity_regulation': 'comment(ACTIVITY REGULATION)',
+    'tissue_specificity': 'comment(TISSUE SPECIFICITY)',
+    'developmental_stage': 'comment(DEVELOPMENTAL STAGE)',
+    'induction': 'comment(INDUCTION)',
+    'intramembrane': 'feature(INTRAMEMBRANE)',
+    'signal_peptide': 'feature(SIGNAL)',
+    'subcellular_location': 'comment(SUBCELLULAR LOCATION)',
+    'transmembrane': 'feature(TRANSMEMBRANE)',
+    'comment': 'comment(MISCELLANEOUS)',
+    'topological_domain': 'feature(TOPOLOGICAL DOMAIN)'
+}
+
+
+def uniprot_data(field, organism = 9606, reviewed = True):
+    """
+    Retrieves a field from UniProt for all proteins of one organism, by
+    default only the reviewed (SwissProt) proteins.
+    For the available fields refer to the ``_uniprot_fields`` attribute of
+    this module or the UniProt website.
+    """
+    
+    rev = (
+        ' AND reviewed: yes'
+            if reviewed == True or reviewed == 'yes' else
+        ' AND reviewed: no'
+        if reviewed == False or reviewed == 'no' else
+        ''
+    )
+    _field = _uniprot_fields[field] if field in _uniprot_fields else field
+    url = urls.urls['uniprot_basic']['url']
+    get = {
+        'query': 'organism:%s%s' % (str(organism), rev),
+        'format': 'tab',
+        'columns': 'id,%s' % _field,
+        'compress': 'yes',
+    }
+    
+    c = curl.Curl(url, get = get, silent = False, large = True, compr = 'gz')
+    _ = next(c.result)
+
+    return dict(
+        id_value
+        for id_value in
+        (
+            line.strip('\n\r').split('\t')
+            for line in c.result if line.strip('\n\r')
+        )
+        if id_value[1]
+    )
