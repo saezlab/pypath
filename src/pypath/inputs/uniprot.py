@@ -24,11 +24,13 @@ from future.utils import iteritems
 import re
 import time
 import datetime
+import collections
 import timeloop
 timeloop.app.logging.disable(level = 9999)
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+import pypath.share.common as common
 import pypath.share.session as session_mod
 import pypath.share.settings as settings
 
@@ -198,7 +200,9 @@ _uniprot_fields = {
     'subcellular_location': 'comment(SUBCELLULAR LOCATION)',
     'transmembrane': 'feature(TRANSMEMBRANE)',
     'comment': 'comment(MISCELLANEOUS)',
-    'topological_domain': 'feature(TOPOLOGICAL DOMAIN)'
+    'topological_domain': 'feature(TOPOLOGICAL DOMAIN)',
+    'family': 'families',
+    'interactor': 'interactor',
 }
 
 
@@ -238,3 +242,120 @@ def uniprot_data(field, organism = 9606, reviewed = True):
         )
         if id_value[1]
     )
+
+
+def uniprot_preprocess(field, organism = 9606, reviewed = True):
+    
+    relabel = re.compile(r'[A-Z\s]+:\s')
+    reisoform = re.compile(r'\[.*]:?\s?')
+    retermsep = re.compile(r'\s?[\.,]\s?')
+    reref = re.compile(r'\{.*\}')
+    
+    result = collections.defaultdict(set)
+    
+    data = uniprot_data(
+        field = field,
+        organism = organism,
+        reviewed = reviewed,
+    )
+    
+    for uniprot, raw in iteritems(data):
+        
+        raw = raw.split('Note=')[0]
+        raw = relabel.sub('', raw)
+        raw = reref.sub('', raw)
+        raw = reisoform.sub('', raw)
+        raw = retermsep.split(raw)
+        
+        for item in raw:
+            
+            if item.startswith('Note'):
+                
+                continue
+            
+            item = item.split('{')[0]
+            elements = tuple(
+                it0
+                for it0 in
+                (
+                    common.upper0(it).strip(' .;,')
+                    for it in item.split(';')
+                )
+                if it0
+            )
+            
+            if elements:
+                
+                result[uniprot].add(elements)
+    
+    return result
+
+
+def uniprot_locations(organism = 9606, reviewed = True):
+    
+    
+    UniprotLocation = collections.namedtuple(
+        'UniprotLocation',
+        [
+            'location',
+            'features',
+        ],
+    )
+    
+    
+    result = collections.defaultdict(set)
+    
+    data = uniprot_preprocess(
+        field = 'subcellular_location',
+        organism = organism,
+        reviewed = reviewed,
+    )
+    
+    for uniprot, locations in iteritems(data):
+        
+        for location in locations:
+            
+            result[uniprot].add(
+                UniprotLocation(
+                    location = location[0],
+                    features = location[1:] or None,
+                )
+            )
+    
+    return result
+
+
+def uniprot_families(organism = 9606, reviewed = True):
+    
+    refamily = re.compile(r'(.+) (?:super)?family(?:, (.*) subfamily)?')
+    
+    
+    UniprotFamily = collections.namedtuple(
+        'UniprotFamily',
+        [
+            'family',
+            'subfamily',
+        ],
+    )
+    
+    
+    result = collections.defaultdict(set)
+    
+    data = uniprot_data(
+        field = 'family',
+        organism = organism,
+        reviewed = reviewed,
+    )
+    
+    for uniprot, family in iteritems(data):
+        
+        family, subfamily = refamily.search(family).groups()
+        
+        result[uniprot].add(
+            UniprotFamily(
+                family = family,
+                subfamily = subfamily,
+            )
+        )
+    
+    return result
