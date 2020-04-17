@@ -106,6 +106,7 @@ protein_sources_default = {
     'Cellcellinteractions',
     'Italk',
     'Embrace',
+    'UniprotLocation',
 }
 
 #TODO this should be part of json files
@@ -4366,6 +4367,37 @@ class GuideToPharmacology(LigandReceptor):
             return
 
         LigandReceptor._default_record_processor(self, record, typ, annot)
+
+
+class UniprotLocation(AnnotationBase):
+
+    _eq_fields = ('location',)
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Subcellular localizations from UniProt.
+        """
+
+        if 'organism' not in kwargs:
+
+            kwargs['organism'] = ncbi_tax_id
+
+        AnnotationBase.__init__(
+            self,
+            name = 'UniProt_location',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'uniprot.uniprot_locations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
 
 
 class AnnotationTable(session_mod.Logger):
