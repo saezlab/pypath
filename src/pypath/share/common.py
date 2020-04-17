@@ -515,6 +515,14 @@ def add_to_set(st, toadd):
     return st
 
 
+def upper0(string):
+    """
+    Ensures the first letter of a string is uppercase.
+    """
+
+    return string[0].upper() + string[1:] if string else string
+
+
 def something(anything):
     """Checks if argument is empty.
 
