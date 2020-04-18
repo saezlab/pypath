@@ -108,6 +108,7 @@ protein_sources_default = {
     'Embrace',
     'UniprotLocation',
     'UniprotFamily',
+    'UniprotTopology',
 }
 
 #TODO this should be part of json files
@@ -4408,7 +4409,7 @@ class UniprotFamily(AnnotationBase):
 
     def __init__(self, ncbi_tax_id = 9606, **kwargs):
         """
-        Subcellular localizations from UniProt.
+        Protein families from UniProt.
         """
 
         if 'organism' not in kwargs:
@@ -4420,6 +4421,37 @@ class UniprotFamily(AnnotationBase):
             name = 'UniProt_family',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'uniprot.uniprot_families',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class UniprotTopology(AnnotationBase):
+
+    _eq_fields = ('location', 'start', 'end')
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Topological domains and transmembrane segments from UniProt.
+        """
+
+        if 'organism' not in kwargs:
+
+            kwargs['organism'] = ncbi_tax_id
+
+        AnnotationBase.__init__(
+            self,
+            name = 'UniProt_family',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'uniprot.uniprot_topology',
             **kwargs
         )
 
