@@ -349,6 +349,10 @@ def uniprot_families(organism = 9606, reviewed = True):
     
     for uniprot, family in iteritems(data):
         
+        if not family:
+            
+            continue
+        
         family, subfamily = refamily.search(family).groups()
         
         result[uniprot].add(
@@ -357,5 +361,69 @@ def uniprot_families(organism = 9606, reviewed = True):
                 subfamily = subfamily,
             )
         )
+    
+    return result
+
+
+def uniprot_topology(organism = 9606, reviewed = True):
+    
+    retopo = re.compile(r'TOPO_DOM (\d+)\.\.(\d+);\s+/note="(\w+)"')
+    retm = re.compile(r'TRANSMEM (\d+)\.\.(\d+);')
+    
+    
+    UniprotTopology = collections.namedtuple(
+        'UniprotTopology',
+        [
+            'location',
+            'start',
+            'end',
+        ],
+    )
+    
+    
+    result = collections.defaultdict(set)
+    
+    transmem = uniprot_data(
+        field = 'transmembrane',
+        organism = organism,
+        reviewed = reviewed,
+    )
+    
+    data = uniprot_data(
+        field = 'topological_domain',
+        organism = organism,
+        reviewed = reviewed,
+    )
+    
+    for uniprot, topology in iteritems(data):
+        
+        for topo_dom in retopo.findall(topology):
+            
+            start, end, location = topo_dom
+            start = int(start)
+            end = int(end)
+            
+            result[uniprot].add(
+                UniprotTopology(
+                    location = location,
+                    start = start,
+                    end = end,
+                )
+            )
+    
+    for uniprot, tm in iteritems(transmem):
+        
+        for start, end in retm.findall(tm):
+            
+            start = int(start)
+            end = int(end)
+            
+            result[uniprot].add(
+                UniprotTopology(
+                    location = 'Transmembrane',
+                    start = start,
+                    end = end,
+                )
+            )
     
     return result
