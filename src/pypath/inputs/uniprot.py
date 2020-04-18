@@ -25,6 +25,7 @@ import re
 import time
 import datetime
 import collections
+import itertools
 import timeloop
 timeloop.app.logging.disable(level = 9999)
 
@@ -368,7 +369,7 @@ def uniprot_families(organism = 9606, reviewed = True):
 def uniprot_topology(organism = 9606, reviewed = True):
     
     retopo = re.compile(r'TOPO_DOM (\d+)\.\.(\d+);\s+/note="(\w+)"')
-    retm = re.compile(r'TRANSMEM (\d+)\.\.(\d+);')
+    retm = re.compile(r'(TRANSMEM|INTRAMEM) (\d+)\.\.(\d+);')
     
     
     UniprotTopology = collections.namedtuple(
@@ -385,6 +386,12 @@ def uniprot_topology(organism = 9606, reviewed = True):
     
     transmem = uniprot_data(
         field = 'transmembrane',
+        organism = organism,
+        reviewed = reviewed,
+    )
+    
+    intramem = uniprot_data(
+        field = 'intramembrane',
         organism = organism,
         reviewed = reviewed,
     )
@@ -411,16 +418,19 @@ def uniprot_topology(organism = 9606, reviewed = True):
                 )
             )
     
-    for uniprot, tm in iteritems(transmem):
+    for uniprot, tm in itertools.chain(
+        iteritems(transmem),
+        iteritems(intramem),
+    ):
         
-        for start, end in retm.findall(tm):
+        for mem, start, end in retm.findall(tm):
             
             start = int(start)
             end = int(end)
             
             result[uniprot].add(
                 UniprotTopology(
-                    location = 'Transmembrane',
+                    location = '%sbrane' % mem.capitalize(),
                     start = start,
                     end = end,
                 )
