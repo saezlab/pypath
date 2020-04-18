@@ -375,7 +375,7 @@ def uniprot_topology(organism = 9606, reviewed = True):
     UniprotTopology = collections.namedtuple(
         'UniprotTopology',
         [
-            'location',
+            'topology',
             'start',
             'end',
         ],
@@ -396,23 +396,29 @@ def uniprot_topology(organism = 9606, reviewed = True):
         reviewed = reviewed,
     )
     
+    signal = uniprot_data(
+        field = 'signal_peptide',
+        organism = organism,
+        reviewed = reviewed,
+    )
+    
     data = uniprot_data(
         field = 'topological_domain',
         organism = organism,
         reviewed = reviewed,
     )
     
-    for uniprot, topology in iteritems(data):
+    for uniprot, topo in iteritems(data):
         
-        for topo_dom in retopo.findall(topology):
+        for topo_dom in retopo.findall(topo):
             
-            start, end, location = topo_dom
+            start, end, topology = topo_dom
             start = int(start)
             end = int(end)
             
             result[uniprot].add(
                 UniprotTopology(
-                    location = location,
+                    topology = topology,
                     start = start,
                     end = end,
                 )
@@ -421,19 +427,322 @@ def uniprot_topology(organism = 9606, reviewed = True):
     for uniprot, tm in itertools.chain(
         iteritems(transmem),
         iteritems(intramem),
+        iteritems(signal),
     ):
         
         for mem, start, end in retm.findall(tm):
             
+            topology = (
+                '%s%s' % (
+                    mem.capitalize(),
+                    'brane' if mem.endswith('MEM') else ''
+                )
+            )
             start = int(start)
             end = int(end)
             
             result[uniprot].add(
                 UniprotTopology(
-                    location = '%sbrane' % mem.capitalize(),
+                    topology = topology,
                     start = start,
                     end = end,
                 )
             )
+    
+    return result
+
+
+def uniprot_tissues(organism = 9606, reviewed = True):
+    
+    reref = re.compile(r'\s?\{.*\}\s?')
+    resep = re.compile(
+        r',?(?:'
+            r' in almost all |'
+            r' but also in |'
+            r' but also at |'
+            r' within the |'
+            r', in |'
+            r' in |'
+            r' but |'
+            r', and |'
+            r' and |'
+            r' such as |'
+            r' \(both |'
+            r' as well as |'
+            r' as |'
+            r' or |'
+            r' at the |'
+            r' at |'
+            r' including |'
+            r' during |'
+            r' especially |'
+            r' to |'
+            r' into |'
+            r' = |'
+            r' > |'
+            r'; |'
+            r', '
+        r')(?=[^\d])'
+    )
+    relabel = re.compile(r'^TISSUE SPECIFICITY: ')
+    repubmed = re.compile(r'\(?PubMed:?\d+\)?')
+    respeci = re.compile(r'(\w+)[-\s]specific')
+    rethe = re.compile(
+        r'\s?(?:'
+           r'[Tt]he |'
+           r'[Ii]n |'
+           r'[Ss]ome|'
+           r'[Ii]n the|'
+           r'[Ww]ithin the|'
+           r'[Ww]ithin|'
+           r'[Ii]nto|'
+           r'[Ww]ith|'
+           r'[Ww]ith only|'
+           r'[Ww]ith the|'
+           r'[Ww]ith an|'
+           r'[Ii]s |'
+           r'[Mm]any  |'
+           r'[Aa] variety of '
+           r'[Aa] |'
+           r'[Ii]t '
+        r')?(.*)'
+    )
+    reand = re.compile(r'(?: and| of| from| or)$')
+    replevel = re.compile(r'\(at \w+ levels?\)')
+    reiso = re.compile(r'[Ii]soform \w+')
+    reindef = re.compile(
+        r'\w'
+        r'(?:'
+           r'ifferent parts of |'
+           r'ariety of tissues |'
+           r' variety of tissues |'
+           r' number of |'
+           r'everal regions of '
+        r')'
+    )
+    
+    level_kw = (
+        ('low', 'low'),
+        ('weak', 'low'),
+        ('lesser extent', 'low'),
+        ('decreases', 'low'),
+        ('moderate', 'low'),
+        ('barely', 'low'),
+        ('minor level', 'low'),
+        ('reduced', 'low'),
+        ('lesser', 'low'),
+        ('high', 'high'),
+        ('elevated', 'high'),
+        ('strong', 'high'),
+        ('prominent', 'high'),
+        ('greatest level', 'high'),
+        ('concentrated', 'high'),
+        ('predominant', 'high'),
+        ('increase', 'high'),
+        ('enrich', 'high'),
+        ('abundant', 'high'),
+        ('primarily', 'high'),
+        ('induced', 'high'),
+        ('up-regulated', 'high'),
+        ('expression is restricted', 'high'),
+        ('amplified', 'high'),
+        ('basal l', 'basal'),
+        ('not detected', 'none'),
+        ('absent', 'none'),
+        ('expressed', 'undefined'),
+        ('detect', 'undefined'),
+        ('found', 'undefined'),
+        ('present', 'undefined'),
+        ('expression', 'undefined'),
+        ('localized', 'undefined'),
+        ('produced', 'undefined'),
+        ('confined', 'undefined'),
+        ('transcribed', 'undefined'),
+        ('xpressed', 'undefined'),
+        ('synthesized', 'undefined'),
+        ('secreted', 'undefined'),
+        ('seen', 'undefined'),
+        ('prevalent', 'undefined'),
+        ('released', 'undefined'),
+    )
+    
+    wide_kw = (
+        ('widely', 'wide'),
+        ('wide tissue distribution', 'wide'),
+        ('wide range of tissues', 'wide'),
+        ('widespread', 'wide'),
+        ('ubiquitous', 'ubiquitous'),
+        ('variety of tissues', 'wide'),
+        ('many tissues', 'wide'),
+        ('various organs', 'wide'),
+        ('various tissues', 'wide'),
+    )
+    
+    tissue_exclude = {
+        'Adult',
+        'By contrast',
+        'Normal cells',
+        'Not only',
+        'A',
+        '[]: Localized',
+        'Early',
+        'Change from a quiescent',
+        'Central',
+        'Beta',
+        'This layer',
+        'With little',
+        'Preferential occurrence',
+        'Stage III',
+        'Take up',
+        'Only seen',
+        'Prevalent',
+        'Inner segment',
+        'Memory',
+        'Many fetal',
+        'Tissues',
+        '0 kb',
+        '1-7',
+        '1b-1',
+        '2 is widely',
+        '8 and 4',
+        'Often amplified',
+    }
+    
+    exclude_startswith = (
+        'Were',
+        'Where',
+        'Which',
+        'While',
+        'When',
+        'There',
+        'Their',
+        'Then',
+        'These',
+        'Level',
+    )
+    
+    exclude_in = (
+        'kb transcript',
+        'compared',
+        'soform',
+        'concentration of'
+    )
+    
+    UniprotTissue = collections.namedtuple(
+        'UniprotTissue',
+        [
+            'tissue',
+            'level',
+        ],
+    )
+    
+    
+    data = uniprot_data(
+        'tissue_specificity',
+        organism = organism,
+        reviewed = reviewed,
+    )
+    
+    result = collections.defaultdict(set)
+    
+    for uniprot, raw in iteritems(data):
+        
+        raw = relabel.sub('', raw)
+        raw = reref.sub('', raw)
+        raw = replevel.sub('', raw)
+        raw = reiso.sub('', raw)
+        raw = repubmed.sub('', raw)
+        raw = reindef.sub('', raw)
+        raw = raw.replace('adult and fetal', '')
+        
+        raw = raw.split('.')
+        
+        for phrase in raw:
+            
+            tokens = tuple(resep.split(phrase))
+            level = None
+            
+            for token in tokens:
+                
+                level_token = False
+                wide_token = False
+                tissue = None
+                
+                token_lower = token.lower()
+                
+                for kw, lev in level_kw:
+                    
+                    if kw in token_lower:
+                        
+                        level = lev
+                        level_token = True
+                        break
+                
+                if level_token:
+                    
+                    for kw, wide in wide_kw:
+                        
+                        if kw in token_lower:
+                            
+                            tissue = wide
+                            wide_token = True
+                            break
+                
+                if not level_token or wide_token:
+                    
+                    if not wide_token:
+                        
+                        specific = respeci.search(token)
+                        
+                        tissue = (
+                            specific.groups()[0].lower()
+                                if specific else
+                            token
+                        )
+                        
+                        if specific and not level:
+                            
+                            level = 'high'
+                    
+                    if tissue.strip():
+                        
+                        if any(e in tissue for e in exclude_in):
+                            
+                            continue
+                        
+                        tissue = rethe.match(tissue).groups()[0]
+                        tissue = rethe.match(tissue).groups()[0]
+                        tissue = rethe.match(tissue).groups()[0]
+                        
+                        if tissue.endswith('+'):
+                            
+                            tissue = '%s cells' % tissue
+                        
+                        tissue = tissue.strip(')(.,;- ')
+                        
+                        if '(' in tissue and ')' not in tissue:
+                            
+                            tissue = '%s)' % tissue
+                        
+                        tissue = reand.sub('', tissue)
+                        tissue = common.upper0(tissue)
+                        
+                        if any(
+                            tissue.startswith(e)
+                            for e in exclude_startswith
+                        ):
+                            
+                            continue
+                        
+                        if tissue in tissue_exclude or len(tissue) < 3:
+                            
+                            continue
+                        
+                        result[uniprot].add(
+                            UniprotTissue(
+                                tissue = tissue,
+                                level = level or 'undefined',
+                            )
+                        )
     
     return result
