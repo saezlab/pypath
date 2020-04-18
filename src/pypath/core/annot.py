@@ -109,6 +109,7 @@ protein_sources_default = {
     'UniprotLocation',
     'UniprotFamily',
     'UniprotTopology',
+    'UniprotTissue',
 }
 
 #TODO this should be part of json files
@@ -4433,9 +4434,40 @@ class UniprotFamily(AnnotationBase):
         delattr(self, 'data')
 
 
+class UniprotTissue(AnnotationBase):
+
+    _eq_fields = ('tissue', 'level')
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Tissue expression levels from UniProt.
+        """
+
+        if 'organism' not in kwargs:
+
+            kwargs['organism'] = ncbi_tax_id
+
+        AnnotationBase.__init__(
+            self,
+            name = 'UniProt_tissue',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'uniprot.uniprot_tissues',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
 class UniprotTopology(AnnotationBase):
 
-    _eq_fields = ('location', 'start', 'end')
+    _eq_fields = ('topology', 'start', 'end')
 
 
     def __init__(self, ncbi_tax_id = 9606, **kwargs):
