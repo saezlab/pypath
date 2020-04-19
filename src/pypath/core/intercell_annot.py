@@ -2890,18 +2890,59 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'tight_junction_uniprot',
-        source = 'UniProt_location',
-        args = {
-            'location': 'Tight junction',
-        },
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'tight_junction_uniprot_location',
+                    source = 'UniProt_location',
+                    args = {
+                        'location': 'Tight junction',
+                    },
+                ),
+                'transmembrane',
+            ),
+            op = set.intersection
+        ),
     ),
-    # adherend junction
+    # adherens junction
+    af.AnnotDef(
+        name = 'adherens_junction',
+        source = af.AnnotOp(
+            annots = (
+                'adherens_junction_ramilowski',
+                'adherens_junction_uniprot',
+            ),
+            op = set.union,
+        ),
+    ),
     af.AnnotDef(
         name = 'adherens_junction_ramilowski',
         source = 'Ramilowski_location',
         args = {
             'location': 'adherens junction',
         },
+    ),
+    af.AnnotDef(
+        name = 'adherens_junction_uniprot',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'adherens_junction_uniprot_location',
+                    source = 'UniProt_location',
+                    args = {
+                        'location': 'Adherens junction',
+                    },
+                ),
+                af.AnnotOp(
+                    annots = (
+                        'transmembrane',
+                        'cell_surface',
+                    ),
+                    op = set.union,
+                ),
+            ),
+            op = set.intersection
+        ),
     ),
     # specific subclasses from HGNC
     af.AnnotDef(
