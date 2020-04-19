@@ -367,7 +367,7 @@ class CustomAnnotation(session_mod.Logger):
         return annotop.op(*annots)
 
 
-    def get_class(self, name, entity_types = None):
+    def select(self, name, entity_types = None):
         """
         Retrieves a class by its name and loads it if hasn't been loaded yet
         but the name present in the class definitions.
@@ -385,6 +385,34 @@ class CustomAnnotation(session_mod.Logger):
             )
 
         self._log('No such annotation class: `%s`' % name)
+
+
+    # synonym for old name
+    get_class = select
+
+
+    def labels(self, name, entity_type = None):
+        """
+        Same as ``select`` but returns a list of labels (more human readable).
+        """
+
+        return mapping.label(
+            self.select(name = name, entity_type = entity_type)
+        )
+
+
+    def show(self, name, entity_type = None, **kwargs):
+        """
+        Same as ``select`` but prints a table to the console with basic
+        information from the UniProt datasheets.
+        """
+
+        table_param = table_param or {}
+
+        utils_uniprot.info(
+            *self.select(name = name, entity_type = entity_type),
+            **kwargs
+        )
 
 
     def get_class_type(self, cls):
