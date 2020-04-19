@@ -29,7 +29,7 @@ import pypath.utils.mapping as mapping
 import pypath.inputs.common as inputs_common
 
 
-resite = re.compile('([A-Z])(\d+)')
+resite = re.compile(r'([A-Z])(\d+)')
 
 
 IptmnetInteraction = collections.namedtuple(
