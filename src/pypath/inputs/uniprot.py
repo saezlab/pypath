@@ -496,18 +496,32 @@ def uniprot_tissues(organism = 9606, reviewed = True):
            r'[Ww]ithin the|'
            r'[Ww]ithin|'
            r'[Ii]nto|'
-           r'[Ww]ith|'
            r'[Ww]ith only|'
            r'[Ww]ith the|'
            r'[Ww]ith an|'
+           r'[Ww]ith |'
            r'[Ii]s |'
            r'[Mm]any  |'
            r'[Aa] variety of '
            r'[Aa] |'
-           r'[Ii]t '
+           r'[Ii]t |'
+           r'[Tt]o |'
+           r'[Oo]n |'
+           r'[Oo]f |'
+           r'[Tt]hose |'
+           r'[Ff]rom |'
+           r'[Aa]lso|'
+           r'[Bb]y |'
+           r'[Pp]articularly|'
+           r'[Pp]articular|'
+           r'[Pp]atients|'
+           r'[Aa]n |'
+           r'\'|'
+           r':|'
+           r'/'
         r')?(.*)'
     )
-    reand = re.compile(r'(?: and| of| from| or)$')
+    reand = re.compile(r'(?: and| of| from| or| than)$')
     replevel = re.compile(r'\(at \w+ levels?\)')
     reiso = re.compile(r'[Ii]soform \w+')
     reindef = re.compile(
@@ -525,12 +539,14 @@ def uniprot_tissues(organism = 9606, reviewed = True):
         ('low', 'low'),
         ('weak', 'low'),
         ('lesser extent', 'low'),
-        ('decreases', 'low'),
+        ('minimal level', 'low'),
+        ('decrease', 'low'),
         ('moderate', 'low'),
         ('barely', 'low'),
         ('minor level', 'low'),
         ('reduced', 'low'),
         ('lesser', 'low'),
+        ('down-regulated', 'low'),
         ('high', 'high'),
         ('elevated', 'high'),
         ('strong', 'high'),
@@ -544,6 +560,7 @@ def uniprot_tissues(organism = 9606, reviewed = True):
         ('primarily', 'high'),
         ('induced', 'high'),
         ('up-regulated', 'high'),
+        ('up regulated', 'high'),
         ('expression is restricted', 'high'),
         ('amplified', 'high'),
         ('basal l', 'basal'),
@@ -564,22 +581,37 @@ def uniprot_tissues(organism = 9606, reviewed = True):
         ('seen', 'undefined'),
         ('prevalent', 'undefined'),
         ('released', 'undefined'),
+        ('appears', 'undefined'),
+        ('varying levels', 'undefined'),
+        ('various levels', 'undefined'),
+        ('identified', 'undefined'),
+        ('observed', 'undefined'),
+        ('occurs', 'undefined'),
     )
     
     wide_kw = (
         ('widely', 'wide'),
         ('wide tissue distribution', 'wide'),
         ('wide range of tissues', 'wide'),
+        ('wide range of adult tissues', 'wide'),
+        ('wide range of cells', 'wide'),
+        ('wide variety of normal adult tissues', 'wide'),
         ('widespread', 'wide'),
         ('ubiquitous', 'ubiquitous'),
         ('variety of tissues', 'wide'),
         ('many tissues', 'wide'),
+        ('many organs', 'wide'),
         ('various organs', 'wide'),
         ('various tissues', 'wide'),
     )
     
     tissue_exclude = {
         'Adult',
+        'All',
+        'Apparently not',
+        'Areas',
+        'Are likely',
+        'Both',
         'By contrast',
         'Normal cells',
         'Not only',
@@ -594,6 +626,7 @@ def uniprot_tissues(organism = 9606, reviewed = True):
         'Preferential occurrence',
         'Stage III',
         'Take up',
+        'Hardly',
         'Only seen',
         'Prevalent',
         'Inner segment',
@@ -601,11 +634,63 @@ def uniprot_tissues(organism = 9606, reviewed = True):
         'Many fetal',
         'Tissues',
         '0 kb',
+        '9 kb',
+        'A 2',
+        'A 3',
+        'A 5',
+        'A 6',
         '1-7',
         '1b-1',
         '2 is widely',
         '8 and 4',
         'Often amplified',
+        'Other',
+        'Others',
+        'Those',
+        'Tissues examined',
+        'Tissues with',
+        'Tissues (e)',
+        'Probably shed',
+        'Reports that',
+        'Primitive',
+        'Prolactin',
+        'Overlap',
+        'A smaller 0',
+        'A smaller form',
+        'A smaltissues',
+        'Different levels',
+        'Different amounts',
+        'Disappears',
+        'Digestion',
+        'Very similar',
+        'Vivo',
+        'Contrary',
+        'Contrast',
+        'Not',
+        'Not all',
+        'Has it',
+        'Has little',
+        'All stages',
+        'Soon',
+        'Specific',
+        'Stage',
+        'Stage I',
+        'Stage II',
+        'Stages II',
+        'Ends',
+        'A minor degree',
+        'A much smaller extent',
+        'Lost',
+        'Varies',
+        'Various',
+        'Mostly restricted',
+        'Mostly',
+        'Most probably',
+        'Much more stable',
+        'Naive',
+        'Neither',
+        'Nor',
+        'None',
     }
     
     exclude_startswith = (
@@ -619,6 +704,14 @@ def uniprot_tissues(organism = 9606, reviewed = True):
         'Then',
         'These',
         'Level',
+        'This',
+        'Almost',
+        'If',
+        'Control',
+        'Be ',
+        'Although',
+        'Than',
+        'Addition',
     )
     
     exclude_in = (
@@ -627,6 +720,7 @@ def uniprot_tissues(organism = 9606, reviewed = True):
         'soform',
         'concentration of'
     )
+    
     
     UniprotTissue = collections.namedtuple(
         'UniprotTissue',
@@ -726,6 +820,7 @@ def uniprot_tissues(organism = 9606, reviewed = True):
                         
                         tissue = reand.sub('', tissue)
                         tissue = common.upper0(tissue)
+                        tissue = tissue.replace('  ', ' ')
                         
                         if any(
                             tissue.startswith(e)
