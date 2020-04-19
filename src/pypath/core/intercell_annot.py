@@ -1954,6 +1954,25 @@ annot_combined_classes = (
         },
     ),
 
+    # plasma membrane
+    af.AnnotDef(
+        name = 'plasma_membrane',
+        source = af.AnnotOp(
+            annots = (
+                'transmembrane_cellphonedb',
+                'lhfpl_plasma_membrane_hgnc',
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'lhfpl_plasma_membrane_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'LHFPL tetraspan proteins',
+        }
+    ),
+
     # transmembrane
     af.AnnotDef(
         name = 'transmembrane',
@@ -2047,6 +2066,13 @@ annot_combined_classes = (
         args = {
             'tmh': bool,
         },
+    ),
+    af.AnnotDef(
+        name = 'lhfpl_transmembrane_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'LHFPL tetraspan proteins',
+        }
     ),
 
     # adhesion
@@ -3099,6 +3125,10 @@ annot_combined_classes = (
         },
     ),  # intracellularily connect the plasma membrane and ER to
         # ensure quick response to membrane potential change
+    af.AnnotDef(
+        name = 'lims1_adhesion_intracell_omnipath',
+        source = {'P48059'},
+    ),
 
 )
 
