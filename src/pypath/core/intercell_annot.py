@@ -1973,6 +1973,7 @@ annot_combined_classes = (
                 'cell_surface_cellphonedb',
                 'cell_surface_dgidb',
                 'cell_surface_ramilowski',
+                'cell_surface_uniprot',
             ),
             op = set.union,
         ),
@@ -2027,6 +2028,43 @@ annot_combined_classes = (
         args = {
             'location': 'cell surface',
         },
+    ),
+    af.AnnotDef(
+        name = 'cell_surface_uniprot',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'cell_membrane_uniprot',
+                    source = 'UniProt_location',
+                    args = {
+                        'location': {
+                            'Cell membrane',
+                            'Acrosome membrane',
+                            'Apical cell membrane',
+                            'Basal cell membrane',
+                            'Basolateral cell membrane',
+                            'Cell surface',
+                            'Dendritic spine membrane',
+                            'Filopodium membrane',
+                            'Flagellum membrane',
+                            'Invadopodium membrane',
+                            'Lamellipodium membrane',
+                            'Lateral cell membrane',
+                            'Microvillus membrane',
+                            'Myelin membrane',
+                            'Photoreceptor inner segment membrane',
+                            'Presynaptic cell membrane',
+                            'Ruffle membrane',
+                            'Stereocilium membrane',
+                        }
+                    },
+                ),
+                # removing the transmembrane ones
+                'transmembrane',
+                # TODO: ensure we keep only the extracellular side
+            ),
+            op = set.difference,
+        ),
     ),
     # specific subclasses from HGNC
     af.AnnotDef(
@@ -2993,7 +3031,7 @@ annot_combined_classes = (
         source = af.AnnotOp(
             annots = (
                 af.AnnotDef(
-                    name = 'tight_junction_uniprot_location',
+                    name = 'tight_junction_uniprot',
                     source = 'UniProt_location',
                     args = {
                         'location': 'Tight junction',
