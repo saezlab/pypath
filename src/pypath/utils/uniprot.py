@@ -517,7 +517,7 @@ def features_table(
         uniprot_ids,
         *features,
         width = 40,
-        maxlen = 180,
+        maxlen = 500,
         tablefmt = 'fancy_grid',
         **kwargs
     ):
@@ -550,7 +550,7 @@ def print_features(
         uniprot_ids,
         *features,
         width = None,
-        maxlen = 200,
+        maxlen = 500,
         tablefmt = 'fancy_grid',
         **kwargs
     ):
