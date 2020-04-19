@@ -1624,7 +1624,18 @@ class Mapper(session_mod.Logger):
         Gene Symbols.
         """
 
-        if hasattr(name, 'genesymbol_str'):
+        if isinstance(name, common.list_like):
+
+            return [
+                self.label(
+                    _name,
+                    id_type = id_type,
+                    ncbi_tax_id = ncbi_tax_id
+                )
+                for _name in name
+            ]
+
+        elif hasattr(name, 'genesymbol_str'):
 
             return name.genesymbol_str
 
@@ -1658,6 +1669,10 @@ class Mapper(session_mod.Logger):
                     'genesymbol',
                     ncbi_tax_id = ncbi_tax_id,
                 ) or name
+
+        else:
+
+            return str(name)
 
 
     def primary_uniprot(self, uniprots):
