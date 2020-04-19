@@ -1196,6 +1196,7 @@ annot_combined_classes = (
                 'ecm_go',
                 'ecm_ramilowski',
                 'ecm_cellcellinteractions',
+                'ecm_uniprot',
             ),
             op = set.union,
         ),
@@ -1253,6 +1254,14 @@ annot_combined_classes = (
             },
         },
     ),
+    af.AnnotDef(
+        name = 'ecm_uniprot',
+        source = 'UniProt_location',
+        args = {
+            'location': 'Extracellular matrix',
+        },
+    ),
+    # specific subclasses from HGNC
     af.AnnotDef(
         name = 'collagen_proteoglycan_ecm_hgnc',
         source = 'HGNC',
@@ -1718,6 +1727,7 @@ annot_combined_classes = (
                 'extracellular_hpmr',
                 'extracellular_cellphonedb',
                 'extracellular_hpa',
+                'extracellular_uniprot',
             ),
             op = set.union,
         ),
@@ -1809,6 +1819,16 @@ annot_combined_classes = (
             },
         },
     ),
+    af.AnnotDef(
+        name = 'extracellular_uniprot',
+        source = 'UniProt_location',
+        args = {
+            'location': {
+                'Secreted',
+            },
+        },
+    ),
+    # specific subclasses from HGNC
     af.AnnotDef(
         name = 'histatin_extracellular_hgnc',
         source = 'HGNC',
@@ -1985,6 +2005,7 @@ annot_combined_classes = (
                 'transmembrane_topdb',
                 'transmembrane_ramilowski',
                 'transmembrane_almen',
+                'transmembrane_uniprot',
             ),
             op = set.union,
         ),
@@ -2020,6 +2041,35 @@ annot_combined_classes = (
         args = {
             'transmembrane_tmhmm': True,
         },
+    ),
+    af.AnnotDef(
+        name = 'transmembrane_uniprot',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'transmembrane_uniprot_location',
+                    source = 'UniProt_location',
+                    args = {
+                        'features': {
+                            'Multi-pass membrane protein',
+                            'Single-pass membrane protein',
+                            'Single-pass type I membrane protein',
+                            'Single-pass type II membrane protein',
+                            'Single-pass type III membrane protein',
+                            'Single-pass type IV membrane protein',
+                        },
+                    },
+                ),
+                af.AnnotDef(
+                    name = 'transmembrane_uniprot_topology',
+                    source = 'UniProt_topology',
+                    args = {
+                        'topology': 'Transmembrane',
+                    },
+                ),
+            ),
+            op = set.union,
+        ),
     ),
     af.AnnotDef(
         name = 'transmembrane_go',
@@ -2779,12 +2829,14 @@ annot_combined_classes = (
     ),
 
     # junctions
+    # gap junction
     af.AnnotDef(
         name = 'gap_junction',
         source = af.AnnotOp(
             annots = (
                 'gap_junction_go',
                 'gap_junction_ramilowski',
+                'gap_junction_uniprot',
             ),
             op = set.union,
         ),
@@ -2804,11 +2856,20 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
+        name = 'gap_junction_uniprot',
+        source = 'UniProt_location',
+        args = {
+            'location': 'Gap junction',
+        },
+    ),
+    # tight junction
+    af.AnnotDef(
         name = 'tight_junction',
         source = af.AnnotOp(
             annots = (
                 'tight_junction_go',
                 'tight_junction_ramilowski',
+                'tight_junction_uniprot',
             ),
             op = set.union,
         ),
@@ -2827,6 +2888,14 @@ annot_combined_classes = (
             'location': 'tight junction',
         },
     ),
+    af.AnnotDef(
+        name = 'tight_junction_uniprot',
+        source = 'UniProt_location',
+        args = {
+            'location': 'Tight junction',
+        },
+    ),
+    # adherend junction
     af.AnnotDef(
         name = 'adherens_junction_ramilowski',
         source = 'Ramilowski_location',
