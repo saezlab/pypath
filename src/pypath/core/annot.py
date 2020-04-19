@@ -2130,6 +2130,28 @@ class AnnotationBase(resource.AbstractResource):
     get_subset = select
 
 
+    def labels(self, method = None, **kwargs):
+        """
+        Same as ``select`` but returns a list of labels (more human readable).
+        """
+
+        return mapping.label(self.select(method = method, **kwargs))
+
+
+    def show(self, method = None, table_param = None, **kwargs):
+        """
+        Same as ``select`` but prints a table to the console with basic
+        information from the UniProt datasheets.
+        """
+
+        table_param = table_param or {}
+
+        utils_uniprot.info(
+            *self.select(method = method, **kwargs),
+            **table_param
+        )
+
+
     def get_subset_bool_array(self, reference_set = None, **kwargs):
         """
         Returns a boolean vector with True and False values for each entity
@@ -4481,7 +4503,7 @@ class UniprotTopology(AnnotationBase):
 
         AnnotationBase.__init__(
             self,
-            name = 'UniProt_family',
+            name = 'UniProt_topology',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'uniprot.uniprot_topology',
             **kwargs
