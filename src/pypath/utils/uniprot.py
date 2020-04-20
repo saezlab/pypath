@@ -42,7 +42,7 @@ class UniprotProtein(object):
     
     _relength = re.compile(r'([0-9]+) AA')
     _rename = re.compile(r'Name=(\w+)\W')
-    _rerecname = re.compile(r'RecName: Full=([^;]+);')
+    _rerecname = re.compile(r'(?:Rec|Sub)Name: Full=([^;\{]+)(?: \{.*\})?;')
     _recc = re.compile(r'-!- ([A-Z ]+):\s?(.*)')
     _remw = re.compile(r'([0-9]+) MW')
     _redb = re.compile(r'([^;]+);\s?(.*)\s?\.\s?(?:\[(.*)\])?')
