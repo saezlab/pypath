@@ -347,9 +347,15 @@ class UniprotProtein(object):
     @property
     def genesymbol(self):
         
-        m = self._rename.search(next(self.itertag('GN')))
-        
-        return m.groups()[0] if m else self.ac
+        try:
+            
+            m = self._rename.search(next(self.itertag('GN')))
+            
+            return m.groups()[0] if m else self.ac
+            
+        except StopIteration:
+            
+            return self.ac
     
     
     @property
@@ -358,14 +364,16 @@ class UniprotProtein(object):
         Returns the keywords as a list.
         """
         
-        return list(
+        return [
+            kw for kw in
             itertools.chain(
                 *(
                     self._redbsep.split(kw.strip('.'))
                     for kw in self.itertag('KW')
                 )
             )
-        )
+            if kw
+        ]
     
     
     @property
