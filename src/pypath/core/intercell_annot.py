@@ -631,6 +631,11 @@ annot_combined_classes = (
         source = 'Adhesome',
         args = {'mainclass': 'Adhesion receptor'},
     ),
+    af.AnnotDef(
+        name = 'ly6_plaur_adhesion_omnipath',
+        source = {'O95274', 'Q8N6Q3', 'Q8TDM5', 'Q9BY14', 'Q17RY6'},
+    ),  #
+    
     # receptor
     af.AnnotDef(
         name = 'receptor',
@@ -1041,6 +1046,14 @@ annot_combined_classes = (
     ),  # although this receptor is intracellular, there is no reason we
         # shouldn't treat it the same way as plasma membrane receptors
     af.AnnotDef(
+        name = 'nuclear_hormone_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Nuclear hormone receptors',
+        },
+    ),  # although these receptors are intracellular, there is no reason we
+        # shouldn't treat it the same way as plasma membrane receptors
+    af.AnnotDef(
         name = 'gpcr_orphan_receptor_hgnc',
         source = 'HGNC',
         args = {
@@ -1185,6 +1198,180 @@ annot_combined_classes = (
             'mainclass': 'Killer cell lectin like receptors',
         },
     ),  # receptors mostly for HLAs
+    af.AnnotDef(
+        name = 'ly6_plaur_receptor_omnipath',
+        source = {
+            'Q03405', 'Q8IV16',
+        }
+    ),
+    af.AnnotDef(
+        name = 'ly6_plaur_receptor_regulator_omnipath',
+        source = {
+            'Q5SQ64', 'Q8N2G4', 'Q86Y78', 'Q8N6Q3', 'Q16553', 'P0DP58',
+            'O94772', 'P13987', 'P0DP57', 'O43653', 'Q8NI32', 'P0C8F1',
+        },
+    ),  #
+    af.AnnotDef(
+        name = 'leukotriene_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Leukotriene receptors',
+        },
+    ),  # receptors for leukotrienes, eicosanoids, N-formyl-met peptides, etc
+    af.AnnotDef(
+        name = 'pentraxin_receptor_omnipath',
+        source = {'Q15818', 'O95502'},
+    ),
+    af.AnnotDef(
+        name = 'low_density_lipoprotein_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Low density lipoprotein receptors',
+        },
+    ),  # receptors for low density lipoproteins
+    af.AnnotDef(
+        name = 'lysophosphatidic_acid_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Lysophosphatidic acid receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'melanin_concentrating_hormone_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Melanin concentrating hormone receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'melanocortin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Melanocortin receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'melatonin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Melatonin receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'membrane_associated_progesterone_receptor_omnipath',
+        source = {'O15173', 'O00264'},
+    ),  # PGRMC1 is in SER and microsome membrane, but it does not matter
+    af.AnnotDef(
+        name = 'neuromedin_u_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Neuromedin U receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'neuropeptide_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Neuropeptide receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'neurotensin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Neurotensin receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'notch_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Notch receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'olfactory_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': {
+                'Olfactory receptors, family 1',
+                'Olfactory receptors, family 2',
+                'Olfactory receptors, family 3',
+                'Olfactory receptors, family 4',
+                'Olfactory receptors, family 5',
+                'Olfactory receptors, family 6',
+                'Olfactory receptors, family 7',
+                'Olfactory receptors, family 8',
+                'Olfactory receptors, family 9',
+                'Olfactory receptors, family 10',
+                'Olfactory receptors, family 11',
+                'Olfactory receptors, family 12',
+                'Olfactory receptors, family 13',
+                'Olfactory receptors, family 14',
+                'Olfactory receptors, family 51',
+                'Olfactory receptors, family 52',
+                'Olfactory receptors, family 56',
+            },
+        },
+    ),  # odorant receptors
+    af.AnnotDef(
+        name = 'opioid_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Opioid receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'opsin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Opsin receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'oxoglutarate_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Oxoglutarate receptor',
+        },
+    ),
+    af.AnnotDef(
+        name = 'p2y_purinergic_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'P2Y receptors',
+        },
+    ),  # receptors for ADP, ATP, UDP, UTP
+
+    # secreted receptors
+    af.AnnotDef(
+        name = 'ly6_plur_secreted_receptor_omnipath',
+        source = {'Q6UX82', 'P55000', 'P13987'},
+    ),
+    af.AnnotDef(
+        name = 'pentraxin_secreted_receptor_omnipath',
+        source = {'Q96A99', 'P26022', 'P47972'},
+    ),
+    af.AnnotDef(
+        name = 'ms4_receptor_regulator_hgnc',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'ms4_hgnc',
+                    source = 'HGNC',
+                    args = {
+                        'mainclass': 'Membrane spanning 4-domains',
+                    },
+                ),
+                'plasma_membrane',
+            ),
+            op = set.intersection,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'ige_receptor_omnipath',
+        source = {'Q01362'},
+    ),
 
     # ECM
     af.AnnotDef(
@@ -1261,6 +1448,13 @@ annot_combined_classes = (
             'location': 'Extracellular matrix',
         },
     ),
+    af.AnnotDef(
+        name = 'ecm_cellcellinteractions',
+        source = 'CellCellInteractions',
+        args = {
+            'mainclass': 'ECM',
+        },
+    ),
     # specific subclasses from HGNC
     af.AnnotDef(
         name = 'collagen_proteoglycan_ecm_hgnc',
@@ -1292,6 +1486,13 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
+        name = 'laminin_ecm_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Laminin subunits',
+        },
+    ),
+    af.AnnotDef(
         name = 'fibulin_ecm_hgnc',
         source = 'HGNC',
         args = {
@@ -1307,12 +1508,28 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'ecm_cellcellinteractions',
-        source = 'CellCellInteractions',
+        name = 'matrilin_ecm_hgnc',
+        source = 'HGNC',
         args = {
-            'mainclass': 'ECM',
+            'mainclass': 'Matrilins',
         },
-    ),
+    ),  # cartilage ECM
+    af.AnnotDef(
+        name = 'mucin_ecm_hgnc',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'mucin_hgnc',
+                    source ='HGNC',
+                    args = {
+                        'mainclass': 'Mucins',
+                    },
+                ),
+                'secreted'
+            ),
+            op = set.intersection
+        ),
+    ),  #
 
     # ligand
     af.AnnotDef(
@@ -1622,6 +1839,57 @@ annot_combined_classes = (
         },
     ),  # maybe not ligands in a strict sense but don't fit either
         # in other categories
+    af.AnnotDef(
+        name = 'tgf_beta_binding_ligand_regulator_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': (
+                'Latent transforming growth factor beta binding proteins'
+            ),
+        },
+    ),
+    af.AnnotDef(
+        name = 'mia_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'MIA family',
+        },
+        exclude = {'Q5JRA6', 'Q96PC5'},
+    ),
+    af.AnnotDef(
+        name = 'neuferricin_neudensin_ligand_omnipath',
+        source = {'Q8WUJ1', 'Q9UMX5'},
+    ),
+    af.AnnotDef(
+        name = 'netrin_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Netrins',
+        },
+    ),  # secreted axon guidance molecules
+    af.AnnotDef(
+        name = 'neurotrophin_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Neurotrophins',
+        },
+    ),
+    af.AnnotDef(
+        name = 'oocyte_secreted_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'OOSP family',
+        },
+    ),  # not sure these are ligands, but this category looks the most likely
+        # at least in a recent paper PLAC1 has been described to activate
+        # FGFR2 together with FGF7
+    af.AnnotDef(
+        name = 'prostate_and_testis_expressed_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'PATE family',
+        },
+    ),  # ligands modulating nicotinic ACh receptors and sperm motility
 
     # intracellular
     af.AnnotDef(
@@ -2393,6 +2661,42 @@ annot_combined_classes = (
         },
     ), # cell-cell adhesion
     af.AnnotDef(
+        name = 'major_cadherin_cell_adhesion_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Major cadherins',
+        },
+    ), # cell-cell adhesion
+    af.AnnotDef(
+        name = 'non_clustered_protocadherin_cell_adhesion_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Non-clustered protocadherins',
+        },
+    ), # cell-cell adhesion
+    af.AnnotDef(
+        name = 'nectin_cell_adhesion_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Nectins and nectin-like molecules',
+        },
+        exclude = {'O95727', 'Q15223'},
+    ), # cell-cell adhesion
+    af.AnnotDef(
+        name = 'neurexin_cell_adhesion_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Neurexins',
+        },
+    ), # cell-cell adhesion for neurons
+    af.AnnotDef(
+        name = 'neuroligin_cell_adhesion_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Neuroligins',
+        },
+    ), # cell-cell adhesion for neurons
+    af.AnnotDef(
         name = 'ceacam_adhesion_hgnc',
         source = 'HGNC',
         args = {
@@ -2459,6 +2763,22 @@ annot_combined_classes = (
             'P05106',
         },
     ),
+    af.AnnotDef(
+        name = 'mucin_matrix_adhesion_hgnc',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'mucin_hgnc',
+                    source ='HGNC',
+                    args = {
+                        'mainclass': 'Mucins',
+                    },
+                ),
+                'transmembrane'
+            ),
+            op = set.intersection
+        ),
+    ),  # membrane bound mucins
 
     # surface enzyme
     af.AnnotDef(
@@ -2514,6 +2834,30 @@ annot_combined_classes = (
         name = 'hyaluronidase_surface_enzyme_omnipath',
         source = {'Q9UHN6', 'Q12891', 'P38567', 'Q2M3T9'},
     ),
+    af.AnnotDef(
+        name = 'm1_metallopeptidase_surface_peptidase_omnipath',
+        source = {'Q6Q4G3', 'Q9UIQ6', 'Q07075', 'P15144', 'Q9UKU6'},
+    ),  # cleave mostly peptide ligands, hormones like TRH, angiotensin, etc
+    af.AnnotDef(
+        name = 'm16_metallopeptidase_surface_peptidase_omnipath',
+        source = {'P14735'},
+    ),  # acts on peptide hormones
+    af.AnnotDef(
+        name = 'm10_metallopeptidase_surface_peptidase_omnipath',
+        source = {'P51511', 'P51512', 'Q9ULZ9', 'Q9Y5R2', 'Q9NPA2'},
+    ),
+    af.AnnotDef(
+        name = 'm13_metallopeptidase_surface_peptidase_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'M13 metallopeptidases',
+        },
+    ),
+        
+    af.AnnotDef(
+        name = 'm14_carboxypeptidase_surface_peptidase_omnipath',
+        source = {'P14384', 'O75976', 'Q8IVL8', },
+    ),
 
     # surface ligand
     af.AnnotDef(
@@ -2525,6 +2869,7 @@ annot_combined_classes = (
             ),
             op = set.union
         ),
+        exclude = {'P0DPD6'},
     ),
     af.AnnotDef(
         name = 'surface_ligand_go',
@@ -2571,6 +2916,13 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
+        name = 'neuregulin_surface_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Neuregulins',
+        },
+    ),  # ligands for various ERBB receptors
+    af.AnnotDef(
         name = 'hedgehog_surface_ligand_hgnc',
         source = 'HGNC',
         args = {
@@ -2579,10 +2931,13 @@ annot_combined_classes = (
     ),  # hedgehog proteins are initially membrane bound and can be
         # solubilized later
     af.AnnotDef(
-        name = 'izumo_surface_ligand_hgnc',
+        name = 'izumo_surface_ligand_omnipath',
         source = {'Q8IYV9', 'Q6UXV1', 'Q5VZ72'},
     ),  # ligands in sperm-egg fusion
-    
+    af.AnnotDef(
+        name = 'nectin_surface_ligand_omnipath',
+        source = {'O95727', 'Q15223'},
+    ),  # ligands for T-lymphocytes
 
     # transporter
     af.AnnotDef(
@@ -2665,7 +3020,10 @@ annot_combined_classes = (
         name = 'nak_atpase_transporter_hgnc',
         source = 'HGNC',
         args = {
-            'mainclass': 'ATPase Na+/K+ transporting subunits',
+            'mainclass': {
+                'ATPase Na+/K+ transporting subunits',
+                'Na+/K+ transporting ATPase interacting',
+            },
         },
     ),
     af.AnnotDef(
@@ -2678,6 +3036,15 @@ annot_combined_classes = (
             ),
         },
     ),
+    af.AnnotDef(
+        name = 'pannexin_transporter_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Pannexins',
+        },
+    ),  # as half channels they release ATP, Ca and other substances to
+        # the extracellular space
+    # Ion channels (subclass of transporters)
     af.AnnotDef(
         name = 'acid_sensing_ion_channel_hgnc',
         source = 'HGNC',
@@ -2734,6 +3101,17 @@ annot_combined_classes = (
         source = 'HGNC',
         args = {
             'mainclass': 'Hydrogen voltage gated channels',
+        },
+    ),
+    af.AnnotDef(
+        name = 'b_lymphocyte_calcium_ion_channel_omnipath',
+        source = {'P11836'},
+    ),
+    af.AnnotDef(
+        name = 'orai_calcium_ion_channel_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'ORAI calcium release-activated calcium modulators',
         },
     ),
 
@@ -2823,9 +3201,74 @@ annot_combined_classes = (
     ),  # permeabilizing microorganism membranes or
         # binding to microorganism surfaces
     af.AnnotDef(
+        name = 'lysozym_extracellular_enyzme_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': {
+                'Lysozymes, c-type',
+                'Lysozymes, g-type'
+            },
+        },
+    ),  # bacteriolytic proteins, some involved in sperm-egg fertilization
+    af.AnnotDef(
+        name = 'm14_carboxypeptidase_extracellular_peptidase_omnipath',
+        source = {
+            'P16870', 'P15169', 'Q8IUX7', 'Q66K79', 'P48052', 'Q96SM3',
+            'Q8WXQ8', 'P15086', 'Q96IY4', 'P15085', 'Q8N4T0', 'Q9HB40',
+            'P22792', 'Q9UI42', 'Q8N436', 'Q9Y646',
+        },
+    ),
+    af.AnnotDef(
         name = 'galactosidase_extracellular_enyzme_omnipath',
         source = {'Q6UWU2', 'Q8IW92'},
     ),  # secreted galactosidases
+    af.AnnotDef(
+        name = 'm1_metallopeptidase_extracellular_peptidase_omnipath',
+        source = {'Q9H4A4'},
+    ),  #
+    af.AnnotDef(
+        name = 'm16_metallopeptidase_extracellular_peptidase_omnipath',
+        source = {'P14735'},
+    ),  # acts on peptide hormones
+    af.AnnotDef(
+        name = 'lipase_extracellular_enzyme_hgnc',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'lipase_hgnc',
+                    source = 'HGNC',
+                    args = {
+                        'mainclass': 'Lipases',
+                    },
+                ),
+                'extracellular',
+            ),
+            op = set.intersection
+        ),
+    ),  # secreted lipases
+    af.AnnotDef(
+        name = 'paraoxonase_extracellular_enzyme_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Paraoxonases',
+        },
+    ),  # secreted enzymes hydrolysing lactons and other metabolites
+    af.AnnotDef(
+        name = 'lipocalin_extracellular_enzyme_hgnc',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'lipocalin_hgnc',
+                    source = 'HGNC',
+                    args = {
+                        'mainclass': 'Lipocalins',
+                    },
+                ),
+                'extracellular',
+            ),
+            op = set.intersection
+        ),
+    ),  # secreted lipases
     af.AnnotDef(
         name = 'immune_serin_protease_extracellular_peptidase_hgnc',
         source = 'HGNC',
@@ -2849,6 +3292,14 @@ annot_combined_classes = (
             'mainclass': 'Inter-alpha-trypsin inhibitor heavy chains',
         },
     ),  # protease inhibitors in plasma
+    af.AnnotDef(
+        name = 'm10_metallopeptidase_extracellular_peptidase_omnipath',
+        source = {
+            'Q9H239', 'P09237', 'P09238', 'P03956', 'P08253', 'P24347',
+            'P39900', 'P45452', 'Q9NRE1', 'P22894', 'Q99542', 'Q8N119',
+            'O60882', 'P14780', 'P08254',
+        },
+    ),  # secreted matrix metallopeptidases, many act on the ECM
 
     # extracellular peptidase
     af.AnnotDef(
@@ -2881,6 +3332,13 @@ annot_combined_classes = (
             'mainclass': 'Kallikreins',
         },
     ),  # extracellular serine proteases, involved in ECM dynamics
+    af.AnnotDef(
+        name = 'pappalysin_extracellular_peptidase_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Pappalysins',
+        },
+    ),  # cleave IGFBPs
 
     # growth factor binder or regulator
     af.AnnotDef(
@@ -2974,6 +3432,7 @@ annot_combined_classes = (
                 'gap_junction_ramilowski',
                 'gap_junction_uniprot',
                 'gap_junction_hgnc',
+                'pannexin_gap_junction_hgnc',
             ),
             op = set.union,
         ),
@@ -2999,6 +3458,13 @@ annot_combined_classes = (
             'location': 'Gap junction',
         },
     ),
+    af.AnnotDef(
+        name = 'pannexin_gap_junction_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Pannexins',
+        },
+    ),  # either half channels or gap junctions
     # tight junction
     af.AnnotDef(
         name = 'tight_junction',
@@ -3378,6 +3844,12 @@ annot_combined_classes = (
         name = 'lims1_adhesion_intracell_omnipath',
         source = {'P48059'},
     ),
+    af.AnnotDef(
+        name = (
+            'maguk_tight_junction_intracell_omnipath'
+        ),
+        source = {'Q07157', 'Q8N3R9', 'Q9UDY2', 'Q96QZ7', 'Q5T2T1', 'O95049'},
+    ),  # intracellular scaffolding proteins supporting tight junctions
 
 )
 
