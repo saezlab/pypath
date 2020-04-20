@@ -1817,6 +1817,7 @@ class AnnotationBase(resource.AbstractResource):
 
         self.set_reference_set()
         resource.AbstractResource.load(self)
+        self._ensure_swissprot()
 
         self._update_primary_field()
 
@@ -1833,6 +1834,28 @@ class AnnotationBase(resource.AbstractResource):
                 if self.get_names() else
             None
         )
+
+
+    def _ensure_swissprot(self):
+
+        if self.entity_type == 'protein':
+
+            new = collections.defaultdict(set)
+
+            for uniprot, annots in iteritems(self.annot):
+
+                swissprots = mapping.map_name(
+                    uniprot,
+                    'uniprot',
+                    'uniprot',
+                    ncbi_tax_id = self.ncbi_tax_id,
+                )
+
+                for swissprot in swissprots:
+
+                    new[swissprot].update(annots)
+
+            self.annot = dict(new)
 
 
     def add_complexes_by_inference(self, complexes = None):
