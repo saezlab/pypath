@@ -1700,7 +1700,7 @@ class CustomAnnotation(session_mod.Logger):
                 
                 sys.stdout.write(
                     '[%u/%u] =====> %s <===== [%u proteins]\n' % (
-                        n,
+                        n + 1,
                         n_classes,
                         cls,
                         len(uniprots)
@@ -2858,7 +2858,7 @@ class AnnotationBase(resource.AbstractResource):
         
         for n, vals in enumerate(values):
             
-            if n < start:
+            if n + 1 < start:
                 
                 continue
             
@@ -2884,7 +2884,7 @@ class AnnotationBase(resource.AbstractResource):
             
             sys.stdout.write(
                 '[%u/%u] =====> %s <===== [%u proteins]\n' % (
-                    n,
+                    n + 1,
                     total or 0,
                     label,
                     len(proteins)
