@@ -51,7 +51,7 @@ def adhesome_interactions():
                 source = rec['Source'],
                 target = rec['Target'],
                 effect = rec['Effect'],
-                type   = rec['Type'],
+                type   = common.upper0(rec['Type']),
                 pmid   = rec['PMID'],
             )
         )
@@ -85,7 +85,7 @@ def adhesome_annotations():
             for _uniprot in mapping.map_name(uniprot, 'uniprot', 'uniprot'):
                 result[uniprot].add(AdhesomeAnnotation(
                     mainclass = (
-                        rec['Functional Category'].strip().capitalize()
+                        common.upper0(rec['Functional Category'].strip())
                     ),
                     intrinsic = rec['FA'].strip() == 'Intrinsic Proteins',
                 ))
