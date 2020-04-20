@@ -517,10 +517,24 @@ def add_to_set(st, toadd):
 
 def upper0(string):
     """
-    Ensures the first letter of a string is uppercase.
+    Ensures the first letter of a string is uppercase, except if the first
+    word already contains uppercase letters, in order to avoid changing,
+    for example, miRNA to MiRNA.
     """
 
-    return string[0].upper() + string[1:] if string else string
+    if not string:
+        
+        return string
+        
+    else:
+        
+        word0, rest = string.split(' ', maxsplit = 1)
+        
+        if word0.lower() == word0:
+            
+            word0 = word0[0].upper() + word[1:]
+        
+        return '%s %s' % (word0, rest)
 
 
 def something(anything):
