@@ -1223,6 +1223,13 @@ annot_combined_classes = (
         source = {'Q15818', 'O95502'},
     ),
     af.AnnotDef(
+        name = 'short_pentraxin_secreted_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Short pentraxins',
+        },
+    ),  # bind to microbial antigens, DNA and histones
+    af.AnnotDef(
         name = 'low_density_lipoprotein_receptor_hgnc',
         source = 'HGNC',
         args = {
@@ -1516,6 +1523,59 @@ annot_combined_classes = (
         },
     ),  # apart from peptide recognition they have anti-microbial activity
         # either enzymatically or other ways
+    af.AnnotDef(
+        name = 'scavenger_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Scavenger receptors',
+        },
+        exclude = {'Q8WTU2', 'Q6AZY7', 'A1L4H1', 'Q14108'}
+    ),
+    af.AnnotDef(
+        name = 'scavenger_secreted_receptor_omnipath',
+        source = {'Q8WTU2', 'A1L4H1', 'Q86VB7'},
+    ),
+    af.AnnotDef(
+        name = 'sialic_acid_binding_lectin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Sialic acid binding Ig like lectins',
+        },
+    ),  # not all of them are receptors, some of them might be cell-cell
+        # adhesion proteins, depending on the intracellular domains
+    af.AnnotDef(
+        name = 'somatostatin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Somatostatin receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'sphingosine_phosphate_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Sphingosine 1-phosphate receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'succinate_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Succinate receptor',
+        },
+    ),
+    af.AnnotDef(
+        name = 't_cell_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': {
+                'T cell receptor alpha locus at 14q11.2',
+                'T cell receptor beta locus at 7q34',
+                'T cell receptor delta locus at 14q11.2',
+                'T cell receptor gamma locus at 7p14',
+            },
+        },
+    ),
 
     # ECM
     af.AnnotDef(
@@ -1692,6 +1752,13 @@ annot_combined_classes = (
             'mainclass': 'SPARC family',
         },
     ),  # act either on ligands or ECM or both
+    af.AnnotDef(
+        name = 'small_leucine_rich_repeat_proteoglycan_ecm_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Small leucine rich repeat proteoglycans',
+        },
+    ),
 
     # ligand
     af.AnnotDef(
@@ -2082,6 +2149,27 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'scavenger_receptor_cysteine_rich_ligand_omnipath',
         source = {'O43866'},
+    ),
+    af.AnnotDef(
+        name = 'frizzled_related_ligand_regulator_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Secreted frizzled-related proteins',
+        },
+    ),  # secreted proteins binding WNT ligands
+    af.AnnotDef(
+        name = 'secretoglobin_ligand_regulator_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Secretoglobins',
+        },
+    ),  # secreted proteins binding small molecule ligands
+    af.AnnotDef(
+        name = 'tafa_chemokine_like_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'TAFA chemokine like family',
+        },
     ),
 
     # intracellular
@@ -3003,6 +3091,13 @@ annot_combined_classes = (
         name = 'scavenger_receptor_cysteine_rich_cell_adhesion_omnipath',
         source = {'P30203'},
     ),
+    af.AnnotDef(
+        name = 'selectin_cell_adhesion_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Selectins',
+        },
+    ),
 
     # surface enzyme
     af.AnnotDef(
@@ -3168,6 +3263,24 @@ annot_combined_classes = (
         name = 'nectin_surface_ligand_omnipath',
         source = {'O95727', 'Q15223'},
     ),  # ligands for T-lymphocytes
+    af.AnnotDef(
+        name = 'semaphorin_surface_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Semaphorins',
+        },
+        exclude = {
+            'Q14563', 'Q13214', 'Q13275', 'Q99985',
+            'Q9NS98', 'O15041', 'O95025',
+        },
+    ),  # surface bound ligands for plexins, regulating axonal growth
+    af.AnnotDef(
+        name = 'semaphorin_ligand_omnipath',
+        source = {
+            'Q14563', 'Q13214', 'Q13275', 'Q99985',
+            'Q9NS98', 'O15041', 'O95025',
+        }
+    ),  # secreted ligands for plexins, regulating axonal growth
 
     # transporter
     af.AnnotDef(
@@ -3382,6 +3495,30 @@ annot_combined_classes = (
         exclude = {
             'O43448', 'Q14722', 'Q9NZI2',
             'Q9Y2W7', 'Q13303', 'Q6PIL6',
+        },
+    ),
+    af.AnnotDef(
+        name = 'epithelial_sodium_ion_channel_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Sodium channels epithelial',
+        },
+    ),
+    af.AnnotDef(
+        name = 'sodium_leak_ion_channel_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Sodium leak channels, non selective',
+        },
+    ),
+    af.AnnotDef(
+        name = 'voltage_gated_sodium_ion_channel_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': {
+                'Sodium voltage-gated channel alpha subunits',
+                'Sodium voltage-gated channel beta subunits',
+            },
         },
     ),
 
@@ -3630,6 +3767,65 @@ annot_combined_classes = (
             'scavenger_receptor_cysteine_rich_extracellular_enzyme_omnipath'
         ),
         source = {'P58215', 'Q96JB6', 'P05156', 'P56730', 'Q96JK4', 'Q9Y4K0'},
+    ),
+    af.AnnotDef(
+        name = (
+            'glutathione_peroxidase_extracellular_enzyme_omnipath'
+        ),
+        source = {'P59796', 'P49908', 'P22352'},
+    ),
+    af.AnnotDef(
+        name = (
+            'serine_peptidase_inhibitor_'
+            'extracellular_peptidase_regulator_hgnc'
+        ),
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Serine peptidase inhibitors, Kazal type',
+        },
+    ),
+    af.AnnotDef(
+        name = (
+            'serine_protease_extracellular_peptidase_hgnc'
+        ),
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Serine proteases',
+        },
+        exclude = {
+            'Q9UHE8', 'P36776', 'Q9NQE7', 'Q6UWY2', 'Q7Z5A4', 'P57727',
+            'Q8IU80', 'Q9Y5Q5', 'Q7RTY9', 'Q9BYE2', 'Q6ZMR5', 'Q9H3S3',
+            'Q86WS5', 'Q9Y6M0', 'Q9Y5Y6', 'O60235', 'Q9NRR2', 'Q7Z410',
+            'Q6ZWK6', 'Q7RTY8', 'P05981', 'Q86T26', 'Q6UWB4', 'Q9NRS4',
+            'O43464', 'Q9UI38',
+        },
+    ),
+    af.AnnotDef(
+        name = (
+            'serine_protease_surface_peptidase_hgnc'
+        ),
+        source = {
+            'Q8IU80', 'Q9Y5Q5', 'Q7RTY9', 'Q9BYE2', 'Q6ZMR5', 'Q9H3S3',
+            'Q86WS5', 'Q9Y6M0', 'Q9Y5Y6', 'O60235', 'Q9NRR2', 'Q7Z410',
+            'Q6ZWK6', 'Q7RTY8', 'P05981', 'Q86T26', 'Q6UWB4', 'Q9NRS4',
+            'A4D1T9', 'O15393', 'Q92743', 'Q9UL52', 'Q16651'
+        },
+    ),
+    af.AnnotDef(
+        name = 'serpin_extracellular_peptidase_regulator_hgnc',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'serpin_peptidase_regulator_hgnc',
+                    source = 'HGNC',
+                    args = {
+                        'mainclass': 'Serpin peptidase inhibitors',
+                    },
+                ),
+                'secreted',
+            ),
+            op = set.intersection,
+        ),
     ),
 
     # growth factor binder or regulator
