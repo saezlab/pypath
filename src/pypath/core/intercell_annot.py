@@ -1576,6 +1576,92 @@ annot_combined_classes = (
             },
         },
     ),
+    af.AnnotDef(
+        name = 'tir_domain_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'TIR domain containing',
+        },
+        exclude = {'Q8IUC6', 'Q99836', 'Q6SZW1', 'Q86XR7'}
+    ),
+    af.AnnotDef(
+        name = 'tachykinin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Tachykinin receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'taste_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': {
+                'Taste 1 receptors',
+                'Taste 2 receptors',
+            },
+        },
+    ),
+    af.AnnotDef(
+        name = 'toll_like_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Toll like receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'trace_amin_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Trace amine receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'tumor_necrosis_factor_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Tumor necrosis factor receptor superfamily',
+        },
+        exclude = {'O9540', 'O0030'},
+    ),
+    af.AnnotDef(
+        name = 'tumor_necrosis_factor_secreted_receptor_omnipath',
+        source = {'O9540', 'O0030'},
+    ),
+    af.AnnotDef(
+        name = 'type1_serine_threonine_kinase_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Type 1 receptor serine/threonine kinases',
+        },
+    ),
+    af.AnnotDef(
+        name = 'type2_serine_threonine_kinase_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Type 2 receptor serine/threonine kinases',
+        },
+    ),
+    af.AnnotDef(
+        name = 'vasoactive_intestinal_peptide_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Vasoactive intestinal peptide receptor family',
+        },
+    ),
+    af.AnnotDef(
+        name = 'vomeronasal_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Vomeronasal receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'xc_motif_chemokine_receptor_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'X-C motif chemokine receptors',
+        },
+    ),
 
     # ECM
     af.AnnotDef(
@@ -1759,6 +1845,13 @@ annot_combined_classes = (
             'mainclass': 'Small leucine rich repeat proteoglycans',
         },
     ),
+    af.AnnotDef(
+        name = 'zona_pellucida_glycoprotein_ecm_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Zona pellucida glycoproteins',
+        },
+    ),  # ECM of the zona pellucida (zone surrounding the oocyte)
 
     # ligand
     af.AnnotDef(
@@ -2169,6 +2262,50 @@ annot_combined_classes = (
         source = 'HGNC',
         args = {
             'mainclass': 'TAFA chemokine like family',
+        },
+    ),
+    af.AnnotDef(
+        name = 'prosalusin_ligand_omnipath',
+        source = {'Q8N2E6'},
+    ),
+    af.AnnotDef(
+        name = 'transforming_growth_factor_beta_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Transforming growth factor beta family',
+        },
+    ),
+    af.AnnotDef(
+        name = 'tumor_necrosis_factor_surface_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Tumor necrosis factor superfamily',
+        },
+        exclude = {'O75888'},
+    ),
+    af.AnnotDef(
+        name = 'tumor_necrosis_factor_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Tumor necrosis factor superfamily',
+        },
+        exclude = {
+            'Q9UNG2', 'P32970', 'O14788', 'P48023',
+            'P32971', 'P41273', 'P23510', 'Q06643',
+        },
+    ),
+    af.AnnotDef(
+        name = 'vascular_endothelial_growth_factor_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'VEGF family',
+        },
+    ),
+    af.AnnotDef(
+        name = 'wnt_ligand_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Wnt family',
         },
     ),
 
@@ -2963,6 +3100,20 @@ annot_combined_classes = (
         },
     ), # cell-cell adhesion
     af.AnnotDef(
+        name = 'type1_classical_cadherin_cell_adhesion_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Type I classical cadherins',
+        },
+    ), # cell-cell adhesion
+    af.AnnotDef(
+        name = 'type2_classical_cadherin_cell_adhesion_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Type II classical cadherins',
+        },
+    ), # cell-cell adhesion
+    af.AnnotDef(
         name = 'nectin_cell_adhesion_hgnc',
         source = 'HGNC',
         args = {
@@ -3183,6 +3334,14 @@ annot_combined_classes = (
         name = 'm14_carboxypeptidase_surface_peptidase_omnipath',
         source = {'P14384', 'O75976', 'Q8IVL8', },
     ),
+    af.AnnotDef(
+        name = 'vanin_surface_enzyme_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Vanins',
+        },
+        exclude = {'P43251'},
+    ),
 
     # surface ligand
     af.AnnotDef(
@@ -3281,6 +3440,14 @@ annot_combined_classes = (
             'Q9NS98', 'O15041', 'O95025',
         }
     ),  # secreted ligands for plexins, regulating axonal growth
+    af.AnnotDef(
+        name = 'anosmin_ligand_omnipath',
+        source = {'P23352'},
+    ),
+    af.AnnotDef(
+        name = 'anosmin_surface_ligand_omnipath',
+        source = {'P23352'},
+    ),
 
     # transporter
     af.AnnotDef(
@@ -3519,6 +3686,43 @@ annot_combined_classes = (
                 'Sodium voltage-gated channel alpha subunits',
                 'Sodium voltage-gated channel beta subunits',
             },
+        },
+    ),
+    af.AnnotDef(
+        name = 'transient_receptor_potential_cation_ion_channel_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Transient receptor potential cation channels',
+        },
+        exclude = {'Q9GZU1'},
+    ),
+    af.AnnotDef(
+        name = 'transmembrane_channel_like_ion_channel_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Transmembrane channel like family',
+        },
+        exclude = {'Q7Z403', 'Q8IU68'},
+    ),
+    af.AnnotDef(
+        name = 'tweety_chloride_ion_channel_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Tweety family',
+        },
+    ),  # Ca activated chloride channels
+    af.AnnotDef(
+        name = 'volume_regulated_anion_ion_channel_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Volume regulated anion channel subunits',
+        },
+    ),
+    af.AnnotDef(
+        name = 'zinc_activated_ion_channel_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Zinc activated channels',
         },
     ),
 
@@ -3786,6 +3990,27 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = (
+            'wap_four_disulfide_core_domain_containing_'
+            'extracellular_peptidase_regulator_hgnc'
+        ),
+        source = 'HGNC',
+        args = {
+            'mainclass': 'WAP four-disulfide core domain containing',
+        },
+        exclude = {'P23352'},
+    ),
+    af.AnnotDef(
+        name = (
+            'tissue_inhibitor_of_metallopeptidases_'
+            'extracellular_peptidase_regulator_hgnc'
+        ),
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Tissue inhibitor of metallopeptidases',
+        },
+    ),
+    af.AnnotDef(
+        name = (
             'serine_protease_extracellular_peptidase_hgnc'
         ),
         source = 'HGNC',
@@ -3826,6 +4051,10 @@ annot_combined_classes = (
             ),
             op = set.intersection,
         ),
+    ),
+    af.AnnotDef(
+        name = 'biotinidase_extracellular_enzyme_omnipath',
+        source = {'P43251'},
     ),
 
     # growth factor binder or regulator
@@ -4123,6 +4352,14 @@ annot_combined_classes = (
         },  # secreted or peripheral on the outer side of plasma membrane
             # enzymes, protease inhibitors, receptors, co-receptors
     ),
+    af.AnnotDef(
+        name = 'tetraspanin_plasma_membrane_regulator_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Tetraspanins',
+        },
+    ),  # transmembrane proteins in the plasma membrane, regulate various
+        # other proteins such as channels, receptors, adhesion proteins
 
     # to be decided
     af.AnnotDef(
@@ -4250,6 +4487,13 @@ annot_combined_classes = (
         },
     ),  # histocompatibility antigen complex members for presenting
         # antigens on the cell surface
+    af.AnnotDef(
+        name = 'vset_domain_containing_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'V-set domain containing',
+        },
+    ),  # various ligands, receptors and adhesion molecules
 
     # intracellular protein classes in close relation to intercellular
     # communication
