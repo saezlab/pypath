@@ -271,7 +271,15 @@ class UniprotProtein(object):
         Returns the molecular weight of the canonical isoform in Daltons.
         """
         
-        return int(self._remw.search(next(self.itertag('SQ'))).groups()[0])
+        try:
+            
+            return int(
+                self._remw.search(next(self.itertag('SQ'))).groups()[0]
+            )
+            
+        except StopIteration:
+            
+            return None
     
     
     @property
@@ -401,6 +409,11 @@ class UniprotProtein(object):
             if _tag == tag:
                 
                 yield line
+    
+    
+    def has_tag(self, tag):
+        
+        return any(line[0] == tag for line in self)
     
     
     def __repr__(self):
