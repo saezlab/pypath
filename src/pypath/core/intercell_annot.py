@@ -627,10 +627,10 @@ annot_combined_classes = (
         args = {'mainclass': 'Actin regulation'},
     ),
     af.AnnotDef(
-        name = 'adhesion_receptor_adhesome',
+        name = 'adhesion_adhesome',
         source = 'Adhesome',
         args = {'mainclass': 'Adhesion receptor'},
-    ),
+    ),  # both cell-cell and cell-matrix adhesion
     af.AnnotDef(
         name = 'ly6_plaur_adhesion_omnipath',
         source = {'O95274', 'Q8N6Q3', 'Q8TDM5', 'Q9BY14', 'Q17RY6'},
@@ -1819,7 +1819,7 @@ annot_combined_classes = (
             ),
             op = set.intersection
         ),
-    ),  #
+    ),
     af.AnnotDef(
         name = 'proteoglycan_ecm_omnipath',
         source = {'O00468', 'P98160'},
@@ -3039,15 +3039,6 @@ annot_combined_classes = (
         ),
     ),
     af.AnnotDef(
-        name = 'adhesion_adhesome',
-        source = af.AnnotOp(
-            annots = (
-                'adhesion_receptor_adhesome',
-            ),
-            op = set.union,
-        ),
-    ),
-    af.AnnotDef(
         name = 'focal_adhesion_ramilowski',
         source = 'Ramilowski_location',
         args = {
@@ -3488,6 +3479,11 @@ annot_combined_classes = (
                 'ION CHANNEL',
             },
         },
+    ),
+    af.AnnotDef(
+        name = 'transporter_adhesome',
+        source = 'Adhesome',
+        args = {'mainclass': 'Channel'},
     ),
 
     # transporters from HGNC
