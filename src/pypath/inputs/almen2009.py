@@ -65,7 +65,7 @@ def almen2009_annotations():
         uniprots = mapping.map_name(row[0], 'ipi', 'uniprot')
         
         mainclass = row[2]
-        classes = row.replace('KInase', 'Kinase')
+        classes = row[3].replace('KInase', 'Kinase')
         classes = tuple(sorted(resep.split(classes)))
         phobius_transmembrane = int(float(row[5]))
         phobius_secreted = row[6] == 'Y'
