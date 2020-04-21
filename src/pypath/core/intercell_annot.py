@@ -1940,6 +1940,100 @@ annot_combined_classes = (
             'classes': 'Rhodopsin',
         },
     ),  # GPCRs for various ligands, hormones, neurotransmitters, etc
+    af.AnnotDef(
+        name = 'secretin_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Secretin',
+        },
+    ),  # GPCRs for various hormones
+    af.AnnotDef(
+        name = 'syndecan_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Syndecan',
+        },
+    ),  # heparan sulphate carrying cell surface proteins
+        # transferring signals to the cytoskeleton, regulating cell shape
+    af.AnnotDef(
+        name = 'taste_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'TAS2R',
+        },
+    ),
+    af.AnnotDef(
+        name = 't_cell_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'TCR',
+        },
+    ),
+    af.AnnotDef(
+        name = 'tumor_necrosis_factor_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'TNFNGF',
+        },
+    ),  # maybe this is a broader superfamily
+    af.AnnotDef(
+        name = 'toll_like_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'TOLL',
+        },
+    ),  # receptors for various pathogen patterns e.g. LPS
+    af.AnnotDef(
+        name = 'teneurin_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Teneurin',
+        },
+    ),  # functioning in neural development and maybe elsewhere;
+        # these are definitely receptors, but also ligands and
+        # maybe cell-cell adhesion molecules
+    af.AnnotDef(
+        name = 'transferrin_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Transferrin',
+        },
+    ),
+    af.AnnotDef(
+        name = 'type1_ig_like_cytokine_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Type1',
+        },
+    ),  # mostly interleukin receptors
+    af.AnnotDef(
+        name = 'type2_ig_like_cytokine_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Type2',
+        },
+    ),  # mostly interferon and interleukin receptors
+    af.AnnotDef(
+        name = 'vomeronasal_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'V1R',
+        },
+    ),  # pheromone receptors
+    af.AnnotDef(
+        name = 'gaba_ach_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'cys-loop',
+        },
+    ),  # receptors for ACh and GABA
+    af.AnnotDef(
+        name = 'neurotrophin_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'neutrophin',
+        },
+    ),
 
     # ECM
     af.AnnotDef(
@@ -3657,12 +3751,19 @@ annot_combined_classes = (
         },
     ),  # cell-cell adhesion
     af.AnnotDef(
-        name = 'sarcoglycan_adhesion_almen',
+        name = 'sarcoglycan_matrix_adhesion_almen',
         source = 'Almen2009',
         args = {
             'classes': 'Sarcoglycan',
         },
     ),  # cell-matrix adhesion for muscle cells
+    af.AnnotDef(
+        name = 'selectin_cell_adhesion_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Selectin',
+        },
+    ),  # cell-cell adhesion between immune cells
 
     # surface enzyme
     af.AnnotDef(
@@ -3869,6 +3970,13 @@ annot_combined_classes = (
             'classes': 'MHC',
         },
     ),
+    af.AnnotDef(
+        name = 'semaphorin_surface_ligand_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Semaphorin',
+        },
+    ),  # surface bound ligands for plexins, regulating axonal growth
 
     # transporter
     af.AnnotDef(
@@ -4006,6 +4114,29 @@ annot_combined_classes = (
             'classes': 'PKD1',
         },
     ),  # components of calcium channels
+    af.AnnotDef(
+        name = 'tmem16_calcium_dependent_chloride_ion_channel_omnipath',
+        source = {'Q9NQ90'},
+    ),
+    af.AnnotDef(
+        name = 'tmem16_phospholipid_scramblase_omnipath',
+        source = {'Q6IWH7', 'Q4KMQ2', 'A1A5B4'},
+    ),
+    af.AnnotDef(
+        name = 'tmem30_aminophospholipid_flippase_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'TMEM30',
+        },
+    ),
+    af.AnnotDef(
+        name = 'tmem63_osmosensitive_cation_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'TMEM63',
+        },
+        exclude = {'O94886'},
+    ),
 
     # transporters from HGNC
     af.AnnotDef(
@@ -4078,6 +4209,13 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
+        name = 'sphingolipid_transporter_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Spinster',
+        },
+    ),
+    af.AnnotDef(
         name = 'pannexin_transporter_hgnc',
         source = 'HGNC',
         args = {
@@ -4130,7 +4268,7 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'cyclic_nucleotid_gated_ion_channel_hgnc',
+        name = 'cyclic_nucleotide_gated_ion_channel_hgnc',
         source = 'HGNC',
         args = {
             'mainclass': 'Cyclic nucleotide gated channels',
@@ -4346,6 +4484,73 @@ annot_combined_classes = (
         source = 'Almen2009',
         args = {
             'classes': 'Potassium_channels',
+        },
+    ),
+    af.AnnotDef(
+        name = 'beta_sodium_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'SodiumChannelBeta',
+        },
+    ),
+    af.AnnotDef(
+        name = 'sodium_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'SodiumChannels',
+        },
+    ),
+    af.AnnotDef(
+        name = 'transient_receptor_potential_cation_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'TRP_channels',
+        },
+    ),  # calcium permeable cation channels activated by receptors
+    af.AnnotDef(
+        name = 'tweety_chloride_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Tweety',
+        },
+    ),
+    af.AnnotDef(
+        name = 'sodium_potassium_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Two-p_K_channels',
+        },
+    ),
+    af.AnnotDef(
+        name = 'voltage_gated_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Voltage_gated_ion_channels',
+        },
+        exclude = {'Q92736', 'P21817', 'Q14573', 'Q9ULQ1'},
+    ),
+    af.AnnotDef(
+        name = 'xk_transporter_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'XK',
+        },
+    ),  # transporters for amino acids,
+        # scramblases for phosphatidylserine,
+        # and who knows what else
+    af.AnnotDef(
+        name = 'sperm_associated_voltage_gated_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'catSper-Two-P',
+        },
+        exclude = {'Q9ULQ1', 'Q8NHX9'},
+    ),
+    af.AnnotDef(
+        name = 'cyclic_nucleotide_gated_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'cycliNucleotideRegulatedChannels',
         },
     ),
 
@@ -4995,6 +5200,15 @@ annot_combined_classes = (
         args = {
             'mainclass': 'Tetraspanins',
         },
+    ),  # transmembrane proteins in the plasma membrane, regulate various
+        # other proteins such as channels, receptors, adhesion proteins
+    af.AnnotDef(
+        name = 'tetraspanin_plasma_membrane_regulator_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Tetraspanin',
+        },
+        exclude = {'O60635'}
     ),  # transmembrane proteins in the plasma membrane, regulate various
         # other proteins such as channels, receptors, adhesion proteins
 
