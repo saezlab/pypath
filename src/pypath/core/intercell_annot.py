@@ -1818,6 +1818,128 @@ annot_combined_classes = (
             'classes': 'NetrinR',
         },
     ),
+    af.AnnotDef(
+        name = 'neuropilin_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Neuropilin',
+        },
+    ),  # receptor for semaphorins, VEGF and PLGF
+    af.AnnotDef(
+        name = 'notch_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Notch',
+        },
+    ),
+    af.AnnotDef(
+        name = 'olfactory_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': {'Olf', 'PutativeOlfR'},
+        },
+    ),
+    af.AnnotDef(
+        name = 'cd1_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'OtherCD1',
+        },
+    ),
+    af.AnnotDef(
+        name = 'cd300_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'OtherCD300',
+        },
+    ),
+    af.AnnotDef(
+        name = 'natural_cytotoxicity_triggering_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'OtherNCR',
+        },
+    ),
+    af.AnnotDef(
+        name = 'poliovirus_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'OtherPVR',
+        },
+    ),
+    af.AnnotDef(
+        name = 'roundabout_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'OtherROBO',
+        },
+    ),
+    af.AnnotDef(
+        name = 'triggering_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'OtherTREM',
+        },
+        exclude = {'Q6UXN2'}
+    ),
+    af.AnnotDef(
+        name = 'pdgf_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'PDGFR',
+        },
+    ),
+    af.AnnotDef(
+        name = 'patched_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Patched',
+        },
+    ),
+    af.AnnotDef(
+        name = 'plexin_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Plexin',
+        },
+    ),
+    af.AnnotDef(
+        name = 'receptor_activity_modifying_receptor_regulator_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'RAMP',
+        },
+    ),  # affect other receptors such as CALCRL
+    af.AnnotDef(
+        name = 'retinal_guanylyl_cyclase_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'RGC',
+        },
+    ),  # receptors for various compounds, e.g. natriuretic peptide
+        # and E.coli enterotoxin
+    af.AnnotDef(
+        name = 'receptor_transporter_receptor_regulator_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'RTP',
+        },
+    ),  # regulate other receptors,
+        # especially their trafficking to the plasma membrane
+    af.AnnotDef(
+        name = 'receptor_tyrosine_phosphatase_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'ReceptorTypePhosphatases',
+        },
+    ),  # not sure all these are receptors
+    af.AnnotDef(
+        name = 'rhodopsin_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Rhodopsin',
+        },
+    ),  # GPCRs for various ligands, hormones, neurotransmitters, etc
 
     # ECM
     af.AnnotDef(
@@ -2520,6 +2642,10 @@ annot_combined_classes = (
         args = {
             'classes': 'Semaphorins',
         },
+    ),
+    af.AnnotDef(
+        name = 'trem_like_ligand_omnipath',
+        source = {'Q6UXN2'},
     ),
 
     # intracellular
@@ -3340,12 +3466,26 @@ annot_combined_classes = (
         },
     ), # cell-cell adhesion for neurons
     af.AnnotDef(
+        name = 'neurexin_cell_adhesion_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Neurexin',
+        },
+    ),  # these are also receptors
+    af.AnnotDef(
         name = 'neuroligin_cell_adhesion_hgnc',
         source = 'HGNC',
         args = {
             'mainclass': 'Neuroligins',
         },
     ), # cell-cell adhesion for neurons
+    af.AnnotDef(
+        name = 'neuroligin_cell_adhesion_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Neuroligin',
+        },
+    ), # cell-cell adhesion for neurons; these are also ligands
     af.AnnotDef(
         name = 'ceacam_adhesion_hgnc',
         source = 'HGNC',
@@ -3502,6 +3642,27 @@ annot_combined_classes = (
             'classes': 'Integrin',
         },
     ),  # matrix adhesion; these are also receptors
+    af.AnnotDef(
+        name = 'beta_protocadherin_adhesion_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'ProtocadherinsBeta',
+        },
+    ),  # cell-cell adhesion especially between neurons
+    af.AnnotDef(
+        name = 'protocadherin_adhesion_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'ProtocadherinsOther',
+        },
+    ),  # cell-cell adhesion
+    af.AnnotDef(
+        name = 'sarcoglycan_adhesion_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Sarcoglycan',
+        },
+    ),  # cell-matrix adhesion for muscle cells
 
     # surface enzyme
     af.AnnotDef(
@@ -3811,10 +3972,40 @@ annot_combined_classes = (
         name = 'solute_carrier_transporter_almen',
         source = 'Almen2009',
         args = {
-            'classes': {'AMAC', 'APC'},
+            'classes': {
+                'AMAC', 'APC', 'SLC1', 'SLC10',
+                'SLC11', 'SLC12', 'SLC13', 'SLC14',
+                'SLC15', 'SLC16', 'SLC17', 'SLC18',
+                'SLC19', 'SLC2', 'SLC20', 'SLC22',
+                'SLC23', 'SLC24', 'SLC26', 'SLC27',
+                'SLC28', 'SLC29', 'SLC3', 'SLC30',
+                'SLC31', 'SLC34', 'SLC36', 'SLC38',
+                'SLC39', 'SLC4', 'SLC40', 'SLC41',
+                'SLC42(Rh)', 'SLC43', 'SLC44', 'SLC45',
+                'SLC46', 'SLC5', 'SLC6', 'SLC7',
+                'SLC8', 'SLC9', 'SLCO',
+            },
         },
-        exclude = {'Q8TBB6', 'Q8TE54'},
-    ),
+        exclude = {
+            'Q8TBB6', 'Q8TE54', 'Q8IY34', 'Q9P2U8', 'Q9P2U7', 'Q8NDX2',
+            'Q8NHS3', 'Q05940', 'P54219', 'Q9UGQ3', 'O95528', 'Q8N4V2',
+            'Q6J4K2', 'Q71RS6', 'Q8TE54', 'Q6P1M0', 'Q6PML9', 'Q8TAD4',
+            'Q6NXT4', 'O14863', 'Q8NEW0', 'Q99726', 'Q9BRI3', 'Q8NBW4',
+            'Q92504', 'Q9C0K1', 'Q96H72', 'Q9UMX9', 'Q9H1V8', 'Q8TBB6',
+            'Q8IVB4', 'Q9Y2E8',
+        },
+    ),  # transporters for various compounds, e.g. amino acids, bile acids,
+        # metal ions, other inorganic and organic ions, urea, oligopeptides,
+        # vitamins, sugars, steroids, organic acids, fatty acids,
+        # pyrimidines, purines, nucleosides, 
+        # we can split this group later
+    af.AnnotDef(
+        name = 'polycystin_calcium_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'PKD1',
+        },
+    ),  # components of calcium channels
 
     # transporters from HGNC
     af.AnnotDef(
@@ -4148,6 +4339,13 @@ annot_combined_classes = (
         source = 'Almen2009',
         args = {
             'classes': 'Ligand_gated_ion_channels',
+        },
+    ),
+    af.AnnotDef(
+        name = 'potassium_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Potassium_channels',
         },
     ),
 
