@@ -1662,6 +1662,162 @@ annot_combined_classes = (
             'mainclass': 'X-C motif chemokine receptors',
         },
     ),
+    # subclasses from Almen 2009
+    af.AnnotDef(
+        name = 'transforming_growth_factor_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Act.TGFB',
+        },
+    ),
+    af.AnnotDef(
+        name = 'axl_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Axl',
+        },
+    ),  # their ligands are in the ECM
+    af.AnnotDef(
+        name = 'butyrophilin_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Butyrophilin',
+        },
+    ),  # not clear if these are all receptors or some of them are ligands,
+        # transporters or regulators of other membrane proteins
+    af.AnnotDef(
+        name = 'scavenger_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'SCAR',
+        },
+    ),
+    af.AnnotDef(
+        name = 'cytokine_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'CytokineR',
+        },
+    ),
+    af.AnnotDef(
+        name = 'egf_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'EGFR',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ephrin_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Eph',
+        },
+    ),
+    af.AnnotDef(
+        name = 'fgf_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'FGFR',
+        },
+    ),
+    af.AnnotDef(
+        name = 'fc_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'FcR',
+        },
+    ),
+    af.AnnotDef(
+        name = 'frizzled_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Frizzled',
+        },
+    ),
+    af.AnnotDef(
+        name = 'gpcr_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'GPCR',
+        },
+    ),
+    af.AnnotDef(
+        name = 'glutamate_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Glutamate',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ig_like_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'mainclass': 'Receptor',
+            'classes': 'IG',
+        },
+    ),
+    af.AnnotDef(
+        name = 'il17_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'mainclass': 'Receptor',
+            'classes': 'IL17',
+        },
+    ),
+    af.AnnotDef(
+        name = 'igf_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'InsR',
+        },
+    ),
+    af.AnnotDef(
+        name = 'killer_cell_ig_like_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'KIR',
+        },
+    ),
+    af.AnnotDef(
+        name = 'kinase_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'mainclass': 'Receptors',
+            'classes': {
+                'Kinase',
+                'KInase' # this is a typo
+            },
+        },
+    ),  # all receptors with kinase activity,
+        # I think it's useful to have such category
+    af.AnnotDef(
+        name = 'low_density_lipoprotein_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'LDLR',
+        },
+    ),
+    af.AnnotDef(
+        name = 'leukocyte_ig_like_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'LILR',
+        },
+    ),
+    af.AnnotDef(
+        name = 'mannose_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'MacrophageMannoseR',
+        },
+    ),
+    af.AnnotDef(
+        name = 'netrin_receptor_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'NetrinR',
+        },
+    ),
 
     # ECM
     af.AnnotDef(
@@ -2308,6 +2464,63 @@ annot_combined_classes = (
             'mainclass': 'Wnt family',
         },
     ),
+    # from Almen 2009
+    af.AnnotDef(
+        name = 'ligand_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Ligand',
+        },
+    ),
+    af.AnnotDef(
+        name = 'delta_like_ligand_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Delta',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ephrin_b_ligand_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'EphB',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ig_ligand_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'IG_Ligand',
+        },
+    ),
+    af.AnnotDef(
+        name = 'jagged_ligand_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Jagged',
+        },
+    ),
+    af.AnnotDef(
+        name = 'neuroligin_ligand_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Neuroligin',
+        },
+    ),
+    af.AnnotDef(
+        name = 'nkg2dl_ligand_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'NKG2DL',
+        },
+    ),
+    af.AnnotDef(
+        name = 'semaphorin_ligand_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Semaphorins',
+        },
+    ),
 
     # intracellular
     af.AnnotDef(
@@ -2821,6 +3034,13 @@ annot_combined_classes = (
             'mainclass': 'LHFPL tetraspan proteins',
         }
     ),
+    af.AnnotDef(
+        name = 'plasma_membrane_regulator_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'EMP-PMP22-LIM',
+        }
+    ),
 
     # transmembrane
     af.AnnotDef(
@@ -3046,7 +3266,7 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'adhesion_gprotein_coupled_receptor_hgnc',
+        name = 'adhesion_gprotein_coupled_receptor_adhesion_hgnc',
         source = 'HGNC',
         args = {
             'mainclass': {
@@ -3240,6 +3460,48 @@ annot_combined_classes = (
             'mainclass': 'Selectins',
         },
     ),
+    af.AnnotDef(
+        name = 'adhesion_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Adhesion',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ig_like_adhesion_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'IG_AdhesionProteins',
+        },
+    ),
+    af.AnnotDef(
+        name = 'mpz_adhesion_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'IG_MPZ',
+        },
+    ),
+    af.AnnotDef(
+        name = 'classical_cadherin_adhesion_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'CadherinClassic',
+        },
+    ),  # cell-cell adhesion
+    af.AnnotDef(
+        name = 'desmosomal_cadherin_adhesion_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'CadherinOther',
+        },
+    ),  # cell-cell adhesion
+    af.AnnotDef(
+        name = 'integrin_matrix_adhesion_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Integrin',
+        },
+    ),  # matrix adhesion; these are also receptors
 
     # surface enzyme
     af.AnnotDef(
@@ -3439,6 +3701,13 @@ annot_combined_classes = (
         name = 'anosmin_surface_ligand_omnipath',
         source = {'P23352'},
     ),
+    af.AnnotDef(
+        name = 'mhc_surface_ligand_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'MHC',
+        },
+    ),
 
     # transporter
     af.AnnotDef(
@@ -3485,6 +3754,67 @@ annot_combined_classes = (
         source = 'Adhesome',
         args = {'mainclass': 'Channel'},
     ),
+    af.AnnotDef(
+        name = 'transporter_almen',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'transporter_almen',
+                    source = 'Almen2009',
+                    args = {
+                        'mainclass': 'Transporters',
+                    }
+                ),
+                'plasma_membrane',
+            ),
+            op = set.intersection,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'channel_almen',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'channel_almen',
+                    source = 'Almen2009',
+                    args = {
+                        'classes': 'Channels',
+                    }
+                ),
+                'plasma_membrane',
+            ),
+            op = set.intersection,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'abca_transporter_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'ABCA',
+        },
+    ),  # lipid transporters
+    af.AnnotDef(
+        name = 'abcc_transporter_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'ABCC',
+        },
+    ),
+    af.AnnotDef(
+        name = 'abcg_transporter_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'ABCG',
+        },
+    ),
+    af.AnnotDef(
+        name = 'solute_carrier_transporter_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': {'AMAC', 'APC'},
+        },
+        exclude = {'Q8TBB6', 'Q8TE54'},
+    ),
 
     # transporters from HGNC
     af.AnnotDef(
@@ -3523,7 +3853,7 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'nak_atpase_transporter_hgnc',
+        name = 'sodium_potassium_atpase_transporter_hgnc',
         source = 'HGNC',
         args = {
             'mainclass': {
@@ -3540,6 +3870,20 @@ annot_combined_classes = (
                 'Cyclin and CBS domain divalent metal cation '
                 'transport mediators'
             ),
+        },
+    ),
+    af.AnnotDef(
+        name = 'magnesium_transporter_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'NIPA',
+        },
+    ),
+    af.AnnotDef(
+        name = 'sodium_potassium_atpase_transporter_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'NKAIN',
         },
     ),
     af.AnnotDef(
@@ -3719,6 +4063,91 @@ annot_combined_classes = (
         source = 'HGNC',
         args = {
             'mainclass': 'Zinc activated channels',
+        },
+    ),
+    af.AnnotDef(
+        name = 'water_transporter_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Aquaporins',
+        },
+    ),
+    af.AnnotDef(
+        name = 'auxiliary_transporter_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'AuxillaryTransportUnit',
+        },
+        exclude = {'Q9UN42'},
+    ),
+    af.AnnotDef(
+        name = 'bestrophin_transporter_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Bestrophin',
+        },
+    ),
+    af.AnnotDef(
+        name = 'voltage_gated_calcium_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': {'CACNA2D', 'CACNG'},
+        },
+    ),
+    af.AnnotDef(
+        name = 'voltage_gated_chloride_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'CLC',
+        },
+    ),
+    af.AnnotDef(
+        name = 'calcium_activated_potassium_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Ca_Activated_Potassium_Channels',
+        },
+    ),
+    af.AnnotDef(
+        name = 'atp_gated_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'ATP_gated_ion_channels',
+        },
+    ),
+    af.AnnotDef(
+        name = 'calcium_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'CalciumChannels',
+        },
+    ),
+    af.AnnotDef(
+        name = 'inward_rectifier_potassium_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'InwardlyRectifyingKchannel',
+        },
+    ),
+    af.AnnotDef(
+        name = 'voltage_gated_potassium_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'KCNE',
+        },
+    ),
+    af.AnnotDef(
+        name = 'calcium_activated_potassium_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'KCNMB',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand_gated_ion_channel_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'Ligand_gated_ion_channels',
         },
     ),
 
@@ -4172,6 +4601,13 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
+        name = 'gap_junction_almen',
+        source = 'Almen2009',
+        args = {
+            'classes': 'GapJunction',
+        },
+    ),
+    af.AnnotDef(
         name = 'pannexin_gap_junction_hgnc',
         source = 'HGNC',
         args = {
@@ -4220,6 +4656,13 @@ annot_combined_classes = (
             ),
             op = set.intersection
         ),
+    ),
+    af.AnnotDef(
+        name = 'claudin_tight_junction_almen',
+        source = 'Almen2009',
+        args = {
+            'mainclass': 'Claudin',
+        },
     ),
     # adherens junction
     af.AnnotDef(
