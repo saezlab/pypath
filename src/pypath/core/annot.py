@@ -318,9 +318,11 @@ class CustomAnnotation(session_mod.Logger):
         Processes an annotation definition and returns a set of identifiers.
         """
 
+        class_set = set()
+
         if isinstance(classdef.source, set):
 
-            return classdef.source
+            class_set = classdef.source
 
         elif isinstance(classdef.source, common.basestring):
 
@@ -328,23 +330,29 @@ class CustomAnnotation(session_mod.Logger):
 
                 if not classdef.args:
 
-                    return self.annotdb.annots[classdef.source].to_set()
+                    class_set = self.annotdb.annots[classdef.source].to_set()
 
                 else:
 
-                    return self.annotdb.annots[classdef.source].get_subset(
-                        **classdef.args
+                    class_set = (
+                        self.annotdb.annots[classdef.source].get_subset(
+                            **classdef.args
+                        )
                     )
 
         elif callable(classdef.source):
 
-            return classdef.source(**(classdef.args or {}))
+            class_set = classdef.source(**(classdef.args or {}))
 
         elif isinstance(classdef.source, annot_formats.AnnotOp):
 
-            return self._execute_operation(classdef.source)
+            class_set = self._execute_operation(classdef.source)
 
-        return set()
+        if classdef.exclude:
+
+            class_set = class_set - classdef.exclude
+
+        return class_set
 
 
     def _execute_operation(self, annotop):
