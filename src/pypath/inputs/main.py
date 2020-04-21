@@ -8697,23 +8697,6 @@ def stitch_interactions(threshold = None):
         yield a, b, l[2], l[3], int(l[5])
 
 
-def get_cspa(organism = 9606):
-    sheets = {
-        'Human': 'Table A',
-        'Mouse': 'Table B',
-    }
-
-    str_organism = taxonomy.taxids[organism].capitalize()
-
-    url = urls.urls['cspa']['url']
-    c = curl.Curl(url, large = True, silent = False)
-    xlsname = c.fname
-    del(c)
-    raw = inputs_common.read_xls(xlsname, sheets[str_organism])[1:]
-
-    return mapping.map_names((r[1] for r in raw), 'uniprot', 'uniprot')
-
-
 def surfaceome_annotations():
     """
     Downloads the "In silico human surfaceome".

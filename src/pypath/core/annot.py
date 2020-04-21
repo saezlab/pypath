@@ -2825,53 +2825,53 @@ class AnnotationBase(resource.AbstractResource):
             
             utils_uniprot.info(uniprots, **kwargs)
             
-        else:
+            return
+        
+        field = field or self.primary_field
+        
+        if isinstance(field, common.basestring):
             
-            field = field or self.primary_field
+            # all values of the field
+            field = {field: self.get_values(field)}
             
-            if isinstance(field, common.basestring):
+        elif isinstance(field, common.list_like):
+            
+            if set(field) & set(self.get_names()):
                 
-                # all values of the field
-                field = {field: self.get_values(field)}
-                
-            elif isinstance(field, common.list_like):
-                
-                if set(field) & set(self.get_names()):
-                    
-                    # a set of fields provided
-                    field = dict(
-                        (
-                            fi,
-                            self.get_values(fi)
-                        )
-                        for fi in field
-                    )
-                    
-                else:
-                    
-                    # a set of values provided
-                    field = {self.primary_field: field}
-                
-            elif isinstance(field, dict):
-                
+                # a set of fields provided
                 field = dict(
                     (
                         fi,
-                        vals or self.get_values(fi)
+                        self.get_values(fi)
                     )
-                    for fi, vals in iteritems(field)
+                    for fi in field
                 )
                 
             else:
                 
-                sys.stdout.write(
-                    'Could not recognize field definition, '
-                    'please refer to the docs.\n'
-                )
-                sys.stdout.flush()
-                return
+                # a set of values provided
+                field = {self.primary_field: field}
             
-            # otherwise we assume `field` is a dict of fields and values
+        elif isinstance(field, dict):
+            
+            field = dict(
+                (
+                    fi,
+                    vals or self.get_values(fi)
+                )
+                for fi, vals in iteritems(field)
+            )
+            
+        else:
+            
+            sys.stdout.write(
+                'Could not recognize field definition, '
+                'please refer to the docs.\n'
+            )
+            sys.stdout.flush()
+            return
+        
+        # otherwise we assume `field` is a dict of fields and values
         
         field_keys = list(field.keys())
         field_values = [field[k] for k in field_keys]
@@ -3655,7 +3655,7 @@ class CellSurfaceProteinAtlas(AnnotationBase):
             self,
             name = 'CSPA',
             ncbi_tax_id = ncbi_tax_id,
-            input_method = 'get_cspa',
+            input_method = 'cspa.cspa_annotations',
             **kwargs
         )
 

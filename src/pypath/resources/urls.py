@@ -974,7 +974,8 @@ urls = {
     },
     'cspa': {
         'label': 'Cell Surface Protein Atlas',
-        'url': 'http://wlab.ethz.ch/cspa/data/S2_File.xlsx',
+        'url_s2': 'http://wlab.ethz.ch/cspa/data/S2_File.xlsx',
+        'url_s1': 'http://wlab.ethz.ch/cspa/data/S1_File.xlsx',
     },
     'surfaceome': {
         'label': 'In silico human surfaceome',

@@ -19,6 +19,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import collections
+
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.inputs.common as inputs_common
@@ -26,7 +28,20 @@ import pypath.utils.mapping as mapping
 import pypath.utils.taxonomy as taxonomy
 
 
-def get_cspa(organism = 9606):
+def cspa_annotations(organism = 9606):
+
+
+    CspaAnnotation = collections.namedtuple(
+        'CspaAnnotation',
+        [
+            'high_confidence',
+            'n_cell_types',
+            'tm',
+            'gpi',
+            'uniprot_cell_surface',
+        ]
+    )
+
 
     sheets = {
         'Human': 'Table A',
@@ -35,10 +50,29 @@ def get_cspa(organism = 9606):
 
     str_organism = taxonomy.taxids[organism].capitalize()
 
-    url = urls.urls['cspa']['url']
+    url = urls.urls['cspa']['url_s2']
     c = curl.Curl(url, large = True, silent = False)
     xlsname = c.fname
     del(c)
     raw = inputs_common.read_xls(xlsname, sheets[str_organism])[1:]
 
-    return mapping.map_names((r[1] for r in raw), 'uniprot', 'uniprot')
+    result = collections.defaultdict(set)
+
+    for row in raw:
+
+        for uniprot in mapping.map_name(row[1], 'uniprot', 'uniprot'):
+
+            result[uniprot].add(
+                CspaAnnotation(
+                    high_confidence = 'high confidence' in row[2],
+                    n_cell_types = int(float(row[9])),
+                    tm = int(float(row[11])),
+                    gpi = int(float(row[12])),
+                    uniprot_cell_surface = row[13] == 'yes',
+                )
+            )
+
+    return result
+
+
+def cspa_cell_type_annotations():
