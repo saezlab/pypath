@@ -42,7 +42,6 @@ def cspa_annotations(organism = 9606):
             'tm',
             'gpi',
             'uniprot_cell_surface',
-            'cell_types',
         ],
     )
 

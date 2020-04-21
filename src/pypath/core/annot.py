@@ -3637,6 +3637,9 @@ class Ramilowski2015Location(AnnotationBase):
 class CellSurfaceProteinAtlas(AnnotationBase):
 
 
+    _eq_fields = ('high_confidence', 'tm', 'gpi', 'uniprot_cell_surface')
+
+
     def __init__(
             self,
             ncbi_tax_id = 9606,
@@ -3663,6 +3666,41 @@ class CellSurfaceProteinAtlas(AnnotationBase):
 
         self.annot = self.data
         delattr(self, 'data')
+
+
+class CellSurfaceProteinAtlasCellType(AnnotationBase):
+
+
+    _eq_fields = ('cell_type',)
+
+
+    def __init__(
+            self,
+            ncbi_tax_id = 9606,
+            **kwargs
+        ):
+        """
+        The name of this resource abbreviated as `CSPA`.
+        """
+
+        if 'organism' not in kwargs:
+
+            kwargs['organism'] = ncbi_tax_id
+
+        AnnotationBase.__init__(
+            self,
+            name = 'CSPA_celltype',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'cspa.cspa_cell_type_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        self.annot = self.data
+        delattr(self, 'data')
+
 
 
 class HumanPlasmaMembraneReceptome(AnnotationBase):
