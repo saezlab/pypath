@@ -19,9 +19,12 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
 import collections
 
 import pypath.share.curl as curl
+import pypath.share.common as common
 import pypath.resources.urls as urls
 import pypath.inputs.common as inputs_common
 import pypath.utils.mapping as mapping
@@ -39,7 +42,8 @@ def cspa_annotations(organism = 9606):
             'tm',
             'gpi',
             'uniprot_cell_surface',
-        ]
+            'cell_types',
+        ],
     )
 
 
@@ -72,7 +76,73 @@ def cspa_annotations(organism = 9606):
                 )
             )
 
+    return dict(result)
+
+
+def cspa_cell_types(organism = 9606):
+
+    sheets = {
+        'Human': 'Table_E',
+        'Mouse': 'Table_F',
+    }
+
+    str_organism = taxonomy.taxids[organism].capitalize()
+
+    url = urls.urls['cspa']['url_s1']
+    c = curl.Curl(url, large = True, silent = False)
+    xlsname = c.fname
+    del(c)
+    raw = inputs_common.read_xls(xlsname, sheets[str_organism])
+
+    result = collections.defaultdict(lambda: collections.defaultdict(dict))
+
+    cell_types = raw[0][1:]
+
+    for row in raw[1:]:
+
+        for uniprot in mapping.map_name(row[0], 'uniprot', 'uniprot'):
+
+            for col, cell_type in enumerate(cell_types):
+
+                value = row[col + 1]
+
+                result[cell_type][uniprot] = (
+                    float(value)
+                        if common.is_float(value) else
+                    None
+                )
+
     return result
 
 
-def cspa_cell_type_annotations():
+def cspa_cell_type_annotations(organism = 9606):
+    
+    
+    CspaCellType = collections.namedtuple(
+        'CspaCellType',
+        [
+            'cell_type',
+            'value',
+        ],
+    )
+    
+    
+    cell_type_data = cspa_cell_types(organism = organism)
+    
+    
+    result = collections.defaultdict(set)
+    
+    for cell_type, data in iteritems(cell_type_data):
+        
+        for uniprot, value in iteritems(data):
+            
+            if value:
+                
+                result[uniprot].add(
+                    CspaCellType(
+                        cell_type = cell_type,
+                        value = value,
+                    )
+                )
+    
+    return dict(result)

@@ -65,6 +65,7 @@ protein_sources_default = {
     'Matrisome',
     'Surfaceome',
     'CellSurfaceProteinAtlas',
+    'CellSurfaceProteinAtlasCellType',
     'HumanPlasmaMembraneReceptome',
     'Matrixdb',
     'Locate',
@@ -3635,8 +3636,6 @@ class Ramilowski2015Location(AnnotationBase):
 
 class CellSurfaceProteinAtlas(AnnotationBase):
 
-    _eq_fields = ()
-
 
     def __init__(
             self,
@@ -3658,6 +3657,12 @@ class CellSurfaceProteinAtlas(AnnotationBase):
             input_method = 'cspa.cspa_annotations',
             **kwargs
         )
+
+
+    def _process_method(self):
+
+        self.annot = self.data
+        delattr(self, 'data')
 
 
 class HumanPlasmaMembraneReceptome(AnnotationBase):
