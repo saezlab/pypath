@@ -659,27 +659,34 @@ class CustomAnnotation(session_mod.Logger):
 
     def counts_by_class(
             self,
-            class_types = 'main',
-            entity_types = 'protein',
+            parent = None,
+            resource = None,
+            scope = None,
+            aspect = None,
+            source = None,
+            transmitter = None,
+            receiver = None,
+            entity_type = 'protein',
             labels = True,
         ):
 
-        class_types = common.to_set(class_types)
-
-        df = self.df[self.df.class_type.isin(class_types)]
-
-        if entity_types:
-
-            entity_types = common.to_set(entity_types)
-            df = df[df.entity_type.isin(entity_types)]
-
-        counts = df.groupby('category')['uniprot'].nunique()
-
-        if labels:
-
-            counts.index = counts.index.map(self.class_labels)
-
-        return counts[counts > 0]
+        return dict(
+            (
+                cls.label if labels else cls.key,
+                len(cls)
+            )
+            for cls in self.iter_classes(
+                parent = parent,
+                resource = resource,
+                scope = scope,
+                aspect = aspect,
+                source = source,
+                transmitter = transmitter,
+                receiver = receiver,
+                entity_type = entity_type,
+            )
+            if len(cls) > 0
+        )
 
 
     def iter_classes(
@@ -689,6 +696,9 @@ class CustomAnnotation(session_mod.Logger):
             scope = None,
             aspect = None,
             source = None,
+            transmitter = None,
+            receiver = None,
+            entity_type = None,
         ):
 
         return filter_classes(
@@ -698,6 +708,9 @@ class CustomAnnotation(session_mod.Logger):
             scope = scope,
             aspect = aspect,
             source = source,
+            transmitter = transmitter,
+            receiver = receiver,
+            entity_type = entity_type,
         )
 
 
@@ -709,6 +722,9 @@ class CustomAnnotation(session_mod.Logger):
             scope = None,
             aspect = None,
             source = None,
+            transmitter = None,
+            receiver = None,
+            entity_type = None,
         ):
 
         parent = common.to_set(parent)
@@ -724,10 +740,17 @@ class CustomAnnotation(session_mod.Logger):
                 (not resource or cls.resource in resource) and
                 (not scope or cls.scope in scope) and
                 (not aspect or cls.aspect in aspect) and
-                (not source or cls.source in source)
+                (not source or cls.source in source) and
+                (transmitter is None or cls.transmitter == transmitter) and
+                (receiver is None or cls.receiver == receiver)
             ):
 
-                yield cls
+                yield self.filter_entity_type(cls, entity_type = entity_type)
+
+
+    def filter_entity_type(self, cls):
+
+        return cls.filter_entity_type(entity_type = entity_type)
 
 
     def network_df(
