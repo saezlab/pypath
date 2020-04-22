@@ -361,6 +361,7 @@ class CustomAnnotation(session_mod.Logger):
         return annot_formats.AnnotationGroup(
             members = class_set,
             name = classdef.name,
+            parent = classdef.parent,
             aspect = classdef.aspect,
             resource = resource, # the actual database name
             scope = classdef.scope,
