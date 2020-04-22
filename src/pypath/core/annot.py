@@ -682,6 +682,54 @@ class CustomAnnotation(session_mod.Logger):
         return counts[counts > 0]
 
 
+    def iter_classes(
+            self,
+            parent = None,
+            resource = None,
+            scope = None,
+            aspect = None,
+            source = None,
+        ):
+
+        return filter_classes(
+            classes = self.classes.values(),
+            parent = parent,
+            resource = resource,
+            scope = scope,
+            aspect = aspect,
+            source = source,
+        )
+
+
+    def filter_classes(
+            self,
+            classes,
+            parent = None,
+            resource = None,
+            scope = None,
+            aspect = None,
+            source = None,
+        ):
+
+        parent = common.to_set(parent)
+        resource = common.to_set(resource)
+        scope = common.to_set(scope)
+        aspect = common.to_set(aspect)
+        source = common.to_set(source)
+
+        for cls in classes:
+
+            if (
+                (not parent or cls.parent in parent) and
+                (not resource or cls.resource in resource) and
+                (not scope or cls.scope in scope) and
+                (not aspect or cls.aspect in aspect) and
+                (not source or cls.source in source)
+            ):
+
+                yield cls
+
+
     def network_df(
             self,
             network = None,
