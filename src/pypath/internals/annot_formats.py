@@ -30,44 +30,65 @@ except:
 
 import pypath.share.settings as settings
 
-"""
-Annotations are defined by a ``name``, a ``source`` and an ``args``
-parameter. If the former is a string it will be first looked up among the
-annotation resources in ``pypath.annot.db``. Otherwise among the keys of the
-classes in the ``CustomAnnotation`` object or in the dictionary of the
-class_definitions. If ``source`` is a `set`, it will be used as a category
-without further processing. If it is callable it will be called and should
-return a `set`. If ``bool(args)`` is `False`, in case of annotations in
-``pypath.annot.db`` the ``to_set`` method will be called. Otherwise ``args``
-will be passed to the ``get_subset`` method. If ``source`` is callable,
-``args`` will be passed if available.
-"""
-AnnotDef = collections.namedtuple(
-    'AnnotDef',
-    [
-        'name',
-        'resource',
-        'parent',
-        'aspect',
-        'scope',
-        'args',
-        'source',
-        'exclude',
-        'transmitter',
-        'receiver',
-    ],
-)
-AnnotDef.__new__.__defaults__ = (
-    None,
-    'functional',
-    'resource_specific',
-    'specific',
-    None,
-    None,
-    None,
-    False,
-    False,
-)
+
+class AnnotDef(
+        collections.namedtuple(
+            'AnnotDefBase',
+            [
+                'name',
+                'resource',
+                'parent',
+                'aspect',
+                'scope',
+                'args',
+                'source',
+                'exclude',
+                'transmitter',
+                'receiver',
+            ]
+        )
+    ):
+    """
+    Annotations are defined by a ``name``, a ``resource`` and an ``args``
+    parameter. If the former is a string it will be first looked up among the
+    annotation resources in ``pypath.annot.db``. Otherwise among the keys of
+    the classes in the ``CustomAnnotation`` object or in the dictionary of
+    the class_definitions. If ``source`` is a `set`, it will be used as a
+    category without further processing. If it is callable it will be called
+    and should return a `set`. If ``bool(args)`` is `False`, in case of
+    annotations in ``pypath.annot.db`` the ``to_set`` method will be called.
+    Otherwise ``args`` will be passed to the ``get_subset`` method.
+    If ``resource`` is callable, ``args`` will be passed if available.
+    """
+
+
+    def __new__(
+            cls,
+            name,
+            resource,
+            parent = None,
+            aspect  = 'functional',
+            scope = 'specific',
+            source = 'resource_specific',
+            args = None,
+            exclude = None,
+            transmitter = False,
+            receiver = False,
+        ):
+
+        return super(AnnotDef, cls).__new__(
+            cls,
+            name = name,
+            resource = resource,
+            parent = parent,
+            aspect, scope,
+            args = args,
+            source = source,
+            exclude = exclude,
+            transmitter = transmitter,
+            receiver = receiver,
+        )
+
 
 """
 Annotation operations consist of list of annotation definitions or names as
