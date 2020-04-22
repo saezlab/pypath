@@ -30,6 +30,7 @@ except:
 
 import pypath.share.settings as settings
 import pypath.share.common as common
+import pypath.core.entity as entity
 
 
 class AnnotDef(
@@ -244,3 +245,33 @@ class AnnotationGroup(collections_abc.Set):
             self.parent,
             self.resource,
         )
+
+
+    def filter_entity_type(self, entity_type = None):
+        """
+        Returns a copy of the group with only the selected entity types.
+        If ``entity_type`` is None returns the object itself.
+        """
+
+        if entity_type is None:
+
+            return self
+
+        else:
+
+            members = entity.Entity.filter_entity_type(
+                self.members,
+                entity_type = entity_type,
+            )
+
+            return AnnotationGroup(
+                members = members,
+                name = self.name,
+                parent = self.parent,
+                aspect = self.aspect,
+                source = self.source,
+                scope = self.scope,
+                resource = self.resource,
+                transmitter = self.transmitter,
+                receiver = self.transmitter,
+            )
