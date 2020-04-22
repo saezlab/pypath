@@ -47,6 +47,7 @@ AnnotDef = collections.namedtuple(
     [
         'name',
         'resource',
+        'parent',
         'aspect',
         'scope',
         'args',
@@ -57,6 +58,7 @@ AnnotDef = collections.namedtuple(
     ],
 )
 AnnotDef.__new__.__defaults__ = (
+    None,
     'functional',
     'resource_specific',
     'specific',
@@ -80,12 +82,51 @@ AnnotOp = collections.namedtuple(
 
 
 class AnnotationGroup(collections_abc.Set):
+    """
+    Represents a set of molecular entities sharing a custom defined
+    annotation. This class behaves like a ``set`` and set operations on it
+    result set objects. Normally this class is instantiated by
+    ``pypath.core.annot.CustomAnnotation`` in the process of populating
+    categories and the contents of the groups defined in
+    ``pypath.core.intercell_annot`` in case of annotations of the
+    intercellular communication roles.
+    For detailed definitions of the parameter values see the Supplementary
+    Table S10 in Turei et al. 2020 (in prep).
 
+    :param list,set,tuple members:
+        The identifiers of the entities in the category.
+    :param str name:
+        The name of the category.
+    :param str parent:
+        The name of the parent category; might be the same as ``name`` in
+        case of high level (generic) categories.
+    :param str aspect:
+        Either *functional* or *locational*.
+    :param str source:
+        Either *resource_specific* or *composite*.
+    :param str scope:
+        Either *specific* or *generic*.
+    :param str resource:
+        The resource (database) name; in case of composite categories it
+        should be the name of the database you are actually building, this
+        by default is `OmniPath` and you can change by the
+        ``pypath.share.settings`` module using the
+        ``annot_composite_database_name`` key.
+    :param bool transmitter:
+        Whether the category contains transmitters of signaling information
+        from the cell expressing the molecular entities in direction of other
+        cells.
+    :param bool receiver:
+        Whether the category contains receivers of signaling information
+        from other cells in direction of the cells expressing the molecular
+        entites in the category.
+    """
 
     def __init__(
             self,
             members,
             name = None,
+            parent = None,
             aspect = 'functional',
             source = 'resource_specific',
             scope = 'specific',
@@ -97,6 +138,7 @@ class AnnotationGroup(collections_abc.Set):
         collections_abc.Set.__init__(self)
         self.members = set(members)
         self.name = name or 'unnamed'
+        self.parent = parent or self.name
         self.aspect = aspect
         self.source = source
         self.scope = scope
