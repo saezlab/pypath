@@ -109,6 +109,9 @@ _defaults = {
     # the annotation classes should infer complex annotations
     # from protein annotations
     'annot_infer_complexes': True,
+    # the resource name for annotation categories
+    # combined from multiple original resources
+    'annot_composite_database_name': 'OmniPath',
 
     # load small, specific categories from CellPhoneDB
     # in the intercell database

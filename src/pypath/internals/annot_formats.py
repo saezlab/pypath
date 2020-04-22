@@ -23,6 +23,13 @@
 
 import collections
 
+try:
+    import collections.abc as collections_abc
+except:
+    import collections as collections_abc
+
+import pypath.share.settings as settings
+
 """
 Annotations are defined by a ``name``, a ``source`` and an ``args``
 parameter. If the former is a string it will be first looked up among the
@@ -37,9 +44,9 @@ will be passed to the ``get_subset`` method. If ``source`` is callable,
 """
 AnnotDef = collections.namedtuple(
     'AnnotDef',
-    ['name', 'source', 'args', 'exclude'],
+    ['name', 'resource', 'source', 'aspect', 'scope', 'args', 'exclude'],
 )
-AnnotDef.__new__.__defaults__ = (None, None)
+AnnotDef.__new__.__defaults__ = (None,) * 6
 
 """
 Annotation operations consist of list of annotation definitions or names as
@@ -51,3 +58,59 @@ AnnotOp = collections.namedtuple(
     'AnnotOp',
     ['annots', 'op'],
 )
+
+
+class AnnotationGroup(collections_abc.Set):
+
+
+    def __init__(
+            self,
+            members,
+            name = None,
+            aspect = 'functional',
+            source = 'resource_specific',
+            scope = 'specific',
+            resource = None,
+        ):
+
+        collections_abc.Set.__init__(self)
+        self.members = set(members)
+        self.name = name or 'unnamed'
+        self.aspect = aspect
+        self.source = source
+        self.scope = scope
+        self.resource = (
+            resource or
+            settings.get('annot_composite_database_name') or
+            'Unknown'
+        )
+
+
+    def __iter__(self):
+
+        return self.members.__iter__()
+
+
+    def __contains__(self, other):
+
+        return other in self.members
+
+
+    def __len__(self):
+
+        return len(self.members)
+
+
+    @classmethod
+    def _from_iterable(cls, iterable):
+
+        return set(iterable)
+
+
+    def __repr__(self):
+
+        return '<AnnotationGroup `%s` from %s, %u elements>' % (
+            self.name,
+            self.resource,
+            len(self),
+        )
