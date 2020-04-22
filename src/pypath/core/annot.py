@@ -1738,11 +1738,8 @@ class CustomAnnotation(session_mod.Logger):
     def numof_records(self, entity_types = None):
 
         return sum(
-            entity.Entity.count_entity_type(
-                members,
-                entity_type = entity_types
-            )
-            for members in self.classes.values()
+            cls.count_entity_type(entity_type = entity_type)
+            for cls in self.classes.values()
         )
 
 
