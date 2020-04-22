@@ -275,3 +275,13 @@ class AnnotationGroup(collections_abc.Set):
                 transmitter = self.transmitter,
                 receiver = self.transmitter,
             )
+
+
+    def count_entity_type(self, entity_type = None):
+
+        return len(
+            entity.Entity.count_entity_type(
+                self.members,
+                entity_type = entity_type,
+            )
+        )
