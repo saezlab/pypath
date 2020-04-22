@@ -470,7 +470,14 @@ class CustomAnnotation(session_mod.Logger):
         )
 
 
-    def show(self, name, entity_type = None, **kwargs):
+    def show(
+            self,
+            name,
+            parent = None,
+            resource = None,
+            entity_type = None,
+            **kwargs
+        ):
         """
         Same as ``select`` but prints a table to the console with basic
         information from the UniProt datasheets.
@@ -479,36 +486,61 @@ class CustomAnnotation(session_mod.Logger):
         table_param = table_param or {}
 
         utils_uniprot.info(
-            *self.select(name = name, entity_type = entity_type),
+            *self.select(
+                name = name,
+                parent = parent,
+                resource = resource,
+                entity_type = entity_type,
+            ),
             **kwargs
         )
 
 
-    def get_class_type(self, cls):
+    def _key(self, name, parent = None, resource = None):
 
-        return (
-            self.class_types[cls]
-                if cls in self.class_types else
-            'sub'
-        )
+        return name if isinstance(name, tuple) else (name, parent, resource)
 
 
-    def get_resource_label(self, cls):
+    def get_class_scope(self, name, parent = None, resource = None):
 
-        return (
-            self.resource_labels[cls]
-                if cls in self.resource_labels else
-            ''
-        )
+        key = self._key(name, parent, resource)
+
+        return self.classes[key].scope
 
 
-    def get_class_label(self, cls):
+    def get_resource(self, name, parent = None, resource = None):
 
-        return (
-            self.class_labels[cls]
-                if cls in self.class_labels else
-            ''
-        )
+        key = self._key(name, parent, resource)
+
+        return self.classes[key].resource
+
+
+    def get_aspect(self, name, parent = None, resource = None):
+
+        key = self._key(name, parent, resource)
+
+        return self.classes[key].aspect
+
+
+    def get_source(self, name, parent = None, resource = None):
+
+        key = self._key(name, parent, resource)
+
+        return self.classes[key].source
+
+
+    def get_parent(self, name, parent = None, resource = None):
+
+        key = self._key(name, parent, resource)
+
+        return self.classes[key].parent
+
+
+    def get_class_label(self, name, parent = None, resource = None):
+
+        cls = self.select(name, parent = parent, resource = resource)
+
+        return cls.label
 
 
     def __len__(self):
@@ -535,7 +567,11 @@ class CustomAnnotation(session_mod.Logger):
 
         header = [
             'category',
+            'parent',
             'database',
+            'scope',
+            'aspect',
+            'source',
             'uniprot',
             'genesymbol',
             'entity_type',
@@ -659,7 +695,7 @@ class CustomAnnotation(session_mod.Logger):
             A ``pypath.network.Network`` object or a data frame with network
             data.
         resources : set,None
-            Use only these network resouces.
+            Use only these network resources.
         classes : set,None
             Use only these annotation classes.
         only_directed : bool
