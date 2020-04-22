@@ -669,6 +669,14 @@ class CustomAnnotation(session_mod.Logger):
             entity_type = 'protein',
             labels = True,
         ):
+        """
+        Returns a dict with number of elements in each class.
+
+        :param bool labels:
+            Use keys or labels as keys in the returned dict.
+
+        All other arguments passed to ``iter_classes``.
+        """
 
         return dict(
             (
@@ -1605,46 +1613,20 @@ class CustomAnnotation(session_mod.Logger):
         self.df.to_csv(fname, **kwargs)
 
 
-    def counts(self, entity_type = None, class_type = None):
-        """
-        Returns a dict with number of elements in each class.
-
-        :arg str,NoneType entity_type:
-            One or more entity type to consider e.g. `'protein'` or
-            `'complex'` or a set of more of them.
-            By default all entities are considered.
-        :arg str,NoneType class_type:
-            One or more class type to consider e.g. `'main'` or a set of
-            more of them.
-            By default all entities are considered.
-        """
-
-        entity_type = common.to_set(entity_type)
-        class_type = common.to_set(class_type)
-
-        return dict(
-            (
-                name,
-                entity.Entity.count_entity_type(
-                    members,
-                    entity_type = entity_type,
-                )
-            )
-            for name, members in iteritems(self.classes)
-            if (
-                not class_type or
-                self.get_class_type(name) in class_type
-            )
-        )
-
-
     def classes_by_entity(self, element):
+        """
+        Returns a set of class keys with the classes containing at least
+        one of the elements.
+
+        :parem str,set element:
+            One or more element (entity) to search for in the classes.
+        """
 
         element = common.to_set(element)
 
         return set(
-            cls
-            for cls, elements in iteritems(self.classes)
+            key
+            for key, elements in iteritems(self.classes)
             if element & elements
         )
 
