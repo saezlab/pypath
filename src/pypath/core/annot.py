@@ -242,7 +242,7 @@ class CustomAnnotation(session_mod.Logger):
 
             class_definitions = dict(
                 (
-                    classdef.name,
+                    classdef.key,
                     classdef
                 ) for classdef in class_definitions
             )
