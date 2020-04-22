@@ -29,6 +29,7 @@ except:
     import collections as collections_abc
 
 import pypath.share.settings as settings
+import pypath.share.common as common
 
 
 class AnnotDef(
@@ -81,12 +82,33 @@ class AnnotDef(
             name = name,
             resource = resource,
             parent = parent,
-            aspect, scope,
+            aspect = aspect,
+            scope = scope,
             args = args,
             source = source,
             exclude = exclude,
             transmitter = transmitter,
             receiver = receiver,
+        )
+
+
+    @property
+    def key(self):
+
+        return (
+            self.name,
+            self.parent,
+            self.resource_str,
+        )
+
+
+    @property
+    def resource_str(self):
+
+        return (
+            self.resource
+                if isinstance(self.resource, common.basestring) else
+            None
         )
 
 
