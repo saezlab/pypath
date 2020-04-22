@@ -222,3 +222,15 @@ class AnnotationGroup(collections_abc.Set):
             self.resource,
             len(self),
         )
+
+
+    @property
+    def label(self):
+
+        return (
+            '%s%s__%s' % (
+                self.name,
+                '__%s' % self.parent if self.parent != self.name else '',
+                self.resource,
+            )
+        )
