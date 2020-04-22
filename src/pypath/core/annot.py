@@ -475,7 +475,6 @@ class CustomAnnotation(session_mod.Logger):
             name,
             parent = None,
             resource = None,
-            entity_type = None,
             **kwargs
         ):
         """
@@ -490,7 +489,7 @@ class CustomAnnotation(session_mod.Logger):
                 name = name,
                 parent = parent,
                 resource = resource,
-                entity_type = entity_type,
+                entity_type = 'protein',
             ),
             **kwargs
         )
@@ -657,8 +656,9 @@ class CustomAnnotation(session_mod.Logger):
         )
 
 
-    def counts_by_class(
+    def counts(
             self,
+            name = None,
             parent = None,
             resource = None,
             scope = None,
@@ -696,9 +696,13 @@ class CustomAnnotation(session_mod.Logger):
             if len(cls) > 0
         )
 
+    # synonym
+    count_by_class = counts
+
 
     def iter_classes(
             self,
+            name = None,
             parent = None,
             resource = None,
             scope = None,
@@ -711,6 +715,7 @@ class CustomAnnotation(session_mod.Logger):
 
         return filter_classes(
             classes = self.classes.values(),
+            name = name,
             parent = parent,
             resource = resource,
             scope = scope,
@@ -725,6 +730,7 @@ class CustomAnnotation(session_mod.Logger):
     def filter_classes(
             self,
             classes,
+            name = None,
             parent = None,
             resource = None,
             scope = None,
@@ -735,6 +741,7 @@ class CustomAnnotation(session_mod.Logger):
             entity_type = None,
         ):
 
+        name = common.to_set(name)
         parent = common.to_set(parent)
         resource = common.to_set(resource)
         scope = common.to_set(scope)
@@ -744,6 +751,7 @@ class CustomAnnotation(session_mod.Logger):
         for cls in classes:
 
             if (
+                (not name or cls.name in name) and
                 (not parent or cls.parent in parent) and
                 (not resource or cls.resource in resource) and
                 (not scope or cls.scope in scope) and
@@ -1832,53 +1840,64 @@ class CustomAnnotation(session_mod.Logger):
             return self.classes_by_entity(item)
 
 
-    def browse(self, classes = None, **kwargs):
+    def browse(
+            self,
+            name = None,
+            parent = None,
+            resource = None,
+            scope = None,
+            aspect = None,
+            source = None,
+            transmitter = None,
+            receiver = None,
+            **kwargs
+        ):
         """
         Presents information about annotation classes as ascii tables printed
         in the terminal. If one class provided, prints one table. If multiple
         classes provided, prints a table for each of them one by one
         proceeding to the next one once you hit return. If no classes
         provided goes through all classes.
-        
+
         **kwargs passed to ``pypath.utils.uniprot.info``.
         """
-        
-        if isinstance(classes, common.simple_types) and classes in self:
-            
-            if classes in self:
-                
-                uniprots = entity.Entity.only_proteins(self.classes[classes])
-                utils_uniprot.info(uniprots, **kwargs)
-            
-        else:
-            
-            classes = classes or sorted(self.classes.keys())
-            
-            n_classes = len(classes)
-            
-            for n, cls in enumerate(classes):
-                
-                if cls not in self.classes:
-                    
-                    continue
-                
-                uniprots = self.classes[cls]
-                uniprots = entity.Entity.only_proteins(uniprots)
-                
-                sys.stdout.write(
-                    '[%u/%u] =====> %s <===== [%u proteins]\n' % (
-                        n + 1,
-                        n_classes,
-                        cls,
-                        len(uniprots)
-                    )
+
+        classes = dict(
+            (cls.label, cls)
+            for cls in self.iter_classes(
+                name = name,
+                parent = parent,
+                resource = resource,
+                scope = scope,
+                aspect = aspect,
+                source = source,
+                transmitter = transmitter,
+                receiver = receiver,
+                entity_type = 'protein',
+            )
+        )
+
+        labels = sorted(classes.keys())
+        n_classes = len(labels)
+
+        for n, label in enumerate(labels):
+
+            uniprots = classes[label].members
+
+            sys.stdout.write(
+                '[%u/%u] =====> %s <===== [%u proteins]\n' % (
+                    n + 1,
+                    n_classes,
+                    label,
+                    len(uniprots)
                 )
-                
-                utils_uniprot.info(uniprots, **kwargs)
-                
-                input()
-                
-                sys.stdout.write('\n\n')
+            )
+
+            utils_uniprot.info(uniprots, **kwargs)
+
+            input()
+
+            sys.stdout.write('\n\n')
 
 
 
