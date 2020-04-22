@@ -44,9 +44,28 @@ will be passed to the ``get_subset`` method. If ``source`` is callable,
 """
 AnnotDef = collections.namedtuple(
     'AnnotDef',
-    ['name', 'resource', 'source', 'aspect', 'scope', 'args', 'exclude'],
+    [
+        'name',
+        'resource',
+        'aspect',
+        'scope',
+        'args',
+        'source',
+        'exclude',
+        'transmitter',
+        'receiver',
+    ],
 )
-AnnotDef.__new__.__defaults__ = (None,) * 6
+AnnotDef.__new__.__defaults__ = (
+    'functional',
+    'resource_specific',
+    'specific',
+    None,
+    None,
+    None,
+    False,
+    False,
+)
 
 """
 Annotation operations consist of list of annotation definitions or names as
@@ -71,6 +90,8 @@ class AnnotationGroup(collections_abc.Set):
             source = 'resource_specific',
             scope = 'specific',
             resource = None,
+            transmitter = False,
+            receiver = False,
         ):
 
         collections_abc.Set.__init__(self)
@@ -84,6 +105,8 @@ class AnnotationGroup(collections_abc.Set):
             settings.get('annot_composite_database_name') or
             'Unknown'
         )
+        self.transmitter = transmitter
+        self.receiver = receiver
 
 
     def __iter__(self):

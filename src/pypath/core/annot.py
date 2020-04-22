@@ -352,7 +352,22 @@ class CustomAnnotation(session_mod.Logger):
 
             class_set = class_set - classdef.exclude
 
-        return class_set
+        resource = (
+            classdef.resource
+                if isinstance(classdef.resource, common.basestring) else
+            None
+        )
+
+        return annot_formats.AnnotationGroup(
+            members = class_set,
+            name = classdef.name,
+            aspect = classdef.aspect,
+            resource = resource, # the actual database name
+            scope = classdef.scope,
+            source = classdef.source, # resource_specific / composite
+            transmitter = classdef.transmitter,
+            receiver = classdef.receiver,
+        )
 
 
     def _execute_operation(self, annotop):
