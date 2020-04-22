@@ -613,33 +613,33 @@ Higher level classes of intercellular communication roles.
 annot_combined_classes = (
     af.AnnotDef(
         name = 'adaptor_adhesome',
-        source = 'Adhesome',
+        resource = 'Adhesome',
         args = {'mainclass': 'Adaptor'},
     ),
     af.AnnotDef(
         name = 'channel_adhesome',
-        source = 'Adhesome',
+        resource = 'Adhesome',
         args = {'mainclass': 'Channel'},
     ),
     af.AnnotDef(
         name = 'actin_regulation_adhesome',
-        source = 'Adhesome',
+        resource = 'Adhesome',
         args = {'mainclass': 'Actin regulation'},
     ),
     af.AnnotDef(
         name = 'adhesion_adhesome',
-        source = 'Adhesome',
+        resource = 'Adhesome',
         args = {'mainclass': 'Adhesion receptor'},
     ),  # both cell-cell and cell-matrix adhesion
     af.AnnotDef(
         name = 'ly6_plaur_adhesion_omnipath',
-        source = {'O95274', 'Q8N6Q3', 'Q8TDM5', 'Q9BY14', 'Q17RY6'},
+        resource = {'O95274', 'Q8N6Q3', 'Q8TDM5', 'Q9BY14', 'Q17RY6'},
     ),  #
     
     # receptor
     af.AnnotDef(
         name = 'receptor',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'receptor_cellphonedb',
                 'receptor_surfaceome',
@@ -662,35 +662,35 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'receptor_italk',
-        source = 'iTALK',
+        resource = 'iTALK',
         args = {
             'mainclass': 'receptor',
         },
     ),
     af.AnnotDef(
         name = 'receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'mainclass': 'Receptors',
         },
     ),
     af.AnnotDef(
         name = 'receptor_cellcellinteractions',
-        source = 'CellCellInteractions',
+        resource = 'CellCellInteractions',
         args = {
             'mainclass': 'Receptor',
         },
     ),
     af.AnnotDef(
         name = 'receptor_embrace',
-        source = 'EMBRACE',
+        resource = 'EMBRACE',
         args = {
             'mainclass': 'receptor',
         },
     ),
     af.AnnotDef(
         name = 'receptor_hgnc',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'interleukin_receptor_hgnc',
             ),
@@ -699,14 +699,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'interleukin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Interleukin receptors',
         },
     ),
     af.AnnotDef(
         name = 'receptor_cellphonedb',
-        source = 'CellPhoneDB',
+        resource = 'CellPhoneDB',
         args = {
             'receptor': bool,
             'transmembrane': True,
@@ -714,56 +714,56 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'receptor_go',
-        source = 'GO_Intercell',
+        resource = 'GO_Intercell',
         args = {
             'mainclass': 'receptors',
         },
     ),
     af.AnnotDef(
         name = 'receptor_hpmr',
-        source = 'HPMR',
+        resource = 'HPMR',
         args = {
             'role': 'Receptor',
         },
     ),
     af.AnnotDef(
         name = 'receptor_surfaceome',
-        source = 'Surfaceome',
+        resource = 'Surfaceome',
         args = {
             'mainclass': 'Receptors',
         },
     ),
     af.AnnotDef(
         name = 'receptor_ramilowski',
-        source = 'Ramilowski2015',
+        resource = 'Ramilowski2015',
         args = {
             'mainclass': 'receptor',
         },
     ),
     af.AnnotDef(
         name = 'receptor_kirouac',
-        source = 'Kirouac2010',
+        resource = 'Kirouac2010',
         args = {
             'mainclass': 'receptor',
         },
     ),
     af.AnnotDef(
         name = 'receptor_guide2pharma',
-        source = 'Guide2Pharma',
+        resource = 'Guide2Pharma',
         args = {
             'mainclass': 'receptor',
         },
     ),
     af.AnnotDef(
         name = 'receptor_dgidb',
-        source = 'DGIdb',
+        resource = 'DGIdb',
         args = {
             'category': 'G PROTEIN COUPLED RECEPTOR',
         },
     ),
     af.AnnotDef(
         name = 'receptor_lrdb',
-        source = 'LRdb',
+        resource = 'LRdb',
         args = {
             'role': 'receptor',
             'references': bool,
@@ -771,14 +771,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'receptor_baccin',
-        source = 'Baccin2019',
+        resource = 'Baccin2019',
         args = {
             'mainclass': 'receptor',
         },
     ),
     af.AnnotDef(
         name = 'receptor_signalink',
-        source = 'SignaLink_function',
+        resource = 'SignaLink_function',
         args = {
             'function': 'Receptor',
         },
@@ -786,245 +786,245 @@ annot_combined_classes = (
     # receptor subclasses from HGNC
     af.AnnotDef(
         name = 'immunoglobulin_like_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Activating leukocyte immunoglobulin like receptors',
         },
     ),
     af.AnnotDef(
         name = 'adiponectin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Adiponectin receptors',
         },
     ),
     af.AnnotDef(
         name = 'adrenalin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Adrenoceptors',
         },
     ),
     af.AnnotDef(
         name = 'angiotensin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Angiotensin receptors',
         },
     ),
     af.AnnotDef(
         name = 'vasopressin_oxytocin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Arginine vasopressin and oxytocin receptors',
         },
     ),
     af.AnnotDef(
         name = 'atypical_chemokine_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Atypical chemokine receptors',
         },
     ),
     af.AnnotDef(
         name = 'basigin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Basigin family',
         },
     ),
     af.AnnotDef(
         name = 'bombesin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Bombesin receptors',
         },
     ),
     af.AnnotDef(
         name = 'bradykinin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Bradykinin receptors',
         },
     ),
     af.AnnotDef(
         name = 'butyrophilin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Butyrophilins',
         },
     ),
     af.AnnotDef(
         name = 'cc_chemokine_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'C-C motif chemokine receptors',
         },
     ),
     af.AnnotDef(
         name = 'cx3c_chemokine_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'C-X-3-C motif chemokine receptors',
         },
     ),
     af.AnnotDef(
         name = 'cxc_chemokine_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'C-X-C motif chemokine receptors',
         },
     ),
     af.AnnotDef(
         name = 'celsr_cadherin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'CELSR cadherins',
         },
     ),
     af.AnnotDef(
         name = '5ht_gprotein_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': '5-hydroxytryptamine receptors, G protein-coupled',
         },
     ),
     af.AnnotDef(
         name = '5ht_ionotropic_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': '5-hydroxytryptamine receptors, ionotropic',
         },
     ),
     af.AnnotDef(
         name = 'activating_leukocyte_ig_like_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Activating leukocyte immunoglobulin like receptors',
         },
     ),
     af.AnnotDef(
         name = 'adenosine_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Adenosine receptors',
         },
     ),
     af.AnnotDef(
         name = 'calcitonin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Calcitonin receptors',
         },
     ),
     af.AnnotDef(
         name = 'calcium_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Calcium sensing receptors',
         },
     ),
     af.AnnotDef(
         name = 'cannabinoid_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Cannabinoid receptors',
         },
     ),
     af.AnnotDef(
         name = 'chemerin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Chemerin receptor',
         },
     ),
     af.AnnotDef(
         name = 'cholecystokinin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Cholecystokinin receptors',
         },
     ),
     af.AnnotDef(
         name = 'muscarinic_cholinergic_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Cholinergic receptors muscarinic',
         },
     ),
     af.AnnotDef(
         name = 'nicotinic_cholinergic_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Cholinergic receptors nicotinic subunits',
         },
     ),
     af.AnnotDef(
         name = 'collectin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Collectins',
         },
     ), # innate immunity receptors for sugar and lipid patterns
     af.AnnotDef(
         name = 'complement_gpcr_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Complement component GPCRs',
         },
     ), # receptors for chemotactic immune signals
     af.AnnotDef(
         name = 'crh_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Corticotropin releasing hormone receptors',
         },
     ),
     af.AnnotDef(
         name = 'dopamine_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Dopamine receptors',
         },
     ),
     af.AnnotDef(
         name = 'ephrin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'EPH receptors',
         },
     ),
     af.AnnotDef(
         name = 'endothelin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Endothelin receptors',
         },
     ),
     af.AnnotDef(
         name = 'erbb_rtk_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Erb-b2 receptor tyrosine kinases',
         },
     ),
     af.AnnotDef(
         name = 'f2r_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'F2R receptors',
         },
     ), # GPCRs for thrombin and trypsin
     af.AnnotDef(
         name = 'formyl_peptide_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Formyl peptide receptors',
         },
     ), # formyl-methionyl peptides are neutrophil chemoattractants
     af.AnnotDef(
         name = 'free_fatty_acid_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Free fatty acid receptors',
         },
@@ -1032,14 +1032,14 @@ annot_combined_classes = (
         # whole-body energy homeostasis
     af.AnnotDef(
         name = 'bile_acid_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'G protein-coupled bile acid receptor',
         },
     ),  # GPCR for bile acid
     af.AnnotDef(
         name = 'estrogen_gpcr_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'G protein-coupled estrogen receptor',
         },
@@ -1047,7 +1047,7 @@ annot_combined_classes = (
         # shouldn't treat it the same way as plasma membrane receptors
     af.AnnotDef(
         name = 'nuclear_hormone_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Nuclear hormone receptors',
         },
@@ -1055,7 +1055,7 @@ annot_combined_classes = (
         # shouldn't treat it the same way as plasma membrane receptors
     af.AnnotDef(
         name = 'gpcr_orphan_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': {
                 'G protein-coupled receptors, Class A orphans',
@@ -1065,21 +1065,21 @@ annot_combined_classes = (
     ),  # GPCRs mostly without known ligand, all in the cell membrane
     af.AnnotDef(
         name = 'frizzled_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'G protein-coupled receptors, Class F frizzled',
         },
     ),  # GPCRs for Wnt
     af.AnnotDef(
         name = 'galanin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Galanin receptors',
         },
     ),
     af.AnnotDef(
         name = 'gaba_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': {
                 'Gamma-aminobutyric acid type A receptor subunits',
@@ -1089,14 +1089,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'glucagon_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Glucagon receptor family',
         },
     ),
     af.AnnotDef(
         name = 'glutamate_ionotropic_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': {
                 'Glutamate ionotropic receptor AMPA type subunits',
@@ -1108,197 +1108,197 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'glutamate_metabotropic_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Glutamate metabotropic receptors',
         },
     ),
     af.AnnotDef(
         name = 'glycine_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Glycine receptors',
         },
     ),
     af.AnnotDef(
         name = 'glycoprotein_hormone_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Glycoprotein hormone receptors',
         },
     ),  # receptors for TSH, FSH and LH
     af.AnnotDef(
         name = 'gonadotropin_releasing_hormone_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Gonadotropin releasing hormone receptors',
         },
     ),  # receptors for GnRH
     af.AnnotDef(
         name = 'natriuretic_peptide_receptor_omnipath',
-        source = {'P16066', 'P20594'},
+        resource = {'P16066', 'P20594'},
     ),
     af.AnnotDef(
         name = 'guanilyn_receptor_omnipath',
-        source = {'P25092'},
+        resource = {'P25092'},
     ),
     af.AnnotDef(
         name = 'histamine_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Histamine receptors',
         },
     ),
     af.AnnotDef(
         name = 'hydroxycarboxylic_acid_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Hydroxy-carboxylic acid receptors',
         },
     ),  # receptors for lactate, niacin, etc
     af.AnnotDef(
         name = 'orexin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Hypocretin receptors',
         },
     ),
     af.AnnotDef(
         name = 'inhibitory_leukocyte_ig_like_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Inhibitory leukocyte immunoglobulin like receptors',
         },
     ),
     af.AnnotDef(
         name = 'interferon_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Interferon receptors',
         },
     ),
     af.AnnotDef(
         name = 'interleukin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Interleukin receptors',
         },
     ),
     af.AnnotDef(
         name = 'killer_cell_ig_like_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Killer cell immunoglobulin like receptors',
         },
     ),  # receptors for HLAs
     af.AnnotDef(
         name = 'killer_cell_lectin_like_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Killer cell lectin like receptors',
         },
     ),  # receptors mostly for HLAs
     af.AnnotDef(
         name = 'ly6_plaur_receptor_omnipath',
-        source = {
+        resource = {
             'Q03405', 'Q8IV16',
         }
     ),
     af.AnnotDef(
         name = 'ly6_plaur_receptor_regulator_omnipath',
-        source = {
+        resource = {
             'Q5SQ64', 'Q8N2G4', 'Q86Y78', 'Q8N6Q3', 'Q16553', 'P0DP58',
             'O94772', 'P13987', 'P0DP57', 'O43653', 'Q8NI32', 'P0C8F1',
         },
     ),  #
     af.AnnotDef(
         name = 'leukotriene_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Leukotriene receptors',
         },
     ),  # receptors for leukotrienes, eicosanoids, N-formyl-met peptides, etc
     af.AnnotDef(
         name = 'pentraxin_receptor_omnipath',
-        source = {'Q15818', 'O95502'},
+        resource = {'Q15818', 'O95502'},
     ),
     af.AnnotDef(
         name = 'short_pentraxin_secreted_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Short pentraxins',
         },
     ),  # bind to microbial antigens, DNA and histones
     af.AnnotDef(
         name = 'low_density_lipoprotein_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Low density lipoprotein receptors',
         },
     ),  # receptors for low density lipoproteins
     af.AnnotDef(
         name = 'lysophosphatidic_acid_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Lysophosphatidic acid receptors',
         },
     ),
     af.AnnotDef(
         name = 'melanin_concentrating_hormone_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Melanin concentrating hormone receptors',
         },
     ),
     af.AnnotDef(
         name = 'melanocortin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Melanocortin receptors',
         },
     ),
     af.AnnotDef(
         name = 'melatonin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Melatonin receptors',
         },
     ),
     af.AnnotDef(
         name = 'membrane_associated_progesterone_receptor_omnipath',
-        source = {'O15173', 'O00264'},
+        resource = {'O15173', 'O00264'},
     ),  # PGRMC1 is in SER and microsome membrane, but it does not matter
     af.AnnotDef(
         name = 'neuromedin_u_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Neuromedin U receptors',
         },
     ),
     af.AnnotDef(
         name = 'neuropeptide_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Neuropeptide receptors',
         },
     ),
     af.AnnotDef(
         name = 'neurotensin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Neurotensin receptors',
         },
     ),
     af.AnnotDef(
         name = 'notch_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Notch receptors',
         },
     ),
     af.AnnotDef(
         name = 'olfactory_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': {
                 'Olfactory receptors, family 1',
@@ -1323,70 +1323,70 @@ annot_combined_classes = (
     ),  # odorant receptors
     af.AnnotDef(
         name = 'opioid_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Opioid receptors',
         },
     ),
     af.AnnotDef(
         name = 'opsin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Opsin receptors',
         },
     ),
     af.AnnotDef(
         name = 'oxoglutarate_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Oxoglutarate receptor',
         },
     ),
     af.AnnotDef(
         name = 'p2y_purinergic_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'P2Y receptors',
         },
     ),  # receptors for ADP, ATP, UDP, UTP
     af.AnnotDef(
         name = 'p2x_purinergic_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Purinergic receptors P2X',
         },
     ),  # receptors for ATP
     af.AnnotDef(
         name = 'parathyroid_hormone_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Parathyroid hormone receptors',
         },
     ),
     af.AnnotDef(
         name = 'peptide_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Peptide receptors',
         },
     ),  # receptors for TRH, motilin, apelin, PrRP, QRFP, ghrelin, etc
     af.AnnotDef(
         name = 'platelet_activating_factor_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Platelet activating factor receptor',
         },
     ),
     af.AnnotDef(
         name = 'plexin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Plexins',
         },
     ),  # receptors for semaphorins
     af.AnnotDef(
         name = 'progestin_and_adipoq_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Progestin and adipoQ receptor family',
         },
@@ -1394,21 +1394,21 @@ annot_combined_classes = (
     ),  # G protein coupled progesterone and ADIPOQ hormone receptors
     af.AnnotDef(
         name = 'prokineticin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Prokineticin receptors',
         },
     ),
     af.AnnotDef(
         name = 'prostaglandin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Prostaglandin receptors',
         },
     ),
     af.AnnotDef(
         name = 'receptor_tyrosine_phosphatase_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Protein tyrosine phosphatases receptor type',
         },
@@ -1416,26 +1416,26 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'proteoglycan_receptor_omnipath',
-        source = {'P16070', 'Q6UVK1'},
+        resource = {'P16070', 'Q6UVK1'},
     ),
     af.AnnotDef(
         name = 'proteoglycan_receptor_regulator_omnipath',
-        source = {'O00468'},
+        resource = {'O00468'},
     ),
     af.AnnotDef(
         name = 'pseudoautosomal_region_receptor_omnipath',
-        source = {'P15509', 'Q86VZ1', 'Q9HC73', 'P26951', 'Q01113'},
+        resource = {'P15509', 'Q86VZ1', 'Q9HC73', 'P26951', 'Q01113'},
     ),
     af.AnnotDef(
         name = 'relt_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'RELT family',
         },
     ),
     af.AnnotDef(
         name = 'gpcr_activity_modifying_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': (
                 'Receptor (G protein-coupled) activity modifying protein'
@@ -1444,64 +1444,64 @@ annot_combined_classes = (
     ),  # receptors for adrenomedullin
     af.AnnotDef(
         name = 'receptor_transporter_receptor_regulator_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Receptor transporter proteins',
         },
     ),  # regulate GPCRs, especially taste and olfactory receptors
     af.AnnotDef(
         name = 'tyrosine_kinase_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Receptor tyrosine kinases',
         },
     ),
     af.AnnotDef(
         name = 'relaxin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Relaxin family peptide receptors',
         },
     ),
     af.AnnotDef(
         name = 'repulsive_guidance_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Repulsive guidance molecule family',
         },
     ),  # BMP coreceptors
     af.AnnotDef(
         name = 'slitrk_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'SLIT and NTRK like family',
         },
     ),  # receptors regulating synapse development in CNS
     af.AnnotDef(
         name = 'scavenger_receptor_cysteine_rich_receptor_omnipath',
-        source = {'Q9UEW3', 'Q6ZMJ2', 'P21757', 'P06127', 'Q86VB7'},
+        resource = {'Q9UEW3', 'Q6ZMJ2', 'P21757', 'P06127', 'Q86VB7'},
     ),
     af.AnnotDef(
         name = 'scavenger_receptor_cysteine_rich_secreted_receptor_omnipath',
-        source = {'Q9UGM3', 'A1L4H1', 'Q86VB7'},
+        resource = {'Q9UGM3', 'A1L4H1', 'Q86VB7'},
     ),
 
     # secreted receptors
     af.AnnotDef(
         name = 'ly6_plur_secreted_receptor_omnipath',
-        source = {'Q6UX82', 'P55000', 'P13987'},
+        resource = {'Q6UX82', 'P55000', 'P13987'},
     ),
     af.AnnotDef(
         name = 'pentraxin_secreted_receptor_omnipath',
-        source = {'Q96A99', 'P26022', 'P47972'},
+        resource = {'Q96A99', 'P26022', 'P47972'},
     ),
     af.AnnotDef(
         name = 'ms4_receptor_regulator_hgnc',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
                     name = 'ms4_hgnc',
-                    source = 'HGNC',
+                    resource = 'HGNC',
                     args = {
                         'mainclass': 'Membrane spanning 4-domains',
                     },
@@ -1513,11 +1513,11 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'ige_receptor_omnipath',
-        source = {'Q01362'},
+        resource = {'Q01362'},
     ),
     af.AnnotDef(
         name = 'peptidoglycan_secreted_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Peptidoglycan recognition proteins',
         },
@@ -1525,7 +1525,7 @@ annot_combined_classes = (
         # either enzymatically or other ways
     af.AnnotDef(
         name = 'scavenger_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Scavenger receptors',
         },
@@ -1533,11 +1533,11 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'scavenger_secreted_receptor_omnipath',
-        source = {'Q8WTU2', 'A1L4H1', 'Q86VB7'},
+        resource = {'Q8WTU2', 'A1L4H1', 'Q86VB7'},
     ),
     af.AnnotDef(
         name = 'sialic_acid_binding_lectin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Sialic acid binding Ig like lectins',
         },
@@ -1545,28 +1545,28 @@ annot_combined_classes = (
         # adhesion proteins, depending on the intracellular domains
     af.AnnotDef(
         name = 'somatostatin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Somatostatin receptors',
         },
     ),
     af.AnnotDef(
         name = 'sphingosine_phosphate_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Sphingosine 1-phosphate receptors',
         },
     ),
     af.AnnotDef(
         name = 'succinate_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Succinate receptor',
         },
     ),
     af.AnnotDef(
         name = 't_cell_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': {
                 'T cell receptor alpha locus at 14q11.2',
@@ -1578,7 +1578,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'tir_domain_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'TIR domain containing',
         },
@@ -1586,14 +1586,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'tachykinin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Tachykinin receptors',
         },
     ),
     af.AnnotDef(
         name = 'taste_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': {
                 'Taste 1 receptors',
@@ -1603,21 +1603,21 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'toll_like_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Toll like receptors',
         },
     ),
     af.AnnotDef(
         name = 'trace_amin_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Trace amine receptors',
         },
     ),
     af.AnnotDef(
         name = 'tumor_necrosis_factor_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Tumor necrosis factor receptor superfamily',
         },
@@ -1625,39 +1625,39 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'tumor_necrosis_factor_secreted_receptor_omnipath',
-        source = {'O9540', 'O0030'},
+        resource = {'O9540', 'O0030'},
     ),
     af.AnnotDef(
         name = 'type1_serine_threonine_kinase_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Type 1 receptor serine/threonine kinases',
         },
     ),
     af.AnnotDef(
         name = 'type2_serine_threonine_kinase_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Type 2 receptor serine/threonine kinases',
         },
     ),
     af.AnnotDef(
         name = 'vasoactive_intestinal_peptide_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Vasoactive intestinal peptide receptor family',
         },
     ),
     af.AnnotDef(
         name = 'vomeronasal_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Vomeronasal receptors',
         },
     ),
     af.AnnotDef(
         name = 'xc_motif_chemokine_receptor_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'X-C motif chemokine receptors',
         },
@@ -1665,21 +1665,21 @@ annot_combined_classes = (
     # subclasses from Almen 2009
     af.AnnotDef(
         name = 'transforming_growth_factor_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Act.TGFB',
         },
     ),
     af.AnnotDef(
         name = 'axl_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Axl',
         },
     ),  # their ligands are in the ECM
     af.AnnotDef(
         name = 'butyrophilin_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Butyrophilin',
         },
@@ -1687,70 +1687,70 @@ annot_combined_classes = (
         # transporters or regulators of other membrane proteins
     af.AnnotDef(
         name = 'scavenger_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'SCAR',
         },
     ),
     af.AnnotDef(
         name = 'cytokine_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'CytokineR',
         },
     ),
     af.AnnotDef(
         name = 'egf_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'EGFR',
         },
     ),
     af.AnnotDef(
         name = 'ephrin_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Eph',
         },
     ),
     af.AnnotDef(
         name = 'fgf_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'FGFR',
         },
     ),
     af.AnnotDef(
         name = 'fc_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'FcR',
         },
     ),
     af.AnnotDef(
         name = 'frizzled_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Frizzled',
         },
     ),
     af.AnnotDef(
         name = 'gpcr_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'GPCR',
         },
     ),
     af.AnnotDef(
         name = 'glutamate_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Glutamate',
         },
     ),
     af.AnnotDef(
         name = 'ig_like_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'mainclass': 'Receptor',
             'classes': 'IG',
@@ -1758,7 +1758,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'il17_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'mainclass': 'Receptor',
             'classes': 'IL17',
@@ -1766,21 +1766,21 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'igf_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'InsR',
         },
     ),
     af.AnnotDef(
         name = 'killer_cell_ig_like_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'KIR',
         },
     ),
     af.AnnotDef(
         name = 'kinase_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'mainclass': 'Receptors',
             'classes': {
@@ -1792,91 +1792,91 @@ annot_combined_classes = (
         # I think it's useful to have such category
     af.AnnotDef(
         name = 'low_density_lipoprotein_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'LDLR',
         },
     ),
     af.AnnotDef(
         name = 'leukocyte_ig_like_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'LILR',
         },
     ),
     af.AnnotDef(
         name = 'mannose_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'MacrophageMannoseR',
         },
     ),
     af.AnnotDef(
         name = 'netrin_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'NetrinR',
         },
     ),
     af.AnnotDef(
         name = 'neuropilin_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Neuropilin',
         },
     ),  # receptor for semaphorins, VEGF and PLGF
     af.AnnotDef(
         name = 'notch_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Notch',
         },
     ),
     af.AnnotDef(
         name = 'olfactory_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': {'Olf', 'PutativeOlfR'},
         },
     ),
     af.AnnotDef(
         name = 'cd1_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'OtherCD1',
         },
     ),
     af.AnnotDef(
         name = 'cd300_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'OtherCD300',
         },
     ),
     af.AnnotDef(
         name = 'natural_cytotoxicity_triggering_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'OtherNCR',
         },
     ),
     af.AnnotDef(
         name = 'poliovirus_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'OtherPVR',
         },
     ),
     af.AnnotDef(
         name = 'roundabout_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'OtherROBO',
         },
     ),
     af.AnnotDef(
         name = 'triggering_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'OtherTREM',
         },
@@ -1884,35 +1884,35 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'pdgf_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'PDGFR',
         },
     ),
     af.AnnotDef(
         name = 'patched_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Patched',
         },
     ),
     af.AnnotDef(
         name = 'plexin_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Plexin',
         },
     ),
     af.AnnotDef(
         name = 'receptor_activity_modifying_receptor_regulator_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'RAMP',
         },
     ),  # affect other receptors such as CALCRL
     af.AnnotDef(
         name = 'retinal_guanylyl_cyclase_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'RGC',
         },
@@ -1920,7 +1920,7 @@ annot_combined_classes = (
         # and E.coli enterotoxin
     af.AnnotDef(
         name = 'receptor_transporter_receptor_regulator_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'RTP',
         },
@@ -1928,28 +1928,28 @@ annot_combined_classes = (
         # especially their trafficking to the plasma membrane
     af.AnnotDef(
         name = 'receptor_tyrosine_phosphatase_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'ReceptorTypePhosphatases',
         },
     ),  # not sure all these are receptors
     af.AnnotDef(
         name = 'rhodopsin_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Rhodopsin',
         },
     ),  # GPCRs for various ligands, hormones, neurotransmitters, etc
     af.AnnotDef(
         name = 'secretin_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Secretin',
         },
     ),  # GPCRs for various hormones
     af.AnnotDef(
         name = 'syndecan_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Syndecan',
         },
@@ -1957,35 +1957,35 @@ annot_combined_classes = (
         # transferring signals to the cytoskeleton, regulating cell shape
     af.AnnotDef(
         name = 'taste_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'TAS2R',
         },
     ),
     af.AnnotDef(
         name = 't_cell_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'TCR',
         },
     ),
     af.AnnotDef(
         name = 'tumor_necrosis_factor_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'TNFNGF',
         },
     ),  # maybe this is a broader superfamily
     af.AnnotDef(
         name = 'toll_like_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'TOLL',
         },
     ),  # receptors for various pathogen patterns e.g. LPS
     af.AnnotDef(
         name = 'teneurin_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Teneurin',
         },
@@ -1994,42 +1994,42 @@ annot_combined_classes = (
         # maybe cell-cell adhesion molecules
     af.AnnotDef(
         name = 'transferrin_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Transferrin',
         },
     ),
     af.AnnotDef(
         name = 'type1_ig_like_cytokine_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Type1',
         },
     ),  # mostly interleukin receptors
     af.AnnotDef(
         name = 'type2_ig_like_cytokine_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Type2',
         },
     ),  # mostly interferon and interleukin receptors
     af.AnnotDef(
         name = 'vomeronasal_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'V1R',
         },
     ),  # pheromone receptors
     af.AnnotDef(
         name = 'gaba_ach_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'cys-loop',
         },
     ),  # receptors for ACh and GABA
     af.AnnotDef(
         name = 'neurotrophin_receptor_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'neutrophin',
         },
@@ -2038,7 +2038,7 @@ annot_combined_classes = (
     # ECM
     af.AnnotDef(
         name = 'ecm',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'ecm_matrixdb',
                 'ecm_matrisome',
@@ -2052,11 +2052,11 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'ecm_matrisome',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
                     name = 'ecm_matrisome_core',
-                    source = 'Matrisome',
+                    resource = 'Matrisome',
                     args = {
                         'mainclass': 'Core matrisome',
                     },
@@ -2065,7 +2065,7 @@ annot_combined_classes = (
                     annots = (
                         af.AnnotDef(
                             name = 'ecm_matrisome_affiliated',
-                            source = 'Matrisome',
+                            resource = 'Matrisome',
                             args = {
                                 'mainclass': 'Matrisome-associated',
                                 'subclass': 'ECM-affiliated Proteins',
@@ -2081,21 +2081,21 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'ecm_matrixdb',
-        source = 'MatrixDB',
+        resource = 'MatrixDB',
         args = {
             'mainclass': 'ecm',
         },
     ),
     af.AnnotDef(
         name = 'ecm_go',
-        source = 'GO_Intercell',
+        resource = 'GO_Intercell',
         args = {
             'mainclass': 'ecm structure',
         },
     ),
     af.AnnotDef(
         name = 'ecm_ramilowski',
-        source = 'Ramilowski_location',
+        resource = 'Ramilowski_location',
         args = {
             'location': {
                 'extracellular matrix',
@@ -2105,14 +2105,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'ecm_uniprot',
-        source = 'UniProt_location',
+        resource = 'UniProt_location',
         args = {
             'location': 'Extracellular matrix',
         },
     ),
     af.AnnotDef(
         name = 'ecm_cellcellinteractions',
-        source = 'CellCellInteractions',
+        resource = 'CellCellInteractions',
         args = {
             'mainclass': 'ECM',
         },
@@ -2120,21 +2120,21 @@ annot_combined_classes = (
     # specific subclasses from HGNC
     af.AnnotDef(
         name = 'collagen_proteoglycan_ecm_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Collagen proteoglycans',
         },
     ),
     af.AnnotDef(
         name = 'collagen_ecm_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Collagens',
         },
     ),
     af.AnnotDef(
         name = 'emi_ecm_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'EMI domain containing',
         },
@@ -2142,21 +2142,21 @@ annot_combined_classes = (
         # are not in the cell membrane but all secreted
     af.AnnotDef(
         name = 'fibrillin_ecm_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Fibrillins',
         },
     ),
     af.AnnotDef(
         name = 'laminin_ecm_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Laminin subunits',
         },
     ),
     af.AnnotDef(
         name = 'fibulin_ecm_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Fibulins',
         },
@@ -2164,21 +2164,21 @@ annot_combined_classes = (
         # for EGFR (but still an EVM protein at the same time)
     af.AnnotDef(
         name = 'hyalectan_proteoglycan_ecm_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Hyalectan proteoglycans',
         },
     ),
     af.AnnotDef(
         name = 'matrilin_ecm_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Matrilins',
         },
     ),  # cartilage ECM
     af.AnnotDef(
         name = 'mucin_ecm_hgnc',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
                     name = 'mucin_hgnc',
@@ -2194,32 +2194,32 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'proteoglycan_ecm_omnipath',
-        source = {'O00468', 'P98160'},
+        resource = {'O00468', 'P98160'},
     ),
     af.AnnotDef(
         name = 'sibling_ecm_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'SIBLING family',
         },
     ),
     af.AnnotDef(
         name = 'sparc_ecm_regulator_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'SPARC family',
         },
     ),  # act either on ligands or ECM or both
     af.AnnotDef(
         name = 'small_leucine_rich_repeat_proteoglycan_ecm_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Small leucine rich repeat proteoglycans',
         },
     ),
     af.AnnotDef(
         name = 'zona_pellucida_glycoprotein_ecm_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Zona pellucida glycoproteins',
         },
@@ -2228,7 +2228,7 @@ annot_combined_classes = (
     # ligand
     af.AnnotDef(
         name = 'ligand',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'ligand_cellphonedb',
                 'ligand_go',
@@ -2249,28 +2249,28 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'ligand_italk',
-        source = 'iTALK',
+        resource = 'iTALK',
         args = {
             'mainclass': 'ligand',
         },
     ),
     af.AnnotDef(
         name = 'ligand_cellcellinteractions',
-        source = 'CellCellInteractions',
+        resource = 'CellCellInteractions',
         args = {
             'mainclass': 'Ligand',
         },
     ),
     af.AnnotDef(
         name = 'ligand_embrace',
-        source = 'EMBRACE',
+        resource = 'EMBRACE',
         args = {
             'mainclass': 'ligand',
         },
     ),
     af.AnnotDef(
         name = 'ligand_hgnc',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'interleukin_hgnc',
                 'endogenous_ligand_hgnc',
@@ -2281,49 +2281,49 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'ligand_cellphonedb',
-        source = 'CellPhoneDB',
+        resource = 'CellPhoneDB',
         args = {
             'secreted': bool,
         },
     ),
     af.AnnotDef(
         name = 'ligand_go',
-        source = 'GO_Intercell',
+        resource = 'GO_Intercell',
         args = {
             'mainclass': 'ligands',
         },
     ),
     af.AnnotDef(
         name = 'ligand_hpmr',
-        source = 'HPMR',
+        resource = 'HPMR',
         args = {
             'role': 'Ligand',
         },
     ),
     af.AnnotDef(
         name = 'ligand_ramilowski',
-        source = 'Ramilowski2015',
+        resource = 'Ramilowski2015',
         args = {
             'mainclass': 'ligand',
         },
     ),
     af.AnnotDef(
         name = 'ligand_kirouac',
-        source = 'Kirouac2010',
+        resource = 'Kirouac2010',
         args = {
             'mainclass': 'ligand',
         },
     ),
     af.AnnotDef(
         name = 'ligand_guide2pharma',
-        source = 'Guide2Pharma',
+        resource = 'Guide2Pharma',
         args = {
             'mainclass': 'ligand',
         },
     ),
     af.AnnotDef(
         name = 'ligand_dgidb',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'growth_factor_dgidb',
                 'hormone_dgidb',
@@ -2333,21 +2333,21 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'growth_factor_dgidb',
-        source = 'DGIdb',
+        resource = 'DGIdb',
         args = {
             'category': 'GROWTH FACTOR',
         },
     ),
     af.AnnotDef(
         'hormone_dgidb',
-        source = 'DGIdb',
+        resource = 'DGIdb',
         args = {
             'category': 'HORMONE ACTIVITY',
         },
     ),
     af.AnnotDef(
         name = 'ligand_lrdb',
-        source = 'LRdb',
+        resource = 'LRdb',
         args = {
             'role': 'ligand',
             'references': bool,
@@ -2355,14 +2355,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'ligand_baccin',
-        source = 'Baccin2019',
+        resource = 'Baccin2019',
         args = {
             'mainclass': 'ligand',
         },
     ),
     af.AnnotDef(
         name = 'ligand_signalink',
-        source = 'SignaLink_function',
+        resource = 'SignaLink_function',
         args = {
             'function': 'Ligand',
         },
@@ -2370,119 +2370,119 @@ annot_combined_classes = (
     # ligands from HGNC
     af.AnnotDef(
         name = 'angiopoietin_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Angiopoietin like family',
         },
     ),
     af.AnnotDef(
         name = 'basigin_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Basigin family',
         },
     ),
     af.AnnotDef(
         name = 'bmp_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Bone morphogenetic proteins',
         },
     ),
     af.AnnotDef(
         name = 'c1q_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'C1q and TNF related',
         },
     ),
     af.AnnotDef(
         name = 'ccn_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Cellular communication network factors',
         },
     ),
     af.AnnotDef(
         name = 'interleukin_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Interleukins',
         },
     ),
     af.AnnotDef(
         name = 'endogenous_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Endogenous ligands',
         },
     ), # a very few among these are actually not secreted
     af.AnnotDef(
         name = 'chemokine_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Chemokine ligands',
         },
     ),
     af.AnnotDef(
         name = 'neurotrophin_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Neurotrophins',
         },
     ),
     af.AnnotDef(
         name = 'gdnf_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'GDNF family ligands',
         },
     ),
     af.AnnotDef(
         name = 'chordin_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Chordin family',
         },
     ), # BMP antagonist ligands
     af.AnnotDef(
         name = 'cysteine_rich_bmp_regulator_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Cysteine rich transmembrane BMP regulators',
         },
     ), # BMP agonist and antagonist ligands
     af.AnnotDef(
         name = 'dan_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'DAN family',
         },
     ), # TGF & BMP signaling agonists and antagonists
     af.AnnotDef(
         name = 'fgf_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Fibroblast growth factor family',
         },
     ), # with the exception of FGF13: that's not secreted
     af.AnnotDef(
         name = 'gdnf_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'GDNF family ligands',
         },
     ), # neurotrophic ligands
     af.AnnotDef(
         name = 'growth_hormone_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Growth hormone family',
         },
     ),
     af.AnnotDef(
         name = 'hedgehog_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Hedgehog signaling molecule family',
         },
@@ -2490,44 +2490,44 @@ annot_combined_classes = (
         # solubilized later
     af.AnnotDef(
         name = 'hdgf_ligand_omnipath',
-        source = {'P51858'},
+        resource = {'P51858'},
     ),  # hepatoma-derived growth factor (HDGFL1 is not included because
         # little is known about its role and whether it's secreted)
     af.AnnotDef(
         name = 'igf_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'IGF like family',
         },
     ),
     af.AnnotDef(
         name = 'izumo_ligand_omnipath',
-        source = {'Q1ZYL8'},
+        resource = {'Q1ZYL8'},
     ),  # ligands in sperm-egg fusion
     af.AnnotDef(
         name = 'inhibin_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Inhibin subunits',
         },
     ),
     af.AnnotDef(
         name = 'interleukin6_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Interleukin 6 type cytokine family',
         },
     ),
     af.AnnotDef(
         name = 'interleukin_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Interleukins',
         },
     ),
     af.AnnotDef(
         name = 'leucine_rich_glioma_inactivated_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'LGI family',
         },
@@ -2535,7 +2535,7 @@ annot_combined_classes = (
         # in other categories
     af.AnnotDef(
         name = 'tgf_beta_binding_ligand_regulator_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': (
                 'Latent transforming growth factor beta binding proteins'
@@ -2544,7 +2544,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'mia_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'MIA family',
         },
@@ -2552,25 +2552,25 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'neuferricin_neudensin_ligand_omnipath',
-        source = {'Q8WUJ1', 'Q9UMX5'},
+        resource = {'Q8WUJ1', 'Q9UMX5'},
     ),
     af.AnnotDef(
         name = 'netrin_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Netrins',
         },
     ),  # secreted axon guidance molecules
     af.AnnotDef(
         name = 'neurotrophin_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Neurotrophins',
         },
     ),
     af.AnnotDef(
         name = 'oocyte_secreted_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'OOSP family',
         },
@@ -2579,14 +2579,14 @@ annot_combined_classes = (
         # FGFR2 together with FGF7
     af.AnnotDef(
         name = 'prostate_and_testis_expressed_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'PATE family',
         },
     ),  # ligands modulating nicotinic ACh receptors and sperm motility
     af.AnnotDef(
         name = 'pregnancy_specific_glycoprotein_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Pregnancy specific glycoproteins',
         },
@@ -2594,62 +2594,62 @@ annot_combined_classes = (
         # overall they fit the best to the ligand category
     af.AnnotDef(
         name = 'proteoglycan_ligand_regulator_omnipath',
-        source = {'Q03167'},
+        resource = {'Q03167'},
     ),
     af.AnnotDef(
         name = 's100_calcium_binding_ligand_omnipath',
-        source = {'P31151', 'P80511', 'P05109'},
+        resource = {'P31151', 'P80511', 'P05109'},
     ),
     af.AnnotDef(
         name = 'sparc_ligand_regulator_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'SPARC family',
         },
     ),
     af.AnnotDef(
         name = 'scavenger_receptor_cysteine_rich_ligand_regulator_omnipath',
-        source = {'Q8WTU2', ''},
+        resource = {'Q8WTU2', ''},
     ),
     af.AnnotDef(
         name = 'scavenger_receptor_cysteine_rich_ligand_omnipath',
-        source = {'O43866'},
+        resource = {'O43866'},
     ),
     af.AnnotDef(
         name = 'frizzled_related_ligand_regulator_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Secreted frizzled-related proteins',
         },
     ),  # secreted proteins binding WNT ligands
     af.AnnotDef(
         name = 'secretoglobin_ligand_regulator_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Secretoglobins',
         },
     ),  # secreted proteins binding small molecule ligands
     af.AnnotDef(
         name = 'tafa_chemokine_like_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'TAFA chemokine like family',
         },
     ),
     af.AnnotDef(
         name = 'prosalusin_ligand_omnipath',
-        source = {'Q8N2E6'},
+        resource = {'Q8N2E6'},
     ),
     af.AnnotDef(
         name = 'transforming_growth_factor_beta_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Transforming growth factor beta family',
         },
     ),
     af.AnnotDef(
         name = 'tumor_necrosis_factor_surface_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Tumor necrosis factor superfamily',
         },
@@ -2657,7 +2657,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'tumor_necrosis_factor_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Tumor necrosis factor superfamily',
         },
@@ -2668,14 +2668,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'vascular_endothelial_growth_factor_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'VEGF family',
         },
     ),
     af.AnnotDef(
         name = 'wnt_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Wnt family',
         },
@@ -2683,69 +2683,69 @@ annot_combined_classes = (
     # from Almen 2009
     af.AnnotDef(
         name = 'ligand_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Ligand',
         },
     ),
     af.AnnotDef(
         name = 'delta_like_ligand_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Delta',
         },
     ),
     af.AnnotDef(
         name = 'ephrin_b_ligand_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'EphB',
         },
     ),
     af.AnnotDef(
         name = 'ig_ligand_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'IG_Ligand',
         },
     ),
     af.AnnotDef(
         name = 'jagged_ligand_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Jagged',
         },
     ),
     af.AnnotDef(
         name = 'neuroligin_ligand_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Neuroligin',
         },
     ),
     af.AnnotDef(
         name = 'nkg2dl_ligand_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'NKG2DL',
         },
     ),
     af.AnnotDef(
         name = 'semaphorin_ligand_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Semaphorins',
         },
     ),
     af.AnnotDef(
         name = 'trem_like_ligand_omnipath',
-        source = {'Q6UXN2'},
+        resource = {'Q6UXN2'},
     ),
 
     # intracellular
     af.AnnotDef(
         name = 'intracellular',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'intracellular_locate',
                 'intracellular_comppi',
@@ -2756,11 +2756,11 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'intracellular_locate',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
                     name = 'locate_intracellular',
-                    source = 'LOCATE',
+                    resource = 'LOCATE',
                     args = {
                         'location': {
                             'centrosome',
@@ -2805,7 +2805,7 @@ annot_combined_classes = (
                 ),
                 af.AnnotDef(
                     name = 'locate_cytoplasmic',
-                    source = 'LOCATE',
+                    resource = 'LOCATE',
                     args = {
                         'cls': 'cytoplasmic',
                     },
@@ -2816,7 +2816,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'intracellular_comppi',
-        source = 'ComPPI',
+        resource = 'ComPPI',
         args = {
             'location': {
                 'cytosol',
@@ -2827,14 +2827,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'intracellular_go',
-        source = 'GO_Intercell',
+        resource = 'GO_Intercell',
         args = {
             'mainclass': 'intracellular',
         },
     ),
     af.AnnotDef(
         name = 'intracellular_uniprot',
-        source = 'UniProt_location',
+        resource = 'UniProt_location',
         args = {
             'location': {
                 'Autophagosome',
@@ -2934,7 +2934,7 @@ annot_combined_classes = (
     # extracellular
     af.AnnotDef(
         name = 'extracellular',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'extracellular_locate',
                 'extracellular_surfaceome',
@@ -2951,11 +2951,11 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'extracellular_locate',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
                     name = 'locate_extracellular',
-                    source = 'LOCATE',
+                    resource = 'LOCATE',
                     args = {
                         'location': {
                             'extracellular',
@@ -2970,18 +2970,18 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'extracellular_comppi',
-        source = 'ComPPI',
+        resource = 'ComPPI',
         args = {
             'location': 'extracellular',
         },
     ),
     af.AnnotDef(
         name = 'extracellular_surfaceome',
-        source = 'Surfaceome',
+        resource = 'Surfaceome',
     ),
     af.AnnotDef(
         name = 'extracellular_matrixdb',
-        source = 'MatrixDB',
+        resource = 'MatrixDB',
         args = {
             'mainclass': {
                 'secreted',
@@ -2991,11 +2991,11 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'extracellular_cspa',
-        source = 'CSPA',
+        resource = 'CSPA',
     ),
     af.AnnotDef(
         name = 'extracellular_membranome',
-        source = 'Membranome',
+        resource = 'Membranome',
         args = {
             'membrane': 'Plasma membrane',
             'side': 'extracellular side',
@@ -3003,18 +3003,18 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'extracellular_cellphonedb',
-        source = 'CellPhoneDB',
+        resource = 'CellPhoneDB',
         args = {
             'secreted': bool,
         },
     ),
     af.AnnotDef(
         name = 'extracellular_hpmr',
-        source = 'HPMR',
+        resource = 'HPMR',
     ),
     af.AnnotDef(
         name = 'extracellular_membranome',
-        source = 'Membranome',
+        resource = 'Membranome',
         args = {
             'membrane': 'Plasma membrane',
             'side': 'extracellular side',
@@ -3022,14 +3022,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'extracellular_hpa',
-        source = 'HPA_secretome',
+        resource = 'HPA_secretome',
         args = {
             'secreted': bool,
         },
     ),
     af.AnnotDef(
         name = 'extracellular_ramilowski',
-        source = 'Ramilowski_location',
+        resource = 'Ramilowski_location',
         args = {
             'location': {
                 'secreted',
@@ -3038,7 +3038,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'extracellular_uniprot',
-        source = 'UniProt_location',
+        resource = 'UniProt_location',
         args = {
             'location': {
                 'Secreted',
@@ -3048,39 +3048,39 @@ annot_combined_classes = (
     # specific subclasses from HGNC
     af.AnnotDef(
         name = 'histatin_extracellular_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Histatins and statherin',
         },
     ),  # secreted into saliva
     af.AnnotDef(
         name = 'proline_rich_extracellular_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Proline rich proteins',
         },
     ),  # secreted into saliva, enamel protective and anti-microbial
     af.AnnotDef(
         name = 'iglon5_extracellular_omnipath',
-        source = {'A6NGN9'},
+        resource = {'A6NGN9'},
     ),  # function is not clear for me
     af.AnnotDef(
         name = 'immunoglobulin_heavy_extracellular_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Immunoglobulin heavy locus at 14q32.33',
         },
     ),  # immunoglobulin heavy chain
     af.AnnotDef(
         name = 'immunoglobulin_kappa_extracellular_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Immunoglobulin kappa locus at 2p11.2',
         },
     ),  # immunoglobulin V region
     af.AnnotDef(
         name = 'immunoglobulin_lambda_extracellular_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Immunoglobulin lambda locus at 22q11.2',
         },
@@ -3089,7 +3089,7 @@ annot_combined_classes = (
     # cell surface
     af.AnnotDef(
         name = 'cell_surface',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'cell_surface_surfaceome',
                 'cell_surface_go',
@@ -3106,36 +3106,36 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'cell_surface_hpmr',
-        source = 'HPMR',
+        resource = 'HPMR',
         args = {
             'role': 'Receptor',
         },
     ),
     af.AnnotDef(
         name = 'cell_surface_surfaceome',
-        source = 'Surfaceome',
+        resource = 'Surfaceome',
     ),
     af.AnnotDef(
         name = 'cell_surface_cspa',
-        source = 'CSPA',
+        resource = 'CSPA',
     ),
     af.AnnotDef(
         name = 'cell_surface_cellphonedb',
-        source = 'CellPhoneDB',
+        resource = 'CellPhoneDB',
         args = {
             'method': lambda a: a.peripheral or a.transmembrane,
         },
     ),
     af.AnnotDef(
         name = 'cell_surface_go',
-        source = 'GO_Intercell',
+        resource = 'GO_Intercell',
         args = {
             'mainclass': 'cell_surface',
         },
     ),
     af.AnnotDef(
         name = 'cell_surface_membranome',
-        source = 'Membranome',
+        resource = 'Membranome',
         args = {
             'membrane': 'Plasma membrane',
             'side': 'extracellular side',
@@ -3143,25 +3143,25 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'cell_surface_dgidb',
-        source = 'DGIdb',
+        resource = 'DGIdb',
         args = {
             'category': {'CELL SURFACE', 'EXTERNAL SIDE OF PLASMA MEMBRANE'},
         },
     ),
     af.AnnotDef(
         name = 'cell_surface_ramilowski',
-        source = 'Ramilowski_location',
+        resource = 'Ramilowski_location',
         args = {
             'location': 'cell surface',
         },
     ),
     af.AnnotDef(
         name = 'cell_surface_uniprot',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
                     name = 'cell_membrane_uniprot',
-                    source = 'UniProt_location',
+                    resource = 'UniProt_location',
                     args = {
                         'location': {
                             'Cell membrane',
@@ -3195,42 +3195,42 @@ annot_combined_classes = (
     # specific subclasses from HGNC
     af.AnnotDef(
         name = 'glypican_cell_surface_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Glypicans',
         },
     ),
     af.AnnotDef(
         name = 'immunoglobulin_heavy_cell_surface_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Immunoglobulin heavy locus at 14q32.33',
         },
     ),  # immunoglobulin heavy chain
     af.AnnotDef(
         name = 'immunoglobulin_kappa_cell_surface_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Immunoglobulin kappa locus at 2p11.2',
         },
     ),  # immunoglobulin V region
     af.AnnotDef(
         name = 'immunoglobulin_lambda_cell_surface_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Immunoglobulin lambda locus at 22q11.2',
         },
     ),  # immunoglobulin V region
     af.AnnotDef(
         name = 'ifn_induced_cell_surface_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Interferon induced transmembrane proteins',
         },
     ),
     af.AnnotDef(
         name = 'ifn_induced_endocytosis_exocytosis_regulator_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Interferon induced transmembrane proteins',
         },
@@ -3239,7 +3239,7 @@ annot_combined_classes = (
     # plasma membrane
     af.AnnotDef(
         name = 'plasma_membrane',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'transmembrane_cellphonedb',
                 'lhfpl_plasma_membrane_hgnc',
@@ -3249,14 +3249,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'lhfpl_plasma_membrane_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'LHFPL tetraspan proteins',
         }
     ),
     af.AnnotDef(
         name = 'plasma_membrane_regulator_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'EMP-PMP22-LIM',
         }
@@ -3265,7 +3265,7 @@ annot_combined_classes = (
     # transmembrane
     af.AnnotDef(
         name = 'transmembrane',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'transmembrane_cellphonedb',
                 'transmembrane_go',
@@ -3281,7 +3281,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'transmembrane_almen',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'transmembrane_phobius_almen',
                 'transmembrane_sosui_almen',
@@ -3292,32 +3292,32 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'transmembrane_phobius_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'transmembrane_phobius': True,
         },
     ),
     af.AnnotDef(
         name = 'transmembrane_sosui_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'transmembrane_sosui': True,
         },
     ),
     af.AnnotDef(
         name = 'transmembrane_tmhmm_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'transmembrane_tmhmm': True,
         },
     ),
     af.AnnotDef(
         name = 'transmembrane_uniprot',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
                     name = 'transmembrane_uniprot_location',
-                    source = 'UniProt_location',
+                    resource = 'UniProt_location',
                     args = {
                         'features': {
                             'Multi-pass membrane protein',
@@ -3331,7 +3331,7 @@ annot_combined_classes = (
                 ),
                 af.AnnotDef(
                     name = 'transmembrane_uniprot_topology',
-                    source = 'UniProt_topology',
+                    resource = 'UniProt_topology',
                     args = {
                         'topology': 'Transmembrane',
                     },
@@ -3342,35 +3342,35 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'transmembrane_go',
-        source = 'GO_Intercell',
+        resource = 'GO_Intercell',
         args = {
             'mainclass': 'transmembrane',
         },
     ),
     af.AnnotDef(
         name = 'transmembrane_cellphonedb',
-        source = 'CellPhoneDB',
+        resource = 'CellPhoneDB',
         args = {
             'transmembrane': True,
         },
     ),
     af.AnnotDef(
         name = 'transmembrane_opm',
-        source = 'OPM',
+        resource = 'OPM',
         args = {
             'transmembrane': True,
         },
     ),
     af.AnnotDef(
         name = 'transmembrane_topdb',
-        source = 'TopDB',
+        resource = 'TopDB',
         args = {
             'topology': 'Membrane',
         },
     ),
     af.AnnotDef(
         name = 'transmembrane_locate',
-        source = 'LOCATE',
+        resource = 'LOCATE',
         args = {
             'cls': {
                 'typeI',
@@ -3381,14 +3381,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'transmembrane_ramilowski',
-        source = 'Ramilowski_location',
+        resource = 'Ramilowski_location',
         args = {
             'tmh': bool,
         },
     ),
     af.AnnotDef(
         name = 'lhfpl_transmembrane_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'LHFPL tetraspan proteins',
         }
@@ -3397,7 +3397,7 @@ annot_combined_classes = (
     # adhesion
     af.AnnotDef(
         name = 'adhesion',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'adhesion_cellphonedb',
                 'adhesion_go',
@@ -3413,22 +3413,22 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'adhesion_cellphonedb',
-        source = 'CellPhoneDB',
+        resource = 'CellPhoneDB',
         args = {
             'integrin': bool,
         },
     ),
     af.AnnotDef(
         name = 'adhesion_integrins',
-        source = 'Integrins',
+        resource = 'Integrins',
     ),
     af.AnnotDef(
         name = 'adhesion_zhong2015',
-        source = 'Zhong2015',
+        resource = 'Zhong2015',
     ),
     af.AnnotDef(
         name = 'adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': {
                 'Type I classical cadherins',
@@ -3456,18 +3456,18 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'adhesion_go',
-        source = 'GO_Intercell',
+        resource = 'GO_Intercell',
         args = {
             'mainclass': {'adhesion to matrix', 'adhesion to other cells'},
         }
     ),
     af.AnnotDef(
         name = 'adhesion_matrisome',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
                     name = 'ecm_affiliated_matrisome',
-                    source = 'Matrisome',
+                    resource = 'Matrisome',
                     args = {
                         'mainclass': 'Matrisome-associated',
                         'subclass': 'ECM-affiliated Proteins',
@@ -3480,14 +3480,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'focal_adhesion_ramilowski',
-        source = 'Ramilowski_location',
+        resource = 'Ramilowski_location',
         args = {
             'location': 'focal adhesion',
         },
     ),
     af.AnnotDef(
         name = 'adhesion_gprotein_coupled_receptor_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': {
                 'Adhesion G protein-coupled receptors, subfamily A',
@@ -3504,49 +3504,49 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = '7d_cadherin_cell_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': '7D cadherins',
         },
     ), # cell-cell adhesion
     af.AnnotDef(
         name = 'cadherin_related_cell_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Cadherin related',
         },
     ), # cell-cell adhesion
     af.AnnotDef(
         name = 'major_cadherin_cell_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Major cadherins',
         },
     ), # cell-cell adhesion
     af.AnnotDef(
         name = 'non_clustered_protocadherin_cell_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Non-clustered protocadherins',
         },
     ), # cell-cell adhesion
     af.AnnotDef(
         name = 'type1_classical_cadherin_cell_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Type I classical cadherins',
         },
     ), # cell-cell adhesion
     af.AnnotDef(
         name = 'type2_classical_cadherin_cell_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Type II classical cadherins',
         },
     ), # cell-cell adhesion
     af.AnnotDef(
         name = 'nectin_cell_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Nectins and nectin-like molecules',
         },
@@ -3554,35 +3554,35 @@ annot_combined_classes = (
     ), # cell-cell adhesion
     af.AnnotDef(
         name = 'neurexin_cell_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Neurexins',
         },
     ), # cell-cell adhesion for neurons
     af.AnnotDef(
         name = 'neurexin_cell_adhesion_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Neurexin',
         },
     ),  # these are also receptors
     af.AnnotDef(
         name = 'neuroligin_cell_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Neuroligins',
         },
     ), # cell-cell adhesion for neurons
     af.AnnotDef(
         name = 'neuroligin_cell_adhesion_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Neuroligin',
         },
     ), # cell-cell adhesion for neurons; these are also ligands
     af.AnnotDef(
         name = 'ceacam_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': (
                 'Carcinoembryonic antigen related '
@@ -3592,21 +3592,21 @@ annot_combined_classes = (
     ), # in plasma membrane; cell-cell adhesion and receptors
     af.AnnotDef(
         name = 'clarin_cell_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Clarins',
         },
     ),  # regulation of cell-cell adhesion and synapsis in ear and retina
     af.AnnotDef(
         name = 'protocadherin_cell_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Clustered protocadherins',
         },
     ),  # cell-cell adhesion in brain neuronal connections
     af.AnnotDef(
         name = 'ig_like_cell_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Ig-like cell adhesion molecule family',
         },
@@ -3614,18 +3614,18 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'matrix_adhesion_omnipath',
-        source = {'Q9HCN6', 'Q14CZ8'},
+        resource = {'Q9HCN6', 'Q14CZ8'},
     ),
     af.AnnotDef(
         name = 'igcam_cxadr_like_cell_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'IgCAM CXADR-related subfamily',
         },
     ),
     af.AnnotDef(
         name = 'iglon_cell_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'IgLON cell adhesion molecules',
         },
@@ -3633,14 +3633,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'integrin_cell_adhesion_omnipath',
-        source = {
+        resource = {
             'P23229', 'Q13349', 'Q13797', 'P20701', 'P38570', 'P05107',
             'P26010',
         },
     ),
     af.AnnotDef(
         name = 'integrin_matrix_adhesion_omnipath',
-        source = {
+        resource = {
             'P06756', 'Q9UKX5', 'P08648', 'P11215', 'P26006', 'Q13683',
             'P20702', 'O75578', 'P13612', 'P17301', 'P56199', 'P08514',
             'P18564', 'O95965', 'P18084', 'P05556', 'P26012', 'P16144',
@@ -3649,7 +3649,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'mucin_matrix_adhesion_hgnc',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
                     name = 'mucin_hgnc',
@@ -3665,101 +3665,101 @@ annot_combined_classes = (
     ),  # membrane bound mucins
     af.AnnotDef(
         name = 'receptor_tyrosine_phosphatase_cell_adhesion_omnipath',
-        source = {'P28827', 'O14522'},
+        resource = {'P28827', 'O14522'},
     ),  # most of the PTPRs are not adhesion molecules but only adhesion
         # receptors or other receptors
     af.AnnotDef(
         name = 'proteoglycan_cell_adhesion_omnipath',
-        source = {'P16070'},
+        resource = {'P16070'},
     ),
     af.AnnotDef(
         name = 'proteoglycan_matrix_adhesion_omnipath',
-        source = {'Q6UVK1'},
+        resource = {'Q6UVK1'},
     ),
     af.AnnotDef(
         name = (
             'scavenger_receptor_cysteine_rich_'
             'matrix_adhesion_regulator_omnipath'
         ),
-        source = {'Q08380'},
+        resource = {'Q08380'},
     ),
     af.AnnotDef(
         name = 'scavenger_receptor_cysteine_rich_cell_adhesion_omnipath',
-        source = {'P30203'},
+        resource = {'P30203'},
     ),
     af.AnnotDef(
         name = 'selectin_cell_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Selectins',
         },
     ),
     af.AnnotDef(
         name = 'adhesion_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Adhesion',
         },
     ),
     af.AnnotDef(
         name = 'ig_like_adhesion_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'IG_AdhesionProteins',
         },
     ),
     af.AnnotDef(
         name = 'mpz_adhesion_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'IG_MPZ',
         },
     ),
     af.AnnotDef(
         name = 'classical_cadherin_adhesion_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'CadherinClassic',
         },
     ),  # cell-cell adhesion
     af.AnnotDef(
         name = 'desmosomal_cadherin_adhesion_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'CadherinOther',
         },
     ),  # cell-cell adhesion
     af.AnnotDef(
         name = 'integrin_matrix_adhesion_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Integrin',
         },
     ),  # matrix adhesion; these are also receptors
     af.AnnotDef(
         name = 'beta_protocadherin_adhesion_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'ProtocadherinsBeta',
         },
     ),  # cell-cell adhesion especially between neurons
     af.AnnotDef(
         name = 'protocadherin_adhesion_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'ProtocadherinsOther',
         },
     ),  # cell-cell adhesion
     af.AnnotDef(
         name = 'sarcoglycan_matrix_adhesion_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Sarcoglycan',
         },
     ),  # cell-matrix adhesion for muscle cells
     af.AnnotDef(
         name = 'selectin_cell_adhesion_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Selectin',
         },
@@ -3768,7 +3768,7 @@ annot_combined_classes = (
     # surface enzyme
     af.AnnotDef(
         name = 'surface_enzyme',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'surface_enzyme_go',
                 'surface_enzyme_surfaceome',
@@ -3778,14 +3778,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'surface_enzyme_go',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotOp(
                     annots = (
                         'cell_surface',
                         af.AnnotDef(
                             name = 'enzyme',
-                            source = 'GO_Intercell',
+                            resource = 'GO_Intercell',
                             args = {
                                 'mainclass': 'enzyme',
                             },
@@ -3801,14 +3801,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'surface_enzyme_surfaceome',
-        source = 'Surfaceome',
+        resource = 'Surfaceome',
         args = {
             'mainclass': 'Enzymes',
         },
     ),
     af.AnnotDef(
         name = 'enpp_surface_enzyme_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': (
                 'Ectonucleotide pyrophosphatase/phosphodiesterase family'
@@ -3817,41 +3817,41 @@ annot_combined_classes = (
     ),  # maybe not all bound to the surface but most of them
     af.AnnotDef(
         name = 'hyaluronidase_surface_enzyme_omnipath',
-        source = {'Q9UHN6', 'Q12891', 'P38567', 'Q2M3T9'},
+        resource = {'Q9UHN6', 'Q12891', 'P38567', 'Q2M3T9'},
     ),
     af.AnnotDef(
         name = 'scavenger_receptor_cysteine_rich_surface_enzyme_omnipath',
-        source = {
+        resource = {
             'P98073', 'Q9Y5Q5', 'Q9BYE2', 'Q9H3S3', 'O15393', 'P05981',
             'Q9NRS4',
         },
     ),
     af.AnnotDef(
         name = 'm1_metallopeptidase_surface_peptidase_omnipath',
-        source = {'Q6Q4G3', 'Q9UIQ6', 'Q07075', 'P15144', 'Q9UKU6'},
+        resource = {'Q6Q4G3', 'Q9UIQ6', 'Q07075', 'P15144', 'Q9UKU6'},
     ),  # cleave mostly peptide ligands, hormones like TRH, angiotensin, etc
     af.AnnotDef(
         name = 'm16_metallopeptidase_surface_peptidase_omnipath',
-        source = {'P14735'},
+        resource = {'P14735'},
     ),  # acts on peptide hormones
     af.AnnotDef(
         name = 'm10_metallopeptidase_surface_peptidase_omnipath',
-        source = {'P51511', 'P51512', 'Q9ULZ9', 'Q9Y5R2', 'Q9NPA2'},
+        resource = {'P51511', 'P51512', 'Q9ULZ9', 'Q9Y5R2', 'Q9NPA2'},
     ),
     af.AnnotDef(
         name = 'm13_metallopeptidase_surface_peptidase_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'M13 metallopeptidases',
         },
     ),
     af.AnnotDef(
         name = 'm14_carboxypeptidase_surface_peptidase_omnipath',
-        source = {'P14384', 'O75976', 'Q8IVL8', },
+        resource = {'P14384', 'O75976', 'Q8IVL8', },
     ),
     af.AnnotDef(
         name = 'vanin_surface_enzyme_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Vanins',
         },
@@ -3861,7 +3861,7 @@ annot_combined_classes = (
     # surface ligand
     af.AnnotDef(
         name = 'surface_ligand',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'surface_ligand_go',
                 'surface_ligand_cellphonedb',
@@ -3872,7 +3872,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'surface_ligand_go',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'cell_surface',
                 'ligand_go',
@@ -3882,7 +3882,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'surface_ligand_cellphonedb',
-        source = 'CellPhoneDB',
+        resource = 'CellPhoneDB',
         args = {
             'method': lambda a: (
                 not a.receptor and (
@@ -3895,35 +3895,35 @@ annot_combined_classes = (
     # surface ligand subclasses from HGNC
     af.AnnotDef(
         name = 'b7_family_surface_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'B7 family',
         },
     ),
     af.AnnotDef(
         name = 'butyrophilin_surface_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Butyrophilins',
         },
     ),
     af.AnnotDef(
         name = 'ephrin_surface_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Ephrins',
         },
     ),
     af.AnnotDef(
         name = 'neuregulin_surface_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Neuregulins',
         },
     ),  # ligands for various ERBB receptors
     af.AnnotDef(
         name = 'hedgehog_surface_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Hedgehog signaling molecule family',
         },
@@ -3931,15 +3931,15 @@ annot_combined_classes = (
         # solubilized later
     af.AnnotDef(
         name = 'izumo_surface_ligand_omnipath',
-        source = {'Q8IYV9', 'Q6UXV1', 'Q5VZ72'},
+        resource = {'Q8IYV9', 'Q6UXV1', 'Q5VZ72'},
     ),  # ligands in sperm-egg fusion
     af.AnnotDef(
         name = 'nectin_surface_ligand_omnipath',
-        source = {'O95727', 'Q15223'},
+        resource = {'O95727', 'Q15223'},
     ),  # ligands for T-lymphocytes
     af.AnnotDef(
         name = 'semaphorin_surface_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Semaphorins',
         },
@@ -3950,29 +3950,29 @@ annot_combined_classes = (
     ),  # surface bound ligands for plexins, regulating axonal growth
     af.AnnotDef(
         name = 'semaphorin_ligand_omnipath',
-        source = {
+        resource = {
             'Q14563', 'Q13214', 'Q13275', 'Q99985',
             'Q9NS98', 'O15041', 'O95025',
         }
     ),  # secreted ligands for plexins, regulating axonal growth
     af.AnnotDef(
         name = 'anosmin_ligand_omnipath',
-        source = {'P23352'},
+        resource = {'P23352'},
     ),
     af.AnnotDef(
         name = 'anosmin_surface_ligand_omnipath',
-        source = {'P23352'},
+        resource = {'P23352'},
     ),
     af.AnnotDef(
         name = 'mhc_surface_ligand_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'MHC',
         },
     ),
     af.AnnotDef(
         name = 'semaphorin_surface_ligand_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Semaphorin',
         },
@@ -3981,7 +3981,7 @@ annot_combined_classes = (
     # transporter
     af.AnnotDef(
         name = 'transporter',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'transporter_surfaceome',
                 'transporter_go',
@@ -3992,14 +3992,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'transporter_surfaceome',
-        source = 'Surfaceome',
+        resource = 'Surfaceome',
         args = {
             'mainclass': 'Transporters',
         },
     ),
     af.AnnotDef(
         name = 'transporter_go',
-        source = 'GO_Intercell',
+        resource = 'GO_Intercell',
         args = {
             'mainclass': {
                 'transport',
@@ -4009,7 +4009,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'transporter_dgidb',
-        source = 'DGIdb',
+        resource = 'DGIdb',
         args = {
             'category': {
                 'ABC TRANSPORTER',
@@ -4020,16 +4020,16 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'transporter_adhesome',
-        source = 'Adhesome',
+        resource = 'Adhesome',
         args = {'mainclass': 'Channel'},
     ),
     af.AnnotDef(
         name = 'transporter_almen',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
                     name = 'transporter_almen',
-                    source = 'Almen2009',
+                    resource = 'Almen2009',
                     args = {
                         'mainclass': 'Transporters',
                     }
@@ -4041,11 +4041,11 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'channel_almen',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
                     name = 'channel_almen',
-                    source = 'Almen2009',
+                    resource = 'Almen2009',
                     args = {
                         'classes': 'Channels',
                     }
@@ -4057,28 +4057,28 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'abca_transporter_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'ABCA',
         },
     ),  # lipid transporters
     af.AnnotDef(
         name = 'abcc_transporter_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'ABCC',
         },
     ),
     af.AnnotDef(
         name = 'abcg_transporter_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'ABCG',
         },
     ),
     af.AnnotDef(
         name = 'solute_carrier_transporter_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': {
                 'AMAC', 'APC', 'SLC1', 'SLC10',
@@ -4109,29 +4109,29 @@ annot_combined_classes = (
         # we can split this group later
     af.AnnotDef(
         name = 'polycystin_calcium_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'PKD1',
         },
     ),  # components of calcium channels
     af.AnnotDef(
         name = 'tmem16_calcium_dependent_chloride_ion_channel_omnipath',
-        source = {'Q9NQ90'},
+        resource = {'Q9NQ90'},
     ),
     af.AnnotDef(
         name = 'tmem16_phospholipid_scramblase_omnipath',
-        source = {'Q6IWH7', 'Q4KMQ2', 'A1A5B4'},
+        resource = {'Q6IWH7', 'Q4KMQ2', 'A1A5B4'},
     ),
     af.AnnotDef(
         name = 'tmem30_aminophospholipid_flippase_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'TMEM30',
         },
     ),
     af.AnnotDef(
         name = 'tmem63_osmosensitive_cation_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'TMEM63',
         },
@@ -4141,42 +4141,42 @@ annot_combined_classes = (
     # transporters from HGNC
     af.AnnotDef(
         name = 'water_transporter_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Aquaporins',
         },
     ),
     af.AnnotDef(
         name = 'bestrophin_transporter_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Bestrophins',
         },
     ),
     af.AnnotDef(
         name = 'abcc_transporter_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'ATP binding cassette subfamily C',
         },
     ),
     af.AnnotDef(
         name = 'abcg_transporter_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'ATP binding cassette subfamily G',
         },
     ),
     af.AnnotDef(
         name = 'hk_atpase_transporter_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'ATPase H+/K+ transporting',
         },
     ),
     af.AnnotDef(
         name = 'sodium_potassium_atpase_transporter_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': {
                 'ATPase Na+/K+ transporting subunits',
@@ -4186,7 +4186,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'cnnm_metal_transporter_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': (
                 'Cyclin and CBS domain divalent metal cation '
@@ -4196,28 +4196,28 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'magnesium_transporter_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'NIPA',
         },
     ),
     af.AnnotDef(
         name = 'sodium_potassium_atpase_transporter_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'NKAIN',
         },
     ),
     af.AnnotDef(
         name = 'sphingolipid_transporter_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Spinster',
         },
     ),
     af.AnnotDef(
         name = 'pannexin_transporter_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Pannexins',
         },
@@ -4226,14 +4226,14 @@ annot_combined_classes = (
     # Ion channels (subclass of transporters)
     af.AnnotDef(
         name = 'acid_sensing_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Acid sensing ion channel subunits',
         },
     ),
     af.AnnotDef(
         name = 'calcium_voltage_gated_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': {
                 'Calcium voltage-gated channel alpha1 subunits',
@@ -4248,28 +4248,28 @@ annot_combined_classes = (
        # filter them?
     af.AnnotDef(
         name = 'catsper_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Cation channels sperm associated',
         },
     ),
     af.AnnotDef(
         name = 'chloride_ion_channel_regulator_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Chloride channel accessory',
         },
     ), # in plasma membrane, regulate cholride channels
     af.AnnotDef(
         name = 'chloride_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Chloride channels, ATP-gated CFTR',
         },
     ),
     af.AnnotDef(
         name = 'cyclic_nucleotide_gated_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Cyclic nucleotide gated channels',
         },
@@ -4277,25 +4277,25 @@ annot_combined_classes = (
         # mostly in visual and olfactory signaling
     af.AnnotDef(
         name = 'hydrogen_voltage_gated_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Hydrogen voltage gated channels',
         },
     ),
     af.AnnotDef(
         name = 'b_lymphocyte_calcium_ion_channel_omnipath',
-        source = {'P11836'},
+        resource = {'P11836'},
     ),
     af.AnnotDef(
         name = 'orai_calcium_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'ORAI calcium release-activated calcium modulators',
         },
     ),
     af.AnnotDef(
         name = 'calcium_activated_potassium_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': {
                 'Potassium calcium-activated channel subfamily '
@@ -4306,21 +4306,21 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'sodium_activated_potassium_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Potassium sodium-activated channel subfamily T',
         },
     ),
     af.AnnotDef(
         name = 'two_pore_domain_potassium_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Potassium two pore domain channel subfamily K',
         },
     ),
     af.AnnotDef(
         name = 'voltage_gated_potassium_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': {
                 'Potassium voltage-gated channel regulatory subunits',
@@ -4335,21 +4335,21 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'epithelial_sodium_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Sodium channels epithelial',
         },
     ),
     af.AnnotDef(
         name = 'sodium_leak_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Sodium leak channels, non selective',
         },
     ),
     af.AnnotDef(
         name = 'voltage_gated_sodium_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': {
                 'Sodium voltage-gated channel alpha subunits',
@@ -4359,7 +4359,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'transient_receptor_potential_cation_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Transient receptor potential cation channels',
         },
@@ -4367,7 +4367,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'transmembrane_channel_like_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Transmembrane channel like family',
         },
@@ -4375,35 +4375,35 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'tweety_chloride_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Tweety family',
         },
     ),  # Ca activated chloride channels
     af.AnnotDef(
         name = 'volume_regulated_anion_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Volume regulated anion channel subunits',
         },
     ),
     af.AnnotDef(
         name = 'zinc_activated_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Zinc activated channels',
         },
     ),
     af.AnnotDef(
         name = 'water_transporter_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Aquaporins',
         },
     ),
     af.AnnotDef(
         name = 'auxiliary_transporter_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'AuxillaryTransportUnit',
         },
@@ -4411,119 +4411,119 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'bestrophin_transporter_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Bestrophin',
         },
     ),
     af.AnnotDef(
         name = 'voltage_gated_calcium_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': {'CACNA2D', 'CACNG'},
         },
     ),
     af.AnnotDef(
         name = 'voltage_gated_chloride_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'CLC',
         },
     ),
     af.AnnotDef(
         name = 'calcium_activated_potassium_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Ca_Activated_Potassium_Channels',
         },
     ),
     af.AnnotDef(
         name = 'atp_gated_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'ATP_gated_ion_channels',
         },
     ),
     af.AnnotDef(
         name = 'calcium_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'CalciumChannels',
         },
     ),
     af.AnnotDef(
         name = 'inward_rectifier_potassium_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'InwardlyRectifyingKchannel',
         },
     ),
     af.AnnotDef(
         name = 'voltage_gated_potassium_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'KCNE',
         },
     ),
     af.AnnotDef(
         name = 'calcium_activated_potassium_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'KCNMB',
         },
     ),
     af.AnnotDef(
         name = 'ligand_gated_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Ligand_gated_ion_channels',
         },
     ),
     af.AnnotDef(
         name = 'potassium_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Potassium_channels',
         },
     ),
     af.AnnotDef(
         name = 'beta_sodium_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'SodiumChannelBeta',
         },
     ),
     af.AnnotDef(
         name = 'sodium_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'SodiumChannels',
         },
     ),
     af.AnnotDef(
         name = 'transient_receptor_potential_cation_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'TRP_channels',
         },
     ),  # calcium permeable cation channels activated by receptors
     af.AnnotDef(
         name = 'tweety_chloride_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Tweety',
         },
     ),
     af.AnnotDef(
         name = 'sodium_potassium_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Two-p_K_channels',
         },
     ),
     af.AnnotDef(
         name = 'voltage_gated_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Voltage_gated_ion_channels',
         },
@@ -4531,7 +4531,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'xk_transporter_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'XK',
         },
@@ -4540,7 +4540,7 @@ annot_combined_classes = (
         # and who knows what else
     af.AnnotDef(
         name = 'sperm_associated_voltage_gated_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'catSper-Two-P',
         },
@@ -4548,7 +4548,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'cyclic_nucleotide_gated_ion_channel_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'cycliNucleotideRegulatedChannels',
         },
@@ -4557,7 +4557,7 @@ annot_combined_classes = (
     # extracellular enzyme
     af.AnnotDef(
         name = 'extracellular_enzyme',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'extracellular_enzyme_go',
                 'extracellular_enzyme_matrisome',
@@ -4567,7 +4567,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'extracellular_enzyme_go',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 # extracellular by any evidence
                 # and enzyme according to GO
@@ -4576,7 +4576,7 @@ annot_combined_classes = (
                         'extracellular',
                         af.AnnotDef(
                             name = 'enzyme',
-                            source = 'GO_Intercell',
+                            resource = 'GO_Intercell',
                             args = {
                                 'mainclass': 'enzyme',
                             },
@@ -4599,7 +4599,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'extracellular_enzyme_matrisome',
-        source = 'Matrisome',
+        resource = 'Matrisome',
         args = {
             'subclass': 'ECM Regulators',
         },
@@ -4607,7 +4607,7 @@ annot_combined_classes = (
     # subclasses from HGNC
     af.AnnotDef(
         name = 'adamts_extracellular_peptidase_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': (
                 'ADAM metallopeptidases with thrombospondin type 1 motif'
@@ -4616,21 +4616,21 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'adamts_like_extracellular_peptidase_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'ADAMTS like',
         },
     ),
     af.AnnotDef(
         name = 'heparanase_extracellular_peptidase_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Heparanases',
         },
     ),  # act on heparin and heparane-sulphate
     af.AnnotDef(
         name = 'phospholipase_extracellular_enzyme_omnipath',
-        source = {
+        resource = {
             'Q53H76', 'Q8NCC3', 'Q9NZK7', 'Q9BX93', 'P04054', 'Q13093',
             'Q5R387', 'Q9NZ20', 'P14555', 'Q9BZM1', 'Q9UNK4', 'O15496',
             'Q9BZM2', 'P39877',
@@ -4638,7 +4638,7 @@ annot_combined_classes = (
     ),  # secreted enzymes acting on phospholipids
     af.AnnotDef(
         name = 'defensin_extracellular_enyzme_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': {
                 'Defensins, alpha',
@@ -4649,7 +4649,7 @@ annot_combined_classes = (
         # binding to microorganism surfaces
     af.AnnotDef(
         name = 'lysozym_extracellular_enyzme_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': {
                 'Lysozymes, c-type',
@@ -4659,7 +4659,7 @@ annot_combined_classes = (
     ),  # bacteriolytic proteins, some involved in sperm-egg fertilization
     af.AnnotDef(
         name = 'm14_carboxypeptidase_extracellular_peptidase_omnipath',
-        source = {
+        resource = {
             'P16870', 'P15169', 'Q8IUX7', 'Q66K79', 'P48052', 'Q96SM3',
             'Q8WXQ8', 'P15086', 'Q96IY4', 'P15085', 'Q8N4T0', 'Q9HB40',
             'P22792', 'Q9UI42', 'Q8N436', 'Q9Y646',
@@ -4667,23 +4667,23 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'galactosidase_extracellular_enyzme_omnipath',
-        source = {'Q6UWU2', 'Q8IW92'},
+        resource = {'Q6UWU2', 'Q8IW92'},
     ),  # secreted galactosidases
     af.AnnotDef(
         name = 'm1_metallopeptidase_extracellular_peptidase_omnipath',
-        source = {'Q9H4A4'},
+        resource = {'Q9H4A4'},
     ),  #
     af.AnnotDef(
         name = 'm16_metallopeptidase_extracellular_peptidase_omnipath',
-        source = {'P14735'},
+        resource = {'P14735'},
     ),  # acts on peptide hormones
     af.AnnotDef(
         name = 'lipase_extracellular_enzyme_hgnc',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
                     name = 'lipase_hgnc',
-                    source = 'HGNC',
+                    resource = 'HGNC',
                     args = {
                         'mainclass': 'Lipases',
                     },
@@ -4695,18 +4695,18 @@ annot_combined_classes = (
     ),  # secreted lipases
     af.AnnotDef(
         name = 'paraoxonase_extracellular_enzyme_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Paraoxonases',
         },
     ),  # secreted enzymes hydrolysing lactons and other metabolites
     af.AnnotDef(
         name = 'lipocalin_extracellular_enzyme_hgnc',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
                     name = 'lipocalin_hgnc',
-                    source = 'HGNC',
+                    resource = 'HGNC',
                     args = {
                         'mainclass': 'Lipocalins',
                     },
@@ -4718,7 +4718,7 @@ annot_combined_classes = (
     ),  # secreted lipases
     af.AnnotDef(
         name = 'immune_serin_protease_extracellular_peptidase_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': (
                 'Granule associated serine proteases of immune defence'
@@ -4727,21 +4727,21 @@ annot_combined_classes = (
     ),  # secreted by granulocytes as part of the immune response
     af.AnnotDef(
         name = 'hyaluronidase_extracellular_enzyme_omnipath',
-        source = {'Q12794', 'Q8WUJ3', 'O43820'},
+        resource = {'Q12794', 'Q8WUJ3', 'O43820'},
     ),
     af.AnnotDef(
         name = (
             'inter_alpha_trypsin_inhibitor_'
             'extracellular_enyzme_regulator_hgnc'
         ),
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Inter-alpha-trypsin inhibitor heavy chains',
         },
     ),  # protease inhibitors in plasma
     af.AnnotDef(
         name = 'm10_metallopeptidase_extracellular_peptidase_omnipath',
-        source = {
+        resource = {
             'Q9H239', 'P09237', 'P09238', 'P03956', 'P08253', 'P24347',
             'P39900', 'P45452', 'Q9NRE1', 'P22894', 'Q99542', 'Q8N119',
             'O60882', 'P14780', 'P08254',
@@ -4749,7 +4749,7 @@ annot_combined_classes = (
     ),  # secreted matrix metallopeptidases, many act on the ECM
     af.AnnotDef(
         name = 'ribonuclease_extracellular_enzyme_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Ribonuclease A family',
         },
@@ -4759,12 +4759,12 @@ annot_combined_classes = (
     # extracellular peptidase
     af.AnnotDef(
         name = 'extracellular_peptidase_go',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'extracellular',
                 af.AnnotDef(
                     name = 'peptidase',
-                    source = 'GO_Intercell',
+                    resource = 'GO_Intercell',
                     args = {
                         'mainclass': 'peptidase',
                     },
@@ -4775,21 +4775,21 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'cela_extracellular_peptidase_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Chymotrypsin like elastases',
         },
     ),  # involved in ECM dynamics and remodeling
     af.AnnotDef(
         name = 'kallikrein_extracellular_peptidase_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Kallikreins',
         },
     ),  # extracellular serine proteases, involved in ECM dynamics
     af.AnnotDef(
         name = 'pappalysin_extracellular_peptidase_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Pappalysins',
         },
@@ -4798,20 +4798,20 @@ annot_combined_classes = (
         name = (
             'scavenger_receptor_cysteine_rich_extracellular_enzyme_omnipath'
         ),
-        source = {'P58215', 'Q96JB6', 'P05156', 'P56730', 'Q96JK4', 'Q9Y4K0'},
+        resource = {'P58215', 'Q96JB6', 'P05156', 'P56730', 'Q96JK4', 'Q9Y4K0'},
     ),
     af.AnnotDef(
         name = (
             'glutathione_peroxidase_extracellular_enzyme_omnipath'
         ),
-        source = {'P59796', 'P49908', 'P22352'},
+        resource = {'P59796', 'P49908', 'P22352'},
     ),
     af.AnnotDef(
         name = (
             'serine_peptidase_inhibitor_'
             'extracellular_peptidase_regulator_hgnc'
         ),
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Serine peptidase inhibitors, Kazal type',
         },
@@ -4821,7 +4821,7 @@ annot_combined_classes = (
             'wap_four_disulfide_core_domain_containing_'
             'extracellular_peptidase_regulator_hgnc'
         ),
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'WAP four-disulfide core domain containing',
         },
@@ -4832,7 +4832,7 @@ annot_combined_classes = (
             'tissue_inhibitor_of_metallopeptidases_'
             'extracellular_peptidase_regulator_hgnc'
         ),
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Tissue inhibitor of metallopeptidases',
         },
@@ -4841,7 +4841,7 @@ annot_combined_classes = (
         name = (
             'serine_protease_extracellular_peptidase_hgnc'
         ),
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Serine proteases',
         },
@@ -4857,7 +4857,7 @@ annot_combined_classes = (
         name = (
             'serine_protease_surface_peptidase_hgnc'
         ),
-        source = {
+        resource = {
             'Q8IU80', 'Q9Y5Q5', 'Q7RTY9', 'Q9BYE2', 'Q6ZMR5', 'Q9H3S3',
             'Q86WS5', 'Q9Y6M0', 'Q9Y5Y6', 'O60235', 'Q9NRR2', 'Q7Z410',
             'Q6ZWK6', 'Q7RTY8', 'P05981', 'Q86T26', 'Q6UWB4', 'Q9NRS4',
@@ -4866,11 +4866,11 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'serpin_extracellular_peptidase_regulator_hgnc',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
                     name = 'serpin_peptidase_regulator_hgnc',
-                    source = 'HGNC',
+                    resource = 'HGNC',
                     args = {
                         'mainclass': 'Serpin peptidase inhibitors',
                     },
@@ -4882,24 +4882,24 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'biotinidase_extracellular_enzyme_omnipath',
-        source = {'P43251'},
+        resource = {'P43251'},
     ),
 
     # growth factor binder or regulator
     af.AnnotDef(
         name = 'growth_factor_binder',
-        source = 'GO_Intercell',
+        resource = 'GO_Intercell',
         args = {
             'mainclass': 'growth factor binding',
         },
     ),
     af.AnnotDef(
         name = 'growth_factor_regulator',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
                     name = 'secreted_matrisome',
-                    source = 'Matrisome',
+                    resource = 'Matrisome',
                     args = {
                         'mainclass': 'Matrisome-associated',
                         'subclass': 'Secreted Factors',
@@ -4918,7 +4918,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'igf_binding_growth_factor_regulator_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Insulin like growth factor binding proteins',
         },
@@ -4927,7 +4927,7 @@ annot_combined_classes = (
     # secreted
     af.AnnotDef(
         name = 'secreted',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'secreted_locate',
                 'secreted_matrisome',
@@ -4938,14 +4938,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'secreted_locate',
-        source = 'LOCATE',
+        resource = 'LOCATE',
         args = {
             'cls': 'secretome',
         },
     ),
     af.AnnotDef(
         name = 'secreted_matrisome',
-        source = 'Matrisome',
+        resource = 'Matrisome',
         args = {
             'mainclass': 'Matrisome-associated',
             'subclass': 'Secreted Factors',
@@ -4953,7 +4953,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'secreted_cellphonedb',
-        source = 'CellPhoneDB',
+        resource = 'CellPhoneDB',
         args = {
             'secreted': bool,
         },
@@ -4961,7 +4961,7 @@ annot_combined_classes = (
     # specific subclasses from HGNC
     af.AnnotDef(
         name = 'bpi_secreted_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'BPI fold containing',
         },
@@ -4971,7 +4971,7 @@ annot_combined_classes = (
     # gap junction
     af.AnnotDef(
         name = 'gap_junction',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'gap_junction_go',
                 'gap_junction_ramilowski',
@@ -4984,35 +4984,35 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'gap_junction_go',
-        source = 'GO_Intercell',
+        resource = 'GO_Intercell',
         args = {
             'mainclass': 'gap junction',
         },
     ),
     af.AnnotDef(
         name = 'gap_junction_ramilowski',
-        source = 'Ramilowski_location',
+        resource = 'Ramilowski_location',
         args = {
             'location': 'gap junction',
         },
     ),
     af.AnnotDef(
         name = 'gap_junction_uniprot',
-        source = 'UniProt_location',
+        resource = 'UniProt_location',
         args = {
             'location': 'Gap junction',
         },
     ),
     af.AnnotDef(
         name = 'gap_junction_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'GapJunction',
         },
     ),
     af.AnnotDef(
         name = 'pannexin_gap_junction_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Pannexins',
         },
@@ -5020,7 +5020,7 @@ annot_combined_classes = (
     # tight junction
     af.AnnotDef(
         name = 'tight_junction',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'tight_junction_go',
                 'tight_junction_ramilowski',
@@ -5032,25 +5032,25 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'tight_junction_go',
-        source = 'GO_Intercell',
+        resource = 'GO_Intercell',
         args = {
             'mainclass': 'tight junction',
         },
     ),
     af.AnnotDef(
         name = 'tight_junction_ramilowski',
-        source = 'Ramilowski_location',
+        resource = 'Ramilowski_location',
         args = {
             'location': 'tight junction',
         },
     ),
     af.AnnotDef(
         name = 'tight_junction_uniprot',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
                     name = 'tight_junction_uniprot',
-                    source = 'UniProt_location',
+                    resource = 'UniProt_location',
                     args = {
                         'location': 'Tight junction',
                     },
@@ -5062,7 +5062,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'claudin_tight_junction_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'mainclass': 'Claudin',
         },
@@ -5070,7 +5070,7 @@ annot_combined_classes = (
     # adherens junction
     af.AnnotDef(
         name = 'adherens_junction',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 'adherens_junction_ramilowski',
                 'adherens_junction_uniprot',
@@ -5080,18 +5080,18 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'adherens_junction_ramilowski',
-        source = 'Ramilowski_location',
+        resource = 'Ramilowski_location',
         args = {
             'location': 'adherens junction',
         },
     ),
     af.AnnotDef(
         name = 'adherens_junction_uniprot',
-        source = af.AnnotOp(
+        resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
                     name = 'adherens_junction_uniprot_location',
-                    source = 'UniProt_location',
+                    resource = 'UniProt_location',
                     args = {
                         'location': 'Adherens junction',
                     },
@@ -5110,21 +5110,21 @@ annot_combined_classes = (
     # specific subclasses from HGNC
     af.AnnotDef(
         name = 'tight_junction_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Claudins',
         },
     ),
     af.AnnotDef(
         name = 'desmosomal_cadherin_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Desmosomal cadherins',
         },
     ),
     af.AnnotDef(
         name = 'gap_junction_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Gap junction proteins',
         },
@@ -5133,35 +5133,35 @@ annot_combined_classes = (
     # plasma membrane regions
     af.AnnotDef(
         name = 'basolateral_cell_membrane_ramilowski',
-        source = 'Ramilowski_location',
+        resource = 'Ramilowski_location',
         args = {
             'location': 'basolateral cell membrane',
         },
     ),
     af.AnnotDef(
         name = 'basal_cell_membrane_ramilowski',
-        source = 'Ramilowski_location',
+        resource = 'Ramilowski_location',
         args = {
             'location': 'basal cell membrane',
         },
     ),
     af.AnnotDef(
         name = 'basal_cell_membrane_ramilowski',
-        source = 'Ramilowski_location',
+        resource = 'Ramilowski_location',
         args = {
             'location': 'basal cell membrane',
         },
     ),
     af.AnnotDef(
         name = 'apical_cell_membrane_ramilowski',
-        source = 'Ramilowski_location',
+        resource = 'Ramilowski_location',
         args = {
             'location': 'apical cell membrane',
         },
     ),
     af.AnnotDef(
         name = 'lateral_cell_membrane_ramilowski',
-        source = 'Ramilowski_location',
+        resource = 'Ramilowski_location',
         args = {
             'location': 'lateral cell membrane',
         },
@@ -5170,7 +5170,7 @@ annot_combined_classes = (
     # miscellanous from HGNC
     af.AnnotDef(
         name = 'cd_molecule_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'CD molecules',
         }, # membrane proteins, secreted, receptors, enzymes,
@@ -5178,7 +5178,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'c2set_domain_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'C2-set domain containing',
         },
@@ -5186,7 +5186,7 @@ annot_combined_classes = (
         # some receptors and adhesion proteins
     af.AnnotDef(
         name = 'c3_pzp_a2m_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': (
                 'C3 and PZP like, alpha-2-macroglobulin domain containing'
@@ -5196,7 +5196,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'tetraspanin_plasma_membrane_regulator_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Tetraspanins',
         },
@@ -5204,7 +5204,7 @@ annot_combined_classes = (
         # other proteins such as channels, receptors, adhesion proteins
     af.AnnotDef(
         name = 'tetraspanin_plasma_membrane_regulator_almen',
-        source = 'Almen2009',
+        resource = 'Almen2009',
         args = {
             'classes': 'Tetraspanin',
         },
@@ -5215,28 +5215,28 @@ annot_combined_classes = (
     # to be decided
     af.AnnotDef(
         name = 'bage_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'BAGE family',
         },
     ),
     af.AnnotDef(
         name = 'cap_ctype_lectin_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'CAP and C-type lectin domain containing',
         },
     ), # these are secreted and affect immune signaling
     af.AnnotDef(
         name = 'cmtm_receptor_regulator_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'CKLF like MARVEL transmembrane domain containing',
         },
     ), # transmembrane in plasme membrane; regulate receptor availability
     af.AnnotDef(
         name = 'cacng_ion_channel_regulator_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': ' Calcium channel auxiliary gamma subunits',
         },
@@ -5244,49 +5244,49 @@ annot_combined_classes = (
         # glutamate receptors
     af.AnnotDef(
         name = 'calcium_homeostasis_ion_channel_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Calcium homeostasis modulators',
         },
     ), # taste bud ion and ATP channels
     af.AnnotDef(
         name = 'cas_scaffold_intracell_matrix_adhesion_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Cas scaffold proteins',
         },
     ), # intracellular part of cell-matrix (focal) adhesion signaling
     af.AnnotDef(
         name = 'cavin_caveolae_intracell_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Cavins',
         },
     ), # caveolae formation, intercellular
     af.AnnotDef(
         name = 'clathrin_coated_pit_intracell_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Clathrin subunits',
         },
     ), # clathrin coated pit formation, intracellular
     af.AnnotDef(
         name = 'collagen_galactosyltransferase_intracell_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Collagen beta(1-O)galactosyltransferases',
         },
     ), # collagen synthesis (in ER)
     af.AnnotDef(
         name = 'complement_system_activator_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Complement system activation components',
         },
     ), # secreted receptors, enzymes and signal transmission proteins
     af.AnnotDef(
         name = 'complement_receptor_and_regulator_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Complement system regulators and receptors',
         },
@@ -5294,7 +5294,7 @@ annot_combined_classes = (
         # in the complement system downstream signaling
     af.AnnotDef(
         name = 'fibrinogen_c_domain_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Fibrinogen C domain containing',
         },
@@ -5302,7 +5302,7 @@ annot_combined_classes = (
         # regulators for receptors or adhesion, or ECM proteins
     af.AnnotDef(
         name = 'fibronectin_type_iii_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Fibronectin type III domain containing',
         },
@@ -5313,7 +5313,7 @@ annot_combined_classes = (
         # especially the `Ig-like cell adhesion molecule family`
     af.AnnotDef(
         name = 'immunoglobulin_like_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Immunoglobulin like domain containing',
         },
@@ -5324,7 +5324,7 @@ annot_combined_classes = (
         # especially the `Ig-like cell adhesion molecule family`
     af.AnnotDef(
         name = 'gla_domain_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Gla domain containing',
         },
@@ -5332,7 +5332,7 @@ annot_combined_classes = (
         # some enzymes or ligands or regulators of other ligands
     af.AnnotDef(
         name = 'hla_surface_ligand_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Histocompatibility complex',
         },
@@ -5340,7 +5340,7 @@ annot_combined_classes = (
         # antigens on the cell surface
     af.AnnotDef(
         name = 'vset_domain_containing_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'V-set domain containing',
         },
@@ -5350,21 +5350,21 @@ annot_combined_classes = (
     # communication
     af.AnnotDef(
         name = 'crumbs_complex_intracell_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Crumbs complex',
         },
     ),  # scaffolds and regulators for plasma membrane proteins
     af.AnnotDef(
         name = 'engulfment_motility_intracell_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Engulfment and cell motility proteins',
         },
     ),  # some intracellular proteins involved in endocytosis
     af.AnnotDef(
         name = 'fbar_actin_dynamics_endocytosis_intracell_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'F-BAR domain containing',
         },
@@ -5372,7 +5372,7 @@ annot_combined_classes = (
         # actin dynamics in endocytosis
     af.AnnotDef(
         name = 'ferm_domain_intracell_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'FERM domain containing',
         },
@@ -5381,7 +5381,7 @@ annot_combined_classes = (
         # to intercellular communication processes
     af.AnnotDef(
         name = 'ferlin_intracell_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Ferlin family',
         },
@@ -5389,7 +5389,7 @@ annot_combined_classes = (
         # and synaptic vesicle fusion
     af.AnnotDef(
         name = 'fermitin_intracell_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Fermitins',
         },
@@ -5398,18 +5398,18 @@ annot_combined_classes = (
         # involved in cell-cell adhesion
     af.AnnotDef(
         name = 'flotillin_intracell_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Flotillins',
         },
     ),  # intracellular proteins with a role in endocytosis
     af.AnnotDef(
         name = 'arc_intracell_omnipath',
-        source = {'Q7LC44'},
+        resource = {'Q7LC44'},
     ),  # intercellular RNA transfer
     af.AnnotDef(
         name = 'interferon_regulator_intracell_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Interferon regulatory factors',
         },
@@ -5417,7 +5417,7 @@ annot_combined_classes = (
         # regulating interferons
     af.AnnotDef(
         name = 'junctophilin_intracell_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Junctophilins',
         },
@@ -5425,24 +5425,24 @@ annot_combined_classes = (
         # ensure quick response to membrane potential change
     af.AnnotDef(
         name = 'lims1_adhesion_intracell_omnipath',
-        source = {'P48059'},
+        resource = {'P48059'},
     ),
     af.AnnotDef(
         name = (
             'maguk_tight_junction_intracell_omnipath'
         ),
-        source = {'Q07157', 'Q8N3R9', 'Q9UDY2', 'Q96QZ7', 'Q5T2T1', 'O95049'},
+        resource = {'Q07157', 'Q8N3R9', 'Q9UDY2', 'Q96QZ7', 'Q5T2T1', 'O95049'},
     ),  # intracellular scaffolding proteins supporting tight junctions
     af.AnnotDef(
         name = 'parin_adhesion_regulator_intracell_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Parvins',
         },
     ),  # intracellular proteins regulating adhesion and integrin signaling
     af.AnnotDef(
         name = 'plakophilin_adhesion_regulator_intracell_hgnc',
-        source = 'HGNC',
+        resource = 'HGNC',
         args = {
             'mainclass': 'Plakophilins',
         },
