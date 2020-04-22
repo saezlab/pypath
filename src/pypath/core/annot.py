@@ -449,13 +449,24 @@ class CustomAnnotation(session_mod.Logger):
     get_class = select
 
 
-    def labels(self, name, entity_type = None):
+    def labels(
+            self,
+            name,
+            parent = None,
+            resource = None,
+            entity_type = None,
+        ):
         """
         Same as ``select`` but returns a list of labels (more human readable).
         """
 
         return mapping.label(
-            self.select(name = name, entity_type = entity_type)
+            self.select(
+                name = name,
+                parent = parent,
+                resource = resource,
+                entity_type = entity_type,
+            )
         )
 
 

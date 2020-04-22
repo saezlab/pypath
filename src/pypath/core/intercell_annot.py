@@ -611,48 +611,12 @@ go_single_terms = {
 Higher level classes of intercellular communication roles.
 """
 annot_combined_classes = (
-    af.AnnotDef(
-        name = 'adaptor_adhesome',
-        resource = 'Adhesome',
-        args = {'mainclass': 'Adaptor'},
-    ),
-    af.AnnotDef(
-        name = 'channel_adhesome',
-        resource = 'Adhesome',
-        args = {'mainclass': 'Channel'},
-    ),
-    af.AnnotDef(
-        name = 'adhesion_adhesome',
-        resource = 'Adhesome',
-        args = {'mainclass': 'Adhesion receptor'},
-    ),  # both cell-cell and cell-matrix adhesion
-    af.AnnotDef(
-        name = 'ly6_plaur',
-        parent = 'adhesion',
-        resource = {'O95274', 'Q8N6Q3', 'Q8TDM5', 'Q9BY14', 'Q17RY6'},
-    ),  #
-    
+
     # receptor
     af.AnnotDef(
         name = 'receptor',
         resource = af.AnnotOp(
-            annots = (
-                'receptor_cellphonedb',
-                'receptor_surfaceome',
-                'receptor_go',
-                'receptor_hpmr',
-                'receptor_ramilowski',
-                'receptor_kirouac',
-                'receptor_guide2pharma',
-                'receptor_hgnc',
-                'receptor_dgidb',
-                'receptor_baccin',
-                'receptor_signalink',
-                'receptor_embrace',
-                'receptor_italk',
-                'receptor_cellcellinteractions',
-                'receptor_almen',
-            ),
+            annots = '~receptor',
             op = set.union,
         ),
     ),
@@ -3703,7 +3667,13 @@ annot_combined_classes = (
         ),
     ),
     af.AnnotDef(
-        name = 'focal_adhesion_ramilowski',
+        name = 'adhesion',
+        resource = 'Adhesome',
+        args = {'mainclass': 'Adhesion receptor'},
+    ),  # both cell-cell and cell-matrix adhesion
+    af.AnnotDef(
+        name = 'focal_adhesion',
+        parent = 'adhesion',
         resource = 'Ramilowski_location',
         args = {
             'location': 'focal adhesion',
@@ -4024,6 +3994,11 @@ annot_combined_classes = (
             'classes': 'Selectin',
         },
     ),  # cell-cell adhesion between immune cells
+    af.AnnotDef(
+        name = 'ly6_plaur',
+        parent = 'adhesion',
+        resource = {'O95274', 'Q8N6Q3', 'Q8TDM5', 'Q9BY14', 'Q17RY6'},
+    ),
 
     # surface enzyme
     af.AnnotDef(
@@ -4312,6 +4287,11 @@ annot_combined_classes = (
             ),
             op = set.intersection,
         ),
+    ),
+    af.AnnotDef(
+        name = 'channel',
+        resource = 'Adhesome',
+        args = {'mainclass': 'Channel'},
     ),
     af.AnnotDef(
         name = 'channel',
@@ -5816,6 +5796,12 @@ annot_combined_classes = (
         parent = 'intracell',
         resource = 'Adhesome',
         args = {'mainclass': 'Actin regulation'},
+    ),
+    af.AnnotDef(
+        name = 'adhesion_cytoskeleton_adaptor',
+        parent = 'intracell',
+        resource = 'Adhesome',
+        args = {'mainclass': 'Adaptor'},
     ),
 
 )
