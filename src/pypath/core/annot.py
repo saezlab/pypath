@@ -307,10 +307,10 @@ class CustomAnnotation(session_mod.Logger):
 
     def create_class(self, classdef):
         """
-        Creates a category of entities by processing an custom definition.
+        Creates a category of entities by processing a custom definition.
         """
 
-        self.classes[classdef.name] = self.process_annot(classdef)
+        self.classes[classdef.key] = self.process_annot(classdef)
 
 
     def process_annot(self, classdef):
@@ -320,33 +320,35 @@ class CustomAnnotation(session_mod.Logger):
 
         class_set = set()
 
-        if isinstance(classdef.source, set):
+        if isinstance(classdef.resource, set):
 
-            class_set = classdef.source
+            class_set = classdef.resource
 
-        elif isinstance(classdef.source, common.basestring):
+        elif isinstance(classdef.resource, common.basestring):
 
-            if classdef.source in self.annotdb.annots:
+            if classdef.resource in self.annotdb.annots:
 
                 if not classdef.args:
 
-                    class_set = self.annotdb.annots[classdef.source].to_set()
+                    class_set = (
+                        self.annotdb.annots[classdef.resource].to_set()
+                    )
 
                 else:
 
                     class_set = (
-                        self.annotdb.annots[classdef.source].get_subset(
+                        self.annotdb.annots[classdef.resource].get_subset(
                             **classdef.args
                         )
                     )
 
-        elif callable(classdef.source):
+        elif callable(classdef.resource):
 
-            class_set = classdef.source(**(classdef.args or {}))
+            class_set = classdef.resource(**(classdef.args or {}))
 
-        elif isinstance(classdef.source, annot_formats.AnnotOp):
+        elif isinstance(classdef.resource, annot_formats.AnnotOp):
 
-            class_set = self._execute_operation(classdef.source)
+            class_set = self._execute_operation(classdef.resource)
 
         if classdef.exclude:
 
@@ -376,20 +378,40 @@ class CustomAnnotation(session_mod.Logger):
         Executes a set operation on anntation sets.
         """
 
-        annots = tuple(
-            (
-                self._execute_operation(_annot)
-                    if isinstance(_annot, annot_formats.AnnotOp) else
-                self.process_annot(_annot)
-                    if isinstance(_annot, annot_formats.AnnotDef) else
-                _annot
-                    if isinstance(_annot, set) else
-                self.get_class(_annot)
+        if (
+            isinstance(annotop.annots, common.basestring) and
+            annotop.annots.startswith('~')
+        ):
+
+            annots = self._collect_by_parent(annotop.annots)
+
+        else:
+
+            annots = tuple(
+                (
+                    self._execute_operation(_annot)
+                        if isinstance(_annot, annot_formats.AnnotOp) else
+                    self.process_annot(_annot)
+                        if isinstance(_annot, annot_formats.AnnotDef) else
+                    _annot
+                        if isinstance(_annot, set) else
+                    self.get_class(_annot)
+                )
+                for _annot in annotop.annots
             )
-            for _annot in annotop.annots
-        )
 
         return annotop.op(*annots)
+
+
+    def _collect_by_parent(self, parent):
+
+        parent = parent.strip('~')
+
+        return tuple(
+            self.get_class(classdef.key())
+            for classdef in self._class_definitions.values()
+            if classdef.parent == parent
+        )
 
 
     def select(self, name, entity_types = None):
