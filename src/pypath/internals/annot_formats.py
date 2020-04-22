@@ -234,3 +234,13 @@ class AnnotationGroup(collections_abc.Set):
                 self.resource,
             )
         )
+
+
+    @property
+    def key(self):
+
+        return (
+            self.name,
+            self.parent,
+            self.resource,
+        )
