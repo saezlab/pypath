@@ -1831,7 +1831,7 @@ class CustomAnnotation(session_mod.Logger):
 
     def __getitem__(self, item):
 
-        if isinstance(item, common.simple_types) and item in self.classes:
+        if isinstance(item, tuple) and item in self.classes:
 
             return self.classes[item]
 
