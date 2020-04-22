@@ -395,7 +395,7 @@ class CustomAnnotation(session_mod.Logger):
                         if isinstance(_annot, annot_formats.AnnotDef) else
                     _annot
                         if isinstance(_annot, set) else
-                    self.get_class(_annot)
+                    self.select(_annot)
                 )
                 for _annot in annotop.annots
             )
@@ -408,30 +408,41 @@ class CustomAnnotation(session_mod.Logger):
         parent = parent.strip('~')
 
         return tuple(
-            self.get_class(classdef.key())
+            self.select(classdef.key())
             for classdef in self._class_definitions.values()
             if classdef.parent == parent
         )
 
 
-    def select(self, name, entity_types = None):
+    def select(
+            self,
+            name,
+            parent = None,
+            resource = None,
+            entity_types = None,
+        ):
         """
         Retrieves a class by its name and loads it if hasn't been loaded yet
         but the name present in the class definitions.
         """
 
-        if name not in self.classes and name in self._class_definitions:
+        key = name if isinstance(name, tuple) else (name, parent, resource)
 
-            self.create_class(self._class_definitions[name])
+        if key not in self.classes and key in self._class_definitions:
 
-        if name in self.classes:
+            self.create_class(self._class_definitions[key])
+
+        if key in self.classes:
 
             return entity.Entity.filter_entity_type(
                 self.classes[name],
                 entity_type = entity_types,
             )
 
-        self._log('No such annotation class: `%s`' % name)
+        self._log(
+            'No such annotation class: `name=%s, '
+            'parent=%s, resource=%s`' % key
+        )
 
 
     # synonym for old name
