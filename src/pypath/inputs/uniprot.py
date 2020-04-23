@@ -149,8 +149,20 @@ def _remove(key):
 
 def protein_datasheet(identifier):
 
-    url = urls.urls['uniprot_basic']['datasheet'] % identifier
-    c = curl.Curl(url, silent = True, large = False)
+    cache = True
+
+    for a in range(3):
+
+        url = urls.urls['uniprot_basic']['datasheet'] % identifier
+        c = curl.Curl(url, silent = True, large = False, cache = cache)
+
+        if c.result.startswith('<!DOCTYPE'):
+
+            cache = False
+
+        else:
+
+            break
 
     return _redatasheet.findall(c.result) if c.result else []
 
