@@ -111,6 +111,7 @@ protein_sources_default = {
     'UniprotFamily',
     'UniprotTopology',
     'UniprotTissue',
+    'Tcdb',
 }
 
 #TODO this should be part of json files
@@ -4826,6 +4827,37 @@ class UniprotTopology(AnnotationBase):
             name = 'UniProt_topology',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'uniprot.uniprot_topology',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class Tcdb(AnnotationBase):
+
+    _eq_fields = ('family', 'tcid')
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Topological domains and transmembrane segments from UniProt.
+        """
+
+        if 'organism' not in kwargs:
+
+            kwargs['organism'] = ncbi_tax_id
+
+        AnnotationBase.__init__(
+            self,
+            name = 'TCDB',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'tcdb.tcdb_annotations',
             **kwargs
         )
 
