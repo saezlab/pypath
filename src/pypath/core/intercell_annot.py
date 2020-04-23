@@ -619,43 +619,60 @@ annot_combined_classes = (
             annots = '~receptor',
             op = set.union,
         ),
+        scope = 'generic',
+        source = 'composite',
+        receiver = True,
+        transmitter = False,
     ),
     af.AnnotDef(
-        name = 'receptor_italk',
+        name = 'receptor',
         resource = 'iTALK',
         args = {
             'mainclass': 'receptor',
         },
-    ),
+        scope = 'generic',
+    ),  # locations are correct, includes also adhesion receptors
     af.AnnotDef(
         name = 'receptor',
         resource = 'Almen2009',
         args = {
             'mainclass': 'Receptors',
         },
+        scope = 'generic',
     ),
     af.AnnotDef(
-        name = 'receptor_cellcellinteractions',
+        name = 'receptor',
         resource = 'CellCellInteractions',
         args = {
             'mainclass': 'Receptor',
         },
-    ),
+        scope = 'generic',
+        exclude = {
+            'P20645', 'Q9P2K9',
+        }
+    ),  # includes also secreted proteins, such as ligands
+        # furthermore nuclear receptors or receptors in the endosome
+        # membrane, but I think those are OK
     af.AnnotDef(
-        name = 'receptor_embrace',
+        name = 'receptor',
         resource = 'EMBRACE',
         args = {
             'mainclass': 'receptor',
         },
-    ),
+        scope = 'generic',
+        exclude = {'Q6NYC1'},
+    ),  # good contents, includes a few secreted and
+        # intracellular receptors
     af.AnnotDef(
         name = 'receptor',
         resource = af.AnnotOp(
             annots = (
-                'interleukin_receptor_hgnc',
+                '~receptor~HGNC',
             ),
             op = set.union,
         ),
+        resource_name = 'HGNC',
+        scope = 'generic',
     ),
     af.AnnotDef(
         name = 'interleukin',
@@ -2246,12 +2263,12 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'ecm_cellcellinteractions',
+        name = 'ecm',
         resource = 'CellCellInteractions',
         args = {
             'mainclass': 'ECM',
         },
-    ),
+    ),  # more or less correct, but includes enzymes and matrix adhesion
     # specific subclasses from HGNC
     af.AnnotDef(
         name = 'collagen_proteoglycan_ecm',
@@ -2364,23 +2381,13 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'ligand',
         resource = af.AnnotOp(
-            annots = (
-                'ligand_cellphonedb',
-                'ligand_go',
-                'ligand_hpmr',
-                'ligand_ramilowski',
-                'ligand_kirouac',
-                'ligand_guide2pharma',
-                'ligand_hgnc',
-                'ligand_dgidb',
-                'ligand_baccin',
-                'ligand_signalink',
-                'ligand_italk',
-                'ligand_cellcellinteractions',
-                'ligand_embrace',
-            ),
+            annots = '~ligand',
             op = set.union,
         ),
+        receiver = True,
+        transmitter = False,
+        scope = 'generic',
+        source = 'composite',
     ),
     af.AnnotDef(
         name = 'ligand_italk',
@@ -2388,21 +2395,31 @@ annot_combined_classes = (
         args = {
             'mainclass': 'ligand',
         },
-    ),
+    ),  # locations are correct (secreted or cell surface), but includes
+        # some ECM, enzyme, regulator, etc proteins
     af.AnnotDef(
-        name = 'ligand_cellcellinteractions',
+        name = 'ligand',
         resource = 'CellCellInteractions',
         args = {
             'mainclass': 'Ligand',
         },
-    ),
+        scope = 'generic',
+        exclude = {
+            'Q6UWW8', 'P15531', 'P08236', 'Q9UHG3', 'Q9H9H4', 'O43852',
+            'Q92896', 'P55789', 'P22392', 'Q96A49', 'Q8WZ79', 'Q9BS26',
+            'O95236', 'Q9UJU6', 'Q8NHP8', 'P35475',
+        },
+    ),  # includes both secreted and cell surface,
+        # also enzymes and regulators
     af.AnnotDef(
-        name = 'ligand_embrace',
+        name = 'ligand',
         resource = 'EMBRACE',
         args = {
             'mainclass': 'ligand',
         },
-    ),
+        scope = 'generic',
+        exclude = {'P35354', 'P14618', 'Q4VX76', 'Q2MV58', 'P84077'}
+    ),  # inlcudes secreted enzymes, some ECM proteins
     af.AnnotDef(
         name = 'ligand',
         resource = af.AnnotOp(
