@@ -156,13 +156,19 @@ def protein_datasheet(identifier):
         url = urls.urls['uniprot_basic']['datasheet'] % identifier
         c = curl.Curl(url, silent = True, large = False, cache = cache)
 
-        if c.result.startswith('<!DOCTYPE'):
+        if not c.result or c.result.startswith('<!DOCTYPE'):
 
             cache = False
 
         else:
 
             break
+
+    if not c.result:
+
+        _logger._log(
+            'Could not retrieve UniProt datasheet for ID `%s`.' % identifier
+        )
 
     return _redatasheet.findall(c.result) if c.result else []
 
