@@ -1621,20 +1621,22 @@ class CustomAnnotation(session_mod.Logger):
         self.df.to_csv(fname, **kwargs)
 
 
-    def classes_by_entity(self, element):
+    def classes_by_entity(self, element, labels = False):
         """
         Returns a set of class keys with the classes containing at least
         one of the elements.
 
-        :parem str,set element:
+        :param str,set element:
             One or more element (entity) to search for in the classes.
+        :param bool labels:
+            Return labels instead of keys.
         """
 
         element = common.to_set(element)
 
         return set(
-            key
-            for key, elements in iteritems(self.classes)
+            cls.label if labels else key
+            for key, cls in iteritems(self.classes)
             if element & elements
         )
 
