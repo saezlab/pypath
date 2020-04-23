@@ -1643,15 +1643,10 @@ class CustomAnnotation(session_mod.Logger):
 
         by_resource = collections.defaultdict(set)
 
-        for key, resource in iteritems(self.resource_labels):
+        for key, cls in iteritems(self.classes):
 
-            by_resource[resource].update(
-                set(
-                    entity.Entity.filter_entity_type(
-                        self.classes[key],
-                        entity_type = entity_types,
-                    )
-                )
+            by_resource[cls.resource].update(
+                cls.filter_entity_type(entity_type = entity_type)
             )
 
         return dict(by_resource)
