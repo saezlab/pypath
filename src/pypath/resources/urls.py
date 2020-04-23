@@ -1215,6 +1215,12 @@ urls = {
         'url': 'https://www.cell.com/cms/10.1016/j.isci.2019.10.026/'
             'attachment/a1f66cee-15cb-4690-b95d-2480fa576b86/mmc2.xlsx',
     },
+    'tcdb': {
+        'label': 'Transporter classification database',
+        'url_tcdb': 'http://www.tcdb.org/cgi-bin/projectv/public/tcdb.dr',
+        'url_families': 'http://www.tcdb.org/cgi-bin/'
+            'projectv/public/families.py',
+    },
 }
 
 
