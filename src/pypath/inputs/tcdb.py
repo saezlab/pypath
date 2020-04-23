@@ -29,11 +29,13 @@ import pypath.inputs.common as inputs_common
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.utils.mapping as mapping
+import pypath.utils.reflists as reflists
 
 
 def tcdb_families():
     
     retag = re.compile(r'<.*>')
+    rethe = re.compile(r'^[tT]he (.*) (?:Super)?[Ff]amily')
     
     url = urls.urls['tcdb']['url_families']
     
@@ -44,7 +46,7 @@ def tcdb_families():
     return dict(
         (
             tcid,
-            family.replace('\t', ' ')
+            rethe.sub(r'\g<1>', family.replace('\t', ' '))
         )
         for tcid, family in
         (
@@ -52,3 +54,66 @@ def tcdb_families():
             for line in lines.strip().split('\n')
         )
     )
+
+
+def tcdb_classes():
+    
+    refam = re.compile(r'(\d\.[A-Z]\.\d+)')
+    retab = re.compile(r'\t+')
+    
+    url = urls.urls['tcdb']['url_acc2tc']
+    
+    c = curl.Curl(url, large = True, silent = False)
+    
+    result = {}
+    
+    for line in c.result:
+        
+        if not line:
+            
+            continue
+        
+        ac, tc = retab.split(line.rstrip())
+        family = refam.search(tc).groups()[0]
+        
+        result[ac] = (tc, family)
+    
+    return result
+
+
+def tcdb_annotations(organism = 9606):
+    
+    TcdbAnnotation = collections.namedtuple(
+        'TcdbAnnotation',
+        [
+            'family',
+            'tcid',
+        ]
+    )
+    
+    
+    families = tcdb_families()
+    classes = tcdb_classes()
+    result = collections.defaultdict(set)
+    
+    for ac, (tc, family) in iteritems(classes):
+        
+        uniprots = mapping.map_name(
+            ac,
+            'uniprot',
+            'uniprot',
+            ncbi_tax_id = organism,
+        )
+        
+        for uniprot in uniprots:
+            
+            if reflists.check(uniprot, 'uniprot', ncbi_tax_id = organism):
+                
+                result[uniprot].add(
+                    TcdbAnnotation(
+                        family = families[family],
+                        tcid = tc,
+                    )
+                )
+    
+    return result
