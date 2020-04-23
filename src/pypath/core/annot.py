@@ -354,12 +354,6 @@ class CustomAnnotation(session_mod.Logger):
 
             class_set = class_set - classdef.exclude
 
-        resource = (
-            classdef.resource
-                if isinstance(classdef.resource, common.basestring) else
-            None
-        )
-
         transmitter, receiver = self._get_transmitter_receiver(classdef)
 
         return annot_formats.AnnotationGroup(
@@ -367,7 +361,7 @@ class CustomAnnotation(session_mod.Logger):
             name = classdef.name,
             parent = classdef.parent,
             aspect = classdef.aspect,
-            resource = resource, # the actual database name
+            resource = classdef.resource_str, # the actual database name
             scope = classdef.scope,
             source = classdef.source, # resource_specific / composite
             transmitter = transmitter,
@@ -408,11 +402,23 @@ class CustomAnnotation(session_mod.Logger):
     def _collect_by_parent(self, parent):
 
         parent = parent.strip('~')
+        resource = None
+        parent_resource = parent.split('~')
+
+        if len(parent_resource) == 2:
+
+            parent, resource = parent_resource
 
         return tuple(
             self.select(classdef.key())
             for classdef in self._class_definitions.values()
-            if classdef.parent == parent
+            if (
+                classdef.parent == parent and
+                (
+                    not resource or
+                    classdef.resource_str == resource
+                )
+            )
         )
 
 
