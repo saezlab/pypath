@@ -112,6 +112,7 @@ protein_sources_default = {
     'UniprotTopology',
     'UniprotTissue',
     'Tcdb',
+    'Mcam',
 }
 
 #TODO this should be part of json files
@@ -4198,7 +4199,7 @@ class NetpathPathways(AnnotationBase):
             self,
             name = 'NetPath',
             ncbi_tax_id = ncbi_tax_id,
-            input_method = 'netpath_pathway_annotations',
+            input_method = 'netpath.netpath_pathway_annotations',
             **kwargs
         )
 
@@ -4868,6 +4869,24 @@ class Tcdb(AnnotationBase):
         self.annot = self.data
 
         delattr(self, 'data')
+
+
+class Mcam(AnnotationBase):
+
+    _eq_fields = ()
+
+
+    def __init__(self, **kwargs):
+        """
+        List of cell adhesion molecules (CAMs) from 10.4137/cin.s341.
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'MCAM',
+            input_method = 'mcam.mcam_cell_adhesion_molecules',
+            **kwargs
+        )
 
 
 class AnnotationTable(session_mod.Logger):
