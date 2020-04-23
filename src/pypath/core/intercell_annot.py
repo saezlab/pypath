@@ -675,6 +675,97 @@ annot_combined_classes = (
         scope = 'generic',
     ),
     af.AnnotDef(
+        name = 'receptor',
+        resource = 'CellPhoneDB',
+        args = {
+            'receptor': bool,
+            'transmembrane': True,
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'receptor',
+        resource = 'GO_Intercell',
+        args = {
+            'mainclass': 'receptors',
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'receptor',
+        resource = 'HPMR',
+        args = {
+            'role': 'Receptor',
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'receptor',
+        resource = 'Surfaceome',
+        args = {
+            'mainclass': 'Receptors',
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'receptor',
+        resource = 'Ramilowski2015',
+        args = {
+            'mainclass': 'receptor',
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'receptor',
+        resource = 'Kirouac2010',
+        args = {
+            'mainclass': 'receptor',
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'receptor',
+        resource = 'Guide2Pharma',
+        args = {
+            'mainclass': 'receptor',
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'gpcr',
+        parent = 'receptor',
+        resource = 'DGIdb',
+        args = {
+            'category': 'G PROTEIN COUPLED RECEPTOR',
+        },
+    ),
+    af.AnnotDef(
+        name = 'receptor',
+        resource = 'LRdb',
+        args = {
+            'role': 'receptor',
+            'references': bool,
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'receptor',
+        resource = 'Baccin2019',
+        args = {
+            'mainclass': 'receptor',
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'receptor',
+        resource = 'SignaLink_function',
+        args = {
+            'function': 'Receptor',
+        },
+        scope = 'generic',
+    ),
+    # receptor subclasses from HGNC
+    af.AnnotDef(
         name = 'interleukin',
         parent = 'receptor',
         resource = 'HGNC',
@@ -682,86 +773,6 @@ annot_combined_classes = (
             'mainclass': 'Interleukin receptors',
         },
     ),
-    af.AnnotDef(
-        name = 'receptor_cellphonedb',
-        resource = 'CellPhoneDB',
-        args = {
-            'receptor': bool,
-            'transmembrane': True,
-        },
-    ),
-    af.AnnotDef(
-        name = 'receptor_go',
-        resource = 'GO_Intercell',
-        args = {
-            'mainclass': 'receptors',
-        },
-    ),
-    af.AnnotDef(
-        name = 'receptor_hpmr',
-        resource = 'HPMR',
-        args = {
-            'role': 'Receptor',
-        },
-    ),
-    af.AnnotDef(
-        name = 'receptor_surfaceome',
-        resource = 'Surfaceome',
-        args = {
-            'mainclass': 'Receptors',
-        },
-    ),
-    af.AnnotDef(
-        name = 'receptor_ramilowski',
-        resource = 'Ramilowski2015',
-        args = {
-            'mainclass': 'receptor',
-        },
-    ),
-    af.AnnotDef(
-        name = 'receptor_kirouac',
-        resource = 'Kirouac2010',
-        args = {
-            'mainclass': 'receptor',
-        },
-    ),
-    af.AnnotDef(
-        name = 'receptor_guide2pharma',
-        resource = 'Guide2Pharma',
-        args = {
-            'mainclass': 'receptor',
-        },
-    ),
-    af.AnnotDef(
-        name = 'receptor_dgidb',
-        resource = 'DGIdb',
-        args = {
-            'category': 'G PROTEIN COUPLED RECEPTOR',
-        },
-    ),
-    af.AnnotDef(
-        name = 'receptor_lrdb',
-        resource = 'LRdb',
-        args = {
-            'role': 'receptor',
-            'references': bool,
-        },
-    ),
-    af.AnnotDef(
-        name = 'receptor_baccin',
-        resource = 'Baccin2019',
-        args = {
-            'mainclass': 'receptor',
-        },
-    ),
-    af.AnnotDef(
-        name = 'receptor_signalink',
-        resource = 'SignaLink_function',
-        args = {
-            'function': 'Receptor',
-        },
-    ),
-    # receptor subclasses from HGNC
     af.AnnotDef(
         name = 'immunoglobulin_like',
         parent = 'receptor',

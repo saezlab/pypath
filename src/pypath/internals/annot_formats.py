@@ -76,6 +76,7 @@ class AnnotDef(
             exclude = None,
             transmitter = None,
             receiver = None,
+            resource_name = None,
         ):
 
         return super(AnnotDef, cls).__new__(
@@ -90,6 +91,7 @@ class AnnotDef(
             exclude = exclude,
             transmitter = transmitter,
             receiver = receiver,
+            resource_name = None,
         )
 
 
@@ -109,7 +111,7 @@ class AnnotDef(
         return (
             self.resource
                 if isinstance(self.resource, common.basestring) else
-            None
+            self.resource_name
         )
 
 
