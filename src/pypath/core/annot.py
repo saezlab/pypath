@@ -360,6 +360,8 @@ class CustomAnnotation(session_mod.Logger):
             None
         )
 
+        transmitter, receiver = self._get_transmitter_receiver(classdef)
+
         return annot_formats.AnnotationGroup(
             members = class_set,
             name = classdef.name,
@@ -368,8 +370,8 @@ class CustomAnnotation(session_mod.Logger):
             resource = resource, # the actual database name
             scope = classdef.scope,
             source = classdef.source, # resource_specific / composite
-            transmitter = classdef.transmitter,
-            receiver = classdef.receiver,
+            transmitter = transmitter,
+            receiver = receiver,
         )
 
 
@@ -412,6 +414,45 @@ class CustomAnnotation(session_mod.Logger):
             for classdef in self._class_definitions.values()
             if classdef.parent == parent
         )
+
+
+    def _get_transmitter_receiver(self, classdef):
+
+        transmitter = classdef.transmitter
+        receiver = classdef.receiver
+
+        if transmitter is None or receiver is None:
+
+            composite_resource_name = settings.get(
+                'annot_composite_database_name'
+            )
+
+            name, parent, resource = classdef.key
+
+            for key, parentdef in self._class_definitions.keys():
+
+                if (
+                    parentdef.name == parent and
+                    parentdef.parent == parent and
+                    (
+                        parantdef.source == 'composite' or
+                        parentdef.resource == composite_resource_name
+                    )
+                ):
+
+                    transmitter = (
+                        transmitter
+                            if transmitter is not None else
+                        parent.transmitter
+                    )
+                    receiver = (
+                        receiver
+                            if receiver is not None else
+                        parent.receiver
+                    )
+                    break
+
+        return transmitter, receiver
 
 
     def select(
