@@ -4361,5 +4361,43 @@
       "sheikh@ie-freiburg.mpg.de", "Bilal N. Sheikh",
       "akhtar@ie-freiburg.mpg.de", "Asifa Akhtar"
     ]
+  },
+  "UniProt": {
+    "license": {
+      "name": "CC Attribution",
+      "url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "commercial_use": true
+    },
+    "emails": ["help@uniprot.org", "Uniprot Consortium"]
+  },
+  "Almen2009": {
+    "license": {
+      "name": "CC Attribution",
+      "url": "http://creativecommons.org/licenses/by/4.0/",
+      "commercial_use": true
+    },
+    "emails": [
+      "markus.sallman-almen@neuro.uu.se", "Markus Sällman Almén",
+      "Helgi.Schioth@neuro.uu.se", "Helgi Schiöth"
+    ]
+  },
+  "TCDB": {
+    "license": {
+      "name": "CC Attribution-ShareAlike 3.0",
+      "url": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "commercial_use": true
+    },
+    "authors": ["Saier Lab"],
+    "emails": [
+      "msaier@ucsd.edu", "Prof. Milton H. Saier, Jr"
+    ]
+  },
+  "iPTMnet": {
+    "license": {
+      "name": "CC Attribution-NonCommercial-ShareAlike",
+      "url": "http://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "commercial_use": false
+    },
+    "emails": ["huang@dbi.udel.edu", "Hongzhan Huang"]
   }
 }
