@@ -74,8 +74,8 @@ class AnnotDef(
             source = 'resource_specific',
             args = None,
             exclude = None,
-            transmitter = False,
-            receiver = False,
+            transmitter = None,
+            receiver = None,
         ):
 
         return super(AnnotDef, cls).__new__(
@@ -175,8 +175,8 @@ class AnnotationGroup(collections_abc.Set):
             source = 'resource_specific',
             scope = 'specific',
             resource = None,
-            transmitter = False,
-            receiver = False,
+            transmitter = None,
+            receiver = None,
         ):
 
         collections_abc.Set.__init__(self)
