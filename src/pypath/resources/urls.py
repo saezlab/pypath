@@ -1220,6 +1220,12 @@ urls = {
         'url_tcdb': 'http://www.tcdb.org/cgi-bin/projectv/public/tcdb.dr',
         'url_families': 'http://www.tcdb.org/cgi-bin/'
             'projectv/public/families.py',
+        'url_acc2tc': 'http://www.tcdb.org/cgi-bin/'
+            'projectv/public/acc2tcid.py',
+    },
+    'mcam': {
+        'label': 'Mammalian Cell Adhesion Molecule Database',
+        'url': 'https://app1.unmc.edu/mcam/exel.cfm?seq=HumanUniprot',
     },
 }
 

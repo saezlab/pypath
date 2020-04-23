@@ -25,7 +25,6 @@ import re
 import collections
 import bs4
 
-import pypath.inputs.common as inputs_common
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.utils.mapping as mapping
@@ -82,6 +81,7 @@ def tcdb_classes():
 
 
 def tcdb_annotations(organism = 9606):
+    
     
     TcdbAnnotation = collections.namedtuple(
         'TcdbAnnotation',

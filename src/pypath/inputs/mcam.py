@@ -19,11 +19,6 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from future.utils import iteritems
-
-import re
-import collections
-
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.utils.mapping as mapping

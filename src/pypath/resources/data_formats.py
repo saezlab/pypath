@@ -356,7 +356,8 @@ pathway = {
         header = False,
         extra_edge_attrs = {'trip_methods': (3, ';')},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'spike': input_formats.NetworkInput(
         name = "SPIKE",
         separator = "\t",
@@ -368,13 +369,16 @@ pathway = {
         entity_type_b = "protein",
         is_directed = (4, ['1']),
         sign = (7, '1', '2'),
-        input = 'spike_interactions',
+        input = 'spike.spike_interactions',
         references = (5, ";"),
         ncbi_tax_id = 9606,
-        extra_edge_attrs = {'spike_effect': 7,
-                        'spike_mechanism': 11},
+        extra_edge_attrs = {
+            'spike_effect': 7,
+            'spike_mechanism': 11,
+        },
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'signalink3': input_formats.NetworkInput(
         name = 'SignaLink3',
         separator = None,
@@ -781,7 +785,7 @@ interaction = {
         entity_type_b = "protein",
         is_directed = False,
         sign = False,
-        input = 'mppi_interactions',
+        input = 'mppi.mppi_interactions',
         references = (0, ";"),
         ncbi_tax_id = 9606,
         extra_edge_attrs = {"mppi_evidences": (1, ";")},
@@ -818,7 +822,7 @@ interaction = {
         entity_type_b = "protein",
         is_directed = False,
         sign = False,
-        input = 'netpath_interactions',
+        input = 'netpath.netpath_interactions',
         references = (4, ";"),
         ncbi_tax_id = 9606,
         extra_edge_attrs = {
@@ -1688,7 +1692,7 @@ interaction_htp = {
         entity_type_b = "protein",
         is_directed = False,
         sign = False,
-        input = 'mppi_interactions',
+        input = 'mppi.mppi_interactions',
         references = (0, ";"),
         ncbi_tax_id = 9606,
         extra_edge_attrs = {"mppi_evidences": (1, ";")},
