@@ -113,6 +113,7 @@ protein_sources_default = {
     'UniprotTissue',
     'Tcdb',
     'Mcam',
+    'Gpcrdb',
 }
 
 #TODO this should be part of json files
@@ -4887,6 +4888,37 @@ class Mcam(AnnotationBase):
             input_method = 'mcam.mcam_cell_adhesion_molecules',
             **kwargs
         )
+
+
+class Gpcrdb(AnnotationBase):
+
+    _eq_fields = ('gpcr_class', 'family', 'subfamily')
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        GPCR classification from GPCRdb - https://gpcrdb.org/.
+        """
+
+        if 'organism' not in kwargs:
+
+            kwargs['organism'] = ncbi_tax_id
+
+        AnnotationBase.__init__(
+            self,
+            name = 'GPCRdb',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'gpcrdb.gpcrdb_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
 
 
 class AnnotationTable(session_mod.Logger):

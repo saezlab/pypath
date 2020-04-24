@@ -45,6 +45,10 @@ def gpcrdb_annotations(organism = 9606):
     
     organism = taxonomy.ensure_ncbi_tax_id(organism)
     
+    if organism not in (9606, 10090):
+        
+        return {}
+    
     i_uniprot = 31 if organism == 10090 else 15
     
     url = urls.urls['gpcrdb']['families']

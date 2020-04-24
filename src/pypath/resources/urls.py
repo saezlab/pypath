@@ -1227,6 +1227,11 @@ urls = {
         'label': 'Mammalian Cell Adhesion Molecule Database',
         'url': 'https://app1.unmc.edu/mcam/exel.cfm?seq=HumanUniprot',
     },
+    'gpcrdb': {
+        'label': 'A comprehensive database about GPCRs',
+        'families': 'https://raw.githubusercontent.com/protwis/gpcrdb_data/'
+            'master/protein_data/proteins_and_families.txt',
+    },
 }
 
 
