@@ -678,11 +678,12 @@ annot_combined_classes = (
         name = 'receptor',
         resource = 'CellPhoneDB',
         args = {
-            'receptor': bool,
+            'receptor': True,
             'transmembrane': True,
         },
         scope = 'generic',
-    ),
+        exclude = {'P14735', 'P52799', 'P05231', 'Q15768', 'Q8IZI9', },
+    ),  # includes some cell-cell adhesion
     af.AnnotDef(
         name = 'receptor',
         resource = 'GO_Intercell',
@@ -690,6 +691,11 @@ annot_combined_classes = (
             'mainclass': 'receptors',
         },
         scope = 'generic',
+        exclude = {
+            'P11021', 'P19835', 'O75144', 'P35225', 'P56705', 'P12643',
+            'Q8IX30', 'Q14512', 'P04628', 'Q76LX8', 'P02647', 'O00755',
+            'P04085', 'P10600', 'P14735',
+        },
     ),
     af.AnnotDef(
         name = 'receptor',
@@ -4088,6 +4094,11 @@ annot_combined_classes = (
             'P98073', 'Q9Y5Q5', 'Q9BYE2', 'Q9H3S3', 'O15393', 'P05981',
             'Q9NRS4',
         },
+    ),
+    af.AnnotDef(
+        name = 'insulin_degrading_enzyme',
+        parent = 'surface_enzyme',
+        resource = {'P14735'},
     ),
     af.AnnotDef(
         name = 'm1_metallopeptidase_surface_peptidase',
