@@ -3725,7 +3725,7 @@ class HumanProteinAtlas(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'HPA_tissue',
-            input_method = 'proteinatlas_annotations',
+            input_method = 'proteinatlas.proteinatlas_annotations',
             **kwargs
         )
 
@@ -3746,7 +3746,9 @@ class HumanProteinAtlasSubcellular(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'HPA_subcellular',
-            input_method = 'proteinatlas_subcellular_annotations',
+            input_method = (
+                'proteinatlas.proteinatlas_subcellular_annotations'
+            ),
             **kwargs
         )
 
@@ -3767,7 +3769,7 @@ class HumanProteinAtlasSecretome(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'HPA_secretome',
-            input_method = 'proteinatlas_secretome_annotations',
+            input_method = 'proteinatlas.proteinatlas_secretome_annotations',
             **kwargs
         )
 
