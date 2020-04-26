@@ -3392,7 +3392,7 @@ class Matrisome(AnnotationBase):
             self,
             name = 'Matrisome',
             ncbi_tax_id = ncbi_tax_id,
-            input_method = 'matrisome_annotations',
+            input_method = 'matrisome.matrisome_annotations',
             **kwargs,
         )
 
