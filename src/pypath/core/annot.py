@@ -4679,7 +4679,7 @@ class Kirouac2010(LigandReceptor):
         LigandReceptor.__init__(
             self,
             name = 'Kirouac2010',
-            input_method = 'kirouac2010_interactions',
+            input_method = 'kirouac2010.kirouac2010_interactions',
             ligand_col = 0,
             receptor_col = 1,
             ligand_id_type = 'genesymbol',
