@@ -3515,7 +3515,7 @@ class Zhong2015(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'Zhong2015',
-            input_method = 'zhong2015_annotations',
+            input_method = 'zhong2015.zhong2015_annotations',
             **kwargs
         )
 

@@ -8013,46 +8013,6 @@ def hgnc_genegroups():
     return result
 
 
-def zhong2015_annotations():
-    """
-    From 10.1111/nyas.12776 (PMID 25988664).
-    """
-
-    types = {
-        'i': 'iCAM',
-        'm': 'matrix adhesion',
-        'ag': 'axonal guidance',
-        'aj': 'adherens junction',
-        'c': 'cell-cell adhesion',
-        'fa': 'focal adhesion',
-        'tj': 'tight junction',
-        'my': 'myelin interactions',
-    }
-
-    Zhong2015Annotation = collections.namedtuple(
-        'Zhong2015Annotation',
-        ['type'],
-    )
-    result = collections.defaultdict(set)
-
-    url = urls.urls['zhong2015']['url']
-    c = curl.Curl(url, silent = False, large = True)
-
-    _ = next(c.result)
-
-    for rec in c.result:
-        rec = rec.strip().split('\t')
-
-        uniprot = mapping.map_name0(rec[0], 'genesymbol', 'uniprot')
-
-        if uniprot:
-            result[uniprot].add(
-                Zhong2015Annotation(type = types[rec[2]])
-            )
-
-    return result
-
-
 def get_compartments_localizations(
         organism = 9606,
         literature = True,
