@@ -4660,7 +4660,7 @@ class Ramilowski2015(LigandReceptor):
         LigandReceptor.__init__(
             self,
             name = 'Ramilowski2015',
-            input_method = 'ramilowski_interactions',
+            input_method = 'ramilowski2015.ramilowski_interactions',
             record_extra_fields = ('sources',),
             extra_fields_methods = extra_fields_methods,
             ligand_col = 0,
