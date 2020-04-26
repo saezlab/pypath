@@ -4065,7 +4065,7 @@ class Matrixdb(AnnotationBase):
             self,
             name = 'MatrixDB',
             ncbi_tax_id = ncbi_tax_id,
-            input_method = 'matrixdb_annotations',
+            input_method = 'matrixdb.matrixdb_annotations',
             **kwargs
         )
 
