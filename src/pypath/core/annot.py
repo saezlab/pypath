@@ -3493,7 +3493,7 @@ class Hgnc(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'HGNC',
-            input_method = 'hgnc_genegroups',
+            input_method = 'hgnc.hgnc_genegroups',
             **kwargs
         )
 
