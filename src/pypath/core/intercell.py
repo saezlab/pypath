@@ -353,7 +353,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
                         continue
 
                     name = '_'.join(
-                        resep.sub('_', val)
+                        resep.sub('_', val).lower()
                         for val in reversed(this_values[1:])
                     )
                     hpmr_categories.append(
@@ -366,6 +366,56 @@ class IntercellAnnotation(annot.CustomAnnotation):
                     )
 
             self._class_definitions_provided += tuple(hpmr_categories)
+
+
+    def add_surfaceome_categories(self):
+
+        resep = re.compile(r'[- /\(\),\.]+')
+
+        mainclasses = {
+            'Receptors': 'receptor',
+            'Transporters': 'transporter',
+            'Enzymes': 'surface_enzyme',
+        }
+
+        if self._resource_categories['surfaceome']:
+
+            self.ensure_annotdb()
+            surfaceome = self.annotdb['Surfaceome']
+            surfaceome_categories = []
+
+            for mainclass, parent in iteritems(mainclasses):
+
+                subclasses = set(itertools.chain(*(
+                    a.subclasses
+                    for aa in surfaceome.annot.values()
+                    for a in aa
+                    if (
+                        aa.subclasses is not None and
+                        aa.mainclass == mainclass and
+                        not a[0].isdigit()
+                )))
+
+                for subclass in subclasses:
+
+                    name = '%s_%s' % (
+                        resep.sub('_', subclass).lower(),
+                        mainclass.lower(),
+                    )
+
+                    surfaceome_categories.append(
+                            af.AnnotDef(
+                                name = name,
+                                resource = 'Surfaceome',
+                                args = {
+                                    'mainclass': mainclass,
+                                    'subclasses': subclass,
+                                },
+                                parent = parent,
+                            )
+                        )
+
+            self._class_definitions_provided += tuple(surfaceome_categories)
 
 
     def post_load(self):
