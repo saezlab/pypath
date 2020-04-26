@@ -500,11 +500,21 @@ class TableServer(BaseServer):
                 'tsv',
                 'table',
             },
-            'levels': {
-                'main',
-                'sub',
-                'small_main',
-                'above_main',
+            'scope': {
+                'specific',
+                'generic',
+            },
+            'aspect': {
+                'functional',
+                'locational',
+            },
+            'source': {
+                'resource_specific',
+                'generic',
+            },
+            'causality': {
+                'transmitter',
+                'receiver',
             },
             'categories': None,
             'mainclass': None,
@@ -527,11 +537,21 @@ class TableServer(BaseServer):
                 'tsv',
                 'table',
             },
-            'levels': {
-                'main',
-                'sub',
-                'small_main',
-                'above_main',
+            'scope': {
+                'specific',
+                'generic',
+            },
+            'aspect': {
+                'functional',
+                'locational',
+            },
+            'source': {
+                'resource_specific',
+                'generic',
+            },
+            'causality': {
+                'transmitter',
+                'receiver',
             },
             'categories': None,
             'fields': None,
@@ -695,8 +715,11 @@ class TableServer(BaseServer):
             'database': 'category',
             'uniprot': 'category',
             'genesymbol': 'category',
-            'mainclass': 'category',
-            'class_type': 'category',
+            'parent': 'category',
+            'aspect': 'category',
+            'scope': 'category',
+            'source': 'category',
+            'causality': 'category',
             'entity_type': 'category',
         }
     )
@@ -1845,12 +1868,14 @@ class TableServer(BaseServer):
         
         hdr = tbl.columns
         
-        # filtering for category level
-        if b'levels' in req.args:
+        # filtering for category types
+        for var in ('aspect', 'source', 'scope', 'causality', 'parent'):
             
-            levels = self._args_set(req, 'levels')
-            
-            tbl = tbl[tbl.class_type.isin(levels)]
+            if var.encode('ascii') in req.args:
+                
+                values = self._args_set(var)
+                
+                tbl = tbl[getattr(tbl, var).isin(values)]
         
         # filtering for categories
         if b'categories' in req.args:
@@ -1865,12 +1890,6 @@ class TableServer(BaseServer):
             entity_types = self._args_set(req, 'entity_types')
             
             tbl = tbl[tbl.entity_type.isin(entity_types)]
-        
-        if b'mainclasses' in req.args:
-            
-            mainclasses =  = self._args_set(req, 'mainclasses')
-            
-            tbl = tbl[tbl.mainclass.isin(mainclasses)]
         
         # filtering for proteins
         if b'proteins' in req.args:
