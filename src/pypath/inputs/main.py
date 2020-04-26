@@ -2965,21 +2965,6 @@ def get_acsn():
     return data
 
 
-def get_abs():
-    result = []
-    url = urls.urls['abs']['url']
-    c = curl.Curl(url, silent = False)
-    data = c.result
-    data = [[x.replace('*', '') for x in xx.split('\t')]
-            for xx in data.split('\n')]
-
-    for d in data:
-        if len(d) > 2:
-            result.append([d[2], d[0]])
-
-    return result
-
-
 def get_pazar():
     url = urls.urls['pazar']['url_rescued']
     c = curl.Curl(url, silent = False)
