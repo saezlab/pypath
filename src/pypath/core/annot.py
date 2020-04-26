@@ -1894,6 +1894,7 @@ class CustomAnnotation(session_mod.Logger):
             source = None,
             transmitter = None,
             receiver = None,
+            start = 0,
             **kwargs
         ):
         """
@@ -1921,28 +1922,7 @@ class CustomAnnotation(session_mod.Logger):
             )
         )
 
-        labels = sorted(classes.keys())
-        n_classes = len(labels)
-
-        for n, label in enumerate(labels):
-
-            uniprots = classes[label].members
-
-            sys.stdout.write(
-                '[%u/%u] =====> %s <===== [%u proteins]\n' % (
-                    n + 1,
-                    n_classes,
-                    label,
-                    len(uniprots)
-                )
-            )
-
-            utils_uniprot.info(uniprots, **kwargs)
-
-            input()
-
-            sys.stdout.write('\n\n')
-
+        utils_uniprot.browse(groups = classes, start = start, **kwargs)
 
 
 class AnnotationBase(resource.AbstractResource):
@@ -3109,11 +3089,9 @@ class AnnotationBase(resource.AbstractResource):
         values = sorted(itertools.product(*field_values))
         total = len(values)
         
-        for n, vals in enumerate(values):
-            
-            if n + 1 < start:
-                
-                continue
+        groups = {}
+        
+        for vals in values:
             
             args = dict(zip(field_keys, vals))
             
@@ -3135,20 +3113,9 @@ class AnnotationBase(resource.AbstractResource):
                 )
             )
             
-            sys.stdout.write(
-                '[%u/%u] =====> %s <===== [%u proteins]\n' % (
-                    n + 1,
-                    total or 0,
-                    label,
-                    len(proteins)
-                )
-            )
-            
-            utils_uniprot.info(proteins, **kwargs)
-            
-            input()
-            
-            sys.stdout.write('\n\n')
+            groups[label] = proteins
+        
+        utils_uniprot.browse(groups = groups, start = start, **kwargs)
 
 
 class Membranome(AnnotationBase):

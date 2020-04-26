@@ -570,6 +570,7 @@ def features_table(
 def print_features(
         uniprot_ids,
         *features,
+        fileobj = None,
         width = None,
         maxlen = 500,
         tablefmt = 'fancy_grid',
@@ -591,8 +592,9 @@ def print_features(
     
     term_width = (os.get_terminal_size().columns - 120) * 2 + 120
     width = width or int(term_width / len(features)) if term_width else 40
+    fileobj = fileobj or None
     
-    sys.stdout.write(
+    fileobj.write(
         features_table(
             uniprot_ids,
             *features,
@@ -602,11 +604,11 @@ def print_features(
             **kwargs
         )
     )
-    sys.stdout.write(os.linesep)
-    sys.stdout.flush()
+    fileobj.write(os.linesep)
+    fileobj.flush()
 
 
-def info(*uniprot_ids, **kwargs):
+def info(*uniprot_ids, features = None, fileobj = None, **kwargs):
     """
     Prints a table with the most important (or the requested) features of a
     list of UniProt IDs.
@@ -620,8 +622,7 @@ def info(*uniprot_ids, **kwargs):
         uniprot_ids = uniprot_ids[0]
     
     features = (
-        kwargs['features']
-            if 'features' in kwargs else
+        features or
         (
             'ac',
             'genesymbol',
@@ -634,8 +635,68 @@ def info(*uniprot_ids, **kwargs):
         )
     )
     
+    fileobj = fileobj or sys.stdout
+    
     print_features(
         uniprot_ids,
         *features,
+        fileobj = fileobj,
         **kwargs
     )
+
+
+def browse(groups, start = 0, fileobj = None, **kwargs):
+    """
+    Browses through a series of protein groups, printing an information table
+    for each group. **kwargs passed to ``info`` and then to print_features``.
+    Parameters for ``common.table_format`` can be provided.
+    """
+
+    labels = sorted(groups.keys())
+    n_groups = len(labels)
+    stop = False
+    maxlen_default = kwargs['maxlen'] if 'maxlen' in kwargs else 500
+    fileobj = sys.stdout or fileobj
+
+    for n, label in enumerate(labels):
+
+        if start > n + 1:
+
+            continue
+
+        if stop:
+
+            break
+
+        kwargs['maxlen'] = maxlen_default
+
+        while True:
+
+            uniprots = groups[label].members
+
+            fileobj.write(
+                '[%u/%u] =====> %s <===== [%u proteins]\n' % (
+                    n + 1,
+                    n_groups,
+                    label,
+                    len(uniprots)
+                )
+            )
+
+            info(uniprots, fileobj = fileobj, **kwargs)
+
+            inp = input()
+
+            if inp == 'q':
+
+                stop = True
+                break
+
+            elif inp.isdigit():
+
+                kwargs['maxlen'] = int(inp)
+
+            else:
+
+                sys.stdout.write(os.linesep * 2)
+                break
