@@ -3161,7 +3161,7 @@ class Membranome(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'Membranome',
-            input_method = 'membranome_annotations',
+            input_method = 'membranome.membranome_annotations',
             **kwargs
         )
 
