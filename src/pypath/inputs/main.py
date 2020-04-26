@@ -7649,33 +7649,6 @@ def stitch_interactions(threshold = None):
         yield a, b, l[2], l[3], int(l[5])
 
 
-def surfaceome_annotations():
-    """
-    Downloads the "In silico human surfaceome".
-    Dict with UniProt IDs as key and tuples of surface prediction score,
-    class and subclass as values (columns B, N, S and T of table S3).
-    """
-
-    url = urls.urls['surfaceome']['url']
-    c = curl.Curl(url, large = True, silent = False)
-    xlsname = c.fname
-    del(c)
-    raw = inputs_common.read_xls(xlsname, 'in silico surfaceome only')[2:]
-
-    return dict(
-        (
-            uniprot, # uniprot
-            (
-                float(r[13]), # score
-                r[18] if r[18] else None, # class
-                set(r[19].split(';')) if r[19] else set(), # subclass
-            )
-        )
-        for r in raw
-        for uniprot in mapping.map_name(r[1], 'uniprot', 'uniprot')
-    )
-
-
 def get_compartments_localizations(
         organism = 9606,
         literature = True,

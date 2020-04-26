@@ -3413,7 +3413,7 @@ class Surfaceome(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'Surfaceome',
-            input_method = 'surfaceome_annotations',
+            input_method = 'surfaceome.surfaceome_annotations',
             **kwargs
         )
 
