@@ -3641,7 +3641,7 @@ class Disgenet(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'DisGeNet',
-            input_method = 'disgenet_annotations',
+            input_method = 'disgenet.disgenet_annotations',
             ncbi_tax_id = ncbi_tax_id,
             **kwargs
         )
