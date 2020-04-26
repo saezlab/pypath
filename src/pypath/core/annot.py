@@ -3666,7 +3666,7 @@ class Msigdb(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'MSigDB',
-            input_method = 'msigdb_annotations',
+            input_method = 'msigdb.msigdb_annotations',
             ncbi_tax_id = ncbi_tax_id,
             **kwargs
         )
