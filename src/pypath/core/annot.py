@@ -3472,7 +3472,7 @@ class Cancersea(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'CancerSEA',
-            input_method = 'cancersea_annotations',
+            input_method = 'cancersea.cancersea_annotations',
             **kwargs
         )
 
