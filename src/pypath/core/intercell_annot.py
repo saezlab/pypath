@@ -682,7 +682,7 @@ annot_combined_classes = (
             'transmembrane': True,
         },
         scope = 'generic',
-        exclude = {'P14735', 'P52799', 'P05231', 'Q15768', 'Q8IZI9', },
+        exclude = {'P14735', 'P52799', 'P05231', 'Q15768', 'Q8IZI9'},
     ),  # includes some cell-cell adhesion
     af.AnnotDef(
         name = 'receptor',
@@ -704,7 +704,12 @@ annot_combined_classes = (
             'role': 'Receptor',
         },
         scope = 'generic',
-    ),
+        exclude = {
+            'Q9UKV5', 'B7ZAQ6', 'O60291', 'O95965', 'Q8N3F9', 'O60478',
+            'Q12933', 'O95994', 'O14894', 'O60635', 'Q92673', 'Q00994',
+            'O94992', 'P17152', 'Q6NYC1'. 'O43813', 'Q99720', 'Q13114',
+        },
+    ),  # includes adhesion molecules e.g. intergrins
     af.AnnotDef(
         name = 'receptor',
         resource = 'Surfaceome',
