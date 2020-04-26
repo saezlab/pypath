@@ -3201,7 +3201,7 @@ class Exocarta(AnnotationBase):
             self,
             name = kwargs['database'].capitalize(),
             ncbi_tax_id = ncbi_tax_id,
-            input_method = '_get_exocarta_vesiclepedia',
+            input_method = 'exocarta._get_exocarta_vesiclepedia',
             **kwargs,
         )
 
