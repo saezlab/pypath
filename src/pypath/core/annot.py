@@ -3540,7 +3540,7 @@ class Opm(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'OPM',
-            input_method = 'opm_annotations',
+            input_method = 'opm.opm_annotations',
             **kwargs
         )
 
