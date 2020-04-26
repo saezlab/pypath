@@ -309,12 +309,63 @@ class IntercellAnnotation(annot.CustomAnnotation):
                         baccin_categories.append(
                             af.AnnotDef(
                                 name = name,
-                                source = 'Baccin2019',
+                                resource = 'Baccin2019',
                                 args = {attr: category},
                             )
                         )
 
             self._class_definitions_provided += tuple(baccin_categories)
+
+
+    def add_hpmr_categories(self):
+
+        resep = re.compile(r'[- /\(\),]+')
+
+        hpmr_categories = []
+
+        if self._resource_categories['hpmr']:
+
+            self.ensure_annotdb()
+
+            hpmr = self.annotdb['HPMR']
+
+            fields = hpmr.get_names()
+
+            for values in itertools.product(*(
+                hpmr.get_values(field)
+                for field in fields
+            )):
+
+                for i in range(2, len(fields)):
+
+                    this_fields = fields[:i]
+                    this_values = values[:i]
+
+                    args = dict(zip(
+                        this_fields,
+                        this_values
+                    ))
+
+                    members = hpmr.select(**args)
+
+                    if not members:
+
+                        continue
+
+                    name = '_'.join(
+                        resep.sub('_', val)
+                        for val in reversed(this_values[1:])
+                    )
+                    hpmr_categories.append(
+                        af.AnnotDef(
+                            name = name,
+                            resource = 'HPMR',
+                            args = args,
+                            parent = values[0].lower(),
+                        )
+                    )
+
+            self._class_definitions_provided += tuple(hpmr_categories)
 
 
     def post_load(self):
