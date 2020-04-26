@@ -21,7 +21,6 @@
 
 from future.utils import iteritems
 
-import os
 import re
 import itertools
 import collections

@@ -3969,7 +3969,7 @@ class Kinasedotcom(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'kinase.com',
-            input_method = 'kinasedotcom_annotations',
+            input_method = 'kinasedotcom.kinasedotcom_annotations',
             **kwargs
         )
 

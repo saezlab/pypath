@@ -5403,49 +5403,6 @@ def load_macrophage():
     data = data.replace('?', '').replace('->', ',')
 
 
-def kinasedotcom_annotations():
-    """
-    Downloads and processes kinase annotations from kinase.com.
-    """
-
-    KinasedotcomAnnotation = collections.namedtuple(
-        'KinasedotcomAnnotation',
-        ['group', 'family', 'subfamily']
-    )
-    KinasedotcomAnnotation.__new__.__defaults__ = (None,)
-
-    def add_record(uniprot, rec, offset = 2):
-
-        if rec[offset].strip():
-            result[uniprot].add(
-                KinasedotcomAnnotation(
-                    group = rec[offset].strip(),
-                    family = rec[offset + 1].strip(),
-                    subfamily = rec[offset + 2].strip() or None,
-                )
-            )
-
-    url = urls.urls['kinome']['url']
-    c = curl.Curl(url, large = True, silent = False)
-    xlsf = c.fileobj
-    xlsname = xlsf.name
-    xlsf.close()
-    tbl = inputs_common.read_xls(xlsname)
-
-    result = collections.defaultdict(set)
-
-    for rec in tbl:
-        uniprots = mapping.map_name(rec[23].strip(), 'genesymbol', 'uniprot')
-
-        for uniprot in uniprots:
-            add_record(uniprot, rec)
-
-            if rec[12].strip():
-                add_record(uniprot, rec, offset = 12)
-
-    return result
-
-
 def phosphatome_annotations():
     """
     Downloads the list of phosphatases from Chen et al, Science Signaling
