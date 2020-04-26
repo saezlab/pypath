@@ -4173,7 +4173,7 @@ class KeggPathways(AnnotationBase):
             self,
             name = 'KEGG',
             ncbi_tax_id = ncbi_tax_id,
-            input_method = 'kegg_pathway_annotations',
+            input_method = 'kegg.kegg_pathway_annotations',
             **kwargs
         )
 
