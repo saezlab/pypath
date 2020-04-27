@@ -123,9 +123,29 @@ def _swissprot_param(swissprot):
 def is_uniprot(name, organism = 9606, swissprot = None):
     """
     Tells if ``name`` is a UniProt ID of ``organism``.
+    If ``swissprot`` is None then both SwissProt and TrEMBL IDs will be
+    considered.
     """
 
     return name in get_db(organism = organism, swissprot = swissprot)
+
+
+def is_swissprot(name, organism = 9606):
+    """
+    Tells if ``name`` is a SwissProt ID of ``organism``.
+    For TrEMBL IDs returns False.
+    """
+
+    return is_uniprot(name, organism = organism, swissprot = True)
+
+
+def is_trembl(name, organism = 9606):
+    """
+    Tells if ``name`` is a TrEMBL ID of ``organism``.
+    For SwissProt IDs returns False.
+    """
+
+    return is_uniprot(name, organism = organism, swissprot = False)
 
 
 _cleanup_timeloop = timeloop.Timeloop()
