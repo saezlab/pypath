@@ -54,8 +54,8 @@ reac = re.compile(
 
 def _all_uniprots(organism = 9606, swissprot = None):
 
-    swissprot = 'yes' if swissprot == True else swissprot
-    rev = '' if not swissprot else ' AND reviewed: %s' % swissprot
+    swissprot = _swissprot_param(swissprot)
+    rev = '' if swissprot is None else ' AND reviewed: %s' % swissprot
     url = urls.urls['uniprot_basic']['url']
     get = {
         'query': 'organism:%s%s' % (str(organism), rev),
@@ -77,15 +77,16 @@ def all_uniprots(organism = 9606, swissprot = None):
 
 def init_db(organism = 9606, swissprot = None):
 
+    swissprot = _swissprot_param(swissprot)
     _logger._log(
         'Loading list of all UniProt IDs for '
         'organism `%u` (only SwissProt: %s).' % (
             organism,
-            str(swissprot == True),
+            str(swissprot),
         )
     )
 
-    key = (organism, swissprot == True)
+    key = (organism, swissprot)
 
     globals()['db'][key] = _all_uniprots(
         organism = organism,
@@ -96,7 +97,8 @@ def init_db(organism = 9606, swissprot = None):
 
 def get_db(organism = 9606, swissprot = None):
 
-    key = (organism, swissprot == True)
+    swissprot = _swissprot_param(swissprot)
+    key = (organism, swissprot)
 
     if key not in globals()['db']:
 
@@ -105,6 +107,17 @@ def get_db(organism = 9606, swissprot = None):
     globals()['_last_used'][key] = time.time()
 
     return globals()['db'][key]
+
+
+def _swissprot_param(swissprot):
+
+    return (
+        'yes'
+            if swissprot in {'yes', 'YES', True} else
+        'no'
+            if swissprot in {'no', 'NO', False} else
+        None
+    )
 
 
 def is_uniprot(name, organism = 9606, swissprot = None):
@@ -231,9 +244,6 @@ def protein_datasheet(identifier):
         )
 
     return _redatasheet.findall(c.result) if c.result else []
-
-
-def uniprot_deleted
 
 
 def uniprot_deleted(confirm = True):
