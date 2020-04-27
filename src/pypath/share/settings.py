@@ -50,6 +50,8 @@ _defaults = {
     # check for expired mapping tables and delete them
     # (period in seconds)
     'mapper_cleanup_interval': 60,
+    'mapper_translate_deleted_uniprot': True,
+    'mapper_keep_deleted_uniprot': False,
     # If None will be the same as ``basedir``.
     'data_basedir': None,
     'acsn_names': 'acsn_names.gmt',
@@ -275,7 +277,21 @@ def setup(**kwargs):
         setattr(settings, param, value)
 
 
-def get(param):
+def get(param, value = None):
+    """
+    Retrieves the current value of a parameter.
+
+    :param str param:
+        The key for the parameter.
+    :param object,NoneType value:
+        If this value is not None it will be returned instead of the settings
+        value. It is useful if the parameter provided at the class or method
+        level should override the one in settings.
+    """
+
+    if value is not None:
+
+        return value
 
     if hasattr(settings, param):
 
