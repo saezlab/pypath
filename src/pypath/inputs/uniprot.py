@@ -46,6 +46,12 @@ _last_used = {}
 _redatasheet = re.compile(r'([A-Z\s]{2})\s*([^\n\r]+)[\n\r]+')
 
 
+reac = re.compile(
+    r'[OPQ][0-9][A-Z0-9]{3}[0-9]|'
+    r'[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}'
+)
+
+
 def _all_uniprots(organism = 9606, swissprot = None):
 
     swissprot = 'yes' if swissprot == True else swissprot
@@ -176,7 +182,7 @@ def protein_datasheet(identifier):
         c_history = curl.Curl(
             url_history,
             silent = True,
-            large = False
+            large = False,
             cache = cache,
         )
 
@@ -225,6 +231,54 @@ def protein_datasheet(identifier):
         )
 
     return _redatasheet.findall(c.result) if c.result else []
+
+
+def uniprot_deleted
+
+
+def uniprot_deleted(confirm = True):
+
+    return swissprot_deleted() | trembl_deleted(confirm = confirm)
+
+
+def _uniprot_deleted(swissprot = True, confirm = True):
+
+    if not swissprot and confirm:
+
+        resp = input(
+            'Loading the list of deleted TrEMBL IDs requires '
+            '>5GB memory. Do you want to proceed [y/n] '
+        )
+
+        if not resp or resp[0].lower() != 'y':
+
+            return set()
+
+    key = 'deleted_%s' % ('sp' if swissprot else 'tr')
+    url = urls.urls['uniprot_basic'][key]
+    c = curl.Curl(url, silent = False, large = True)
+
+    result = set()
+
+    for line in c.result:
+
+        m = reac.match(line.strip())
+
+        if m:
+
+            result.add(m.groups()[0])
+
+    return result
+
+
+def swissprot_deleted():
+
+    return _uniprot_deleted(swissprot = True)
+
+
+def trembl_deleted(confirm = True):
+
+    return _uniprot_deleted(swissprot = False, confirm = True)
 
 
 def get_uniprot_sec(organism = 9606):
