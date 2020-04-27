@@ -717,7 +717,8 @@ annot_combined_classes = (
             'mainclass': 'Receptors',
         },
         scope = 'generic',
-    ),
+        exclude = {'Q14108'}
+    ),  # good as it is
     af.AnnotDef(
         name = 'receptor',
         resource = 'Ramilowski2015',
@@ -725,7 +726,7 @@ annot_combined_classes = (
             'mainclass': 'receptor',
         },
         scope = 'generic',
-    ),
+    ),  # good as it is
     af.AnnotDef(
         name = 'receptor',
         resource = 'Kirouac2010',
@@ -733,7 +734,7 @@ annot_combined_classes = (
             'mainclass': 'receptor',
         },
         scope = 'generic',
-    ),
+    ),  # good as it is
     af.AnnotDef(
         name = 'receptor',
         resource = 'Guide2Pharma',
@@ -741,6 +742,7 @@ annot_combined_classes = (
             'mainclass': 'receptor',
         },
         scope = 'generic',
+        exclude = {'Q9H1R3'},
     ),
     af.AnnotDef(
         name = 'gpcr',
@@ -748,6 +750,9 @@ annot_combined_classes = (
         resource = 'DGIdb',
         args = {
             'category': 'G PROTEIN COUPLED RECEPTOR',
+        },
+        exclude = {
+            'O43813', 'Q9P2Y4', 'Q6RW13', 'P16112', 'Q9BRX2', 'O75575',
         },
     ),
     af.AnnotDef(
@@ -758,7 +763,11 @@ annot_combined_classes = (
             'references': bool,
         },
         scope = 'generic',
-    ),
+        exclude = {
+            'P27824', 'Q6NYC1', 'Q00994', 'Q92673', 'P00747',
+            'Q99712', 'P29972', 'P26038', 'Q07075', 'P57057',
+        },
+    ),  # wrong annotations added to exclude
     af.AnnotDef(
         name = 'receptor',
         resource = 'Baccin2019',
@@ -766,7 +775,12 @@ annot_combined_classes = (
             'mainclass': 'receptor',
         },
         scope = 'generic',
-    ),
+        exclude = {
+            'Q4VX76', 'Q9NZV8', 'P17302', 'Q92673', 'Q99523',
+            'Q9NP59', 'Q9NZQ7', 'P48651', 'P23276', 'Q13936',
+            'P21589', 'Q12884', 'P22001', 'P36021',
+        },
+    ),  # contains also adhesion and some wrong annotations
     af.AnnotDef(
         name = 'receptor',
         resource = 'SignaLink_function',
@@ -774,6 +788,7 @@ annot_combined_classes = (
             'function': 'Receptor',
         },
         scope = 'generic',
+        exclude = {'P48552'},
     ),
     # receptor subclasses from HGNC
     af.AnnotDef(
@@ -2213,14 +2228,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'ecm',
         resource = af.AnnotOp(
-            annots = (
-                'ecm_matrixdb',
-                'ecm_matrisome',
-                'ecm_go',
-                'ecm_ramilowski',
-                'ecm_cellcellinteractions',
-                'ecm_uniprot',
-            ),
+            annots = '~ecm',
             op = set.union,
         ),
     ),
