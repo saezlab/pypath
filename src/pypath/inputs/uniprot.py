@@ -167,6 +167,60 @@ def protein_datasheet(identifier):
     if not c.result:
 
         _logger._log(
+            'UniProt ID `%s` returns empty response, it might be and an old '
+            'ID which has been deleted from the database. Attempting to '
+            'find its history and retrieve either an archived version or '
+            'the find the new ID which replaced this one.' % identifier
+        )
+        url_history = urls.urls['uniprot_basic']['history'] % identifier
+        c_history = curl.Curl(
+            url_history,
+            silent = True,
+            large = False
+            cache = cache,
+        )
+
+        if c_history.result and not c_history.result.startswith('<!DOCTYPE'):
+
+            for line in c_history.result.split('\n'):
+
+                if line.startswith('Entry'):
+
+                    continue
+
+                line = line.split('\t')
+
+                if line[7]:
+
+                    new = line[7]
+                    _logger._log(
+                        'UniProt ID `%s` is obsolete, has been replaced by '
+                        '`%s`: `%s`.' % (
+                            identifier,
+                            new,
+                            url,
+                        )
+                    )
+                    return protein_datasheet(new)
+
+                if line[2] != 'null' and line[0] != '0':
+
+                    version = int(line[0])
+                    url = '%s?version=%u' % (url, version)
+                    _logger._log(
+                        'UniProt ID `%s` is obsolete, downloading archived '
+                        'version %u: `%s`.' % (
+                            identifier,
+                            version,
+                            url,
+                        )
+                    )
+                    c = curl.Curl(url, silent = True, large = False)
+                    break
+
+    if not c.result:
+
+        _logger._log(
             'Could not retrieve UniProt datasheet for ID `%s`.' % identifier
         )
 
