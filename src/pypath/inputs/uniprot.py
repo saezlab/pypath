@@ -75,6 +75,16 @@ def all_uniprots(organism = 9606, swissprot = None):
     return get_db(organism = organism, swissprot = swissprot)
 
 
+def all_swissprots(organism = 9606):
+
+    return get_db(organism = organism, swissprot = True)
+
+
+def all_trembls(organism = 9606):
+
+    return get_db(organism = organism, swissprot = False)
+
+
 def init_db(organism = 9606, swissprot = None):
 
     swissprot = _swissprot_param(swissprot)
@@ -174,7 +184,7 @@ def _remove(key):
 
         _logger._log(
             'Removing UniProt ID list for '
-            'organism `%u` (only SwissProt: %s)' % (
+            'organism `%u` (SwissProt: %s)' % (
                 key[0],
                 str(key[1]),
             )
