@@ -51,7 +51,7 @@ _defaults = {
     # (period in seconds)
     'mapper_cleanup_interval': 60,
     'mapper_translate_deleted_uniprot': True,
-    'mapper_keep_deleted_uniprot': False,
+    'mapper_keep_invalid_uniprot': False,
     # If None will be the same as ``basedir``.
     'data_basedir': None,
     'acsn_names': 'acsn_names.gmt',
