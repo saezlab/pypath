@@ -65,9 +65,9 @@ def _all_uniprots(organism = 9606, swissprot = None):
     c = curl.Curl(url, get = get, silent = False)
     data = c.result
 
-    return [
+    return {
         l.strip() for l in data.split('\n')[1:] if l.strip()
-    ]
+    }
 
 
 def all_uniprots(organism = 9606, swissprot = None):
