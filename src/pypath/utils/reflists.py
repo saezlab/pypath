@@ -48,6 +48,8 @@ import pypath.share.cache as cache_mod
 # method names for ID types
 inputs = {
     'uniprot': 'all_uniprots',
+    'swissprot': 'all_swissprots',
+    'trembl': 'all_trembls',
     'mirbase': 'mirbase_mature_all',
     'mir-pre': 'mirbase_precursor_all',
 }
@@ -103,7 +105,7 @@ class ReferenceListManager(session_mod.Logger):
     
     def load(self, key):
         
-        cachefile = common.md5(json.dumps(key))
+        cachefile = 'reflist_%s_%u.pickle' % key
         cachefile = os.path.join(self.cachedir, cachefile)
         
         if os.path.exists(cachefile):
@@ -151,7 +153,8 @@ class ReferenceListManager(session_mod.Logger):
                 
                 input_func = getattr(mirbase_input, input_method)
             
-            data = set(input_func())
+            ncbi_tax_id = key[1]
+            data = set(input_func(organism = ncbi_tax_id))
             self._log(
                 'Reference list for ID type `%s` for organism `%u` has '
                 'been loaded by method `%s`.' % (key + (str(input_method),))
