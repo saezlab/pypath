@@ -65,7 +65,13 @@ class IntercellAnnotation(annot.CustomAnnotation):
                 locals_['%s_categories' % res] or
                 settings.get('intercell_%s_categories' % res)
             )
-            for res in ('baccin', 'cellphonedb')
+            for res in (
+                'baccin',
+                'cellphonedb',
+                'hpmr',
+                'surfaceome',
+                'matrisome',
+            )
         )
 
         annot.CustomAnnotation.__init__(
@@ -416,6 +422,75 @@ class IntercellAnnotation(annot.CustomAnnotation):
                         )
 
             self._class_definitions_provided += tuple(surfaceome_categories)
+
+
+    def add_matrisome_categories(self):
+
+        resep = re.compile(r'[- /\(\),\.]+')
+
+        regulators = {'Secreted Factors', 'ECM Regulators'}
+        exclude = {'linc', 'n/a'}
+
+        if self._resource_categories['matrisome']:
+
+            self.ensure_annotdb()
+            matrisome = self.annotdb['Matrisome']
+            matrisome_categories = []
+
+            for mainclass in matrisome.get_values('mainclass'):
+
+                if mainclass == 'Retired':
+
+                    continue
+
+                subclasses = matrisome.get_values('subclass')
+                subsubclasses = matrisome.get_values('subsubclass')
+
+                for sclass, ssclass in itertools.product(
+                    subclasses,
+                    subsubclasses,
+                ):
+
+
+                    if sclass in exclude or ssclass in exclude:
+
+                        continue
+
+                    args = {
+                        'mainclass': mainclass,
+                        'subclass': sclass,
+                        'subsubclass': ssclass,
+                    }
+
+                    members = matrisome.select(**args)
+
+                    )
+
+                    if not members:
+
+                        continue
+
+                    name = '%s_%s' % (
+                        resep.sub('_', ssclass),
+                        resep.sub('_', sclass),
+                    )
+
+                    parent = (
+                        'ecm_regulator'
+                            if sclass in regulators else
+                        'ecm'
+                    )
+
+                    matrisome_categories.append(
+                        af.AnnotDef(
+                            name = name,
+                            resource = 'Matrisome',
+                            parent = parent,
+                            args = args,
+                        )
+                    )
+
+            self._class_definitions_provided += tuple(matrisome_categories)
 
 
     def post_load(self):

@@ -2231,6 +2231,10 @@ annot_combined_classes = (
             annots = '~ecm',
             op = set.union,
         ),
+        scope = 'generic',
+        source = 'composite',
+        transmitter = True,
+        receiver = False,
     ),
     af.AnnotDef(
         name = 'ecm_matrisome',
