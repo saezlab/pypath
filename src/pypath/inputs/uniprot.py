@@ -130,6 +130,11 @@ def _swissprot_param(swissprot):
     )
 
 
+def valid_uniprot(name):
+
+    return bool(reac.match(name))
+
+
 def is_uniprot(name, organism = 9606, swissprot = None):
     """
     Tells if ``name`` is a UniProt ID of ``organism``.
