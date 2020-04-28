@@ -510,7 +510,7 @@ class TableServer(BaseServer):
             },
             'source': {
                 'resource_specific',
-                'generic',
+                'composite',
             },
             'causality': {
                 'transmitter',
