@@ -1259,6 +1259,7 @@ class Mapper(session_mod.Logger):
             strict = False,
             silent = True,
             expand_complexes = True,
+            uniprot_cleanup = True,
             nameType = None,
             targetNameType = None,
         ):
@@ -1508,7 +1509,7 @@ class Mapper(session_mod.Logger):
 
         # for UniProt IDs we do a few more steps to
         # try to find out the primary SwissProt ID
-        if target_id_type == 'uniprot':
+        if uniprot_cleanup and target_id_type == 'uniprot':
 
             mapped_names = self.uniprot_cleanup(
                 uniprots = mapped_names,
@@ -1788,7 +1789,7 @@ class Mapper(session_mod.Logger):
                     name = genesymbol,
                     id_type = 'genesymbol',
                     target_id_type = 'swissprot',
-                    ncbi_tax_id = ncbi_tax_id
+                    ncbi_tax_id = ncbi_tax_id,
                 )
 
             if not swissprot:
@@ -1854,6 +1855,7 @@ class Mapper(session_mod.Logger):
                     'genesymbol',
                     'uniprot',
                     ncbi_tax_id = ncbi_tax_id,
+                    uniprot_cleanup = False,
                 )
 
         return {uniprot}
