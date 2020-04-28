@@ -235,7 +235,7 @@ def deleted_uniprot_genesymbol(identifier):
     """
 
     datasheet = uniprot_history_recent_datasheet(identifier)
-    genesmbol = None
+    genesymbol = None
     ncbi_tax_id = None
 
     for tag, line in datasheet:
@@ -289,7 +289,7 @@ def uniprot_history_recent_datasheet(identifier):
 
         if recent_version.replaced_by:
 
-            new = recent_version.replaced_by
+            new = recent_version.replaced_by.split(';')[0]
             url = urls.urls['uniprot_basic']['datasheet'] % new
             _logger._log(
                 'UniProt ID `%s` is obsolete, has been replaced by '
@@ -299,7 +299,7 @@ def uniprot_history_recent_datasheet(identifier):
                     url,
                 )
             )
-            return _protein_datasheet(url)
+            return protein_datasheet(new)
 
         else:
 
@@ -1226,10 +1226,6 @@ def uniprot_ncbi_taxids_2():
                 entry['english'] = _name
                 
             elif _name_type == 'S':
-                
-                if 'latin_synonym' in entry:
-                    
-                    print(entry['latin_synonym'])
                 
                 entry['latin_synonym'] = _name
     
