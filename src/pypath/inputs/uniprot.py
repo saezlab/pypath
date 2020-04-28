@@ -229,8 +229,14 @@ def protein_datasheet(identifier):
 
 
 def deleted_uniprot_genesymbol(identifier):
+    """
+    Retrieves the archived datasheet for a deleted UniProt ID and returns
+    the Gene Symbol and the NCBI Taxonomy ID from the datasheet.
+    """
 
     datasheet = uniprot_history_recent_datasheet(identifier)
+    genesmbol = None
+    ncbi_tax_id = None
 
     for tag, line in datasheet:
 
@@ -240,7 +246,14 @@ def deleted_uniprot_genesymbol(identifier):
 
             if m:
 
-                return m.groups()[0]
+                genesymbol = m.groups()[0]
+
+        if tag == 'OX':
+
+            ncbi_tax_id = int(line.split('=')[1][:-1])
+            break
+
+    return genesymbol, ncbi_tax_id
 
 
 def _protein_datasheet(url):

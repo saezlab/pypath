@@ -1851,9 +1851,9 @@ class Mapper(session_mod.Logger):
 
         else:
 
-            genesymbol = self.deleted_uniprot_genesymbol(uniprot)
+            genesymbol, taxid = self.deleted_uniprot_genesymbol(uniprot)
 
-            if genesymbol:
+            if genesymbol and taxid == ncbi_tax_id:
 
                 return self.map_name(
                     genesymbol,
