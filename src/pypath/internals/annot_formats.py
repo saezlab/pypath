@@ -47,6 +47,7 @@ class AnnotDef(
                 'exclude',
                 'transmitter',
                 'receiver',
+                'resource_name',
             ]
         )
     ):
@@ -79,7 +80,7 @@ class AnnotDef(
             resource_name = None,
         ):
 
-        return super(AnnotDef, cls).__new__(
+        return super().__new__(
             cls,
             name = name,
             resource = resource,
@@ -91,7 +92,7 @@ class AnnotDef(
             exclude = exclude,
             transmitter = transmitter,
             receiver = receiver,
-            resource_name = None,
+            resource_name = resource_name,
         )
 
 
