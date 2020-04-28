@@ -45,11 +45,13 @@ _last_used = {}
 
 _redatasheet = re.compile(r'([A-Z\s]{2})\s*([^\n\r]+)[\n\r]+')
 
-
+# regex for matching UniProt AC format
+# from https://www.uniprot.org/help/accession_numbers
 reac = re.compile(
     r'[OPQ][0-9][A-Z0-9]{3}[0-9]|'
     r'[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}'
 )
+_rename = re.compile(r'Name=([\w\(\)-]+)\W')
 
 
 def _all_uniprots(organism = 9606, swissprot = None):
@@ -131,6 +133,10 @@ def _swissprot_param(swissprot):
 
 
 def valid_uniprot(name):
+    """
+    Checks if ``name`` fits the format requirements for UniProt accession
+    numbers.
+    """
 
     return bool(reac.match(name))
 
@@ -203,11 +209,46 @@ def _remove(key):
 
 def protein_datasheet(identifier):
 
+    url = urls.urls['uniprot_basic']['datasheet'] % identifier
+
+    datasheet =  _protein_datasheet(url)
+
+    if not datasheet:
+
+        _logger._log(
+            'UniProt ID `%s` returns empty response, it might be and an old '
+            'ID which has been deleted from the database. Attempting to '
+            'find its history and retrieve either an archived version or '
+            'the find the new ID which replaced this one.' % identifier
+        )
+        return uniprot_history_recent_datasheet(identifier)
+
+    else:
+
+        return datasheet
+
+
+def deleted_uniprot_genesymbol(identifier):
+
+    datasheet = uniprot_history_recent_datasheet(identifier)
+
+    for tag, line in datasheet:
+
+        if tag == 'GN':
+
+            m = _rename.search(line.strip())
+
+            if m:
+
+                return m.groups()[0]
+
+
+def _protein_datasheet(url):
+
     cache = True
 
     for a in range(3):
 
-        url = urls.urls['uniprot_basic']['datasheet'] % identifier
         c = curl.Curl(url, silent = True, large = False, cache = cache)
 
         if not c.result or c.result.startswith('<!DOCTYPE'):
@@ -221,64 +262,113 @@ def protein_datasheet(identifier):
     if not c.result:
 
         _logger._log(
-            'UniProt ID `%s` returns empty response, it might be and an old '
-            'ID which has been deleted from the database. Attempting to '
-            'find its history and retrieve either an archived version or '
-            'the find the new ID which replaced this one.' % identifier
+            'Could not retrieve UniProt datasheet by URL `%s`.' % url
         )
+
+    return _redatasheet.findall(c.result) if c.result else []
+
+
+def uniprot_history_recent_datasheet(identifier):
+
+    recent_version = uniprot_recent_version(identifier)
+
+    if recent_version:
+
+        if recent_version.replaced_by:
+
+            new = recent_version.replaced_by
+            url = urls.urls['uniprot_basic']['datasheet'] % new
+            _logger._log(
+                'UniProt ID `%s` is obsolete, has been replaced by '
+                '`%s`: `%s`.' % (
+                    identifier,
+                    new,
+                    url,
+                )
+            )
+            return _protein_datasheet(url)
+
+        else:
+
+            version = int(recent_version.entry_version)
+            url = '%s?version=%u' % (
+                urls.urls['uniprot_basic']['datasheet'] % identifier,
+                version,
+            )
+            _logger._log(
+                'UniProt ID `%s` is obsolete, downloading archived '
+                'version %u: `%s`.' % (
+                    identifier,
+                    version,
+                    url,
+                )
+            )
+            c = curl.Curl(url, silent = True, large = False)
+            return _protein_datasheet(url)
+
+    return []
+
+
+UniprotRecordHistory = collections.namedtuple(
+    'UniprotRecordHistory',
+    [
+        'entry_version',
+        'sequence_version',
+        'entry_name',
+        'database',
+        'number',
+        'date',
+        'replaces',
+        'replaced_by',
+    ],
+)
+
+
+def uniprot_history(identifier):
+    """
+    Retrieves the history of a record.
+    Returns a generator iterating over the history from most recent to the
+    oldest.
+    """
+    
+    if valid_uniprot(identifier):
+        
         url_history = urls.urls['uniprot_basic']['history'] % identifier
         c_history = curl.Curl(
             url_history,
             silent = True,
-            large = False,
-            cache = cache,
+            large = True,
         )
 
-        if c_history.result and not c_history.result.startswith('<!DOCTYPE'):
-
-            for line in c_history.result.split('\n'):
-
-                if line.startswith('Entry'):
-
-                    continue
-
-                line = line.split('\t')
-
-                if line[7]:
-
-                    new = line[7]
-                    _logger._log(
-                        'UniProt ID `%s` is obsolete, has been replaced by '
-                        '`%s`: `%s`.' % (
-                            identifier,
-                            new,
-                            url,
+        if c_history.result:
+            
+            line0 = next(c_history.result)
+            
+            if not line0.startswith('<!DOCTYPE'):
+                
+                for line in c_history.result:
+                    
+                    if line:
+                        
+                        yield UniprotRecordHistory(
+                            *(
+                                field.strip() for field in line.split('\t')
+                            )
                         )
-                    )
-                    return protein_datasheet(new)
 
-                if line[2] != 'null' and line[0] != '0':
 
-                    version = int(line[0])
-                    url = '%s?version=%u' % (url, version)
-                    _logger._log(
-                        'UniProt ID `%s` is obsolete, downloading archived '
-                        'version %u: `%s`.' % (
-                            identifier,
-                            version,
-                            url,
-                        )
-                    )
-                    c = curl.Curl(url, silent = True, large = False)
-                    break
-
-    if not c.result:
-
-        _logger._log(
-            'Could not retrieve UniProt datasheet for ID `%s`.' % identifier
-        )
-
-    return _redatasheet.findall(c.result) if c.result else []
+def uniprot_recent_version(identifier):
+    
+    for version in uniprot_history(identifier):
+        
+        if (
+            (
+                version.entry_version != '0' and
+                version.entry_name != 'null'
+            ) or version.replaced_by
+        ):
+            
+            return version
 
 
 def uniprot_deleted(confirm = True):
