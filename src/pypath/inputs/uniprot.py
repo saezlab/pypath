@@ -1139,14 +1139,16 @@ Taxon = collections.namedtuple(
         'ncbi_id',
         'latin',
         'english',
+        'latin_synonym',
     ]
 )
+Taxon.__new__.__defaults__ = (None, None)
 
 
 def uniprot_ncbi_taxids():
     
     url = urls.urls['uniprot_basic']['taxids']
-    c = curl.Curl(url, large = True, silent = False)
+    c = curl.Curl(url, large = True, silent = False, compr = 'gz')
     
     _ = next(c.result)
     
@@ -1156,12 +1158,70 @@ def uniprot_ncbi_taxids():
         
         line = line.split('\t')
         
-        taxid = int(line[0])
+        if line[0].isdigit() and len(line) > 3:
+            
+            taxid = int(line[0])
+            
+            result[taxid] = Taxon(
+                ncbi_id = taxid,
+                latin = line[2],
+                english = line[3],
+            )
+    
+    return result
+
+
+def uniprot_ncbi_taxids_2():
+    
+    reline = re.compile(
+        r'(?:([A-Z\d]+)\s+)?' # code
+        r'(?:([A-Z]))?\s+' # kingdom
+        r'(?:(\d+): )?' # NCBI Taxonomy ID
+        r'([A-Z])=' # name type
+        r'([ \w\(\),/\.\'-]+)[\n\r\s]*' # the name
+    )
+    
+    url = urls.urls['uniprot_basic']['speclist']
+    c = curl.Curl(url, large = True, silent = False)
+    
+    result = {}
+    entry = {}
+    
+    for line in c.result:
         
-        result[taxid] = Taxon(
-            ncbi_id = taxid,
-            latin = line[2],
-            english = line[3],
-        )
+        m = reline.match(line)
+        
+        if m:
+            
+            _code, _kingdom, _taxid, _name_type, _name = m.groups()
+            
+            if _taxid:
+                
+                if entry and 'ncbi_id' in entry:
+                    
+                    result[entry['ncbi_id']] = Taxon(**entry)
+                
+                entry = {}
+                entry['ncbi_id'] = int(_taxid)
+            
+            if _name_type == 'N':
+                
+                entry['latin'] = _name
+                
+            elif _name_type == 'C':
+                
+                entry['english'] = _name
+                
+            elif _name_type == 'S':
+                
+                if 'latin_synonym' in entry:
+                    
+                    print(entry['latin_synonym'])
+                
+                entry['latin_synonym'] = _name
+    
+    if entry and 'ncbi_id' in entry:
+        
+        result[entry['ncbi_id']] = Taxon(**entry)
     
     return result

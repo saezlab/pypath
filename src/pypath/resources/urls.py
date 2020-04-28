@@ -43,6 +43,8 @@ urls = {
             'knowledgebase/docs/speindex.txt',
         'taxids': 'https://www.uniprot.org/taxonomy/?query='
             '*&format=tab&force=true&columns=id&compress=yes',
+        'speclist': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'
+            'knowledgebase/docs/speclist.txt',
     },
     'corum': {
         'label':
