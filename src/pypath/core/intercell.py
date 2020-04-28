@@ -392,15 +392,18 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
             for mainclass, parent in iteritems(mainclasses):
 
-                subclasses = set(itertools.chain(*(
-                    a.subclasses
-                    for aa in surfaceome.annot.values()
-                    for a in aa
-                    if (
-                        aa.subclasses is not None and
-                        aa.mainclass == mainclass and
-                        not a[0].isdigit()
-                )))
+                subclasses = set(
+                    itertools.chain(*(
+                        a.subclasses
+                        for aa in surfaceome.annot.values()
+                        for a in aa
+                        if (
+                            aa.subclasses is not None and
+                            aa.mainclass == mainclass and
+                            not a[0].isdigit()
+                        )
+                    ))
+                )
 
                 for subclass in subclasses:
 
@@ -463,8 +466,6 @@ class IntercellAnnotation(annot.CustomAnnotation):
                     }
 
                     members = matrisome.select(**args)
-
-                    )
 
                     if not members:
 
