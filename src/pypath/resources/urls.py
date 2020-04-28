@@ -34,6 +34,11 @@ urls = {
         'url': 'https://www.uniprot.org/uniprot/',
         'lists': 'https://www.uniprot.org/uploadlists/',
         'datasheet': 'https://www.uniprot.org/uniprot/%s.txt',
+        'history': 'https://www.uniprot.org/uniprot/%s.tab?version=*',
+        'deleted_sp': r'ftp://ftp.uniprot.org/pub/databases/uniprot/'
+            r'knowledgebase/docs/delac%5Fsp.txt',
+        'deleted_tr': r'ftp://ftp.uniprot.org/pub/databases/uniprot/'
+            r'knowledgebase/docs/delac%5Ftr.txt.gz',
     },
     'corum': {
         'label':
