@@ -133,13 +133,13 @@ class MapReader(session_mod.Logger):
         """
 
         session_mod.Logger.__init__(self, name = 'mapping')
-        
+
         self.ncbi_tax_id = (
             ncbi_tax_id or
             param.ncbi_tax_id or
             settings.get('default_organism')
         )
-        
+
         self._log(
             'Reader created for ID translation table, parameters: '
             '`ncbi_tax_id=%u, id_a=%s, id_b=%s, '
@@ -728,13 +728,13 @@ class MapReader(session_mod.Logger):
     def read_mapping_pro(self):
 
         pro_data = pro_input.pro_mapping(target_id_type = self.param.id_type)
-        
+
         pro_to_other = collections.defaultdict(set)
-        
+
         for pro, other in pro_data:
-            
+
             pro_to_other[pro].add(other)
-        
+
         self.a_to_b = (
             None
                 if not self.load_a_to_b else
@@ -866,6 +866,9 @@ class Mapper(session_mod.Logger):
             ncbi_tax_id = None,
             cleanup_period = 10,
             lifetime = 300,
+            translate_deleted_uniprot = None,
+            keep_invalid_uniprot = None,
+            trembl_swissprot_by_genesymbol = None,
         ):
         """
         cleanup_period : int
@@ -874,11 +877,37 @@ class Mapper(session_mod.Logger):
         lifetime : int
             If a table has not been used for longer than this preiod it is
             to be removed at next cleanup.
+        translate_deleted_uniprot : bool
+            Do an extra attempt to translate deleted or obsolete UniProt IDs
+            by retrieving their archived datasheet and use the gene symbol
+            to find the corresponding valid UniProt ID?
+        keep_invalid_uniprot : bool
+            If the target ID is UniProt, keep the results if they fit the
+            format for UniProt IDs (we won't check if they are deleted or
+            from a different taxon). The alternative is to keep only those
+            which are in the list of all UniProt IDs for the given organism.
+        trembl_swissprot_by_genesymbol : bool
+            Attempt to translate TrEMBL IDs to SwissProt by translating to
+            gene symbols and then to SwissProt.
         """
 
         session_mod.Logger.__init__(self, name = 'mapping')
-        cleanup_period = (
-            cleanup_period or settings.get('mapper_cleanup_interval')
+
+        cleanup_period = settings.get(
+            'mapper_cleanup_interval',
+            cleanup_period
+        )
+        self._translate_deleted_uniprot = settings.get(
+            'mapper_translate_deleted_uniprot',
+            translate_deleted_uniprot,
+        )
+        self._keep_invalid_uniprot = settings.get(
+            'mapper_keep_invalid_uniprot',
+            keep_invalid_uniprot,
+        )
+        self._trembl_swissprot_by_genesmbol = settings.get(
+            'mapper_trembl_swissprot_by_genesmbol',
+            trembl_swissprot_by_genesymbol,
         )
 
         self._mapper_cleanup_timeloop = timeloop.Timeloop()
@@ -905,10 +934,8 @@ class Mapper(session_mod.Logger):
 
         self._mapper_cleanup_timeloop.start(block = False)
 
-        self.reuniprot = re.compile(
-            r'[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]'
-            r'([A-Z][A-Z0-9]{2}[0-9]){1,2}'
-        )
+        # regex for matching UniProt AC format
+        self.reuniprot = uniprot_input.reac
         self.cachedir = cache_mod.get_cachedir()
         self.ncbi_tax_id = ncbi_tax_id or settings.get('default_organism')
 
@@ -1374,7 +1401,7 @@ class Mapper(session_mod.Logger):
 
         if not mapped_names:
 
-            # maybe it's all uppercase (e.g. human gene symbols)?
+            # maybe it should be all uppercase (e.g. human gene symbols)?
             mapped_names = self._map_name(
                 name = name.upper(),
                 id_type = id_type,
@@ -1387,7 +1414,7 @@ class Mapper(session_mod.Logger):
             id_type not in {'uniprot', 'trembl', 'uniprot-sec'}
         ):
 
-            # maybe it's capitalized (e.g. rodent gene symbols)?
+            # maybe should be capitalized (e.g. rodent gene symbols)?
             mapped_names = self._map_name(
                 name = name.capitalize(),
                 id_type = id_type,
@@ -1400,7 +1427,7 @@ class Mapper(session_mod.Logger):
             id_type not in {'uniprot', 'trembl', 'uniprot-sec'}
         ):
 
-            # maybe it's all lowercase?
+            # maybe it should be all lowercase?
             mapped_names = self._map_name(
                 name = name.lower(),
                 id_type = id_type,
@@ -1479,26 +1506,38 @@ class Mapper(session_mod.Logger):
                 ncbi_tax_id = ncbi_tax_id,
             )
 
-        # for UniProt IDs we do one more step:
+        # for UniProt IDs we do a few more steps to
         # try to find out the primary SwissProt ID
         if target_id_type == 'uniprot':
 
-            orig = mapped_names
+            # step 1: translate secondary IDs to primary
             mapped_names = self.primary_uniprot(mapped_names)
-            mapped_names = self.trembl_swissprot(mapped_names, ncbi_tax_id)
 
-            # what is this? is it necessary?
-            # probably should be removed
-            if orig - mapped_names:
+            # step 2: translate TrEMBL to SwissProt by gene symbols
+            if self._trembl_swissprot_by_genesmbol:
 
-                self.uniprot_mapped.append((orig, mapped_names))
+                mapped_names = self.trembl_swissprot(
+                    mapped_names,
+                    ncbi_tax_id = ncbi_tax_id,
+                )
 
-            # why? we have no chance to have anything else here than
-            # UniProt IDs
-            # probably should be removed
-            mapped_names = {
-                u for u in mapped_names if self.reuniprot.match(u)
-            }
+            # step 3: translate deleted IDs by gene symbols
+            if self._translate_deleted_uniprot:
+
+                mapped_names = self.translate_deleted_uniprots_by_genesymbol(
+                    mapped_names
+                )
+
+            # step 4: check if the IDs exist in the proteome of the organism
+            if not self._keep_invalid_uniprot:
+
+                mapped_names = self.only_valid_uniprots(
+                    mapped_names,
+                    ncbi_tax_id = ncbi_tax_id,
+                )
+
+            # step 5: ensure the format validity
+            mapped_names = self.only_uniprot_ac(mapped_names)
 
         return mapped_names
 
@@ -1677,7 +1716,9 @@ class Mapper(session_mod.Logger):
 
     def primary_uniprot(self, uniprots):
         """
-        For a list of UniProt IDs returns the list of primary ids.
+        For an iterable of UniProt IDs returns a set with the secondary IDs
+        changed to the corresponding primary IDs. Anything what is not a
+        secondary UniProt ID left intact.
         """
 
         primaries = set()
@@ -1705,9 +1746,11 @@ class Mapper(session_mod.Logger):
 
     def trembl_swissprot(self, uniprots, ncbi_tax_id = None):
         """
-        For a list of Trembl and SwissProt IDs, returns possibly
-        only Swissprot, mapping from Trembl to gene symbols, and
-        then back to SwissProt.
+        For an iterable of TrEMBL and SwissProt IDs, returns a set with
+        only SwissProt, mapping from TrEMBL to gene symbols, and
+        then back to SwissProt. If this kind of translation is not successful
+        for any of the IDs it will be kept in the result, no matter if it's
+        not a SwissProt ID. If the 
         """
 
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
@@ -1741,6 +1784,132 @@ class Mapper(session_mod.Logger):
                 swissprots.update(swissprot)
 
         return swissprots
+
+
+    def translate_deleted_uniprots_by_genesymbol(
+            self,
+            uniprots,
+            ncbi_tax_id = None,
+        ):
+
+        if isinstance(uniprots, common.basestring):
+
+            return self.translate_deleted_uniprot_by_genesymbol(
+                uniprots,
+                ncbi_tax_id = ncbi_tax_id,
+            )
+
+        else:
+
+            ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+
+            return set.union(*(
+                self.translate_deleted_uniprot_by_genesymbol(
+                    uniprot,
+                    ncbi_tax_id = ncbi_tax_id,
+                )
+                for uniprot in uniprots
+            )) if uniprots else set()
+
+
+    def translate_deleted_uniprot_by_genesymbol(
+            self,
+            uniprot,
+            ncbi_tax_id = None,
+        ):
+        """
+        Due to potentially ambiguous translation always returns set.
+        """
+
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+
+        if uniprot_input.is_uniprot(uniprot,organism = ncbi_tax_id):
+
+            return {uniprot}
+
+        else:
+
+            genesymbol = self.deleted_uniprot_genesymbol(uniprot)
+
+            if genesymbol:
+
+                return self.map_name(
+                    genesymbol,
+                    'genesymbol',
+                    'uniprot',
+                    ncbi_tax_id = ncbi_tax_id,
+                )
+
+        return {uniprot}
+
+
+    def deleted_uniprot_genesymbol(self, uniprot):
+
+        return uniprot_input.deleted_uniprot_genesymbol(uniprot)
+
+
+    def only_valid_uniprots(self, uniprots, ncbi_tax_id = None):
+
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+
+        if isinstance(uniprots, common.basestring):
+
+            return self.valid_uniprot(uniprots, ncbi_tax_id = ncbi_tax_id)
+
+        else:
+
+            return {
+                uniprot
+                for uniprot in uniprots
+                if uniprot_input.is_uniprot(uniprot, organism = ncbi_tax_id)
+            }
+
+
+    def valid_uniprot(self, uniprot, ncbi_tax_id = None):
+        """
+        If the UniProt ID ``uniprot`` exist in the proteome of the organism
+        ``ncbi_tax_id`` returns the ID, otherwise returns None.
+        """
+
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+
+        if uniprot_input.is_uniprot(uniprot, organism = ncbi_tax_id):
+
+            return uniprot
+
+
+    def only_uniprot_ac(self, uniprots):
+        """
+        For one or more strings returns only those which match the format
+        of UniProt accession numbers.
+        The format is defined here:
+        https://www.uniprot.org/help/accession_numbers
+
+        If string provided, returns string or None.
+        If iterable provided, returns set (potentially empty if none of the
+        strings are valid).
+        """
+
+        if isinstance(uniprots, common.basestring):
+
+            return self._only_uniprot_ac(uniprots)
+
+        else:
+
+            return {
+                validated
+                for validated in
+                (
+                    self._only_uniprot_ac(uniprot)
+                    for uniprot in uniprots
+                )
+                if validated
+            }
+
+
+    def _only_uniprot_ac(self, uniprot):
+
+        return uniprot if uniprot_input.valid_uniprot(uniprot) else None
 
     #
     # Mapping table management methods

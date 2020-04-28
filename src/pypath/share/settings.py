@@ -52,6 +52,7 @@ _defaults = {
     'mapper_cleanup_interval': 60,
     'mapper_translate_deleted_uniprot': True,
     'mapper_keep_invalid_uniprot': False,
+    'mapper_trembl_swissprot_by_genesymbol': True,
     # If None will be the same as ``basedir``.
     'data_basedir': None,
     'acsn_names': 'acsn_names.gmt',
