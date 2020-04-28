@@ -20,11 +20,23 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-import pypath.share.common as common
-import pypath.share.session as session_mod
+import time
+import datetime
+import timeloop
+timeloop.app.logging.disable(level = 9999)
 
-_logger = session_mod.Logger(name = 'taxonomy')
+import pypath.share.common as common
+import pypath.share.session as session
+import pypath.share.settings as settings
+import pypath.inputs.uniprot as uniprot_input
+
+_logger = session.Logger(name = 'taxonomy')
 _log = _logger._log
+
+db = {}
+_cleanup_period = settings.get('mapper_cleanup_interval')
+_lifetime = 300
+_last_used = {}
 
 # XXX: Shouldn't we keep all functions and variables separated
 #      (together among them)?
@@ -156,6 +168,12 @@ def taxid_from_common_name(taxon_name):
     if taxon_name in taxa:
         
         return taxa[taxon_name]
+    
+    common_to_ncbi = get_db('common')
+    
+    if taxon_name in common_to_ncbi:
+        
+        return common_to_ncbi[taxon_name]
 
 
 def taxid_from_latin_name(taxon_name):
@@ -163,6 +181,12 @@ def taxid_from_latin_name(taxon_name):
     if taxon_name in latin_name_to_ncbi_tax_id:
         
         return latin_name_to_ncbi_tax_id[taxon_name]
+    
+    latin_to_ncbi = get_db('latin')
+    
+    if taxon_name in latin_to_ncbi:
+        
+        return latin_to_ncbi[taxon_name]
 
 
 def taxid_from_dbptm_taxon_name(taxon_name):
@@ -180,6 +204,11 @@ def taxid_from_nonstandard(taxon_name):
 
 
 def ensure_ncbi_tax_id(taxon_id):
+    """
+    For taxon names of various formats returns NCBI Taxonomy ID if possible.
+    Handles English names, scientific names and other common language
+    synonyms and database specific codenames.
+    """
     
     if isinstance(taxon_id, int):
         
@@ -207,10 +236,10 @@ def ensure_ncbi_tax_id(taxon_id):
         else:
             
             ncbi_tax_id = (
-                taxid_from_common_name(taxon_id) or
-                taxid_from_latin_name(taxon_id) or
                 taxid_from_dbptm_taxon_name(taxon_id) or
-                taxid_from_nonstandard(taxon_id)
+                taxid_from_nonstandard(taxon_id) or
+                taxid_from_common_name(taxon_id) or
+                taxid_from_latin_name(taxon_id)
             )
         
         if not ncbi_tax_id:
@@ -218,3 +247,112 @@ def ensure_ncbi_tax_id(taxon_id):
             _log('Could not map to NCBI Taxonomy ID: `%s`.' % str(taxon_id))
         
         return ncbi_tax_id
+
+
+def uniprot_taxid(uniprot):
+    """
+    For a UniProt ID returns its NCBI Taxonomy ID.
+    """
+
+    uniprot_to_taxid = get_db('swissprot')
+
+    if uniprot in uniprot.taxid:
+
+        return uniprot_to_taxid[uniprot]
+
+
+_cleanup_timeloop = timeloop.Timeloop()
+
+@_cleanup_timeloop.job(
+    interval = datetime.timedelta(
+        seconds = _cleanup_period
+    )
+)
+def _cleanup():
+
+    keys = list(globals()['db'].keys())
+
+    for key in keys:
+
+        if time.time() - globals()['_last_used'][key] > _lifetime:
+
+            _remove(key)
+
+_cleanup_timeloop.start(block = False)
+
+
+def _remove(key):
+
+    if key in globals()['db']:
+
+        _logger._log(
+            'Removing taxonomy data %s' % key
+        )
+        del globals()['db'][key]
+
+    if key in globals()['_last_used']:
+
+        del globals()['_last_used'][key]
+
+
+def get_db(key):
+
+    if key not in globals()['db']:
+
+        init_db(key)
+
+    if key in globals()['db']:
+
+        globals()['_last_used'][key] = time.time()
+
+        return globals()['db'][key]
+
+    else:
+
+        return {}
+
+
+def init_db(key):
+
+    ncbi_data = uniprot_input.uniprot_ncbi_taxids_2()
+    this_db = None
+
+    if key == 'latin':
+
+        this_db = dict(
+            (
+                taxon.latin,
+                taxon.ncbi_id,
+            )
+            for taxon in ncbi_data.values()
+        )
+
+    elif key == 'common':
+
+        this_db = dict(
+            (
+                taxon.english,
+                taxon.ncbi_id,
+            )
+            for taxon in ncbi_data.values()
+            if taxon.english
+        )
+
+    elif key == 'swissprot':
+
+        uniprot_data = uniprot_input.uniprot_taxonomy()
+        latin_to_ncbi = get_db('latin')
+
+        this_db = dict(
+            (
+                swissprot,
+                latin_to_ncbi[name],
+            )
+            for swissprot, names in iteritems(uniprot_data)
+            for name in names
+            if name in latin_to_ncbi
+        )
+
+    if this_db:
+
+        globals()['db'][key] = this_db
