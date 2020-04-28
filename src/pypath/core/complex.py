@@ -579,7 +579,7 @@ class ComplexAggregator(AbstractComplexResource):
             except Exception:
 
                 self._log(
-                    'Failed to load resouce `%s`: %s' % (
+                    'Failed to load resource `%s`: %s' % (
                         str(res),
                         traceback.format_exception(*sys.exc_info()),
                     ))

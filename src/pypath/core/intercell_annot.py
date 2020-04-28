@@ -707,7 +707,7 @@ annot_combined_classes = (
         exclude = {
             'Q9UKV5', 'B7ZAQ6', 'O60291', 'O95965', 'Q8N3F9', 'O60478',
             'Q12933', 'O95994', 'O14894', 'O60635', 'Q92673', 'Q00994',
-            'O94992', 'P17152', 'Q6NYC1'. 'O43813', 'Q99720', 'Q13114',
+            'O94992', 'P17152', 'Q6NYC1', 'O43813', 'Q99720', 'Q13114',
         },
     ),  # includes adhesion molecules e.g. intergrins
     af.AnnotDef(
@@ -2368,7 +2368,7 @@ annot_combined_classes = (
             annots = (
                 af.AnnotDef(
                     name = 'mucin_hgnc',
-                    source ='HGNC',
+                    resource ='HGNC',
                     args = {
                         'mainclass': 'Mucins',
                     },
@@ -3920,7 +3920,7 @@ annot_combined_classes = (
             annots = (
                 af.AnnotDef(
                     name = 'mucin_hgnc',
-                    source ='HGNC',
+                    resource ='HGNC',
                     args = {
                         'mainclass': 'Mucins',
                     },

@@ -330,9 +330,9 @@ def uniprot_history(identifier):
     Returns a generator iterating over the history from most recent to the
     oldest.
     """
-    
+
     if valid_uniprot(identifier):
-        
+
         url_history = urls.urls['uniprot_basic']['history'] % identifier
         c_history = curl.Curl(
             url_history,
@@ -341,15 +341,15 @@ def uniprot_history(identifier):
         )
 
         if c_history.result:
-            
+
             line0 = next(c_history.result)
-            
+
             if not line0.startswith('<!DOCTYPE'):
-                
+
                 for line in c_history.result:
-                    
+
                     if line:
-                        
+
                         yield UniprotRecordHistory(
                             *(
                                 field.strip() for field in line.split('\t')
@@ -358,16 +358,16 @@ def uniprot_history(identifier):
 
 
 def uniprot_recent_version(identifier):
-    
+
     for version in uniprot_history(identifier):
-        
+
         if (
             (
                 version.entry_version != '0' and
                 version.entry_name != 'null'
             ) or version.replaced_by
         ):
-            
+
             return version
 
 
@@ -475,7 +475,7 @@ def uniprot_data(field, organism = 9606, reviewed = True):
     For the available fields refer to the ``_uniprot_fields`` attribute of
     this module or the UniProt website.
     """
-    
+
     rev = (
         ' AND reviewed: yes'
             if reviewed == True or reviewed == 'yes' else
@@ -491,7 +491,7 @@ def uniprot_data(field, organism = 9606, reviewed = True):
         'columns': 'id,%s' % _field,
         'compress': 'yes',
     }
-    
+
     c = curl.Curl(url, get = get, silent = False, large = True, compr = 'gz')
     _ = next(c.result)
 
@@ -507,34 +507,34 @@ def uniprot_data(field, organism = 9606, reviewed = True):
 
 
 def uniprot_preprocess(field, organism = 9606, reviewed = True):
-    
+
     relabel = re.compile(r'[A-Z\s]+:\s')
     reisoform = re.compile(r'\[.*]:?\s?')
     retermsep = re.compile(r'\s?[\.,]\s?')
     reref = re.compile(r'\{.*\}')
-    
+
     result = collections.defaultdict(set)
-    
+
     data = uniprot_data(
         field = field,
         organism = organism,
         reviewed = reviewed,
     )
-    
+
     for uniprot, raw in iteritems(data):
-        
+
         raw = raw.split('Note=')[0]
         raw = relabel.sub('', raw)
         raw = reref.sub('', raw)
         raw = reisoform.sub('', raw)
         raw = retermsep.split(raw)
-        
+
         for item in raw:
-            
+
             if item.startswith('Note'):
-                
+
                 continue
-            
+
             item = item.split('{')[0]
             elements = tuple(
                 it0
@@ -545,17 +545,17 @@ def uniprot_preprocess(field, organism = 9606, reviewed = True):
                 )
                 if it0
             )
-            
+
             if elements:
-                
+
                 result[uniprot].add(elements)
-    
+
     return result
 
 
 def uniprot_locations(organism = 9606, reviewed = True):
-    
-    
+
+
     UniprotLocation = collections.namedtuple(
         'UniprotLocation',
         [
@@ -563,35 +563,35 @@ def uniprot_locations(organism = 9606, reviewed = True):
             'features',
         ],
     )
-    
-    
+
+
     result = collections.defaultdict(set)
-    
+
     data = uniprot_preprocess(
         field = 'subcellular_location',
         organism = organism,
         reviewed = reviewed,
     )
-    
+
     for uniprot, locations in iteritems(data):
-        
+
         for location in locations:
-            
+
             result[uniprot].add(
                 UniprotLocation(
                     location = location[0],
                     features = location[1:] or None,
                 )
             )
-    
+
     return result
 
 
 def uniprot_families(organism = 9606, reviewed = True):
-    
+
     refamily = re.compile(r'(.+) (?:super)?family(?:, (.*) subfamily)?')
-    
-    
+
+
     UniprotFamily = collections.namedtuple(
         'UniprotFamily',
         [
@@ -599,40 +599,40 @@ def uniprot_families(organism = 9606, reviewed = True):
             'subfamily',
         ],
     )
-    
-    
+
+
     result = collections.defaultdict(set)
-    
+
     data = uniprot_data(
         field = 'family',
         organism = organism,
         reviewed = reviewed,
     )
-    
+
     for uniprot, family in iteritems(data):
-        
+
         if not family:
-            
+
             continue
-        
+
         family, subfamily = refamily.search(family).groups()
-        
+
         result[uniprot].add(
             UniprotFamily(
                 family = family,
                 subfamily = subfamily,
             )
         )
-    
+
     return result
 
 
 def uniprot_topology(organism = 9606, reviewed = True):
-    
+
     retopo = re.compile(r'TOPO_DOM (\d+)\.\.(\d+);\s+/note="(\w+)"')
     retm = re.compile(r'(TRANSMEM|INTRAMEM) (\d+)\.\.(\d+);')
-    
-    
+
+
     UniprotTopology = collections.namedtuple(
         'UniprotTopology',
         [
@@ -641,42 +641,42 @@ def uniprot_topology(organism = 9606, reviewed = True):
             'end',
         ],
     )
-    
-    
+
+
     result = collections.defaultdict(set)
-    
+
     transmem = uniprot_data(
         field = 'transmembrane',
         organism = organism,
         reviewed = reviewed,
     )
-    
+
     intramem = uniprot_data(
         field = 'intramembrane',
         organism = organism,
         reviewed = reviewed,
     )
-    
+
     signal = uniprot_data(
         field = 'signal_peptide',
         organism = organism,
         reviewed = reviewed,
     )
-    
+
     data = uniprot_data(
         field = 'topological_domain',
         organism = organism,
         reviewed = reviewed,
     )
-    
+
     for uniprot, topo in iteritems(data):
-        
+
         for topo_dom in retopo.findall(topo):
-            
+
             start, end, topology = topo_dom
             start = int(start)
             end = int(end)
-            
+
             result[uniprot].add(
                 UniprotTopology(
                     topology = topology,
@@ -684,15 +684,15 @@ def uniprot_topology(organism = 9606, reviewed = True):
                     end = end,
                 )
             )
-    
+
     for uniprot, tm in itertools.chain(
         iteritems(transmem),
         iteritems(intramem),
         iteritems(signal),
     ):
-        
+
         for mem, start, end in retm.findall(tm):
-            
+
             topology = (
                 '%s%s' % (
                     mem.capitalize(),
@@ -701,7 +701,7 @@ def uniprot_topology(organism = 9606, reviewed = True):
             )
             start = int(start)
             end = int(end)
-            
+
             result[uniprot].add(
                 UniprotTopology(
                     topology = topology,
@@ -709,12 +709,12 @@ def uniprot_topology(organism = 9606, reviewed = True):
                     end = end,
                 )
             )
-    
+
     return result
 
 
 def uniprot_tissues(organism = 9606, reviewed = True):
-    
+
     reref = re.compile(r'\s?\{.*\}\s?')
     resep = re.compile(
         r',?(?:'
@@ -795,7 +795,7 @@ def uniprot_tissues(organism = 9606, reviewed = True):
            r'everal regions of '
         r')'
     )
-    
+
     level_kw = (
         ('low', 'low'),
         ('weak', 'low'),
@@ -849,7 +849,7 @@ def uniprot_tissues(organism = 9606, reviewed = True):
         ('observed', 'undefined'),
         ('occurs', 'undefined'),
     )
-    
+
     wide_kw = (
         ('widely', 'wide'),
         ('wide tissue distribution', 'wide'),
@@ -865,7 +865,7 @@ def uniprot_tissues(organism = 9606, reviewed = True):
         ('various organs', 'wide'),
         ('various tissues', 'wide'),
     )
-    
+
     tissue_exclude = {
         'Adult',
         'All',
@@ -953,7 +953,7 @@ def uniprot_tissues(organism = 9606, reviewed = True):
         'Nor',
         'None',
     }
-    
+
     exclude_startswith = (
         'Were',
         'Where',
@@ -974,15 +974,15 @@ def uniprot_tissues(organism = 9606, reviewed = True):
         'Than',
         'Addition',
     )
-    
+
     exclude_in = (
         'kb transcript',
         'compared',
         'soform',
         'concentration of'
     )
-    
-    
+
+
     UniprotTissue = collections.namedtuple(
         'UniprotTissue',
         [
@@ -990,18 +990,18 @@ def uniprot_tissues(organism = 9606, reviewed = True):
             'level',
         ],
     )
-    
-    
+
+
     data = uniprot_data(
         'tissue_specificity',
         organism = organism,
         reviewed = reviewed,
     )
-    
+
     result = collections.defaultdict(set)
-    
+
     for uniprot, raw in iteritems(data):
-        
+
         raw = relabel.sub('', raw)
         raw = reref.sub('', raw)
         raw = replevel.sub('', raw)
@@ -1009,96 +1009,96 @@ def uniprot_tissues(organism = 9606, reviewed = True):
         raw = repubmed.sub('', raw)
         raw = reindef.sub('', raw)
         raw = raw.replace('adult and fetal', '')
-        
+
         raw = raw.split('.')
-        
+
         for phrase in raw:
-            
+
             tokens = tuple(resep.split(phrase))
             level = None
-            
+
             for token in tokens:
-                
+
                 level_token = False
                 wide_token = False
                 tissue = None
-                
+
                 token_lower = token.lower()
-                
+
                 for kw, lev in level_kw:
-                    
+
                     if kw in token_lower:
-                        
+
                         level = lev
                         level_token = True
                         break
-                
+
                 if level_token:
-                    
+
                     for kw, wide in wide_kw:
-                        
+
                         if kw in token_lower:
-                            
+
                             tissue = wide
                             wide_token = True
                             break
-                
+
                 if not level_token or wide_token:
-                    
+
                     if not wide_token:
-                        
+
                         specific = respeci.search(token)
-                        
+
                         tissue = (
                             specific.groups()[0].lower()
                                 if specific else
                             token
                         )
-                        
+
                         if specific and not level:
-                            
+
                             level = 'high'
-                    
+
                     if tissue.strip():
-                        
+
                         if any(e in tissue for e in exclude_in):
-                            
+
                             continue
-                        
+
                         tissue = rethe.match(tissue).groups()[0]
                         tissue = rethe.match(tissue).groups()[0]
                         tissue = rethe.match(tissue).groups()[0]
-                        
+
                         if tissue.endswith('+'):
-                            
+
                             tissue = '%s cells' % tissue
-                        
+
                         tissue = tissue.strip(')(.,;- ')
-                        
+
                         if '(' in tissue and ')' not in tissue:
-                            
+
                             tissue = '%s)' % tissue
-                        
+
                         tissue = reand.sub('', tissue)
                         tissue = common.upper0(tissue)
                         tissue = tissue.replace('  ', ' ')
-                        
+
                         if any(
                             tissue.startswith(e)
                             for e in exclude_startswith
                         ):
-                            
+
                             continue
-                        
+
                         if tissue in tissue_exclude or len(tissue) < 3:
-                            
+
                             continue
-                        
+
                         result[uniprot].add(
                             UniprotTissue(
                                 tissue = tissue,
                                 level = level or 'undefined',
                             )
                         )
-    
+
     return result
