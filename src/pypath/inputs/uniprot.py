@@ -52,6 +52,7 @@ reac = re.compile(
     r'[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}'
 )
 _rename = re.compile(r'Name=([\w\(\)-]+)\W')
+_retaxid = re.compile(r'=(\d+)[^\d]')
 
 
 def _all_uniprots(organism = 9606, swissprot = None):
@@ -250,7 +251,7 @@ def deleted_uniprot_genesymbol(identifier):
 
         if tag == 'OX':
 
-            ncbi_tax_id = int(line.split('=')[1][:-1])
+            ncbi_tax_id = int(_retaxid.search(line).groups()[0])
             break
 
     return genesymbol, ncbi_tax_id

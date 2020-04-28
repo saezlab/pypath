@@ -47,6 +47,7 @@ class UniprotProtein(object):
     _remw = re.compile(r'([0-9]+) MW')
     _redb = re.compile(r'([^;]+);\s?(.*)\s?\.\s?(?:\[(.*)\])?')
     _redbsep = re.compile(r'\s?;\s?')
+    _retaxid = re.compile(r'=(\d+)[^\d]')
     
     def __init__(self, uniprot_id):
         
@@ -98,7 +99,7 @@ class UniprotProtein(object):
     @property
     def organism(self):
         
-        return int(next(self.itertag('OX')).split('=')[1][:-1])
+        return int(self._retaxid.search(next(self.itertag('OX'))).groups()[0])
     
     
     @property
