@@ -20,6 +20,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
 import time
 import datetime
 import timeloop
@@ -256,7 +258,7 @@ def uniprot_taxid(uniprot):
 
     uniprot_to_taxid = get_db('swissprot')
 
-    if uniprot in uniprot.taxid:
+    if uniprot in uniprot_to_taxid:
 
         return uniprot_to_taxid[uniprot]
 
