@@ -1510,36 +1510,52 @@ class Mapper(session_mod.Logger):
         # try to find out the primary SwissProt ID
         if target_id_type == 'uniprot':
 
-            # step 1: translate secondary IDs to primary
-            mapped_names = self.primary_uniprot(mapped_names)
-
-            # step 2: translate TrEMBL to SwissProt by gene symbols
-            if self._trembl_swissprot_by_genesmbol:
-
-                mapped_names = self.trembl_swissprot(
-                    mapped_names,
-                    ncbi_tax_id = ncbi_tax_id,
-                )
-
-            # step 3: translate deleted IDs by gene symbols
-            if self._translate_deleted_uniprot:
-
-                mapped_names = self.translate_deleted_uniprots_by_genesymbol(
-                    mapped_names
-                )
-
-            # step 4: check if the IDs exist in the proteome of the organism
-            if not self._keep_invalid_uniprot:
-
-                mapped_names = self.only_valid_uniprots(
-                    mapped_names,
-                    ncbi_tax_id = ncbi_tax_id,
-                )
-
-            # step 5: ensure the format validity
-            mapped_names = self.only_uniprot_ac(mapped_names)
+            mapped_names = self.uniprot_cleanup(
+                uniprots = mapped_names,
+                ncbi_tax_id = ncbi_tax_id,
+            )
 
         return mapped_names
+
+
+    def uniprot_cleanup(self, uniprots, ncbi_tax_id = None):
+
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+
+        if isinstance(uniprots, common.basestring):
+
+            uniprots = {uniprots}
+
+        # step 1: translate secondary IDs to primary
+        uniprots = self.primary_uniprot(uniprots)
+
+        # step 2: translate TrEMBL to SwissProt by gene symbols
+        if self._trembl_swissprot_by_genesmbol:
+
+            uniprots = self.trembl_swissprot(
+                uniprots,
+                ncbi_tax_id = ncbi_tax_id,
+            )
+
+        # step 3: translate deleted IDs by gene symbols
+        if self._translate_deleted_uniprot:
+
+            uniprots = self.translate_deleted_uniprots_by_genesymbol(
+                uniprots
+            )
+
+        # step 4: check if the IDs exist in the proteome of the organism
+        if not self._keep_invalid_uniprot:
+
+            uniprots = self.only_valid_uniprots(
+                uniprots,
+                ncbi_tax_id = ncbi_tax_id,
+            )
+
+        # step 5: ensure the format validity
+        uniprots = self.only_uniprot_ac(uniprots)
+
+        return uniprots
 
 
     def map_names(
