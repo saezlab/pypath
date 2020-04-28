@@ -64,6 +64,7 @@ import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.pro as pro_input
 import pypath.internals.input_formats as input_formats
 import pypath.utils.reflists as reflists
+import pypath.utils.taxonomy as taxonomy
 import pypath.share.settings as settings
 import pypath.share.session as session_mod
 _logger = session_mod.get_log()
@@ -1840,9 +1841,13 @@ class Mapper(session_mod.Logger):
 
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
-        if uniprot_input.is_uniprot(uniprot,organism = ncbi_tax_id):
+        if uniprot_input.is_uniprot(uniprot, organism = ncbi_tax_id):
 
             return {uniprot}
+
+        elif self.other_organism_uniprot(uniprot, ncbi_tax_id = ncbi_tax_id):
+
+            return set()
 
         else:
 
@@ -1859,6 +1864,19 @@ class Mapper(session_mod.Logger):
                 )
 
         return {uniprot}
+
+
+    def other_organism_uniprot(self, uniprot, ncbi_tax_id = None):
+        """
+        Tells if ``uniprot`` is an UniProt ID from some other organism than
+        ``ncbi_tax_id``.
+        """
+
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+
+        uniprot_taxid = taxonomy.uniprot_taxid(uniprot)
+
+        return uniprot_taxid and uniprot_taxid != ncbi_tax_id
 
 
     def deleted_uniprot_genesymbol(self, uniprot):
