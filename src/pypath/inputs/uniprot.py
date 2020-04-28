@@ -1131,3 +1131,37 @@ def uniprot_taxonomy():
                 result[ac].update(names)
     
     return result
+
+
+Taxon = collections.namedtuple(
+    'Taxon',
+    [
+        'ncbi_id',
+        'latin',
+        'english',
+    ]
+)
+
+
+def uniprot_ncbi_taxids():
+    
+    url = urls.urls['uniprot_basic']['taxids']
+    c = curl.Curl(url, large = True, silent = False)
+    
+    _ = next(c.result)
+    
+    result = {}
+    
+    for line in c.result:
+        
+        line = line.split('\t')
+        
+        taxid = int(line[0])
+        
+        result[taxid] = Taxon(
+            ncbi_id = taxid,
+            latin = line[2],
+            english = line[3],
+        )
+    
+    return result

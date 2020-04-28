@@ -41,6 +41,8 @@ urls = {
             r'knowledgebase/docs/delac%5Ftr.txt.gz',
         'speindex': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'
             'knowledgebase/docs/speindex.txt',
+        'taxids': 'https://www.uniprot.org/taxonomy/?query='
+            '*&format=tab&force=true&columns=id&compress=yes',
     },
     'corum': {
         'label':
