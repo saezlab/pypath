@@ -39,46 +39,48 @@ urls = {
             r'knowledgebase/docs/delac%5Fsp.txt',
         'deleted_tr': r'ftp://ftp.uniprot.org/pub/databases/uniprot/'
             r'knowledgebase/docs/delac%5Ftr.txt.gz',
+        'speindex': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'
+            'knowledgebase/docs/speindex.txt',
     },
     'corum': {
         'label':
         'CORUM is a database of protein complexes, downloadable in csv format',
         'url_old':
         'http://mips.helmholtz-muenchen.de/genre/proj/corum/allComplexes.csv',
-        'url':
-        'http://mips.helmholtz-muenchen.de/corum/download/allComplexes.txt.zip'
+        'url': 'http://mips.helmholtz-muenchen.de/corum/download/'
+            'allComplexes.txt.zip',
     },
     'pfam_pdb': {
         'label': 'PDB-Pfam mapping and names of Pfam domains',
-        'url':
-        'ftp://ftp.ebi.ac.uk/pub/databases/Pfam/mappings/pdb_pfam_mapping.txt'
+        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/Pfam/mappings/'
+            'pdb_pfam_mapping.txt',
     },
     'pfam_up': {
         'label': 'Mapping Pfam regions to UniProt',
         'url': 'ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/'
-        'Pfam-A.regions.tsv.gz'
+            'Pfam-A.regions.tsv.gz',
     },
     '3dcomplexes_contact': {
-        'label': 'This file contains the topology definition of the complexes',
+        'label': 'This file contains the topology '
+            'definition of the complexes',
         'url': 'http://shmoo.weizmann.ac.il/elevy/3dcomplexV4/dataV4/'
-        'contactDefinition.txt'
+            'contactDefinition.txt',
     },
     '3dcomplexes_correspondancy': {
         'label': 'This is the dictionary of chain names',
         'url': 'http://shmoo.weizmann.ac.il/elevy/3dcomplexV4/dataV4/'
-        'pdb_chain_corresV2.txt'
+            'pdb_chain_corresV2.txt',
     },
     'pdb_chains': {
-        'label': 'Corresponding UniProt IDs and residue numbers for each chain'
-        'in PDB structures',
-        'url':
-        'ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/tsv/pdb_chain_'
-        'uniprot.tsv.gz'
+        'label': 'Corresponding UniProt IDs and residue numbers '
+            'for each chain in PDB structures',
+        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/'
+            'tsv/pdb_chain_uniprot.tsv.gz',
     },
     'complex_portal': {
         'label': 'Complexes curated by IntAct',
-        'url':
-        'ftp://ftp.ebi.ac.uk/pub/databases/intact/complex/current/psi25/'
+        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/intact/complex/'
+            'current/psi25/',
     },
     'pisa_interfaces': {
         'label': 'Base URL for download interface data from PDBe PISA',
@@ -87,7 +89,7 @@ urls = {
     'catalytic_sites': {
         'label': 'Catalytic Site Atlas',
         'url': 'http://www.ebi.ac.uk/thornton-'
-        'srv/databases/CSA/downloads/CSA_2_0_121113.txt'
+            'srv/databases/CSA/downloads/CSA_2_0_121113.txt',
     },
     '3did_ddi': {
         'label': 'Domain-domain interactions derived from 3D structures',
@@ -95,23 +97,23 @@ urls = {
     },
     '3did_dmi': {
         'label': 'Domain-motif interactions from 3DID',
-        'url': 'http://3did.irbbarcelona.org/download/current/3did_dmi_flat.gz'
+        'url': 'http://3did.irbbarcelona.org/download/current/'
+            '3did_dmi_flat.gz',
     },
     'swissprot_full': {
         'label': 'Full UniProt/Swissprot database',
         'url': 'ftp://ftp.ebi.ac.uk/pub/databases/Pfam/'
-        'current_release/uniprot_sprot.dat.gz'
+            'current_release/uniprot_sprot.dat.gz',
     },
     'instruct_human': {
         'label':
         'Protein interactome networks annotated to 3D structural resolution',
-        'url': 'http://instruct.yulab.org/download/sapiens.sin'
+        'url': 'http://instruct.yulab.org/download/sapiens.sin',
     },
     'i3d_human': {
         'label': 'Interactome3D representative dataset for human proteins',
-        'url':
-        'http://interactome3d.irbbarcelona.org/user_data/human/download/'
-        'representative/interactions.dat'
+        'url': 'http://interactome3d.irbbarcelona.org/user_data/human/'
+            'download/representative/interactions.dat',
     },
     'instruct_offsets': {
         'label': 'Offsets between PDB chains and UniProt sequences',

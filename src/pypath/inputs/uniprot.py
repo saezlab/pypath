@@ -1102,3 +1102,32 @@ def uniprot_tissues(organism = 9606, reviewed = True):
                         )
 
     return result
+
+
+def uniprot_taxonomy():
+    """
+    Returns a dictionary with SwissProt IDs as keys and sets of various taxon
+    names as values.
+    """
+    
+    rename = re.compile(r'\(?(\w[\w\s\',/\.-]+\w)\)?')
+    reac = re.compile(r'\s*\w+\s+\(([A-Z\d]+)\)\s*,')
+
+    url = urls.urls['uniprot_basic']['speindex']
+    c = curl.Curl(url, large = True, silent = False)
+
+    result = collections.defaultdict(set)
+    
+    for line in c.result:
+        
+        if line[0] != ' ':
+            
+            names = set(rename.findall(line))
+            
+        else:
+            
+            for ac in reac.findall(line):
+                
+                result[ac].update(names)
+    
+    return result
