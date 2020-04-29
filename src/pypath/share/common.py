@@ -528,13 +528,13 @@ def upper0(string):
         
     else:
         
-        word0, rest = string.split(' ', maxsplit = 1)
+        words = string.split(' ', maxsplit = 1)
         
-        if word0.lower() == word0:
+        if words[0] and words[0].lower() == words[0]:
             
-            word0 = word0[0].upper() + word[1:]
+            words[0] = words[0][0].upper() + words[0][1:]
         
-        return '%s %s' % (word0, rest)
+        return ' '.join(words)
 
 
 def something(anything):
