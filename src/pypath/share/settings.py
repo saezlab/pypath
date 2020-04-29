@@ -50,7 +50,7 @@ _defaults = {
     # check for expired mapping tables and delete them
     # (period in seconds)
     'mapper_cleanup_interval': 60,
-    'mapper_translate_deleted_uniprot': True,
+    'mapper_translate_deleted_uniprot': False,
     'mapper_keep_invalid_uniprot': False,
     'mapper_trembl_swissprot_by_genesymbol': True,
     # If None will be the same as ``basedir``.
