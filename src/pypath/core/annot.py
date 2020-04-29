@@ -3821,7 +3821,7 @@ class Ramilowski2015Location(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'Ramilowski_location',
-            input_method = 'ramilowski_locations',
+            input_method = 'ramilowski2015.ramilowski_locations',
             **kwargs
         )
 
@@ -4061,7 +4061,7 @@ class SignorPathways(AnnotationBase):
             self,
             name = 'SIGNOR',
             ncbi_tax_id = ncbi_tax_id,
-            input_method = 'signor_pathway_annotations',
+            input_method = 'signor.signor_pathway_annotations',
             **kwargs
         )
 
