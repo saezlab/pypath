@@ -906,8 +906,8 @@ class Mapper(session_mod.Logger):
             'mapper_keep_invalid_uniprot',
             keep_invalid_uniprot,
         )
-        self._trembl_swissprot_by_genesmbol = settings.get(
-            'mapper_trembl_swissprot_by_genesmbol',
+        self._trembl_swissprot_by_genesymbol = settings.get(
+            'mapper_trembl_swissprot_by_genesymbol',
             trembl_swissprot_by_genesymbol,
         )
 
@@ -1398,6 +1398,16 @@ class Mapper(session_mod.Logger):
                 )
             )
 
+        # by default the uniprot-genesymbol tables contain only SwissProt
+        if id_type == 'uniprot' and target_id_type == 'genesymbol':
+
+            mapped_names = self._map_name(
+                name = name,
+                id_type = 'trembl',
+                target_id_type = 'genesymbol',
+                ncbi_tax_id = ncbi_tax_id,
+            )
+
         # further attempts to set it right if
         # first attempt was not successful
 
@@ -1532,7 +1542,7 @@ class Mapper(session_mod.Logger):
         uniprots = self.primary_uniprot(uniprots)
 
         # step 2: translate TrEMBL to SwissProt by gene symbols
-        if self._trembl_swissprot_by_genesmbol:
+        if self._trembl_swissprot_by_genesymbol:
 
             uniprots = self.trembl_swissprot(
                 uniprots,
