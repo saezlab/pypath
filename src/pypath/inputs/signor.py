@@ -25,10 +25,12 @@ import sys
 import re
 import collections
 import itertools
+import bs4
 
 import pypath.inputs.common as inputs_common
 import pypath.share.progress as progress
 import pypath.utils.taxonomy as taxonomy
+import pypath.utils.mapping as mapping
 import pypath.internals.intera as intera
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
