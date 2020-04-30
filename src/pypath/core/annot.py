@@ -353,6 +353,30 @@ class CustomAnnotation(session_mod.Logger):
 
             class_set = self._execute_operation(classdef.resource)
 
+        for avoid in classdef.avoid:
+
+            op = AnnotOp(
+                annots = (
+                    class_set,
+                    self.select(avoid)
+                ),
+                op = set.difference,
+            )
+
+            class_set = self._execute_operation(op)
+
+        for limit in classdef.limit:
+
+            op = AnnotOp(
+                annots = (
+                    class_set,
+                    self.select(limit)
+                ),
+                op = set.intersection,
+            )
+
+            class_set = self._execute_operation(op)
+
         if classdef.exclude:
 
             class_set = class_set - classdef.exclude
@@ -387,15 +411,7 @@ class CustomAnnotation(session_mod.Logger):
         else:
 
             annots = tuple(
-                (
-                    self._execute_operation(_annot)
-                        if isinstance(_annot, annot_formats.AnnotOp) else
-                    self.process_annot(_annot)
-                        if isinstance(_annot, annot_formats.AnnotDef) else
-                    _annot
-                        if isinstance(_annot, set) else
-                    self.select(_annot)
-                )
+                self.select(_annot)
                 for _annot in annotop.annots
             )
 
@@ -464,7 +480,7 @@ class CustomAnnotation(session_mod.Logger):
         return transmitter, receiver
 
 
-    def select(
+    def _select(
             self,
             name,
             parent = None,
@@ -492,6 +508,31 @@ class CustomAnnotation(session_mod.Logger):
         self._log(
             'No such annotation class: `name=%s, '
             'parent=%s, resource=%s`' % key
+        )
+
+
+    def select(
+            self,
+            definition,
+            parent = None,
+            resource = None,
+            entity_type = None,
+        ):
+        """
+        Retrieves a class by its name or definition. The definition can be
+        a class name (string) or a set of entities, or an AnnotDef object
+        defining the contents based on original resources or an AnnotOp
+        which defines the contents as an operation over other definitions.
+        """
+
+        return (
+            self._execute_operation(definition)
+                if isinstance(definition, annot_formats.AnnotOp) else
+            self.process_annot(definition)
+                if isinstance(definition, annot_formats.AnnotDef) else
+            definition
+                if isinstance(definition, set) else
+            self._select(definition)
         )
 
 
