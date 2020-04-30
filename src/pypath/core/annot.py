@@ -2089,11 +2089,11 @@ class AnnotationBase(resource.AbstractResource):
 
     def _ensure_swissprot(self):
 
-        if self.entity_type == 'protein':
+        new = collections.defaultdict(set)
 
-            new = collections.defaultdict(set)
+        for uniprot, annots in iteritems(self.annot):
 
-            for uniprot, annots in iteritems(self.annot):
+            if entity.Entity._is_protein(uniprot):
 
                 swissprots = mapping.map_name(
                     uniprot,
@@ -2106,7 +2106,11 @@ class AnnotationBase(resource.AbstractResource):
 
                     new[swissprot].update(annots)
 
-            self.annot = dict(new)
+            else:
+
+                new[uniprot].update(annots)
+
+        self.annot = dict(new)
 
 
     def add_complexes_by_inference(self, complexes = None):
