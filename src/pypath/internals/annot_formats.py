@@ -48,6 +48,8 @@ class AnnotDef(
                 'transmitter',
                 'receiver',
                 'resource_name',
+                'limit',
+                'avoid',
             ]
         )
     ):
@@ -78,6 +80,8 @@ class AnnotDef(
             transmitter = None,
             receiver = None,
             resource_name = None,
+            limit = None,
+            avoid = None,
         ):
 
         return super().__new__(
@@ -93,6 +97,8 @@ class AnnotDef(
             transmitter = transmitter,
             receiver = receiver,
             resource_name = resource_name,
+            limit = limit,
+            avoid = avoid,
         )
 
 
@@ -167,6 +173,15 @@ class AnnotationGroup(collections_abc.Set):
         Whether the category contains receivers of signaling information
         from other cells in direction of the cells expressing the molecular
         entites in the category.
+    :param str,set limit:
+        Limit to this or these categories. E.g. if it's 'extracellular'
+        the result will be the intersection of this category and
+        'extracellular' i.e. the category will be limited to extracellular
+        proteins.
+    :param str,set avoid:
+        Avoid elements of this or these categories. E.g. if it's
+        'cell_surface' then all cell_surface proteins will be removed from
+        this category.
     """
 
     def __init__(
@@ -180,6 +195,8 @@ class AnnotationGroup(collections_abc.Set):
             resource = None,
             transmitter = None,
             receiver = None,
+            limit = None,
+            avoid = None,
         ):
 
         collections_abc.Set.__init__(self)
@@ -196,6 +213,8 @@ class AnnotationGroup(collections_abc.Set):
         )
         self.transmitter = transmitter
         self.receiver = receiver
+        self.limit = common.to_set(limit)
+        self.avoid = common.to_set(avoid)
 
 
     def __iter__(self):
