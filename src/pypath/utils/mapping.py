@@ -1408,6 +1408,24 @@ class Mapper(session_mod.Logger):
                 ncbi_tax_id = ncbi_tax_id,
             )
 
+            if not mapped_names:
+
+                uniprots = self._map_name(
+                    name = name,
+                    id_type = 'uniprot-sec',
+                    target_id_type = 'uniprot-pri',
+                    ncbi_tax_id = ncbi_tax_id,
+                )
+
+                if uniprots:
+
+                    mapped_names = self.map_names(
+                        names = uniprots,
+                        id_type = 'uniprot',
+                        target_id_type = 'genesymbol',
+                        ncbi_tax_id = ncbi_tax_id,
+                    )
+
         # further attempts to set it right if
         # first attempt was not successful
 

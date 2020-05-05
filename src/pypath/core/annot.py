@@ -223,6 +223,7 @@ class CustomAnnotation(session_mod.Logger):
         self.ensure_annotdb()
 
         self._class_definitions = {}
+        self._parents = {}
         self.add_class_definitions(self._class_definitions_provided or {})
 
         self.classes = {}
@@ -249,6 +250,28 @@ class CustomAnnotation(session_mod.Logger):
                     classdef
                 ) for classdef in class_definitions
             )
+        
+        for key in class_definitions.keys():
+            
+            name_resource = (key[0], key[2])
+            
+            if name_resource in self._parents:
+                
+                self._log(
+                    'Ambiguous parent: %s and %s for name=%s, '
+                    'resource=%s. This results misfunction in this '
+                    'annotation database, please change the name '
+                    'in the annotation definitions.' % (
+                        key[1],
+                        self._parents[name_resource],
+                        name_resource[0],
+                        name_resource[1],
+                    )
+                )
+                
+            else:
+                
+                self._parents[name_resource] = key[1]
 
         self._class_definitions.update(class_definitions)
 
@@ -532,6 +555,10 @@ class CustomAnnotation(session_mod.Logger):
                 if isinstance(definition, annot_formats.AnnotDef) else
             definition
                 if isinstance(definition, set) else
+            self._select(*definition)
+                if isinstance(definition, (tuple, list)) else
+            self._select(**definition)
+                if isinstance(definition, dict) else
             self._select(definition)
         )
 
@@ -619,11 +646,11 @@ class CustomAnnotation(session_mod.Logger):
         return self.classes[key].source
 
 
-    def get_parent(self, name, parent = None, resource = None):
+    def get_parent(self, name, resource = None):
 
-        key = self._key(name, parent, resource)
+        key = self._key(name, resource)
 
-        return self.classes[key].parent
+        return self._parents[key]
 
 
     def get_class_label(self, name, parent = None, resource = None):
