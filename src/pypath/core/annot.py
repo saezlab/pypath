@@ -515,16 +515,38 @@ class CustomAnnotation(session_mod.Logger):
         but the name present in the class definitions.
         """
 
-        key = name if isinstance(name, tuple) else (name, parent, resource)
+        selected = None
 
-        if key not in self.classes and key in self._class_definitions:
+        if isinstance(name, common.basestring) and name.startswith('~'):
 
-            self.create_class(self._class_definitions[key])
+            annots = self._collect_by_parent(name)
+            selected = set.union(*annots)
 
-        if key in self.classes:
+        else:
+
+            key = (
+                name
+                    if isinstance(name, tuple) else
+                annot_formats.AnnotDefKey(name, parent, resource)
+            )
+
+            if not key[1]:
+
+                parent = self.get_parent(name = key[0], resource = key[2])
+                key = annot_formats.AnnotDefKey(key[0], parent, key[2])
+
+            if key not in self.classes and key in self._class_definitions:
+
+                self.create_class(self._class_definitions[key])
+
+            if key in self.classes:
+
+                selected = self.classes[key]
+
+        if selected:
 
             return entity.Entity.filter_entity_type(
-                self.classes[name],
+                selected,
                 entity_type = entity_types,
             )
 
@@ -647,10 +669,17 @@ class CustomAnnotation(session_mod.Logger):
 
 
     def get_parent(self, name, resource = None):
+        """
+        As names should be unique for resources, a combination of a name and
+        resource determines the parent category. This method looks up the
+        parent for a pair of name and resource.
+        """
 
         key = self._key(name, resource)
 
-        return self._parents[key]
+        if key in self._parents:
+
+            return self._parents[key]
 
 
     def get_class_label(self, name, parent = None, resource = None):
