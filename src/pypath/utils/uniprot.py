@@ -657,7 +657,7 @@ def browse(groups, start = 0, fileobj = None, **kwargs):
     n_groups = len(labels)
     stop = False
     maxlen_default = kwargs['maxlen'] if 'maxlen' in kwargs else 500
-    fileobj = sys.stdout or fileobj
+    fileobj = fileobj or sys.stdout
 
     for n, label in enumerate(labels):
 
@@ -673,7 +673,12 @@ def browse(groups, start = 0, fileobj = None, **kwargs):
 
         while True:
 
-            uniprots = groups[label].members
+            uniprots = groups[label]
+            uniprots = (
+                uniprots.members
+                    if hasattr(uniprots, 'members') else
+                uniprots
+            )
 
             fileobj.write(
                 '[%u/%u] =====> %s <===== [%u proteins]\n' % (
@@ -699,5 +704,8 @@ def browse(groups, start = 0, fileobj = None, **kwargs):
 
             else:
 
-                sys.stdout.write(os.linesep * 2)
+                fileobj.write(os.linesep * 2)
                 break
+    
+    sys.stdout.write(os.linesep)
+    sys.stdout.flush()

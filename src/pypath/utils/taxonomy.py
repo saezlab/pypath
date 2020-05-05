@@ -288,7 +288,7 @@ def _remove(key):
     if key in globals()['db']:
 
         _logger._log(
-            'Removing taxonomy data %s' % key
+            'Removing taxonomy data `%s`.' % key
         )
         del globals()['db'][key]
 
