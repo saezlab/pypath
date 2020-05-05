@@ -33,6 +33,16 @@ import pypath.share.common as common
 import pypath.core.entity as entity
 
 
+AnnotDefKey = collections.namedtuple(
+    'AnnotDefKey',
+    [
+        'name',
+        'parent',
+        'resource',
+    ],
+)
+
+
 class AnnotDef(
         collections.namedtuple(
             'AnnotDefBase',
@@ -105,10 +115,10 @@ class AnnotDef(
     @property
     def key(self):
 
-        return (
-            self.name,
-            self.parent,
-            self.resource_str,
+        return AnnotDefKey(
+            name = self.name,
+            parent = self.parent,
+            resource = self.resource_str,
         )
 
 
@@ -262,10 +272,10 @@ class AnnotationGroup(collections_abc.Set):
     @property
     def key(self):
 
-        return (
-            self.name,
-            self.parent,
-            self.resource,
+        return AnnotDefKey(
+            name = self.name,
+            name = self.parent,
+            resource = self.resource,
         )
 
 
