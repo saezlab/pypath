@@ -479,6 +479,7 @@ _uniprot_fields = {
     'topological_domain': 'feature(TOPOLOGICAL DOMAIN)',
     'family': 'families',
     'interactor': 'interactor',
+    'keywords': 'keywords',
 }
 
 
@@ -595,6 +596,37 @@ def uniprot_locations(organism = 9606, reviewed = True):
                 UniprotLocation(
                     location = location[0],
                     features = location[1:] or None,
+                )
+            )
+
+    return result
+
+
+def uniprot_keywords(organism = 9606, reviewed = True):
+
+    UniprotKeyword = collections.namedtuple(
+        'UniprotKeyword',
+        [
+            'keyword',
+        ],
+    )
+
+
+    result = collections.defaultdict(set)
+
+    data = uniprot_data(
+        field = 'keywords',
+        organism = organism,
+        reviewed = reviewed,
+    )
+
+    for uniprot, keywords in iteritems(data):
+
+        for keyword in keywords.split(';'):
+
+            result[uniprot].add(
+                UniprotKeyword(
+                    keyword = keyword.strip(),
                 )
             )
 
