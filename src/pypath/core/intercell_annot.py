@@ -4324,32 +4324,9 @@ annot_combined_classes = (
         name = 'transporter_dgidb',
         parent = 'transporter',
         resource = af.AnnotOp(
-            annots = (
-                af.AnnotOp(
-                    annots = '~transporter~DGIdb',
-                    op = set.union,
-                ),
-                af.AnnotDef(
-                    name = 'generic_transporter',
-                    parent = 'transporter',
-                    resource = 'DGIdb',
-                    args = {
-                        'category': 'TRANSPORTER',
-                    },
-                ),
-            ),
+            annots = '~transporter~DGIdb',
             op = set.union,
         ),
-    )
-        resource = 'DGIdb',
-        args = {
-            'category': {
-                'ABC TRANSPORTER',
-                'TRANSPORTER',
-                'ION CHANNEL',
-            },
-        },
-    ),
     af.AnnotDef(
         name = 'ion_channel',
         parent = 'transporter',
@@ -4414,22 +4391,11 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'abc',
-        parent = 'transporter',
-        resource = 'DGIdb',
-        args = {
-            'category': 'TRANSPORTER',
-        },
-        exclude = {
-            'P28288', 'Q93050', 'P33897', 'P54652', 'P21283', 'Q06055',
-            'Q9BRX2', 'Q9NP78', 'P24539', ''
-        },
-    ),
-    af.AnnotDef(
-        name = 'transporter_adhesome',
+        name = 'ion_channel_adhesome',
+        parent = 'ion_channel',
         resource = 'Adhesome',
         args = {'mainclass': 'Channel'},
-    ),
+    ),  # only 5 channels but is all right
     af.AnnotDef(
         name = 'transporter',
         resource = af.AnnotOp(
@@ -4445,11 +4411,6 @@ annot_combined_classes = (
             ),
             op = set.intersection,
         ),
-    ),
-    af.AnnotDef(
-        name = 'channel',
-        resource = 'Adhesome',
-        args = {'mainclass': 'Channel'},
     ),
     af.AnnotDef(
         name = 'channel',
