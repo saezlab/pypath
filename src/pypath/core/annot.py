@@ -425,8 +425,10 @@ class CustomAnnotation(session_mod.Logger):
         """
 
         if (
-            isinstance(annotop.annots, common.basestring) and
-            annotop.annots.startswith('~')
+            isinstance(annotop.annots, common.basestring) and (
+                annotop.annots.startswith('~') or
+                annotop.annots.startswith('#')
+            )
         ):
 
             annots = self._collect_by_parent(annotop.annots)
@@ -442,9 +444,20 @@ class CustomAnnotation(session_mod.Logger):
 
 
     def _collect_by_parent(self, parent):
+        """
+        Processes the shorthand (single string) notation
+        `[#name]~parent[~resource]`.
+        """
+
+        name = None
+        resource = None
+
+        if parent.startswith('#'):
+
+            name, parent = parent.split('~', maxsplit = 1)
+            name = name.strip('#')
 
         parent = parent.strip('~')
-        resource = None
         parent_resource = parent.split('~')
 
         if len(parent_resource) == 2:
@@ -517,7 +530,12 @@ class CustomAnnotation(session_mod.Logger):
 
         selected = None
 
-        if isinstance(name, common.basestring) and name.startswith('~'):
+        if (
+            isinstance(name, common.basestring) and (
+                name.startswith('~') or
+                name.startswith('#')
+            )
+        ):
 
             annots = self._collect_by_parent(name)
             selected = set.union(*annots)
