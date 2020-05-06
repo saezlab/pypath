@@ -2426,7 +2426,7 @@ class AnnotationBase(resource.AbstractResource):
         self.annot = dict((u, set()) for u in self.data)
 
 
-    def select(self, method = None, **kwargs):
+    def select(self, method = None, entity_type = None, **kwargs):
         """
         Retrieves a subset by filtering based on ``kwargs``.
         Each argument should be a name and a value or set of values.
@@ -2502,6 +2502,8 @@ class AnnotationBase(resource.AbstractResource):
 
                     result.add(uniprot)
                     break
+
+        result = entity.Entity.filter_entity_type(result, entity_type)
 
         return result
 
