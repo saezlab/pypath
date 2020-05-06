@@ -111,6 +111,7 @@ protein_sources_default = {
     'UniprotFamily',
     'UniprotTopology',
     'UniprotTissue',
+    'UniprotKeyword',
     'Tcdb',
     'Mcam',
     'Gpcrdb',
@@ -4888,6 +4889,37 @@ class UniprotTissue(AnnotationBase):
             name = 'UniProt_tissue',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'uniprot.uniprot_tissues',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class UniprotKeyword(AnnotationBase):
+
+    _eq_fields = ('keyword',)
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Tissue expression levels from UniProt.
+        """
+
+        if 'organism' not in kwargs:
+
+            kwargs['organism'] = ncbi_tax_id
+
+        AnnotationBase.__init__(
+            self,
+            name = 'UniProt_keyword',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'uniprot.uniprot_keywords',
             **kwargs
         )
 
