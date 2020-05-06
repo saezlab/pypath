@@ -4301,7 +4301,15 @@ annot_combined_classes = (
         args = {
             'mainclass': 'Transporters',
         },
-    ),
+        exclude = {
+            'Q7L1I2', 'Q9ULQ1', 'Q05940', 'Q9BZC7', 'Q8NBW4', 'P54219',
+            'Q9P2U8', 'Q8IY34', 'Q8TED4', 'Q9UN42', 'Q9P2U7', 'Q8NCC5',
+            'Q9H598', 'Q8NHS3', 'Q9NRX5', 'Q9H1V8', 'Q496J9', 'Q6J4K2',
+            'Q96T83', 'Q9NP78', 'A6NFC5', 'Q8TBB6', 'O00400', 'Q8WWZ7',
+            'Q71RS6', 'Q9GZU1', 'O95528', 'Q8NDX2', 'O43826', 'O94778',
+            'Q9HD20', 'Q9UGQ3',
+        },
+    ),  # some intracellular transporters added to exclude
     af.AnnotDef(
         name = 'transporter_go',
         resource = 'GO_Intercell',
@@ -4314,6 +4322,25 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'transporter_dgidb',
+        parent = 'transporter',
+        resource = af.AnnotOp(
+            annots = (
+                af.AnnotOp(
+                    annots = '~transporter~DGIdb',
+                    op = set.union,
+                ),
+                af.AnnotDef(
+                    name = 'generic_transporter',
+                    parent = 'transporter',
+                    resource = 'DGIdb',
+                    args = {
+                        'category': 'TRANSPORTER',
+                    },
+                ),
+            ),
+            op = set.union,
+        ),
+    )
         resource = 'DGIdb',
         args = {
             'category': {
@@ -4321,6 +4348,81 @@ annot_combined_classes = (
                 'TRANSPORTER',
                 'ION CHANNEL',
             },
+        },
+    ),
+    af.AnnotDef(
+        name = 'ion_channel',
+        parent = 'transporter',
+        resource = 'DGIdb',
+        args = {
+            'category': 'ION CHANNEL',
+        },
+        exclude = {
+            'Q9ULQ1', 'Q9BRX2', 'Q14289', 'Q9H6F2', 'O14791', 'P14780',
+            'F7VJQ1', 'O43768', 'P78509', 'Q8TE54', 'Q96S66', 'Q92508',
+            'P78352', 'Q12959', 'Q13976', 'Q9Y4I1', 'P22466', 'P62942',
+            'Q9P246', 'P04839', 'Q92915', 'P51790', 'P51793', 'P23327',
+            'P0CG08', 'O75534', 'P08133', 'Q9ULM6', 'Q6IQ26', 'P21796',
+            'Q86YM7', 'Q9NWR8', 'P68106', 'P54257', 'P28161', 'P56539',
+            'Q13387', 'P00367', 'Q9NVV0', 'P80108', 'Q9UMX0', 'P01588',
+            'Q9BYP7', 'P62258', 'Q13023', 'P33176', 'Q96PH1', 'Q9P2U7',
+            'P34998', 'Q09666', 'Q9UM00', 'Q14393', 'P62879', 'Q9HD26',
+            'Q9BV40', 'Q14573', 'P53355', 'Q13127', 'P0DP25', 'Q9HC97',
+            'O14958', 'P24387', 'Q96SF2', 'Q9NRX4', 'P78417', 'P58400',
+            'Q6XPS3', 'Q6ZUT9', 'Q05513', 'P0DP23', 'Q99959', 'O95833',
+            'Q9HDC5', 'P21333', 'Q96PU5', 'Q96MG2', 'P17612', 'P46934',
+            'P45880', 'Q96NY7', 'Q8NGH8', 'Q13303', 'Q96BR1', 'Q14643',
+            'P23297', 'P84074', 'P51797', 'Q9Y277', 'P25774', 'Q7LC44',
+            'Q06787', 'P61328', 'O43448', 'Q9Y696', 'P26678', 'Q14571',
+            'P54284', 'Q6ZRF8', 'P06850', 'P01303', 'B7ZAQ6', 'O00141',
+            'Q14644', 'Q9BVC6', 'Q13972', 'Q9H4A3', 'O75628', 'Q96D96',
+            'Q6TFL4', 'Q8NE86', 'Q9UEU0', 'Q92796', 'Q93034', 'P63165',
+            'P02760', 'P49768', 'Q9BSW2', 'P55042', 'P56211', 'Q8NHX9',
+            'Q9BYB0', 'Q92913', 'P07550', 'Q8N4C8', 'P05067', 'P35609',
+            'Q8NBP7', 'P05771', 'P57796', 'Q92736', 'P29475', 'P19429',
+            'Q16623', 'Q8NGH5', 'Q9NZ94', 'Q15413', 'P57727', 'O60733',
+            'P30626', 'Q8NGS4', 'P56180', 'P21817', 'Q9Y566', 'Q99653',
+            'P42858', 'Q03135', 'P04156', 'O15400', 'Q8N5I3', 'Q9Y6N3',
+            'Q8TBE1', 'P62166', 'P58401', 'P01160', 'Q9UBK2', 'Q71RS6',
+            'Q9GZU1', 'Q9Y6X2', 'P16885', 'Q9P2S2', 'P51798', 'Q8N335',
+            'Q9ULB1', 'Q99996', 'P35462', 'Q08499', 'Q8N144', 'Q9BSA9',
+            'Q9Y2W7', 'P06756', 'Q8WXH2', 'Q9Y217', 'P30989', 'P0DP24',
+            'O75052', 'Q8TEL6', 'P11532', 'Q06413', 'Q16651', 'O14775',
+            'Q9HBY8', 'P20936',
+        },
+    ),
+    af.AnnotDef(
+        name = 'abc',
+        parent = 'transporter',
+        resource = 'DGIdb',
+        args = {
+            'category': 'ABC TRANSPORTER',
+        },
+        exclude = {
+            'P28288', 'Q93050', 'P33897', 'P54652', 'P21283', 'Q06055',
+            'Q9BRX2', 'Q9NP78', 'P24539', 'P24539', 'Q92736', 'Q9UBJ2',
+            'O14678', 'P78363', 'Q9NUT2', 'P06576', 'P62328', 'O14983',
+            'Q96LB4', 'Q99437', 'Q9NRK6', 'O75964', 'P48047', 'Q5VTU8',
+            'P98194', 'P21281', 'Q13488', 'Q9NR96', 'Q52LC2', 'Q15904',
+            'P38606', 'Q9BZC7', 'Q7Z4Y8', 'P26678', 'P36542', 'P48201',
+            'P16615', 'P30405', 'O15533', 'Q8WWZ7', 'P50570', 'O75027',
+            'O75947', 'O75110', 'P25705', 'P56381', 'Q93084', 'Q03519',
+            'O94823', 'P21917', 'Q8N8Y2', 'Q03518', 'P35462', 'P61421',
+            'O60423', 'O43861', 'P35670', 'O00631', 'P30049', 'O75534',
+            'Q16864', 'P63165', 'Q8NHE4', 'Q9ULM6', 'Q9UI12', 'Q96A05',
+            'Q9HD20', 'Q9UHG3', 'P05496', 'P27449', 'Q9Y2G3',
+        },
+    ),
+    af.AnnotDef(
+        name = 'abc',
+        parent = 'transporter',
+        resource = 'DGIdb',
+        args = {
+            'category': 'TRANSPORTER',
+        },
+        exclude = {
+            'P28288', 'Q93050', 'P33897', 'P54652', 'P21283', 'Q06055',
+            'Q9BRX2', 'Q9NP78', 'P24539', ''
         },
     ),
     af.AnnotDef(
