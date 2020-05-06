@@ -525,7 +525,7 @@ def uniprot_preprocess(field, organism = 9606, reviewed = True):
     relabel = re.compile(r'[A-Z\s]+:\s')
     reisoform = re.compile(r'\[.*]:?\s?')
     retermsep = re.compile(r'\s?[\.,]\s?')
-    reref = re.compile(r'\{.*\}')
+    reref = re.compile(r'\{[-\w :\|,\.]*\}')
 
     result = collections.defaultdict(set)
 
