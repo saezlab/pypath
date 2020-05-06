@@ -4361,11 +4361,11 @@ annot_combined_classes = (
             'P30626', 'Q8NGS4', 'P56180', 'P21817', 'Q9Y566', 'Q99653',
             'P42858', 'Q03135', 'P04156', 'O15400', 'Q8N5I3', 'Q9Y6N3',
             'Q8TBE1', 'P62166', 'P58401', 'P01160', 'Q9UBK2', 'Q71RS6',
-            'Q9GZU1', 'Q9Y6X2', 'P16885', 'Q9P2S2', 'P51798', 'Q8N335',
+            'P20936', 'Q9Y6X2', 'P16885', 'Q9P2S2', 'P51798', 'Q8N335',
             'Q9ULB1', 'Q99996', 'P35462', 'Q08499', 'Q8N144', 'Q9BSA9',
             'Q9Y2W7', 'P06756', 'Q8WXH2', 'Q9Y217', 'P30989', 'P0DP24',
             'O75052', 'Q8TEL6', 'P11532', 'Q06413', 'Q16651', 'O14775',
-            'Q9HBY8', 'P20936',
+            'Q9HBY8',
         },
     ),
     af.AnnotDef(
@@ -4391,43 +4391,35 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'ion_channel_adhesome',
+        name = 'ion_channel',
         parent = 'ion_channel',
         resource = 'Adhesome',
         args = {'mainclass': 'Channel'},
     ),  # only 5 channels but is all right
     af.AnnotDef(
         name = 'transporter',
-        resource = af.AnnotOp(
-            annots = (
-                af.AnnotDef(
-                    name = 'transporter',
-                    resource = 'Almen2009',
-                    args = {
-                        'mainclass': 'Transporters',
-                    }
-                ),
-                'plasma_membrane',
-            ),
-            op = set.intersection,
-        ),
+        resource = 'Almen2009',
+        parent = 'transporter',
+        args = {
+            'mainclass': 'Transporters',
+        },
+        limit = 'plasma_membrane_transmembrane',
+        exclude = {
+            'P32856', 'O95183', 'Q13277', 'Q9UNK0',
+        }
     ),
     af.AnnotDef(
-        name = 'channel',
-        resource = af.AnnotOp(
-            annots = (
-                af.AnnotDef(
-                    name = 'channel',
-                    resource = 'Almen2009',
-                    args = {
-                        'classes': 'Channels',
-                    }
-                ),
-                'plasma_membrane',
-            ),
-            op = set.intersection,
-        ),
-    ),
+        name = 'ion_channel',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'Channels',
+        },
+        exclude = {
+            'P51797', 'Q92736', 'Q15413', 'P21817', 'Q14573',
+            'Q13520', 'P51793', 'P51798', 'O94778', 'Q8NHX9',
+        },
+    ),  # all ion channels a few localized only intracellularly
     af.AnnotDef(
         name = 'abca',
         parent = 'transporter',
@@ -4444,6 +4436,130 @@ annot_combined_classes = (
             'classes': 'ABCC',
         },
     ),
+    
+    # transmembrane
+    af.AnnotDef(
+        name = 'transmembrane',
+        resource = af.AnnotOp(
+            annots = '~transmembrane',
+            op = set.union
+        ),
+        aspect = 'locational',
+        source = 'composite',
+    )
+    af.AnnotDef(
+        name = 'transmembrane',
+        parent = 'transmembrane',
+        resource = 'UniProt_location',
+        aspect = 'locational',
+        args = {
+            features = {
+                'Multi-pass membrane protein',
+                'Single-pass membrane protein',
+                'Single-pass type I membrane protein',
+                'Single-pass type II membrane protein',
+                'Single-pass type III membrane protein',
+                'Single-pass type IV membrane protein',
+            },
+        },
+    ),
+    af.AnnotDef(
+        name = 'transmembrane',
+        parent = 'transmembrane',
+        resource = 'UniProt_topology',
+        aspect = 'locational',
+        args = {
+            'topology': 'Transmembrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'transmembrane',
+        parent = 'transmembrane',
+        resource = 'UniProt_keywords',
+        aspect = 'locational',
+        args = {
+            'keyword': {
+                'Transmembrane',
+                'Transmembrane beta strand',
+                'Transmembrane helix',
+            },
+        },
+    ),
+    # peripheral
+    af.AnnotDef(
+        name = 'peripheral',
+        source = 'composite',
+        aspect = 'locational',
+        resource = af.AnnotOp(
+            annots = '~peripheral',
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'peripheral',
+        parent = 'peripheral',
+        resource = 'UniProt_location',
+        aspect = 'locational',
+        args = {
+            'features': {
+                'Peripheral membrane protein',
+                'Lipid-anchor',
+            },
+        },
+    ),
+    af.AnnotDef(
+        name = 'peripheral',
+        parent = 'peripheral',
+        resource = 'UniProt_location',
+        aspect = 'locational',
+        args = {
+            'location': {
+                'GPI-anchor',
+                'GPI-like-anchor',
+            },
+        },
+    ),
+    af.AnnotDef(
+        name = 'peripheral',
+        parent = 'peripheral',
+        resource = 'UniProt_topology',
+        aspect = 'locational',
+        args = {
+            'topology': 'Intramembrane',
+        },
+    ),
+    # plasma membrane
+    af.AnnotDef(
+        name = 'plasma_membrane',
+        parent = 'plasma_membrane',
+        resource = 'UniProt_location',
+        aspect = 'locational',
+        args = {
+            'location': {
+                'Cell membrane',
+                'Basal cell membrane',
+                'Basolateral cell membrane',
+                'Lateral cell membrane',
+                'Apicolateral cell membrane',
+                'Apical cell membrane',
+            },
+        },
+    ),
+    # plasma membrane transmembrane
+    af.AnnotDef(
+        name = 'plasma_membrane_transmembrane',
+        source = 'composite',
+        aspect = 'locational',
+        resource = af.AnnotOp(
+            annots = (
+                'transmembrane',
+                'plasma_membrane',
+            ),
+            op = set.intersection,
+        ),
+    ),
+    
+    
     af.AnnotDef(
         name = 'abcg',
         parent = 'transporter',
