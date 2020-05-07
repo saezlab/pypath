@@ -612,6 +612,188 @@ Higher level classes of intercellular communication roles.
 """
 annot_combined_classes = (
 
+    ### locational categories ###
+
+    # transmembrane
+    af.AnnotDef(
+        name = 'transmembrane',
+        resource = af.AnnotOp(
+            annots = '~transmembrane',
+            op = set.union
+        ),
+        aspect = 'locational',
+        source = 'composite',
+    )
+    af.AnnotDef(
+        name = 'transmembrane',
+        parent = 'transmembrane',
+        resource = 'UniProt_location',
+        aspect = 'locational',
+        args = {
+            features = {
+                'Multi-pass membrane protein',
+                'Single-pass membrane protein',
+                'Single-pass type I membrane protein',
+                'Single-pass type II membrane protein',
+                'Single-pass type III membrane protein',
+                'Single-pass type IV membrane protein',
+            },
+        },
+    ),
+    af.AnnotDef(
+        name = 'transmembrane',
+        parent = 'transmembrane',
+        resource = 'UniProt_topology',
+        aspect = 'locational',
+        args = {
+            'topology': 'Transmembrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'transmembrane',
+        parent = 'transmembrane',
+        resource = 'UniProt_keywords',
+        aspect = 'locational',
+        args = {
+            'keyword': {
+                'Transmembrane',
+                'Transmembrane beta strand',
+                'Transmembrane helix',
+            },
+        },
+    ),
+    # peripheral
+    af.AnnotDef(
+        name = 'peripheral',
+        source = 'composite',
+        aspect = 'locational',
+        resource = af.AnnotOp(
+            annots = '~peripheral',
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'peripheral',
+        parent = 'peripheral',
+        resource = 'UniProt_location',
+        aspect = 'locational',
+        args = {
+            'features': {
+                'Peripheral membrane protein',
+                'Lipid-anchor',
+            },
+        },
+    ),
+    af.AnnotDef(
+        name = 'peripheral',
+        parent = 'peripheral',
+        resource = 'UniProt_location',
+        aspect = 'locational',
+        args = {
+            'location': {
+                'GPI-anchor',
+                'GPI-like-anchor',
+            },
+        },
+    ),
+    af.AnnotDef(
+        name = 'peripheral',
+        parent = 'peripheral',
+        resource = 'UniProt_topology',
+        aspect = 'locational',
+        args = {
+            'topology': 'Intramembrane',
+        },
+    ),
+    # plasma membrane
+    af.AnnotDef(
+        name = 'plasma_membrane',
+        parent = 'plasma_membrane',
+        resource = 'UniProt_location',
+        aspect = 'locational',
+        args = {
+            'location': {
+                'Cell membrane',
+                'Basal cell membrane',
+                'Basolateral cell membrane',
+                'Lateral cell membrane',
+                'Apicolateral cell membrane',
+                'Apical cell membrane',
+            },
+        },
+    ),
+    # plasma membrane transmembrane
+    af.AnnotDef(
+        name = 'plasma_membrane_transmembrane',
+        source = 'composite',
+        aspect = 'locational',
+        resource = af.AnnotOp(
+            annots = (
+                'transmembrane',
+                'plasma_membrane',
+            ),
+            op = set.intersection,
+        ),
+    ),
+    # secreted
+    af.AnnotDef(
+        name = 'secreted',
+        source = 'composite',
+        aspect = 'locational',
+        resource = '~secreted',
+    ),
+    af.AnnotDef(
+        name = 'secreted',
+        parent = 'secreted',
+        resource = 'UniProt_keywords',
+        aspect = 'locational',
+        args = {
+            'keyword': 'Secreted',
+        },
+    ),
+    af.AnnotDef(
+        name = 'secreted',
+        parent = 'secreted',
+        resource = 'UniProt_location',
+        aspect = 'locational',
+        args = {
+            'location': 'Secreted',
+        },
+    ),
+    # cell_surface =
+    # plasma_membrane_peripheral + plasma_membrane_transmembrane
+    af.AnnotDef(
+        name = 'cell_surface',
+        parent = 'cell_surface',
+        aspect = 'locational',
+        source = 'composite',
+        resource = af.AnnotOp(
+            annots = (
+                'plasma_membrane_transmembrane',
+                'plasma_membrane_peripheral',
+            ),
+            op = set.union,
+        ),
+    ),
+    # extracellular =
+    # cell_surface + secreted + ecm
+    af.AnnotDef(
+        name = 'extracellular',
+        parent = 'extracellular',
+        aspect = 'locational',
+        source = 'composite',
+        resource = af.AnnotOp(
+            annots = (
+                'secreted',
+                'cell_surface',
+                'ecm',
+            ),
+            op = set.union,
+        ),
+    ),
+
+    ### functional classes ###
+
     # receptor
     af.AnnotDef(
         name = 'receptor',
@@ -2223,6 +2405,79 @@ annot_combined_classes = (
             'classes': 'neutrophin',
         },
     ),
+    
+    af.AnnotDef(
+        name = 'gpcr',
+        parent = 'receptor',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'G-protein coupled receptor',
+        },
+    ),
+    af.AnnotDef(
+        name = 'lectin',
+        parent = 'secreted_receptor',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Lectin',
+        },
+        limit = 'secreted',
+        avoid = af.AnnodDef(
+            name = 'ecm',
+            resource = 'UniProt_location',
+            args = {
+                'location': 'Extracellular matrix',
+            },
+        ),
+    ),
+    af.AnnotDef(
+        name = 'lectin',
+        parent = 'receptor',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Lectin',
+        },
+        limit = 'plasma_membrane_transmembrane',
+        avoid = af.AnnodDef(
+            name = 'ecm',
+            resource = 'UniProt_location',
+            args = {
+                'location': 'Extracellular matrix',
+            },
+        ),
+    ),
+    af.AnnotDef(
+        name = 'lectin',
+        parent = 'ecm',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Lectin',
+        },
+        limit = af.AnnodDef(
+            name = 'ecm',
+            resource = 'UniProt_location',
+            args = {
+                'location': 'Extracellular matrix',
+            },
+        ),
+    ),
+    af.AnnotDef(
+        name = 'collagen',
+        parent = 'ecm',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Lectin',
+        },
+        limit = af.AnnodDef(
+            name = 'ecm',
+            resource = 'UniProt_location',
+            args = {
+                'location': 'Extracellular matrix',
+            },
+        ),
+    ),
+    
+    
 
     # ECM
     af.AnnotDef(
@@ -2980,6 +3235,31 @@ annot_combined_classes = (
         parent = 'ligand',
         resource = {'Q6UXN2'},
     ),
+    af.AnnotDef(
+        name = 'growth_factor_binder',
+        parent = 'ligand_regulator',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Growth factor binding',
+        }
+    ),
+    af.AnnotDef(
+        name = 'growth_factor',
+        parent = 'ligand',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Growth factor',
+        },
+        exclude = {'Q6ZN28', 'P26441', 'Q9Y3E1'},
+    ),
+    af.AnnotDef(
+        name = 'cytokine',
+        parent = 'ligand',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Cytokine',
+        },
+    ),
 
     # intracellular
     af.AnnotDef(
@@ -3658,8 +3938,30 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'adhesion_integrins',
+        name = 'integrin',
+        parent = 'matrix_adhesion',
         resource = 'Integrins',
+    ),
+    af.AnnotDef(
+        name = 'integrin',
+        parent = 'receptor',
+        resource = 'Integrins',
+    ),
+    af.AnnotDef(
+        name = 'integrin',
+        parent = 'receptor',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Integrin',
+        },
+    ),
+    af.AnnotDef(
+        name = 'integrin',
+        parent = 'matrix_adhesion',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Integrin',
+        },
     ),
     af.AnnotDef(
         name = 'adhesion_zhong2015',
@@ -4436,130 +4738,69 @@ annot_combined_classes = (
             'classes': 'ABCC',
         },
     ),
-    
-    # transmembrane
     af.AnnotDef(
-        name = 'transmembrane',
-        resource = af.AnnotOp(
-            annots = '~transmembrane',
-            op = set.union
-        ),
-        aspect = 'locational',
-        source = 'composite',
-    )
-    af.AnnotDef(
-        name = 'transmembrane',
-        parent = 'transmembrane',
-        resource = 'UniProt_location',
-        aspect = 'locational',
-        args = {
-            features = {
-                'Multi-pass membrane protein',
-                'Single-pass membrane protein',
-                'Single-pass type I membrane protein',
-                'Single-pass type II membrane protein',
-                'Single-pass type III membrane protein',
-                'Single-pass type IV membrane protein',
-            },
-        },
-    ),
-    af.AnnotDef(
-        name = 'transmembrane',
-        parent = 'transmembrane',
-        resource = 'UniProt_topology',
-        aspect = 'locational',
-        args = {
-            'topology': 'Transmembrane',
-        },
-    ),
-    af.AnnotDef(
-        name = 'transmembrane',
-        parent = 'transmembrane',
+        name = 'ion_channel',
+        parent = 'ion_channel',
         resource = 'UniProt_keywords',
-        aspect = 'locational',
         args = {
-            'keyword': {
-                'Transmembrane',
-                'Transmembrane beta strand',
-                'Transmembrane helix',
-            },
+            'keyword': 'Ion channel',
         },
-    ),
-    # peripheral
-    af.AnnotDef(
-        name = 'peripheral',
-        source = 'composite',
-        aspect = 'locational',
-        resource = af.AnnotOp(
-            annots = '~peripheral',
-            op = set.union,
-        ),
+        limit = 'plasma_membrane_transmembrane',
     ),
     af.AnnotDef(
-        name = 'peripheral',
-        parent = 'peripheral',
-        resource = 'UniProt_location',
-        aspect = 'locational',
+        name = 'ligand_gated_ion_channel',
+        parent = 'ion_channel',
+        resource = 'UniProt_keywords',
         args = {
-            'features': {
-                'Peripheral membrane protein',
-                'Lipid-anchor',
-            },
+            'keyword': 'Ligand-gated ion channel',
         },
+        limit = 'plasma_membrane_transmembrane',
     ),
     af.AnnotDef(
-        name = 'peripheral',
-        parent = 'peripheral',
-        resource = 'UniProt_location',
-        aspect = 'locational',
+        name = 'chloride_ion_channel',
+        parent = 'ion_channel',
+        resource = 'UniProt_keywords',
         args = {
-            'location': {
-                'GPI-anchor',
-                'GPI-like-anchor',
-            },
+            'keyword': 'Chloride channel',
         },
+        limit = 'plasma_membrane_transmembrane',
     ),
     af.AnnotDef(
-        name = 'peripheral',
-        parent = 'peripheral',
-        resource = 'UniProt_topology',
-        aspect = 'locational',
+        name = 'calcium_ion_channel',
+        parent = 'ion_channel',
+        resource = 'UniProt_keywords',
         args = {
-            'topology': 'Intramembrane',
+            'keyword': 'Calcium channel',
         },
+        limit = 'plasma_membrane_transmembrane',
     ),
-    # plasma membrane
     af.AnnotDef(
-        name = 'plasma_membrane',
-        parent = 'plasma_membrane',
-        resource = 'UniProt_location',
-        aspect = 'locational',
+        name = 'potassium_ion_channel',
+        parent = 'ion_channel',
+        resource = 'UniProt_keywords',
         args = {
-            'location': {
-                'Cell membrane',
-                'Basal cell membrane',
-                'Basolateral cell membrane',
-                'Lateral cell membrane',
-                'Apicolateral cell membrane',
-                'Apical cell membrane',
-            },
+            'keyword': 'Potassium channel',
         },
+        limit = 'plasma_membrane_transmembrane',
     ),
-    # plasma membrane transmembrane
     af.AnnotDef(
-        name = 'plasma_membrane_transmembrane',
-        source = 'composite',
-        aspect = 'locational',
-        resource = af.AnnotOp(
-            annots = (
-                'transmembrane',
-                'plasma_membrane',
-            ),
-            op = set.intersection,
-        ),
+        name = 'sodium_ion_channel',
+        parent = 'ion_channel',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Sodium channel',
+        },
+        limit = 'plasma_membrane_transmembrane',
     ),
-    
-    
+    af.AnnotDef(
+        name = 'transporter',
+        parent = 'transporter',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Transport',
+        },
+        limit = 'plasma_membrane_transmembrane',
+    ),
     af.AnnotDef(
         name = 'abcg',
         parent = 'transporter',
