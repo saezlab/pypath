@@ -60,6 +60,7 @@ class AnnotDef(
                 'resource_name',
                 'limit',
                 'avoid',
+                'enabled',
             ]
         )
     ):
@@ -92,6 +93,7 @@ class AnnotDef(
             resource_name = None,
             limit = None,
             avoid = None,
+            enabled = True,
         ):
 
         return super().__new__(
@@ -109,6 +111,7 @@ class AnnotDef(
             resource_name = resource_name,
             limit = limit,
             avoid = avoid,
+            enabled = enabled,
         )
 
 
@@ -207,6 +210,7 @@ class AnnotationGroup(collections_abc.Set):
             receiver = None,
             limit = None,
             avoid = None,
+            enabled = True,
         ):
 
         collections_abc.Set.__init__(self)
@@ -225,6 +229,7 @@ class AnnotationGroup(collections_abc.Set):
         self.receiver = receiver
         self.limit = common.to_set(limit)
         self.avoid = common.to_set(avoid)
+        self.enabled = enabled
 
 
     def __iter__(self):

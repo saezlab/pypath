@@ -347,6 +347,10 @@ class CustomAnnotation(session_mod.Logger):
 
         class_set = set()
 
+        if not classdef.enabled:
+
+            return class_set
+
         if isinstance(classdef.resource, set):
 
             class_set = classdef.resource
@@ -439,6 +443,10 @@ class CustomAnnotation(session_mod.Logger):
             annots = tuple(
                 self.select(_annot)
                 for _annot in annotop.annots
+                if (
+                    not hasattr(_annot, 'enabled') or
+                    _annot.enabled
+                )
             )
 
         return annotop.op(*annots)
@@ -473,7 +481,8 @@ class CustomAnnotation(session_mod.Logger):
                 (
                     not resource or
                     classdef.resource_str == resource
-                )
+                ) and
+                classdef.enabled
             )
         )
 
