@@ -2487,7 +2487,7 @@ class AnnotationBase(resource.AbstractResource):
                             and
                             isinstance(value, set)
                             and
-                            set(getattr(a, name)) | value
+                            set(getattr(a, name)) & value
                         )
                         # search value is a set, checking if contains
                         # the record's value
