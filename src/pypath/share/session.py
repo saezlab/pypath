@@ -21,6 +21,8 @@
 
 import random
 import sys
+import traceback
+import itertools
 
 import pypath.share.log as log
 
@@ -71,24 +73,71 @@ class Session(object):
 
 class Logger(object):
 
-    def __init__(self, name=None):
+    def __init__(self, name = None):
 
         self._log_name = name or self.__class__.__name__
         self._logger = get_log()
 
-    def _log(self, msg='', level=0):
+    def _log(self, msg = '', level = 0):
         """
         Writes a message into the logfile.
         """
 
-        self._logger.msg(msg=msg, label=self._log_name, level=level)
+        self._logger.msg(msg = msg, label = self._log_name, level = level)
 
-    def _console(self, msg=''):
+    def _console(self, msg = ''):
         """
         Writes a message to the console and also to the logfile.
         """
 
-        self._logger.console(msg=msg, label=self._log_name)
+        self._logger.console(msg = msg, label = self._log_name)
+
+
+    def _log_traceback(self):
+        """
+        Includes a traceback into the log.
+        """
+
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+
+        if exc_type is not None:
+
+            f = exc_traceback.tb_frame.f_back
+            stack = traceback.extract_stack(f)
+
+        else:
+
+            stack = traceback.extract_stack()[:-1]
+
+        trc = 'Traceback (most recent call last):\n'
+        trc_list = list(
+            itertools.chain(*(
+                stack_level.strip('\n').split('\n')
+                for stack_level in traceback.format_list(stack)
+            ))
+        )
+
+        if exc_type is not None:
+
+            trc_list.extend(
+                ('  %s' % traceback.format_exc().lstrip(trc)).split('\n')
+            )
+
+        stack_top = 0
+
+        for i, line in enumerate(trc_list):
+
+            if line.strip().endswith('<module>'):
+
+                stack_top = i
+
+        trc_list = trc_list[stack_top:]
+
+        self._log(trc.strip())
+
+        for traceline in trc_list:
+
+            self._log(traceline)
 
 
 def get_session():
