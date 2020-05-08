@@ -279,7 +279,7 @@ class AnnotationGroup(collections_abc.Set):
 
         return AnnotDefKey(
             name = self.name,
-            name = self.parent,
+            parent = self.parent,
             resource = self.resource,
         )
 
