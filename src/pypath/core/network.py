@@ -927,15 +927,18 @@ class Network(session_mod.Logger):
                             'Skipping to next resource. '
                             'See below the traceback.' % input_func.__name__
                         )
-                        self._log(str(e.args))
+                        self._log_traceback()
 
                         try:
                             traceback.print_tb(
-                                e.__traceback__, file = sys.stdout)
+                                e.__traceback__,
+                                file = sys.stdout
+                            )
 
                         except Exception as e:
+
                             self._log('Failed handling exception.')
-                            self._log(str(e.args))
+                            self._log_traceback()
 
                     curl.CACHE = _store_cache
 
