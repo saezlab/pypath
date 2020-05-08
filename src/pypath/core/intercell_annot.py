@@ -662,6 +662,7 @@ annot_combined_classes = (
             },
         },
     ),
+
     # peripheral
     af.AnnotDef(
         name = 'peripheral',
@@ -705,6 +706,7 @@ annot_combined_classes = (
             'topology': 'Intramembrane',
         },
     ),
+
     # plasma membrane
     af.AnnotDef(
         name = 'plasma_membrane',
@@ -722,6 +724,7 @@ annot_combined_classes = (
             },
         },
     ),
+
     # plasma membrane transmembrane
     af.AnnotDef(
         name = 'plasma_membrane_transmembrane',
@@ -729,12 +732,102 @@ annot_combined_classes = (
         aspect = 'locational',
         resource = af.AnnotOp(
             annots = (
-                'transmembrane',
-                'plasma_membrane',
+                af.AnnotOp(
+                    annots = (
+                        'transmembrane',
+                        'plasma_membrane',
+                    ),
+                    op = set.intersection,
+                ),
+                '~plasma_membrane_transmembrane',
             ),
-            op = set.intersection,
+            op = set.union,
         ),
     ),
+    af.AnnotDef(
+        name = 'plasma_membrane_transmembrane',
+        parent = 'plasma_membrane_transmembrane'
+        aspect = 'locational',
+        resource = 'Membranome',
+        args = {
+            'membrane': 'Plasma membrane',
+            'side': 'extracellular side',
+        },
+    ),  # with a few exception these are transmembrane proteins
+        # of the plasma membrane
+    af.AnnotDef(
+        name = 'plasma_membrane_transmembrane',
+        aspect = 'locational',
+        resource = 'CSPA',
+        args = {
+            high_confidence = bool,
+            tm = bool,
+        },
+    ),
+    af.AnnotDef(
+        name = 'plasma_membrane_transmembrane',
+        aspect = 'locational',
+        resource = 'HPMR',
+        args = {
+            'role': 'Receptor',
+        },
+        exclude = {
+            'P56159', 'Q14982', 'P35052', 'O14798', 'Q96QV1', 'P26992',
+            'Q9Y5V3', 'O00451', 'Q12860', 'O60609', 'P14207', 'O43813',
+            'P15328', 'O75015', 'Q9BZR6',
+        },
+    ),
+    af.AnnotDef(
+        name = 'plasma_membrane_transmembrane',
+        aspect = 'locational',
+        resource = 'Membranome',
+        args = {
+            'membrane': 'Plasma membrane',
+            'side': 'extracellular side',
+        },
+        exclude = {
+            'O14798', 'O75326', 'P04216', 'Q6H3X3', 'P55259', 'P22748',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ifn_induced',
+        parent = 'plasma_membrane_transmembrane',
+        aspect = 'locational',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Interferon induced transmembrane proteins',
+        },
+    ),
+
+    # plasma membrane peripheral
+    af.AnnotDef(
+        name = 'plasma_membrane_peripheral',
+        source = 'composite',
+        aspect = 'locational',
+        resource = af.AnnotOp(
+            annots = (
+                af.AnnotOp(
+                    annots = (
+                        'peripheral',
+                        'plasma_membrane',
+                    ),
+                    op = set.intersection,
+                ),
+                '~plasma_membrane_peripheral',
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'plasma_membrane_peripheral',
+        aspect = 'locational',
+        resource = 'CSPA',
+        args = {
+            high_confidence = bool,
+            gpi = bool,
+        },
+    ),
+
     # secreted
     af.AnnotDef(
         name = 'secreted',
@@ -760,6 +853,54 @@ annot_combined_classes = (
             'location': 'Secreted',
         },
     ),
+        af.AnnotDef(
+        name = 'secreted',
+        parent = 'secreted',
+        resource = 'HPA_secretome',
+        aspect = 'locational',
+        args = {
+            'secreted': bool,
+        },
+    ),  # looks all right
+    af.AnnotDef(
+        name = 'secreted',
+        parent = 'secreted',
+        resource = 'MatrixDB',
+        aspect = 'locational',
+        args = {
+            'mainclass': 'secreted',
+        },
+    ),  # some potentially wrong elements, proteins annotated by
+        # UniProt as intracellular
+    af.AnnotDef(
+        name = 'secreted',
+        aspect = 'locational',
+        resource = 'LOCATE',
+        args = {
+            'cls': 'secretome',
+        },
+        enabled = False,
+    ),  # unusable, too many intracellular proteins
+        # secreted
+    af.AnnotDef(
+        name = 'secreted_matrisome',
+        resource = 'Matrisome',
+        args = {
+            'mainclass': 'Matrisome-associated',
+            'subclass': 'Secreted Factors',
+        },
+    ),
+    # specific subclasses from HGNC
+    af.AnnotDef(
+        name = 'bpi_fold_containing',
+        parent = 'secreted',
+        aspect = 'locational',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'BPI fold containing',
+        },
+    ),
+
     # cell_surface =
     # plasma_membrane_peripheral + plasma_membrane_transmembrane
     af.AnnotDef(
@@ -771,10 +912,72 @@ annot_combined_classes = (
             annots = (
                 'plasma_membrane_transmembrane',
                 'plasma_membrane_peripheral',
+                '~cell_surface',
             ),
             op = set.union,
         ),
     ),
+    af.AnnotDef(
+        name = 'cell_surface',
+        parent = 'cell_surface',
+        aspect = 'locational',
+        resource = 'Surfaceome',
+        exclude = {
+            'Q7L1I2', 'Q9ULQ1', 'Q05940', 'Q9BZC7', 'Q8NBW4', 'P54219',
+            'Q9P2U8', 'Q8IY34', 'Q8TED4', 'Q9UN42', 'Q9P2U7', 'Q8NCC5',
+            'Q9H598', 'Q8NHS3', 'Q9NRX5', 'Q9H1V8', 'Q496J9', 'Q6J4K2',
+            'Q96T83', 'Q9NP78', 'A6NFC5', 'Q8TBB6', 'O00400', 'Q8WWZ7',
+            'Q71RS6', 'Q9GZU1', 'O95528', 'Q8NDX2', 'O43826', 'O94778',
+            'Q9HD20', 'Q9UGQ3', 'Q14108',
+        },
+    ),
+    af.AnnotDef(
+        name = 'cell_surface',
+        resource = 'Ramilowski_location',
+        aspect = 'locational',
+        args = {
+            'location': 'cell surface',
+        },
+        enabled = False,
+    ),  # mostly intracellular, disabled
+    # specific subclasses from HGNC
+    af.AnnotDef(
+        name = 'glypican',
+        parent = 'cell_surface',
+        aspect = 'locational',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Glypicans',
+        },
+    ),
+    af.AnnotDef(
+        name = 'immunoglobulin_heavy',
+        parent = 'cell_surface',
+        aspect = 'locational',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Immunoglobulin heavy locus at 14q32.33',
+        },
+    ),  # immunoglobulin heavy chain
+    af.AnnotDef(
+        name = 'immunoglobulin_kappa',
+        parent = 'cell_surface',
+        aspect = 'locational',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Immunoglobulin kappa locus at 2p11.2',
+        },
+    ),  # immunoglobulin V region
+    af.AnnotDef(
+        name = 'immunoglobulin_lambda',
+        parent = 'cell_surface',
+        aspect = 'locational',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Immunoglobulin lambda locus at 22q11.2',
+        },
+    ),  # immunoglobulin V region
+    
     # extracellular =
     # cell_surface + secreted + ecm
     af.AnnotDef(
@@ -787,10 +990,87 @@ annot_combined_classes = (
                 'secreted',
                 'cell_surface',
                 'ecm',
+                '~extracellular',
             ),
             op = set.union,
         ),
     ),
+    af.AnnotDef(
+        name = 'extracellular',
+        parent = 'extracellular',
+        aspect = 'locational',
+        resource = 'Ramilowski_location',
+        args = {
+            'location': {
+                'secreted',
+            },
+        },
+        enabled = False,
+    ),  # many membrane bound, transmembrane or intracellular
+        # at least according to UniProt
+        # disabled because of this
+    af.AnnotDef(
+        name = 'extracellular',
+        parent = 'extracellular',
+        aspect = 'locational',
+        resource = 'HPMR',
+    ),  # these are membrane bound or secreted proteins
+        # so we can add them only to the extracellular
+    af.AnnotDef(
+        name = 'extracellular',
+        resource = 'DGIdb',
+        aspect = 'locational',
+        args = {
+            'category': 'EXTERNAL SIDE OF PLASMA MEMBRANE',
+        },
+        exclude = {
+            'O75534'
+        },
+    ),  # the `CELL SURFACE` category is completely unusable, contains
+        # proteins from any location randomly
+        # this on, the `EXT. SIDE OF PM.` is better, but contains many
+        # secreted proteins, ligands, and some potentially intracellular ones
+    af.AnnotDef(
+        name = 'extracellular',
+        aspect = 'locational',
+        resource = 'ComPPI',
+        args = {
+            'location': 'extracellular',
+        },
+        enabled = False,
+    ),  # unusable, unrealistically huge and
+        # contains half of the intracellular proteome
+    af.AnnotDef(
+        name = 'extracellular',
+        aspect = 'locational',
+        resource = 'LOCATE',
+        args = {
+            'location': {
+                'extracellular',
+                'extracellular region',
+            },
+        },
+    ),  # unusable, too many intracellular proteins
+
+    # extracellular
+    af.AnnotDef(
+        name = 'extracellular',
+        resource = af.AnnotOp(
+            annots = (
+                'extracellular_locate',
+                'extracellular_surfaceome',
+                'extracellular_matrixdb',
+                'extracellular_membranome',
+                'extracellular_cspa',
+                'extracellular_hpmr',
+                'extracellular_cellphonedb',
+                'extracellular_hpa',
+                'extracellular_uniprot',
+            ),
+            op = set.union,
+        ),
+    ),
+
 
     ### functional classes ###
 
@@ -2521,12 +2801,13 @@ annot_combined_classes = (
         ),
     ),
     af.AnnotDef(
-        name = 'ecm_matrixdb',
+        name = 'ecm',
+        parent = 'ecm',
         resource = 'MatrixDB',
         args = {
             'mainclass': 'ecm',
         },
-    ),
+    ),  # some potentially wrong elements such as ligands
     af.AnnotDef(
         name = 'ecm_go',
         resource = 'GO_Intercell',
@@ -2560,21 +2841,24 @@ annot_combined_classes = (
     ),  # more or less correct, but includes enzymes and matrix adhesion
     # specific subclasses from HGNC
     af.AnnotDef(
-        name = 'collagen_proteoglycan_ecm',
+        name = 'collagen_proteoglycan',
+        parent = 'ecm',
         resource = 'HGNC',
         args = {
             'mainclass': 'Collagen proteoglycans',
         },
     ),
     af.AnnotDef(
-        name = 'collagen_ecm',
+        name = 'collagen',
+        parent = 'ecm',
         resource = 'HGNC',
         args = {
             'mainclass': 'Collagens',
         },
     ),
     af.AnnotDef(
-        name = 'emi_ecm',
+        name = 'emi',
+        parent = 'ecm',
         resource = 'HGNC',
         args = {
             'mainclass': 'EMI domain containing',
@@ -2582,21 +2866,24 @@ annot_combined_classes = (
     ),  # this could be also cell-matrix adhesion, although these proteins
         # are not in the cell membrane but all secreted
     af.AnnotDef(
-        name = 'fibrillin_ecm',
+        name = 'fibrillin',
+        parent = 'ecm',
         resource = 'HGNC',
         args = {
             'mainclass': 'Fibrillins',
         },
     ),
     af.AnnotDef(
-        name = 'laminin_ecm',
+        name = 'laminin',
+        parent = 'ecm',
         resource = 'HGNC',
         args = {
             'mainclass': 'Laminin subunits',
         },
     ),
     af.AnnotDef(
-        name = 'fibulin_ecm',
+        name = 'fibulin',
+        parent = 'ecm',
         resource = 'HGNC',
         args = {
             'mainclass': 'Fibulins',
@@ -2604,41 +2891,37 @@ annot_combined_classes = (
     ),  # parts of ECM, especially elastic fibers, one of them is a ligand
         # for EGFR (but still an EVM protein at the same time)
     af.AnnotDef(
-        name = 'hyalectan_proteoglycan_ecm',
+        name = 'hyalectan_proteoglycan',
+        parent = 'ecm',
         resource = 'HGNC',
         args = {
             'mainclass': 'Hyalectan proteoglycans',
         },
     ),
     af.AnnotDef(
-        name = 'matrilin_ecm',
+        name = 'matrilin',
+        parent = 'ecm',
         resource = 'HGNC',
         args = {
             'mainclass': 'Matrilins',
         },
     ),  # cartilage ECM
     af.AnnotDef(
-        name = 'mucin_ecm',
-        resource = af.AnnotOp(
-            annots = (
-                af.AnnotDef(
-                    name = 'mucin_hgnc',
-                    resource ='HGNC',
-                    args = {
-                        'mainclass': 'Mucins',
-                    },
-                ),
-                'secreted'
-            ),
-            op = set.intersection
-        ),
+        name = 'mucin',
+        parent = 'ecm',
+        resource ='HGNC',
+        args = {
+            'mainclass': 'Mucins',
+        },
+        limit = 'secreted',
     ),
     af.AnnotDef(
         name = 'proteoglycan_ecm',
         resource = {'O00468', 'P98160'},
     ),
     af.AnnotDef(
-        name = 'sibling_ecm',
+        name = 'sibling',
+        parent = 'ecm',
         resource = 'HGNC',
         args = {
             'mainclass': 'SIBLING family',
@@ -2652,14 +2935,16 @@ annot_combined_classes = (
         },
     ),  # act either on ligands or ECM or both
     af.AnnotDef(
-        name = 'small_leucine_rich_repeat_proteoglycan_ecm',
+        name = 'small_leucine_rich_repeat_proteoglycan',
+        parent = 'ecm',
         resource = 'HGNC',
         args = {
             'mainclass': 'Small leucine rich repeat proteoglycans',
         },
     ),
     af.AnnotDef(
-        name = 'zona_pellucida_glycoprotein_ecm',
+        name = 'zona_pellucida_glycoprotein',
+        parent = 'ecm',
         resource = 'HGNC',
         args = {
             'mainclass': 'Zona pellucida glycoproteins',
@@ -3450,120 +3735,7 @@ annot_combined_classes = (
         },
     ),
 
-    # extracellular
-    af.AnnotDef(
-        name = 'extracellular',
-        resource = af.AnnotOp(
-            annots = (
-                'extracellular_locate',
-                'extracellular_surfaceome',
-                'extracellular_matrixdb',
-                'extracellular_membranome',
-                'extracellular_cspa',
-                'extracellular_hpmr',
-                'extracellular_cellphonedb',
-                'extracellular_hpa',
-                'extracellular_uniprot',
-            ),
-            op = set.union,
-        ),
-    ),
-    af.AnnotDef(
-        name = 'extracellular_locate',
-        resource = af.AnnotOp(
-            annots = (
-                af.AnnotDef(
-                    name = 'locate_extracellular',
-                    resource = 'LOCATE',
-                    args = {
-                        'location': {
-                            'extracellular',
-                            'extracellular region',
-                        },
-                    },
-                ),
-                'secreted_locate',
-            ),
-            op = set.union,
-        ),
-    ),
-    af.AnnotDef(
-        name = 'extracellular_comppi',
-        resource = 'ComPPI',
-        args = {
-            'location': 'extracellular',
-        },
-    ),
-    af.AnnotDef(
-        name = 'extracellular_surfaceome',
-        resource = 'Surfaceome',
-    ),
-    af.AnnotDef(
-        name = 'extracellular_matrixdb',
-        resource = 'MatrixDB',
-        args = {
-            'mainclass': {
-                'secreted',
-                'ecm',
-            },
-        },
-    ),
-    af.AnnotDef(
-        name = 'extracellular_cspa',
-        resource = 'CSPA',
-    ),
-    af.AnnotDef(
-        name = 'extracellular_membranome',
-        resource = 'Membranome',
-        args = {
-            'membrane': 'Plasma membrane',
-            'side': 'extracellular side',
-        },
-    ),
-    af.AnnotDef(
-        name = 'extracellular_cellphonedb',
-        resource = 'CellPhoneDB',
-        args = {
-            'secreted': bool,
-        },
-    ),
-    af.AnnotDef(
-        name = 'extracellular_hpmr',
-        resource = 'HPMR',
-    ),
-    af.AnnotDef(
-        name = 'extracellular_membranome',
-        resource = 'Membranome',
-        args = {
-            'membrane': 'Plasma membrane',
-            'side': 'extracellular side',
-        },
-    ),
-    af.AnnotDef(
-        name = 'extracellular_hpa',
-        resource = 'HPA_secretome',
-        args = {
-            'secreted': bool,
-        },
-    ),
-    af.AnnotDef(
-        name = 'extracellular_ramilowski',
-        resource = 'Ramilowski_location',
-        args = {
-            'location': {
-                'secreted',
-            },
-        },
-    ),
-    af.AnnotDef(
-        name = 'extracellular_uniprot',
-        resource = 'UniProt_location',
-        args = {
-            'location': {
-                'Secreted',
-            },
-        },
-    ),
+
     # specific subclasses from HGNC
     af.AnnotDef(
         name = 'histatin_extracellular',
@@ -3623,137 +3795,8 @@ annot_combined_classes = (
             op = set.union,
         ),
     ),
-    af.AnnotDef(
-        name = 'cell_surface_hpmr',
-        resource = 'HPMR',
-        args = {
-            'role': 'Receptor',
-        },
-    ),
-    af.AnnotDef(
-        name = 'cell_surface_surfaceome',
-        resource = 'Surfaceome',
-    ),
-    af.AnnotDef(
-        name = 'cell_surface_cspa',
-        resource = 'CSPA',
-    ),
-    af.AnnotDef(
-        name = 'cell_surface_cellphonedb',
-        resource = 'CellPhoneDB',
-        args = {
-            'method': lambda a: a.peripheral or a.transmembrane,
-        },
-    ),
-    af.AnnotDef(
-        name = 'cell_surface_go',
-        resource = 'GO_Intercell',
-        args = {
-            'mainclass': 'cell_surface',
-        },
-    ),
-    af.AnnotDef(
-        name = 'cell_surface_membranome',
-        resource = 'Membranome',
-        args = {
-            'membrane': 'Plasma membrane',
-            'side': 'extracellular side',
-        },
-    ),
-    af.AnnotDef(
-        name = 'cell_surface_dgidb',
-        resource = 'DGIdb',
-        args = {
-            'category': {'CELL SURFACE', 'EXTERNAL SIDE OF PLASMA MEMBRANE'},
-        },
-    ),
-    af.AnnotDef(
-        name = 'cell_surface_ramilowski',
-        resource = 'Ramilowski_location',
-        args = {
-            'location': 'cell surface',
-        },
-    ),
-    af.AnnotDef(
-        name = 'cell_surface_uniprot',
-        resource = af.AnnotOp(
-            annots = (
-                af.AnnotDef(
-                    name = 'cell_membrane_uniprot',
-                    resource = 'UniProt_location',
-                    args = {
-                        'location': {
-                            'Cell membrane',
-                            'Acrosome membrane',
-                            'Apical cell membrane',
-                            'Basal cell membrane',
-                            'Basolateral cell membrane',
-                            'Cell surface',
-                            'Dendritic spine membrane',
-                            'Filopodium membrane',
-                            'Flagellum membrane',
-                            'Invadopodium membrane',
-                            'Lamellipodium membrane',
-                            'Lateral cell membrane',
-                            'Microvillus membrane',
-                            'Myelin membrane',
-                            'Photoreceptor inner segment membrane',
-                            'Presynaptic cell membrane',
-                            'Ruffle membrane',
-                            'Stereocilium membrane',
-                        }
-                    },
-                ),
-                # removing the transmembrane ones
-                'transmembrane',
-                # TODO: ensure we keep only the extracellular side
-            ),
-            op = set.difference,
-        ),
-    ),
-    # specific subclasses from HGNC
-    af.AnnotDef(
-        name = 'glypican_cell_surface',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Glypicans',
-        },
-    ),
-    af.AnnotDef(
-        name = 'immunoglobulin_heavy_cell_surface',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Immunoglobulin heavy locus at 14q32.33',
-        },
-    ),  # immunoglobulin heavy chain
-    af.AnnotDef(
-        name = 'immunoglobulin_kappa_cell_surface',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Immunoglobulin kappa locus at 2p11.2',
-        },
-    ),  # immunoglobulin V region
-    af.AnnotDef(
-        name = 'immunoglobulin_lambda_cell_surface',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Immunoglobulin lambda locus at 22q11.2',
-        },
-    ),  # immunoglobulin V region
-    af.AnnotDef(
-        name = 'ifn_induced_cell_surface',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Interferon induced transmembrane proteins',
-        },
-    ),
-    af.AnnotDef(
-        name = 'ifn_induced_endocytosis_exocytosis_regulator',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Interferon induced transmembrane proteins',
-        },
-    ),
+    
+    
 
     # plasma membrane
     af.AnnotDef(
@@ -4355,12 +4398,9 @@ annot_combined_classes = (
 
     # surface enzyme
     af.AnnotDef(
-        name = 'surface_enzyme',
+        name = 'cell_surface_enzyme',
         resource = af.AnnotOp(
-            annots = (
-                'surface_enzyme_go',
-                'surface_enzyme_surfaceome',
-            ),
+            annots = '~cell_surface_enzyme',
             op = set.union,
         ),
     ),
@@ -4388,12 +4428,12 @@ annot_combined_classes = (
         ),
     ),
     af.AnnotDef(
-        name = 'surface_enzyme_surfaceome',
+        name = 'cell_surface_enzyme',
         resource = 'Surfaceome',
         args = {
             'mainclass': 'Enzymes',
         },
-    ),
+    ),  # looks all right
     af.AnnotDef(
         name = 'enpp_surface_enzyme',
         resource = 'HGNC',
@@ -5570,53 +5610,68 @@ annot_combined_classes = (
         ),
     ),
     af.AnnotDef(
-        name = 'cela_extracellular_peptidase',
+        name = 'extracellular_enzyme',
+        resource = af.AnnotOp(
+            annots = (
+                '~extracellular_peptidase',
+                '~extracellular_enzyme',
+            ),
+            op = set.union,
+        ),
+        source = 'composite',
+    ),
+    af.AnnotDef(
+        name = 'extracellular_peptidase',
+        resource = '~extracellular_peptidase',
+        source = 'composite',
+    ),
+    af.AnnotDef(
+        name = 'chymotrypsin_like_elastase',
+        parent = 'extracellular_peptidase',
         resource = 'HGNC',
         args = {
             'mainclass': 'Chymotrypsin like elastases',
         },
     ),  # involved in ECM dynamics and remodeling
     af.AnnotDef(
-        name = 'kallikrein_extracellular_peptidase',
+        name = 'kallikrein',
+        parent = 'extracellular_peptidase',
         resource = 'HGNC',
         args = {
             'mainclass': 'Kallikreins',
         },
     ),  # extracellular serine proteases, involved in ECM dynamics
     af.AnnotDef(
-        name = 'pappalysin_extracellular_peptidase',
+        name = 'pappalysin',
+        parent = 'extracellular_peptidase',
         resource = 'HGNC',
         args = {
             'mainclass': 'Pappalysins',
         },
     ),  # cleave IGFBPs
     af.AnnotDef(
-        name = (
-            'scavenger_receptor_cysteine_rich_extracellular_enzyme_omnipath'
-        ),
-        resource = {'P58215', 'Q96JB6', 'P05156', 'P56730', 'Q96JK4', 'Q9Y4K0'},
+        name = 'scavenger_receptor_cysteine_rich',
+        parent = 'extracellular_enzyme',
+        resource = {
+            'P58215', 'Q96JB6', 'P05156', 'P56730', 'Q96JK4', 'Q9Y4K0',
+        },
     ),
     af.AnnotDef(
-        name = (
-            'glutathione_peroxidase_extracellular_enzyme_omnipath'
-        ),
+        name = 'glutathione_peroxidase',
+        parent = 'extracellular_enzyme',
         resource = {'P59796', 'P49908', 'P22352'},
     ),
     af.AnnotDef(
-        name = (
-            'serine_peptidase_inhibitor_'
-            'extracellular_peptidase_regulator_hgnc'
-        ),
+        name = 'serine_peptidase_inhibitor',
+        parent = 'extracellular_peptidase_regulator',
         resource = 'HGNC',
         args = {
             'mainclass': 'Serine peptidase inhibitors, Kazal type',
         },
     ),
     af.AnnotDef(
-        name = (
-            'wap_four_disulfide_core_domain_containing_'
-            'extracellular_peptidase_regulator_hgnc'
-        ),
+        name = 'wap_four_disulfide_core_domain_containing',
+        parent = 'extracellular_peptidase_regulator',
         resource = 'HGNC',
         args = {
             'mainclass': 'WAP four-disulfide core domain containing',
@@ -5624,19 +5679,16 @@ annot_combined_classes = (
         exclude = {'P23352'},
     ),
     af.AnnotDef(
-        name = (
-            'tissue_inhibitor_of_metallopeptidases_'
-            'extracellular_peptidase_regulator_hgnc'
-        ),
+        name = 'tissue_inhibitor_of_metallopeptidases',
+        parent = 'extracellular_peptidase_regulator',
         resource = 'HGNC',
         args = {
             'mainclass': 'Tissue inhibitor of metallopeptidases',
         },
     ),
     af.AnnotDef(
-        name = (
-            'serine_protease_extracellular_peptidase_hgnc'
-        ),
+        name = 'serine_protease',
+        parent = 'extracellular_peptidase',
         resource = 'HGNC',
         args = {
             'mainclass': 'Serine proteases',
@@ -5650,9 +5702,8 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = (
-            'serine_protease_surface_peptidase_hgnc'
-        ),
+        name = 'serine_protease',
+        parent = 'cell_surface_peptidase',
         resource = {
             'Q8IU80', 'Q9Y5Q5', 'Q7RTY9', 'Q9BYE2', 'Q6ZMR5', 'Q9H3S3',
             'Q86WS5', 'Q9Y6M0', 'Q9Y5Y6', 'O60235', 'Q9NRR2', 'Q7Z410',
@@ -5661,20 +5712,13 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'serpin_extracellular_peptidase_regulator',
-        resource = af.AnnotOp(
-            annots = (
-                af.AnnotDef(
-                    name = 'serpin_peptidase_regulator',
-                    resource = 'HGNC',
-                    args = {
-                        'mainclass': 'Serpin peptidase inhibitors',
-                    },
-                ),
-                'secreted',
-            ),
-            op = set.intersection,
-        ),
+        name = 'serpin',
+        parent = 'peptidase_regulator',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Serpin peptidase inhibitors',
+        },
+        limit = 'secreted',
     ),
     af.AnnotDef(
         name = 'biotinidase',
@@ -5685,6 +5729,7 @@ annot_combined_classes = (
     # growth factor binder or regulator
     af.AnnotDef(
         name = 'growth_factor_binder',
+        parent = 'ligand_regulator',
         resource = 'GO_Intercell',
         args = {
             'mainclass': 'growth factor binding',
@@ -5714,53 +5759,11 @@ annot_combined_classes = (
         ),
     ),
     af.AnnotDef(
-        name = 'igf_binding_growth_factor_regulator',
+        name = 'igf_binding',
+        parent = 'ligand_regulator',
         resource = 'HGNC',
         args = {
             'mainclass': 'Insulin like growth factor binding proteins',
-        },
-    ),
-
-    # secreted
-    af.AnnotDef(
-        name = 'secreted',
-        resource = af.AnnotOp(
-            annots = (
-                'secreted_locate',
-                'secreted_matrisome',
-                'secreted_cellphonedb',
-            ),
-            op = set.union,
-        ),
-    ),
-    af.AnnotDef(
-        name = 'secreted_locate',
-        resource = 'LOCATE',
-        args = {
-            'cls': 'secretome',
-        },
-    ),
-    af.AnnotDef(
-        name = 'secreted_matrisome',
-        resource = 'Matrisome',
-        args = {
-            'mainclass': 'Matrisome-associated',
-            'subclass': 'Secreted Factors',
-        },
-    ),
-    af.AnnotDef(
-        name = 'secreted_cellphonedb',
-        resource = 'CellPhoneDB',
-        args = {
-            'secreted': bool,
-        },
-    ),
-    # specific subclasses from HGNC
-    af.AnnotDef(
-        name = 'bpi_secreted',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'BPI fold containing',
         },
     ),
 
@@ -5814,6 +5817,7 @@ annot_combined_classes = (
             'mainclass': 'Pannexins',
         },
     ),  # either half channels or gap junctions
+
     # tight junction
     af.AnnotDef(
         name = 'tight_junction',
