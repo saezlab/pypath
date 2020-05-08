@@ -827,6 +827,13 @@ annot_combined_classes = (
     # plasma membrane
     af.AnnotDef(
         name = 'plasma_membrane',
+        source = 'composite',
+        aspect = 'locational',
+        scope = 'generic',
+        resource = '~plasma_membrane',
+    )
+    af.AnnotDef(
+        name = 'plasma_membrane',
         parent = 'plasma_membrane',
         resource = 'UniProt_location',
         aspect = 'locational',
@@ -839,6 +846,114 @@ annot_combined_classes = (
                 'Apicolateral cell membrane',
                 'Apical cell membrane',
             },
+        },
+    ),
+
+    # plasma membrane regions
+    # from UniProt_location
+    af.AnnotDef(
+        name = 'plasma_membrane',
+        resource = '~plasma_membrane~UniProt_location',
+        resource_name = 'UniProt_location',
+        scope = 'generic',
+        aspect = 'locational',
+    )
+    af.AnnotDef(
+        name = 'basolateral_cell_membrane',
+        parent = 'plasma_membrane',
+        aspect = 'locational',
+        scope = 'generic',
+        resource = 'UniProt_location',
+        args = {
+            'location': 'Basolateral cell membrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'basal_cell_membrane',
+        parent = 'plasma_membrane',
+        aspect = 'locational',
+        scope = 'generic',
+        resource = 'UniProt_location',
+        args = {
+            'location': 'Basal cell membrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'apical_cell_membrane',
+        parent = 'plasma_membrane',
+        aspect = 'locational',
+        scope = 'generic',
+        resource = 'UniProt_location',
+        args = {
+            'location': 'Apical cell membrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'apicolateral_cell_membrane',
+        parent = 'plasma_membrane',
+        aspect = 'locational',
+        scope = 'generic',
+        resource = 'UniProt_location',
+        args = {
+            'location': 'Apicolateral cell membrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'lateral_cell_membrane',
+        parent = 'plasma_membrane',
+        aspect = 'locational',
+        scope = 'generic',
+        resource = 'UniProt_location',
+        args = {
+            'location': 'Lateral cell membrane',
+        },
+    ),
+    # from Ramilowski_location
+    af.AnnotDef(
+        name = 'plasma_membrane',
+        resource = '~plasma_membrane~Ramilowski_location',
+        resource_name = 'Ramilowski_location',
+        scope = 'generic',
+        aspect = 'locational',
+    )
+    af.AnnotDef(
+        name = 'basolateral_cell_membrane',
+        parent = 'plasma_membrane',
+        aspect = 'locational',
+        scope = 'generic',
+        resource = 'Ramilowski_location',
+        args = {
+            'location': 'basolateral cell membrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'basal_cell_membrane',
+        parent = 'plasma_membrane',
+        aspect = 'locational',
+        scope = 'generic',
+        resource = 'Ramilowski_location',
+        args = {
+            'location': 'basal cell membrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'apical_cell_membrane',
+        parent = 'plasma_membrane',
+        aspect = 'locational',
+        scope = 'generic',
+        resource = 'Ramilowski_location',
+        args = {
+            'location': 'apical cell membrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'lateral_cell_membrane',
+        parent = 'plasma_membrane',
+        aspect = 'locational',
+        scope = 'generic',
+        resource = 'Ramilowski_location',
+        args = {
+            'location': 'lateral cell membrane',
         },
     ),
 
@@ -4448,19 +4563,14 @@ annot_combined_classes = (
 
     # surface ligand
     af.AnnotDef(
-        name = 'surface',
-        parent = 'ligand',
-        resource = af.AnnotOp(
-            annots = (
-                'surface_ligand_go',
-                'surface_ligand_cellphonedb',
-            ),
-            op = set.union
-        ),
+        name = 'surface_ligand',
+        resource = '~surface_ligand',
+        source = 'composite',
+        scope = 'generic',
         exclude = {'P0DPD6'},
     ),
     af.AnnotDef(
-        name = 'surface_ligand_go',
+        name = 'surface_ligand',
         resource = af.AnnotOp(
             annots = (
                 'cell_surface',
@@ -4470,7 +4580,7 @@ annot_combined_classes = (
         ),
     ),
     af.AnnotDef(
-        name = 'surface_ligand_cellphonedb',
+        name = 'surface_ligand',
         resource = 'CellPhoneDB',
         args = {
             'method': lambda a: (
@@ -4585,15 +4695,22 @@ annot_combined_classes = (
         name = 'transporter',
         resource = af.AnnotOp(
             annots = (
-                'transporter_surfaceome',
-                'transporter_go',
-                'transporter_dgidb',
+                '~transporter',
+                '~ion_channel',
             ),
             op = set.union,
         ),
+        scope = 'generic',
+        source = 'composite',
     ),
     af.AnnotDef(
-        name = 'transporter_surfaceome',
+        name = 'ion_channel',
+        resource = '~ion_channel',
+        scope = 'generic',
+        source = 'composite',
+    ),
+    af.AnnotDef(
+        name = 'transporter',
         resource = 'Surfaceome',
         args = {
             'mainclass': 'Transporters',
@@ -4608,7 +4725,7 @@ annot_combined_classes = (
         },
     ),  # some intracellular transporters added to exclude
     af.AnnotDef(
-        name = 'transporter_go',
+        name = 'transporter',
         resource = 'GO_Intercell',
         args = {
             'mainclass': {
@@ -4618,12 +4735,11 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'transporter_dgidb',
+        name = 'transporter',
         parent = 'transporter',
-        resource = af.AnnotOp(
-            annots = '~transporter~DGIdb',
-            op = set.union,
-        ),
+        resource = '~transporter~DGIdb',
+        scope = 'generic',
+    ),
     af.AnnotDef(
         name = 'ion_channel',
         parent = 'transporter',
@@ -4743,7 +4859,7 @@ annot_combined_classes = (
         limit = 'plasma_membrane_transmembrane',
     ),
     af.AnnotDef(
-        name = 'ligand_gated_ion_channel',
+        name = 'ligand_gated_channel',
         parent = 'ion_channel',
         resource = 'UniProt_keywords',
         args = {
@@ -4752,7 +4868,7 @@ annot_combined_classes = (
         limit = 'plasma_membrane_transmembrane',
     ),
     af.AnnotDef(
-        name = 'chloride_ion_channel',
+        name = 'chloride_channel',
         parent = 'ion_channel',
         resource = 'UniProt_keywords',
         args = {
@@ -4761,7 +4877,7 @@ annot_combined_classes = (
         limit = 'plasma_membrane_transmembrane',
     ),
     af.AnnotDef(
-        name = 'calcium_ion_channel',
+        name = 'calcium_channel',
         parent = 'ion_channel',
         resource = 'UniProt_keywords',
         args = {
@@ -4770,7 +4886,7 @@ annot_combined_classes = (
         limit = 'plasma_membrane_transmembrane',
     ),
     af.AnnotDef(
-        name = 'potassium_ion_channel',
+        name = 'potassium_channel',
         parent = 'ion_channel',
         resource = 'UniProt_keywords',
         args = {
@@ -4779,7 +4895,7 @@ annot_combined_classes = (
         limit = 'plasma_membrane_transmembrane',
     ),
     af.AnnotDef(
-        name = 'sodium_ion_channel',
+        name = 'sodium_channel',
         parent = 'ion_channel',
         resource = 'UniProt_keywords',
         args = {
@@ -4869,10 +4985,9 @@ annot_combined_classes = (
         },
         exclude = {'O94886'},
     ),
-
     # transporters from HGNC
     af.AnnotDef(
-        name = 'water',
+        name = 'aquaporin',
         parent = 'transporter',
         resource = 'HGNC',
         args = {
@@ -5677,7 +5792,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'biotinidase',
-        parent = 'extracellular_enzyme',
+        parent = 'secreted_enzyme',
         resource = {'P43251'},
     ),
 
@@ -5691,28 +5806,15 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'growth_factor_regulator',
-        resource = af.AnnotOp(
-            annots = (
-                af.AnnotDef(
-                    name = 'secreted_matrisome',
-                    resource = 'Matrisome',
-                    args = {
-                        'mainclass': 'Matrisome-associated',
-                        'subclass': 'Secreted Factors',
-                    },
-                ),
-                af.AnnotOp(
-                    annots = (
-                        'growth_factor_binder',
-                        'extracellular_enzyme',
-                    ),
-                    op = set.union,
-                ),
-            ),
-            op = set.intersection,
-        ),
-    ),
+        name = 'ligand_regulator',
+        scope = 'generic',
+        resource = 'Matrisome',
+        args = {
+            'mainclass': 'Matrisome-associated',
+            'subclass': 'Secreted Factors',
+        },
+        limit = ('growth_factor_binder', 'extracellular_enzyme'),
+    ),  # to be checked later
     af.AnnotDef(
         name = 'igf_binding',
         parent = 'ligand_regulator',
@@ -5883,43 +5985,6 @@ annot_combined_classes = (
         resource = 'HGNC',
         args = {
             'mainclass': 'Gap junction proteins',
-        },
-    ),
-
-    # plasma membrane regions
-    af.AnnotDef(
-        name = 'basolateral_cell_membrane_ramilowski',
-        resource = 'Ramilowski_location',
-        args = {
-            'location': 'basolateral cell membrane',
-        },
-    ),
-    af.AnnotDef(
-        name = 'basal_cell_membrane_ramilowski',
-        resource = 'Ramilowski_location',
-        args = {
-            'location': 'basal cell membrane',
-        },
-    ),
-    af.AnnotDef(
-        name = 'basal_cell_membrane_ramilowski',
-        resource = 'Ramilowski_location',
-        args = {
-            'location': 'basal cell membrane',
-        },
-    ),
-    af.AnnotDef(
-        name = 'apical_cell_membrane_ramilowski',
-        resource = 'Ramilowski_location',
-        args = {
-            'location': 'apical cell membrane',
-        },
-    ),
-    af.AnnotDef(
-        name = 'lateral_cell_membrane_ramilowski',
-        resource = 'Ramilowski_location',
-        args = {
-            'location': 'lateral cell membrane',
         },
     ),
 
