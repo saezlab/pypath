@@ -612,7 +612,7 @@ Higher level classes of intercellular communication roles.
 """
 annot_combined_classes = (
 
-    ### locational categories ###
+    ### locational (and topological) categories ###
 
     # transmembrane
     af.AnnotDef(
@@ -661,6 +661,123 @@ annot_combined_classes = (
                 'Transmembrane helix',
             },
         },
+    ),
+
+    # transmembrane
+    af.AnnotDef(
+        name = 'transmembrane',
+        resource = af.AnnotOp(
+            annots = (
+                'transmembrane_cellphonedb',
+                'transmembrane_go',
+                'transmembrane_opm',
+                'transmembrane_locate',
+                'transmembrane_topdb',
+                'transmembrane_ramilowski',
+                'transmembrane_almen',
+                'transmembrane_uniprot',
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'transmembrane',
+        aspect = 'locational',
+        resource = af.AnnotOp(
+            annots = (
+                'transmembrane_phobius',
+                'transmembrane_sosui',
+                'transmembrane_tmhmm',
+            ),
+            op = set.union
+        ),
+    ),
+    af.AnnotDef(
+        name = 'transmembrane_phobius',
+        parent = 'transmembrane',
+        aspect = 'locational',
+        resource = 'Almen2009',
+        args = {
+            'transmembrane_phobius': True,
+        },
+    ),
+    af.AnnotDef(
+        name = 'transmembrane_sosui',
+        parent = 'transmembrane',
+        aspect = 'locational',
+        resource = 'Almen2009',
+        args = {
+            'transmembrane_sosui': True,
+        },
+    ),
+    af.AnnotDef(
+        name = 'transmembrane_tmhmm',
+        parent = 'transmembrane',
+        aspect = 'locational',
+        resource = 'Almen2009',
+        args = {
+            'transmembrane_tmhmm': True,
+        },
+    ),
+    af.AnnotDef(
+        name = 'transmembrane',
+        aspect = 'locational',
+        resource = 'GO_Intercell',
+        args = {
+            'mainclass': 'transmembrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'transmembrane',
+        aspect = 'locational',
+        resource = 'CellPhoneDB',
+        args = {
+            'transmembrane': True,
+        },
+    ),
+    af.AnnotDef(
+        name = 'transmembrane',
+        aspect = 'locational',
+        resource = 'OPM',
+        args = {
+            'transmembrane': True,
+        },
+    ),
+    af.AnnotDef(
+        name = 'transmembrane',
+        aspect = 'locational',
+        resource = 'TopDB',
+        args = {
+            'topology': 'Membrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'transmembrane',
+        aspect = 'locational',
+        resource = 'LOCATE',
+        args = {
+            'cls': {
+                'typeI',
+                'typeII',
+                'mtmp',
+            },
+        },
+    ),
+    af.AnnotDef(
+        name = 'transmembrane',
+        aspect = 'locational',
+        resource = 'Ramilowski_location',
+        args = {
+            'tmh': bool,
+        },
+    ),
+    af.AnnotDef(
+        name = 'lhfpl',
+        aspect = 'locational',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'LHFPL tetraspan proteins',
+        }
     ),
 
     # peripheral
@@ -903,6 +1020,24 @@ annot_combined_classes = (
             'mainclass': 'BPI fold containing',
         },
     ),
+    af.AnnotDef(
+        name = 'histatin',
+        parent = 'secreted',
+        aspect = 'locational',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Histatins and statherin',
+        },
+    ),  # secreted into saliva
+    af.AnnotDef(
+        name = 'proline_rich',
+        parent = 'secreted',
+        aspect = 'locational',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Proline rich proteins',
+        },
+    ),  # secreted into saliva, enamel protective and anti-microbial
 
     # cell_surface =
     # plasma_membrane_peripheral + plasma_membrane_transmembrane
@@ -980,7 +1115,7 @@ annot_combined_classes = (
             'mainclass': 'Immunoglobulin lambda locus at 22q11.2',
         },
     ),  # immunoglobulin V region
-    
+
     # extracellular =
     # cell_surface + secreted + ecm
     af.AnnotDef(
@@ -1054,25 +1189,40 @@ annot_combined_classes = (
             },
         },
     ),  # unusable, too many intracellular proteins
-
-    # extracellular
+    # specific subclasses from HGNC
     af.AnnotDef(
-        name = 'extracellular',
-        resource = af.AnnotOp(
-            annots = (
-                'extracellular_locate',
-                'extracellular_surfaceome',
-                'extracellular_matrixdb',
-                'extracellular_membranome',
-                'extracellular_cspa',
-                'extracellular_hpmr',
-                'extracellular_cellphonedb',
-                'extracellular_hpa',
-                'extracellular_uniprot',
-            ),
-            op = set.union,
-        ),
-    ),
+        name = 'iglon5',
+        parent = 'extracellular',
+        aspect = 'locational',
+        resource = {'A6NGN9'},
+    ),  # function is not clear for me
+    af.AnnotDef(
+        name = 'immunoglobulin_heavy',
+        parent = 'extracellular',
+        aspect = 'locational',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Immunoglobulin heavy locus at 14q32.33',
+        },
+    ),  # immunoglobulin heavy chain
+    af.AnnotDef(
+        name = 'immunoglobulin_kappa',
+        parent = 'extracellular',
+        aspect = 'locational',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Immunoglobulin kappa locus at 2p11.2',
+        },
+    ),  # immunoglobulin V region
+    af.AnnotDef(
+        name = 'immunoglobulin_lambda',
+        parent = 'extracellular',
+        aspect = 'locational',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Immunoglobulin lambda locus at 22q11.2',
+        },
+    ),  # immunoglobulin V region
 
     # intracellular
     af.AnnotDef(
@@ -3735,71 +3885,6 @@ annot_combined_classes = (
         },
     ),
 
-
-
-
-    # specific subclasses from HGNC
-    af.AnnotDef(
-        name = 'histatin_extracellular',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Histatins and statherin',
-        },
-    ),  # secreted into saliva
-    af.AnnotDef(
-        name = 'proline_rich_extracellular',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Proline rich proteins',
-        },
-    ),  # secreted into saliva, enamel protective and anti-microbial
-    af.AnnotDef(
-        name = 'iglon5_extracellular',
-        resource = {'A6NGN9'},
-    ),  # function is not clear for me
-    af.AnnotDef(
-        name = 'immunoglobulin_heavy_extracellular',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Immunoglobulin heavy locus at 14q32.33',
-        },
-    ),  # immunoglobulin heavy chain
-    af.AnnotDef(
-        name = 'immunoglobulin_kappa_extracellular',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Immunoglobulin kappa locus at 2p11.2',
-        },
-    ),  # immunoglobulin V region
-    af.AnnotDef(
-        name = 'immunoglobulin_lambda_extracellular',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Immunoglobulin lambda locus at 22q11.2',
-        },
-    ),  # immunoglobulin V region
-
-    # cell surface
-    af.AnnotDef(
-        name = 'cell_surface',
-        resource = af.AnnotOp(
-            annots = (
-                'cell_surface_surfaceome',
-                'cell_surface_go',
-                'cell_surface_hpmr',
-                'cell_surface_membranome',
-                'cell_surface_cspa',
-                'cell_surface_cellphonedb',
-                'cell_surface_dgidb',
-                'cell_surface_ramilowski',
-                'cell_surface_uniprot',
-            ),
-            op = set.union,
-        ),
-    ),
-    
-    
-
     # plasma membrane
     af.AnnotDef(
         name = 'plasma_membrane',
@@ -3823,138 +3908,6 @@ annot_combined_classes = (
         resource = 'Almen2009',
         args = {
             'classes': 'EMP-PMP22-LIM',
-        }
-    ),
-
-    # transmembrane
-    af.AnnotDef(
-        name = 'transmembrane',
-        resource = af.AnnotOp(
-            annots = (
-                'transmembrane_cellphonedb',
-                'transmembrane_go',
-                'transmembrane_opm',
-                'transmembrane_locate',
-                'transmembrane_topdb',
-                'transmembrane_ramilowski',
-                'transmembrane_almen',
-                'transmembrane_uniprot',
-            ),
-            op = set.union,
-        ),
-    ),
-    af.AnnotDef(
-        name = 'transmembrane',
-        resource = af.AnnotOp(
-            annots = (
-                'transmembrane_phobius_almen',
-                'transmembrane_sosui_almen',
-                'transmembrane_tmhmm_almen',
-            ),
-            op = set.union
-        ),
-    ),
-    af.AnnotDef(
-        name = 'transmembrane_phobius',
-        resource = 'Almen2009',
-        args = {
-            'transmembrane_phobius': True,
-        },
-    ),
-    af.AnnotDef(
-        name = 'transmembrane_sosui',
-        resource = 'Almen2009',
-        args = {
-            'transmembrane_sosui': True,
-        },
-    ),
-    af.AnnotDef(
-        name = 'transmembrane_tmhmm',
-        resource = 'Almen2009',
-        args = {
-            'transmembrane_tmhmm': True,
-        },
-    ),
-    af.AnnotDef(
-        name = 'transmembrane_uniprot',
-        resource = af.AnnotOp(
-            annots = (
-                af.AnnotDef(
-                    name = 'transmembrane_uniprot_location',
-                    resource = 'UniProt_location',
-                    args = {
-                        'features': {
-                            'Multi-pass membrane protein',
-                            'Single-pass membrane protein',
-                            'Single-pass type I membrane protein',
-                            'Single-pass type II membrane protein',
-                            'Single-pass type III membrane protein',
-                            'Single-pass type IV membrane protein',
-                        },
-                    },
-                ),
-                af.AnnotDef(
-                    name = 'transmembrane_uniprot_topology',
-                    resource = 'UniProt_topology',
-                    args = {
-                        'topology': 'Transmembrane',
-                    },
-                ),
-            ),
-            op = set.union,
-        ),
-    ),
-    af.AnnotDef(
-        name = 'transmembrane_go',
-        resource = 'GO_Intercell',
-        args = {
-            'mainclass': 'transmembrane',
-        },
-    ),
-    af.AnnotDef(
-        name = 'transmembrane_cellphonedb',
-        resource = 'CellPhoneDB',
-        args = {
-            'transmembrane': True,
-        },
-    ),
-    af.AnnotDef(
-        name = 'transmembrane_opm',
-        resource = 'OPM',
-        args = {
-            'transmembrane': True,
-        },
-    ),
-    af.AnnotDef(
-        name = 'transmembrane_topdb',
-        resource = 'TopDB',
-        args = {
-            'topology': 'Membrane',
-        },
-    ),
-    af.AnnotDef(
-        name = 'transmembrane_locate',
-        resource = 'LOCATE',
-        args = {
-            'cls': {
-                'typeI',
-                'typeII',
-                'mtmp',
-            },
-        },
-    ),
-    af.AnnotDef(
-        name = 'transmembrane_ramilowski',
-        resource = 'Ramilowski_location',
-        args = {
-            'tmh': bool,
-        },
-    ),
-    af.AnnotDef(
-        name = 'lhfpl_transmembrane',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'LHFPL tetraspan proteins',
         }
     ),
 
