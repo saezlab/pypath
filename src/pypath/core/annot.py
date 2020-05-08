@@ -107,11 +107,11 @@ protein_sources_default = {
     'Cellcellinteractions',
     'Italk',
     'Embrace',
-    'UniprotLocation',
-    'UniprotFamily',
-    'UniprotTopology',
-    'UniprotTissue',
-    'UniprotKeyword',
+    'UniprotLocations',
+    'UniprotFamilies',
+    'UniprotTopologies',
+    'UniprotTissues',
+    'UniprotKeywords',
     'Tcdb',
     'Mcam',
     'Gpcrdb',
@@ -4817,7 +4817,7 @@ class GuideToPharmacology(LigandReceptor):
         LigandReceptor._default_record_processor(self, record, typ, annot)
 
 
-class UniprotLocation(AnnotationBase):
+class UniprotLocations(AnnotationBase):
 
     _eq_fields = ('location',)
 
@@ -4848,7 +4848,7 @@ class UniprotLocation(AnnotationBase):
         delattr(self, 'data')
 
 
-class UniprotFamily(AnnotationBase):
+class UniprotFamilies(AnnotationBase):
 
     _eq_fields = ('family', 'subfamily')
 
@@ -4879,7 +4879,7 @@ class UniprotFamily(AnnotationBase):
         delattr(self, 'data')
 
 
-class UniprotTissue(AnnotationBase):
+class UniprotTissues(AnnotationBase):
 
     _eq_fields = ('tissue', 'level')
 
@@ -4910,7 +4910,7 @@ class UniprotTissue(AnnotationBase):
         delattr(self, 'data')
 
 
-class UniprotKeyword(AnnotationBase):
+class UniprotKeywords(AnnotationBase):
 
     _eq_fields = ('keyword',)
 
@@ -4941,7 +4941,7 @@ class UniprotKeyword(AnnotationBase):
         delattr(self, 'data')
 
 
-class UniprotTopology(AnnotationBase):
+class UniprotTopologies(AnnotationBase):
 
     _eq_fields = ('topology', 'start', 'end')
 
