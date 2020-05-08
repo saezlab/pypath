@@ -623,14 +623,14 @@ annot_combined_classes = (
         ),
         aspect = 'locational',
         source = 'composite',
-    )
+    ),
     af.AnnotDef(
         name = 'transmembrane',
         parent = 'transmembrane',
         resource = 'UniProt_location',
         aspect = 'locational',
         args = {
-            features = {
+            'features': {
                 'Multi-pass membrane protein',
                 'Single-pass membrane protein',
                 'Single-pass type I membrane protein',
@@ -831,7 +831,7 @@ annot_combined_classes = (
         aspect = 'locational',
         scope = 'generic',
         resource = '~plasma_membrane',
-    )
+    ),
     af.AnnotDef(
         name = 'plasma_membrane',
         parent = 'plasma_membrane',
@@ -857,7 +857,7 @@ annot_combined_classes = (
         resource_name = 'UniProt_location',
         scope = 'generic',
         aspect = 'locational',
-    )
+    ),
     af.AnnotDef(
         name = 'basolateral_cell_membrane',
         parent = 'plasma_membrane',
@@ -915,7 +915,7 @@ annot_combined_classes = (
         resource_name = 'Ramilowski_location',
         scope = 'generic',
         aspect = 'locational',
-    )
+    ),
     af.AnnotDef(
         name = 'basolateral_cell_membrane',
         parent = 'plasma_membrane',
@@ -978,7 +978,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'plasma_membrane_transmembrane',
-        parent = 'plasma_membrane_transmembrane'
+        parent = 'plasma_membrane_transmembrane',
         aspect = 'locational',
         resource = 'Membranome',
         args = {
@@ -992,8 +992,8 @@ annot_combined_classes = (
         aspect = 'locational',
         resource = 'CSPA',
         args = {
-            high_confidence = bool,
-            tm = bool,
+            'high_confidence': bool,
+            'tm': bool,
         },
     ),
     af.AnnotDef(
@@ -1055,8 +1055,8 @@ annot_combined_classes = (
         aspect = 'locational',
         resource = 'CSPA',
         args = {
-            high_confidence = bool,
-            gpi = bool,
+            'high_confidence': bool,
+            'gpi': bool,
         },
     ),
 
@@ -3158,7 +3158,7 @@ annot_combined_classes = (
             'keyword': 'Lectin',
         },
         limit = 'secreted',
-        avoid = af.AnnodDef(
+        avoid = af.AnnotDef(
             name = 'ecm',
             resource = 'UniProt_location',
             args = {
@@ -3174,7 +3174,7 @@ annot_combined_classes = (
             'keyword': 'Lectin',
         },
         limit = 'plasma_membrane_transmembrane',
-        avoid = af.AnnodDef(
+        avoid = af.AnnotDef(
             name = 'ecm',
             resource = 'UniProt_location',
             args = {
@@ -3189,7 +3189,7 @@ annot_combined_classes = (
         args = {
             'keyword': 'Lectin',
         },
-        limit = af.AnnodDef(
+        limit = af.AnnotDef(
             name = 'ecm',
             resource = 'UniProt_location',
             args = {
@@ -3204,7 +3204,7 @@ annot_combined_classes = (
         args = {
             'keyword': 'Lectin',
         },
-        limit = af.AnnodDef(
+        limit = af.AnnotDef(
             name = 'ecm',
             resource = 'UniProt_location',
             args = {
