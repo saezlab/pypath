@@ -5215,14 +5215,33 @@ class AnnotationTable(session_mod.Logger):
                     self._log(
                         'Reconstituted annotation data for `%s`: '
                         'dict of length %u.' % (
-                            cls_name,
+                            name,
                             len(data),
                         )
                     )
 
                 cls = globals()[cls_name]
 
-                self.annots[name] = cls(dump = data)
+                try:
+
+                    self.annots[name] = cls(dump = data)
+                    self._log(
+                        'Instance of annotation class `%s` (resource %s) '
+                        'successfully loaded from pickle.' % (
+                            cls_name,
+                            name,
+                        )
+                    )
+
+                # we never want to fail due to any issue with
+                # one resource:
+                except Exception as e:
+
+                    self._log(
+                        'ERROR: Failed to create instance of `%s` '
+                        'with data loaded from the pickle.' % cls_name
+                    )
+                    self._log_traceback()
 
         self._log('Loaded from pickle `%s`.' % pickle_file)
 
