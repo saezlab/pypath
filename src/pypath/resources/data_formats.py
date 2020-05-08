@@ -228,6 +228,7 @@ reaction_misc = {
         ncbi_tax_id = 9606,
         huge = True,
         input = 'reactome_interactions',
+        input_args = {'ask': False},
         references = (3, ';'),
         header = False,
         extra_edge_attrs = {},

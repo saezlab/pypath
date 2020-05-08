@@ -56,6 +56,12 @@ except:
     import urllib.parse
     urlparse = urllib.parse
 
+# Py 2/3
+try:
+    input = raw_input
+except NameError:
+    pass
+
 try:
     import cPickle as pickle
 except:
@@ -5176,23 +5182,32 @@ def reactome_biopax(organism = 9606, cache = True):
     )
 
     if not os.path.exists(unzipped) or not cache:
+
+        fname = '%s.owl' % organisms[organism]
+
         url = urls.urls['reactome']['biopax_l3']
         c = curl.Curl(
             url,
             silent = False,
             large = True,
-            files_needed = ['%s.owl' % organisms[organism]]).values()[0]
+            files_needed = [fname]
+        )
+
+        fileobj = c.result[fname]
 
         with open(unzipped, 'w') as _unzipped:
+
             while True:
-                chunk = c.result.read(4096)
+
+                chunk = fileobj.read(4096)
 
                 if not chunk:
                     break
 
                 _unzipped.write(chunk)
 
-        c.result.close()
+        fileobj.close()
+
     _unzipped = open(unzipped, 'r')
 
     return _unzipped
@@ -5262,7 +5277,7 @@ def reactions_biopax(biopax_file,
         sys.stdout.write('\t:: Loading already processed data\n')
         sys.stdout.flush()
 
-        return pickle.load(open(cachefile, 'r'))
+        return pickle.load(open(cachefile, 'rb'))
 
     # string constants
     bppref = '{http://www.biopax.org/release/biopax-level3.owl#}'
@@ -5340,13 +5355,21 @@ def reactions_biopax(biopax_file,
     bpf = reactome_biopax(organism = organism)
     bp_filesize = 0
 
-    if type(biopax_file) is file:
+    if hasattr(biopax_file, 'name') and os.path.exists(biopax_file.name):
+
         bp_filesize = os.path.getsize(biopax_file.name)
 
+        if biopax_file.mode == 'r':
+
+            biopax_file.close()
+            biopax_file = open(biopax_file.name, 'rb')
+
     elif type(biopax_file) is tarfile.ExFileObject:
+
         bp_filesize = biopax_file.size
 
     elif type(biopax_file) is gzip.GzipFile:
+
         f = open(biopax_file.name, 'rb')
         f.seek(-4, 2)
         bp_filesize = struct.unpack('<I', f.read())[0]
@@ -5639,9 +5662,18 @@ def reactions_biopax(biopax_file,
         len(controls) + len(catalyses), 'Processing controls and catalyses',
         11)
     controls_uniprots = _process_controls(
-        dict(controls.items() + catalyses.items()), entity_uniprot,
-        dict(reactions_uniprots.items() + complexassemblies_uniprots.items()),
-        publications)
+        dict(itertools.chain.from_iterable(
+            iteritems(d) for d in (controls, catalyses)
+        )),
+        entity_uniprot,
+        dict(itertools.chain.from_iterable(
+            iteritems(d) for d in (
+                reactions_uniprots,
+                complexassemblies_uniprots,
+            )
+        )),
+        publications,
+    )
 
     for caref, ca in iteritems(complexassemblies_uniprots):
         controls_uniprots[caref] = {
@@ -5653,7 +5685,7 @@ def reactions_biopax(biopax_file,
         }
 
     del entity_uniprot
-    pickle.dump(controls_uniprots, open(cachefile, 'w'))
+    pickle.dump(controls_uniprots, open(cachefile, 'wb'))
 
     # return controls_uniprots, entity_uniprot, proteins, proteinreferences,
     # uniprots, complexes, stoichiometries
@@ -5789,7 +5821,7 @@ def process_complex(depth, cref, entity_uniprot, complexes, complexvariations,
     entity_uniprot[cref].extend(this_cplex)
 
 
-def reactome_interactions(cacheFile = None, **kwargs):
+def reactome_interactions(cacheFile = None, ask = True, **kwargs):
     """
     Downloads and processes Reactome BioPAX.
     Extracts binary interactions.
@@ -5805,23 +5837,33 @@ def reactome_interactions(cacheFile = None, **kwargs):
     if os.path.exists(cacheFile):
         interactions = pickle.load(open(cacheFile, 'rb'))
 
-    else:
+    elif ask:
+
         while True:
+
             sys.stdout.write(
-                '\nProcessing Reactome requires huge memory.\n'
-                'Please hit `y` if you have at least 2G free memory,\n'
-                'or `n` to omit Reactome.\n'
-                'After processing once, it will be saved in \n'
-                '%s, so next time can be loaded quickly.\n\n'
-                'Process Reactome now? [y/n]\n' % cacheFile)
+                '\n\tProcessing Reactome requires huge memory.\n'
+                '\tPlease hit `y` if you have at least 2G free memory,\n'
+                '\tor `n` to omit Reactome.\n'
+                '\tAfter processing once, it will be saved in \n'
+                '\t%s, so next time can be loaded quickly.\n\n'
+                '\tProcess Reactome now? [y/n]\n' % cacheFile)
             sys.stdout.flush()
-            answer = raw_input().lower()
+            answer = input().lower()
 
-            if answer == 'y':
-                return get_interactions('reactome', **kwargs)
+            if answer in {'y', 'n'}:
 
-            else:
-                return []
+                break
+
+    else:
+
+        answer = 'y'
+
+    if answer == 'y':
+        return get_interactions('reactome', **kwargs)
+
+    else:
+        return []
 
 
 def acsn_interactions_2(**kwargs):
