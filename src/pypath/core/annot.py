@@ -5172,6 +5172,10 @@ class AnnotationTable(session_mod.Logger):
 
             for name, (cls_name, data, record_cls) in iteritems(annots):
 
+                self._log(
+                    'Loading from pickle: annotation class `%s`.' % cls_name
+                )
+
                 if record_cls is not None:
 
                     modname = record_cls['module']
@@ -5206,6 +5210,14 @@ class AnnotationTable(session_mod.Logger):
                             )
                         )
                         for key, these_annots in iteritems(data)
+                    )
+
+                    self._log(
+                        'Reconstituted annotation data for `%s`: '
+                        'dict of length %u.' % (
+                            cls_name,
+                            len(data),
+                        )
                     )
 
                 cls = globals()[cls_name]
