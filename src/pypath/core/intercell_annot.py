@@ -662,24 +662,6 @@ annot_combined_classes = (
             },
         },
     ),
-
-    # transmembrane
-    af.AnnotDef(
-        name = 'transmembrane',
-        resource = af.AnnotOp(
-            annots = (
-                'transmembrane_cellphonedb',
-                'transmembrane_go',
-                'transmembrane_opm',
-                'transmembrane_locate',
-                'transmembrane_topdb',
-                'transmembrane_ramilowski',
-                'transmembrane_almen',
-                'transmembrane_uniprot',
-            ),
-            op = set.union,
-        ),
-    ),
     af.AnnotDef(
         name = 'transmembrane',
         aspect = 'locational',
@@ -762,7 +744,12 @@ annot_combined_classes = (
                 'mtmp',
             },
         },
-    ),
+        enabled = False,
+    ),  # about 500 proteins above the ones in UniProt classified as
+        # transmembrane, mostly based on prediction methods
+        # for this reason we don't use it, however it might be that
+        # many more proteins have transmembrane isoforms apart from
+        # the ones in UniProt
     af.AnnotDef(
         name = 'transmembrane',
         aspect = 'locational',
@@ -770,14 +757,19 @@ annot_combined_classes = (
         args = {
             'tmh': bool,
         },
-    ),
+        enabled = False,
+    ),  # same as for LOCATE: overall 1000 additional TM proteins
+        # apart from the ones in UniProt, 150 of these are annotated
+        # to the plasma membrane, most of these are peripheral
+        # according to UniProt
     af.AnnotDef(
         name = 'lhfpl',
+        parent = 'transmembrane',
         aspect = 'locational',
         resource = 'HGNC',
         args = {
             'mainclass': 'LHFPL tetraspan proteins',
-        }
+        },
     ),
 
     # peripheral
@@ -954,6 +946,34 @@ annot_combined_classes = (
         resource = 'Ramilowski_location',
         args = {
             'location': 'lateral cell membrane',
+        },
+    ),
+    # from LOCATE
+    af.AnnotDef(
+        name = 'plasma_membrane',
+        resource = '~plasma_membrane~LOCATE',
+        resource_name = 'LOCATE',
+        scope = 'generic',
+        aspect = 'locational',
+    ),
+    af.AnnotDef(
+        name = 'basolateral_cell_membrane',
+        parent = 'plasma_membrane',
+        aspect = 'locational',
+        scope = 'generic',
+        resource = 'LOCATE',
+        args = {
+            'location': 'basolateral plasma membrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'apical_cell_membrane',
+        parent = 'plasma_membrane',
+        aspect = 'locational',
+        scope = 'generic',
+        resource = 'LOCATE',
+        args = {
+            'location': 'apical plasma membrane',
         },
     ),
 
@@ -3212,6 +3232,34 @@ annot_combined_classes = (
             },
         ),
     ),
+    af.AnnotDef(
+        name = 'receptor',
+        scope = 'generic',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Receptor',
+        },
+        limit = 'extracellular',
+    ),
+    af.AnnotDef(
+        name = 'cytokine',
+        parent = 'ligand',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Cytokine',
+        },
+        limit = 'extracellular',
+    ),
+    af.AnnotDef(
+        name = 'secreted_peptidase',
+        scope = 'generic',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Protease',
+        },
+        limit = 'secreted',
+    ),
+    
 
     # ECM
     af.AnnotDef(

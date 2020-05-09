@@ -221,9 +221,10 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
     def setup_intercell_classes(self):
 
-        self.set_classes()
-        self.add_classes_to_df()
-        self.collect_classes()
+        pass
+        #self.set_classes()
+        #self.add_classes_to_df()
+        #self.collect_classes()
 
 
     def pre_build(self):
@@ -235,6 +236,9 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
         self.add_cellphonedb_categories()
         self.add_baccin_categories()
+        self.add_hpmr_categories()
+        self.add_matrisome_categories()
+        self.add_surfaceome_categories()
 
 
     def add_cellphonedb_categories(self):
