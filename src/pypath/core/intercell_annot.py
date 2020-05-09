@@ -744,8 +744,7 @@ annot_combined_classes = (
                 'mtmp',
             },
         },
-        enabled = False,
-    ),  # about 500 proteins above the ones in UniProt classified as
+    ),  # about 60 proteins above the ones in UniProt classified as
         # transmembrane, mostly based on prediction methods
         # for this reason we don't use it, however it might be that
         # many more proteins have transmembrane isoforms apart from
@@ -757,11 +756,8 @@ annot_combined_classes = (
         args = {
             'tmh': bool,
         },
-        enabled = False,
-    ),  # same as for LOCATE: overall 1000 additional TM proteins
-        # apart from the ones in UniProt, 150 of these are annotated
-        # to the plasma membrane, most of these are peripheral
-        # according to UniProt
+    ),  # same as for LOCATE: overall 141 additional TM proteins
+        # apart from the ones in UniProt
     af.AnnotDef(
         name = 'lhfpl',
         parent = 'transmembrane',
