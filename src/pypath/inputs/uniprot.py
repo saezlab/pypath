@@ -524,7 +524,7 @@ def uniprot_data(field, organism = 9606, reviewed = True):
 def uniprot_preprocess(field, organism = 9606, reviewed = True):
 
     relabel = re.compile(r'[A-Z\s]+:\s')
-    reisoform = re.compile(r'\[.*]:?\s?')
+    reisoform = re.compile(r'\[[-\w\s]+\]:?\s?')
     retermsep = re.compile(r'\s?[\.,]\s?')
     reref = re.compile(r'\{[-\w :\|,\.]*\}')
 
@@ -555,7 +555,7 @@ def uniprot_preprocess(field, organism = 9606, reviewed = True):
                 it0
                 for it0 in
                 (
-                    common.upper0(it).strip(' .;,')
+                    common.upper0(it.strip(' .;,'))
                     for it in item.split(';')
                 )
                 if it0
