@@ -69,10 +69,12 @@ def locate_localizations(
     used_elements = []
 
     for ev, elem in parser:
+
         if ev == 'end' and elem.tag == 'LOCATE_protein':
 
             tag_protein = elem.find('protein')
             this_uniprot = None
+            this_uniprots = None
             this_entrez  = None
             this_organism = (
                 tag_protein.find('organism').text
@@ -205,7 +207,9 @@ def locate_localizations(
                                     locs.add(loc.text.lower())
 
                         pmid = litref.find('source')
-                        pmid = None if pmid is None else pmid.find('accn').text
+                        pmid = (
+                            None if pmid is None else pmid.find('accn').text
+                        )
 
                         for loc in locs:
 
