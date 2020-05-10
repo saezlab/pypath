@@ -3247,15 +3247,48 @@ annot_combined_classes = (
         limit = 'extracellular',
     ),
     af.AnnotDef(
-        name = 'secreted_peptidase',
+        name = 'peptidase',
         scope = 'generic',
         resource = 'UniProt_keywords',
         args = {
             'keyword': 'Protease',
         },
-        limit = 'secreted',
+        limit = 'extracellular',
+    ),  # looks all right
+    af.AnnotDef(
+        name = 'peptidase_inhibitor',
+        scope = 'generic',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Protease inhibitor',
+        },
+        limit = 'extracellular',
+    ),  # looks all right
+    af.AnnotDef(
+        name = 'collagen_degrading',
+        parent = 'peptidase',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Collagen degradation',
+        },
+    ),  # very good
+    af.AnnotDef(
+        name = 'adhesion',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Cell adhesion',
+        },
+        limit = 'cell_surface',
+    ),  # with limiting to the cell surface, it's a nice
+        # collecion of adhesion proteins (267)
+    af.AnnotDef(
+        name = 'gap_junction',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Gap junction',
+        },
+        exclude = {'Q69YQ0', 'P48745'},
     ),
-    
 
     # ECM
     af.AnnotDef(
