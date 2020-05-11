@@ -1624,7 +1624,26 @@ annot_combined_classes = (
         },
     ),  # locations are correct, includes also adhesion receptors
     af.AnnotDef(
+        name = 'growth_factor'
+        parent = 'receptor',
+        resource = 'iTALK',
+        args = {
+            'mainclass': 'receptor',
+            'subclass': 'growth factor',
+        },
+    ),  # looks good
+    af.AnnotDef(
+        name = 'cytokine'
+        parent = 'receptor',
+        resource = 'iTALK',
+        args = {
+            'mainclass': 'receptor',
+            'subclass': 'cytokine',
+        },
+    ),  # looks good
+    af.AnnotDef(
         name = 'receptor',
+        scope = 'generic',
         resource = 'Almen2009',
         args = {
             'mainclass': 'Receptors',
@@ -1633,6 +1652,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'receptor',
+        scope = 'generic',
         resource = 'CellCellInteractions',
         args = {
             'mainclass': 'Receptor',
@@ -3806,7 +3826,7 @@ annot_combined_classes = (
         limit = 'extracellular',
     ),
     af.AnnotDef(
-        name = 'ligand_italk',
+        name = 'ligand',
         resource = 'iTALK',
         args = {
             'mainclass': 'ligand',
@@ -3844,6 +3864,24 @@ annot_combined_classes = (
         }
     ),  # locations are 90% correct (secreted or cell surface), but includes
         # some ECM, enzyme, regulator, etc proteins
+    af.AnnotDef(
+        name = 'growth_factor'
+        parent = 'ligand',
+        resource = 'iTALK',
+        args = {
+            'mainclass': 'ligand',
+            'subclass': 'growth factor',
+        },
+    ),  # looks good
+    af.AnnotDef(
+        name = 'cytokine'
+        parent = 'ligand',
+        resource = 'iTALK',
+        args = {
+            'mainclass': 'ligand',
+            'subclass': 'cytokine',
+        },
+    ),  # looks good
     af.AnnotDef(
         name = 'ligand',
         resource = 'CellCellInteractions',
