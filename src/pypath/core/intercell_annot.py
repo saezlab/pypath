@@ -1621,9 +1621,48 @@ annot_combined_classes = (
         },
         scope = 'generic',
         exclude = {
-            'P20645', 'Q9P2K9',
-        }
-    ),  # includes also secreted proteins, such as ligands
+            'Q8IZV2', 'O95477', 'A6NFA1', 'B2RUY7', 'B4DS77', 'O00170',
+            'O00468', 'O00548', 'O00555', 'O14493', 'O14638', 'O14672',
+            'O14788', 'O14795', 'O15551', 'O43813', 'O43866', 'O43921',
+            'O60359', 'O75078', 'O75106', 'O75144', 'O75575', 'O94772',
+            'O94779', 'O94856', 'O95196', 'O95259', 'O95727', 'O95897',
+            'O95967', 'P00734', 'P01303', 'P01889', 'P01903', 'P01906',
+            'P01909', 'P01911', 'P01920', 'P02649', 'P04004', 'P04439',
+            'P05026', 'P05156', 'P05187', 'P05231', 'P05362', 'P05538',
+            'P08865', 'P09326', 'P09923', 'P10321', 'P10589', 'P11168',
+            'P12830', 'P13056', 'P13598', 'P13765', 'P15813', 'P16581',
+            'P17693', 'P18433', 'P19256', 'P19801', 'P20827', 'P20916',
+            'P21246', 'P21926', 'P22460', 'P22736', 'P23515', 'P25098',
+            'P29460', 'P29972', 'P30511', 'P30533', 'P31431', 'P31997',
+            'P32004', 'P32942', 'P32970', 'P36269', 'P41235', 'P48509',
+            'P52797', 'P52798', 'P52799', 'P52803', 'P54709', 'P54851',
+            'P55160', 'P56705', 'P58401', 'P62079', 'P62955', 'P78504',
+            'P78509', 'P78536', 'P79483', 'P84157', 'P98172', 'Q02108',
+            'Q02153', 'Q02246', 'Q02641', 'Q02846', 'Q08380', 'Q08AM6',
+            'Q10588', 'Q12809', 'Q12884', 'Q13061', 'Q13275', 'Q13445',
+            'Q13740', 'Q13822', 'Q14213', 'Q14242', 'Q14541', 'Q14563',
+            'Q14773', 'Q14956', 'Q14982', 'Q14994', 'Q14995', 'Q15125',
+            'Q15758', 'Q15768', 'Q15842', 'Q15848', 'Q16853', 'Q19T08',
+            'Q29983', 'Q2TAL6', 'Q30201', 'Q401N2', 'Q496H8', 'Q4VCS5',
+            'Q4W5P6', 'Q5DX21', 'Q5T4B2', 'Q5VY80', 'Q5ZPR3', 'Q6PIZ9',
+            'Q6Q4G3', 'Q6RW13', 'Q6UWV6', 'Q6UXB3', 'Q6UXI9', 'Q7L0J3',
+            'Q7Z7D3', 'Q86UF1', 'Q86UK0', 'Q8IU54', 'Q8IUK5', 'Q8IWV2',
+            'Q8IZY2', 'Q8N2G4', 'Q8NCM2', 'Q8NFP4', 'Q8NFY4', 'Q8NFZ3',
+            'Q8NG11', 'Q8TAZ6', 'Q8TCY5', 'Q8TD07', 'Q8TDM5', 'Q8WUM9',
+            'Q8WWA0', 'Q92570', 'Q92753', 'Q92913', 'Q92954', 'Q96B86',
+            'Q96DZ9', 'Q96JB6', 'Q96JK4', 'Q96L42', 'Q96PB7', 'Q96S97',
+            'Q99075', 'Q99784', 'Q9BQQ7', 'Q9BRK0', 'Q9BUF7', 'Q9BY67',
+            'Q9BYE2', 'Q9BZM4', 'Q9GZM7', 'Q9H221', 'Q9H222', 'Q9H4B8',
+            'Q9H7V2', 'Q9NP59', 'Q9NR61', 'Q9NRQ2', 'Q9NY72', 'Q9NY84',
+            'Q9NYJ7', 'Q9NYZ4', 'Q9P0K1', 'Q9P0L9', 'Q9P232', 'Q9P2K9',
+            'Q9UBN1', 'Q9UBX5', 'Q9UEF7', 'Q9UF02', 'Q9UGM3', 'Q9UHC9',
+            'Q9UIR0', 'Q9UJZ1', 'Q9UL54', 'Q9ULB1', 'Q9ULD8', 'Q9UMF0',
+            'Q9UQ05', 'Q9Y215', 'Q9Y219', 'Q9Y286', 'Q9Y2I2', 'Q9Y3R0',
+            'Q9Y466', 'Q9Y4C0', 'Q9Y624', 'Q9Y698', 'Q9Y6Y9', 'Q8WXS5',
+            'Q9BX67', 'Q12933', 'Q96QT4', 'P20645', 'Q9P2K9',
+        },
+    ),  # includes also secreted proteins, such as ligands, and intracellular
+        # proteins, these we try to exclude;
         # furthermore nuclear receptors or receptors in the endosome
         # membrane, but I think those are OK
     af.AnnotDef(
@@ -3766,8 +3805,9 @@ annot_combined_classes = (
         exclude = {
             'Q6UWW8', 'P15531', 'P08236', 'Q9UHG3', 'Q9H9H4', 'O43852',
             'Q92896', 'P55789', 'P22392', 'Q96A49', 'Q8WZ79', 'Q9BS26',
-            'O95236', 'Q9UJU6', 'Q8NHP8', 'P35475',
+            'O95236', 'Q9UJU6', 'Q8NHP8', 'P35475', 'P12109',
         },
+        enabled = False,
     ),  # includes both secreted and cell surface,
         # also enzymes and regulators
     af.AnnotDef(
