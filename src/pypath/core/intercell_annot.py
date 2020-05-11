@@ -3476,15 +3476,53 @@ annot_combined_classes = (
             'subsubclass': 'Mucin',
         },
     ),
-    
     af.AnnotDef(
         name = 'ecm',
         parent = 'ecm',
-        resource = 'MatrixDB',
-        args = {
-            'mainclass': 'ecm',
-        },
-    ),  # some potentially wrong elements such as ligands
+        scope = 'generic',
+        resource_name = 'MatrixDB',
+        resource = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    resource = 'MatrixDB',
+                    args = {
+                        'mainclass': 'ecm',
+                    },
+                    exclude = {
+                        'Q12959', 'Q96JX3', 'Q96SY0', 'Q9UQE7',
+                        'O95389', 'Q9NZU0', 'P48745', 'O75445',
+                        'O75900', 'P05230', 'Q8TC99', 'O43155',
+                        'Q03001', 'Q5JSJ4', 'Q53GQ0', 'Q9Y5L3',
+                        'Q14129', 'A1KZ92', 'Q9Y2Y8', 'Q9UBB9',
+                        'Q9NZU1', 'P27797', 'Q92896', 'Q96HD1',
+                        'Q8IVL5', 'P22303', 'P23229', 'Q96RT1',
+                        'Q7RTW8', 'Q502W6', 'P55081', 'Q8IUX7',
+                        'Q92832', 'Q6UXH1', 'Q08431', 'Q9Y215',
+                        'Q03167', 'P03950', 'P10124', 'P52803',
+                        'Q96SY0', 'Q5KU26', 'Q86UN3', 'Q9Y2Y8',
+                        'O15455', 'Q96HD1', 'Q86UN2', 'Q6EMK4',
+                        'Q502W6', 'Q6AZY7', 'Q92832', 'Q6UXH1',
+                        'Q7L0X0', 'P10124',
+                    },
+                ),
+                af.AnnotOp(
+                    annots = (
+                        af.AnnotDef(
+                            resource = 'GO_Intercell',
+                            args = {'mainclass': 'lignads'},
+                        ),
+                        af.AnnotDef(
+                            resource = 'GO_Intercell',
+                            args = {'mainclass': 'enzyme'},
+                        ),
+                    ),
+                    op = set.union,
+                ),
+            ),
+            op = set.difference,
+        ),
+    ),  # some potentially wrong elements such as ligands, with removal
+        # of the groups above it looks more or less fine
     af.AnnotDef(
         name = 'ecm_go',
         resource = 'GO_Intercell',
