@@ -1046,6 +1046,25 @@ annot_combined_classes = (
             'mainclass': 'Interferon induced transmembrane proteins',
         },
     ),
+    af.AnnotDef(
+        name = 'lhfpl_plasma_membrane',
+        parent = 'plasma_membrane_transmembrane',
+        aspect = 'locational',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'LHFPL tetraspan proteins',
+        }
+    ),
+
+    #### what to do with this???
+    # plasma membrane regulator
+    af.AnnotDef(
+        name = 'plasma_membrane_regulator',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'EMP-PMP22-LIM',
+        }
+    ),
 
     # plasma membrane peripheral
     af.AnnotDef(
@@ -1216,6 +1235,24 @@ annot_combined_classes = (
         resource = 'HGNC',
         args = {
             'mainclass': 'Glypicans',
+        },
+    ),
+    af.AnnotDef(
+        name = 'glypican',
+        parent = 'cell_surface',
+        aspect = 'locational',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Glypican',
+        },
+    ),
+    af.AnnotDef(
+        name = 'syndecan',
+        parent = 'cell_surface',
+        aspect = 'locational',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Syndecan',
         },
     ),
     af.AnnotDef(
@@ -2532,6 +2569,14 @@ annot_combined_classes = (
         parent = 'secreted_receptor',
         resource = {'Q9UGM3', 'A1L4H1', 'Q86VB7'},
     ),
+    af.AnnotDef(
+        name = 'plexin',
+        parent = 'receptor',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Plexin',
+        },
+    ),
 
     # secreted receptors
     af.AnnotDef(
@@ -3182,6 +3227,14 @@ annot_combined_classes = (
         ),
     ),
     af.AnnotDef(
+        name = 'galectin',
+        parent = 'secreted_receptor',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Galectin',
+        },
+    ),
+    af.AnnotDef(
         name = 'lectin',
         parent = 'receptor',
         resource = 'UniProt_keywords',
@@ -3215,6 +3268,30 @@ annot_combined_classes = (
         limit = 'cell_surface',
     ),  # with limiting to the cell surface, it's a nice
         # collecion of adhesion proteins (267)
+    af.AnnotDef(
+        name = 'glypican',
+        parent = 'receptor_regulator',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Glypicans',
+        },
+    ),
+    af.AnnotDef(
+        name = 'glypican',
+        parent = 'receptor_regulator',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Glypican',
+        },
+    ),
+    af.AnnotDef(
+        name = 'syndecan',
+        parent = 'receptor_regulator',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Syndecan',
+        },
+    ),
 
     # ECM
     af.AnnotDef(
@@ -3290,7 +3367,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'ecm_regulator',
-        parent = 'ecm',
+        scope = 'generic',
         resource = 'Matrisome',
         args = {
             'subclass': 'ECM regulators',
@@ -3329,36 +3406,77 @@ annot_combined_classes = (
         },
         exclude = {'Q14512', 'P51610'},
     ),
-    
     af.AnnotDef(
-        name = 'ecm_matrisome',
-        resource = af.AnnotOp(
-            annots = (
-                af.AnnotDef(
-                    name = 'ecm_matrisome_core',
-                    resource = 'Matrisome',
-                    args = {
-                        'mainclass': 'Core matrisome',
-                    },
-                ),
-                af.AnnotOp(
-                    annots = (
-                        af.AnnotDef(
-                            name = 'ecm_matrisome_affiliated',
-                            resource = 'Matrisome',
-                            args = {
-                                'mainclass': 'Matrisome-associated',
-                                'subclass': 'ECM-affiliated Proteins',
-                            },
-                        ),
-                        'cell_surface',
-                    ),
-                    op = set.difference,
-                ),
-            ),
-            op = set.union,
-        ),
+        name = 'basement_membrane',
+        parent = 'ecm',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Basement Membrane',
+        },
     ),
+    af.AnnotDef(
+        name = 'ccn_family',
+        parent = 'ligand',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'CCN Family',
+        },
+    ),
+    af.AnnotDef(
+        name = 'cathepsin',
+        parent = 'extracellular_peptidase',
+        resource = {'P08311', 'P07711', 'P43235', 'P25774', 'P07339'},
+    ),
+    af.AnnotDef(
+        name = 'cystatin',
+        parent = 'extracellular_peptidase_inhibitor',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Cystatin',
+        },
+        exclude = {'P04080', 'P01040'},
+    ),
+    af.AnnotDef(
+        name = 'fibril_associated_collagen_with_interrupted_triple_helices',
+        parent = 'ecm',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'FACIT',
+        },
+    ),
+    af.AnnotDef(
+        name = 'fibulin',
+        parent = 'ecm',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Fibulin',
+        },
+    ),
+    af.AnnotDef(
+        name = 'hemostasis_related',
+        parent = 'ecm',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Hemostasis',
+        },
+    ),
+    af.AnnotDef(
+        name = 'laminin',
+        parent = 'ecm',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Laminin, Basement Membrane',
+        },
+    ),
+    af.AnnotDef(
+        name = 'mucin',
+        parent = 'ecm',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Mucin',
+        },
+    ),
+    
     af.AnnotDef(
         name = 'ecm',
         parent = 'ecm',
@@ -4097,6 +4215,14 @@ annot_combined_classes = (
         }
     ),
     af.AnnotDef(
+        name = 'growth_factor_binder',
+        parent = 'ligand_regulator',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Growth Factor-binding',
+        }
+    ),
+    af.AnnotDef(
         name = 'growth_factor',
         parent = 'ligand',
         resource = 'UniProt_keywords',
@@ -4113,31 +4239,37 @@ annot_combined_classes = (
             'keyword': 'Cytokine',
         },
     ),
-
-    # plasma membrane
     af.AnnotDef(
-        name = 'plasma_membrane',
-        resource = af.AnnotOp(
-            annots = (
-                'transmembrane_cellphonedb',
-                'lhfpl_plasma_membrane_hgnc',
-            ),
-            op = set.union,
-        ),
+        name = 'semaphorin',
+        parent = 'ligand',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Semaphorin',
+        },
     ),
     af.AnnotDef(
-        name = 'lhfpl_plasma_membrane',
+        name = 'glypican',
+        parent = 'ligand_regulator',
         resource = 'HGNC',
         args = {
-            'mainclass': 'LHFPL tetraspan proteins',
-        }
+            'mainclass': 'Glypicans',
+        },
     ),
     af.AnnotDef(
-        name = 'plasma_membrane_regulator',
-        resource = 'Almen2009',
+        name = 'glypican',
+        parent = 'ligand_regulator',
+        resource = 'Matrisome',
         args = {
-            'classes': 'EMP-PMP22-LIM',
-        }
+            'subsubclass': 'Glypican',
+        },
+    ),
+    af.AnnotDef(
+        name = 'syndecan',
+        parent = 'ligand_regulator',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Syndecan',
+        },
     ),
 
     # adhesion
@@ -4223,23 +4355,6 @@ annot_combined_classes = (
         args = {
             'mainclass': {'adhesion to matrix', 'adhesion to other cells'},
         }
-    ),
-    af.AnnotDef(
-        name = 'adhesion_matrisome',
-        resource = af.AnnotOp(
-            annots = (
-                af.AnnotDef(
-                    name = 'ecm_affiliated_matrisome',
-                    resource = 'Matrisome',
-                    args = {
-                        'mainclass': 'Matrisome-associated',
-                        'subclass': 'ECM-affiliated Proteins',
-                    },
-                ),
-                'cell_surface',
-            ),
-            op = set.intersection,
-        ),
     ),
     af.AnnotDef(
         name = 'adhesion',
