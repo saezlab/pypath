@@ -3534,15 +3534,32 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'ecm_ramilowski',
+        name = 'ecm',
         resource = 'Ramilowski_location',
         args = {
-            'location': {
-                'extracellular matrix',
-                'basement membrane',
-            },
+            'location': 'extracellular matrix',
+        },
+        exclude = {
+            'P55081', 'P03950', 'Q9UBV4', 'O14904', 'O00744', 'Q9H1J7',
+            'O00755', 'Q9NPA2', 'P56706', 'P09544', 'Q93097', 'P10745',
+            'Q9GZT5', 'O14905', 'O96014', 'Q9NRE1', 'P56703', 'P01009',
+            'P04628', 'P09238', 'Q9Y6F9', 'P08254', 'P56704', 'P39900',
+            'P01137', 'Q5K4E3', 'P03956', 'Q9H239', 'P22894', 'Q92626',
+            'P56705', 'P41221', 'Q93098', 'Q9H1J5', 'Q6UY14', 'Q66K79',
+            'P55081', 'P08253', 'P09237', 'P12644', 'P13497', 'P45452',
+            'Q8N2S1', 'P35625', 'P14780', 'Q8N6G6', 'Q8IUX8', 'Q9ULZ9',
+            'P51512',
         },
     ),
+    af.AnnotDef(
+        name = 'basement membrane',
+        parent = 'ecm',
+        resource = 'Ramilowski_location',
+        args = {
+            'location': 'basement membrane',
+        },
+    ),
+
     af.AnnotDef(
         name = 'ecm_uniprot',
         resource = 'UniProt_location',
@@ -4311,6 +4328,33 @@ annot_combined_classes = (
         args = {
             'subsubclass': 'Syndecan',
         },
+    ),
+        af.AnnotDef(
+        name = 'wnt',
+        parent = 'ligand',
+        resource = {
+            'O96014', 'P56703', 'O00755', 'P04628', 'P56706', 'Q9UBV4',
+            'P56705', 'Q9Y6F9', 'O14904', 'P41221', 'Q93098', 'P09544',
+            'Q9H1J5', 'Q93097', 'O00744', 'P56704', 'Q9GZT5', 'O14905',
+            'Q9H1J7',
+        }
+    ),
+    af.AnnotDef(
+        name = 'bmp',
+        parent = 'ligand',
+        resource = {'P12644', 'P13497'},
+    ),
+    af.AnnotDef(
+        name = 'tgf_beta',
+        parent = 'ligand',
+        resource = {
+            'P01137', 
+        }
+    ),
+    af.AnnotDef(
+        name = 'tgf_beta_binding',
+        parent = 'ligand_regulator',
+        resource = {'Q8N2S1'},
     ),
 
     # adhesion
@@ -6093,6 +6137,38 @@ annot_combined_classes = (
         name = 'biotinidase',
         parent = 'secreted_enzyme',
         resource = {'P43251'},
+    ),
+    af.AnnotDef(
+        name = 'matrix_matalloproteinase',
+        name = 'secreted_peptidase',
+        resource = {
+            'Q9NRE1', 'Q9NPA2', 'P14780', 'Q9H239', 'P22894', 'P08253',
+            'P09237', 'P39900', 'P45452', 'Q9ULZ9', 'P51512', 'P03956',
+        }
+    ),
+    af.AnnotDef(
+        name = 'adamts',
+        parent = 'secreted_peptidase',
+        resource = {'Q8N6G6', 'Q6UY14'},
+    ),
+    af.AnnotDef(
+        name = 'stromelysin',
+        parent = 'secreted_peptidase',
+        resource = {'P08254', 'P09238'},
+    ),
+    af.AnnotDef(
+        name = 'carboxypeptidase',
+        parent = 'secreted_peptidase',
+        resource = {'Q66K79'},
+    ),
+    af.AnnotDef(
+        name = 'polyserase',
+        parent = 'secreted_peptidase',
+        resource = {'Q5K4E3'},
+    ),
+    af.AnnotDef(
+        name = 'secreted_peptidase_inhibitor',
+        resource = {'P01009', 'P35625'},
     ),
 
     # growth factor binder or regulator
