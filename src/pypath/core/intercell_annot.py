@@ -3569,11 +3569,52 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'ecm',
-        resource = 'CellCellInteractions',
-        args = {
-            'mainclass': 'ECM',
-        },
+        resource_name = 'CellCellInteractions',
+        resource = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    resource = 'CellCellInteractions',
+                    args = {
+                        'mainclass': 'ECM',
+                    },
+                    exclude = {
+                        'Q12959', 'Q01196', 'Q6PIL6', 'Q9NS61',
+                        'Q96JX3', 'Q9UQE7', 'O95389', 'Q9NZU0',
+                        'P48745', 'O75445', 'O75197', 'O43294',
+                        'O75900', 'Q8N7U6', 'P05230', 'P16144',
+                        'O43155', 'Q05586', 'P00441', 'Q03001',
+                        'P07900', 'P26012', 'Q53GQ0', 'Q9Y5L3',
+                        'P14618', 'P37840', 'Q4KMG0', 'Q14129',
+                        'P16150', 'Q14651', 'Q9UBB9', 'Q9NZU1',
+                        'P07339', 'P27797', 'Q92896', 'P08311',
+                        'Q9NZU5', 'P16591', 'Q8IVL5', 'P22303',
+                        'Q9ULV1', 'P23229', 'P05556', 'Q8IVL1',
+                        'P21802', 'Q96RT1', 'Q7RTW8', 'Q9NZI2',
+                        'P55081', 'P29122', 'P52272', 'Q9Y215',
+                        'P14625', 'Q03167', 'Q9Y2W7', 'P06756',
+                        'Q01638', 'P03950', 'Q9H1J7',
+                    },
+                ),
+                af.AnnotOp(
+                    annots = (
+                        af.AnnotDef(
+                            resource = 'GO_Intercell',
+                            args = {'mainclass': 'lignads'},
+                        ),
+                        af.AnnotDef(
+                            resource = 'GO_Intercell',
+                            args = {'mainclass': 'enzyme'},
+                        ),
+                    ),
+                    op = set.union,
+                ),
+            ),
+            op = set.difference,
+        )
     ),  # more or less correct, but includes enzymes and matrix adhesion
+        # these we excluded
+        # TODO: the rest can be added to ligand and secreted enzyme
+        # categories
     # specific subclasses from HGNC
     af.AnnotDef(
         name = 'collagen_proteoglycan',
