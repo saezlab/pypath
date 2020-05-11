@@ -1136,7 +1136,6 @@ annot_combined_classes = (
         aspect = 'locational',
         resource = 'Matrisome',
         args = {
-            'mainclass': 'Matrisome-associated',
             'subclass': 'Secreted Factors',
         },
         exclude = {'P51610'}
@@ -3157,7 +3156,7 @@ annot_combined_classes = (
             'classes': 'neutrophin',
         },
     ),
-    
+    # specific classes from UniProt keywords
     af.AnnotDef(
         name = 'gpcr',
         parent = 'receptor',
@@ -3199,6 +3198,37 @@ annot_combined_classes = (
         ),
     ),
     af.AnnotDef(
+        name = 'receptor',
+        scope = 'generic',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Receptor',
+        },
+        limit = 'extracellular',
+    ),
+    af.AnnotDef(
+        name = 'adhesion',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Cell adhesion',
+        },
+        limit = 'cell_surface',
+    ),  # with limiting to the cell surface, it's a nice
+        # collecion of adhesion proteins (267)
+
+    # ECM
+    af.AnnotDef(
+        name = 'ecm',
+        resource = af.AnnotOp(
+            annots = '~ecm',
+            op = set.union,
+        ),
+        scope = 'generic',
+        source = 'composite',
+        transmitter = True,
+        receiver = False,
+    ),
+    af.AnnotDef(
         name = 'lectin',
         parent = 'ecm',
         resource = 'UniProt_keywords',
@@ -3229,79 +3259,77 @@ annot_combined_classes = (
         ),
     ),
     af.AnnotDef(
-        name = 'receptor',
-        scope = 'generic',
-        resource = 'UniProt_keywords',
+        name = 'collagen',
+        parent = 'ecm',
+        resource = 'Matrisome',
         args = {
-            'keyword': 'Receptor',
+            'subclass': 'Collagens',
         },
-        limit = 'extracellular',
     ),
     af.AnnotDef(
-        name = 'cytokine',
-        parent = 'ligand',
-        resource = 'UniProt_keywords',
+        name = 'glycoprotein',
+        parent = 'ecm',
+        resource = 'Matrisome',
         args = {
-            'keyword': 'Cytokine',
+            'subclass': 'ECM Glycoproteins',
         },
-        limit = 'extracellular',
+        exclude = {
+            'Q8TC99', 'Q502W6', 'Q96HD1', 'P55081', 'Q8IUX7', 'Q92832',
+            'Q6UXH1', 'Q5JSJ4', 'Q96SY0', 'Q08431', 'Q9Y215', 'O95389',
+            'A1KZ92', 'Q8WWZ8',
+        },
     ),
     af.AnnotDef(
-        name = 'peptidase',
-        scope = 'generic',
-        resource = 'UniProt_keywords',
+        name = 'proteoglycan',
+        parent = 'ecm',
+        resource = 'Matrisome',
         args = {
-            'keyword': 'Protease',
+            'subclass': 'Proteoglycans',
         },
-        limit = 'extracellular',
-    ),  # looks all right
-    af.AnnotDef(
-        name = 'peptidase_inhibitor',
-        scope = 'generic',
-        resource = 'UniProt_keywords',
-        args = {
-            'keyword': 'Protease inhibitor',
-        },
-        limit = 'extracellular',
-    ),  # looks all right
-    af.AnnotDef(
-        name = 'collagen_degrading',
-        parent = 'peptidase',
-        resource = 'UniProt_keywords',
-        args = {
-            'keyword': 'Collagen degradation',
-        },
-    ),  # very good
-    af.AnnotDef(
-        name = 'adhesion',
-        resource = 'UniProt_keywords',
-        args = {
-            'keyword': 'Cell adhesion',
-        },
-        limit = 'cell_surface',
-    ),  # with limiting to the cell surface, it's a nice
-        # collecion of adhesion proteins (267)
-    af.AnnotDef(
-        name = 'gap_junction',
-        resource = 'UniProt_keywords',
-        args = {
-            'keyword': 'Gap junction',
-        },
-        exclude = {'Q69YQ0', 'P48745'},
+        exclude = {'P10124', 'Q9Y2Y8'},
     ),
-
-    # ECM
+    af.AnnotDef(
+        name = 'ecm_regulator',
+        parent = 'ecm',
+        resource = 'Matrisome',
+        args = {
+            'subclass': 'ECM regulators',
+        },
+        exclude = {
+            'O00469', 'O15460', 'O43548', 'O60911', 'O75063', 'O75635',
+            'O95932', 'P00488', 'P01040', 'P04080', 'P07339', 'P09668',
+            'P10619', 'P13674', 'P14091', 'P20848', 'P29508', 'P35237',
+            'P43234', 'P48594', 'P48595', 'P50452', 'P50453', 'P50454',
+            'P53634', 'P56202', 'Q08188', 'Q6HA08', 'Q6YHK3', 'Q7Z4N8',
+            'Q86WD7', 'Q8IVL5', 'Q8IVL6', 'Q8NBH2', 'Q96IV0', 'Q96KS0',
+            'Q96P15', 'Q9GZT9', 'Q9H6Z9', 'Q9NXG6', 'Q9UBR2', 'Q9UBX1',
+            'Q9UIV8', 'Q9UKF2',
+        },
+    ),  # mostly secreted enzymes acting on ECM components
     af.AnnotDef(
         name = 'ecm',
-        resource = af.AnnotOp(
-            annots = '~ecm',
-            op = set.union,
-        ),
         scope = 'generic',
-        source = 'composite',
-        transmitter = True,
-        receiver = False,
+        resource = {
+            'Q5SZK8', 'Q6UVK1', 'P35247', 'Q99102', 'Q9Y625', 'P09382',
+            'P0C091', 'Q9ULC0', 'Q8N387', 'Q5H8C1', 'E2RYF6', 'Q02817',
+            'Q8TAX7', 'P98088', 'Q9HC84', 'Q6W4X9', 'Q7Z5P9', 'Q9UKN1',
+            'Q685J3', 'Q9H3R2', 'Q8WXI7', 'P15941', 'Q8N387', 'Q8N307',
+            'Q02505', 'Q5SSG8',
+        },
+    ),  # these are mostly mucins, selected by Leila from the
+        # Matrisome "ECM-affiliated" category; however this category
+        # contains 6x more proteins and later would be good to review
+        # these again and include in further categories
+    af.AnnotDef(
+        name = 'ligand',
+        scope = 'generic',
+        resource = 'Matrisome',
+        args = {
+            'subclass': 'Secreted Factors',
+        },
+        exclude = {'Q14512', 'P51610'},
     ),
+    
     af.AnnotDef(
         name = 'ecm_matrisome',
         resource = af.AnnotOp(
@@ -3493,6 +3521,15 @@ annot_combined_classes = (
         transmitter = False,
         scope = 'generic',
         source = 'composite',
+    ),
+    af.AnnotDef(
+        name = 'cytokine',
+        parent = 'ligand',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Cytokine',
+        },
+        limit = 'extracellular',
     ),
     af.AnnotDef(
         name = 'ligand_italk',
@@ -4108,14 +4145,9 @@ annot_combined_classes = (
         name = 'adhesion',
         resource = af.AnnotOp(
             annots = (
-                'adhesion_cellphonedb',
-                'adhesion_go',
-                'adhesion_matrisome',
-                'adhesion_hgnc',
-                'adhesion_integrins',
-                'adhesion_zhong2015',
-                'adhesion_adhesome',
-                'focal_adhesion_ramilowski',
+                '~adhesion',
+                '~cell_adhesion',
+                '~matrix_adhesion',
             ),
             op = set.union,
         ),
@@ -4154,7 +4186,7 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'adhesion_zhong2015',
+        name = 'adhesion',
         resource = 'Zhong2015',
     ),
     af.AnnotDef(
@@ -5575,7 +5607,33 @@ annot_combined_classes = (
         ),
     ),
     af.AnnotDef(
-        name = 'extracellular_enzyme_matrisome',
+        name = 'peptidase',
+        scope = 'generic',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Protease',
+        },
+        limit = 'extracellular',
+    ),  # looks all right
+    af.AnnotDef(
+        name = 'peptidase_inhibitor',
+        scope = 'generic',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Protease inhibitor',
+        },
+        limit = 'extracellular',
+    ),  # looks all right
+    af.AnnotDef(
+        name = 'collagen_degrading',
+        parent = 'peptidase',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Collagen degradation',
+        },
+    ),  # very good
+    af.AnnotDef(
+        name = 'extracellular_enzyme',
         resource = 'Matrisome',
         args = {
             'subclass': 'ECM Regulators',
@@ -5583,7 +5641,8 @@ annot_combined_classes = (
     ),
     # subclasses from HGNC
     af.AnnotDef(
-        name = 'adamts_extracellular_peptidase',
+        name = 'adamts',
+        parent = 'extracellular_peptidase',
         resource = 'HGNC',
         args = {
             'mainclass': (
@@ -5592,14 +5651,16 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'adamts_like_extracellular_peptidase',
+        name = 'adamts_like',
+        parent = 'extracellular_peptidase',
         resource = 'HGNC',
         args = {
             'mainclass': 'ADAMTS like',
         },
     ),
     af.AnnotDef(
-        name = 'heparanase_extracellular_peptidase',
+        name = 'heparanase',
+        parent = 'extracellular_peptidase',
         resource = 'HGNC',
         args = {
             'mainclass': 'Heparanases',
@@ -5615,7 +5676,8 @@ annot_combined_classes = (
         },
     ),  # secreted enzymes acting on phospholipids
     af.AnnotDef(
-        name = 'defensin_extracellular_enyzme',
+        name = 'defensin',
+        parent = 'extracellular_enyzme',
         resource = 'HGNC',
         args = {
             'mainclass': {
@@ -5626,7 +5688,8 @@ annot_combined_classes = (
     ),  # permeabilizing microorganism membranes or
         # binding to microorganism surfaces
     af.AnnotDef(
-        name = 'lysozym_extracellular_enyzme',
+        name = 'lysozym',
+        parent = 'extracellular_enyzme',
         resource = 'HGNC',
         args = {
             'mainclass': {
@@ -5644,15 +5707,18 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'galactosidase_extracellular_enyzme',
+        name = 'galactosidase',
+        parent = 'extracellular_enyzme',
         resource = {'Q6UWU2', 'Q8IW92'},
     ),  # secreted galactosidases
     af.AnnotDef(
-        name = 'm1_metallopeptidase_extracellular_peptidase',
+        name = 'm1_metallopeptidase',
+        parent = 'extracellular_peptidase',
         resource = {'Q9H4A4'},
     ),  #
     af.AnnotDef(
-        name = 'm16_metallopeptidase_extracellular_peptidase',
+        name = 'm16_metallopeptidase',
+        parent = 'extracellular_peptidase',
         resource = {'P14735'},
     ),  # acts on peptide hormones
     af.AnnotDef(
@@ -5905,33 +5971,29 @@ annot_combined_classes = (
     # gap junction
     af.AnnotDef(
         name = 'gap_junction',
+        scope = 'generic',
+        source = 'composite',
         resource = af.AnnotOp(
-            annots = (
-                'gap_junction_go',
-                'gap_junction_ramilowski',
-                'gap_junction_uniprot',
-                'gap_junction_hgnc',
-                'pannexin_gap_junction_hgnc',
-            ),
+            annots = '~gap_junction',
             op = set.union,
         ),
     ),
     af.AnnotDef(
-        name = 'gap_junction_go',
+        name = 'gap_junction',
         resource = 'GO_Intercell',
         args = {
             'mainclass': 'gap junction',
         },
     ),
     af.AnnotDef(
-        name = 'gap_junction_ramilowski',
+        name = 'gap_junction',
         resource = 'Ramilowski_location',
         args = {
             'location': 'gap junction',
         },
     ),
     af.AnnotDef(
-        name = 'gap_junction_uniprot',
+        name = 'gap_junction',
         resource = 'UniProt_location',
         args = {
             'location': 'Gap junction',
@@ -5945,7 +6007,8 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'pannexin_gap_junction',
+        name = 'pannexin',
+        parent = 'gap_junction',
         resource = 'HGNC',
         args = {
             'mainclass': 'Pannexins',
@@ -5956,31 +6019,26 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'tight_junction',
         resource = af.AnnotOp(
-            annots = (
-                'tight_junction_go',
-                'tight_junction_ramilowski',
-                'tight_junction_uniprot',
-                'tight_junction_hgnc',
-            ),
+            annots = '~tight_junction',
             op = set.union,
         ),
     ),
     af.AnnotDef(
-        name = 'tight_junction_go',
+        name = 'tight_junction',
         resource = 'GO_Intercell',
         args = {
             'mainclass': 'tight junction',
         },
     ),
     af.AnnotDef(
-        name = 'tight_junction_ramilowski',
+        name = 'tight_junction',
         resource = 'Ramilowski_location',
         args = {
             'location': 'tight junction',
         },
     ),
     af.AnnotDef(
-        name = 'tight_junction_uniprot',
+        name = 'tight_junction',
         resource = af.AnnotOp(
             annots = (
                 af.AnnotDef(
@@ -5996,7 +6054,8 @@ annot_combined_classes = (
         ),
     ),
     af.AnnotDef(
-        name = 'claudin_tight_junction',
+        name = 'claudin',
+        parent = 'tight_junction',
         resource = 'Almen2009',
         args = {
             'mainclass': 'Claudin',
@@ -6021,27 +6080,13 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'adherens_junction_uniprot',
-        resource = af.AnnotOp(
-            annots = (
-                af.AnnotDef(
-                    name = 'adherens_junction_uniprot_location',
-                    resource = 'UniProt_location',
-                    args = {
-                        'location': 'Adherens junction',
-                    },
-                ),
-                af.AnnotOp(
-                    annots = (
-                        'transmembrane',
-                        'cell_surface',
-                    ),
-                    op = set.union,
-                ),
-            ),
-            op = set.intersection
-        ),
-    ),
+        name = 'adherens_junction',
+        resource = 'UniProt_location',
+        args = {
+            'location': 'Adherens junction',
+        },
+        limit = 'cell_surface',
+    ),  # to be checked
     # specific subclasses from HGNC
     af.AnnotDef(
         name = 'tight_junction',
@@ -6063,6 +6108,14 @@ annot_combined_classes = (
         args = {
             'mainclass': 'Gap junction proteins',
         },
+    ),
+    af.AnnotDef(
+        name = 'gap_junction',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Gap junction',
+        },
+        exclude = {'Q69YQ0', 'P48745'},
     ),
 
     # miscellanous from HGNC
@@ -6251,6 +6304,8 @@ annot_combined_classes = (
             'mainclass': 'V-set domain containing',
         },
     ),  # various ligands, receptors and adhesion molecules
+
+    ### Miscellanous ###
 
     # intracellular protein classes in close relation to intercellular
     # communication

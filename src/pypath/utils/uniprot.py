@@ -609,19 +609,25 @@ def print_features(
     fileobj.flush()
 
 
-def info(*uniprot_ids, features = None, fileobj = None, **kwargs):
+def info(
+        *uniprot_ids,
+        features = None,
+        fileobj = None,
+        header = None,
+        **kwargs
+    ):
     """
     Prints a table with the most important (or the requested) features of a
     list of UniProt IDs.
     """
-    
+
     if (
         len(uniprot_ids) == 1 and
         isinstance(uniprot_ids, common.list_like)
     ):
-        
+
         uniprot_ids = uniprot_ids[0]
-    
+
     features = (
         features or
         (
@@ -635,9 +641,21 @@ def info(*uniprot_ids, features = None, fileobj = None, **kwargs):
             'subcellular_location',
         )
     )
-    
+
     fileobj = fileobj or sys.stdout
-    
+
+    header = (
+        header or
+        '=====> [%u proteins] <=====\n' % len(
+            entity.Entity.filter_entity_type(
+                uniprot_ids,
+                entity_type = 'protein',
+            )
+        )
+    )
+
+    fileobj.write(header)
+
     print_features(
         uniprot_ids,
         *features,
@@ -680,7 +698,7 @@ def browse(groups, start = 0, fileobj = None, **kwargs):
                 uniprots
             )
 
-            fileobj.write(
+            header = (
                 '[%u/%u] =====> %s <===== [%u proteins]\n' % (
                     n + 1,
                     n_groups,
@@ -689,7 +707,7 @@ def browse(groups, start = 0, fileobj = None, **kwargs):
                 )
             )
 
-            info(uniprots, fileobj = fileobj, **kwargs)
+            info(uniprots, fileobj = fileobj, header = header, **kwargs)
 
             inp = input()
 
@@ -706,6 +724,6 @@ def browse(groups, start = 0, fileobj = None, **kwargs):
 
                 fileobj.write(os.linesep * 2)
                 break
-    
+
     sys.stdout.write(os.linesep)
     sys.stdout.flush()
