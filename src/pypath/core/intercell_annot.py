@@ -1137,8 +1137,11 @@ annot_combined_classes = (
         args = {
             'mainclass': 'secreted',
         },
+        enabled = False,
     ),  # some potentially wrong elements, proteins annotated by
         # UniProt as intracellular
+        # manual revision is time consuming (3000 proteins), disabled
+        # for the time being
     af.AnnotDef(
         name = 'secreted',
         aspect = 'locational',
