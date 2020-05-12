@@ -1960,6 +1960,15 @@ annot_combined_classes = (
             'P48552', 'Q04724', 'P31749', 'P48552', 'P61160',
         },
     ),
+    af.AnnotDef(
+        name = 'receptor',
+        scope = 'generic',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Receptor',
+        },
+        limit = 'plasma_membrane_transmembrane',
+    ),
     # receptor subclasses from HGNC
     af.AnnotDef(
         name = 'interleukin',
@@ -4812,6 +4821,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'adhesion',
+        scope = 'generic',
         resource = 'Zhong2015',
     ),
     af.AnnotDef(
