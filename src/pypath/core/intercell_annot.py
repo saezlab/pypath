@@ -4068,27 +4068,37 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'ligand_dgidb',
         resource = af.AnnotOp(
-            annots = (
-                'growth_factor_dgidb',
-                'hormone_dgidb',
-            ),
+            annots = '~ligand~DGIdb',
             op = set.union,
         ),
+        scope = 'generic',
+        resource_name = 'DGIdb',
     ),
     af.AnnotDef(
-        name = 'growth_factor_dgidb',
+        name = 'growth_factor',
+        parent = 'ligand',
         resource = 'DGIdb',
         args = {
             'category': 'GROWTH FACTOR',
         },
-    ),
+        exclude = {
+            'P06744', 'P55789', 'P13385', 'P01033', 'Q9UIW2', 'P00734',
+            'O14649', 'O75534', 'Q8NGH5', 'Q8NGH8', 'P21917', 'P14416',
+            'P0C7T3',
+        },
+    ),  # good, apart from a few surprising exceptions
     af.AnnotDef(
-        'hormone_dgidb',
+        name = 'hormone',
+        parent = 'ligand',
         resource = 'DGIdb',
         args = {
             'category': 'HORMONE ACTIVITY',
         },
-    ),
+        exclude = {
+            'P21917', 'P14416', 'P0C7T3', 'O75534', 'Q8NGH8', 'P35555',
+            'Q8NGH5', 'P35462', 'Q8NGS4', 'O95751',
+        },
+    ),  # good, apart from a few surprising exceptions
     af.AnnotDef(
         name = 'ligand_lrdb',
         resource = 'LRdb',
