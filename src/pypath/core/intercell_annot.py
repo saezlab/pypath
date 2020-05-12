@@ -6263,6 +6263,35 @@ annot_combined_classes = (
         source = 'composite',
     ),
     af.AnnotDef(
+        name = 'secreted_peptidase',
+        resource = 'UniProt_keywords',
+        scope = 'generic',
+        args = {
+            'keyword': 'Protease',
+        },
+        limit = 'secreted',
+    ),
+    af.AnnotDef(
+        name = 'secreted_peptidase',
+        resource = 'UniProt_keywords',
+        scope = 'generic',
+        args = {
+            'keyword': 'Protease',
+        },
+        limit = 'secreted',
+    ),
+    af.AnnotDef(
+        name = 'secreted_lipase',
+        parent = 'secreted_enzyme',
+        resource = 'UniProt_keywords',
+        scope = 'generic',
+        args = {
+            'keyword': 'Lipid degradation',
+        },
+        limit = 'secreted',
+    ),
+    # specific classes from HGNC
+    af.AnnotDef(
         name = 'chymotrypsin_like_elastase',
         parent = 'extracellular_peptidase',
         resource = 'HGNC',
