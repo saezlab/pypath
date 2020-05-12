@@ -3913,8 +3913,8 @@ annot_combined_classes = (
             'Q9UKQ2', 'P17752', 'P19823', 'P07237', 'P39019', 'P50552',
             'Q86UR5', 'Q92956', 'P55058', 'O95274', 'P80303', 'Q5T5A4',
             'P62987', 'Q9NZR2', 'P21980', 'P08709', 'P16035', 'O43278',
-            'P20292', 'P08582', 'P06744', 'P25063', 'Q7Z6A9', 'P0DP23',
-            'Q9NV23', 'Q13477',
+            'P20292', 'P08582', 'Q13477', 'P25063', 'Q7Z6A9', 'P0DP23',
+            'Q9NV23',
         }
     ),  # locations are 90% correct (secreted or cell surface), but includes
         # some ECM, enzyme, regulator, etc proteins
@@ -3969,7 +3969,7 @@ annot_combined_classes = (
             'P00451', 'P00488', 'P00734', 'P00740', 'P00742', 'P00749',
             'P00750', 'P00797', 'P00995', 'P01008', 'P01023', 'P01024',
             'P01031', 'P01033', 'P01112', 'P02746', 'P02768', 'P02788',
-            'P03973', 'P04278', 'P05067', 'P05155', 'P06744', 'P07093',
+            'P03973', 'P04278', 'P05067', 'P05155', 'Q9Y566', 'P07093',
             'P07225', 'P07237', 'P07602', 'P07900', 'P08571', 'P08670',
             'P08709', 'P09417', 'P10646', 'P12821', 'P12830', 'P14618',
             'P16520', 'P19823', 'P20062', 'P21815', 'P21980', 'P22692',
@@ -3979,7 +3979,7 @@ annot_combined_classes = (
             'Q10588', 'Q13352', 'Q13442', 'Q13444', 'Q15165', 'Q2MV58',
             'Q4VX76', 'Q5JWF2', 'Q6NW40', 'Q6UWX4', 'Q6V0I7', 'Q7Z6A9',
             'Q86UR5', 'Q8N474', 'Q8WWY8', 'Q92819', 'Q9BX66', 'Q9NQC3',
-            'Q9NUP9', 'Q9NV23', 'Q9UQ26', 'Q9Y2I2', 'Q9Y566',
+            'Q9NUP9', 'Q9NV23', 'Q9UQ26', 'Q9Y2I2',
         },
     ),  # inlcudes secreted enzymes, some ECM proteins which we exclude
     af.AnnotDef(
@@ -4040,7 +4040,7 @@ annot_combined_classes = (
             'P02671', 'P02675', 'P02679', 'P02741', 'P02745', 'P02746',
             'P02753', 'P02765', 'P02768', 'P02788', 'P03951', 'P04070',
             'P04196', 'P04278', 'P04899', 'P05067', 'P05121', 'P05155',
-            'P05543', 'P06454', 'P06744', 'P06858', 'P07093', 'P07225',
+            'P05543', 'P06454', 'P04003', 'P06858', 'P07093', 'P07225',
             'P07288', 'P07602', 'P07900', 'P08123', 'P08174', 'P08253',
             'P08571', 'P08603', 'P08670', 'P08709', 'P09211', 'P09429',
             'P0C0L4', 'P10144', 'P10153', 'P10646', 'P11150', 'P11226',
@@ -4059,7 +4059,7 @@ annot_combined_classes = (
             'Q9NZR2', 'Q9UIW2', 'Q9UKQ2', 'Q9UQ26', 'Q9Y215', 'Q9Y2I2',
             'Q9Y566', 'P05997', 'P08572', 'P02458', 'Q8IWL1', 'P29400',
             'P25940', 'Q13443', 'Q14055', 'P03956', 'Q14050', 'Q99965',
-            'Q14766', 'P53420', 'P04003',
+            'Q14766', 'P53420',
         },
     ),  # many non-ligand proteins excluded
     af.AnnotDef(
@@ -4097,9 +4097,9 @@ annot_combined_classes = (
             'category': 'GROWTH FACTOR',
         },
         exclude = {
-            'P06744', 'P55789', 'P13385', 'P01033', 'Q9UIW2', 'P00734',
+            'P0C7T3', 'P55789', 'P13385', 'P01033', 'Q9UIW2', 'P00734',
             'O14649', 'O75534', 'Q8NGH5', 'Q8NGH8', 'P21917', 'P14416',
-            'P0C7T3',
+            'P26441', 'Q8NGS4', 'Q9H5N1', 'Q8NG75', 'P35462',
         },
     ),  # good, apart from a few surprising exceptions
     af.AnnotDef(
@@ -4111,12 +4111,14 @@ annot_combined_classes = (
         },
         exclude = {
             'P21917', 'P14416', 'P0C7T3', 'O75534', 'Q8NGH8', 'P35555',
-            'Q8NGH5', 'P35462', 'Q8NGS4', 'O95751',
+            'Q8NGH5', 'P35462', 'Q8NGS4', 'O95751', 'P26441', 'P13385',
+            'Q9H5N1', 'Q8NG75', 'Q9UIW2',
         },
     ),  # good, apart from a few surprising exceptions
     af.AnnotDef(
-        name = 'ligand_lrdb',
+        name = 'ligand',
         resource = 'LRdb',
+        scope = 'generic',
         args = {
             'role': 'ligand',
             'references': bool,
