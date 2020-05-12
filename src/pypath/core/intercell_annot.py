@@ -1800,7 +1800,20 @@ annot_combined_classes = (
             'mainclass': 'receptor',
         },
         scope = 'generic',
-    ),  # good as it is
+        exclude = {
+            'Q9NZ08', 'Q30201', 'Q9Y5R2', 'Q96SN7', 'O95994', 'P29972',
+            'Q9NP59', 'O95477', 'Q9Y624', 'Q9NQS3', 'P52961', 'P20916',
+            'P16581', 'Q96JQ0', 'O43914', 'O14493', 'P22001', 'Q14524',
+            'Q99712', 'Q9NRQ2', 'P27701', 'Q00994', 'P13637', 'Q9NZV8',
+            'P09917', 'Q9Y4C0', 'P57739', 'P78562', 'Q13936', 'P29016',
+            'Q9NSA2', 'P21926', 'O60291', 'Q12933', 'P36021', 'Q12884',
+            'P31431', 'P30511', 'Q9UQD0', 'Q03135', 'Q02846', 'P48050',
+            'P58401', 'Q9ULB1', 'Q7Z7D3', 'Q9UKR5', 'P08865', 'Q8NEC5',
+            'P48509', 'P57057', 'Q5TAT6', 'Q92542', 'Q02094', 'Q9Y6N8',
+            'O14939', 'Q9ULT6', 'O75923', 'P21589', 'P13726', 'P13569',
+            'Q08828',
+        },
+    ),  # many non-receptors excluded
     af.AnnotDef(
         name = 'receptor',
         resource = 'Kirouac2010',
