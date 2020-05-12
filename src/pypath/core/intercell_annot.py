@@ -1829,8 +1829,10 @@ annot_combined_classes = (
             'mainclass': 'receptor',
         },
         scope = 'generic',
-        exclude = {'Q9H1R3'},
-    ),
+        exclude = {
+            'Q9H1R3', 'P54750', 'Q14123', 'P09917', 'Q02846', 'Q01064',
+        },
+    ),  # these are really true receptors
     af.AnnotDef(
         name = 'gpcr',
         parent = 'receptor',
@@ -4053,12 +4055,16 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'ligand_guide2pharma',
+        name = 'ligand',
         resource = 'Guide2Pharma',
+        scope = 'generic',
         args = {
             'mainclass': 'ligand',
         },
-    ),
+        exclude = {
+            'P54750', 'Q14123', 'P09917', 'Q02846', 'Q01064',
+        },
+    ),  # great collection of ligands
     af.AnnotDef(
         name = 'ligand_dgidb',
         resource = af.AnnotOp(
