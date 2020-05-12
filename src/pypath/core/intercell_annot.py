@@ -1956,7 +1956,9 @@ annot_combined_classes = (
             'function': 'Receptor',
         },
         scope = 'generic',
-        exclude = {'P48552'},
+        exclude = {
+            'P48552', 'Q04724', 'P31749', 'P48552', 'P61160',
+        },
     ),
     # receptor subclasses from HGNC
     af.AnnotDef(
