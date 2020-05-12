@@ -606,6 +606,25 @@ go_single_terms = {
 
 }
 
+excludes = {
+    ('ligand', 'ligand', 'HPMR'):
+        {
+            'Q8NEJ0', 'P25940', 'Q13443', 'Q9NPH0', 'P02452', 'P28329',
+            'P09172', 'P21980', 'P35354', 'P08174', 'P19113', 'P17752',
+            'Q92819', 'P02788', 'P02458', 'P39060',
+        },
+    ('receptor', 'receptor', 'HPMR'):
+        {
+            'B7ZAQ6', 'O00463', 'O14713', 'O14894', 'O43813', 'O60291',
+            'O60478', 'O60635', 'O94992', 'O95965', 'O95994', 'P08865',
+            'P16581', 'P17152', 'P18433', 'P21926', 'P23942', 'P27701',
+            'P31431', 'P41219', 'P48509', 'P62079', 'Q00994', 'Q02846',
+            'Q12933', 'Q13114', 'Q14982', 'Q30201', 'Q6NYC1', 'Q8N3F9',
+            'Q8NG11', 'Q8NHQ8', 'Q92673', 'Q92734', 'Q99720', 'Q9NQS3',
+            'Q9UKV5', 'Q9Y6Y9',
+        },
+}
+
 
 """
 Higher level classes of intercellular communication roles.
@@ -1763,11 +1782,7 @@ annot_combined_classes = (
             'role': 'Receptor',
         },
         scope = 'generic',
-        exclude = {
-            'Q9UKV5', 'B7ZAQ6', 'O60291', 'O95965', 'Q8N3F9', 'O60478',
-            'Q12933', 'O95994', 'O14894', 'O60635', 'Q92673', 'Q00994',
-            'O94992', 'P17152', 'Q6NYC1', 'O43813', 'Q99720', 'Q13114',
-        },
+        # `exclude` defined in the `excludes` dict
     ),  # includes adhesion molecules e.g. intergrins
     af.AnnotDef(
         name = 'receptor',
@@ -3967,6 +3982,16 @@ annot_combined_classes = (
         resource = 'HPMR',
         args = {
             'role': 'Ligand',
+        },
+        # `exclude` defined in the `excludes` dict
+    ),
+    af.AnnotDef(
+        name = 'small_molecule_ligand_synthase',
+        scope = 'generic',
+        resource = {
+            'P09172', # Dopamine beta-hydroxylase (noradrenaline)
+            'P35354', # Prostaglandin G/H synthase 2
+            'P19113', # Histidine decarboxylase (histamine)
         },
     ),
     af.AnnotDef(
@@ -6868,6 +6893,7 @@ annot_combined_classes = (
     ),
 
 )
+
 
 class_types = {
     'above_main': {
