@@ -172,6 +172,7 @@ class CustomAnnotation(session_mod.Logger):
     def __init__(
             self,
             class_definitions = None,
+            excludes = None,
             pickle_file = None,
             annotdb_pickle_file = None,
         ):
@@ -183,6 +184,7 @@ class CustomAnnotation(session_mod.Logger):
         self.pickle_file = pickle_file
         self.annotdb_pickle_file = annotdb_pickle_file
         self._class_definitions_provided = class_definitions
+        self._excludes = excludes or {}
         self.network = None
 
         self.load()
@@ -408,6 +410,10 @@ class CustomAnnotation(session_mod.Logger):
         if classdef.exclude:
 
             class_set = class_set - classdef.exclude
+
+        if classdef.key in self._excludes:
+
+            class_set = class_set - self._excludes[classdef.key]
 
         transmitter, receiver = self._get_transmitter_receiver(classdef)
 

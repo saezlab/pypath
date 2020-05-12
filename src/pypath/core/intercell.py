@@ -48,6 +48,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
     def __init__(
             self,
             class_definitions = None,
+            excludes = None,
             cellphonedb_categories = None,
             baccin_categories = None,
             **kwargs
@@ -56,6 +57,10 @@ class IntercellAnnotation(annot.CustomAnnotation):
         class_definitions = (
             class_definitions or
             intercell_annot.annot_combined_classes
+        )
+        excludes = (
+            exludes or
+            intercell_annot.excludes
         )
 
         locals_ = locals()
@@ -76,6 +81,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
         annot.CustomAnnotation.__init__(
             self,
             class_definitions = class_definitions,
+            excludes = excludes,
             **kwargs
         )
 
@@ -356,10 +362,12 @@ class IntercellAnnotation(annot.CustomAnnotation):
                     ))
 
                     members = hpmr.select(**args)
+                    parent = values[0].lower()
 
                     if not members:
 
                         continue
+
 
                     name = '_'.join(
                         resep.sub('_', val).lower()
@@ -370,7 +378,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
                             name = name,
                             resource = 'HPMR',
                             args = args,
-                            parent = values[0].lower(),
+                            parent = parent,
                         )
                     )
 
