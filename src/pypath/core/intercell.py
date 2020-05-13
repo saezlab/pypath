@@ -49,10 +49,31 @@ class IntercellAnnotation(annot.CustomAnnotation):
             self,
             class_definitions = None,
             excludes = None,
+            excludes_extra = None,
             cellphonedb_categories = None,
             baccin_categories = None,
             **kwargs
         ):
+        """
+        :param tuple class_definitions:
+            A series of annotation class definitions, each represented by
+            an instance of ``pypath.internals.annot_formats.AnnotDef``.
+            These definitions carry the attributes and instructions to
+            populate the classes.
+        :param dict excludes:
+            A dict with parent category names (strings) or category keys
+            (tuples) as keys and sets if identifiers as values.
+            The identifiers in this dict will be excluded from all the
+            respective categories while building the database. E.g. if
+            the UniProt ID `P00533` (EGFR) is in the set under the key of
+            `adhesion` it will be excluded from the category `adhesion` and
+            all it's direct children.
+        :param dict excludes_extra:
+            Same kind of dict as `excludes` but it will be added to the
+            built-in default. The built in and the provided extra sets
+            will be merged. If you want to overwrite or modify the built-in
+            sets provide your custom dict as `excludes`.
+        """
 
         class_definitions = (
             class_definitions or
@@ -82,6 +103,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             self,
             class_definitions = class_definitions,
             excludes = excludes,
+            excludes_extra = excludes_extra,
             **kwargs
         )
 
