@@ -672,8 +672,8 @@ excludes = {
             'Q9Y3R0', 'Q9Y466', 'Q9Y4C0', 'Q9Y566', 'Q9Y5R2', 'Q9Y5Y6',
             'Q9Y5Y9', 'Q9Y624', 'Q9Y698', 'Q9Y6Y9',
         },
-        # the proteins below are not ligands,
-        # are excluded from all ligand categories
+    # the proteins below are not ligands,
+    # are excluded from all ligand categories
     'ligand':
         {
             'O00220', 'O00300', 'O00468', 'O00587', 'O00592', 'O14594',
@@ -740,7 +740,19 @@ excludes = {
             'Q9XRX5', 'Q9Y215', 'Q9Y2I2', 'Q9Y4D7', 'Q9Y566', 'Q9Y5U5',
             'Q9Y624', 'Q9Y625', 'Q9Y6N7',
         },
-    ''
+    # the proteins below are not adhesion proteins,
+    # are excluded from all adhesion categories
+    'adhesion':
+        {
+            'O14976', 'O15231', 'O43294', 'O60711', 'O60759', 'P07332',
+            'P29965', 'P35221', 'P35222', 'P50552', 'P56945', 'Q02297',
+            'Q03001', 'Q13153', 'Q13895', 'Q14451', 'Q14511', 'Q14943',
+            'Q14952', 'Q14953', 'Q155Q3', 'Q15654', 'Q5JRA6', 'Q5T4B2',
+            'Q7L5Y9', 'Q7Z4I7', 'Q86TP1', 'Q8IVT2', 'Q8IZW8', 'Q8N264',
+            'Q8N743', 'Q8NHK3', 'Q8WX93', 'Q92502', 'Q96AC1', 'Q96IF1',
+            'Q96QB1', 'Q99689', 'Q9H792', 'Q9HBI0', 'Q9HBI1', 'Q9NQ75',
+            'Q9UBT7', 'Q9UGI8', 'Q9UGP4', 'Q9UI47', 'Q9UQB3',
+        },
 }
 
 
@@ -4945,25 +4957,47 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'adhesion_go',
+        name = 'matrix_adhesion',
         resource = 'GO_Intercell',
+        scope = 'generic',
         args = {
-            'mainclass': {'adhesion to matrix', 'adhesion to other cells'},
-        }
+            'mainclass': 'adhesion to matrix',
+        },
+        limit = 'cell_surface',
+    ),
+    af.AnnotDef(
+        name = 'cell_adhesion',
+        resource = 'GO_Intercell',
+        scope = 'generic',
+        args = {
+            'mainclass': 'adhesion to other cells',
+        },
+        limit = 'cell_surface',
     ),
     af.AnnotDef(
         name = 'adhesion',
         scope = 'generic',
         resource = 'Adhesome',
-        args = {'mainclass': 'Adhesion receptor'},
-    ),  # both cell-cell and cell-matrix adhesion
+        args = {
+            'mainclass': 'Adhesion receptor',
+        },
+    ),  # both cell-cell and cell-matrix adhesion, good as it is
     af.AnnotDef(
         name = 'focal_adhesion',
-        parent = 'adhesion',
+        parent = 'matrix_adhesion',
         resource = 'Ramilowski_location',
         args = {
             'location': 'focal adhesion',
         },
+        limit = 'cell_surface',
+        exclude = {
+            'O14976', 'O15231', 'O43294', 'O60711', 'P07332', 'P50552',
+            'P56945', 'Q13153', 'Q14451', 'Q14511', 'Q155Q3', 'Q15654',
+            'Q7Z4I7', 'Q86TP1', 'Q8IVT2', 'Q8IZW8', 'Q8N264', 'Q8WX93',
+            'Q92502', 'Q96QB1', 'Q9H792', 'Q9HBI0', 'Q9HBI1', 'Q9NQ75',
+            'Q9UGI8', 'Q9UGP4',
+        },
+    # specific classes from HGNC
     ),
     af.AnnotDef(
         name = 'adhesion_gprotein_coupled_receptor',
