@@ -288,6 +288,8 @@ class CustomAnnotation(session_mod.Logger):
 
     def add_class_definitions(self, class_definitions):
 
+        class_definitions = copy.deepcopy(class_definitions)
+
         if not isinstance(class_definitions, dict):
 
             class_definitions = dict(
