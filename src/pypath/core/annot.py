@@ -290,13 +290,13 @@ class CustomAnnotation(session_mod.Logger):
                     classdef
                 ) for classdef in class_definitions
             )
-        
+
         for key in class_definitions.keys():
-            
+
             name_resource = (key[0], key[2])
-            
+
             if name_resource in self._parents:
-                
+
                 self._log(
                     'Ambiguous parent: %s and %s for name=%s, '
                     'resource=%s. This results misfunction in this '
@@ -308,9 +308,9 @@ class CustomAnnotation(session_mod.Logger):
                         name_resource[1],
                     )
                 )
-                
+
             else:
-                
+
                 self._parents[name_resource] = key[1]
 
         self._class_definitions.update(class_definitions)
@@ -2504,11 +2504,11 @@ class AnnotationBase(resource.AbstractResource):
         """
 
         result = set()
-        
+
         names = set(self.get_names())
-        
+
         if not all(k in names for k in kwargs.keys()):
-            
+
             raise ValueError('Unknown field names: %s' % (
                     ', '.join(sorted(set(kwargs.keys()) - names))
                 )
@@ -3194,7 +3194,7 @@ class AnnotationBase(resource.AbstractResource):
         categories provided, prints a table for each of them one by one
         proceeding to the next one once you hit return. If no categories
         provided goes through all levels of the primary category.
-        
+
         :param NoneType,str,list,dict field:
             The field to browse categories by.
             * If None the primary field will be selected.
@@ -3217,26 +3217,26 @@ class AnnotationBase(resource.AbstractResource):
             250th.
         **kwargs passed to ``pypath.utils.uniprot.info``.
         """
-        
+
         if not field and not self.primary_field:
-            
+
             uniprots = entity.Entity.only_proteins(self.to_set())
-            
+
             utils_uniprot.info(uniprots, **kwargs)
-            
+
             return
-        
+
         field = field or self.primary_field
-        
+
         if isinstance(field, common.basestring):
-            
+
             # all values of the field
             field = {field: self.get_values(field)}
-            
+
         elif isinstance(field, common.list_like):
-            
+
             if set(field) & set(self.get_names()):
-                
+
                 # a set of fields provided
                 field = dict(
                     (
@@ -3245,14 +3245,14 @@ class AnnotationBase(resource.AbstractResource):
                     )
                     for fi in field
                 )
-                
+
             else:
-                
+
                 # a set of values provided
                 field = {self.primary_field: field}
-            
+
         elif isinstance(field, dict):
-            
+
             field = dict(
                 (
                     fi,
@@ -3260,36 +3260,36 @@ class AnnotationBase(resource.AbstractResource):
                 )
                 for fi, vals in iteritems(field)
             )
-            
+
         else:
-            
+
             sys.stdout.write(
                 'Could not recognize field definition, '
                 'please refer to the docs.\n'
             )
             sys.stdout.flush()
             return
-        
+
         # otherwise we assume `field` is a dict of fields and values
-        
+
         field_keys = list(field.keys())
         field_values = [field[k] for k in field_keys]
-        
+
         values = sorted(itertools.product(*field_values))
         total = len(values)
-        
+
         groups = {}
-        
+
         for vals in values:
-            
+
             args = dict(zip(field_keys, vals))
-            
+
             proteins = entity.Entity.only_proteins(self.select(**args))
-            
+
             if not proteins:
-                
+
                 continue
-            
+
             label = (
                 vals[0]
                     if len(vals) == 1 else
@@ -3301,9 +3301,9 @@ class AnnotationBase(resource.AbstractResource):
                     for key, val in iteritems(args)
                 )
             )
-            
+
             groups[label] = proteins
-        
+
         utils_uniprot.browse(groups = groups, start = start, **kwargs)
 
 
