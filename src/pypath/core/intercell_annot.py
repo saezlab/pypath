@@ -6322,79 +6322,89 @@ annot_combined_classes = (
     # extracellular enzyme
     af.AnnotDef(
         name = 'extracellular_enzyme',
+        scope = 'generic',
+        source = 'composite',
         resource = af.AnnotOp(
             annots = (
-                'extracellular_enzyme_go',
-                'extracellular_enzyme_matrisome',
+                '~extracellular_enzyme',
+                '~extracellular_peptidase',
             ),
             op = set.union
         ),
     ),
     af.AnnotDef(
-        name = 'extracellular_enzyme_go',
-        resource = af.AnnotOp(
-            annots = (
-                # extracellular by any evidence
-                # and enzyme according to GO
-                af.AnnotOp(
-                    annots = (
-                        'extracellular',
-                        af.AnnotDef(
-                            name = 'enzyme',
-                            resource = 'GO_Intercell',
-                            args = {
-                                'mainclass': 'enzyme',
-                            },
-                        ),
-                    ),
-                    op = set.intersection,
-                ),
-                # but not transmembrane or receptor or ligand
-                af.AnnotOp(
-                    annots = (
-                        'transmembrane',
-                        'receptor',
-                        'ligand',
-                    ),
-                    op = set.union,
-                ),
-            ),
-            op = set.difference,
-        ),
+        name = 'extracellular_peptidase',
+        scope = 'generic',
+        source = 'composite',
+        resource = '~extracellular_peptidase',
     ),
     af.AnnotDef(
-        name = 'peptidase',
+        name = 'extracellular_peptidase_inhibitor',
+        scope = 'generic',
+        source = 'composite',
+        resource = '~extracellular_peptidase_inhibitor',
+    ),
+    af.AnnotDef(
+        name = 'extracellular_enzyme',
+        resource = 'GO_Intercell',
+        scope = 'generic',
+        args = {
+            'mainclass': 'enzyme',
+        },
+        limit = 'extracellular',
+        avoid = ('receptor', 'ligand', 'plasma_membrane_transmembrane'),
+    ),
+    af.AnnotDef(
+        name = 'extracellular_peptidase',
         scope = 'generic',
         resource = 'UniProt_keywords',
         args = {
-            'keyword': 'Protease',
+            'keyword': {
+                'Protease',
+                'Serine protease',
+            },
         },
         limit = 'extracellular',
     ),  # looks all right
     af.AnnotDef(
-        name = 'peptidase_inhibitor',
+        name = 'extracellular_peptidase_inhibitor',
         scope = 'generic',
         resource = 'UniProt_keywords',
         args = {
-            'keyword': 'Protease inhibitor',
+            'keyword': {
+                'Protease inhibitor',
+                'Serine protease inhibitor',
+            },
         },
         limit = 'extracellular',
     ),  # looks all right
     af.AnnotDef(
         name = 'collagen_degrading',
-        parent = 'peptidase',
+        parent = 'extracellular_peptidase',
         resource = 'UniProt_keywords',
         args = {
             'keyword': 'Collagen degradation',
         },
     ),  # very good
     af.AnnotDef(
-        name = 'extracellular_enzyme',
+        name = 'ecm_regulator',
+        parent = 'ecm_regulator',
+        scope = 'generic',
         resource = 'Matrisome',
         args = {
             'subclass': 'ECM Regulators',
         },
-    ),
+        exclude = {
+            'P29508', 'P50454', 'O75063', 'O00469', 'P43234', 'P07339',
+            'O60911', 'Q9UIV8', 'Q9UKF2', 'P10619', 'P53634', 'P14091',
+            'Q7Z4N8', 'P04080', 'P50453', 'O15460', 'Q8IVL5', 'P50452',
+            'Q96P15', 'O43548', 'Q9UBR2', 'P01040', 'Q9UBX1', 'Q8IVL6',
+            'Q8NBH2', 'P09668', 'P48595', 'P13674', 'Q6HA08', 'P00488',
+            'Q08188', 'P56202', 'O75635', 'P20848', 'Q96KS0', 'Q9H6Z9',
+            'Q6YHK3', 'Q86WD7', 'Q9NXG6', 'Q9GZT9', 'P35237', 'Q96IV0',
+            'P48594', 'O95932',
+        },
+    ),  # mostly proteases and protease inhibitors
     # subclasses from HGNC
     af.AnnotDef(
         name = 'adamts',
