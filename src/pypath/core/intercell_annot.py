@@ -4820,10 +4820,69 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'adhesion',
+        name = 'cell_adhesion',
         scope = 'generic',
         resource = 'Zhong2015',
+        args = {
+            'type': {
+                'cell-cell adhesion',
+                'iCAM',
+                'myelin interactions',
+            },
+        },
     ),
+    af.AnnotDef(
+        name = 'icam',
+        parent = 'cell_adhesion',
+        resource = 'Zhong2015',
+        args = {
+            'type': 'iCAM',
+        },
+    ),
+    af.AnnotDef(
+        name = 'myelin_adhesion',
+        parent = 'cell_adhesion',
+        resource = 'Zhong2015',
+        args = {
+            'type': 'myelin interactions',
+        },
+    ),
+    af.AnnotDef(
+        name = 'matrix_adhesion',
+        scope = 'generic',
+        resource = 'Zhong2015',
+        args = {
+            'type': {
+                'matrix adhesion',
+                'focal adhesion',
+            },
+        },
+    ),
+    af.AnnotDef(
+        name = 'focal_adhesion',
+        parent = 'matrix_adhesion',
+        resource = 'Zhong2015',
+        args = {
+            'type': 'focal adhesion',
+        },
+    ),
+    af.AnnotDef(
+        name = 'tight_junction',
+        scope = 'generic',
+        resource = 'Zhong2015',
+        args = {
+            'type': 'tight junction',
+        },
+    ),
+    af.AnnotDef(
+        name = 'adherens_junction',
+        scope = 'generic',
+        resource = 'Zhong2015',
+        args = {
+            'type': 'adherens junction',
+        },
+    ),
+    
     af.AnnotDef(
         name = 'adhesion',
         resource = 'HGNC',
