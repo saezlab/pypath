@@ -6818,6 +6818,7 @@ annot_combined_classes = (
         args = {
             'location': 'gap junction',
         },
+        exclude = {'Q69YQ0'},
     ),
     af.AnnotDef(
         name = 'gap_junction',
@@ -6832,6 +6833,7 @@ annot_combined_classes = (
         args = {
             'classes': 'GapJunction',
         },
+        exclude = {'A6NN92'},
     ),
     af.AnnotDef(
         name = 'pannexin',
@@ -6863,22 +6865,19 @@ annot_combined_classes = (
         args = {
             'location': 'tight junction',
         },
+        exclude = {
+            'Q68EM7', 'Q92974', 'Q9NPG3', 'Q9H8V3', 'O95786', 'Q9NR48',
+            'Q92797', 'Q68DX3', 'Q9BUZ4',
+        },
     ),
     af.AnnotDef(
         name = 'tight_junction',
-        resource = af.AnnotOp(
-            annots = (
-                af.AnnotDef(
-                    name = 'tight_junction_uniprot',
-                    resource = 'UniProt_location',
-                    args = {
-                        'location': 'Tight junction',
-                    },
-                ),
-                'transmembrane',
-            ),
-            op = set.intersection
-        ),
+        scope = 'generic',
+        resource = 'UniProt_location',
+        args = {
+            'location': 'Tight junction',
+        },
+        limit = 'plasma_membrane_transmembrane',
     ),
     af.AnnotDef(
         name = 'claudin',
@@ -6891,29 +6890,36 @@ annot_combined_classes = (
     # adherens junction
     af.AnnotDef(
         name = 'adherens_junction',
+        scope = 'generic',
+        source = 'composite',
         resource = af.AnnotOp(
-            annots = (
-                'adherens_junction_ramilowski',
-                'adherens_junction_uniprot',
-            ),
+            annots = '~adherens_junction',
             op = set.union,
         ),
     ),
     af.AnnotDef(
-        name = 'adherens_junction_ramilowski',
+        name = 'adherens_junction',
+        scope = 'generic',
         resource = 'Ramilowski_location',
         args = {
             'location': 'adherens junction',
         },
+        exclude = {
+            'P35222', 'P35221', 'Q13444', 'Q96TA1', 'Q9UGP4', 'Q9BVG8',
+            'A6NIX2', 'Q9HCM4', 'O60331', 'Q9P1Y5', 'Q6IQ23', 'Q8N264',
+            'Q8N157',
+        },
     ),
     af.AnnotDef(
         name = 'adherens_junction',
+        scope = 'generic',
         resource = 'UniProt_location',
         args = {
             'location': 'Adherens junction',
         },
         limit = 'cell_surface',
     ),  # to be checked
+    # tight junction
     af.AnnotDef(
         name = 'tight_junction',
         scope = 'generic',
@@ -6933,6 +6939,7 @@ annot_combined_classes = (
     # specific subclasses from HGNC
     af.AnnotDef(
         name = 'tight_junction',
+        scope = 'generic',
         resource = 'HGNC',
         args = {
             'mainclass': 'Claudins',
@@ -6947,6 +6954,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'gap_junction',
+        scope = 'generic',
         resource = 'HGNC',
         args = {
             'mainclass': 'Gap junction proteins',
@@ -6954,6 +6962,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'gap_junction',
+        scope = 'generic',
         resource = 'UniProt_keywords',
         args = {
             'keyword': 'Gap junction',
