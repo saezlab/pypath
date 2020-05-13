@@ -4827,12 +4827,32 @@ annot_combined_classes = (
     # adhesion
     af.AnnotDef(
         name = 'adhesion',
+        scope = 'generic',
+        source = 'composite',
         resource = af.AnnotOp(
             annots = (
                 '~adhesion',
                 '~cell_adhesion',
                 '~matrix_adhesion',
             ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'cell_adhesion',
+        scope = 'generic',
+        source = 'composite',
+        resource = af.AnnotOp(
+            annots = '~cell_adhesion',
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'matrix_adhesion',
+        scope = 'generic',
+        source = 'composite',
+        resource = af.AnnotOp(
+            annots = '~matrix_adhesion',
             op = set.union,
         ),
     ),
@@ -4924,35 +4944,6 @@ annot_combined_classes = (
             'type': 'focal adhesion',
         },
     ),
-    
-    af.AnnotDef(
-        name = 'adhesion',
-        resource = 'HGNC',
-        args = {
-            'mainclass': {
-                'Type I classical cadherins',
-                'Type II classical cadherins',
-                '7D cadherins',
-                'Desmosomal cadherins',
-                'CELSR cadherins',
-                'Clustered protocadherins',
-                'Non-clustered protocadherins',
-                'Cadherin related',
-                'Integrin beta subunits',
-                'Integrin alpha subunits',
-                'Sialic acid binding Ig like lectins',
-                'IgLON cell adhesion molecules',
-                'IgCAM CXADR-related subfamily',
-                'Nectins and nectin-like molecules',
-                'Neurexins',
-                'Neuroligins',
-                (
-                    'Carcinoemryonic antigen related '
-                    'cell adhesion molecule family'
-                ),
-            }
-        },
-    ),
     af.AnnotDef(
         name = 'adhesion_go',
         resource = 'GO_Intercell',
@@ -4962,6 +4953,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'adhesion',
+        scope = 'generic',
         resource = 'Adhesome',
         args = {'mainclass': 'Adhesion receptor'},
     ),  # both cell-cell and cell-matrix adhesion
@@ -4975,7 +4967,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'adhesion_gprotein_coupled_receptor',
-        parent = 'adhesion',
+        parent = 'matrix_adhesion',
         resource = 'HGNC',
         args = {
             'mainclass': {
