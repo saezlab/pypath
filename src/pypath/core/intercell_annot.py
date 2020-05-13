@@ -753,6 +753,14 @@ excludes = {
             'Q96QB1', 'Q99689', 'Q9H792', 'Q9HBI0', 'Q9HBI1', 'Q9NQ75',
             'Q9UBT7', 'Q9UGI8', 'Q9UGP4', 'Q9UI47', 'Q9UQB3',
         },
+    # the proteins below are not cell surface enzymes,
+    # are excluded from all cell surface enzyme categories
+    'cell_surface_enzyme':
+        {
+            'P52961', 'O00391', 'Q8WUD6', 'P11117', 'Q15125', 'Q13444',
+            'P08842', 'Q9UK23', 'Q9NPH5', 'P19021', 'P09958', 'P40126',
+            'Q96JJ7', 'P04843', 'Q8TCJ2', 'Q9UKF2',
+        },
 }
 
 
@@ -5329,37 +5337,32 @@ annot_combined_classes = (
         ),
     ),
     af.AnnotDef(
-        name = 'surface_enzyme_go',
-        resource = af.AnnotOp(
-            annots = (
-                af.AnnotOp(
-                    annots = (
-                        'cell_surface',
-                        af.AnnotDef(
-                            name = 'enzyme',
-                            resource = 'GO_Intercell',
-                            args = {
-                                'mainclass': 'enzyme',
-                            },
-                        ),
-                        'cell_surface',
-                    ),
-                    op = set.intersection,
-                ),
-                'receptor',
-            ),
-            op = set.difference,
-        ),
-    ),
+        name = 'cell_surface_enzyme',
+        resource = 'GO_Intercell',
+        scope = 'generic',
+        args = {
+            'mainclass': 'enzyme',
+        },
+        limit = 'cell_surface',
+        avoid = 'receptor',
+    ),  # to be checked
     af.AnnotDef(
         name = 'cell_surface_enzyme',
         resource = 'Surfaceome',
+        scope = 'generic',
         args = {
             'mainclass': 'Enzymes',
         },
+        exclude = {
+            'Q8TCJ2', 'Q9NPH5', 'Q9UKF2', 'P04843', 'P19021', 'Q9UK23',
+            'P52961', 'P09958', 'P11117', 'Q96JJ7', 'P40126', 'P08842',
+            'Q13444', 'Q8WUD6', 'O00391', 'Q15125',
+        },
     ),  # looks all right
+    # specific subclasses from HGNC
     af.AnnotDef(
-        name = 'enpp_surface_enzyme',
+        name = 'ectonucleotide_phosphatase',
+        parent = 'cell_surface_enzyme',
         resource = 'HGNC',
         args = {
             'mainclass': (
@@ -5368,7 +5371,8 @@ annot_combined_classes = (
         },
     ),  # maybe not all bound to the surface but most of them
     af.AnnotDef(
-        name = 'hyaluronidase_surface_enzyme',
+        name = 'hyaluronidase',
+        parent = 'cell_surface_enzyme',
         resource = {'Q9UHN6', 'Q12891', 'P38567', 'Q2M3T9'},
     ),
     af.AnnotDef(
@@ -5379,35 +5383,41 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'insulin_degrading_enzyme',
-        parent = 'surface_enzyme',
+        name = 'insulin_degrading',
+        parent = 'cell_surface_enzyme',
         resource = {'P14735'},
     ),
     af.AnnotDef(
-        name = 'm1_metallopeptidase_surface_peptidase',
+        name = 'm1_metallopeptidase',
+        parent = 'cell_surface_peptidase',
         resource = {'Q6Q4G3', 'Q9UIQ6', 'Q07075', 'P15144', 'Q9UKU6'},
     ),  # cleave mostly peptide ligands, hormones like TRH, angiotensin, etc
     af.AnnotDef(
-        name = 'm16_metallopeptidase_surface_peptidase',
+        name = 'm16_metallopeptidase',
+        parent = 'cell_surface_peptidase',
         resource = {'P14735'},
     ),  # acts on peptide hormones
     af.AnnotDef(
-        name = 'm10_metallopeptidase_surface_peptidase',
+        name = 'm10_metallopeptidase',
+        parent = 'cell_surface_peptidase',
         resource = {'P51511', 'P51512', 'Q9ULZ9', 'Q9Y5R2', 'Q9NPA2'},
     ),
     af.AnnotDef(
-        name = 'm13_metallopeptidase_surface_peptidase',
+        name = 'm13_metallopeptidase',
+        parent = 'cell_surface_peptidase',
         resource = 'HGNC',
         args = {
             'mainclass': 'M13 metallopeptidases',
         },
     ),
     af.AnnotDef(
-        name = 'm14_carboxypeptidase_surface_peptidase',
+        name = 'm14_carboxypeptidase',
+        parent = 'cell_surface_peptidase',
         resource = {'P14384', 'O75976', 'Q8IVL8', },
     ),
     af.AnnotDef(
-        name = 'vanin_surface_enzyme',
+        name = 'vanin',
+        parent = 'cell_surface_peptidase',
         resource = 'HGNC',
         args = {
             'mainclass': 'Vanins',
@@ -5417,14 +5427,14 @@ annot_combined_classes = (
 
     # surface ligand
     af.AnnotDef(
-        name = 'surface_ligand',
-        resource = '~surface_ligand',
+        name = 'cell_surface_ligand',
+        resource = '~cell_surface_ligand',
         source = 'composite',
         scope = 'generic',
         exclude = {'P0DPD6'},
     ),
     af.AnnotDef(
-        name = 'surface_ligand',
+        name = 'cell_surface_ligand',
         resource = af.AnnotOp(
             annots = (
                 'cell_surface',
@@ -5432,9 +5442,10 @@ annot_combined_classes = (
             ),
             op = set.intersection,
         ),
+        enabled = False, # to be checked, disabled until then
     ),
     af.AnnotDef(
-        name = 'surface_ligand',
+        name = 'cell_surface_ligand',
         resource = 'CellPhoneDB',
         args = {
             'method': lambda a: (
@@ -5448,7 +5459,7 @@ annot_combined_classes = (
     # surface ligand subclasses from HGNC
     af.AnnotDef(
         name = 'b7_family',
-        parent = 'surface_ligand',
+        parent = 'cell_surface_ligand',
         resource = 'HGNC',
         args = {
             'mainclass': 'B7 family',
@@ -5464,7 +5475,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'ephrin',
-        parent = 'surface_ligand',
+        parent = 'cell_surface_ligand',
         resource = 'HGNC',
         args = {
             'mainclass': 'Ephrins',
@@ -5472,7 +5483,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'neuregulin',
-        parent = 'surface_ligand',
+        parent = 'cell_surface_ligand',
         resource = 'HGNC',
         args = {
             'mainclass': 'Neuregulins',
@@ -5480,7 +5491,7 @@ annot_combined_classes = (
     ),  # ligands for various ERBB receptors
     af.AnnotDef(
         name = 'hedgehog',
-        parent = 'surface_ligand',
+        parent = 'cell_surface_ligand',
         resource = 'HGNC',
         args = {
             'mainclass': 'Hedgehog signaling molecule family',
@@ -5489,17 +5500,17 @@ annot_combined_classes = (
         # solubilized later
     af.AnnotDef(
         name = 'izumo',
-        parent = 'surface_ligand',
+        parent = 'cell_surface_ligand',
         resource = {'Q8IYV9', 'Q6UXV1', 'Q5VZ72'},
     ),  # ligands in sperm-egg fusion
     af.AnnotDef(
         name = 'nectin',
-        parent = 'surface_ligand',
+        parent = 'cell_surface_ligand',
         resource = {'O95727', 'Q15223'},
     ),  # ligands for T-lymphocytes
     af.AnnotDef(
         name = 'semaphorin',
-        parent = 'surface_ligand',
+        parent = 'cell_surface_ligand',
         resource = 'HGNC',
         args = {
             'mainclass': 'Semaphorins',
@@ -5524,12 +5535,12 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'anosmin',
-        parent = 'surface_ligand',
+        parent = 'cell_surface_ligand',
         resource = {'P23352'},
     ),
     af.AnnotDef(
         name = 'mhc',
-        parent = 'surface_ligand',
+        parent = 'cell_surface_ligand',
         resource = 'Almen2009',
         args = {
             'classes': 'MHC',
@@ -5537,7 +5548,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'semaphorin',
-        parent = 'surface_ligand',
+        parent = 'cell_surface_ligand',
         resource = 'Almen2009',
         args = {
             'classes': 'Semaphorin',
