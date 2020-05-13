@@ -353,6 +353,11 @@ class CustomAnnotation(session_mod.Logger):
 
             return class_set
 
+        self._log(
+            'Processing custom annotation definition '
+            '`%s` (parent: `%s`, resource: `%s`).' % classdef.key
+        )
+
         if isinstance(classdef.resource, set):
 
             class_set = classdef.resource
@@ -385,7 +390,7 @@ class CustomAnnotation(session_mod.Logger):
 
         for avoid in classdef.avoid:
 
-            op = AnnotOp(
+            op = annot_formats.AnnotOp(
                 annots = (
                     class_set,
                     self.select(avoid)
@@ -397,7 +402,7 @@ class CustomAnnotation(session_mod.Logger):
 
         for limit in classdef.limit:
 
-            op = AnnotOp(
+            op = annot_formats.AnnotOp(
                 annots = (
                     class_set,
                     self.select(limit)
@@ -411,11 +416,17 @@ class CustomAnnotation(session_mod.Logger):
 
             class_set = class_set - classdef.exclude
 
-        if classdef.key in self._excludes:
+        if classdef.parent in self._excludes:
 
-            class_set = class_set - self._excludes[classdef.key]
+            class_set = class_set - self._excludes[classdef.parent]
 
         transmitter, receiver = self._get_transmitter_receiver(classdef)
+
+        self._log(
+            'Finished processing custom annotation definition '
+            '`%s` (parent: `%s`, resource: `%s`). Resulted a set of %u '
+            'entities.' % classdef.key + (len(class_set),)
+        )
 
         return annot_formats.AnnotationGroup(
             members = class_set,
