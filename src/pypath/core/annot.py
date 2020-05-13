@@ -175,6 +175,7 @@ class CustomAnnotation(session_mod.Logger):
             class_definitions = None,
             excludes = None,
             excludes_extra = None,
+            build = True,
             pickle_file = None,
             annotdb_pickle_file = None,
         ):
@@ -197,6 +198,9 @@ class CustomAnnotation(session_mod.Logger):
             built-in default. The built in and the provided extra sets
             will be merged. If you want to overwrite or modify the built-in
             sets provide your custom dict as `excludes`.
+        :param bool build:
+            Execute the build upon instantiation or set up an empty object
+            the build can be executed on later.
         """
 
         if not hasattr(self, '_log_name'):
@@ -210,7 +214,9 @@ class CustomAnnotation(session_mod.Logger):
         self._excludes_extra_original = excludes_extra or {}
         self.network = None
 
-        self.load()
+        if build:
+
+            self.load()
 
 
     def reload(self):

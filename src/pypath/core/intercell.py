@@ -52,6 +52,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             excludes_extra = None,
             cellphonedb_categories = None,
             baccin_categories = None,
+            build = True,
             **kwargs
         ):
         """
@@ -73,6 +74,9 @@ class IntercellAnnotation(annot.CustomAnnotation):
             built-in default. The built in and the provided extra sets
             will be merged. If you want to overwrite or modify the built-in
             sets provide your custom dict as `excludes`.
+        :param bool build:
+            Execute the build upon instantiation or set up an empty object
+            the build can be executed on later.
         """
 
         class_definitions = (
@@ -104,6 +108,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             class_definitions = class_definitions,
             excludes = excludes,
             excludes_extra = excludes_extra,
+            build = build,
             **kwargs
         )
 
@@ -256,6 +261,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
     def pre_build(self):
 
+        annot.CustomAnnotation.pre_build(self)
         self.add_extra_categories()
 
 
