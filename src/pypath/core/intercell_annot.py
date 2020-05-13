@@ -740,6 +740,7 @@ excludes = {
             'Q9XRX5', 'Q9Y215', 'Q9Y2I2', 'Q9Y4D7', 'Q9Y566', 'Q9Y5U5',
             'Q9Y624', 'Q9Y625', 'Q9Y6N7',
         },
+    ''
 }
 
 
@@ -4879,6 +4880,11 @@ annot_combined_classes = (
                 'myelin interactions',
             },
         },
+        exclude = {
+            'Q02297', 'Q14952', 'P29965', 'Q14943', 'Q5JRA6', 'P35221',
+            'P35222', 'Q9UI47', 'Q9UQB3', 'Q9UBT7', 'Q14953', 'Q5T4B2',
+            'Q8N743', 'Q13895', 'Q7L5Y9', 'Q99689', 'Q8NHK3',
+        },
     ),
     af.AnnotDef(
         name = 'icam',
@@ -4906,6 +4912,9 @@ annot_combined_classes = (
                 'focal adhesion',
             },
         },
+        exclude = {
+            'Q14511', 'O60711', 'Q7Z4I7', 'Q96AC1', 'Q9H792',
+        },
     ),
     af.AnnotDef(
         name = 'focal_adhesion',
@@ -4913,22 +4922,6 @@ annot_combined_classes = (
         resource = 'Zhong2015',
         args = {
             'type': 'focal adhesion',
-        },
-    ),
-    af.AnnotDef(
-        name = 'tight_junction',
-        scope = 'generic',
-        resource = 'Zhong2015',
-        args = {
-            'type': 'tight junction',
-        },
-    ),
-    af.AnnotDef(
-        name = 'adherens_junction',
-        scope = 'generic',
-        resource = 'Zhong2015',
-        args = {
-            'type': 'adherens junction',
         },
     ),
     
@@ -6874,6 +6867,22 @@ annot_combined_classes = (
         },
         limit = 'cell_surface',
     ),  # to be checked
+    af.AnnotDef(
+        name = 'tight_junction',
+        scope = 'generic',
+        resource = 'Zhong2015',
+        args = {
+            'type': 'tight junction',
+        },
+    ),
+    af.AnnotDef(
+        name = 'adherens_junction',
+        scope = 'generic',
+        resource = 'Zhong2015',
+        args = {
+            'type': 'adherens junction',
+        },
+    ),
     # specific subclasses from HGNC
     af.AnnotDef(
         name = 'tight_junction',
