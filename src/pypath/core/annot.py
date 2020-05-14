@@ -342,8 +342,8 @@ class CustomAnnotation(session_mod.Logger):
 
     def populate_classes(self, update = False):
         """
-        Creates a classification of proteins according to their roles
-        in the intercellular communication.
+        Creates a classification of proteins according to the custom 
+        annotation definitions.
         """
 
         if self.pickle_file:
@@ -408,11 +408,11 @@ class CustomAnnotation(session_mod.Logger):
         Processes an annotation definition and returns a set of identifiers.
         """
 
-        class_set = set()
+        members = set()
 
         if not classdef.enabled:
 
-            return class_set
+            return members
 
         self._log(
             'Processing custom annotation definition '
@@ -421,7 +421,7 @@ class CustomAnnotation(session_mod.Logger):
 
         if isinstance(classdef.resource, set):
 
-            class_set = classdef.resource
+            members = classdef.resource
 
         elif isinstance(classdef.resource, common.basestring):
 
@@ -429,13 +429,13 @@ class CustomAnnotation(session_mod.Logger):
 
                 if not classdef.args:
 
-                    class_set = (
+                    members = (
                         self.annotdb.annots[classdef.resource].to_set()
                     )
 
                 else:
 
-                    class_set = (
+                    members = (
                         self.annotdb.annots[classdef.resource].get_subset(
                             **classdef.args
                         )
@@ -443,58 +443,58 @@ class CustomAnnotation(session_mod.Logger):
 
         elif callable(classdef.resource):
 
-            class_set = classdef.resource(**(classdef.args or {}))
+            members = classdef.resource(**(classdef.args or {}))
 
         elif isinstance(classdef.resource, annot_formats.AnnotOp):
 
-            class_set = self._execute_operation(classdef.resource)
+            members = self._execute_operation(classdef.resource)
 
         for avoid in classdef.avoid:
 
             op = annot_formats.AnnotOp(
                 annots = (
-                    class_set,
+                    members,
                     self.select(avoid)
                 ),
                 op = set.difference,
             )
 
-            class_set = self._execute_operation(op)
+            members = self._execute_operation(op)
 
         for limit in classdef.limit:
 
             op = annot_formats.AnnotOp(
                 annots = (
-                    class_set,
+                    members,
                     self.select(limit)
                 ),
                 op = set.intersection,
             )
 
-            class_set = self._execute_operation(op)
+            members = self._execute_operation(op)
 
         if classdef.exclude:
 
-            class_set = class_set - classdef.exclude
+            members = members - classdef.exclude
 
         if classdef.parent in self._excludes:
 
-            class_set = class_set - self._excludes[classdef.parent]
+            members = members - self._excludes[classdef.parent]
 
         if classdef.key in self._excludes:
 
-            class_set = class_set - self._excludes[classdef.key]
+            members = members - self._excludes[classdef.key]
 
         transmitter, receiver = self._get_transmitter_receiver(classdef)
 
         self._log(
             'Finished processing custom annotation definition '
             '`%s` (parent: `%s`, resource: `%s`). Resulted a set of %u '
-            'entities.' % classdef.key + (len(class_set),)
+            'entities.' % classdef.key + (len(members),)
         )
 
         return annot_formats.AnnotationGroup(
-            members = class_set,
+            members = members,
             name = classdef.name,
             parent = classdef.parent,
             aspect = classdef.aspect,
