@@ -22,6 +22,9 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
+import re
 import importlib as imp
 import collections
 import itertools
@@ -30,6 +33,7 @@ import numpy as np
 import pandas as pd
 
 import pypath.share.settings as settings
+import pypath.share.common as common
 import pypath.core.annot as annot
 import pypath.core.intercell_annot as intercell_annot
 import pypath.core.network as network_mod
@@ -52,6 +56,8 @@ class IntercellAnnotation(annot.CustomAnnotation):
             excludes_extra = None,
             cellphonedb_categories = None,
             baccin_categories = None,
+            hpmr_categories = None,
+            surfaceome_categories = None,
             build = True,
             **kwargs
         ):
@@ -84,7 +90,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             intercell_annot.annot_combined_classes
         )
         excludes = (
-            exludes or
+            excludes or
             intercell_annot.excludes
         )
 
@@ -92,7 +98,8 @@ class IntercellAnnotation(annot.CustomAnnotation):
         self._resource_categories = dict(
             (
                 res,
-                locals_['%s_categories' % res] or
+                locals_['%s_categories' % res]
+                    if locals_['%s_categories' % res] is not None else
                 settings.get('intercell_%s_categories' % res)
             )
             for res in (
@@ -304,7 +311,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
                     cellphonedb_categories.append(
                         af.AnnotDef(
                             name = '%s_cellphonedb' % category,
-                            source = 'CellPhoneDB',
+                            resource = 'CellPhoneDB',
                             args = {attr: category},
                         )
                     )
@@ -374,15 +381,18 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
             fields = hpmr.get_names()
 
-            for values in itertools.product(*(
-                hpmr.get_values(field)
-                for field in fields
-            )):
+            combinations = {
+                a
+                for entity, annots in iteritems(hpmr.annot)
+                for a in annots
+            }
+
+            for values in combinations:
 
                 for i in range(2, len(fields)):
 
-                    this_fields = fields[:i]
-                    this_values = values[:i]
+                    this_fields = fields[1:i]
+                    this_values = values[1:i]
 
                     args = dict(zip(
                         this_fields,
@@ -396,10 +406,16 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
                         continue
 
-
                     name = '_'.join(
-                        resep.sub('_', val).lower()
-                        for val in reversed(this_values[1:])
+                        name_part
+                        for name_part in
+                        (
+                            resep.sub('_', val).lower()
+                                if val else
+                            None
+                            for val in reversed(this_values[1:])
+                        )
+                        if name_part
                     )
                     hpmr_categories.append(
                         af.AnnotDef(
@@ -431,18 +447,17 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
             for mainclass, parent in iteritems(mainclasses):
 
-                subclasses = set(
-                    itertools.chain(*(
-                        a.subclasses
-                        for aa in surfaceome.annot.values()
-                        for a in aa
-                        if (
-                            aa.subclasses is not None and
-                            aa.mainclass == mainclass and
-                            not a[0].isdigit()
-                        )
-                    ))
-                )
+                subclasses = {
+                    sc
+                    for annots in surfaceome.annot.values()
+                    for a in annots
+                    for sc in (a.subclasses or ())
+                    if (
+                        a.mainclass == mainclass and
+                        sc is not None and
+                        not sc[0].isdigit()
+                    )
+                }
 
                 for subclass in subclasses:
 
@@ -452,16 +467,16 @@ class IntercellAnnotation(annot.CustomAnnotation):
                     )
 
                     surfaceome_categories.append(
-                            af.AnnotDef(
-                                name = name,
-                                resource = 'Surfaceome',
-                                args = {
-                                    'mainclass': mainclass,
-                                    'subclasses': subclass,
-                                },
-                                parent = parent,
-                            )
+                        af.AnnotDef(
+                            name = name,
+                            resource = 'Surfaceome',
+                            args = {
+                                'mainclass': mainclass,
+                                'subclasses': subclass,
+                            },
+                            parent = parent,
                         )
+                    )
 
             self._class_definitions_provided += tuple(surfaceome_categories)
 

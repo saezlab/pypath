@@ -213,6 +213,7 @@ class CustomAnnotation(session_mod.Logger):
         self._excludes_original = excludes or {}
         self._excludes_extra_original = excludes_extra or {}
         self.network = None
+        self.classes = {}
 
         if build:
 
@@ -318,10 +319,7 @@ class CustomAnnotation(session_mod.Logger):
         # collecting the potential parents
         for key, classdef in iteritems(self._class_definitions):
 
-            if (
-                classdef.source == 'composite' or
-                classdef.name == classdef.parent
-            ):
+            if classdef.source == 'composite':
 
                 collect_parents[classdef.name].add(key)
 
@@ -335,6 +333,9 @@ class CustomAnnotation(session_mod.Logger):
 
                     children[parent_key].add(key)
                     parents[key].add(parent_key)
+                    parents[key[0]].add(parent_key)
+                    parents[(key[0], key[1])].add(parent_key)
+                    parents[(key[0], key[2])].add(parent_key)
 
         self.children = dict(children)
         self.parents = dict(parents)
@@ -586,7 +587,6 @@ class CustomAnnotation(session_mod.Logger):
 
                 if (
                     parentdef.name == parent and
-                    parentdef.parent == parent and
                     (
                         parantdef.source == 'composite' or
                         parentdef.resource == composite_resource_name
@@ -1942,7 +1942,9 @@ class CustomAnnotation(session_mod.Logger):
     def get_entities(self, entity_types = None):
 
         return entity.Entity.filter_entity_type(
-            set.union(*self.classes.values()),
+            set.union(*self.classes.values())
+                if self.classes else
+            (),
             entity_type = entity_types,
         )
 
