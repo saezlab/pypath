@@ -299,29 +299,45 @@ class CustomAnnotation(session_mod.Logger):
                 ) for classdef in class_definitions
             )
 
-        for key in class_definitions.keys():
-
-            name_resource = (key[0], key[2])
-
-            if name_resource in self._parents:
-
-                self._log(
-                    'Ambiguous parent: %s and %s for name=%s, '
-                    'resource=%s. This results misfunction in this '
-                    'annotation database, please change the name '
-                    'in the annotation definitions.' % (
-                        key[1],
-                        self._parents[name_resource],
-                        name_resource[0],
-                        name_resource[1],
-                    )
-                )
-
-            else:
-
-                self._parents[name_resource] = key[1]
-
         self._class_definitions.update(class_definitions)
+        self.update_parents()
+
+
+    def update_parents(self):
+        """
+        Creates a dict :py:attr:``children`` with parent class names as keys
+        and sets of children class keys as values. Also a dict
+        :py:attr:``parents`` with children class keys as keys and parent
+        class keys as values.
+        """
+
+        children = collections.defaultdict(set)
+        parents = collections.defaultdict(set)
+        collect_parents = collections.defaultdict(set)
+
+        # collecting the potential parents
+        for key, classdef in iteritems(self._class_definitions):
+
+            if (
+                classdef.source == 'composite' or
+                classdef.name == classdef.parent
+            ):
+
+                collect_parents[classdef.name].add(key)
+
+        # assigning children to parents
+        for key, classdef in iteritems(self._class_definitions):
+
+            parent = key[1]
+            if parent in collect_parents:
+
+                for parent_key in collect_parents[parent]:
+
+                    children[parent_key].add(key)
+                    parents[key].add(parent_key)
+
+        self.children = dict(children)
+        self.parents = dict(parents)
 
 
     def populate_classes(self, update = False):
@@ -337,7 +353,7 @@ class CustomAnnotation(session_mod.Logger):
 
         for classdef in self._class_definitions.values():
 
-            if classdef.name not in self.classes or update:
+            if classdef.key not in self.classes or update:
 
                 self.create_class(classdef)
 
