@@ -1874,7 +1874,7 @@ def wrap_truncate(text, width = None, maxlen = None):
 
 def table_add_row_numbers(tbl, **kwargs):
 
-    nrows = len(next(tbl.items().__iter__())) if len(tbl) else 0
+    nrows = len(next(tbl.values().__iter__())) if len(tbl) else 0
     
     return collections.OrderedDict(
         itertools.chain(
@@ -1921,6 +1921,11 @@ def table_textwrap(tbl, width = None, maxlen = None):
     )
 
 
+tabulate_defaults = {
+    'numalign': 'right',
+}
+
+
 def table_format(
         tbl,
         width = None,
@@ -1939,11 +1944,15 @@ def table_format(
         
         tbl = table_add_row_numbers(tbl)
     
+    tabulate_param = copy.deepcopy(tabulate_defaults)
+    tabulate_param.update(kwargs)
+    
+    
     return tabulate.tabulate(
         zip(*tbl.values()),
         tbl.keys(),
         tablefmt = tablefmt,
-        **kwargs
+        **tabulate_param
     )
 
 
@@ -1970,3 +1979,92 @@ def print_table(
     )
     sys.stdout.write(os.linesep)
     sys.stdout.flush()
+
+
+def tsv_table(
+        tbl,
+        maxlen = None,
+        lineno = True,
+        path = None,
+        **kwargs,
+    ):
+    """
+    From a table represented by an OrderedDict with column titles as keys
+    and column contents as lists generates a tab separated string.
+    If ``path`` provided writes out the tsv into a file, otherwise returns
+    the string.
+    """
+    
+    resp = re.compile(r'[ \t]+')
+    
+    _ = kwargs.pop('wrap', None)
+    
+    kwargs['tablefmt'] = 'plain'
+
+    tsv = table_format(
+        tbl = tbl,
+        maxlen = maxlen,
+        lineno = lineno,
+        wrap = False,
+        **kwargs,
+    )
+    tsv = resp.sub('\t', tsv)
+    
+    if path:
+        
+        with open(path, 'w') as fp:
+            
+            fp.write(tsv)
+        
+    else:
+        
+        return tsv
+
+
+def latex_table(
+        tbl,
+        maxlen = None,
+        lineno = True,
+        path = None,
+        doc_template = True,
+        booktabs = True,
+        **kwargs,
+    ):
+    """
+    From a table represented by an OrderedDict with column titles as keys
+    and column contents as lists generates a tab separated string.
+    If ``path`` provided writes out the tsv into a file, otherwise returns
+    the string.
+    """
+    
+    _doc_template = (
+        
+    )
+    
+    _tabular_template = (
+        
+    )
+    
+    _ = kwargs.pop('wrap', None)
+    
+    kwargs['tablefmt'] = 'latex_%s' % ('booktabs' if booktabs else 'raw')
+    kwargs['numalign'] = 'right'
+
+    tsv = table_format(
+        tbl = tbl,
+        maxlen = maxlen,
+        lineno = lineno,
+        wrap = False,
+        **kwargs,
+    )
+    tsv = resp.sub('\t', tsv)
+    
+    if path:
+        
+        with open(path, 'w') as fp:
+            
+            fp.write(tsv)
+        
+    else:
+        
+        return tsv
