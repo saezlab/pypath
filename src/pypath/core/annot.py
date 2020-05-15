@@ -256,7 +256,6 @@ class CustomAnnotation(session_mod.Logger):
         self.ensure_annotdb()
 
         self._class_definitions = {}
-        self._parents = {}
         self.add_class_definitions(self._class_definitions_provided or {})
 
         self.classes = {}
@@ -336,6 +335,7 @@ class CustomAnnotation(session_mod.Logger):
                     parents[key[0]].add(parent_key)
                     parents[(key[0], key[1])].add(parent_key)
                     parents[(key[0], key[2])].add(parent_key)
+                    parents[key[2]].add(parent_key)
 
         self.children = dict(children)
         self.parents = dict(parents)
@@ -499,7 +499,7 @@ class CustomAnnotation(session_mod.Logger):
             name = classdef.name,
             parent = classdef.parent,
             aspect = classdef.aspect,
-            resource = classdef.resource_str, # the actual database name
+            resource = classdef.resource_name, # the actual database name
             scope = classdef.scope,
             source = classdef.source, # resource_specific / composite
             transmitter = transmitter,
@@ -563,7 +563,7 @@ class CustomAnnotation(session_mod.Logger):
                 classdef.parent == parent and
                 (
                     not resource or
-                    classdef.resource_str == resource
+                    classdef.resource_name == resource
                 ) and
                 classdef.enabled
             )
@@ -778,18 +778,26 @@ class CustomAnnotation(session_mod.Logger):
         return self.classes[key].source
 
 
-    def get_parent(self, name, resource = None):
+    def get_parent(self, name, parent = None, resource = None):
         """
         As names should be unique for resources, a combination of a name and
         resource determines the parent category. This method looks up the
         parent for a pair of name and resource.
         """
 
-        key = self._key(name, resource)
+        keys = (
+            (name, parent, resource),
+            (name, name, resource),
+            (name, resource),
+            (name, parent),
+            (parent, resource),
+        )
 
-        if key in self._parents:
+        for key in keys:
 
-            return self._parents[key]
+            if key in self.parents:
+
+                return self.parents[key]
 
 
     def get_class_label(self, name, parent = None, resource = None):

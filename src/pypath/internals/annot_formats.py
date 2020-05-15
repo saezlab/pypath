@@ -52,8 +52,8 @@ class AnnotDef(
                 'parent',
                 'aspect',
                 'scope',
-                'args',
                 'source',
+                'args',
                 'exclude',
                 'transmitter',
                 'receiver',
@@ -96,15 +96,25 @@ class AnnotDef(
             enabled = True,
         ):
 
+        resource_name = (
+            resource
+                if cls._is_resource_name(resource) else
+            (
+                resource_name or
+                settings.get('annot_composite_database_name') or
+                'Unknown'
+            )
+        )
+
         return super().__new__(
             cls,
             name = name,
             resource = resource,
-            parent = parent,
+            parent = parent or name,
             aspect = aspect,
             scope = scope,
-            args = args,
             source = source,
+            args = args,
             exclude = exclude,
             transmitter = transmitter,
             receiver = receiver,
@@ -121,17 +131,19 @@ class AnnotDef(
         return AnnotDefKey(
             name = self.name,
             parent = self.parent,
-            resource = self.resource_str,
+            resource = self.resource_name,
         )
 
 
-    @property
-    def resource_str(self):
+    @staticmethod
+    def _is_resource_name(name):
 
         return (
-            self.resource
-                if isinstance(self.resource, common.basestring) else
-            self.resource_name
+            isinstance(name, common.basestring) and
+            not (
+                name.startswith('~') or
+                name.startswith('#')
+            )
         )
 
 

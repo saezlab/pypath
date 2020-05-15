@@ -1745,10 +1745,7 @@ annot_combined_classes = (
     # receptor
     af.AnnotDef(
         name = 'receptor',
-        resource = af.AnnotOp(
-            annots = '~receptor',
-            op = set.union,
-        ),
+        resource = '~receptor',
         scope = 'generic',
         source = 'composite',
         receiver = True,
@@ -1879,12 +1876,7 @@ annot_combined_classes = (
         # intracellular receptors
     af.AnnotDef(
         name = 'receptor',
-        resource = af.AnnotOp(
-            annots = (
-                '~receptor~HGNC',
-            ),
-            op = set.union,
-        ),
+        resource = '~receptor~HGNC',
         resource_name = 'HGNC',
         scope = 'generic',
     ),
@@ -4087,31 +4079,26 @@ annot_combined_classes = (
     ),  # inlcudes secreted enzymes, some ECM proteins which we exclude
     af.AnnotDef(
         name = 'ligand',
-        resource = af.AnnotOp(
-            annots = (
-                'interleukin_hgnc',
-                'endogenous_ligand_hgnc',
-                'chemokine_ligand_hgnc',
-            ),
-            op = set.union,
-        ),
+        resource = '~ligand~HGNC',
+        resource_name = 'HGNC',
+        scope = 'generic',
     ),
     af.AnnotDef(
-        name = 'ligand_cellphonedb',
+        name = 'ligand',
         resource = 'CellPhoneDB',
         args = {
             'secreted': bool,
         },
     ),
     af.AnnotDef(
-        name = 'ligand_go',
+        name = 'ligand',
         resource = 'GO_Intercell',
         args = {
             'mainclass': 'ligands',
         },
     ),
     af.AnnotDef(
-        name = 'ligand_hpmr',
+        name = 'ligand',
         resource = 'HPMR',
         args = {
             'role': 'Ligand',
@@ -4963,8 +4950,33 @@ annot_combined_classes = (
             'Q92502', 'Q96QB1', 'Q9H792', 'Q9HBI0', 'Q9HBI1', 'Q9NQ75',
             'Q9UGI8', 'Q9UGP4',
         },
-    # specific classes from HGNC
     ),
+    af.AnnotDef(
+        name = 'adhesion',
+        resource = af.AnnotOp(
+            annots = (
+                '~adhesion~HGNC',
+                '~cell_adhesion~HGNC',
+                '~matrix_adhesion~HGNC',
+            ),
+            op = set.union,
+        ),
+        resource_name = 'HGNC',
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'cell_adhesion',
+        resource = '~cell_adhesion~HGNC',
+        resource_name = 'HGNC',
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'matrix_adhesion',
+        resource = '~matrix_adhesion~HGNC',
+        resource_name = 'HGNC',
+        scope = 'generic',
+    ),
+    # specific classes from HGNC
     af.AnnotDef(
         name = 'adhesion_gprotein_coupled_receptor',
         parent = 'matrix_adhesion',
@@ -5317,6 +5329,24 @@ annot_combined_classes = (
             'Q13444', 'Q8WUD6', 'O00391', 'Q15125',
         },
     ),  # looks all right
+    af.AnnotDef(
+        name = 'cell_surface_enzyme',
+        resource = af.AnnotOp(
+            annots = (
+                '~cell_surface_enzyme~HGNC',
+                '~cell_surface_peptidase~HGNC',
+            ),
+            op = set.union,
+        ),
+        resource_name = 'HGNC',
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'cell_surface_peptidase',
+        resource = '~cell_surface_peptidase~HGNC',
+        resource_name = 'HGNC',
+        scope = 'generic',
+    ),
     # specific subclasses from HGNC
     af.AnnotDef(
         name = 'ectonucleotide_phosphatase',
@@ -5556,6 +5586,18 @@ annot_combined_classes = (
                 'ion channels',
             },
         },
+    ),
+    af.AnnotDef(
+        name = 'transporter',
+        resource = '~transporter~HGNC',
+        resource_name = 'HGNC',
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'ion_channel',
+        resource = '~ion_channel~HGNC',
+        resource_name = 'HGNC',
+        scope = 'generic',
     ),
     af.AnnotDef(
         name = 'transporter',
@@ -6363,6 +6405,24 @@ annot_combined_classes = (
             'P48594', 'O95932',
         },
     ),  # mostly proteases and protease inhibitors
+    af.AnnotDef(
+        name = 'extracellular_enzyme',
+        resource = af.AnnotOp(
+            annots = (
+                '~extracellular_enzyme~HGNC',
+                '~extracellular_peptidase~HGNC',
+            ),
+            op = set.union,
+        ),
+        resource_name = 'HGNC',
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'extracellular_peptidase',
+        resource = '~extracellular_peptidase~HGNC',
+        resource_name = 'HGNC',
+        scope = 'generic',
+    ),
     # subclasses from HGNC
     af.AnnotDef(
         name = 'adamts',

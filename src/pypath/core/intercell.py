@@ -62,6 +62,11 @@ class IntercellAnnotation(annot.CustomAnnotation):
             **kwargs
         ):
         """
+        Builds a database about roles of proteins and complexes in
+        intercellular communication. The built-in category definitions
+        defining the default contents of this database can be found in the
+        ``pypath.core.intercell_annot`` module.
+
         :param tuple class_definitions:
             A series of annotation class definitions, each represented by
             an instance of ``pypath.internals.annot_formats.AnnotDef``.
@@ -277,7 +282,6 @@ class IntercellAnnotation(annot.CustomAnnotation):
         self.add_cellphonedb_categories()
         self.add_baccin_categories()
         self.add_hpmr_categories()
-        self.add_matrisome_categories()
         self.add_surfaceome_categories()
 
 
@@ -381,15 +385,19 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
             fields = hpmr.get_names()
 
-            combinations = {
-                a
-                for entity, annots in iteritems(hpmr.annot)
-                for a in annots
-            }
+            for i in range(2, len(fields) + 1):
 
-            for values in combinations:
+                combinations = {
+                    a
+                    for entity, annots in iteritems(hpmr.annot)
+                    for a in annots
+                }
 
-                for i in range(2, len(fields)):
+                for values in combinations:
+
+                    if not values[0]:
+
+                        continue
 
                     this_fields = fields[1:i]
                     this_values = values[1:i]
@@ -406,17 +414,24 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
                         continue
 
+                    name_parts = (
+                        this_values[1:]
+                            if len(this_values) > 1 else
+                        this_values
+                    )
+
                     name = '_'.join(
-                        name_part
+                        name_part.strip('_').replace('_receptors', '')
                         for name_part in
                         (
                             resep.sub('_', val).lower()
                                 if val else
                             None
-                            for val in reversed(this_values[1:])
+                            for val in reversed(name_parts)
                         )
                         if name_part
                     )
+
                     hpmr_categories.append(
                         af.AnnotDef(
                             name = name,
