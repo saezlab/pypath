@@ -1872,6 +1872,18 @@ def wrap_truncate(text, width = None, maxlen = None):
     return os.linesep.join(text)
 
 
+def table_add_row_numbers(tbl, **kwargs):
+
+    nrows = len(next(tbl.items().__iter__())) if len(tbl) else 0
+    
+    return collections.OrderedDict(
+        itertools.chain(
+            (('No.', list(xrange(1, nrows + 1))),),
+            tbl.items(),
+        )
+    )
+
+
 def table_textwrap(tbl, width = None, maxlen = None):
     """
     Wraps and truncates the text content of cells in a table.
@@ -1914,10 +1926,18 @@ def table_format(
         width = None,
         maxlen = None,
         tablefmt = 'fancy_grid',
+        wrap = True,
+        lineno = True,
         **kwargs
     ):
     
-    tbl = table_textwrap(tbl, width = width, maxlen = maxlen)
+    if wrap:
+        
+        tbl = table_textwrap(tbl, width = width, maxlen = maxlen)
+        
+    if lineno:
+        
+        tbl = table_add_row_numbers(tbl)
     
     return tabulate.tabulate(
         zip(*tbl.values()),
@@ -1932,6 +1952,8 @@ def print_table(
         width = None,
         maxlen = None,
         tablefmt = 'fancy_grid',
+        wrap = True,
+        lineno = True,
         **kwargs
     ):
     
@@ -1941,6 +1963,8 @@ def print_table(
             width = width,
             maxlen = wifth,
             tablefmt = tablefmt,
+            wrape = wrap,
+            lineno = lineno,
             **kwargs
         )
     )
