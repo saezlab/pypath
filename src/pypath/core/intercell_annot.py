@@ -3640,6 +3640,7 @@ annot_combined_classes = (
         transmitter = True,
         receiver = False,
     ),
+    # ecm: UniProt specific categories
     af.AnnotDef(
         name = 'lectin',
         parent = 'ecm',
@@ -3670,6 +3671,7 @@ annot_combined_classes = (
             },
         ),
     ),
+    # ecm: Matrisome specific categories
     af.AnnotDef(
         name = 'collagen',
         parent = 'ecm',
@@ -3701,24 +3703,6 @@ annot_combined_classes = (
         exclude = {'P10124', 'Q9Y2Y8'},
     ),
     af.AnnotDef(
-        name = 'ecm_regulator',
-        scope = 'generic',
-        resource = 'Matrisome',
-        args = {
-            'subclass': 'ECM regulators',
-        },
-        exclude = {
-            'O00469', 'O15460', 'O43548', 'O60911', 'O75063', 'O75635',
-            'O95932', 'P00488', 'P01040', 'P04080', 'P07339', 'P09668',
-            'P10619', 'P13674', 'P14091', 'P20848', 'P29508', 'P35237',
-            'P43234', 'P48594', 'P48595', 'P50452', 'P50453', 'P50454',
-            'P53634', 'P56202', 'Q08188', 'Q6HA08', 'Q6YHK3', 'Q7Z4N8',
-            'Q86WD7', 'Q8IVL5', 'Q8IVL6', 'Q8NBH2', 'Q96IV0', 'Q96KS0',
-            'Q96P15', 'Q9GZT9', 'Q9H6Z9', 'Q9NXG6', 'Q9UBR2', 'Q9UBX1',
-            'Q9UIV8', 'Q9UKF2',
-        },
-    ),  # mostly secreted enzymes acting on ECM components
-    af.AnnotDef(
         name = 'ecm',
         scope = 'generic',
         resource = {
@@ -3732,15 +3716,6 @@ annot_combined_classes = (
         # Matrisome "ECM-affiliated" category; however this category
         # contains 6x more proteins and later would be good to review
         # these again and include in further categories
-    af.AnnotDef(
-        name = 'ligand',
-        scope = 'generic',
-        resource = 'Matrisome',
-        args = {
-            'subclass': 'Secreted Factors',
-        },
-        exclude = {'Q14512', 'P51610'},
-    ),
     af.AnnotDef(
         name = 'basement_membrane',
         parent = 'ecm',
@@ -3756,20 +3731,6 @@ annot_combined_classes = (
         args = {
             'subsubclass': 'CCN Family',
         },
-    ),
-    af.AnnotDef(
-        name = 'cathepsin',
-        parent = 'extracellular_peptidase',
-        resource = {'P08311', 'P07711', 'P43235', 'P25774', 'P07339'},
-    ),
-    af.AnnotDef(
-        name = 'cystatin',
-        parent = 'extracellular_peptidase_inhibitor',
-        resource = 'Matrisome',
-        args = {
-            'subsubclass': 'Cystatin',
-        },
-        exclude = {'P04080', 'P01040'},
     ),
     af.AnnotDef(
         name = 'fibril_associated_collagen_with_interrupted_triple_helices',
@@ -3838,7 +3799,8 @@ annot_combined_classes = (
     ),  # some potentially wrong elements such as ligands, with removal
         # of the groups above it looks more or less fine
     af.AnnotDef(
-        name = 'ecm_go',
+        name = 'ecm',
+        scope = 'generic',
         resource = 'GO_Intercell',
         args = {
             'mainclass': 'ecm structure',
@@ -3846,6 +3808,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'ecm',
+        scope = 'generic',
         resource = 'Ramilowski_location',
         args = {
             'location': 'extracellular matrix',
@@ -3872,7 +3835,8 @@ annot_combined_classes = (
     ),
 
     af.AnnotDef(
-        name = 'ecm_uniprot',
+        name = 'ecm',
+        scope = 'generic',
         resource = 'UniProt_location',
         args = {
             'location': 'Extracellular matrix',
@@ -4019,6 +3983,37 @@ annot_combined_classes = (
         },
     ),  # ECM of the zona pellucida (zone surrounding the oocyte)
 
+    # ECM regulators
+    af.AnnotDef(
+        name = 'ecm_regulator',
+        resource = af.AnnotOp(
+            annots = '~ecm_regulator',
+            op = set.union,
+        ),
+        receiver = False,
+        transmitter = True,
+        scope = 'generic',
+        source = 'composite',
+    ),
+    af.AnnotDef(
+        name = 'ecm_regulator',
+        scope = 'generic',
+        resource = 'Matrisome',
+        args = {
+            'subclass': 'ECM regulators',
+        },
+        exclude = {
+            'O00469', 'O15460', 'O43548', 'O60911', 'O75063', 'O75635',
+            'O95932', 'P00488', 'P01040', 'P04080', 'P07339', 'P09668',
+            'P10619', 'P13674', 'P14091', 'P20848', 'P29508', 'P35237',
+            'P43234', 'P48594', 'P48595', 'P50452', 'P50453', 'P50454',
+            'P53634', 'P56202', 'Q08188', 'Q6HA08', 'Q6YHK3', 'Q7Z4N8',
+            'Q86WD7', 'Q8IVL5', 'Q8IVL6', 'Q8NBH2', 'Q96IV0', 'Q96KS0',
+            'Q96P15', 'Q9GZT9', 'Q9H6Z9', 'Q9NXG6', 'Q9UBR2', 'Q9UBX1',
+            'Q9UIV8', 'Q9UKF2',
+        },
+    ),  # mostly secreted enzymes acting on ECM components
+
     # ligand
     af.AnnotDef(
         name = 'ligand',
@@ -4026,10 +4021,19 @@ annot_combined_classes = (
             annots = '~ligand',
             op = set.union,
         ),
-        receiver = True,
-        transmitter = False,
+        receiver = False,
+        transmitter = True,
         scope = 'generic',
         source = 'composite',
+    ),
+    af.AnnotDef(
+        name = 'ligand',
+        scope = 'generic',
+        resource = 'Matrisome',
+        args = {
+            'subclass': 'Secreted Factors',
+        },
+        exclude = {'Q14512', 'P51610'},
     ),
     af.AnnotDef(
         name = 'cytokine',
@@ -6461,6 +6465,20 @@ annot_combined_classes = (
             'keyword': 'Collagen degradation',
         },
     ),  # very good
+    af.AnnotDef(
+        name = 'cathepsin',
+        parent = 'extracellular_peptidase',
+        resource = {'P08311', 'P07711', 'P43235', 'P25774', 'P07339'},
+    ),
+    af.AnnotDef(
+        name = 'cystatin',
+        parent = 'extracellular_peptidase_inhibitor',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Cystatin',
+        },
+        exclude = {'P04080', 'P01040'},
+    ),
     af.AnnotDef(
         name = 'ecm_regulator',
         parent = 'ecm_regulator',
