@@ -123,6 +123,7 @@ _defaults = {
     'intercell_baccin_categories': True,
     'intercell_hpmr_categories': True,
     'intercell_surfaceome_categories': True,
+    'intercell_gpcrdb_categories': True,
 
     # parameters for pypath.omnipath
     'timestamp_format': '%Y%m%d',

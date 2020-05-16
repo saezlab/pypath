@@ -58,6 +58,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             baccin_categories = None,
             hpmr_categories = None,
             surfaceome_categories = None,
+            gpcrdb_categories = None,
             build = True,
             **kwargs
         ):
@@ -112,6 +113,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
                 'cellphonedb',
                 'hpmr',
                 'surfaceome',
+                'gpcrdb',
             )
         )
 
@@ -283,6 +285,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
         self.add_baccin_categories()
         self.add_hpmr_categories()
         self.add_surfaceome_categories()
+        self.add_gpcrdb_categories()
 
 
     def add_cellphonedb_categories(self):
@@ -442,6 +445,63 @@ class IntercellAnnotation(annot.CustomAnnotation):
                     )
 
             self._class_definitions_provided += tuple(hpmr_categories)
+
+
+    def add_gpcrdb_categories(self):
+
+        resep = re.compile(r'[- /\(\),]+')
+
+        gpcrdb_categories = []
+
+        if self._resource_categories['gpcrdb']:
+
+            self.ensure_annotdb()
+
+            gpcrdb = self.annotdb['GPCRdb']
+
+            fields = gpcrdb.get_names()
+
+            for i in range(1, len(fields) + 1):
+
+                combinations = {
+                    a
+                    for entity, annots in iteritems(gpcrdb.annot)
+                    for a in annots
+                }
+
+                for values in combinations:
+
+                    if not values[0]:
+
+                        continue
+
+                    this_fields = fields[:i]
+                    this_values = values[:i]
+
+                    args = dict(zip(
+                        this_fields,
+                        this_values,
+                    ))
+
+                    members = gpcrdb.select(**args)
+
+                    if not members:
+
+                        continue
+
+                    name = resep.sub('_', this_values[-1]).lower()
+                    name.replace('receptors', 'receptors')
+
+                    gpcrdb_categories.append(
+                        af.AnnotDef(
+                            name = name,
+                            resource = 'GPCRdb',
+                            args = args,
+                            parent = 'receptor',
+                        )
+                    )
+
+            self._class_definitions_provided += tuple(gpcrdb_categories)
 
 
     def add_surfaceome_categories(self):
