@@ -4047,6 +4047,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'ligand',
         resource = 'iTALK',
+        scope = 'generic',
         args = {
             'mainclass': 'ligand',
         },
@@ -4156,6 +4157,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'ligand',
         resource = 'CellPhoneDB',
+        scope = 'generic',
         args = {
             'secreted': bool,
         },
@@ -4163,6 +4165,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'ligand',
         resource = 'GO_Intercell',
+        scope = 'generic',
         args = {
             'mainclass': 'ligands',
         },
@@ -4170,19 +4173,11 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'ligand',
         resource = 'HPMR',
+        scope = 'generic',
         args = {
             'role': 'Ligand',
         },
         # `exclude` defined in the `excludes` dict
-    ),
-    af.AnnotDef(
-        name = 'small_molecule_ligand_synthase',
-        scope = 'generic',
-        resource = {
-            'P09172', # Dopamine beta-hydroxylase (noradrenaline)
-            'P35354', # Prostaglandin G/H synthase 2
-            'P19113', # Histidine decarboxylase (histamine)
-        },
     ),
     af.AnnotDef(
         name = 'ligand',
@@ -4321,16 +4316,18 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'ligand_baccin',
+        name = 'ligand',
         resource = 'Baccin2019',
+        scope = 'generic',
         args = {
             'mainclass': 'ligand',
         },
         # `exclude` defined in `excludes` dict
     ),  # quite some wrong annotations, also many receptors
     af.AnnotDef(
-        name = 'ligand_signalink',
+        name = 'ligand',
         resource = 'SignaLink_function',
+        scope = 'generic',
         args = {
             'function': 'Ligand',
         },
@@ -4339,7 +4336,7 @@ annot_combined_classes = (
             'Q13361', 'P26012',
         },
     ),
-    # ligands from HGNC
+    # specific ligand classes from HGNC
     af.AnnotDef(
         name = 'angiopoietin',
         parent = 'ligand',
@@ -4529,16 +4526,6 @@ annot_combined_classes = (
     ),  # maybe not ligands in a strict sense but don't fit either
         # in other categories
     af.AnnotDef(
-        name = 'tgf_beta_binding',
-        parent = 'ligand_regulator',
-        resource = 'HGNC',
-        args = {
-            'mainclass': (
-                'Latent transforming growth factor beta binding proteins'
-            ),
-        },
-    ),
-    af.AnnotDef(
         name = 'mia',
         parent = 'ligand',
         resource = 'HGNC',
@@ -4596,49 +4583,15 @@ annot_combined_classes = (
     ),  # bind to cell surface moieties, regulate other ligands --
         # overall they fit the best to the ligand category
     af.AnnotDef(
-        name = 'proteoglycan',
-        parent = 'ligand_regulator',
-        resource = {'Q03167'},
-    ),
-    af.AnnotDef(
         name = 's100_calcium_binding',
         parent = 'ligand',
         resource = {'P31151', 'P80511', 'P05109'},
-    ),
-    af.AnnotDef(
-        name = 'sparc',
-        parent = 'ligand_regulator',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'SPARC family',
-        },
-    ),
-    af.AnnotDef(
-        name = 'scavenger_receptor_cysteine_rich',
-        parent = 'ligand_regulator',
-        resource = {'Q8WTU2', ''},
     ),
     af.AnnotDef(
         name = 'scavenger_receptor_cysteine_rich',
         parent = 'ligand',
         resource = {'O43866'},
     ),
-    af.AnnotDef(
-        name = 'frizzled_related',
-        parent = 'ligand_regulator',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Secreted frizzled-related proteins',
-        },
-    ),  # secreted proteins binding WNT ligands
-    af.AnnotDef(
-        name = 'secretoglobin',
-        parent = 'ligand_regulator',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Secretoglobins',
-        },
-    ),  # secreted proteins binding small molecule ligands
     af.AnnotDef(
         name = 'tafa_chemokine_like',
         parent = 'ligand',
@@ -4659,15 +4612,6 @@ annot_combined_classes = (
         args = {
             'mainclass': 'Transforming growth factor beta family',
         },
-    ),
-    af.AnnotDef(
-        name = 'tumor_necrosis_factor',
-        parent = 'surface_ligand',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Tumor necrosis factor superfamily',
-        },
-        exclude = {'O75888'},
     ),
     af.AnnotDef(
         name = 'tumor_necrosis_factor',
@@ -4767,22 +4711,6 @@ annot_combined_classes = (
         resource = {'Q6UXN2'},
     ),
     af.AnnotDef(
-        name = 'growth_factor_binder',
-        parent = 'ligand_regulator',
-        resource = 'UniProt_keywords',
-        args = {
-            'keyword': 'Growth factor binding',
-        }
-    ),
-    af.AnnotDef(
-        name = 'growth_factor_binder',
-        parent = 'ligand_regulator',
-        resource = 'Matrisome',
-        args = {
-            'subsubclass': 'Growth Factor-binding',
-        }
-    ),
-    af.AnnotDef(
         name = 'growth_factor',
         parent = 'ligand',
         resource = 'UniProt_keywords',
@@ -4808,6 +4736,114 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
+        name = 'wnt',
+        parent = 'ligand',
+        resource = {
+            'O96014', 'P56703', 'O00755', 'P04628', 'P56706', 'Q9UBV4',
+            'P56705', 'Q9Y6F9', 'O14904', 'P41221', 'Q93098', 'P09544',
+            'Q9H1J5', 'Q93097', 'O00744', 'P56704', 'Q9GZT5', 'O14905',
+            'Q9H1J7',
+        }
+    ),
+    af.AnnotDef(
+        name = 'bmp',
+        parent = 'ligand',
+        resource = {'P12644', 'P13497'},
+    ),
+    af.AnnotDef(
+        name = 'tgf_beta',
+        parent = 'ligand',
+        resource = {'P01137'},
+    ),
+    af.AnnotDef(
+        name = 'semaphorin',
+        parent = 'ligand',
+        resource = {
+            'Q14563', 'Q13214', 'Q13275', 'Q99985',
+            'Q9NS98', 'O15041', 'O95025',
+        }
+    ),  # secreted ligands for plexins, regulating axonal growth
+    af.AnnotDef(
+        name = 'anosmin',
+        parent = 'ligand',
+        resource = {'P23352'},
+    ),
+
+    # ligand regulator
+    af.AnnotDef(
+        name = 'ligand_regulator',
+        scope = 'generic',
+        source = 'composite',
+        resource = '~ligand_regulator',
+        transmitter = True,
+        receiver = False,
+    ),
+    af.AnnotDef(
+        name = 'proteoglycan',
+        parent = 'ligand_regulator',
+        resource = {'Q03167'},
+    ),
+    af.AnnotDef(
+        name = 'tgf_beta_binding',
+        parent = 'ligand_regulator',
+        resource = 'HGNC',
+        args = {
+            'mainclass': (
+                'Latent transforming growth factor beta binding proteins'
+            ),
+        },
+    ),
+    af.AnnotDef(
+        name = 'sparc',
+        parent = 'ligand_regulator',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'SPARC family',
+        },
+    ),
+    af.AnnotDef(
+        name = 'scavenger_receptor_cysteine_rich',
+        parent = 'ligand_regulator',
+        resource = {'Q8WTU2'},
+    ),
+    af.AnnotDef(
+        name = 'frizzled_related',
+        parent = 'ligand_regulator',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Secreted frizzled-related proteins',
+        },
+    ),  # secreted proteins binding WNT ligands
+    af.AnnotDef(
+        name = 'secretoglobin',
+        parent = 'ligand_regulator',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Secretoglobins',
+        },
+    ),  # secreted proteins binding small molecule ligands
+    af.AnnotDef(
+        name = 'growth_factor_binder',
+        parent = 'ligand_regulator',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Growth factor binding',
+        },
+    ),
+    af.AnnotDef(
+        name = 'growth_factor_binder',
+        parent = 'ligand_regulator',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Growth Factor-binding',
+        },
+    ),
+    af.AnnotDef(
+        name = 'tgf_beta_binding',
+        parent = 'ligand_regulator',
+        resource = {'Q8N2S1'},
+    ),
+    af.AnnotDef(
         name = 'glypican',
         parent = 'ligand_regulator',
         resource = 'HGNC',
@@ -4831,33 +4867,136 @@ annot_combined_classes = (
             'subsubclass': 'Syndecan',
         },
     ),
-        af.AnnotDef(
-        name = 'wnt',
-        parent = 'ligand',
-        resource = {
-            'O96014', 'P56703', 'O00755', 'P04628', 'P56706', 'Q9UBV4',
-            'P56705', 'Q9Y6F9', 'O14904', 'P41221', 'Q93098', 'P09544',
-            'Q9H1J5', 'Q93097', 'O00744', 'P56704', 'Q9GZT5', 'O14905',
-            'Q9H1J7',
-        }
+
+    # cell surface ligand
+    af.AnnotDef(
+        name = 'cell_surface_ligand',
+        scope = 'generic',
+        source = 'composite',
+        resource = '~cell_surface_ligand',
+        exclude = {'P0DPD6'},
+        transmitter = True,
+        receiver = False,
     ),
     af.AnnotDef(
-        name = 'bmp',
-        parent = 'ligand',
-        resource = {'P12644', 'P13497'},
+        name = 'tumor_necrosis_factor',
+        parent = 'cell_surface_ligand',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Tumor necrosis factor superfamily',
+        },
+        exclude = {'O75888'},
     ),
     af.AnnotDef(
-        name = 'tgf_beta',
-        parent = 'ligand',
-        resource = {
-            'P01137', 
-        }
+        name = 'cell_surface_ligand',
+        scope = 'generic',
+        resource = af.AnnotOp(
+            annots = (
+                'cell_surface',
+                'ligand_go',
+            ),
+            op = set.intersection,
+        ),
+        enabled = False, # to be checked, disabled until then
     ),
     af.AnnotDef(
-        name = 'tgf_beta_binding',
-        parent = 'ligand_regulator',
-        resource = {'Q8N2S1'},
+        name = 'cell_surface_ligand',
+        scope = 'generic',
+        resource = 'CellPhoneDB',
+        args = {
+            'method': lambda a: (
+                not a.receptor and (
+                    a.peripheral or
+                    a.transmembrane
+                )
+            ),
+        },
     ),
+    # surface ligand subclasses from HGNC
+    af.AnnotDef(
+        name = 'b7_family',
+        parent = 'cell_surface_ligand',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'B7 family',
+        },
+    ),
+    af.AnnotDef(
+        name = 'butyrophilin',
+        parent = 'cell_surface_ligand',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Butyrophilins',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ephrin',
+        parent = 'cell_surface_ligand',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Ephrins',
+        },
+    ),
+    af.AnnotDef(
+        name = 'neuregulin',
+        parent = 'cell_surface_ligand',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Neuregulins',
+        },
+    ),  # ligands for various ERBB receptors
+    af.AnnotDef(
+        name = 'hedgehog',
+        parent = 'cell_surface_ligand',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Hedgehog signaling molecule family',
+        },
+    ),  # hedgehog proteins are initially membrane bound and can be
+        # solubilized later
+    af.AnnotDef(
+        name = 'izumo',
+        parent = 'cell_surface_ligand',
+        resource = {'Q8IYV9', 'Q6UXV1', 'Q5VZ72'},
+    ),  # ligands in sperm-egg fusion
+    af.AnnotDef(
+        name = 'nectin',
+        parent = 'cell_surface_ligand',
+        resource = {'O95727', 'Q15223'},
+    ),  # ligands for T-lymphocytes
+    af.AnnotDef(
+        name = 'semaphorin',
+        parent = 'cell_surface_ligand',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Semaphorins',
+        },
+        exclude = {
+            'Q14563', 'Q13214', 'Q13275', 'Q99985',
+            'Q9NS98', 'O15041', 'O95025',
+        },
+    ),  # surface bound ligands for plexins, regulating axonal growth
+    af.AnnotDef(
+        name = 'anosmin',
+        parent = 'cell_surface_ligand',
+        resource = {'P23352'},
+    ),
+    af.AnnotDef(
+        name = 'mhc',
+        parent = 'cell_surface_ligand',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'MHC',
+        },
+    ),
+    af.AnnotDef(
+        name = 'semaphorin',
+        parent = 'cell_surface_ligand',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'Semaphorin',
+        },
+    ),  # surface bound ligands for plexins, regulating axonal growth
 
     # adhesion
     af.AnnotDef(
@@ -5491,136 +5630,6 @@ annot_combined_classes = (
         },
         exclude = {'P43251'},
     ),
-
-    # surface ligand
-    af.AnnotDef(
-        name = 'cell_surface_ligand',
-        resource = '~cell_surface_ligand',
-        source = 'composite',
-        scope = 'generic',
-        exclude = {'P0DPD6'},
-    ),
-    af.AnnotDef(
-        name = 'cell_surface_ligand',
-        resource = af.AnnotOp(
-            annots = (
-                'cell_surface',
-                'ligand_go',
-            ),
-            op = set.intersection,
-        ),
-        enabled = False, # to be checked, disabled until then
-    ),
-    af.AnnotDef(
-        name = 'cell_surface_ligand',
-        resource = 'CellPhoneDB',
-        args = {
-            'method': lambda a: (
-                not a.receptor and (
-                    a.peripheral or
-                    a.transmembrane
-                )
-            ),
-        },
-    ),
-    # surface ligand subclasses from HGNC
-    af.AnnotDef(
-        name = 'b7_family',
-        parent = 'cell_surface_ligand',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'B7 family',
-        },
-    ),
-    af.AnnotDef(
-        name = 'butyrophilin',
-        parent = 'surface_ligand',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Butyrophilins',
-        },
-    ),
-    af.AnnotDef(
-        name = 'ephrin',
-        parent = 'cell_surface_ligand',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Ephrins',
-        },
-    ),
-    af.AnnotDef(
-        name = 'neuregulin',
-        parent = 'cell_surface_ligand',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Neuregulins',
-        },
-    ),  # ligands for various ERBB receptors
-    af.AnnotDef(
-        name = 'hedgehog',
-        parent = 'cell_surface_ligand',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Hedgehog signaling molecule family',
-        },
-    ),  # hedgehog proteins are initially membrane bound and can be
-        # solubilized later
-    af.AnnotDef(
-        name = 'izumo',
-        parent = 'cell_surface_ligand',
-        resource = {'Q8IYV9', 'Q6UXV1', 'Q5VZ72'},
-    ),  # ligands in sperm-egg fusion
-    af.AnnotDef(
-        name = 'nectin',
-        parent = 'cell_surface_ligand',
-        resource = {'O95727', 'Q15223'},
-    ),  # ligands for T-lymphocytes
-    af.AnnotDef(
-        name = 'semaphorin',
-        parent = 'cell_surface_ligand',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Semaphorins',
-        },
-        exclude = {
-            'Q14563', 'Q13214', 'Q13275', 'Q99985',
-            'Q9NS98', 'O15041', 'O95025',
-        },
-    ),  # surface bound ligands for plexins, regulating axonal growth
-    af.AnnotDef(
-        name = 'semaphorin',
-        parent = 'ligand',
-        resource = {
-            'Q14563', 'Q13214', 'Q13275', 'Q99985',
-            'Q9NS98', 'O15041', 'O95025',
-        }
-    ),  # secreted ligands for plexins, regulating axonal growth
-    af.AnnotDef(
-        name = 'anosmin',
-        parent = 'ligand',
-        resource = {'P23352'},
-    ),
-    af.AnnotDef(
-        name = 'anosmin',
-        parent = 'cell_surface_ligand',
-        resource = {'P23352'},
-    ),
-    af.AnnotDef(
-        name = 'mhc',
-        parent = 'cell_surface_ligand',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'MHC',
-        },
-    ),
-    af.AnnotDef(
-        name = 'semaphorin',
-        parent = 'cell_surface_ligand',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'Semaphorin',
-        },
-    ),  # surface bound ligands for plexins, regulating axonal growth
 
     # transporter
     af.AnnotDef(
@@ -7272,6 +7281,18 @@ annot_combined_classes = (
 
     # intracellular protein classes in close relation to intercellular
     # communication
+    af.AnnotDef(
+        name = 'small_molecule_ligand_synthase',
+        parent = 'intracell',
+        scope = 'generic',
+        resource = {
+            'P09172', # Dopamine beta-hydroxylase (noradrenaline)
+            'P35354', # Prostaglandin G/H synthase 2
+            'P19113', # Histidine decarboxylase (histamine)
+        },
+        transmitter = True,
+        receiver = False,
+    ),
     af.AnnotDef(
         name = 'crumbs_complex',
         parent = 'intracell',
