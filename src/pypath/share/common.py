@@ -30,6 +30,7 @@ import os
 import sys
 import re
 import math
+import copy
 import random
 import operator
 import collections
@@ -2028,43 +2029,92 @@ def latex_table(
         path = None,
         doc_template = True,
         booktabs = True,
+        latex_compile = False,
+        latex_executable = 'xelatex',
+        latex_engine = 'xelatex',
         **kwargs,
     ):
     """
     From a table represented by an OrderedDict with column titles as keys
-    and column contents as lists generates a tab separated string.
-    If ``path`` provided writes out the tsv into a file, otherwise returns
-    the string.
+    and column contents as lists generates LaTeX tabular.
+    If ``path`` provided writes out the table into a file,
+    if ``latex_compile`` is True compiles the document, otherwise returns
+    it as a string.
     """
     
-    _doc_template = (
-        
-    )
+    _xelatex_header = [
+        r'\usepackage[no-math]{fontspec}',
+        r'\usepackage{xunicode}',
+        r'\usepackage{polyglossia}',
+        r'\setdefaultlanguage{english}',
+        r'\usepackage{xltxtra}',
+    ]
     
-    _tabular_template = (
-        
+    _pdflatex_header = [
+        r'\usepackage[utf8]{inputenc}'
+        r'\usepackage[T1]{fontenc}'
+        r'\usepackage[english]{babel}'
+    ]
+    
+    _doc_template_default = [
+        r'\documentclass[10pt, a4paper]{article}',
+    ]
+    _doc_template_default.extend(
+        _xelatex_header if latex_engine == 'xelatex' else _pdflatex_header
+    )
+    _doc_template_default.extend([
+        r'\usepackage{booktabs}',
+        r'',
+        r'\begin{document}',
+        r'',
+        r'%s',
+        r'',
+        r'\end{document}',
+    ])
+    
+    doc_template = (
+        doc_template
+            if isinstance(doc_template, basestring) else
+        os.linesep.join(_doc_template_default)
+            if doc_template or latex_compile else
+        '%s'
     )
     
     _ = kwargs.pop('wrap', None)
     
     kwargs['tablefmt'] = 'latex_%s' % ('booktabs' if booktabs else 'raw')
-    kwargs['numalign'] = 'right'
 
-    tsv = table_format(
+    latex_tabular = table_format(
         tbl = tbl,
         maxlen = maxlen,
         lineno = lineno,
         wrap = False,
         **kwargs,
     )
-    tsv = resp.sub('\t', tsv)
+    
+    latex_full = doc_template % latex_tabular
+    
+    if not path and latex_compile:
+        
+        path = 'table-%s' % gen_session_id()
+    
+    if path and os.path.splitext(path)[1] != '.tex':
+        
+        path = '%s.tex' % path
     
     if path:
         
         with open(path, 'w') as fp:
             
-            fp.write(tsv)
+            fp.write(latex_full)
+
+    if latex_compile and doc_template:
         
-    else:
+        os.system('%s %s' % (latex_executable, path))
+    
+    if not path:
         
-        return tsv
+        return latex_full
+
+
+def xls_table
