@@ -1834,6 +1834,33 @@ def _add_method(cls, method_name, method, signature = None, doc = None):
     setattr(cls, method_name, method)
 
 
+def at_least_in(n = 2):
+    """
+    Returns a method which is similar to the `intersection` operator on sets
+    but requires the elements to present at least in ``n`` of the sets
+    instead of in all of them. If ``n = 1`` it is equivalent with ``union``,
+    if ``n`` is the same as the number of the sets it is equivalent with
+    ``intersection``. The returned method accepts an arbitrary number of
+    sets as non-keyword arguments.
+    """
+    
+    def _at_least_in(*args):
+        
+        if len(args) < n:
+            
+            return set()
+        
+        counter = collections.Counter(itertools.chain(*args))
+        
+        return {
+            key
+            for key, count in iteritems(counter)
+            if count >= n
+        }
+    
+    return _at_least_in
+
+
 def sets_to_sorted_lists(obj):
 
     if isinstance(obj, dict):
@@ -2032,7 +2059,7 @@ def latex_table(
         latex_compile = False,
         latex_executable = 'xelatex',
         latex_engine = 'xelatex',
-        **kwargs,
+        **kwargs
     ):
     """
     From a table represented by an OrderedDict with column titles as keys
@@ -2115,6 +2142,3 @@ def latex_table(
     if not path:
         
         return latex_full
-
-
-def xls_table
