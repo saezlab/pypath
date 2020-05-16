@@ -820,42 +820,48 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'transmembrane',
+        name = 'transmembrane_predicted',
+        parent = 'transmembrane',
         aspect = 'locational',
         resource = af.AnnotOp(
-            annots = (
-                'transmembrane_phobius',
-                'transmembrane_sosui',
-                'transmembrane_tmhmm',
-            ),
-            op = set.union
+            annots = '~transmembrane_predicted',
+            op = common.at_least_in(2),
         ),
     ),
     af.AnnotDef(
+        name = 'transmembrane',
+        parent = 'transmembrane_predicted',
+        aspect = 'locational',
+        resource = 'Phobius',
+        args = {
+            'tm_helices': bool,
+        },
+    ),
+    af.AnnotDef(
         name = 'transmembrane_phobius',
-        parent = 'transmembrane',
+        parent = 'transmembrane_predicted',
         aspect = 'locational',
         resource = 'Almen2009',
         args = {
-            'transmembrane_phobius': True,
+            'phobius_transmembrane': True,
         },
     ),
     af.AnnotDef(
         name = 'transmembrane_sosui',
-        parent = 'transmembrane',
+        parent = 'transmembrane_predicted',
         aspect = 'locational',
         resource = 'Almen2009',
         args = {
-            'transmembrane_sosui': True,
+            'sosui_transmembrane': True,
         },
     ),
     af.AnnotDef(
         name = 'transmembrane_tmhmm',
-        parent = 'transmembrane',
+        parent = 'transmembrane_predicted',
         aspect = 'locational',
         resource = 'Almen2009',
         args = {
-            'transmembrane_tmhmm': True,
+            'tmhmm_transmembrane': True,
         },
     ),
     af.AnnotDef(

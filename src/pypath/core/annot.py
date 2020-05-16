@@ -3507,7 +3507,7 @@ class Almen2009(AnnotationBase):
 
         AnnotationBase.__init__(
             self,
-            name = 'Almen2019',
+            name = 'Almen2009',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'almen2009.almen2009_annotations',
             **kwargs
