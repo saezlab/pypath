@@ -22,6 +22,7 @@
 
 import importlib as imp
 
+import pypath.share.common as common
 import pypath.utils.go as go
 import pypath.inputs.main as dataio
 import pypath.internals.annot_formats as af
@@ -774,12 +775,13 @@ annot_combined_classes = (
     # transmembrane
     af.AnnotDef(
         name = 'transmembrane',
+        aspect = 'locational',
+        source = 'composite',
+        scope = 'generic',
         resource = af.AnnotOp(
             annots = '~transmembrane',
             op = set.union
         ),
-        aspect = 'locational',
-        source = 'composite',
     ),
     af.AnnotDef(
         name = 'transmembrane',
@@ -800,6 +802,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'transmembrane',
         parent = 'transmembrane',
+        scope = 'generic',
         resource = 'UniProt_topology',
         aspect = 'locational',
         args = {
@@ -809,6 +812,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'transmembrane',
         parent = 'transmembrane',
+        scope = 'generic',
         resource = 'UniProt_keywords',
         aspect = 'locational',
         args = {
@@ -822,6 +826,8 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'transmembrane_predicted',
         parent = 'transmembrane',
+        scope = 'generic',
+        source = 'composite',
         aspect = 'locational',
         resource = af.AnnotOp(
             annots = '~transmembrane_predicted',
@@ -831,6 +837,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'transmembrane',
         parent = 'transmembrane_predicted',
+        scope = 'generic',
         aspect = 'locational',
         resource = 'Phobius',
         args = {
@@ -840,6 +847,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'transmembrane_phobius',
         parent = 'transmembrane_predicted',
+        scope = 'generic',
         aspect = 'locational',
         resource = 'Almen2009',
         args = {
@@ -849,6 +857,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'transmembrane_sosui',
         parent = 'transmembrane_predicted',
+        scope = 'generic',
         aspect = 'locational',
         resource = 'Almen2009',
         args = {
@@ -858,6 +867,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'transmembrane_tmhmm',
         parent = 'transmembrane_predicted',
+        scope = 'generic',
         aspect = 'locational',
         resource = 'Almen2009',
         args = {
@@ -867,6 +877,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'transmembrane',
         aspect = 'locational',
+        scope = 'generic',
         resource = 'GO_Intercell',
         args = {
             'mainclass': 'transmembrane',
@@ -883,6 +894,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'transmembrane',
         aspect = 'locational',
+        scope = 'generic',
         resource = 'OPM',
         args = {
             'transmembrane': True,
@@ -891,6 +903,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'transmembrane',
         aspect = 'locational',
+        scope = 'generic',
         resource = 'TopDB',
         args = {
             'topology': 'Membrane',
@@ -899,6 +912,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'transmembrane',
         aspect = 'locational',
+        scope = 'generic',
         resource = 'LOCATE',
         args = {
             'cls': {
@@ -915,6 +929,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'transmembrane',
         aspect = 'locational',
+        scope = 'generic',
         resource = 'Ramilowski_location',
         args = {
             'tmh': bool,
@@ -935,6 +950,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'peripheral',
         source = 'composite',
+        scope = 'generic',
         aspect = 'locational',
         resource = af.AnnotOp(
             annots = '~peripheral',
@@ -944,6 +960,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'peripheral',
         parent = 'peripheral',
+        scope = 'generic',
         resource = 'UniProt_location',
         aspect = 'locational',
         args = {
@@ -956,6 +973,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'peripheral',
         parent = 'peripheral',
+        scope = 'generic',
         resource = 'UniProt_location',
         aspect = 'locational',
         args = {
@@ -968,6 +986,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'peripheral',
         parent = 'peripheral',
+        scope = 'generic',
         resource = 'UniProt_topology',
         aspect = 'locational',
         args = {
@@ -986,6 +1005,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'plasma_membrane',
         parent = 'plasma_membrane',
+        scope = 'generic',
         resource = 'UniProt_location',
         aspect = 'locational',
         args = {
@@ -1140,6 +1160,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'plasma_membrane_transmembrane',
         source = 'composite',
+        scope = 'generic',
         aspect = 'locational',
         resource = af.AnnotOp(
             annots = (
@@ -1159,6 +1180,7 @@ annot_combined_classes = (
         name = 'plasma_membrane_transmembrane',
         parent = 'plasma_membrane_transmembrane',
         aspect = 'locational',
+        scope = 'generic',
         resource = 'Membranome',
         args = {
             'membrane': 'Plasma membrane',
@@ -1169,6 +1191,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'plasma_membrane_transmembrane',
         aspect = 'locational',
+        scope = 'generic',
         resource = 'CSPA',
         args = {
             'high_confidence': bool,
@@ -1178,6 +1201,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'plasma_membrane_transmembrane',
         aspect = 'locational',
+        scope = 'generic',
         resource = 'HPMR',
         args = {
             'role': 'Receptor',
@@ -1191,6 +1215,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'plasma_membrane_transmembrane',
         aspect = 'locational',
+        scope = 'generic',
         resource = 'Membranome',
         args = {
             'membrane': 'Plasma membrane',
@@ -1226,13 +1251,14 @@ annot_combined_classes = (
         resource = 'Almen2009',
         args = {
             'classes': 'EMP-PMP22-LIM',
-        }
+        },
     ),
 
     # plasma membrane peripheral
     af.AnnotDef(
         name = 'plasma_membrane_peripheral',
         source = 'composite',
+        scope = 'generic',
         aspect = 'locational',
         resource = af.AnnotOp(
             annots = (
@@ -1251,6 +1277,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'plasma_membrane_peripheral',
         aspect = 'locational',
+        scope = 'generic',
         resource = 'CSPA',
         args = {
             'high_confidence': bool,
@@ -1262,12 +1289,14 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'secreted',
         source = 'composite',
+        scope = 'generic',
         aspect = 'locational',
         resource = '~secreted',
     ),
     af.AnnotDef(
         name = 'secreted',
         parent = 'secreted',
+        scope = 'generic',
         resource = 'UniProt_keywords',
         aspect = 'locational',
         args = {
@@ -1277,6 +1306,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'secreted',
         parent = 'secreted',
+        scope = 'generic',
         resource = 'UniProt_location',
         aspect = 'locational',
         args = {
@@ -1286,6 +1316,7 @@ annot_combined_classes = (
         af.AnnotDef(
         name = 'secreted',
         parent = 'secreted',
+        scope = 'generic',
         resource = 'HPA_secretome',
         aspect = 'locational',
         args = {
@@ -1295,6 +1326,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'secreted',
         parent = 'secreted',
+        scope = 'generic',
         resource = 'MatrixDB',
         aspect = 'locational',
         args = {
@@ -1308,6 +1340,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'secreted',
         aspect = 'locational',
+        scope = 'generic',
         resource = 'LOCATE',
         args = {
             'cls': 'secretome',
@@ -1318,6 +1351,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'secreted',
         parent = 'secreted',
+        scope = 'generic',
         aspect = 'locational',
         resource = 'Matrisome',
         args = {
@@ -1359,6 +1393,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'cell_surface',
         parent = 'cell_surface',
+        scope = 'generic',
         aspect = 'locational',
         source = 'composite',
         resource = af.AnnotOp(
@@ -1373,6 +1408,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'cell_surface',
         parent = 'cell_surface',
+        scope = 'generic',
         aspect = 'locational',
         resource = 'Surfaceome',
         exclude = {
@@ -1387,6 +1423,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'cell_surface',
         resource = 'Ramilowski_location',
+        scope = 'generic',
         aspect = 'locational',
         args = {
             'location': 'cell surface',
@@ -1454,6 +1491,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'extracellular',
         parent = 'extracellular',
+        scope = 'generic',
         aspect = 'locational',
         source = 'composite',
         resource = af.AnnotOp(
@@ -1469,6 +1507,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'extracellular',
         parent = 'extracellular',
+        scope = 'generic',
         aspect = 'locational',
         resource = 'Ramilowski_location',
         args = {
@@ -1483,6 +1522,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'extracellular',
         parent = 'extracellular',
+        scope = 'generic',
         aspect = 'locational',
         resource = 'HPMR',
     ),  # these are membrane bound or secreted proteins
@@ -1504,6 +1544,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'extracellular',
         aspect = 'locational',
+        scope = 'generic',
         resource = 'ComPPI',
         args = {
             'location': 'extracellular',
@@ -1513,6 +1554,7 @@ annot_combined_classes = (
         # contains half of the intracellular proteome
     af.AnnotDef(
         name = 'extracellular',
+        scope = 'generic',
         aspect = 'locational',
         resource = 'LOCATE',
         args = {
@@ -1563,6 +1605,7 @@ annot_combined_classes = (
         aspect = 'locational',
         resource = '~intracellular',
         source = 'composite',
+        scope = 'generic',
     ),
     af.AnnotDef(
         name = 'intracellular',
@@ -1629,6 +1672,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'intracellular',
         aspect = 'locational',
+        scope = 'generic',
         resource = 'ComPPI',
         args = {
             'location': {
@@ -1641,6 +1685,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'intracellular',
         aspect = 'locational',
+        scope = 'generic',
         resource = 'GO_Intercell',
         args = {
             'mainclass': 'intracellular',
@@ -1649,6 +1694,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'intracellular',
         aspect = 'locational',
+        scope = 'generic',
         resource = 'UniProt_location',
         args = {
             'location': {
@@ -1880,6 +1926,11 @@ annot_combined_classes = (
         },
     ),  # good contents, includes a few secreted and
         # intracellular receptors
+    af.AnnotDef(
+        name = 'gpcr',
+        parent = 'receptor',
+        resource = 'GPCRdb',
+    ),
     af.AnnotDef(
         name = 'receptor',
         resource = '~receptor~HGNC',
@@ -2852,49 +2903,11 @@ annot_combined_classes = (
             'subsubclass': 'Plexin',
         },
     ),
-
-    # secreted receptors
-    af.AnnotDef(
-        name = 'ly6_plur',
-        parent = 'secreted_receptor',
-        resource = {'Q6UX82', 'P55000', 'P13987'},
-    ),
-    af.AnnotDef(
-        name = 'pentraxin',
-        parent = 'secreted_receptor',
-        resource = {'Q96A99', 'P26022', 'P47972'},
-    ),
-    af.AnnotDef(
-        name = 'ms4',
-        parent = 'receptor_regulator',
-        resource = af.AnnotOp(
-            annots = (
-                af.AnnotDef(
-                    name = 'ms4',
-                    resource = 'HGNC',
-                    args = {
-                        'mainclass': 'Membrane spanning 4-domains',
-                    },
-                ),
-                'plasma_membrane',
-            ),
-            op = set.intersection,
-        ),
-    ),
     af.AnnotDef(
         name = 'ige',
         parent = 'receptor',
         resource = {'Q01362'},
     ),
-    af.AnnotDef(
-        name = 'peptidoglycan',
-        parent = 'secreted_receptor',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Peptidoglycan recognition proteins',
-        },
-    ),  # apart from peptide recognition they have anti-microbial activity
-        # either enzymatically or other ways
     af.AnnotDef(
         name = 'scavenger',
         parent = 'receptor',
@@ -2903,11 +2916,6 @@ annot_combined_classes = (
             'mainclass': 'Scavenger receptors',
         },
         exclude = {'Q8WTU2', 'Q6AZY7', 'A1L4H1', 'Q14108'}
-    ),
-    af.AnnotDef(
-        name = 'scavenger',
-        parent = 'secreted_receptor',
-        resource = {'Q8WTU2', 'A1L4H1', 'Q86VB7'},
     ),
     af.AnnotDef(
         name = 'sialic_acid_binding_lectin',
@@ -3007,11 +3015,6 @@ annot_combined_classes = (
             'mainclass': 'Tumor necrosis factor receptor superfamily',
         },
         exclude = {'O9540', 'O0030'},
-    ),
-    af.AnnotDef(
-        name = 'tumor_necrosis_factor',
-        parent = 'secreted_receptor',
-        resource = {'O9540', 'O0030'},
     ),
     af.AnnotDef(
         name = 'type1_serine_threonine_kinase',
@@ -3328,32 +3331,6 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'receptor_activity_modifying',
-        parent = 'receptor_regulator',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'RAMP',
-        },
-    ),  # affect other receptors such as CALCRL
-    af.AnnotDef(
-        name = 'retinal_guanylyl_cyclase',
-        parent = 'receptor',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'RGC',
-        },
-    ),  # receptors for various compounds, e.g. natriuretic peptide
-        # and E.coli enterotoxin
-    af.AnnotDef(
-        name = 'receptor_transporter',
-        parent = 'receptor_regulator',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'RTP',
-        },
-    ),  # regulate other receptors,
-        # especially their trafficking to the plasma membrane
-    af.AnnotDef(
         name = 'receptor_tyrosine_phosphatase',
         parent = 'receptor',
         resource = 'Almen2009',
@@ -3486,29 +3463,23 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'lectin',
-        parent = 'secreted_receptor',
-        resource = 'UniProt_keywords',
+        name = 'retinal_guanylyl_cyclase',
+        parent = 'receptor',
+        resource = 'Almen2009',
         args = {
-            'keyword': 'Lectin',
+            'classes': 'RGC',
         },
-        limit = 'secreted',
-        avoid = af.AnnotDef(
-            name = 'ecm',
-            resource = 'UniProt_location',
-            args = {
-                'location': 'Extracellular matrix',
-            },
-        ),
-    ),
+    ),  # receptors for various compounds, e.g. natriuretic peptide
+        # and E.coli enterotoxin
     af.AnnotDef(
-        name = 'galectin',
-        parent = 'secreted_receptor',
-        resource = 'Matrisome',
+        name = 'receptor_transporter',
+        parent = 'receptor_regulator',
+        resource = 'Almen2009',
         args = {
-            'subsubclass': 'Galectin',
+            'classes': 'RTP',
         },
-    ),
+    ),  # regulate other receptors,
+        # especially their trafficking to the plasma membrane
     af.AnnotDef(
         name = 'lectin',
         parent = 'receptor',
@@ -3534,15 +3505,104 @@ annot_combined_classes = (
         },
         limit = 'extracellular',
     ),
+
+    # secreted receptors
     af.AnnotDef(
-        name = 'adhesion',
+        name = 'secreted_receptor',
+        source = 'composite',
+        scope = 'generic',
+        resource = '~secreted_receptor',
+        transmitter = True,
+        receiver = False,
+    ),
+    af.AnnotDef(
+        name = 'ly6_plur',
+        parent = 'secreted_receptor',
+        resource = {'Q6UX82', 'P55000', 'P13987'},
+    ),
+    af.AnnotDef(
+        name = 'pentraxin',
+        parent = 'secreted_receptor',
+        resource = {'Q96A99', 'P26022', 'P47972'},
+    ),
+    af.AnnotDef(
+        name = 'peptidoglycan',
+        parent = 'secreted_receptor',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Peptidoglycan recognition proteins',
+        },
+    ),  # apart from peptide recognition they have anti-microbial activity
+        # either enzymatically or other ways
+    af.AnnotDef(
+        name = 'scavenger',
+        parent = 'secreted_receptor',
+        resource = {'Q8WTU2', 'A1L4H1', 'Q86VB7'},
+    ),
+    af.AnnotDef(
+        name = 'tumor_necrosis_factor',
+        parent = 'secreted_receptor',
+        resource = {'O9540', 'O0030'},
+    ),
+    af.AnnotDef(
+        name = 'lectin',
+        parent = 'secreted_receptor',
         resource = 'UniProt_keywords',
         args = {
-            'keyword': 'Cell adhesion',
+            'keyword': 'Lectin',
         },
-        limit = 'cell_surface',
-    ),  # with limiting to the cell surface, it's a nice
-        # collecion of adhesion proteins (267)
+        limit = 'secreted',
+        avoid = af.AnnotDef(
+            name = 'ecm',
+            resource = 'UniProt_location',
+            args = {
+                'location': 'Extracellular matrix',
+            },
+        ),
+    ),
+    af.AnnotDef(
+        name = 'galectin',
+        parent = 'secreted_receptor',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Galectin',
+        },
+    ),
+
+    # receptor regulators
+    af.AnnotDef(
+        name = 'receptor_regulator',
+        source = 'composite',
+        scope = 'generic',
+        resource = '~receptor_regulator',
+        transmitter = True,
+        receiver = False,
+    ),
+    af.AnnotDef(
+        name = 'ms4',
+        parent = 'receptor_regulator',
+        resource = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'ms4',
+                    resource = 'HGNC',
+                    args = {
+                        'mainclass': 'Membrane spanning 4-domains',
+                    },
+                ),
+                'plasma_membrane',
+            ),
+            op = set.intersection,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'receptor_activity_modifying',
+        parent = 'receptor_regulator',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'RAMP',
+        },
+    ),  # affect other receptors such as CALCRL
     af.AnnotDef(
         name = 'glypican',
         parent = 'receptor_regulator',
@@ -4827,6 +4887,15 @@ annot_combined_classes = (
             op = set.union,
         ),
     ),
+    af.AnnotDef(
+        name = 'adhesion',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Cell adhesion',
+        },
+        limit = 'cell_surface',
+    ),  # with limiting to the cell surface, it's a nice
+        # collecion of adhesion proteins (267)
     af.AnnotDef(
         name = 'adhesion_cellphonedb',
         resource = 'CellPhoneDB',
