@@ -331,45 +331,58 @@ class IntercellAnnotation(annot.CustomAnnotation):
         if self._resource_categories['baccin']:
 
             self.ensure_annotdb()
-
             baccin_categories = []
+            baccin = self.annotdb.annots['Baccin2019']
+            fields = baccin.get_names()
+            locations = {
+                'surface': {'membrane', 'both'},
+                'secreted': {'secreted', 'both', 'ecm'},
+            }
 
-            for attr in ('subclass', 'location'):
+            subclasses = baccin.get_values('subclass') - {'other', None}
 
-                baccin = self.annotdb.annots['Baccin2019']
+            this_fields = fields[1:]
 
-                categories = set(
-                    getattr(c, attr)
-                    for cc in baccin.annot.values()
-                    for c in cc
-                )
+            for subclass in subclasses:
 
-                for category in categories:
+                args = {'subclass': subclass}
 
-                    if category in {'other', None}:
+                for location in ('surface', 'secreted'):
+
+                    args['location'] = location
+
+                    members = baccin.select(**args)
+
+                    if not members:
 
                         continue
 
-                    names = (
+                    receptor = 'receptor' in subclass
+
+                    parent = (
                         (
-                            'membrane_ligand_baccin',
-                            'secreted_ligand_baccin',
+                            'secreted_receptor'
+                                if location == 'secreted' else
+                            'receptor'
                         )
-                            if category == 'both' else
-                        ('%s_ligand_baccin' % category,)
-                            if attr == 'location' else
-                        ('%s_baccin' % category,)
+                        if receptor else
+                        (
+                            'cell_surface_ligand'
+                                if location == 'surface' else
+                            'ligand'
+                        )
                     )
 
-                    for name in names:
+                    name = subclass.replace('_receptor', '')
 
-                        baccin_categories.append(
-                            af.AnnotDef(
-                                name = name,
-                                resource = 'Baccin2019',
-                                args = {attr: category},
-                            )
+                    baccin_categories.append(
+                        af.AnnotDef(
+                            name = name,
+                            parent = parent,
+                            resource = 'Baccin2019',
+                            args = args,
                         )
+                    )
 
             self._class_definitions_provided += tuple(baccin_categories)
 
@@ -391,7 +404,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             for i in range(2, len(fields) + 1):
 
                 combinations = {
-                    a
+                    a[:i]
                     for entity, annots in iteritems(hpmr.annot)
                     for a in annots
                 }
@@ -405,9 +418,13 @@ class IntercellAnnotation(annot.CustomAnnotation):
                     this_fields = fields[1:i]
                     this_values = values[1:i]
 
+                    if not this_values[-1]:
+
+                        continue
+
                     args = dict(zip(
                         this_fields,
-                        this_values
+                        this_values,
                     ))
 
                     members = hpmr.select(**args)
@@ -464,7 +481,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             for i in range(1, len(fields) + 1):
 
                 combinations = {
-                    a
+                    a[:i]
                     for entity, annots in iteritems(gpcrdb.annot)
                     for a in annots
                 }
@@ -489,8 +506,12 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
                         continue
 
-                    name = resep.sub('_', this_values[-1]).lower()
-                    name.replace('receptors', 'receptors')
+                    name = '_'.join(
+                        resep.sub('_', val).lower().strip('_')
+                        for val in
+                        this_values
+                    )
+                    name = name.replace('_receptors', '')
 
                     gpcrdb_categories.append(
                         af.AnnotDef(
@@ -507,6 +528,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
     def add_surfaceome_categories(self):
 
         resep = re.compile(r'[- /\(\),\.]+')
+        recls = re.compile(r'_(?:transporters|receptors|ion_channels)')
 
         mainclasses = {
             'Receptors': 'receptor',
@@ -536,10 +558,20 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
                 for subclass in subclasses:
 
+                    if subclass.startswith('Other'):
+
+                        continue
+
                     name = '%s_%s' % (
-                        resep.sub('_', subclass).lower(),
+                        resep.sub('_', subclass).lower().strip('_'),
                         mainclass.lower(),
                     )
+                    _parent = (
+                        'ion_channel'
+                            if 'ion_channel' in name else
+                        parent
+                    )
+                    name = recls.sub('', name)
 
                     surfaceome_categories.append(
                         af.AnnotDef(
@@ -549,7 +581,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
                                 'mainclass': mainclass,
                                 'subclasses': subclass,
                             },
-                            parent = parent,
+                            parent = _parent,
                         )
                     )
 
