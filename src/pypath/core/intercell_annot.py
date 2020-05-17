@@ -2086,6 +2086,19 @@ annot_combined_classes = (
         },
         limit = 'plasma_membrane_transmembrane',
     ),
+    af.AnnotDef(
+        name = 'integrin',
+        parent = 'receptor',
+        resource = 'Integrins',
+    ),
+    af.AnnotDef(
+        name = 'integrin',
+        parent = 'receptor',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Integrin',
+        },
+    ),
     # receptor subclasses from HGNC
     af.AnnotDef(
         name = 'interleukin',
@@ -4998,7 +5011,8 @@ annot_combined_classes = (
         },
     ),  # surface bound ligands for plexins, regulating axonal growth
 
-    # adhesion
+
+    # adhesion (generic, cell-cell or cell-matrix undistinguished)
     af.AnnotDef(
         name = 'adhesion',
         scope = 'generic',
@@ -5011,27 +5025,28 @@ annot_combined_classes = (
             ),
             op = set.union,
         ),
-    ),
-    af.AnnotDef(
-        name = 'cell_adhesion',
-        scope = 'generic',
-        source = 'composite',
-        resource = af.AnnotOp(
-            annots = '~cell_adhesion',
-            op = set.union,
-        ),
-    ),
-    af.AnnotDef(
-        name = 'matrix_adhesion',
-        scope = 'generic',
-        source = 'composite',
-        resource = af.AnnotOp(
-            annots = '~matrix_adhesion',
-            op = set.union,
-        ),
+        transmitter = True,
+        receiver = True,
+        # transmitter & receiver are not valid for all members of this
+        # category but we have no better option now than keep all these
+        # proteins as potential transmitters and receivers
     ),
     af.AnnotDef(
         name = 'adhesion',
+        resource = af.AnnotOp(
+            annots = (
+                '~adhesion~HGNC',
+                '~cell_adhesion~HGNC',
+                '~matrix_adhesion~HGNC',
+            ),
+            op = set.union,
+        ),
+        resource_name = 'HGNC',
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'adhesion',
+        scope = 'generic',
         resource = 'UniProt_keywords',
         args = {
             'keyword': 'Cell adhesion',
@@ -5040,37 +5055,61 @@ annot_combined_classes = (
     ),  # with limiting to the cell surface, it's a nice
         # collecion of adhesion proteins (267)
     af.AnnotDef(
-        name = 'adhesion_cellphonedb',
+        name = 'adhesion',
+        scope = 'generic',
         resource = 'CellPhoneDB',
         args = {
             'integrin': bool,
         },
     ),
     af.AnnotDef(
-        name = 'integrin',
-        parent = 'matrix_adhesion',
-        resource = 'Integrins',
-    ),
-    af.AnnotDef(
-        name = 'integrin',
-        parent = 'receptor',
-        resource = 'Integrins',
-    ),
-    af.AnnotDef(
-        name = 'integrin',
-        parent = 'receptor',
-        resource = 'UniProt_keywords',
+        name = 'adhesion',
+        scope = 'generic',
+        resource = 'Adhesome',
         args = {
-            'keyword': 'Integrin',
+            'mainclass': 'Adhesion receptor',
+        },
+    ),  # both cell-cell and cell-matrix adhesion, good as it is
+    af.AnnotDef(
+        name = 'adhesion',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'Adhesion',
         },
     ),
     af.AnnotDef(
-        name = 'integrin',
-        parent = 'matrix_adhesion',
-        resource = 'UniProt_keywords',
+        name = 'ig_like',
+        parent = 'adhesion',
+        resource = 'Almen2009',
         args = {
-            'keyword': 'Integrin',
+            'classes': 'IG_AdhesionProteins',
         },
+    ),
+    af.AnnotDef(
+        name = 'mpz',
+        parent = 'adhesion',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'IG_MPZ',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ly6_plaur',
+        parent = 'adhesion',
+        resource = {'O95274', 'Q8N6Q3', 'Q8TDM5', 'Q9BY14', 'Q17RY6'},
+    ),  # both cell and matrix adhesion
+
+    # cell-cell adhesion
+    af.AnnotDef(
+        name = 'cell_adhesion',
+        scope = 'generic',
+        source = 'composite',
+        resource = af.AnnotOp(
+            annots = '~cell_adhesion',
+            op = set.union,
+        ),
+        transmitter = True,
+        receiver = True,
     ),
     af.AnnotDef(
         name = 'cell_adhesion',
@@ -5106,37 +5145,6 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'matrix_adhesion',
-        scope = 'generic',
-        resource = 'Zhong2015',
-        args = {
-            'type': {
-                'matrix adhesion',
-                'focal adhesion',
-            },
-        },
-        exclude = {
-            'Q14511', 'O60711', 'Q7Z4I7', 'Q96AC1', 'Q9H792',
-        },
-    ),
-    af.AnnotDef(
-        name = 'focal_adhesion',
-        parent = 'matrix_adhesion',
-        resource = 'Zhong2015',
-        args = {
-            'type': 'focal adhesion',
-        },
-    ),
-    af.AnnotDef(
-        name = 'matrix_adhesion',
-        resource = 'GO_Intercell',
-        scope = 'generic',
-        args = {
-            'mainclass': 'adhesion to matrix',
-        },
-        limit = 'cell_surface',
-    ),
-    af.AnnotDef(
         name = 'cell_adhesion',
         resource = 'GO_Intercell',
         scope = 'generic',
@@ -5146,72 +5154,49 @@ annot_combined_classes = (
         limit = 'cell_surface',
     ),
     af.AnnotDef(
-        name = 'adhesion',
-        scope = 'generic',
-        resource = 'Adhesome',
-        args = {
-            'mainclass': 'Adhesion receptor',
-        },
-    ),  # both cell-cell and cell-matrix adhesion, good as it is
-    af.AnnotDef(
-        name = 'focal_adhesion',
-        parent = 'matrix_adhesion',
-        resource = 'Ramilowski_location',
-        args = {
-            'location': 'focal adhesion',
-        },
-        limit = 'cell_surface',
-        exclude = {
-            'O14976', 'O15231', 'O43294', 'O60711', 'P07332', 'P50552',
-            'P56945', 'Q13153', 'Q14451', 'Q14511', 'Q155Q3', 'Q15654',
-            'Q7Z4I7', 'Q86TP1', 'Q8IVT2', 'Q8IZW8', 'Q8N264', 'Q8WX93',
-            'Q92502', 'Q96QB1', 'Q9H792', 'Q9HBI0', 'Q9HBI1', 'Q9NQ75',
-            'Q9UGI8', 'Q9UGP4',
-        },
-    ),
-    af.AnnotDef(
-        name = 'adhesion',
-        resource = af.AnnotOp(
-            annots = (
-                '~adhesion~HGNC',
-                '~cell_adhesion~HGNC',
-                '~matrix_adhesion~HGNC',
-            ),
-            op = set.union,
-        ),
-        resource_name = 'HGNC',
+        name = 'cell_adhesion',
+        resource = '~cell_adhesion~Almen2009',
+        resource_name = 'Almen2009',
         scope = 'generic',
     ),
+    af.AnnotDef(
+        name = 'beta_protocadherin',
+        parent = 'cell_adhesion',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'ProtocadherinsBeta',
+        },
+    ),  # cell-cell adhesion especially between neurons
+    af.AnnotDef(
+        name = 'protocadherin',
+        parent = 'cell_adhesion',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'ProtocadherinsOther',
+        },
+    ),  # cell-cell adhesion
+    af.AnnotDef(
+        name = 'classical_cadherin',
+        parent = 'cell_adhesion',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'CadherinClassic',
+        },
+    ),  # cell-cell adhesion
+    af.AnnotDef(
+        name = 'desmosomal_cadherin',
+        parent = 'cell_adhesion',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'CadherinOther',
+        },
+    ),  # cell-cell adhesion
+    # cell-cell adhesion HGNC
     af.AnnotDef(
         name = 'cell_adhesion',
         resource = '~cell_adhesion~HGNC',
         resource_name = 'HGNC',
         scope = 'generic',
-    ),
-    af.AnnotDef(
-        name = 'matrix_adhesion',
-        resource = '~matrix_adhesion~HGNC',
-        resource_name = 'HGNC',
-        scope = 'generic',
-    ),
-    # specific classes from HGNC
-    af.AnnotDef(
-        name = 'adhesion_gprotein_coupled_receptor',
-        parent = 'matrix_adhesion',
-        resource = 'HGNC',
-        args = {
-            'mainclass': {
-                'Adhesion G protein-coupled receptors, subfamily A',
-                'Adhesion G protein-coupled receptors, subfamily B',
-                'Adhesion G protein-coupled receptors, subfamily C',
-                'Adhesion G protein-coupled receptors, subfamily D',
-                'Adhesion G protein-coupled receptors, subfamily E',
-                'Adhesion G protein-coupled receptors, subfamily F',
-                'Adhesion G protein-coupled receptors, subfamily G',
-                'Adhesion G protein-coupled receptors, subfamily L',
-                'Adhesion G protein-coupled receptors, subfamily V',
-            },
-        }, # cell-matrix adhesion
     ),
     af.AnnotDef(
         name = '7d_cadherin',
@@ -5221,6 +5206,17 @@ annot_combined_classes = (
             'mainclass': '7D cadherins',
         },
     ), # cell-cell adhesion
+    af.AnnotDef(
+        name = 'ceacam',
+        parent = 'cell_adhesion',
+        resource = 'HGNC',
+        args = {
+            'mainclass': (
+                'Carcinoembryonic antigen related '
+                'cell adhesion molecule family'
+            ),
+        },
+    ), # in plasma membrane; cell-cell adhesion and receptors
     af.AnnotDef(
         name = 'cadherin_related',
         parent = 'cell_adhesion',
@@ -5303,17 +5299,6 @@ annot_combined_classes = (
         },
     ), # cell-cell adhesion for neurons; these are also ligands
     af.AnnotDef(
-        name = 'ceacam',
-        parent = 'adhesion',
-        resource = 'HGNC',
-        args = {
-            'mainclass': (
-                'Carcinoembryonic antigen related '
-                'cell adhesion molecule family'
-            ),
-        },
-    ), # in plasma membrane; cell-cell adhesion and receptors
-    af.AnnotDef(
         name = 'clarin',
         parent = 'cell_adhesion',
         resource = 'HGNC',
@@ -5339,11 +5324,6 @@ annot_combined_classes = (
         exclude = {'Q9HCN6', 'Q14CZ8'},
     ),
     af.AnnotDef(
-        name = 'matrix',
-        parent = 'adhesion',
-        resource = {'Q9HCN6', 'Q14CZ8'},
-    ),
-    af.AnnotDef(
         name = 'igcam_cxadr_like',
         parent = 'cell_adhesion',
         resource = 'HGNC',
@@ -5367,6 +5347,154 @@ annot_combined_classes = (
             'P23229', 'Q13349', 'Q13797', 'P20701', 'P38570', 'P05107',
             'P26010',
         },
+    ),
+    af.AnnotDef(
+        name = 'receptor_tyrosine_phosphatase',
+        parent = 'cell_adhesion',
+        resource = {'P28827', 'O14522'},
+    ),  # most of the PTPRs are not adhesion molecules but only adhesion
+        # receptors or other receptors
+    af.AnnotDef(
+        name = 'proteoglycan',
+        parent = 'cell_adhesion',
+        resource = {'P16070'},
+    ),
+    af.AnnotDef(
+        name = 'scavenger_receptor_cysteine_rich',
+        parent = 'cell_adhesion',
+        resource = {'P30203'},
+    ),
+    af.AnnotDef(
+        name = 'selectin',
+        parent = 'cell_adhesion',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Selectins',
+        },
+    ),
+    af.AnnotDef(
+        name = 'selectin',
+        parent = 'cell_adhesion',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'Selectin',
+        },
+    ),  # cell-cell adhesion between immune cells
+
+    # cell-matrix adhesion
+    af.AnnotDef(
+        name = 'matrix_adhesion',
+        scope = 'generic',
+        source = 'composite',
+        resource = af.AnnotOp(
+            annots = '~matrix_adhesion',
+            op = set.union,
+        ),
+        transmitter = False,
+        receiver = True,
+    ),
+    af.AnnotDef(
+        name = 'integrin',
+        parent = 'matrix_adhesion',
+        resource = 'Integrins',
+    ),
+    af.AnnotDef(
+        name = 'integrin',
+        parent = 'matrix_adhesion',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Integrin',
+        },
+    ),
+    af.AnnotDef(
+        name = 'matrix_adhesion',
+        scope = 'generic',
+        resource = 'Zhong2015',
+        args = {
+            'type': {
+                'matrix adhesion',
+                'focal adhesion',
+            },
+        },
+        exclude = {'Q14511', 'O60711', 'Q7Z4I7', 'Q96AC1', 'Q9H792'},
+    ),
+    af.AnnotDef(
+        name = 'focal_adhesion',
+        parent = 'matrix_adhesion',
+        resource = 'Zhong2015',
+        args = {
+            'type': 'focal adhesion',
+        },
+    ),
+    af.AnnotDef(
+        name = 'matrix_adhesion',
+        resource = 'GO_Intercell',
+        scope = 'generic',
+        args = {
+            'mainclass': 'adhesion to matrix',
+        },
+        limit = 'cell_surface',
+    ),
+    af.AnnotDef(
+        name = 'focal_adhesion',
+        parent = 'matrix_adhesion',
+        resource = 'Ramilowski_location',
+        args = {
+            'location': 'focal adhesion',
+        },
+        limit = 'cell_surface',
+        exclude = {
+            'O14976', 'O15231', 'O43294', 'O60711', 'P07332', 'P50552',
+            'P56945', 'Q13153', 'Q14451', 'Q14511', 'Q155Q3', 'Q15654',
+            'Q7Z4I7', 'Q86TP1', 'Q8IVT2', 'Q8IZW8', 'Q8N264', 'Q8WX93',
+            'Q92502', 'Q96QB1', 'Q9H792', 'Q9HBI0', 'Q9HBI1', 'Q9NQ75',
+            'Q9UGI8', 'Q9UGP4',
+        },
+    ),
+    af.AnnotDef(
+        name = 'integrin',
+        parent = 'matrix_adhesion',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'Integrin',
+        },
+    ),  # matrix adhesion; these are also receptors
+    af.AnnotDef(
+        name = 'sarcoglycan',
+        parent = 'matrix_adhesion',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'Sarcoglycan',
+        },
+    ),  # cell-matrix adhesion for muscle cells
+    af.AnnotDef(
+        name = 'matrix_adhesion',
+        resource = '~matrix_adhesion~HGNC',
+        resource_name = 'HGNC',
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'adhesion_gprotein_coupled_receptor',
+        parent = 'matrix_adhesion',
+        resource = 'HGNC',
+        args = {
+            'mainclass': {
+                'Adhesion G protein-coupled receptors, subfamily A',
+                'Adhesion G protein-coupled receptors, subfamily B',
+                'Adhesion G protein-coupled receptors, subfamily C',
+                'Adhesion G protein-coupled receptors, subfamily D',
+                'Adhesion G protein-coupled receptors, subfamily E',
+                'Adhesion G protein-coupled receptors, subfamily F',
+                'Adhesion G protein-coupled receptors, subfamily G',
+                'Adhesion G protein-coupled receptors, subfamily L',
+                'Adhesion G protein-coupled receptors, subfamily V',
+            },
+        }, # cell-matrix adhesion
+    ),
+    af.AnnotDef(
+        name = 'matrix_adhesion',
+        parent = 'adhesion',
+        resource = {'Q9HCN6', 'Q14CZ8'},
     ),
     af.AnnotDef(
         name = 'integrin',
@@ -5396,124 +5524,23 @@ annot_combined_classes = (
         ),
     ),  # membrane bound mucins
     af.AnnotDef(
-        name = 'receptor_tyrosine_phosphatase',
-        parent = 'cell_adhesion',
-        resource = {'P28827', 'O14522'},
-    ),  # most of the PTPRs are not adhesion molecules but only adhesion
-        # receptors or other receptors
-    af.AnnotDef(
-        name = 'proteoglycan',
-        parent = 'cell_adhesion',
-        resource = {'P16070'},
-    ),
-    af.AnnotDef(
         name = 'proteoglycan',
         parent = 'matrix_adhesion',
         resource = {'Q6UVK1'},
     ),
+
+    # cell-matrix adhesion regulators
     af.AnnotDef(
-        name = (
-            'scavenger_receptor_cysteine_rich_'
-            'matrix_adhesion_regulator_omnipath'
-        ),
-        resource = {'Q08380'},
+        name = 'matrix_adhesion_regulator',
+        resource = '~matrix_adhesion_regulator',
+        scope = 'generic',
+        transmitter = True,
+        receiver = False,
     ),
     af.AnnotDef(
         name = 'scavenger_receptor_cysteine_rich',
-        parent = 'cell_adhesion',
-        resource = {'P30203'},
-    ),
-    af.AnnotDef(
-        name = 'selectin',
-        parent = 'cell_adhesion',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Selectins',
-        },
-    ),
-    af.AnnotDef(
-        name = 'adhesion',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'Adhesion',
-        },
-    ),
-    af.AnnotDef(
-        name = 'ig_like',
-        parent = 'adhesion',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'IG_AdhesionProteins',
-        },
-    ),
-    af.AnnotDef(
-        name = 'mpz',
-        parent = 'adhesion',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'IG_MPZ',
-        },
-    ),
-    af.AnnotDef(
-        name = 'classical_cadherin',
-        parent = 'adhesion',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'CadherinClassic',
-        },
-    ),  # cell-cell adhesion
-    af.AnnotDef(
-        name = 'desmosomal_cadherin',
-        parent = 'adhesion',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'CadherinOther',
-        },
-    ),  # cell-cell adhesion
-    af.AnnotDef(
-        name = 'integrin',
-        parent = 'matrix_adhesion',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'Integrin',
-        },
-    ),  # matrix adhesion; these are also receptors
-    af.AnnotDef(
-        name = 'beta_protocadherin',
-        parent = 'adhesion',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'ProtocadherinsBeta',
-        },
-    ),  # cell-cell adhesion especially between neurons
-    af.AnnotDef(
-        name = 'protocadherin',
-        parent = 'adhesion',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'ProtocadherinsOther',
-        },
-    ),  # cell-cell adhesion
-    af.AnnotDef(
-        name = 'sarcoglycan',
-        parent = 'matrix_adhesion',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'Sarcoglycan',
-        },
-    ),  # cell-matrix adhesion for muscle cells
-    af.AnnotDef(
-        name = 'selectin',
-        parent = 'cell_adhesion',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'Selectin',
-        },
-    ),  # cell-cell adhesion between immune cells
-    af.AnnotDef(
-        name = 'ly6_plaur',
-        parent = 'adhesion',
-        resource = {'O95274', 'Q8N6Q3', 'Q8TDM5', 'Q9BY14', 'Q17RY6'},
+        parent = 'matrix_adhesion_regulator',
+        resource = {'Q08380'},
     ),
 
     # surface enzyme
