@@ -4025,7 +4025,8 @@ annot_combined_classes = (
             'Q96P15', 'Q9GZT9', 'Q9H6Z9', 'Q9NXG6', 'Q9UBR2', 'Q9UBX1',
             'Q9UIV8', 'Q9UKF2',
         },
-    ),  # mostly secreted enzymes acting on ECM components
+    ),  # mostly secreted enzymes acting on ECM components,
+        # proteases and protease inhibitors
 
     # ligand
     af.AnnotDef(
@@ -5534,6 +5535,7 @@ annot_combined_classes = (
         name = 'matrix_adhesion_regulator',
         resource = '~matrix_adhesion_regulator',
         scope = 'generic',
+        source = 'composite',
         transmitter = True,
         receiver = False,
     ),
@@ -5546,10 +5548,17 @@ annot_combined_classes = (
     # surface enzyme
     af.AnnotDef(
         name = 'cell_surface_enzyme',
+        scope = 'generic',
+        source = 'composite',
         resource = af.AnnotOp(
-            annots = '~cell_surface_enzyme',
+            annots = (
+                '~cell_surface_enzyme',
+                '~cell_surface_peptidase',
+            ),
             op = set.union,
         ),
+        transmitter = True,
+        receiver = False,
     ),
     af.AnnotDef(
         name = 'cell_surface_enzyme',
@@ -5586,12 +5595,6 @@ annot_combined_classes = (
         resource_name = 'HGNC',
         scope = 'generic',
     ),
-    af.AnnotDef(
-        name = 'cell_surface_peptidase',
-        resource = '~cell_surface_peptidase~HGNC',
-        resource_name = 'HGNC',
-        scope = 'generic',
-    ),
     # specific subclasses from HGNC
     af.AnnotDef(
         name = 'ectonucleotide_phosphatase',
@@ -5609,15 +5612,32 @@ annot_combined_classes = (
         resource = {'Q9UHN6', 'Q12891', 'P38567', 'Q2M3T9'},
     ),
     af.AnnotDef(
-        name = 'scavenger_receptor_cysteine_rich_surface_enzyme',
+        name = 'scavenger_receptor_cysteine_rich',
+        parent = 'cell_surface_enzyme',
         resource = {
             'P98073', 'Q9Y5Q5', 'Q9BYE2', 'Q9H3S3', 'O15393', 'P05981',
             'Q9NRS4',
         },
     ),
+
+    # cell surface peptidase (protease)
+    af.AnnotDef(
+        name = 'cell_surface_peptidase',
+        scope = 'generic',
+        source = 'composite',
+        resource = '~cell_surface_peptidase',
+        transmitter = True,
+        receiver = False,
+    ),
+    af.AnnotDef(
+        name = 'cell_surface_peptidase',
+        resource = '~cell_surface_peptidase~HGNC',
+        resource_name = 'HGNC',
+        scope = 'generic',
+    ),
     af.AnnotDef(
         name = 'insulin_degrading',
-        parent = 'cell_surface_enzyme',
+        parent = 'cell_surface_peptidase',
         resource = {'P14735'},
     ),
     af.AnnotDef(
@@ -5657,6 +5677,415 @@ annot_combined_classes = (
         },
         exclude = {'P43251'},
     ),
+    af.AnnotDef(
+        name = 'serine_protease',
+        parent = 'cell_surface_peptidase',
+        resource = {
+            'Q8IU80', 'Q9Y5Q5', 'Q7RTY9', 'Q9BYE2', 'Q6ZMR5', 'Q9H3S3',
+            'Q86WS5', 'Q9Y6M0', 'Q9Y5Y6', 'O60235', 'Q9NRR2', 'Q7Z410',
+            'Q6ZWK6', 'Q7RTY8', 'P05981', 'Q86T26', 'Q6UWB4', 'Q9NRS4',
+            'A4D1T9', 'O15393', 'Q92743', 'Q9UL52', 'Q16651'
+        },
+    ),
+    
+    # secreted enzyme
+    af.AnnotDef(
+        name = 'secreted_enzyme',
+        scope = 'generic',
+        source = 'composite',
+        resource = af.AnnotOp(
+            annots = (
+                '~secreted_enzyme',
+                '~secreted_peptidase',
+            ),
+            op = set.union,
+        ),
+        transmitter = True,
+        receiver = False,
+    ),
+    af.AnnotDef(
+        name = 'secreted_enzyme',
+        resource = 'GO_Intercell',
+        scope = 'generic',
+        args = {
+            'mainclass': 'enzyme',
+        },
+        limit = 'secreted',
+        avoid = ('receptor', 'ligand', 'plasma_membrane_transmembrane'),
+    ),
+    af.AnnotDef(
+        name = 'secreted_enzyme',
+        resource = af.AnnotOp(
+            annots = (
+                '~secreted_enzyme~HGNC',
+                '~secreted_peptidase~HGNC',
+            ),
+            op = set.union,
+        ),
+        resource_name = 'HGNC',
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'phospholipase',
+        parent = 'secreted_enzyme',
+        resource = {
+            'Q53H76', 'Q8NCC3', 'Q9NZK7', 'Q9BX93', 'P04054', 'Q13093',
+            'Q5R387', 'Q9NZ20', 'P14555', 'Q9BZM1', 'Q9UNK4', 'O15496',
+            'Q9BZM2', 'P39877',
+        },
+    ),  # secreted enzymes acting on phospholipids
+    af.AnnotDef(
+        name = 'defensin',
+        parent = 'secreted_enyzme',
+        resource = 'HGNC',
+        args = {
+            'mainclass': {
+                'Defensins, alpha',
+                'Defensins, beta',
+            },
+        },
+    ),  # permeabilizing microorganism membranes or
+        # binding to microorganism surfaces
+    af.AnnotDef(
+        name = 'lysozym',
+        parent = 'secreted_enyzme',
+        resource = 'HGNC',
+        args = {
+            'mainclass': {
+                'Lysozymes, c-type',
+                'Lysozymes, g-type'
+            },
+        },
+    ),  # bacteriolytic proteins, some involved in sperm-egg fertilization
+    af.AnnotDef(
+        name = 'galactosidase',
+        parent = 'secreted_enyzme',
+        resource = {'Q6UWU2', 'Q8IW92'},
+    ),  # secreted galactosidases
+    af.AnnotDef(
+        name = 'lipase',
+        parent = 'secreted_enzyme',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Lipases',
+        },
+        limit = 'secreted',
+    ),  # secreted lipases
+    af.AnnotDef(
+        name = 'paraoxonase',
+        parent = 'secreted_enzyme',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Paraoxonases',
+        },
+    ),  # secreted enzymes hydrolysing lactons and other metabolites
+    af.AnnotDef(
+        name = 'lipocalin',
+        parent = 'secreted_enzyme',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Lipocalins',
+        },
+        limit = 'secreted',
+    ),  # secreted lipases
+    af.AnnotDef(
+        name = 'lipase',
+        parent = 'secreted_enzyme',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Lipid degradation',
+        },
+        limit = 'secreted',
+    ),
+    af.AnnotDef(
+        name = 'scavenger_receptor_cysteine_rich',
+        parent = 'secreted_enzyme',
+        resource = {
+            'P58215', 'Q96JB6', 'P05156', 'P56730', 'Q96JK4', 'Q9Y4K0',
+        },
+    ),
+    af.AnnotDef(
+        name = 'glutathione_peroxidase',
+        parent = 'secreted_enzyme',
+        resource = {'P59796', 'P49908', 'P22352'},
+    ),
+    af.AnnotDef(
+        name = 'biotinidase',
+        parent = 'secreted_enzyme',
+        resource = {'P43251'},
+    ),
+    af.AnnotDef(
+        name = 'hyaluronidase',
+        parent = 'secreted_enzyme',
+        resource = {'Q12794', 'Q8WUJ3', 'O43820'},
+    ),
+    af.AnnotDef(
+        name = 'ribonuclease',
+        parent = 'secreted_enzyme',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Ribonuclease A family',
+        },
+        exclude = {'P10153', 'P03950'},
+    ),
+
+    # secreted peptidase
+    af.AnnotDef(
+        name = 'secreted_peptidase',
+        resource = '~secreted_peptidase',
+        source = 'composite',
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'secreted_peptidase',
+        scope = 'generic',
+        resource = 'GO_Intercell',
+        limit = 'extracellular',
+        args = {
+            'mainclass': 'peptidase',
+        },
+    ),
+    af.AnnotDef(
+        name = 'secreted_peptidase',
+        resource = 'UniProt_keywords',
+        scope = 'generic',
+        args = {
+            'keyword': {
+                'Protease',
+                'Serine protease',
+            },
+        },
+        limit = 'secreted',
+    ),  # looks all right
+    af.AnnotDef(
+        name = 'collagen_degrading',
+        parent = 'secreted_peptidase',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Collagen degradation',
+        },
+    ),  # very good
+    af.AnnotDef(
+        name = 'cathepsin',
+        parent = 'secreted_peptidase',
+        resource = {'P08311', 'P07711', 'P43235', 'P25774', 'P07339'},
+    ),
+    af.AnnotDef(
+        name = 'secreted_peptidase',
+        resource = '~secreted_peptidase~HGNC',
+        resource_name = 'HGNC',
+        scope = 'generic',
+    ),
+    # subclasses from HGNC
+    af.AnnotDef(
+        name = 'adamts',
+        parent = 'secreted_peptidase',
+        resource = 'HGNC',
+        args = {
+            'mainclass': (
+                'ADAM metallopeptidases with thrombospondin type 1 motif'
+            ),
+        },
+    ),
+    af.AnnotDef(
+        name = 'adamts_like',
+        parent = 'secreted_peptidase',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'ADAMTS like',
+        },
+    ),
+    af.AnnotDef(
+        name = 'heparanase',
+        parent = 'secreted_peptidase',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Heparanases',
+        },
+    ),  # act on heparin and heparane-sulphate
+    af.AnnotDef(
+        name = 'm14_carboxypeptidase',
+        parent = 'secreted_peptidase',
+        resource = {
+            'P16870', 'P15169', 'Q8IUX7', 'Q66K79', 'P48052', 'Q96SM3',
+            'Q8WXQ8', 'P15086', 'Q96IY4', 'P15085', 'Q8N4T0', 'Q9HB40',
+            'P22792', 'Q9UI42', 'Q8N436', 'Q9Y646',
+        },
+    ),
+    af.AnnotDef(
+        name = 'm1_metallopeptidase',
+        parent = 'secreted_peptidase',
+        resource = {'Q9H4A4'},
+    ),  #
+    af.AnnotDef(
+        name = 'm16_metallopeptidase',
+        parent = 'secreted_peptidase',
+        resource = {'P14735'},
+    ),  # acts on peptide hormones
+    af.AnnotDef(
+        name = 'immune_serin_protease',
+        parent = 'secreted_peptidase',
+        resource = 'HGNC',
+        args = {
+            'mainclass': (
+                'Granule associated serine proteases of immune defence'
+            ),
+        },
+    ),  # secreted by granulocytes as part of the immune response
+    af.AnnotDef(
+        name = 'm10_metallopeptidase',
+        parent = 'secreted_peptidase',
+        resource = {
+            'Q9H239', 'P09237', 'P09238', 'P03956', 'P08253', 'P24347',
+            'P39900', 'P45452', 'Q9NRE1', 'P22894', 'Q99542', 'Q8N119',
+            'O60882', 'P14780', 'P08254',
+        },
+    ),  # secreted matrix metallopeptidases, many act on the ECM
+    # specific classes from HGNC
+    af.AnnotDef(
+        name = 'chymotrypsin_like_elastase',
+        parent = 'extracellular_peptidase',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Chymotrypsin like elastases',
+        },
+    ),  # involved in ECM dynamics and remodeling
+    af.AnnotDef(
+        name = 'kallikrein',
+        parent = 'extracellular_peptidase',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Kallikreins',
+        },
+    ),  # extracellular serine proteases, involved in ECM dynamics
+    af.AnnotDef(
+        name = 'pappalysin',
+        parent = 'extracellular_peptidase',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Pappalysins',
+        },
+    ),  # cleave IGFBPs
+    af.AnnotDef(
+        name = 'serine_protease',
+        parent = 'secreted_peptidase',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Serine proteases',
+        },
+        exclude = {
+            'Q9UHE8', 'P36776', 'Q9NQE7', 'Q6UWY2', 'Q7Z5A4', 'P57727',
+            'Q8IU80', 'Q9Y5Q5', 'Q7RTY9', 'Q9BYE2', 'Q6ZMR5', 'Q9H3S3',
+            'Q86WS5', 'Q9Y6M0', 'Q9Y5Y6', 'O60235', 'Q9NRR2', 'Q7Z410',
+            'Q6ZWK6', 'Q7RTY8', 'P05981', 'Q86T26', 'Q6UWB4', 'Q9NRS4',
+            'O43464', 'Q9UI38',
+        },
+    ),
+    af.AnnotDef(
+        name = 'matrix_matalloproteinase',
+        parent = 'secreted_peptidase',
+        resource = {
+            'Q9NRE1', 'Q9NPA2', 'P14780', 'Q9H239', 'P22894', 'P08253',
+            'P09237', 'P39900', 'P45452', 'Q9ULZ9', 'P51512', 'P03956',
+        }
+    ),
+    af.AnnotDef(
+        name = 'adamts',
+        parent = 'secreted_peptidase',
+        resource = {'Q8N6G6', 'Q6UY14'},
+    ),
+    af.AnnotDef(
+        name = 'stromelysin',
+        parent = 'secreted_peptidase',
+        resource = {'P08254', 'P09238'},
+    ),
+    af.AnnotDef(
+        name = 'carboxypeptidase',
+        parent = 'secreted_peptidase',
+        resource = {'Q66K79'},
+    ),
+    af.AnnotDef(
+        name = 'polyserase',
+        parent = 'secreted_peptidase',
+        resource = {'Q5K4E3'},
+    ),
+
+
+    # secreted peptidase inhibitor
+    af.AnnotDef(
+        name = 'secreted_peptidase_inhibitor',
+        scope = 'generic',
+        source = 'composite',
+        resource = '~secreted_peptidase_inhibitor',
+    ),
+    af.AnnotDef(
+        name = 'serpin',
+        parent = 'secreted_peptidase_inhibitor',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Serpin peptidase inhibitors',
+        },
+        limit = 'secreted',
+    ),
+    af.AnnotDef(
+        name = 'inter_alpha_trypsin_inhibitor',
+        parent = 'secreted_peptidase_inhibitor',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Inter-alpha-trypsin inhibitor heavy chains',
+        },
+    ),  # protease inhibitors in plasma
+    af.AnnotDef(
+        name = 'secreted_peptidase_inhibitor',
+        scope = 'generic',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': {
+                'Protease inhibitor',
+                'Serine protease inhibitor',
+            },
+        },
+        limit = 'secreted',
+    ),  # looks all right
+    af.AnnotDef(
+        name = 'cystatin',
+        parent = 'secreted_peptidase_inhibitor',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'Cystatin',
+        },
+        exclude = {'P04080', 'P01040'},
+    ),
+    af.AnnotDef(
+        name = 'secreted_peptidase_inhibitor',
+        resource = {'P01009', 'P35625'},
+    ),
+    af.AnnotDef(
+        name = 'serine_peptidase_inhibitor',
+        parent = 'secreted_peptidase_inhibitor',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Serine peptidase inhibitors, Kazal type',
+        },
+    ),
+    af.AnnotDef(
+        name = 'wap_four_disulfide_core_domain_containing',
+        parent = 'secreted_peptidase_inhibitor',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'WAP four-disulfide core domain containing',
+        },
+        exclude = {'P23352'},
+    ),
+    af.AnnotDef(
+        name = 'tissue_inhibitor_of_metallopeptidases',
+        parent = 'secreted_peptidase_inhibitor',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Tissue inhibitor of metallopeptidases',
+        },
+    ),
+
 
     # transporter
     af.AnnotDef(
@@ -6434,484 +6863,7 @@ annot_combined_classes = (
         },
     ),
 
-    # extracellular enzyme
-    af.AnnotDef(
-        name = 'extracellular_enzyme',
-        scope = 'generic',
-        source = 'composite',
-        resource = af.AnnotOp(
-            annots = (
-                '~extracellular_enzyme',
-                '~extracellular_peptidase',
-            ),
-            op = set.union
-        ),
-    ),
-    af.AnnotDef(
-        name = 'extracellular_peptidase',
-        scope = 'generic',
-        source = 'composite',
-        resource = '~extracellular_peptidase',
-    ),
-    af.AnnotDef(
-        name = 'extracellular_peptidase_inhibitor',
-        scope = 'generic',
-        source = 'composite',
-        resource = '~extracellular_peptidase_inhibitor',
-    ),
-    af.AnnotDef(
-        name = 'extracellular_enzyme',
-        resource = 'GO_Intercell',
-        scope = 'generic',
-        args = {
-            'mainclass': 'enzyme',
-        },
-        limit = 'extracellular',
-        avoid = ('receptor', 'ligand', 'plasma_membrane_transmembrane'),
-    ),
-    af.AnnotDef(
-        name = 'extracellular_peptidase',
-        scope = 'generic',
-        resource = 'UniProt_keywords',
-        args = {
-            'keyword': {
-                'Protease',
-                'Serine protease',
-            },
-        },
-        limit = 'extracellular',
-    ),  # looks all right
-    af.AnnotDef(
-        name = 'extracellular_peptidase_inhibitor',
-        scope = 'generic',
-        resource = 'UniProt_keywords',
-        args = {
-            'keyword': {
-                'Protease inhibitor',
-                'Serine protease inhibitor',
-            },
-        },
-        limit = 'extracellular',
-    ),  # looks all right
-    af.AnnotDef(
-        name = 'collagen_degrading',
-        parent = 'extracellular_peptidase',
-        resource = 'UniProt_keywords',
-        args = {
-            'keyword': 'Collagen degradation',
-        },
-    ),  # very good
-    af.AnnotDef(
-        name = 'cathepsin',
-        parent = 'extracellular_peptidase',
-        resource = {'P08311', 'P07711', 'P43235', 'P25774', 'P07339'},
-    ),
-    af.AnnotDef(
-        name = 'cystatin',
-        parent = 'extracellular_peptidase_inhibitor',
-        resource = 'Matrisome',
-        args = {
-            'subsubclass': 'Cystatin',
-        },
-        exclude = {'P04080', 'P01040'},
-    ),
-    af.AnnotDef(
-        name = 'ecm_regulator',
-        parent = 'ecm_regulator',
-        scope = 'generic',
-        resource = 'Matrisome',
-        args = {
-            'subclass': 'ECM Regulators',
-        },
-        exclude = {
-            'P29508', 'P50454', 'O75063', 'O00469', 'P43234', 'P07339',
-            'O60911', 'Q9UIV8', 'Q9UKF2', 'P10619', 'P53634', 'P14091',
-            'Q7Z4N8', 'P04080', 'P50453', 'O15460', 'Q8IVL5', 'P50452',
-            'Q96P15', 'O43548', 'Q9UBR2', 'P01040', 'Q9UBX1', 'Q8IVL6',
-            'Q8NBH2', 'P09668', 'P48595', 'P13674', 'Q6HA08', 'P00488',
-            'Q08188', 'P56202', 'O75635', 'P20848', 'Q96KS0', 'Q9H6Z9',
-            'Q6YHK3', 'Q86WD7', 'Q9NXG6', 'Q9GZT9', 'P35237', 'Q96IV0',
-            'P48594', 'O95932',
-        },
-    ),  # mostly proteases and protease inhibitors
-    af.AnnotDef(
-        name = 'extracellular_enzyme',
-        resource = af.AnnotOp(
-            annots = (
-                '~extracellular_enzyme~HGNC',
-                '~extracellular_peptidase~HGNC',
-            ),
-            op = set.union,
-        ),
-        resource_name = 'HGNC',
-        scope = 'generic',
-    ),
-    af.AnnotDef(
-        name = 'extracellular_peptidase',
-        resource = '~extracellular_peptidase~HGNC',
-        resource_name = 'HGNC',
-        scope = 'generic',
-    ),
-    # subclasses from HGNC
-    af.AnnotDef(
-        name = 'adamts',
-        parent = 'extracellular_peptidase',
-        resource = 'HGNC',
-        args = {
-            'mainclass': (
-                'ADAM metallopeptidases with thrombospondin type 1 motif'
-            ),
-        },
-    ),
-    af.AnnotDef(
-        name = 'adamts_like',
-        parent = 'extracellular_peptidase',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'ADAMTS like',
-        },
-    ),
-    af.AnnotDef(
-        name = 'heparanase',
-        parent = 'extracellular_peptidase',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Heparanases',
-        },
-    ),  # act on heparin and heparane-sulphate
-    af.AnnotDef(
-        name = 'phospholipase',
-        parent = 'extracellular_enzyme',
-        resource = {
-            'Q53H76', 'Q8NCC3', 'Q9NZK7', 'Q9BX93', 'P04054', 'Q13093',
-            'Q5R387', 'Q9NZ20', 'P14555', 'Q9BZM1', 'Q9UNK4', 'O15496',
-            'Q9BZM2', 'P39877',
-        },
-    ),  # secreted enzymes acting on phospholipids
-    af.AnnotDef(
-        name = 'defensin',
-        parent = 'extracellular_enyzme',
-        resource = 'HGNC',
-        args = {
-            'mainclass': {
-                'Defensins, alpha',
-                'Defensins, beta',
-            },
-        },
-    ),  # permeabilizing microorganism membranes or
-        # binding to microorganism surfaces
-    af.AnnotDef(
-        name = 'lysozym',
-        parent = 'extracellular_enyzme',
-        resource = 'HGNC',
-        args = {
-            'mainclass': {
-                'Lysozymes, c-type',
-                'Lysozymes, g-type'
-            },
-        },
-    ),  # bacteriolytic proteins, some involved in sperm-egg fertilization
-    af.AnnotDef(
-        name = 'm14_carboxypeptidase_extracellular_peptidase',
-        resource = {
-            'P16870', 'P15169', 'Q8IUX7', 'Q66K79', 'P48052', 'Q96SM3',
-            'Q8WXQ8', 'P15086', 'Q96IY4', 'P15085', 'Q8N4T0', 'Q9HB40',
-            'P22792', 'Q9UI42', 'Q8N436', 'Q9Y646',
-        },
-    ),
-    af.AnnotDef(
-        name = 'galactosidase',
-        parent = 'extracellular_enyzme',
-        resource = {'Q6UWU2', 'Q8IW92'},
-    ),  # secreted galactosidases
-    af.AnnotDef(
-        name = 'm1_metallopeptidase',
-        parent = 'extracellular_peptidase',
-        resource = {'Q9H4A4'},
-    ),  #
-    af.AnnotDef(
-        name = 'm16_metallopeptidase',
-        parent = 'extracellular_peptidase',
-        resource = {'P14735'},
-    ),  # acts on peptide hormones
-    af.AnnotDef(
-        name = 'lipase',
-        parent = 'extracellular_enzyme',
-        resource = af.AnnotOp(
-            annots = (
-                af.AnnotDef(
-                    name = 'lipase',
-                    resource = 'HGNC',
-                    args = {
-                        'mainclass': 'Lipases',
-                    },
-                ),
-                'extracellular',
-            ),
-            op = set.intersection
-        ),
-    ),  # secreted lipases
-    af.AnnotDef(
-        name = 'paraoxonase',
-        parent = 'extracellular_enzyme',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Paraoxonases',
-        },
-    ),  # secreted enzymes hydrolysing lactons and other metabolites
-    af.AnnotDef(
-        name = 'lipocalin',
-        parent = 'extracellular_enzyme',
-        resource = af.AnnotOp(
-            annots = (
-                af.AnnotDef(
-                    name = 'lipocalin',
-                    resource = 'HGNC',
-                    args = {
-                        'mainclass': 'Lipocalins',
-                    },
-                ),
-                'extracellular',
-            ),
-            op = set.intersection
-        ),
-    ),  # secreted lipases
-    af.AnnotDef(
-        name = 'immune_serin_protease_extracellular_peptidase',
-        resource = 'HGNC',
-        args = {
-            'mainclass': (
-                'Granule associated serine proteases of immune defence'
-            ),
-        },
-    ),  # secreted by granulocytes as part of the immune response
-    af.AnnotDef(
-        name = 'hyaluronidase',
-        parent = 'extracellular_enzyme',
-        resource = {'Q12794', 'Q8WUJ3', 'O43820'},
-    ),
-    af.AnnotDef(
-        name = (
-            'inter_alpha_trypsin_inhibitor_'
-            'extracellular_enyzme_regulator_hgnc'
-        ),
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Inter-alpha-trypsin inhibitor heavy chains',
-        },
-    ),  # protease inhibitors in plasma
-    af.AnnotDef(
-        name = 'm10_metallopeptidase_extracellular_peptidase',
-        resource = {
-            'Q9H239', 'P09237', 'P09238', 'P03956', 'P08253', 'P24347',
-            'P39900', 'P45452', 'Q9NRE1', 'P22894', 'Q99542', 'Q8N119',
-            'O60882', 'P14780', 'P08254',
-        },
-    ),  # secreted matrix metallopeptidases, many act on the ECM
-    af.AnnotDef(
-        name = 'ribonuclease',
-        parent = 'extracellular_enzyme',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Ribonuclease A family',
-        },
-        exclude = {'P10153', 'P03950'},
-    ),
-
-    # extracellular peptidase
-    af.AnnotDef(
-        name = 'extracellular_peptidase_go',
-        resource = af.AnnotOp(
-            annots = (
-                'extracellular',
-                af.AnnotDef(
-                    name = 'peptidase',
-                    resource = 'GO_Intercell',
-                    args = {
-                        'mainclass': 'peptidase',
-                    },
-                ),
-            ),
-            op = set.intersection,
-        ),
-    ),
-    af.AnnotDef(
-        name = 'extracellular_enzyme',
-        resource = af.AnnotOp(
-            annots = (
-                '~extracellular_peptidase',
-                '~extracellular_enzyme',
-            ),
-            op = set.union,
-        ),
-        source = 'composite',
-    ),
-    af.AnnotDef(
-        name = 'extracellular_peptidase',
-        resource = '~extracellular_peptidase',
-        source = 'composite',
-    ),
-    af.AnnotDef(
-        name = 'secreted_peptidase',
-        resource = 'UniProt_keywords',
-        scope = 'generic',
-        args = {
-            'keyword': 'Protease',
-        },
-        limit = 'secreted',
-    ),
-    af.AnnotDef(
-        name = 'secreted_peptidase',
-        resource = 'UniProt_keywords',
-        scope = 'generic',
-        args = {
-            'keyword': 'Protease',
-        },
-        limit = 'secreted',
-    ),
-    af.AnnotDef(
-        name = 'secreted_lipase',
-        parent = 'secreted_enzyme',
-        resource = 'UniProt_keywords',
-        scope = 'generic',
-        args = {
-            'keyword': 'Lipid degradation',
-        },
-        limit = 'secreted',
-    ),
-    # specific classes from HGNC
-    af.AnnotDef(
-        name = 'chymotrypsin_like_elastase',
-        parent = 'extracellular_peptidase',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Chymotrypsin like elastases',
-        },
-    ),  # involved in ECM dynamics and remodeling
-    af.AnnotDef(
-        name = 'kallikrein',
-        parent = 'extracellular_peptidase',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Kallikreins',
-        },
-    ),  # extracellular serine proteases, involved in ECM dynamics
-    af.AnnotDef(
-        name = 'pappalysin',
-        parent = 'extracellular_peptidase',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Pappalysins',
-        },
-    ),  # cleave IGFBPs
-    af.AnnotDef(
-        name = 'scavenger_receptor_cysteine_rich',
-        parent = 'extracellular_enzyme',
-        resource = {
-            'P58215', 'Q96JB6', 'P05156', 'P56730', 'Q96JK4', 'Q9Y4K0',
-        },
-    ),
-    af.AnnotDef(
-        name = 'glutathione_peroxidase',
-        parent = 'extracellular_enzyme',
-        resource = {'P59796', 'P49908', 'P22352'},
-    ),
-    af.AnnotDef(
-        name = 'serine_peptidase_inhibitor',
-        parent = 'extracellular_peptidase_regulator',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Serine peptidase inhibitors, Kazal type',
-        },
-    ),
-    af.AnnotDef(
-        name = 'wap_four_disulfide_core_domain_containing',
-        parent = 'extracellular_peptidase_regulator',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'WAP four-disulfide core domain containing',
-        },
-        exclude = {'P23352'},
-    ),
-    af.AnnotDef(
-        name = 'tissue_inhibitor_of_metallopeptidases',
-        parent = 'extracellular_peptidase_regulator',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Tissue inhibitor of metallopeptidases',
-        },
-    ),
-    af.AnnotDef(
-        name = 'serine_protease',
-        parent = 'extracellular_peptidase',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Serine proteases',
-        },
-        exclude = {
-            'Q9UHE8', 'P36776', 'Q9NQE7', 'Q6UWY2', 'Q7Z5A4', 'P57727',
-            'Q8IU80', 'Q9Y5Q5', 'Q7RTY9', 'Q9BYE2', 'Q6ZMR5', 'Q9H3S3',
-            'Q86WS5', 'Q9Y6M0', 'Q9Y5Y6', 'O60235', 'Q9NRR2', 'Q7Z410',
-            'Q6ZWK6', 'Q7RTY8', 'P05981', 'Q86T26', 'Q6UWB4', 'Q9NRS4',
-            'O43464', 'Q9UI38',
-        },
-    ),
-    af.AnnotDef(
-        name = 'serine_protease',
-        parent = 'cell_surface_peptidase',
-        resource = {
-            'Q8IU80', 'Q9Y5Q5', 'Q7RTY9', 'Q9BYE2', 'Q6ZMR5', 'Q9H3S3',
-            'Q86WS5', 'Q9Y6M0', 'Q9Y5Y6', 'O60235', 'Q9NRR2', 'Q7Z410',
-            'Q6ZWK6', 'Q7RTY8', 'P05981', 'Q86T26', 'Q6UWB4', 'Q9NRS4',
-            'A4D1T9', 'O15393', 'Q92743', 'Q9UL52', 'Q16651'
-        },
-    ),
-    af.AnnotDef(
-        name = 'serpin',
-        parent = 'peptidase_regulator',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Serpin peptidase inhibitors',
-        },
-        limit = 'secreted',
-    ),
-    af.AnnotDef(
-        name = 'biotinidase',
-        parent = 'secreted_enzyme',
-        resource = {'P43251'},
-    ),
-    af.AnnotDef(
-        name = 'matrix_matalloproteinase',
-        parent = 'secreted_peptidase',
-        resource = {
-            'Q9NRE1', 'Q9NPA2', 'P14780', 'Q9H239', 'P22894', 'P08253',
-            'P09237', 'P39900', 'P45452', 'Q9ULZ9', 'P51512', 'P03956',
-        }
-    ),
-    af.AnnotDef(
-        name = 'adamts',
-        parent = 'secreted_peptidase',
-        resource = {'Q8N6G6', 'Q6UY14'},
-    ),
-    af.AnnotDef(
-        name = 'stromelysin',
-        parent = 'secreted_peptidase',
-        resource = {'P08254', 'P09238'},
-    ),
-    af.AnnotDef(
-        name = 'carboxypeptidase',
-        parent = 'secreted_peptidase',
-        resource = {'Q66K79'},
-    ),
-    af.AnnotDef(
-        name = 'polyserase',
-        parent = 'secreted_peptidase',
-        resource = {'Q5K4E3'},
-    ),
-    af.AnnotDef(
-        name = 'secreted_peptidase_inhibitor',
-        resource = {'P01009', 'P35625'},
-    ),
+    
 
     # growth factor binder or regulator
     af.AnnotDef(
