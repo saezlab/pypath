@@ -6939,10 +6939,9 @@ annot_combined_classes = (
         name = 'gap_junction',
         scope = 'generic',
         source = 'composite',
-        resource = af.AnnotOp(
-            annots = '~gap_junction',
-            op = set.union,
-        ),
+        resource = '~gap_junction',
+        transmitter = True,
+        receiver = True,
     ),
     af.AnnotDef(
         name = 'gap_junction',
@@ -6954,6 +6953,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'gap_junction',
         resource = 'Ramilowski_location',
+        scope = 'generic',
         args = {
             'location': 'gap junction',
         },
@@ -6962,6 +6962,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'gap_junction',
         resource = 'UniProt_location',
+        scope = 'generic',
         args = {
             'location': 'Gap junction',
         },
@@ -6969,10 +6970,28 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'gap_junction',
         resource = 'Almen2009',
+        scope = 'generic',
         args = {
             'classes': 'GapJunction',
         },
         exclude = {'A6NN92'},
+    ),
+    af.AnnotDef(
+        name = 'gap_junction',
+        scope = 'generic',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Gap junction proteins',
+        },
+    ),
+    af.AnnotDef(
+        name = 'gap_junction',
+        scope = 'generic',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Gap junction',
+        },
+        exclude = {'Q69YQ0', 'P48745'},
     ),
     af.AnnotDef(
         name = 'pannexin',
@@ -6983,17 +7002,20 @@ annot_combined_classes = (
         },
     ),  # either half channels or gap junctions
 
+
     # tight junction
     af.AnnotDef(
         name = 'tight_junction',
-        resource = af.AnnotOp(
-            annots = '~tight_junction',
-            op = set.union,
-        ),
+        scope = 'generic',
+        source = 'composite',
+        resource = '~tight_junction',
+        transmitter = True,
+        receiver = True,
     ),
     af.AnnotDef(
         name = 'tight_junction',
         resource = 'GO_Intercell',
+        scope = 'generic',
         args = {
             'mainclass': 'tight junction',
         },
@@ -7001,6 +7023,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'tight_junction',
         resource = 'Ramilowski_location',
+        scope = 'generic',
         args = {
             'location': 'tight junction',
         },
@@ -7019,6 +7042,22 @@ annot_combined_classes = (
         limit = 'plasma_membrane_transmembrane',
     ),
     af.AnnotDef(
+        name = 'tight_junction',
+        scope = 'generic',
+        resource = 'Zhong2015',
+        args = {
+            'type': 'tight junction',
+        },
+    ),
+    af.AnnotDef(
+        name = 'tight_junction',
+        scope = 'generic',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Claudins',
+        },
+    ),
+    af.AnnotDef(
         name = 'claudin',
         parent = 'tight_junction',
         resource = 'Almen2009',
@@ -7026,15 +7065,16 @@ annot_combined_classes = (
             'mainclass': 'Claudin',
         },
     ),
+
+
     # adherens junction
     af.AnnotDef(
         name = 'adherens_junction',
         scope = 'generic',
         source = 'composite',
-        resource = af.AnnotOp(
-            annots = '~adherens_junction',
-            op = set.union,
-        ),
+        resource = '~adherens_junction',
+        transmitter = False,
+        receiver = True,
     ),
     af.AnnotDef(
         name = 'adherens_junction',
@@ -7058,15 +7098,6 @@ annot_combined_classes = (
         },
         limit = 'cell_surface',
     ),  # to be checked
-    # tight junction
-    af.AnnotDef(
-        name = 'tight_junction',
-        scope = 'generic',
-        resource = 'Zhong2015',
-        args = {
-            'type': 'tight junction',
-        },
-    ),
     af.AnnotDef(
         name = 'adherens_junction',
         scope = 'generic',
@@ -7075,234 +7106,40 @@ annot_combined_classes = (
             'type': 'adherens junction',
         },
     ),
-    # specific subclasses from HGNC
+
+
+    # desmosome (macula adherens)
     af.AnnotDef(
-        name = 'tight_junction',
+        name = 'desmosome',
         scope = 'generic',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Claudins',
-        },
+        source = 'composite',
+        resource = '~desmosome',
+        transmitter = True,
+        receiver = True,
     ),
     af.AnnotDef(
         name = 'desmosomal_cadherin',
+        parent = 'desmosome',
         resource = 'HGNC',
         args = {
             'mainclass': 'Desmosomal cadherins',
         },
     ),
-    af.AnnotDef(
-        name = 'gap_junction',
-        scope = 'generic',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Gap junction proteins',
-        },
-    ),
-    af.AnnotDef(
-        name = 'gap_junction',
-        scope = 'generic',
-        resource = 'UniProt_keywords',
-        args = {
-            'keyword': 'Gap junction',
-        },
-        exclude = {'Q69YQ0', 'P48745'},
-    ),
 
-    # miscellanous from HGNC
-    af.AnnotDef(
-        name = 'cd_molecule',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'CD molecules',
-        }, # membrane proteins, secreted, receptors, enzymes,
-           # adhesion proteins
-    ),
-    af.AnnotDef(
-        name = 'c2set_domain',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'C2-set domain containing',
-        },
-    ),  # these are all plasma membrane proteins, ligands,
-        # some receptors and adhesion proteins
-    af.AnnotDef(
-        name = 'c3_pzp_a2m',
-        resource = 'HGNC',
-        args = {
-            'mainclass': (
-                'C3 and PZP like, alpha-2-macroglobulin domain containing'
-            ),
-        },  # secreted or peripheral on the outer side of plasma membrane
-            # enzymes, protease inhibitors, receptors, co-receptors
-    ),
-    af.AnnotDef(
-        name = 'tetraspanin_plasma_membrane_regulator',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Tetraspanins',
-        },
-    ),  # transmembrane proteins in the plasma membrane, regulate various
-        # other proteins such as channels, receptors, adhesion proteins
-    af.AnnotDef(
-        name = 'tetraspanin_plasma_membrane_regulator',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'Tetraspanin',
-        },
-        exclude = {'O60635'}
-    ),  # transmembrane proteins in the plasma membrane, regulate various
-        # other proteins such as channels, receptors, adhesion proteins
-
-    # to be decided
-    af.AnnotDef(
-        name = 'bage',
-        parent = 'ligand',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'BAGE family',
-        },
-    ),
-    af.AnnotDef(
-        name = 'cap_ctype_lectin',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'CAP and C-type lectin domain containing',
-        },
-    ), # these are secreted and affect immune signaling
-    af.AnnotDef(
-        name = 'cmtm',
-        parent = 'receptor_regulator',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'CKLF like MARVEL transmembrane domain containing',
-        },
-    ), # transmembrane in plasme membrane; regulate receptor availability
-    af.AnnotDef(
-        name = 'cacng_ion_channel_regulator',
-        resource = 'HGNC',
-        args = {
-            'mainclass': ' Calcium channel auxiliary gamma subunits',
-        },
-    ),  # transmembrane in plasma membrane; regulate calcium channels and
-        # glutamate receptors
-    af.AnnotDef(
-        name = 'calcium_homeostasis',
-        parent = 'ion_channel',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Calcium homeostasis modulators',
-        },
-    ), # taste bud ion and ATP channels
-    af.AnnotDef(
-        name = 'cas_scaffold_intracell',
-        parent = 'matrix_adhesion',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Cas scaffold proteins',
-        },
-    ), # intracellular part of cell-matrix (focal) adhesion signaling
-    af.AnnotDef(
-        name = 'cavin_caveolae',
-        parent = 'intracell',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Cavins',
-        },
-    ), # caveolae formation, intercellular
-    af.AnnotDef(
-        name = 'clathrin_coated_pit',
-        parent = 'intracell',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Clathrin subunits',
-        },
-    ), # clathrin coated pit formation, intracellular
-    af.AnnotDef(
-        name = 'collagen_galactosyltransferase',
-        parent = 'intracell',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Collagen beta(1-O)galactosyltransferases',
-        },
-    ), # collagen synthesis (in ER)
-    af.AnnotDef(
-        name = 'complement_system_activator',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Complement system activation components',
-        },
-    ), # secreted receptors, enzymes and signal transmission proteins
-    af.AnnotDef(
-        name = 'complement_receptor_and_regulator',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Complement system regulators and receptors',
-        },
-    ),  # secreted regulators or membrane bound receptors or inhibitors
-        # in the complement system downstream signaling
-    af.AnnotDef(
-        name = 'fibrinogen_c_domain',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Fibrinogen C domain containing',
-        },
-    ),  # all are secreted, some of them are ligands, enzymes, other kind of
-        # regulators for receptors or adhesion, or ECM proteins
-    af.AnnotDef(
-        name = 'fibronectin_type_iii',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Fibronectin type III domain containing',
-        },
-    ),  # a mixture of plasma membrane transmembrane receptors or adhesion
-        # proteins, and also ECM proteins;
-        # a few of them are not extracellular at all
-        # probably are annotated in other, more specific categories,
-        # especially the `Ig-like cell adhesion molecule family`
-    af.AnnotDef(
-        name = 'immunoglobulin_like',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Immunoglobulin like domain containing',
-        },
-    ),  # a mixture of plasma membrane transmembrane receptors or adhesion
-        # proteins, and also ECM proteins;
-        # a few of them are not extracellular at all
-        # probably are annotated in other, more specific categories,
-        # especially the `Ig-like cell adhesion molecule family`
-    af.AnnotDef(
-        name = 'gla_domain',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Gla domain containing',
-        },
-    ),  # all secreted, various regulators of blood coagulation, ECM,
-        # some enzymes or ligands or regulators of other ligands
-    af.AnnotDef(
-        name = 'hla',
-        parent = 'surface_ligand',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Histocompatibility complex',
-        },
-    ),  # histocompatibility antigen complex members for presenting
-        # antigens on the cell surface
-    af.AnnotDef(
-        name = 'vset_domain_containing',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'V-set domain containing',
-        },
-    ),  # various ligands, receptors and adhesion molecules
-
-    ### Miscellanous ###
 
     # intracellular protein classes in close relation to intercellular
     # communication
     af.AnnotDef(
+        name = 'intracellular_intercellular_related',
+        resource = '~intracellular_intercellular_related',
+        scope = 'generic',
+        source = 'composite',
+        transmitter = True,
+        receiver = False,
+    ),
+    af.AnnotDef(
         name = 'small_molecule_ligand_synthase',
-        parent = 'intracell',
+        parent = 'intracellular_intercellular_related',
         scope = 'generic',
         resource = {
             'P09172', # Dopamine beta-hydroxylase (noradrenaline)
@@ -7314,7 +7151,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'crumbs_complex',
-        parent = 'intracell',
+        parent = 'intracellular_intercellular_related',
         resource = 'HGNC',
         args = {
             'mainclass': 'Crumbs complex',
@@ -7322,15 +7159,17 @@ annot_combined_classes = (
     ),  # scaffolds and regulators for plasma membrane proteins
     af.AnnotDef(
         name = 'engulfment_motility',
-        parent = 'intracell',
+        parent = 'intracellular_intercellular_related',
         resource = 'HGNC',
         args = {
             'mainclass': 'Engulfment and cell motility proteins',
         },
+        transmitter = False,
+        receiver = True,
     ),  # some intracellular proteins involved in endocytosis
     af.AnnotDef(
         name = 'fbar_actin_dynamics_endocytosis',
-        parent = 'intracell',
+        parent = 'intracellular_intercellular_related',
         resource = 'HGNC',
         args = {
             'mainclass': 'F-BAR domain containing',
@@ -7339,7 +7178,7 @@ annot_combined_classes = (
         # actin dynamics in endocytosis
     af.AnnotDef(
         name = 'ferm_domain',
-        parent = 'intracell',
+        parent = 'intracellular_intercellular_related',
         resource = 'HGNC',
         args = {
             'mainclass': 'FERM domain containing',
@@ -7349,7 +7188,7 @@ annot_combined_classes = (
         # to intercellular communication processes
     af.AnnotDef(
         name = 'ferlin',
-        parent = 'intracell',
+        parent = 'intracellular_intercellular_related',
         resource = 'HGNC',
         args = {
             'mainclass': 'Ferlin family',
@@ -7358,7 +7197,7 @@ annot_combined_classes = (
         # and synaptic vesicle fusion
     af.AnnotDef(
         name = 'fermitin',
-        parent = 'intracell',
+        parent = 'intracellular_intercellular_related',
         resource = 'HGNC',
         args = {
             'mainclass': 'Fermitins',
@@ -7368,20 +7207,24 @@ annot_combined_classes = (
         # involved in cell-cell adhesion
     af.AnnotDef(
         name = 'flotillin',
-        parent = 'intracell',
+        parent = 'intracellular_intercellular_related',
         resource = 'HGNC',
         args = {
             'mainclass': 'Flotillins',
         },
+        transmitter = False,
+        receiver = True,
     ),  # intracellular proteins with a role in endocytosis
     af.AnnotDef(
         name = 'arc',
-        parent = 'intracell',
+        parent = 'intracellular_intercellular_related',
         resource = {'Q7LC44'},
+        transmitter = True,
+        receiver = False,
     ),  # intercellular RNA transfer
     af.AnnotDef(
         name = 'interferon_regulator',
-        parent = 'intracell',
+        parent = 'intracellular_intercellular_related',
         resource = 'HGNC',
         args = {
             'mainclass': 'Interferon regulatory factors',
@@ -7389,8 +7232,40 @@ annot_combined_classes = (
     ),  # intracellular proteins mostly transcriptionally 
         # regulating interferons
     af.AnnotDef(
+        name = 'cas_scaffold_intracell',
+        parent = 'matrix_adhesion',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Cas scaffold proteins',
+        },
+    ),  # intracellular part of cell-matrix (focal) adhesion signaling
+    af.AnnotDef(
+        name = 'cavin_caveolae',
+        parent = 'intracellular_intercellular_related',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Cavins',
+        },
+    ),  # caveolae formation, intercellular
+    af.AnnotDef(
+        name = 'clathrin_coated_pit',
+        parent = 'intracellular_intercellular_related',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Clathrin subunits',
+        },
+    ),  # clathrin coated pit formation, intracellular
+    af.AnnotDef(
+        name = 'collagen_galactosyltransferase',
+        parent = 'intracellular_intercellular_related',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Collagen beta(1-O)galactosyltransferases',
+        },
+    ), # collagen synthesis (in ER)
+    af.AnnotDef(
         name = 'junctophilin',
-        parent = 'intracell',
+        parent = 'intracellular_intercellular_related',
         resource = 'HGNC',
         args = {
             'mainclass': 'Junctophilins',
@@ -7399,20 +7274,19 @@ annot_combined_classes = (
         # ensure quick response to membrane potential change
     af.AnnotDef(
         name = 'lims1_adhesion',
-        parent = 'intracell',
+        parent = 'intracellular_intercellular_related',
         resource = {'P48059'},
     ),
     af.AnnotDef(
-        name = (
-            'maguk_tight_junction_intracell_omnipath'
-        ),
+        name = 'maguk_tight_junction',
+        parent = 'intracellular_intercellular_related',
         resource = {
             'Q07157', 'Q8N3R9', 'Q9UDY2', 'Q96QZ7', 'Q5T2T1', 'O95049',
         },
     ),  # intracellular scaffolding proteins supporting tight junctions
     af.AnnotDef(
         name = 'parin_adhesion_regulator',
-        parent = 'intracell',
+        parent = 'intracellular_intercellular_related',
         resource = 'HGNC',
         args = {
             'mainclass': 'Parvins',
@@ -7420,7 +7294,7 @@ annot_combined_classes = (
     ),  # intracellular proteins regulating adhesion and integrin signaling
     af.AnnotDef(
         name = 'plakophilin_adhesion_regulator',
-        parent = 'intracell',
+        parent = 'intracellular_intercellular_related',
         resource = 'HGNC',
         args = {
             'mainclass': 'Plakophilins',
@@ -7428,15 +7302,178 @@ annot_combined_classes = (
     ),  # important intracellular parts of cell-cell junctions
     af.AnnotDef(
         name = 'actin_regulation_adhesome',
-        parent = 'intracell',
+        parent = 'intracellular_intercellular_related',
         resource = 'Adhesome',
         args = {'mainclass': 'Actin regulation'},
     ),
     af.AnnotDef(
         name = 'adhesion_cytoskeleton_adaptor',
-        parent = 'intracell',
+        parent = 'intracellular_intercellular_related',
         resource = 'Adhesome',
         args = {'mainclass': 'Adaptor'},
     ),
+
+
+    # miscellanous from HGNC -- disabled until decision
+    af.AnnotDef(
+        name = 'cd_molecule',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'CD molecules',
+        },
+        enabled = False,
+    ),  # membrane proteins, secreted, receptors, enzymes,
+        # adhesion proteins
+    af.AnnotDef(
+        name = 'c2set_domain',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'C2-set domain containing',
+        },
+        enabled = False,
+    ),  # these are all plasma membrane proteins, ligands,
+        # some receptors and adhesion proteins
+    af.AnnotDef(
+        name = 'c3_pzp_a2m',
+        resource = 'HGNC',
+        args = {
+            'mainclass': (
+                'C3 and PZP like, alpha-2-macroglobulin domain containing'
+            ),
+        },
+        enabled = False,
+    ),  # secreted or peripheral on the outer side of plasma membrane
+        # enzymes, protease inhibitors, receptors, co-receptors
+    af.AnnotDef(
+        name = 'tetraspanin_plasma_membrane_regulator',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'Tetraspanin',
+        },
+        exclude = {'O60635'},
+        enabled = False,
+    ),  # transmembrane proteins in the plasma membrane, regulate various
+        # other proteins such as channels, receptors, adhesion proteins
+    af.AnnotDef(
+        name = 'bage',
+        parent = 'ligand',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'BAGE family',
+        },
+        enabled = False,
+    ),
+    af.AnnotDef(
+        name = 'cap_ctype_lectin',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'CAP and C-type lectin domain containing',
+        },
+        enabled = False,
+    ), # these are secreted and affect immune signaling
+    af.AnnotDef(
+        name = 'cmtm',
+        parent = 'receptor_regulator',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'CKLF like MARVEL transmembrane domain containing',
+        },
+        enabled = False,
+    ), # transmembrane in plasme membrane; regulate receptor availability
+    af.AnnotDef(
+        name = 'cacng_ion_channel_regulator',
+        resource = 'HGNC',
+        args = {
+            'mainclass': ' Calcium channel auxiliary gamma subunits',
+        },
+        enabled = False,
+    ),  # transmembrane in plasma membrane; regulate calcium channels and
+        # glutamate receptors
+    af.AnnotDef(
+        name = 'calcium_homeostasis',
+        parent = 'ion_channel',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Calcium homeostasis modulators',
+        },
+        enabled = False,
+    ),  # taste bud ion and ATP channels
+    af.AnnotDef(
+        name = 'complement_system_activator',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Complement system activation components',
+        },
+        enabled = False,
+    ), # secreted receptors, enzymes and signal transmission proteins
+    af.AnnotDef(
+        name = 'complement_receptor_and_regulator',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Complement system regulators and receptors',
+        },
+        enabled = False,
+    ),  # secreted regulators or membrane bound receptors or inhibitors
+        # in the complement system downstream signaling
+    af.AnnotDef(
+        name = 'fibrinogen_c_domain',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Fibrinogen C domain containing',
+        },
+        enabled = False,
+    ),  # all are secreted, some of them are ligands, enzymes, other kind of
+        # regulators for receptors or adhesion, or ECM proteins
+    af.AnnotDef(
+        name = 'fibronectin_type_iii',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Fibronectin type III domain containing',
+        },
+        enabled = False,
+    ),  # a mixture of plasma membrane transmembrane receptors or adhesion
+        # proteins, and also ECM proteins;
+        # a few of them are not extracellular at all
+        # probably are annotated in other, more specific categories,
+        # especially the `Ig-like cell adhesion molecule family`
+    af.AnnotDef(
+        name = 'immunoglobulin_like',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Immunoglobulin like domain containing',
+        },
+        enabled = False,
+    ),  # a mixture of plasma membrane transmembrane receptors or adhesion
+        # proteins, and also ECM proteins;
+        # a few of them are not extracellular at all
+        # probably are annotated in other, more specific categories,
+        # especially the `Ig-like cell adhesion molecule family`
+    af.AnnotDef(
+        name = 'gla_domain',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Gla domain containing',
+        },
+        enabled = False,
+    ),  # all secreted, various regulators of blood coagulation, ECM,
+        # some enzymes or ligands or regulators of other ligands
+    af.AnnotDef(
+        name = 'hla',
+        parent = 'cell_surface_ligand',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Histocompatibility complex',
+        },
+        enabled = False,
+    ),  # histocompatibility antigen complex members for presenting
+        # antigens on the cell surface
+    af.AnnotDef(
+        name = 'vset_domain_containing',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'V-set domain containing',
+        },
+        enabled = False,
+    ),  # various ligands, receptors and adhesion molecules
 
 )
