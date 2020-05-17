@@ -4837,6 +4837,14 @@ annot_combined_classes = (
         },
     ),  # secreted proteins binding small molecule ligands
     af.AnnotDef(
+        name = 'igf_binding',
+        parent = 'ligand_regulator',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Insulin like growth factor binding proteins',
+        },
+    ),
+    af.AnnotDef(
         name = 'growth_factor_binder',
         parent = 'ligand_regulator',
         resource = 'UniProt_keywords',
@@ -4881,6 +4889,27 @@ annot_combined_classes = (
             'subsubclass': 'Syndecan',
         },
     ),
+    # growth factor binder or regulator
+    af.AnnotDef(
+        name = 'growth_factor_binder',
+        parent = 'ligand_regulator',
+        resource = 'GO_Intercell',
+        args = {
+            'mainclass': 'growth factor binding',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand_regulator',
+        scope = 'generic',
+        resource = 'Matrisome',
+        args = {
+            'mainclass': 'Matrisome-associated',
+            'subclass': 'Secreted Factors',
+        },
+        limit = ('growth_factor_binder', 'extracellular_enzyme'),
+        enabled = False,
+    ),  # to be checked later
+
 
     # cell surface ligand
     af.AnnotDef(
@@ -6099,16 +6128,13 @@ annot_combined_classes = (
         ),
         scope = 'generic',
         source = 'composite',
-    ),
-    af.AnnotDef(
-        name = 'ion_channel',
-        resource = '~ion_channel',
-        scope = 'generic',
-        source = 'composite',
+        transmitter = False,
+        receiver = True,
     ),
     af.AnnotDef(
         name = 'transporter',
         resource = 'Surfaceome',
+        scope = 'generic',
         args = {
             'mainclass': 'Transporters',
         },
@@ -6123,13 +6149,12 @@ annot_combined_classes = (
     ),  # some intracellular transporters added to exclude
     af.AnnotDef(
         name = 'transporter',
+        scope = 'generic',
         resource = 'GO_Intercell',
         args = {
-            'mainclass': {
-                'transport',
-                'ion channels',
-            },
+            'mainclass': 'transport',
         },
+        limit = 'plasma_membrane_transmembrane',
     ),
     af.AnnotDef(
         name = 'transporter',
@@ -6138,57 +6163,10 @@ annot_combined_classes = (
         scope = 'generic',
     ),
     af.AnnotDef(
-        name = 'ion_channel',
-        resource = '~ion_channel~HGNC',
-        resource_name = 'HGNC',
-        scope = 'generic',
-    ),
-    af.AnnotDef(
         name = 'transporter',
         parent = 'transporter',
         resource = '~transporter~DGIdb',
         scope = 'generic',
-    ),
-    af.AnnotDef(
-        name = 'ion_channel',
-        parent = 'transporter',
-        resource = 'DGIdb',
-        args = {
-            'category': 'ION CHANNEL',
-        },
-        exclude = {
-            'Q9ULQ1', 'Q9BRX2', 'Q14289', 'Q9H6F2', 'O14791', 'P14780',
-            'F7VJQ1', 'O43768', 'P78509', 'Q8TE54', 'Q96S66', 'Q92508',
-            'P78352', 'Q12959', 'Q13976', 'Q9Y4I1', 'P22466', 'P62942',
-            'Q9P246', 'P04839', 'Q92915', 'P51790', 'P51793', 'P23327',
-            'P0CG08', 'O75534', 'P08133', 'Q9ULM6', 'Q6IQ26', 'P21796',
-            'Q86YM7', 'Q9NWR8', 'P68106', 'P54257', 'P28161', 'P56539',
-            'Q13387', 'P00367', 'Q9NVV0', 'P80108', 'Q9UMX0', 'P01588',
-            'Q9BYP7', 'P62258', 'Q13023', 'P33176', 'Q96PH1', 'Q9P2U7',
-            'P34998', 'Q09666', 'Q9UM00', 'Q14393', 'P62879', 'Q9HD26',
-            'Q9BV40', 'Q14573', 'P53355', 'Q13127', 'P0DP25', 'Q9HC97',
-            'O14958', 'P24387', 'Q96SF2', 'Q9NRX4', 'P78417', 'P58400',
-            'Q6XPS3', 'Q6ZUT9', 'Q05513', 'P0DP23', 'Q99959', 'O95833',
-            'Q9HDC5', 'P21333', 'Q96PU5', 'Q96MG2', 'P17612', 'P46934',
-            'P45880', 'Q96NY7', 'Q8NGH8', 'Q13303', 'Q96BR1', 'Q14643',
-            'P23297', 'P84074', 'P51797', 'Q9Y277', 'P25774', 'Q7LC44',
-            'Q06787', 'P61328', 'O43448', 'Q9Y696', 'P26678', 'Q14571',
-            'P54284', 'Q6ZRF8', 'P06850', 'P01303', 'B7ZAQ6', 'O00141',
-            'Q14644', 'Q9BVC6', 'Q13972', 'Q9H4A3', 'O75628', 'Q96D96',
-            'Q6TFL4', 'Q8NE86', 'Q9UEU0', 'Q92796', 'Q93034', 'P63165',
-            'P02760', 'P49768', 'Q9BSW2', 'P55042', 'P56211', 'Q8NHX9',
-            'Q9BYB0', 'Q92913', 'P07550', 'Q8N4C8', 'P05067', 'P35609',
-            'Q8NBP7', 'P05771', 'P57796', 'Q92736', 'P29475', 'P19429',
-            'Q16623', 'Q8NGH5', 'Q9NZ94', 'Q15413', 'P57727', 'O60733',
-            'P30626', 'Q8NGS4', 'P56180', 'P21817', 'Q9Y566', 'Q99653',
-            'P42858', 'Q03135', 'P04156', 'O15400', 'Q8N5I3', 'Q9Y6N3',
-            'Q8TBE1', 'P62166', 'P58401', 'P01160', 'Q9UBK2', 'Q71RS6',
-            'P20936', 'Q9Y6X2', 'P16885', 'Q9P2S2', 'P51798', 'Q8N335',
-            'Q9ULB1', 'Q99996', 'P35462', 'Q08499', 'Q8N144', 'Q9BSA9',
-            'Q9Y2W7', 'P06756', 'Q8WXH2', 'Q9Y217', 'P30989', 'P0DP24',
-            'O75052', 'Q8TEL6', 'P11532', 'Q06413', 'Q16651', 'O14775',
-            'Q9HBY8',
-        },
     ),
     af.AnnotDef(
         name = 'abc',
@@ -6213,13 +6191,8 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'ion_channel',
-        parent = 'ion_channel',
-        resource = 'Adhesome',
-        args = {'mainclass': 'Channel'},
-    ),  # only 5 channels but is all right
-    af.AnnotDef(
         name = 'transporter',
+        scope = 'generic',
         resource = 'Almen2009',
         parent = 'transporter',
         args = {
@@ -6231,169 +6204,15 @@ annot_combined_classes = (
         }
     ),
     af.AnnotDef(
-        name = 'ion_channel',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'Channels',
-        },
-        exclude = {
-            'P51797', 'Q92736', 'Q15413', 'P21817', 'Q14573',
-            'Q13520', 'P51793', 'P51798', 'O94778', 'Q8NHX9',
-        },
-    ),  # all ion channels a few localized only intracellularly
-    af.AnnotDef(
-        name = 'abca',
-        parent = 'transporter',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'ABCA',
-        },
-    ),  # lipid transporters
-    af.AnnotDef(
-        name = 'abcc',
-        parent = 'transporter',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'ABCC',
-        },
-    ),
-    af.AnnotDef(
-        name = 'ion_channel',
-        parent = 'ion_channel',
-        resource = 'UniProt_keywords',
-        args = {
-            'keyword': 'Ion channel',
-        },
-        limit = 'plasma_membrane_transmembrane',
-    ),
-    af.AnnotDef(
-        name = 'ligand_gated_channel',
-        parent = 'ion_channel',
-        resource = 'UniProt_keywords',
-        args = {
-            'keyword': 'Ligand-gated ion channel',
-        },
-        limit = 'plasma_membrane_transmembrane',
-    ),
-    af.AnnotDef(
-        name = 'chloride_channel',
-        parent = 'ion_channel',
-        resource = 'UniProt_keywords',
-        args = {
-            'keyword': 'Chloride channel',
-        },
-        limit = 'plasma_membrane_transmembrane',
-    ),
-    af.AnnotDef(
-        name = 'calcium_channel',
-        parent = 'ion_channel',
-        resource = 'UniProt_keywords',
-        args = {
-            'keyword': 'Calcium channel',
-        },
-        limit = 'plasma_membrane_transmembrane',
-    ),
-    af.AnnotDef(
-        name = 'potassium_channel',
-        parent = 'ion_channel',
-        resource = 'UniProt_keywords',
-        args = {
-            'keyword': 'Potassium channel',
-        },
-        limit = 'plasma_membrane_transmembrane',
-    ),
-    af.AnnotDef(
-        name = 'sodium_channel',
-        parent = 'ion_channel',
-        resource = 'UniProt_keywords',
-        args = {
-            'keyword': 'Sodium channel',
-        },
-        limit = 'plasma_membrane_transmembrane',
-    ),
-    af.AnnotDef(
         name = 'transporter',
-        parent = 'transporter',
+        scope = 'generic',
         resource = 'UniProt_keywords',
         args = {
             'keyword': 'Transport',
         },
         limit = 'plasma_membrane_transmembrane',
     ),
-    af.AnnotDef(
-        name = 'abcg',
-        parent = 'transporter',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'ABCG',
-        },
-    ),
-    af.AnnotDef(
-        name = 'solute_carrier',
-        parent = 'transporter',
-        resource = 'Almen2009',
-        args = {
-            'classes': {
-                'AMAC', 'APC', 'SLC1', 'SLC10',
-                'SLC11', 'SLC12', 'SLC13', 'SLC14',
-                'SLC15', 'SLC16', 'SLC17', 'SLC18',
-                'SLC19', 'SLC2', 'SLC20', 'SLC22',
-                'SLC23', 'SLC24', 'SLC26', 'SLC27',
-                'SLC28', 'SLC29', 'SLC3', 'SLC30',
-                'SLC31', 'SLC34', 'SLC36', 'SLC38',
-                'SLC39', 'SLC4', 'SLC40', 'SLC41',
-                'SLC42(Rh)', 'SLC43', 'SLC44', 'SLC45',
-                'SLC46', 'SLC5', 'SLC6', 'SLC7',
-                'SLC8', 'SLC9', 'SLCO',
-            },
-        },
-        exclude = {
-            'Q8TBB6', 'Q8TE54', 'Q8IY34', 'Q9P2U8', 'Q9P2U7', 'Q8NDX2',
-            'Q8NHS3', 'Q05940', 'P54219', 'Q9UGQ3', 'O95528', 'Q8N4V2',
-            'Q6J4K2', 'Q71RS6', 'Q8TE54', 'Q6P1M0', 'Q6PML9', 'Q8TAD4',
-            'Q6NXT4', 'O14863', 'Q8NEW0', 'Q99726', 'Q9BRI3', 'Q8NBW4',
-            'Q92504', 'Q9C0K1', 'Q96H72', 'Q9UMX9', 'Q9H1V8', 'Q8TBB6',
-            'Q8IVB4', 'Q9Y2E8',
-        },
-    ),  # transporters for various compounds, e.g. amino acids, bile acids,
-        # metal ions, other inorganic and organic ions, urea, oligopeptides,
-        # vitamins, sugars, steroids, organic acids, fatty acids,
-        # pyrimidines, purines, nucleosides, 
-        # we can split this group later
-    af.AnnotDef(
-        name = 'polycystin_calcium',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'PKD1',
-        },
-    ),  # components of calcium channels
-    af.AnnotDef(
-        name = 'tmem16_calcium_dependent_chloride',
-        parent = 'ion_channel',
-        resource = {'Q9NQ90'},
-    ),
-    af.AnnotDef(
-        name = 'tmem16_phospholipid_scramblase',
-        resource = {'Q6IWH7', 'Q4KMQ2', 'A1A5B4'},
-    ),
-    af.AnnotDef(
-        name = 'tmem30_aminophospholipid_flippase',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'TMEM30',
-        },
-    ),
-    af.AnnotDef(
-        name = 'tmem63_osmosensitive_cation',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'TMEM63',
-        },
-        exclude = {'O94886'},
-    ),
+
     # transporters from HGNC
     af.AnnotDef(
         name = 'aquaporin',
@@ -6458,6 +6277,73 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
+        name = 'pannexin',
+        parent = 'transporter',
+        resource = 'HGNC',
+        args = {
+            'mainclass': 'Pannexins',
+        },
+    ),  # as half channels they release ATP, Ca and other substances to
+        # the extracellular space
+
+    # specific subclasses from Almen 2009
+    af.AnnotDef(
+        name = 'abca',
+        parent = 'transporter',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'ABCA',
+        },
+    ),  # lipid transporters
+    af.AnnotDef(
+        name = 'abcc',
+        parent = 'transporter',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'ABCC',
+        },
+    ),
+    af.AnnotDef(
+        name = 'abcg',
+        parent = 'transporter',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'ABCG',
+        },
+    ),
+    af.AnnotDef(
+        name = 'solute_carrier',
+        parent = 'transporter',
+        resource = 'Almen2009',
+        args = {
+            'classes': {
+                'AMAC', 'APC', 'SLC1', 'SLC10',
+                'SLC11', 'SLC12', 'SLC13', 'SLC14',
+                'SLC15', 'SLC16', 'SLC17', 'SLC18',
+                'SLC19', 'SLC2', 'SLC20', 'SLC22',
+                'SLC23', 'SLC24', 'SLC26', 'SLC27',
+                'SLC28', 'SLC29', 'SLC3', 'SLC30',
+                'SLC31', 'SLC34', 'SLC36', 'SLC38',
+                'SLC39', 'SLC4', 'SLC40', 'SLC41',
+                'SLC42(Rh)', 'SLC43', 'SLC44', 'SLC45',
+                'SLC46', 'SLC5', 'SLC6', 'SLC7',
+                'SLC8', 'SLC9', 'SLCO',
+            },
+        },
+        exclude = {
+            'Q8TBB6', 'Q8TE54', 'Q8IY34', 'Q9P2U8', 'Q9P2U7', 'Q8NDX2',
+            'Q8NHS3', 'Q05940', 'P54219', 'Q9UGQ3', 'O95528', 'Q8N4V2',
+            'Q6J4K2', 'Q71RS6', 'Q8TE54', 'Q6P1M0', 'Q6PML9', 'Q8TAD4',
+            'Q6NXT4', 'O14863', 'Q8NEW0', 'Q99726', 'Q9BRI3', 'Q8NBW4',
+            'Q92504', 'Q9C0K1', 'Q96H72', 'Q9UMX9', 'Q9H1V8', 'Q8TBB6',
+            'Q8IVB4', 'Q9Y2E8',
+        },
+    ),  # transporters for various compounds, e.g. amino acids, bile acids,
+        # metal ions, other inorganic and organic ions, urea, oligopeptides,
+        # vitamins, sugars, steroids, organic acids, fatty acids,
+        # pyrimidines, purines, nucleosides, 
+        # we can split this group later
+    af.AnnotDef(
         name = 'magnesium',
         parent = 'transporter',
         resource = 'Almen2009',
@@ -6482,15 +6368,367 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'pannexin',
+        name = 'xk',
         parent = 'transporter',
-        resource = 'HGNC',
+        resource = 'Almen2009',
         args = {
-            'mainclass': 'Pannexins',
+            'classes': 'XK',
         },
-    ),  # as half channels they release ATP, Ca and other substances to
-        # the extracellular space
-    # Ion channels (subclass of transporters)
+    ),  # transporters for amino acids,
+        # scramblases for phosphatidylserine,
+        # and who knows what else
+    af.AnnotDef(
+        name = 'aquaporin',
+        parent = 'transporter',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'Aquaporins',
+        },
+    ),
+    af.AnnotDef(
+        name = 'auxiliary_transport_unit',
+        parent = 'transporter',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'AuxillaryTransportUnit',
+        },
+        exclude = {'Q9UN42'},
+    ),
+    af.AnnotDef(
+        name = 'bestrophin',
+        parent = 'transporter',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'Bestrophin',
+        },
+    ),
+    af.AnnotDef(
+        name = 'tmem30_aminophospholipid_flippase',
+        parent = 'transporter',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'TMEM30',
+        },
+    ),
+    af.AnnotDef(
+        name = 'tmem16_phospholipid_scramblase',
+        parent = 'transporter',
+        resource = {'Q6IWH7', 'Q4KMQ2', 'A1A5B4'},
+    ),
+
+
+    # ion channels
+    af.AnnotDef(
+        name = 'ion_channel',
+        resource = '~ion_channel',
+        scope = 'generic',
+        source = 'composite',
+        transmitter = False,
+        receiver = True,
+    ),
+    af.AnnotDef(
+        name = 'ion_channel',
+        scope = 'generic',
+        resource = 'GO_Intercell',
+        args = {
+            'mainclass': 'ion channels',
+        },
+        limit = 'plasma_membrane_transmembrane',
+    ),
+    af.AnnotDef(
+        name = 'ion_channel',
+        resource = 'DGIdb',
+        scope = 'generic',
+        args = {
+            'category': 'ION CHANNEL',
+        },
+        exclude = {
+            'Q9ULQ1', 'Q9BRX2', 'Q14289', 'Q9H6F2', 'O14791', 'P14780',
+            'F7VJQ1', 'O43768', 'P78509', 'Q8TE54', 'Q96S66', 'Q92508',
+            'P78352', 'Q12959', 'Q13976', 'Q9Y4I1', 'P22466', 'P62942',
+            'Q9P246', 'P04839', 'Q92915', 'P51790', 'P51793', 'P23327',
+            'P0CG08', 'O75534', 'P08133', 'Q9ULM6', 'Q6IQ26', 'P21796',
+            'Q86YM7', 'Q9NWR8', 'P68106', 'P54257', 'P28161', 'P56539',
+            'Q13387', 'P00367', 'Q9NVV0', 'P80108', 'Q9UMX0', 'P01588',
+            'Q9BYP7', 'P62258', 'Q13023', 'P33176', 'Q96PH1', 'Q9P2U7',
+            'P34998', 'Q09666', 'Q9UM00', 'Q14393', 'P62879', 'Q9HD26',
+            'Q9BV40', 'Q14573', 'P53355', 'Q13127', 'P0DP25', 'Q9HC97',
+            'O14958', 'P24387', 'Q96SF2', 'Q9NRX4', 'P78417', 'P58400',
+            'Q6XPS3', 'Q6ZUT9', 'Q05513', 'P0DP23', 'Q99959', 'O95833',
+            'Q9HDC5', 'P21333', 'Q96PU5', 'Q96MG2', 'P17612', 'P46934',
+            'P45880', 'Q96NY7', 'Q8NGH8', 'Q13303', 'Q96BR1', 'Q14643',
+            'P23297', 'P84074', 'P51797', 'Q9Y277', 'P25774', 'Q7LC44',
+            'Q06787', 'P61328', 'O43448', 'Q9Y696', 'P26678', 'Q14571',
+            'P54284', 'Q6ZRF8', 'P06850', 'P01303', 'B7ZAQ6', 'O00141',
+            'Q14644', 'Q9BVC6', 'Q13972', 'Q9H4A3', 'O75628', 'Q96D96',
+            'Q6TFL4', 'Q8NE86', 'Q9UEU0', 'Q92796', 'Q93034', 'P63165',
+            'P02760', 'P49768', 'Q9BSW2', 'P55042', 'P56211', 'Q8NHX9',
+            'Q9BYB0', 'Q92913', 'P07550', 'Q8N4C8', 'P05067', 'P35609',
+            'Q8NBP7', 'P05771', 'P57796', 'Q92736', 'P29475', 'P19429',
+            'Q16623', 'Q8NGH5', 'Q9NZ94', 'Q15413', 'P57727', 'O60733',
+            'P30626', 'Q8NGS4', 'P56180', 'P21817', 'Q9Y566', 'Q99653',
+            'P42858', 'Q03135', 'P04156', 'O15400', 'Q8N5I3', 'Q9Y6N3',
+            'Q8TBE1', 'P62166', 'P58401', 'P01160', 'Q9UBK2', 'Q71RS6',
+            'P20936', 'Q9Y6X2', 'P16885', 'Q9P2S2', 'P51798', 'Q8N335',
+            'Q9ULB1', 'Q99996', 'P35462', 'Q08499', 'Q8N144', 'Q9BSA9',
+            'Q9Y2W7', 'P06756', 'Q8WXH2', 'Q9Y217', 'P30989', 'P0DP24',
+            'O75052', 'Q8TEL6', 'P11532', 'Q06413', 'Q16651', 'O14775',
+            'Q9HBY8',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ion_channel',
+        parent = 'ion_channel',
+        resource = 'Adhesome',
+        scope = 'generic',
+        args = {'mainclass': 'Channel'},
+    ),  # only 5 channels but is all right
+    af.AnnotDef(
+        name = 'ion_channel',
+        resource = '~ion_channel~HGNC',
+        resource_name = 'HGNC',
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'ion_channel',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        scope = 'generic',
+        args = {
+            'classes': 'Channels',
+        },
+        exclude = {
+            'P51797', 'Q92736', 'Q15413', 'P21817', 'Q14573',
+            'Q13520', 'P51793', 'P51798', 'O94778', 'Q8NHX9',
+        },
+    ),  # all ion channels a few localized only intracellularly
+    af.AnnotDef(
+        name = 'ion_channel',
+        parent = 'ion_channel',
+        scope = 'generic',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Ion channel',
+        },
+        limit = 'plasma_membrane_transmembrane',
+    ),
+    # specific subclasses from UniProt
+    af.AnnotDef(
+        name = 'ligand_gated_channel',
+        parent = 'ion_channel',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Ligand-gated ion channel',
+        },
+        limit = 'plasma_membrane_transmembrane',
+    ),
+    af.AnnotDef(
+        name = 'chloride_channel',
+        parent = 'ion_channel',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Chloride channel',
+        },
+        limit = 'plasma_membrane_transmembrane',
+    ),
+    af.AnnotDef(
+        name = 'calcium_channel',
+        parent = 'ion_channel',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Calcium channel',
+        },
+        limit = 'plasma_membrane_transmembrane',
+    ),
+    af.AnnotDef(
+        name = 'potassium_channel',
+        parent = 'ion_channel',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Potassium channel',
+        },
+        limit = 'plasma_membrane_transmembrane',
+    ),
+    af.AnnotDef(
+        name = 'sodium_channel',
+        parent = 'ion_channel',
+        resource = 'UniProt_keywords',
+        args = {
+            'keyword': 'Sodium channel',
+        },
+        limit = 'plasma_membrane_transmembrane',
+    ),
+    # specific subclasses from Almen 2009
+    af.AnnotDef(
+        name = 'sperm_associated_voltage_gated',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'catSper-Two-P',
+        },
+        exclude = {'Q9ULQ1', 'Q8NHX9'},
+    ),
+    af.AnnotDef(
+        name = 'cyclic_nucleotide_gated',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'cycliNucleotideRegulatedChannels',
+        },
+    ),
+    af.AnnotDef(
+        name = 'polycystin_calcium',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'PKD1',
+        },
+    ),  # components of calcium channels
+    af.AnnotDef(
+        name = 'tmem63_osmosensitive_cation',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'TMEM63',
+        },
+        exclude = {'O94886'},
+    ),
+    af.AnnotDef(
+        name = 'tmem16_calcium_dependent_chloride',
+        parent = 'ion_channel',
+        resource = {'Q9NQ90'},
+    ),
+    af.AnnotDef(
+        name = 'voltage_gated_calcium',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': {'CACNA2D', 'CACNG'},
+        },
+    ),
+    af.AnnotDef(
+        name = 'voltage_gated_chloride',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'CLC',
+        },
+    ),
+    af.AnnotDef(
+        name = 'calcium_activated_potassium',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'Ca_Activated_Potassium_Channels',
+        },
+    ),
+    af.AnnotDef(
+        name = 'atp_gated',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'ATP_gated_ion_channels',
+        },
+    ),
+    af.AnnotDef(
+        name = 'calcium',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'CalciumChannels',
+        },
+    ),
+    af.AnnotDef(
+        name = 'inward_rectifier_potassium',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'InwardlyRectifyingKchannel',
+        },
+    ),
+    af.AnnotDef(
+        name = 'voltage_gated_potassium',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'KCNE',
+        },
+    ),
+    af.AnnotDef(
+        name = 'calcium_activated_potassium',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'KCNMB',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand_gated',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'Ligand_gated_ion_channels',
+        },
+    ),
+    af.AnnotDef(
+        name = 'potassium',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'Potassium_channels',
+        },
+    ),
+    af.AnnotDef(
+        name = 'beta_sodium',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'SodiumChannelBeta',
+        },
+    ),
+    af.AnnotDef(
+        name = 'sodium',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'SodiumChannels',
+        },
+    ),
+    af.AnnotDef(
+        name = 'transient_receptor_potential_cation',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'TRP_channels',
+        },
+    ),  # calcium permeable cation channels activated by receptors
+    af.AnnotDef(
+        name = 'tweety_chloride',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'Tweety',
+        },
+    ),
+    af.AnnotDef(
+        name = 'sodium_potassium',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'Two-p_K_channels',
+        },
+    ),
+    af.AnnotDef(
+        name = 'voltage_gated',
+        parent = 'ion_channel',
+        resource = 'Almen2009',
+        args = {
+            'classes': 'Voltage_gated_ion_channels',
+        },
+        exclude = {'Q92736', 'P21817', 'Q14573', 'Q9ULQ1'},
+    ),
+
+    # specific subclasses from HGNC
     af.AnnotDef(
         name = 'acid_sensing',
         parent = 'ion_channel',
@@ -6523,13 +6761,6 @@ annot_combined_classes = (
             'mainclass': 'Cation channels sperm associated',
         },
     ),
-    af.AnnotDef(
-        name = 'chloride_ion_channel_regulator',
-        resource = 'HGNC',
-        args = {
-            'mainclass': 'Chloride channel accessory',
-        },
-    ), # in plasma membrane, regulate cholride channels
     af.AnnotDef(
         name = 'chloride',
         parent = 'ion_channel',
@@ -6681,217 +6912,26 @@ annot_combined_classes = (
             'mainclass': 'Zinc activated channels',
         },
     ),
-    af.AnnotDef(
-        name = 'water',
-        parent = 'transporter',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'Aquaporins',
-        },
-    ),
-    af.AnnotDef(
-        name = 'auxiliary',
-        parent = 'transporter',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'AuxillaryTransportUnit',
-        },
-        exclude = {'Q9UN42'},
-    ),
-    af.AnnotDef(
-        name = 'bestrophin',
-        parent = 'transporter',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'Bestrophin',
-        },
-    ),
-    af.AnnotDef(
-        name = 'voltage_gated_calcium',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': {'CACNA2D', 'CACNG'},
-        },
-    ),
-    af.AnnotDef(
-        name = 'voltage_gated_chloride',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'CLC',
-        },
-    ),
-    af.AnnotDef(
-        name = 'calcium_activated_potassium',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'Ca_Activated_Potassium_Channels',
-        },
-    ),
-    af.AnnotDef(
-        name = 'atp_gated',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'ATP_gated_ion_channels',
-        },
-    ),
-    af.AnnotDef(
-        name = 'calcium',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'CalciumChannels',
-        },
-    ),
-    af.AnnotDef(
-        name = 'inward_rectifier_potassium',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'InwardlyRectifyingKchannel',
-        },
-    ),
-    af.AnnotDef(
-        name = 'voltage_gated_potassium',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'KCNE',
-        },
-    ),
-    af.AnnotDef(
-        name = 'calcium_activated_potassium',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'KCNMB',
-        },
-    ),
-    af.AnnotDef(
-        name = 'ligand_gated',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'Ligand_gated_ion_channels',
-        },
-    ),
-    af.AnnotDef(
-        name = 'potassium',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'Potassium_channels',
-        },
-    ),
-    af.AnnotDef(
-        name = 'beta_sodium',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'SodiumChannelBeta',
-        },
-    ),
-    af.AnnotDef(
-        name = 'sodium',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'SodiumChannels',
-        },
-    ),
-    af.AnnotDef(
-        name = 'transient_receptor_potential_cation',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'TRP_channels',
-        },
-    ),  # calcium permeable cation channels activated by receptors
-    af.AnnotDef(
-        name = 'tweety_chloride',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'Tweety',
-        },
-    ),
-    af.AnnotDef(
-        name = 'sodium_potassium',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'Two-p_K_channels',
-        },
-    ),
-    af.AnnotDef(
-        name = 'voltage_gated',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'Voltage_gated_ion_channels',
-        },
-        exclude = {'Q92736', 'P21817', 'Q14573', 'Q9ULQ1'},
-    ),
-    af.AnnotDef(
-        name = 'xk',
-        parent = 'transporter',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'XK',
-        },
-    ),  # transporters for amino acids,
-        # scramblases for phosphatidylserine,
-        # and who knows what else
-    af.AnnotDef(
-        name = 'sperm_associated_voltage_gated',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'catSper-Two-P',
-        },
-        exclude = {'Q9ULQ1', 'Q8NHX9'},
-    ),
-    af.AnnotDef(
-        name = 'cyclic_nucleotide_gated',
-        parent = 'ion_channel',
-        resource = 'Almen2009',
-        args = {
-            'classes': 'cycliNucleotideRegulatedChannels',
-        },
-    ),
 
-    
 
-    # growth factor binder or regulator
+    # ion channel regulator
     af.AnnotDef(
-        name = 'growth_factor_binder',
-        parent = 'ligand_regulator',
-        resource = 'GO_Intercell',
-        args = {
-            'mainclass': 'growth factor binding',
-        },
-    ),
-    af.AnnotDef(
-        name = 'ligand_regulator',
+        name = 'ion_channel_regulator',
+        resource = '~ion_channel_regulator',
         scope = 'generic',
-        resource = 'Matrisome',
-        args = {
-            'mainclass': 'Matrisome-associated',
-            'subclass': 'Secreted Factors',
-        },
-        limit = ('growth_factor_binder', 'extracellular_enzyme'),
-    ),  # to be checked later
+        source = 'composite',
+        transmitter = False,
+        receiver = True,
+    ),
     af.AnnotDef(
-        name = 'igf_binding',
-        parent = 'ligand_regulator',
+        name = 'chloride',
+        parent = 'ion_channel_regulator',
         resource = 'HGNC',
         args = {
-            'mainclass': 'Insulin like growth factor binding proteins',
+            'mainclass': 'Chloride channel accessory',
         },
-    ),
+    ), # in plasma membrane, regulate cholride channels
+
 
     # junctions
     # gap junction
