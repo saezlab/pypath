@@ -591,7 +591,7 @@ def print_features(
         None.
     """
     
-    term_width = (os.get_terminal_size().columns - 120) * 2 + 120
+    term_width = (os.get_terminal_size().columns - 120) * 2 + 100
     width = width or int(term_width / len(features)) if term_width else 40
     fileobj = fileobj or None
     
