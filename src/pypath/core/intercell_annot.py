@@ -20,11 +20,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-import importlib as imp
-
 import pypath.share.common as common
-import pypath.utils.go as go
-import pypath.inputs.main as dataio
 import pypath.internals.annot_formats as af
 
 
