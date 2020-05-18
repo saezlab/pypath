@@ -35,6 +35,7 @@ import itertools
 import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.genecards as genecards_input
 import pypath.share.common as common
+import pypath.share.settings as settings
 import pypath.core.entity as entity
 
 
@@ -48,10 +49,11 @@ class UniprotProtein(object):
     _redb = re.compile(r'([^;]+);\s?(.*)\s?\.\s?(?:\[(.*)\])?')
     _redbsep = re.compile(r'\s?;\s?')
     _retaxid = re.compile(r'=(\d+)[^\d]')
+    _rexref = re.compile(r'[\.,]?\s?\{[^\}]+\}')
 
     def __init__(self, uniprot_id):
 
-        self.uniprot_id = uniprot_id
+        self.uniprot_id = uniprot_id.strip()
         self.load()
 
 
@@ -162,9 +164,15 @@ class UniprotProtein(object):
 
 
     @property
-    def function(self):
+    def function_with_xrefs(self):
 
         return self.info_section('FUNCTION')
+
+
+    @property
+    def function(self):
+
+        return self.remove_xrefs(self.function_with_xrefs)
 
 
     @property
@@ -185,71 +193,143 @@ class UniprotProtein(object):
     @property
     def subcellular_location(self):
 
-        return self.info_section('SUBCELLULAR LOCATION')
+        return self.remove_xrefs(self.subcellular_location_with_xrefs)
 
 
     @property
     def tissue_specificity(self):
 
-        return self.info_section('TISSUE SPECIFICITY')
+        return self.remove_xrefs(self.tissue_specificity_with_xrefs)
 
 
     @property
     def subunit(self):
 
-        return self.info_section('SUBUNIT')
+        return self.remove_xrefs(self.subunit_with_xrefs)
 
 
     @property
     def interaction(self):
 
-        return self.info_section('INTERACTION')
+        return self.remove_xrefs(self.interaction_with_xrefs)
 
 
     @property
     def sequence_caution(self):
 
-        return self.info_section('SEQUENCE CAUTION')
+        return self.remove_xrefs(self.sequence_caution_with_xrefs)
 
 
     @property
     def catalytic_activity(self):
 
-        return self.info_section('CATALYTIC ACTIVITY')
+        return self.remove_xrefs(self.catalytic_activity_with_xrefs)
 
 
     @property
     def activity_regulation(self):
 
-        return self.info_section('ACTIVITY REGULATION')
+        return self.remove_xrefs(self.activity_regulation_with_xrefs)
 
 
     @property
     def alternative_products(self):
 
-        return self.info_section('ALTERNATIVE PRODUCTS')
+        return self.remove_xrefs(self.alternative_products_with_xrefs)
 
 
     @property
     def ptm(self):
 
-        return self.info_section('PTM')
+        return self.remove_xrefs(self.ptm_with_xrefs)
 
 
     @property
     def disease(self):
 
-        return self.info_section('DISEASE')
+        return self.remove_xrefs(self.disease_with_xrefs)
 
 
     @property
     def similarity(self):
 
-        return self.info_section('SIMILARITY')
+        return self.remove_xrefs(self.similarity_with_xrefs)
 
 
     @property
     def web_resource(self):
+
+        return self.remove_xrefs(self.web_resource_with_xrefs)
+
+
+    @property
+    def subcellular_location_with_xrefs(self):
+
+        return self.info_section('SUBCELLULAR LOCATION')
+
+
+    @property
+    def tissue_specificity_with_xrefs(self):
+
+        return self.info_section('TISSUE SPECIFICITY')
+
+
+    @property
+    def subunit_with_xrefs(self):
+
+        return self.info_section('SUBUNIT')
+
+
+    @property
+    def interaction_with_xrefs(self):
+
+        return self.info_section('INTERACTION')
+
+
+    @property
+    def sequence_caution_with_xrefs(self):
+
+        return self.info_section('SEQUENCE CAUTION')
+
+
+    @property
+    def catalytic_activity_with_xrefs(self):
+
+        return self.info_section('CATALYTIC ACTIVITY')
+
+
+    @property
+    def activity_regulation_with_xrefs(self):
+
+        return self.info_section('ACTIVITY REGULATION')
+
+
+    @property
+    def alternative_products_with_xrefs(self):
+
+        return self.info_section('ALTERNATIVE PRODUCTS')
+
+
+    @property
+    def ptm_with_xrefs(self):
+
+        return self.info_section('PTM')
+
+
+    @property
+    def disease_with_xrefs(self):
+
+        return self.info_section('DISEASE')
+
+
+    @property
+    def similarity_with_xrefs(self):
+
+        return self.info_section('SIMILARITY')
+
+
+    @property
+    def web_resource_with_xrefs(self):
 
         return self.info_section('WEB RESOURCE')
 
@@ -360,9 +440,9 @@ class UniprotProtein(object):
 
 
     @property
-    def keywords(self):
+    def keywords_with_xrefs(self):
         """
-        Returns the keywords as a list.
+        Returns the keywords as a list with keeping the cross-references.
         """
 
         return [
@@ -375,6 +455,21 @@ class UniprotProtein(object):
             )
             if kw
         ]
+
+
+    @property
+    def keywords(self):
+        """
+        Returns the keywords as a list.
+        """
+
+        return [self.remove_xrefs(kw) for kw in self.keywords_with_xrefs]
+
+
+    @classmethod
+    def remove_xrefs(cls, value):
+
+        return cls._rexref.sub('', value)
 
 
     @property
@@ -598,12 +693,10 @@ def print_features(
     """
 
     maxlen = maxlen or settings.get('uniprot_info_maxlen')
-
+    features = features or default_features
     term_width = (os.get_terminal_size().columns - 120) * 2 + 100
     width = width or int(term_width / len(features)) if term_width else 40
-    fileobj = fileobj or None
-
-    features = features or default_features
+    fileobj = fileobj or sys.stdout
 
     fileobj.write(
         features_table(
