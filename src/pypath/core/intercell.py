@@ -317,9 +317,16 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
                         continue
 
+                    parent = (
+                        'receptor'
+                            if category == 'receptor' else
+                        'ligand'
+                    )
+
                     cellphonedb_categories.append(
                         af.AnnotDef(
-                            name = '%s_cellphonedb' % category,
+                            name = category,
+                            parent = parent,
                             resource = 'CellPhoneDB',
                             args = {attr: category},
                         )
