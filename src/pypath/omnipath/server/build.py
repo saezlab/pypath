@@ -44,8 +44,8 @@ class WebserviceTables(session_mod.Logger):
     """
     Creates the data frames which the web service uses to serve the data from.
     """
-    
-    
+
+
     def __init__(
             self,
             only_human = False,
@@ -56,10 +56,10 @@ class WebserviceTables(session_mod.Logger):
             outfile_intercell = 'omnipath_webservice_intercell.tsv',
             network_datasets = None,
         ):
-        
+
         session_mod.Logger.__init__(self, name = 'websrvtab')
         self._log('WebserviceTables initialized.')
-        
+
         self.only_human = only_human
         self.outfile_interactions = outfile_interactions
         self.outfile_ptms = outfile_ptms
@@ -76,63 +76,63 @@ class WebserviceTables(session_mod.Logger):
                 'lncrna_mrna',
             )
         )
-    
-    
+
+
     def reload(self):
-        
+
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-    
-    
+
+
     def main(self):
-        
+
         self.interactions()
         self.enz_sub()
         self.complexes()
         self.annotations()
         self.intercell()
-    
-    
+
+
     def interactions(self):
-        
+
         self._log('Building `interactions` data frame.')
         dataframes = []
-        
+
         for dataset in self.network_datasets:
-            
+
             self._log('Building `%s` interactions.' % dataset)
-            
+
             netw = omnipath.data.get_db(dataset)
-            
+
             exp = export.Export(netw)
             exp.webservice_interactions_df()
             dataframes.append(exp.df)
-            
+
             if dataset not in {'mirna_mrna', 'lncrna_mrna', 'tf_mirna'}:
-                
+
                 for rodent in (10090, 10116):
-                    
+
                     self._log(
                         'Translating `%s` interactions to organism `%u`' % (
                             dataset,
                             rodent,
                         )
                     )
-                    
+
                     rodent_netw = netw.homology_translate(rodent)
                     exp = export.Export(rodent_netw)
                     exp.webservice_interactions_df()
                     dataframes.append(exp.df)
-                    
+
                     del rodent_netw
-            
+
             del exp
             del netw
             omnipath.data.remove_db(dataset)
-        
+
         self.df_interactions = pd.concat(dataframes)
         self.df_interactions.to_csv(
             self.outfile_interactions,
@@ -142,22 +142,22 @@ class WebserviceTables(session_mod.Logger):
         self._log('Data frame `interactions` has been exported to `%s`.' % (
             self.outfile_interactions,
         ))
-    
-    
+
+
     def interactions_legacy(self):
-        
+
         self._log(
             'Building `interactions` data frame from '
             '`legacy.main.PyPath` object.'
         )
         dataframes = []
-        
+
         tf_target = copy.deepcopy(data_formats.transcription)
         tf_target['dorothea'].input_args['levels'] = {
             'A', 'B', 'C', 'D',
         }
         tf_target['dorothea'].must_have_references = False
-        
+
         param = {
             'PPI': (
                 'load_omnipath',
@@ -180,61 +180,61 @@ class WebserviceTables(session_mod.Logger):
                 {'lst': data_formats.lncrna_target},
             )
         }
-        
+
         for name, (to_call, kwargs) in iteritems(param):
-            
+
             self._log('Building %s interactions.' % name)
-            
+
             pa = main.PyPath()
             getattr(pa, to_call)(**kwargs)
-            
+
             e = export.Export(pa)
             e.webservice_interactions_df()
             dataframes.append(e.df)
-            
+
             if not self.only_human and name != 'lncRNA-target':
-                
+
                 graph_human = None
-                
+
                 for rodent in (10090, 10116):
-                    
+
                     self._log(
                         'Translating %s interactions to organism `%u`' % (
                             name,
                             rodent,
                         )
                     )
-                    
+
                     if pa.ncbi_tax_id == 9606:
-                        
+
                         if pa.graph.ecount() < 100000:
-                            
+
                             graph_human = copy.deepcopy(pa.graph)
-                        
+
                     else:
-                        
+
                         if graph_human:
-                            
+
                             pa.graph = graph_human
                             pa.ncbi_tax_id = 9606
                             pa.genesymbol_labels(remap_all = True)
                             pa.update_vname()
-                            
+
                         else:
-                            
+
                             del e
                             del pa
                             pa = main.PyPath()
                             getattr(pa, to_call)(**kwargs)
-                    
+
                     pa.orthology_translation(rodent)
                     e = export.Export(pa)
                     e.webservice_interactions_df()
                     dataframes.append(e.df)
-        
+
         del e
         del pa
-        
+
         self.df_interactions = pd.concat(dataframes)
         self.df_interactions.to_csv(
             self.outfile_interactions,
@@ -244,23 +244,23 @@ class WebserviceTables(session_mod.Logger):
         self._log('Data frame `interactions` has been exported to `%s`.' % (
             self.outfile_interactions,
         ))
-    
-    
+
+
     def enz_sub(self):
-        
+
         self._log('Building `enz_sub` data frame.')
-        
+
         dataframes = []
-        
+
         enz_sub_a = omnipath.data.get_db('enz_sub')
         enz_sub_a.make_df(tax_id = True)
         dataframes.append(enz_sub_a.df)
         omnipath.data.remove_db('enz_sub', ncbi_tax_id = 9606)
-        
+
         if not self.only_human:
-            
+
             for rodent in (10090, 10116):
-                
+
                 enz_sub_a = omnipath.data.get_db(
                     'enz_sub',
                     ncbi_tax_id = rodent,
@@ -269,82 +269,82 @@ class WebserviceTables(session_mod.Logger):
                 dataframes.append(enz_sub_a.df)
                 omnipath.data.remove_db('enz_sub', ncbi_tax_id = rodent)
                 del enz_sub_a
-        
+
         self.df_enz_sub = pd.concat(dataframes)
         self.df_enz_sub.to_csv(
             self.outfile_ptms,
             sep = '\t',
             index = False
         )
-        
+
         self._log('Data frame `ptms` has been exported to `%s`.' % (
             self.outfile_ptms,
         ))
-    
-    
+
+
     def complexes(self):
-        
+
         self._log('Building `complexes` data frame.')
-        
+
         co = omnipath.data.get_db('complex')
-        
+
         co.make_df()
-        
+
         self.df_complexes = co.df
-        
+
         del co
-        
+
         self.df_complexes.to_csv(
             self.outfile_complexes,
             sep = '\t',
             index = False,
         )
-        
+
         self._log('Data frame `complexes` has been exported to `%s`.' % (
             self.outfile_complexes,
         ))
-    
-    
+
+
     def annotations(self):
-        
+
         self._log('Building `annotations` data frame.')
-        
+
         an = omnipath.data.get_db('annotations')
-        
+
         an.make_narrow_df()
-        
+
         self.df_annotations = an.narrow_df
         self.df_annotations.to_csv(
             self.outfile_annotations,
             sep = '\t',
             index = False,
         )
-        
+
         self._log('Data frame `annotations` has been exported to `%s`.' % (
             self.outfile_annotations,
         ))
-    
-    
+
+
     def intercell(self):
-        
+
         self._log('Building `intercell` data frame.')
-        
+
         i = omnipath.data.get_db('intercell')
-        
+
         i.make_df()
-        
+
         self.df_intercell = i.df
         self.df_intercell.to_csv(
             self.outfile_intercell,
             sep = '\t',
             index = False,
         )
-        
+
         del i
         omnipath.data.remove_db('intercell')
         omnipath.data.remove_db('complex')
         omnipath.data.remove_db('annotations')
-        
+
         self._log('Data frame `intercell` has been exported to `%s`.' % (
             self.outfile_intercell,
         ))
