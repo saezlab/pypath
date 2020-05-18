@@ -517,6 +517,8 @@ def collect(uniprot_ids, *features):
     # most of the times it removes nothing
     resources = [u for u in resources if u.raw]
 
+    features = features or default_features
+
     if 'ac' not in features:
 
         features = ['ac'] + list(*features)
@@ -559,6 +561,8 @@ def features_table(
 
     maxlen = maxlen or settings.get('uniprot_info_maxlen')
 
+    features = features or default_features
+
     tbl = collect(uniprot_ids, *features)
 
     return common.table_format(
@@ -599,6 +603,8 @@ def print_features(
     width = width or int(term_width / len(features)) if term_width else 40
     fileobj = fileobj or None
 
+    features = features or default_features
+
     fileobj.write(
         features_table(
             uniprot_ids,
@@ -632,19 +638,7 @@ def info(
 
         uniprot_ids = uniprot_ids[0]
 
-    features = (
-        features or
-        (
-            'ac',
-            'genesymbol',
-            'length',
-            'weight',
-            'full_name',
-            'function_or_genecards',
-            'keywords',
-            'subcellular_location',
-        )
-    )
+    features = features or default_features
 
     fileobj = fileobj or sys.stdout
 
@@ -731,3 +725,15 @@ def browse(groups, start = 0, fileobj = None, **kwargs):
 
     sys.stdout.write(os.linesep)
     sys.stdout.flush()
+
+
+default_features = (
+    'ac',
+    'genesymbol',
+    'length',
+    'weight',
+    'full_name',
+    'function_or_genecards',
+    'keywords',
+    'subcellular_location',
+)
