@@ -258,12 +258,40 @@ class IntercellAnnotation(annot.CustomAnnotation):
             pickle_file = pickle_file,
         )
 
-        self.setup_intercell_classes()
+        self.df_add_locations()
 
 
-    def setup_intercell_classes(self):
+    def df_add_locations(self, locations = None):
 
-        pass
+        if not hasattr(self, 'df'):
+
+            self.make_df()
+            return
+
+        self._log('Adding location columns to data frame.')
+
+        locations = (
+            locations or
+            (
+                'secreted',
+                'plasma_membrane_transmembrane',
+                'plasma_membrane_peripheral',
+            )
+        )
+        location_classes = dict(
+            (
+                location,
+                self.select(location),
+            )
+            for location in locations
+        )
+
+        for location, entities in iteritems(location_classes):
+
+            self.df[location] = [
+                uniprot in entities
+                for uniprot in self.df.uniprot
+            ]
 
 
     def pre_build(self):
