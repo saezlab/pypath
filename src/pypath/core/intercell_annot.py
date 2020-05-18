@@ -2975,7 +2975,7 @@ annot_combined_classes = (
         args = {
             'mainclass': 'Tumor necrosis factor receptor superfamily',
         },
-        exclude = {'O9540', 'O0030'},
+        exclude = {'O95407', 'O00300'},
     ),
     af.AnnotDef(
         name = 'type1_serine_threonine_kinase',
