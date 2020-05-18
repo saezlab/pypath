@@ -729,10 +729,7 @@ annot_combined_classes = (
         aspect = 'locational',
         source = 'composite',
         scope = 'generic',
-        resource = af.AnnotOp(
-            annots = '~transmembrane',
-            op = set.union
-        ),
+        resource = '~transmembrane',
     ),
     af.AnnotDef(
         name = 'transmembrane',
@@ -3454,7 +3451,7 @@ annot_combined_classes = (
         },
         limit = 'plasma_membrane_transmembrane',
         avoid = af.AnnotDef(
-            name = 'ecm',
+            name = 'ecm_located',
             resource = 'UniProt_location',
             args = {
                 'location': 'Extracellular matrix',
@@ -3768,7 +3765,7 @@ annot_combined_classes = (
             'Q502W6', 'Q6AZY7', 'Q92832', 'Q6UXH1',
             'Q7L0X0', 'P10124',
         },
-        avoid = ('ligand', 'extracellular_enzyme', 'receptor'),
+        avoid = ('ligand', 'secreted_enzyme', 'receptor'),
     ),  # some potentially wrong elements such as ligands, with removal
         # of the groups above it looks more or less fine
     af.AnnotDef(
@@ -3839,7 +3836,7 @@ annot_combined_classes = (
             'P14625', 'Q03167', 'Q9Y2W7', 'P06756',
             'Q01638', 'P03950', 'Q9H1J7',
         },
-        avoid = ('ligand', 'receptor', 'extracellular_enyzme'),
+        avoid = ('ligand', 'receptor', 'secreted_enzyme'),
     ),  # more or less correct, but includes enzymes and matrix adhesion
         # these we excluded
         # TODO: the rest can be added to ligand and secreted enzyme
@@ -4837,7 +4834,7 @@ annot_combined_classes = (
             'mainclass': 'Matrisome-associated',
             'subclass': 'Secreted Factors',
         },
-        limit = ('growth_factor_binder', 'extracellular_enzyme'),
+        limit = ('growth_factor_binder', 'secreted_enzyme'),
         enabled = False,
     ),  # to be checked later
 
@@ -5007,7 +5004,6 @@ annot_combined_classes = (
         name = 'adhesion',
         resource = af.AnnotOp(
             annots = (
-                '~adhesion~HGNC',
                 '~cell_adhesion~HGNC',
                 '~matrix_adhesion~HGNC',
             ),
@@ -5658,7 +5654,8 @@ annot_combined_classes = (
             'A4D1T9', 'O15393', 'Q92743', 'Q9UL52', 'Q16651'
         },
     ),
-    
+
+
     # secreted enzyme
     af.AnnotDef(
         name = 'secreted_enzyme',

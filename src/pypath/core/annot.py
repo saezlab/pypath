@@ -178,6 +178,7 @@ class CustomAnnotation(session_mod.Logger):
             build = True,
             pickle_file = None,
             annotdb_pickle_file = None,
+            composite_resource_name = None,
         ):
         """
         :param tuple class_definitions:
@@ -214,6 +215,10 @@ class CustomAnnotation(session_mod.Logger):
         self._excludes_extra_original = excludes_extra or {}
         self.network = None
         self.classes = {}
+        self.composite_resource_name = (
+            composite_resource_name or
+            settings.get('annot_composite_database_name')
+        )
 
         if build:
 
@@ -396,12 +401,14 @@ class CustomAnnotation(session_mod.Logger):
         )
 
 
-    def create_class(self, classdef):
+    def create_class(self, classdef, override = False):
         """
         Creates a category of entities by processing a custom definition.
         """
 
-        self.classes[classdef.key] = self.process_annot(classdef)
+        if classdef.enabled or override:
+
+            self.classes[classdef.key] = self.process_annot(classdef)
 
 
     def process_annot(self, classdef):
@@ -491,7 +498,7 @@ class CustomAnnotation(session_mod.Logger):
         self._log(
             'Finished processing custom annotation definition '
             '`%s` (parent: `%s`, resource: `%s`). Resulted a set of %u '
-            'entities.' % classdef.key + (len(members),)
+            'entities.' % (classdef.key + (len(members),))
         )
 
         return annot_formats.AnnotationGroup(
@@ -532,7 +539,10 @@ class CustomAnnotation(session_mod.Logger):
                 )
             )
 
-        return annotop.op(*annots)
+        return annotop.op(*(
+            a if isinstance(a, set) else set(a)
+            for a in annots
+        ))
 
 
     def _collect_by_parent(self, parent):
@@ -557,7 +567,7 @@ class CustomAnnotation(session_mod.Logger):
             parent, resource = parent_resource
 
         return tuple(
-            self.select(classdef.key())
+            self.select(classdef.key)
             for classdef in self._class_definitions.values()
             if (
                 classdef.parent == parent and
@@ -565,7 +575,13 @@ class CustomAnnotation(session_mod.Logger):
                     not resource or
                     classdef.resource_name == resource
                 ) and
-                classdef.enabled
+                classdef.enabled and
+                not (
+                    classdef.name == classdef.parent and (
+                        classdef.source == 'composite' or
+                        classdef.resource_name == resource
+                    )
+                )
             )
         )
 
@@ -577,31 +593,27 @@ class CustomAnnotation(session_mod.Logger):
 
         if transmitter is None or receiver is None:
 
-            composite_resource_name = settings.get(
-                'annot_composite_database_name'
-            )
-
             name, parent, resource = classdef.key
 
-            for key, parentdef in self._class_definitions.keys():
+            for key, parentdef in iteritems(self._class_definitions):
 
                 if (
                     parentdef.name == parent and
                     (
-                        parantdef.source == 'composite' or
-                        parentdef.resource == composite_resource_name
+                        parentdef.source == 'composite' or
+                        parentdef.resource == self.composite_resource_name
                     )
                 ):
 
                     transmitter = (
                         transmitter
                             if transmitter is not None else
-                        parent.transmitter
+                        parentdef.transmitter
                     )
                     receiver = (
                         receiver
                             if receiver is not None else
-                        parent.receiver
+                        parentdef.receiver
                     )
                     break
 
@@ -630,20 +642,29 @@ class CustomAnnotation(session_mod.Logger):
         ):
 
             annots = self._collect_by_parent(name)
-            selected = set.union(*annots)
+            selected = set.union(*(
+                a if isinstance(a, set) else set(a)
+                for a in annots
+            ))
 
         else:
 
-            key = (
-                name
-                    if isinstance(name, tuple) else
-                annot_formats.AnnotDefKey(name, parent, resource)
-            )
+            if isinstance(name, tuple):
 
-            if not key[1]:
+                name, parent, resource = name
 
-                parent = self.get_parent(name = key[0], resource = key[2])
-                key = annot_formats.AnnotDefKey(key[0], parent, key[2])
+            if not parent or not resource:
+
+                if not parent:
+
+                    parent = self.get_parent(name = name, resource = resource)
+                    parent = parent.name if parent else None
+
+                if not resource:
+
+                    resource = self.get_resource(name = name, parent = parent)
+
+            key = annot_formats.AnnotDefKey(name, parent, resource)
 
             if key not in self.classes and key in self._class_definitions:
 
@@ -653,7 +674,7 @@ class CustomAnnotation(session_mod.Logger):
 
                 selected = self.classes[key]
 
-        if selected:
+        if selected is not None:
 
             return entity.Entity.filter_entity_type(
                 selected,
@@ -686,7 +707,7 @@ class CustomAnnotation(session_mod.Logger):
             self.process_annot(definition)
                 if isinstance(definition, annot_formats.AnnotDef) else
             definition
-                if isinstance(definition, set) else
+                if isinstance(definition, annot_formats._set_type) else
             self._select(*definition)
                 if isinstance(definition, (tuple, list)) else
             self._select(**definition)
@@ -778,12 +799,14 @@ class CustomAnnotation(session_mod.Logger):
         return self.classes[key].source
 
 
-    def get_parent(self, name, parent = None, resource = None):
+    def get_parents(self, name, parent = None, resource = None):
         """
         As names should be unique for resources, a combination of a name and
         resource determines the parent category. This method looks up the
         parent for a pair of name and resource.
         """
+
+        parent = parent or name
 
         keys = (
             (name, parent, resource),
@@ -798,6 +821,56 @@ class CustomAnnotation(session_mod.Logger):
             if key in self.parents:
 
                 return self.parents[key]
+
+
+    def get_parent(self, name, parent = None, resource = None):
+
+        parents = self.get_parents(
+            name = name,
+            parent = parent,
+            resource = resource,
+        )
+
+        return (
+            sorted(parents, key = lambda par: par[0])[0]
+                if parents else
+            None
+        )
+
+
+    def get_resources(self, name, parent = None):
+        """
+        Returns a set with the names of all resources defining a category
+        with the given name and parent.
+        """
+
+        parent = parent or name
+
+        return {
+            key[2]
+            for key in self._class_definitions.keys()
+            if key[0] == name and key[1] == parent
+        }
+
+
+    def get_resource(self, name, parent = None):
+        """
+        For a category name and its parent returns a single resource name.
+        If a category belonging to the composite database matches the name
+        and the parent the name of the composite database will be returned,
+        otherwise the resource name first in alphabetic order.
+        """
+
+        resources = self.get_resources(name = name, parent = parent)
+
+
+        return (
+            self.composite_resource_name
+                if self.composite_resource_name in resources else
+            sorted(resources)[0]
+                if resources else
+            None
+        )
 
 
     def get_class_label(self, name, parent = None, resource = None):
@@ -1950,7 +2023,7 @@ class CustomAnnotation(session_mod.Logger):
     def get_entities(self, entity_types = None):
 
         return entity.Entity.filter_entity_type(
-            set.union(*self.classes.values())
+            set.union(*(set(a) for a in self.classes.values()))
                 if self.classes else
             (),
             entity_type = entity_types,
@@ -2002,7 +2075,7 @@ class CustomAnnotation(session_mod.Logger):
     def numof_records(self, entity_types = None):
 
         return sum(
-            cls.count_entity_type(entity_type = entity_type)
+            cls.count_entity_type(entity_type = entity_types)
             for cls in self.classes.values()
         )
 

@@ -60,6 +60,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             surfaceome_categories = None,
             gpcrdb_categories = None,
             build = True,
+            composite_resource_name = None,
             **kwargs
         ):
         """
@@ -123,6 +124,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             excludes = excludes,
             excludes_extra = excludes_extra,
             build = build,
+            composite_resource_name = composite_resource_name,
             **kwargs
         )
 

@@ -119,8 +119,8 @@ class AnnotDef(
             transmitter = transmitter,
             receiver = receiver,
             resource_name = resource_name,
-            limit = limit,
-            avoid = avoid,
+            limit = cls._zero_one_or_more(limit),
+            avoid = cls._zero_one_or_more(avoid),
             enabled = enabled,
         )
 
@@ -144,6 +144,18 @@ class AnnotDef(
                 name.startswith('~') or
                 name.startswith('#')
             )
+        )
+
+
+    @staticmethod
+    def _zero_one_or_more(arg):
+
+        return (
+            ()
+                if not arg else
+            (arg,)
+                if isinstance(arg, (common.basestring, _annot_type)) else
+            arg
         )
 
 
@@ -328,9 +340,13 @@ class AnnotationGroup(collections_abc.Set):
 
     def count_entity_type(self, entity_type = None):
 
-        return len(
+        return (
             entity.Entity.count_entity_type(
                 self.members,
                 entity_type = entity_type,
             )
         )
+
+
+_set_type = (set, AnnotationGroup)
+_annot_type = _set_type + (AnnotDef, AnnotOp)
