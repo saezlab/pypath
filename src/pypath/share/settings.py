@@ -193,7 +193,11 @@ _defaults = {
     # directory for LaTeX
     'latex_dir': 'omnipath_latex',
 
+    # include a timestamp in directory names
     'timestamp_dirs': True,
+
+    # maximum lenght of the strings in UniProt info printed tables
+    'uniprot_info_maxlen': 500,
 
 }
 
