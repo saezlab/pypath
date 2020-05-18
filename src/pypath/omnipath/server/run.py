@@ -512,10 +512,6 @@ class TableServer(BaseServer):
                 'resource_specific',
                 'composite',
             },
-            'causality': {
-                'transmitter',
-                'receiver',
-            },
             'categories': None,
             'mainclass': None,
             'proteins': None,
@@ -527,6 +523,16 @@ class TableServer(BaseServer):
                 'lncrna',
                 'small_molecule',
             },
+            'transmitter': {'1', '0', 'no', 'yes'},
+            'receiver': {'1', '0', 'no', 'yes'},
+            'trans': {'1', '0', 'no', 'yes'},
+            'rec': {'1', '0', 'no', 'yes'},
+            'secreted': {'1', '0', 'no', 'yes'},
+            'plasma_membrane_peripheral': {'1', '0', 'no', 'yes'},
+            'plasma_membrane_transmembrane': {'1', '0', 'no', 'yes'},
+            'sec': {'1', '0', 'no', 'yes'},
+            'pmp': {'1', '0', 'no', 'yes'},
+            'pmtm': {'1', '0', 'no', 'yes'},
         },
         'intercell_summary': {
             'header': None,
@@ -549,12 +555,18 @@ class TableServer(BaseServer):
                 'resource_specific',
                 'generic',
             },
-            'causality': {
-                'transmitter',
-                'receiver',
-            },
             'categories': None,
             'fields': None,
+            'transmitter': {'1', '0', 'no', 'yes'},
+            'receiver': {'1', '0', 'no', 'yes'},
+            'trans': {'1', '0', 'no', 'yes'},
+            'rec': {'1', '0', 'no', 'yes'},
+            'secreted': {'1', '0', 'no', 'yes'},
+            'plasma_membrane_peripheral': {'1', '0', 'no', 'yes'},
+            'plasma_membrane_transmembrane': {'1', '0', 'no', 'yes'},
+            'sec': {'1', '0', 'no', 'yes'},
+            'pmp': {'1', '0', 'no', 'yes'},
+            'pmtm': {'1', '0', 'no', 'yes'},
         },
         'complexes': {
             'header': None,
@@ -719,8 +731,12 @@ class TableServer(BaseServer):
             'aspect': 'category',
             'scope': 'category',
             'source': 'category',
-            'causality': 'category',
             'entity_type': 'category',
+            'transmitter': 'bool',
+            'receiver': 'bool',
+            'secreted': 'bool',
+            'plasma_membrane_transmembrane': 'bool',
+            'plasma_membrane_peripheral': 'bool',
         }
     )
 
@@ -1869,13 +1885,44 @@ class TableServer(BaseServer):
         hdr = tbl.columns
 
         # filtering for category types
-        for var in ('aspect', 'source', 'scope', 'causality', 'parent'):
+        for var in (
+            'aspect',
+            'source',
+            'scope',
+            'transmitter',
+            'receiver',
+            'parent',
+        ):
 
             if var.encode('ascii') in req.args:
 
                 values = self._args_set(var)
 
                 tbl = tbl[getattr(tbl, var).isin(values)]
+
+        for (_long, short) in (
+            ('transmitter', 'trans'),
+            ('receiver', 'rec'),
+            ('secreted', 'sec'),
+            ('plasma_membrane_peripheral', 'pmp'),
+            ('plasma_membrane_transmembrane', 'pmtm'),
+        ):
+
+            this_arg = None
+            _long_b = _long.encode('ascii')
+            short_b = short.encode('ascii')
+
+            if _long_b in req.args:
+
+                this_arg = self._parse_arg(req.args[_long_b])
+
+            elif short_b in req_args:
+
+                this_arg = self._parse_arg(req.args[short_b])
+
+            if this_arg is not None:
+
+                tbl = tbl[getattr(tbl, _long) == this_arg]
 
         # filtering for categories
         if b'categories' in req.args:
