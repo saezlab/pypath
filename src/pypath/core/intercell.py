@@ -248,7 +248,8 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
         annot.CustomAnnotation.make_df(self)
 
-        self.setup_intercell_classes()
+        self.df_add_causality()
+        self.df_add_locations()
 
 
     def load_from_pickle(self, pickle_file):
@@ -258,7 +259,24 @@ class IntercellAnnotation(annot.CustomAnnotation):
             pickle_file = pickle_file,
         )
 
-        self.df_add_locations()
+
+    def df_add_causality(self):
+
+        if not hasattr(self, 'df'):
+
+            self.make_df()
+            return
+
+        for causality in ('transmitter', 'receiver'):
+
+            self.df[causality] = [
+                bool(getattr(self.classes[key], causality))
+                for key in zip(
+                    self.df.category,
+                    self.df.parent,
+                    self.df.database,
+                )
+            ]
 
 
     def df_add_locations(self, locations = None):
