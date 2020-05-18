@@ -1901,7 +1901,7 @@ def wrap_truncate(text, width = None, maxlen = None):
         
         text = textwrap.wrap(text, width = width)
     
-    return os.linesep.join(text)
+    return os.linesep.join(text) if isinstance(text, list_like) else text
 
 
 def table_add_row_numbers(tbl, **kwargs):
@@ -2015,9 +2015,8 @@ def print_table(
 
 def tsv_table(
         tbl,
-        maxlen = None,
-        lineno = True,
         path = None,
+        maxlen = None,
         **kwargs,
     ):
     """
@@ -2027,20 +2026,14 @@ def tsv_table(
     the string.
     """
     
-    resp = re.compile(r'[ \t]+')
-    
-    _ = kwargs.pop('wrap', None)
-    
-    kwargs['tablefmt'] = 'plain'
-
-    tsv = table_format(
-        tbl = tbl,
-        maxlen = maxlen,
-        lineno = lineno,
-        wrap = False,
-        **kwargs,
-    )
-    tsv = resp.sub('\t', tsv)
+    tbl = table_textwrap(tbl, width = None, maxlen = maxlen)
+    tsv = []
+    tsv.append('\t'.join(tbl.keys()))
+    tsv.extend([
+        '\t'.join(map(str, row))
+        for row in zip(*tbl.values())
+    ])
+    tsv = os.linesep.join(tsv)
     
     if path:
         
@@ -2073,6 +2066,8 @@ def latex_table(
     it as a string.
     """
     
+    maxlen = maxlen or 999999
+    
     _xelatex_header = [
         r'\usepackage[no-math]{fontspec}',
         r'\usepackage{xunicode}',
@@ -2094,6 +2089,7 @@ def latex_table(
         _xelatex_header if latex_engine == 'xelatex' else _pdflatex_header
     )
     _doc_template_default.extend([
+        r'\usepackage{longtable}',
         r'\usepackage{booktabs}',
         r'',
         r'\begin{document}',
