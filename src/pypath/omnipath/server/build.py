@@ -332,7 +332,6 @@ class WebserviceTables(session_mod.Logger):
         i = omnipath.data.get_db('intercell')
         
         i.make_df()
-        i.add_classes_to_df()
         
         self.df_intercell = i.df
         self.df_intercell.to_csv(

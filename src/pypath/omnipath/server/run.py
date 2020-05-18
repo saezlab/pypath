@@ -61,21 +61,21 @@ if 'unicode' not in __builtins__:
 
 
 def stop_server():
-    
+
     reactor.removeAll()
 
 
 class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
-    
-    
+
+
     def __init__(self):
-        
+
         if not hasattr(self, '_log_name'):
-            
+
             session_mod.Logger.__init__(name = 'server')
-        
+
         self._log('Initializing BaseServer.')
-        
+
         self.htmls = ['info', '']
         self.welcome_message = (
             'Hello, this is the REST service of pypath %s. Welcome!\n'
@@ -83,36 +83,36 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             'Available query types: interactions, enz_sub, complexes, \n'
             'annotations, intercell'
         ) % __version__
-        
+
         self.isLeaf = True
 
         twisted.web.resource.Resource.__init__(self)
         self._log('Twisted resource initialized.')
-    
-    
+
+
     def render_GET(self, request):
-        
+
         response = []
-        
+
         request.postpath = [i.decode('utf-8') for i in request.postpath]
-        
+
         self._log('Processing request: `%s`.' % request.uri.decode('utf-8'))
-        
+
         html = len(request.postpath) == 0 or request.postpath[0] in self.htmls
         self._set_defaults(request, html = html)
-        
+
         if (
             request.postpath and
             hasattr(self, request.postpath[0]) and
             request.postpath[0][0] != '_'
         ):
-            
+
             self._process_postpath(request)
-            
+
             toCall = getattr(self, request.postpath[0])
-            
+
             if hasattr(toCall, '__call__'):
-                
+
                 response = toCall(request)
                 response = (
                     response.encode('utf-8')
@@ -120,13 +120,13 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
                     response
                 )
                 response = [response]
-            
+
         elif not request.postpath:
-            
+
             response = [self._root(request)]
-        
+
         if not response:
-            
+
             response = [
                 (
                     "Not found: %s%s" % (
@@ -145,25 +145,25 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
                     )
                 ).encode('utf-8')
             ]
-        
+
         request.write(response[0])
-        
+
         self._log(
             'Finished serving request: `%s`.' % request.uri.decode('utf-8')
         )
-        
+
         request.finish()
-        
+
         return twisted.web.server.NOT_DONE_YET
-    
-    
+
+
     def render_POST(self, request):
-        
+
         if (
             request.getHeader(b'content-type') and
             request.getHeader(b'content-type').startswith(b'application/json')
         ):
-            
+
             args_raw = json.loads(request.content.getvalue())
             request.args = dict(
                 (
@@ -174,23 +174,23 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
                 )
                 for k, v in iteritems(args_raw)
             )
-        
+
         return self.render_GET(request)
-    
-    
+
+
     def _set_defaults(self, request, html=False):
-        
+
         for k, v in iteritems(request.args):
-            
+
             request.args[k] = [b','.join(v)]
-        
+
         request.setHeader('Cache-Control', 'Public')
-        
+
         if '' in request.postpath:
             request.postpath.remove('')
-        
+
         request.setHeader('Access-Control-Allow-Origin', '*')
-        
+
         if html:
             request.setHeader('Content-Type', 'text/html; charset=utf-8')
         elif (
@@ -204,26 +204,26 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         else:
             request.args[b'format'] = [b'text']
             request.setHeader('Content-Type', 'text/plain; charset=utf-8')
-        
+
         request.args[b'header'] = (
             [b'1']
                 if b'header' not in request.args else
             request.args[b'header']
         )
-        
+
         request.args[b'fields'] = (
             []
                 if b'fields' not in request.args else
             request.args[b'fields']
         )
-    
-    
+
+
     def _process_postpath(self, req):
-        
+
         if len(req.postpath) > 1:
-            
+
             ids_left = [req.postpath[1].encode('utf-8')]
-            
+
             ids_right = (
                 [req.postpath[2].encode('utf-8')]
                 if (
@@ -232,61 +232,61 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
                 ) else
                 None
             )
-            
+
             left_right = (
                 [b'OR']
                 if req.postpath[-1].lower() not in {'and', 'or'} else
                 [req.postpath[-1].encode('utf-8')]
             )
-            
+
             if ids_right:
-                
+
                 if req.postpath[0] == 'enzsub':
-                    
+
                     req.args[b'enzymes'] = ids_left
                     req.args[b'substrates'] = ids_right
-                    
+
                 else:
                     req.args[b'sources'] = ids_left
                     req.args[b'targets'] = ids_right
-                
+
             else:
                 req.args[b'partners'] = ids_left
-            
+
             if req.postpath[0] == 'enzsub':
                 req.args[b'enzyme_substrate'] = left_right
             else:
                 req.args[b'source_target'] = left_right
-    
-    
+
+
     def about(self, req):
-        
+
         return self.welcome_message
-    
-    
+
+
     def info(self, req):
-        
+
         if (
             b'format' in req.args and
             req.args[b'format'][0] == b'json' and
             hasattr(self, 'resources')
         ):
-            
+
             return self.resources(req)
 
         rc = resources.get_controller()
         rc.update()
 
         return generate_about_page.generate_about_html(rc.data)
-    
-    
+
+
     def _root(self, req):
-        
+
         return _html.main_page()
-    
-    
+
+
     def _parse_arg(self, arg):
-        
+
         if type(arg) is list and len(arg):
             arg = arg[0]
         if hasattr(arg, 'decode'):
@@ -297,12 +297,12 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             arg = False
         if arg == 'yes':
             arg = True
-        
+
         return bool(arg)
 
 
 class TableServer(BaseServer):
-    
+
     query_types = {
         'annotations',
         'intercell',
@@ -328,12 +328,12 @@ class TableServer(BaseServer):
         'references',
         'isoforms',
     }
-    
+
     int_list_fields = {
         'references',
         'isoforms',
     }
-    
+
     args_reference = {
         'interactions': {
             'header': None,
@@ -589,8 +589,8 @@ class TableServer(BaseServer):
             'subtypes': None,
         },
     }
-    
-    
+
+
     query_type_synonyms = {
         'interactions': 'interactions',
         'interaction': 'interactions',
@@ -723,7 +723,7 @@ class TableServer(BaseServer):
             'entity_type': 'category',
         }
     )
-    
+
     # the annotation attributes served for the cytoscape app
     cytoscape_attributes = {
         ('Zhong2015', 'type'),
@@ -800,7 +800,7 @@ class TableServer(BaseServer):
         ('Ramilowski_location', 'location'),
         ('LRdb', ('role', 'cell_type')),
     }
-    
+
     def __init__(
             self,
             input_files = None,
@@ -809,92 +809,92 @@ class TableServer(BaseServer):
         ):
         """
         Server based on ``pandas`` data frames.
-        
+
         :param dict input_files:
             Paths to tables exported by the ``pypath.websrvtab`` module.
         """
-        
+
         session_mod.Logger.__init__(self, name = 'server')
-        
+
         self._log('TableServer starting up.')
-        
+
         self.input_files = copy.deepcopy(self.default_input_files)
         self.input_files.update(input_files or {})
         self.data = {}
-        
+
         self.to_load = (
             self.data_query_types - common.to_set(exclude_tables)
                 if only_tables is None else
             common.to_set(only_tables)
         )
-        
+
         self._log('Datasets to load: %s.' % (', '.join(sorted(self.to_load))))
-        
+
         self._read_tables()
-        
+
         self._preprocess_interactions()
         self._preprocess_enzsub()
         self._preprocess_annotations()
         self._preprocess_complexes()
         self._preprocess_intercell()
         self._update_databases()
-        
+
         BaseServer.__init__(self)
         self._log('TableServer startup ready.')
-    
-    
+
+
     def _read_tables(self):
-        
+
         self._log('Loading data tables.')
-        
+
         for name, fname in iteritems(self.input_files):
-            
+
             if name not in self.to_load:
-                
+
                 continue
-            
+
             self._log('Loading dataset `%s` from file `%s`.' % (name, fname))
-            
+
             if not os.path.exists(fname):
-                
+
                 self._log(
                     'Missing table: `%s`.' % fname
                 )
                 continue
-            
+
             dtype = self.default_dtypes[name]
-            
+
             self.data[name] = pd.read_csv(
                 fname,
                 sep = '\t',
                 index_col = False,
                 dtype = dtype,
             )
-            
+
             self._log(
                 'Table `%s` loaded from file `%s`.' % (name, fname)
             )
-    
-    
+
+
     def _network(self, req):
-        
+
         hdr = ['nodes', 'edges', 'is_directed', 'sources']
         tbl = self.data['network'].field
         val = dict(zip(tbl.field, tbl.value))
-        
+
         if b'format' in req.args and req.args[b'format'] == b'json':
             return json.dumps(val)
         else:
             return '%s\n%s' % ('\t'.join(hdr), '\t'.join(
                 [str(val[h]) for h in hdr]))
-    
-    
+
+
     def _preprocess_interactions(self):
-        
+
         if 'interactions' not in self.data:
-            
+
             return
-        
+
         self._log('Preprocessing interactions.')
         tbl = self.data['interactions']
         tbl['set_sources'] = pd.Series(
@@ -908,27 +908,27 @@ class TableServer(BaseServer):
                 for s in tbl.dorothea_level
             ]
         )
-    
-    
+
+
     def _preprocess_enzsub(self):
-        
+
         if 'enzsub' not in self.data:
-            
+
             return
-        
+
         self._log('Preprocessing enzyme-substrate relationships.')
         tbl = self.data['enzsub']
         tbl['set_sources'] = pd.Series(
             [set(s.split(';')) for s in tbl.sources]
         )
-    
-    
+
+
     def _preprocess_complexes(self):
-        
+
         if 'complexes' not in self.data:
-            
+
             return
-        
+
         self._log('Preprocessing complexes.')
         tbl = self.data['complexes']
         tbl['set_sources'] = pd.Series(
@@ -937,19 +937,19 @@ class TableServer(BaseServer):
         tbl['set_proteins'] = pd.Series(
             [set(c.split('_')) for c in tbl.components]
         )
-    
-    
+
+
     def _preprocess_annotations_old(self):
-        
+
         if 'annotations' not in self.data:
-            
+
             return
-        
+
         renum = re.compile(r'[-\d\.]+')
-        
-        
+
+
         def _agg_values(vals):
-            
+
             result = (
                 '#'.join(sorted(set(str(ii) for ii in vals)))
                 if not all(
@@ -964,34 +964,34 @@ class TableServer(BaseServer):
                 ) else
                 '<numeric>'
             )
-            
+
             return result
-        
-        
+
+
         self._log('Preprocessing annotations.')
-        
+
         self.data['annotations_summary'] = self.data['annotations'].groupby(
             ['source', 'label'],
         ).agg({'value': _agg_values}).reset_index(drop = False)
-    
-    
+
+
     def _preprocess_annotations(self):
-        
+
         if 'annotations' not in self.data:
-            
+
             return
-        
+
         renum = re.compile(r'[-\d\.]+')
-        
-        
+
+
         self._log('Preprocessing annotations.')
-        
+
         values_by_key = collections.defaultdict(set)
-        
+
         # we need to do it this way as we are memory limited on the server
         # and pandas groupby is very memory intensive
         for row in self.data['annotations'].itertuples():
-            
+
             value = (
                 '<numeric>'
                 if (
@@ -1003,18 +1003,18 @@ class TableServer(BaseServer):
                 ) else
                 str(row.value)
             )
-            
+
             values_by_key[(row.source, row.label)].add(value)
-        
+
         for vals in values_by_key.values():
-            
+
             if len(vals) > 1:
-                
+
                 vals.discard('<numeric>')
-            
+
             vals.discard('')
             vals.discard('nan')
-        
+
         self.data['annotations_summary'] = pd.DataFrame(
             list(
                 (source, label, '#'.join(sorted(values)))
@@ -1022,14 +1022,14 @@ class TableServer(BaseServer):
             ),
             columns = ['source', 'label', 'value'],
         )
-    
-    
+
+
     def _preprocess_intercell(self):
-        
+
         if 'intercell' not in self.data:
-            
+
             return
-        
+
         self._log('Preprocessing intercell data.')
         tbl = self.data['intercell']
         tbl.mainclass = tbl.mainclass.cat.add_categories('')
@@ -1039,38 +1039,38 @@ class TableServer(BaseServer):
             ['category', 'mainclass', 'class_type'],
             as_index = False,
         ).agg({})
-    
-    
+
+
     def _update_databases(self):
-        
+
         self._databases_dict = collections.defaultdict(dict)
-        
+
         for query_type in self.data_query_types:
-            
+
             if query_type not in self.data:
-                
+
                 continue
-            
+
             tbl = self.data[query_type]
-            
+
             for colname, argname in (
                 ('sources', 'databases'),
                 ('source', 'databases'),
                 ('category', 'categories')
             ):
-                
+
                 if colname in tbl.columns:
-                    
+
                     break
-            
+
             values = sorted(set(
                 itertools.chain(*(
                     val.split(';') for val in getattr(tbl, colname)
                 ))
             ))
-            
+
             if query_type == 'intercell':
-                
+
                 intercell_databases = dict(
                     set(
                         zip(
@@ -1079,7 +1079,7 @@ class TableServer(BaseServer):
                         )
                     )
                 )
-                
+
                 intercell_main_classes = dict(
                     set(
                         zip(
@@ -1088,94 +1088,94 @@ class TableServer(BaseServer):
                         )
                     )
                 )
-            
+
             for db in values:
-                
+
                 if query_type == 'intercell':
-                    
+
                     if any(
                         db in dbs
                         for dbs in intercell_annot.class_types.values()
                     ):
-                        
+
                         continue
-                    
+
                     db_class = db
                     db = intercell_databases[db_class]
                     class_label = intercell_annot.get_class_label(
                         intercell_main_classes[db_class]
                     )
-                
+
                 if 'datasets' not in self._databases_dict[db]:
-                    
+
                     self._databases_dict[db]['datasets'] = {}
-                
+
                 if query_type not in self._databases_dict[db]['datasets']:
-                    
+
                     self._databases_dict[db]['datasets'][query_type] = (
-                        
+
                         {'classes': {}}
-                        
+
                             if query_type == 'intercell' else
-                        
+
                         sorted(db_categories.get_categories(db, names = True))
-                        
+
                             if query_type == 'interactions' else
-                        
+
                         []
-                        
+
                     )
-                
+
                 if query_type == 'intercell':
-                    
+
                     qt = self._databases_dict[db]['datasets'][query_type]
                     qt['classes'][db_class] = class_label
-            
+
             self.args_reference[query_type][argname] = values
-        
+
         self._databases_dict = dict(self._databases_dict)
-    
-    
+
+
     def _check_args(self, req):
-        
+
         result = []
         ref = self.args_reference[req.postpath[0]]
-        
+
         for arg, val in iteritems(req.args):
-            
+
             arg = arg.decode('utf-8')
-            
+
             if arg in ref:
-                
+
                 if not ref[arg] or not val:
-                    
+
                     continue
-                
+
                 val = (
                     {val[0]}
                     if type(val[0]) is int else
                     set(val[0].decode('utf-8').split(','))
                 )
-                
+
                 unknowns = val - set(ref[arg])
-                
+
                 if unknowns:
-                    
+
                     result.append(
                         ' ==> Unknown values for argument `%s`: `%s`' % (
                             arg,
                             ', '.join(str(u) for u in unknowns)
                         )
                     )
-                
+
             else:
-                
+
                 result.append(' ==> Unknown argument: `%s`' % arg)
-        
+
         req.args[b'header'] = self._parse_arg(req.args[b'header'])
-        
+
         if result:
-            
+
             return (
                 'Something is not entirely good:\n%s\n\n'
                 'Please check the examples at\n'
@@ -1186,58 +1186,58 @@ class TableServer(BaseServer):
                 'https://github.com/saezlab/pypath/issues'
                 '' % '\n'.join(result)
             )
-    
-    
+
+
     def _query_type(self, query_type):
-        
+
         return (
             self.query_type_synonyms[query_type]
                 if query_type in self.query_type_synonyms else
             query_type
         )
-    
-    
+
+
     def queries(self, req):
-        
+
         query_type = (
             req.postpath[1]
                 if len(req.postpath) > 1 else
             'interactions'
         )
-        
+
         query_type = self._query_type(query_type)
-        
+
         query_param = (
             req.postpath[2]
                 if len(req.postpath) > 2 else
             None
         )
-        
+
         if query_type in self.args_reference:
-            
+
             result = self.args_reference[query_type]
-            
+
             if query_param is not None and query_param in result:
-                
+
                 result = {}
                 result[query_param] = (
                     self.args_reference[query_type][query_param]
                 )
-            
+
         else:
-            
+
             result = {}
             result[query_type] = (
                 'No possible arguments defined for'
                 'query `%s` or no such query available.' % query_type
             )
-        
+
         if b'format' in req.args and req.args[b'format'][0] == b'json':
-            
+
             return json.dumps(result)
-            
+
         else:
-            
+
             return 'argument\tvalues\n%s' % '\n'.join(
                 '%s\t%s' % (
                     k,
@@ -1247,95 +1247,95 @@ class TableServer(BaseServer):
                 )
                 for k, v in iteritems(result)
             )
-    
-    
+
+
     def databases(self, req):
-        
+
         query_type = (
             req.postpath[1]
                 if len(req.postpath) > 1 else
             'interactions'
         )
-        
+
         query_type = self._query_type(query_type)
-        
+
         datasets = (
             set(req.postpath[2].split(','))
                 if len(req.postpath) > 2 else
             None
         )
-        
+
         tbl = (
             self.data[query_type]
                 if query_type in self.data else
             self.data['interactions']
         )
-        
+
         # filter for datasets
         if query_type == 'interactions':
-            
+
             if datasets is not None:
-                
+
                 tbl = tbl[tbl.type.isin(datasets)]
-                
+
             else:
-                
+
                 datasets = self._get_datasets()
-            
+
             result = {}
-            
+
             for dataset in datasets:
-                
+
                 result[dataset] = sorted(set.union(
                     *tbl[tbl.type == dataset].set_sources)
                 )
-            
+
         else:
-            
+
             result = {}
             result['*'] = sorted(set.union(*tbl.set_sources))
-        
+
         if b'format' in req.args and req.args[b'format'][0] == b'json':
-            
+
             return json.dumps(result)
-            
+
         else:
-            
+
             return 'dataset\tdatabases\n%s' % '\n'.join(
                 '%s\t%s' % (k, ';'.join(v)) for k, v in iteritems(result)
             )
-    
-    
+
+
     def _get_datasets(self):
-        
+
         return list(self.data['interactions'].type.unique())
-    
-    
+
+
     def datasets(self, req):
-        
+
         query_type = (
             req.postpath[1]
                 if len(req.postpath) > 1 else
             'interactions'
         )
-        
+
         if query_type == 'interactions':
-            
+
             result = self._get_datasets()
-        
+
         else:
-            
+
             result = []
-        
+
         if b'format' in req.args and req.args[b'format'][0] == b'json':
-            
+
             return json.dumps(result)
-            
+
         else:
-            
+
             return ';'.join(result)
-    
-    
+
+
     def interactions(
             self,
             req,
@@ -1345,13 +1345,13 @@ class TableServer(BaseServer):
             organisms = {9606},
             source_target = 'OR'
         ):
-        
+
         bad_req = self._check_args(req)
-        
+
         if bad_req:
-            
+
             return bad_req
-        
+
         hdr = [
             'source',
             'target',
@@ -1363,18 +1363,18 @@ class TableServer(BaseServer):
             'consensus_inhibition',
             'dip_url',
         ]
-        
+
         if b'source_target' in req.args:
-            
+
             source_target = (
                 req.args[b'source_target'][0].decode('utf-8').upper()
             )
-        
+
         # changes the old, "tfregulons" names to new "dorothea"
         self._tfregulons_dorothea(req)
-        
+
         args = {}
-        
+
         for arg in (
             'datasets',
             'types',
@@ -1386,30 +1386,30 @@ class TableServer(BaseServer):
             'dorothea_levels',
             'dorothea_methods',
         ):
-            
+
             args[arg] = self._args_set(req, arg)
-        
+
         # if user requested TF type interactions
         # they likely want the tfregulons dataset
         if 'transcriptional' in args['types']:
-            
+
             args['datasets'].add('dorothea')
             args['datasets'].add('tf_target')
-        
+
         if 'post_transcriptional' in args['types']:
-            
+
             args['datasets'].add('mirnatarget')
-        
+
         # here adjust on the defaults otherwise we serve empty
         # response by default
         args['datasets'] = args['datasets'] or datasets
         args['datasets'] = args['datasets'] & self.datasets_
-        
+
         args['organisms'] = set(
             int(t) for t in args['organisms'] if t.isdigit()
         )
         args['organisms'] = args['organisms'] or organisms
-        
+
         # do not allow impossible values
         # those would result KeyError later
         args['dorothea_levels'] = (
@@ -1419,7 +1419,7 @@ class TableServer(BaseServer):
         args['dorothea_methods'] = (
             args['dorothea_methods'] & self.dorothea_methods
         )
-        
+
         # provide genesymbols: yes or no
         if (
             b'genesymbols' in req.args and
@@ -1430,80 +1430,80 @@ class TableServer(BaseServer):
             hdr.insert(3, 'target_genesymbol')
         else:
             genesymbols = False
-        
+
         # if user requested TF Regulons they likely want us
         # to serve TF-target interactions
         # but if they requested other types, then we
         # serve those as well
         if 'dorothea' in args['datasets'] or 'tf_target' in args['datasets']:
-            
+
             args['types'].add('transcriptional')
-        
+
         if 'mirnatarget' in args['datasets']:
-            
+
             args['types'].add('post_transcriptional')
-        
+
         # if no types provided we collect the types
         # for the datasets requested
         # or by default only the 'omnipath' dataset
         # which belongs to the 'PPI' type
         if not args['types'] or args['datasets']:
-            
+
             args['types'].update(
                 {self.dataset2type[ds] for ds in args['datasets']}
             )
-        
+
         # starting from the entire dataset
         tbl = self.data['interactions']
-        
+
         # filter by type
         tbl = tbl[tbl.type.isin(args['types'])]
-        
+
         # if partners provided those will overwrite
         # sources and targets
         args['sources'] = args['sources'] or args['partners']
         args['targets'] = args['targets'] or args['partners']
-        
+
         # then we filter by source and target
         # which matched against both standard names
         # and gene symbols
         if args['sources'] and args['targets'] and source_target == 'OR':
-            
+
             tbl = tbl[
                 tbl.target.isin(args['targets']) |
                 tbl.target_genesymbol.isin(args['targets']) |
                 tbl.source.isin(args['sources']) |
                 tbl.source_genesymbol.isin(args['sources'])
             ]
-        
+
         else:
-            
+
             if args['sources']:
                 tbl = tbl[
                     tbl.source.isin(args['sources']) |
                     tbl.source_genesymbol.isin(args['sources'])
                 ]
-            
+
             if args['targets']:
                 tbl = tbl[
                     tbl.target.isin(args['targets']) |
                     tbl.target_genesymbol.isin(args['targets'])
                 ]
-        
+
         # filter by datasets
         if args['datasets']:
-            
+
             tbl = tbl.query(' or '.join(args['datasets']))
-        
+
         # filter by organism
         tbl = tbl[
             tbl.ncbi_tax_id_source.isin(args['organisms']) |
             tbl.ncbi_tax_id_target.isin(args['organisms'])
         ]
-        
+
         # filter by DoRothEA confidence levels
         if 'transcriptional' in args['types'] and args['dorothea_levels']:
-            
+
             tbl = tbl[
                 np.logical_not(tbl.dorothea) |
                 [
@@ -1511,148 +1511,148 @@ class TableServer(BaseServer):
                     for levels in tbl.set_dorothea_level
                 ]
             ]
-        
+
         # filter by databases
         if args['databases']:
-            
+
             tbl = tbl[
                 [
                     bool(sources & args['databases'])
                     for sources in tbl.set_sources
                 ]
             ]
-        
+
          # filtering for entity types
         if b'entity_types' in req.args:
-            
+
             entity_types = self._args_set(req, 'entity_types')
-            
+
             tbl = tbl[
                 tbl.entity_type_source.isin(entity_types) |
                 tbl.entity_type_target.isin(entity_types)
             ]
-        
+
         # filtering by DoRothEA methods
         if 'transcriptional' in args['types'] and args['dorothea_methods']:
-            
+
             q = ['dorothea_%s' % m for m in args['dorothea_methods']]
-            
+
             tbl = tbl[
                 tbl[q].any(1) |
                 np.logical_not(tbl.dorothea)
             ]
-        
+
         # filter directed & signed
         if (
             b'directed' not in req.args or
             self._parse_arg(req.args[b'directed'])
         ):
-            
+
             tbl = tbl[tbl.is_directed == 1]
-        
+
         if (
             b'signed' in req.args and
             self._parse_arg(req.args[b'signed'])
         ):
-            
+
             tbl = tbl[np.logical_or(
                 tbl.is_stimulation == 1,
                 tbl.is_inhibition == 1
             )]
-        
+
         if req.args[b'fields']:
-            
+
             _fields = [
                 f for f in
                 req.args[b'fields'][0].decode('utf-8').split(',')
                 if f in self.interaction_fields
             ]
-            
+
             for f in _fields:
-                
+
                 if f == 'ncbi_tax_id' or f == 'organism':
-                    
+
                     hdr.append('ncbi_tax_id_source')
                     hdr.append('ncbi_tax_id_target')
-                    
+
                 elif f == 'entity_type':
-                    
+
                     hdr.append('entity_type_source')
                     hdr.append('entity_type_target')
-                    
+
                 elif f == 'databases':
-                    
+
                     hdr.append('sources')
-                    
+
                 else:
-                    
+
                     hdr.append(f)
-        
+
         tbl = tbl.loc[:,hdr]
-        
+
         return self._serve_dataframe(tbl, req)
-    
-    
+
+
     def _tfregulons_dorothea(self, req):
-        
+
         for arg in (b'datasets', b'fields'):
-            
+
             if arg in req.args:
-                
+
                 req.args[arg] = (
                     req.args[arg].replace(b'tfregulons', b'dorothea')
                 )
-        
+
         for postfix in (b'levels', b'methods'):
-            
+
             key = b'tfregulons_%s' % postfix
             new_key = b'dorothea_%s' % postfix
-            
+
             if key in req.args and new_key not in req.args:
-                
+
                 req.args[new_key] = req.args[key]
                 _ = req.args.pop(key)
-    
-    
+
+
     def enzsub(
             self,
             req,
             organisms = {9606},
             enzyme_substrate = 'OR'
         ):
-        
+
         bad_req = self._check_args(req)
-        
+
         if bad_req:
-            
+
             return bad_req
-        
+
         hdr = [
             'enzyme', 'substrate', 'residue_type',
             'residue_offset', 'modification'
         ]
-        
+
         if b'enzyme_substrate' in req.args:
-            
+
             enzyme_substrate = (
                 req.args[b'enzyme_substrate'][0].decode('utf-8').upper()
             )
-        
+
         args = {}
-        
+
         for arg in (
             'enzymes', 'substrates', 'partners',
             'databases', 'organisms', 'types',
             'residues'
         ):
-            
+
             args[arg] = self._args_set(req, arg)
-        
+
         args['organisms'] = set(
             int(t) for t in args['organisms'] if t.isdigit()
         )
         args['organisms'] = args['organisms'] or organisms
-        
+
         # provide genesymbols: yes or no
         if (
             b'genesymbols' in req.args and
@@ -1663,19 +1663,19 @@ class TableServer(BaseServer):
             hdr.insert(3, 'substrate_genesymbol')
         else:
             genesymbols = False
-        
+
         # starting from the entire dataset
         tbl = self.data['enzsub']
-        
+
         # filter by type
         if args['types']:
             tbl = tbl[tbl.modification.isin(args['types'])]
-        
+
         # if partners provided those will overwrite
         # enzymes and substrates
         args['enzymes'] = args['enzymes'] or args['partners']
         args['substrates'] = args['substrates'] or args['partners']
-        
+
         # then we filter by enzyme and substrate
         # which matched against both standard names
         # and gene symbols
@@ -1684,112 +1684,112 @@ class TableServer(BaseServer):
             args['substrates'] and
             enzyme_substrate == 'OR'
         ):
-            
+
             tbl = tbl[
                 tbl.substrate.isin(args['substrates']) |
                 tbl.substrate_genesymbol.isin(args['substrates']) |
                 tbl.enzyme.isin(args['enzymes']) |
                 tbl.enzyme_genesymbol.isin(args['enzymes'])
             ]
-        
+
         else:
-            
+
             if args['enzymes']:
                 tbl = tbl[
                     tbl.enzyme.isin(args['enzymes']) |
                     tbl.enzyme_genesymbol.isin(args['enzymes'])
                 ]
-            
+
             if args['substrates']:
                 tbl = tbl[
                     tbl.substrate.isin(args['substrates']) |
                     tbl.substrate_genesymbol.isin(args['substrates'])
                 ]
-        
+
         # filter by organism
         tbl = tbl[tbl.ncbi_tax_id.isin(args['organisms'])]
-        
+
         # filter by databases
         if args['databases']:
-            
+
             tbl = tbl[
                 [
                     bool(args['databases'] & sources)
                     for sources in tbl.set_sources
                 ]
             ]
-        
+
         if req.args[b'fields']:
-            
+
             _fields = [
                 f for f in
                 req.args[b'fields'][0].decode('utf-8').split(',')
                 if f in self.enzsub_fields
             ]
-            
+
             for f in _fields:
-                
+
                 if f == 'ncbi_tax_id' or f == 'organism':
-                    
+
                     hdr.append('ncbi_tax_id')
-                    
+
                 elif f == 'databases':
-                    
+
                     hdr.append('sources')
-                    
+
                 else:
-                    
+
                     hdr.append(f)
-        
+
         tbl = tbl.loc[:,hdr]
-        
+
         return self._serve_dataframe(tbl, req)
-    
-    
+
+
     def ptms(self, req):
-        
+
         req.postpath[0] = 'enzsub'
-        
+
         return self.enzsub(req)
-    
-    
+
+
     def annotations(self, req):
-        
+
         bad_req = self._check_args(req)
-        
+
         if bad_req:
-            
+
             return bad_req
-        
+
         # starting from the entire dataset
         tbl = self.data['annotations']
-        
+
         hdr = tbl.columns
-        
+
         # filtering for databases
         if b'databases' in req.args:
-            
+
             databases = self._args_set(req, 'databases')
-            
+
             tbl = tbl[tbl.source.isin(databases)]
-        
+
         # filtering for entity types
         if b'entity_types' in req.args:
-            
+
             entity_types = self._args_set(req, 'entity_types')
-            
+
             tbl = tbl[tbl.entity_type.isin(entity_types)]
-        
+
         # filtering for proteins
         if b'proteins' in req.args:
-            
+
             proteins = self._args_set(req, 'proteins')
-            
+
             tbl = tbl[
                 tbl.uniprot.isin(proteins) |
                 tbl.genesymbol.isin(proteins)
             ]
-        
+
         # provide genesymbols: yes or no
         if (
             b'genesymbols' in req.args and
@@ -1799,49 +1799,49 @@ class TableServer(BaseServer):
             hdr.insert(1, 'genesymbol')
         else:
             genesymbols = False
-        
+
         tbl = tbl.loc[:,hdr]
-        
+
         return self._serve_dataframe(tbl, req)
-    
-    
+
+
     def annotations_summary(self, req):
-        
+
         bad_req = self._check_args(req)
-        
+
         if bad_req:
-            
+
             return bad_req
-        
+
         # starting from the entire dataset
         tbl = self.data['annotations_summary']
-        
+
         hdr = tbl.columns
-        
+
         # filtering for databases
         if b'databases' in req.args:
-            
+
             databases = self._args_set(req, 'databases')
-            
+
             tbl = tbl[tbl.source.isin(databases)]
-        
+
         if (
             b'cytoscape' in req.args and
             self._parse_arg(req.args[b'cytoscape'])
         ):
-            
+
             cytoscape = True
-            
+
         else:
-            
+
             cytoscape = False
-        
+
         tbl = tbl.loc[:,hdr]
-        
+
         if cytoscape:
-            
+
             tbl = tbl.set_index(['source', 'label'], drop = False)
-            
+
             cytoscape_keys = {
                 (source, label)
                 for source, labels in self.cytoscape_attributes
@@ -1849,156 +1849,156 @@ class TableServer(BaseServer):
                     labels if isinstance(labels, tuple) else (labels,)
                 )
             } & set(tbl.index)
-            
+
             tbl = tbl.loc[list(cytoscape_keys)]
-        
+
         return self._serve_dataframe(tbl, req)
-    
-    
+
+
     def intercell(self, req):
-        
+
         bad_req = self._check_args(req)
-        
+
         if bad_req:
-            
+
             return bad_req
-        
+
         # starting from the entire dataset
         tbl = self.data['intercell']
-        
+
         hdr = tbl.columns
-        
+
         # filtering for category types
         for var in ('aspect', 'source', 'scope', 'causality', 'parent'):
-            
+
             if var.encode('ascii') in req.args:
-                
+
                 values = self._args_set(var)
-                
+
                 tbl = tbl[getattr(tbl, var).isin(values)]
-        
+
         # filtering for categories
         if b'categories' in req.args:
-            
+
             categories = self._args_set(req, 'categories')
-            
+
             tbl = tbl[tbl.category.isin(categories)]
-        
+
         # filtering for entity types
         if b'entity_types' in req.args:
-            
+
             entity_types = self._args_set(req, 'entity_types')
-            
+
             tbl = tbl[tbl.entity_type.isin(entity_types)]
-        
+
         # filtering for proteins
         if b'proteins' in req.args:
-            
+
             proteins = self._args_set(req, 'proteins')
-            
+
             tbl = tbl[
                 np.logical_or(
                     tbl.uniprot.isin(proteins),
                     tbl.genesymbol.isin(proteins),
                 )
             ]
-        
+
         tbl = tbl.loc[:,hdr]
-        
+
         return self._serve_dataframe(tbl, req)
-    
-    
+
+
     def intercell_summary(self, req):
-        
+
         bad_req = self._check_args(req)
-        
+
         if bad_req:
-            
+
             return bad_req
-        
+
         # starting from the entire dataset
         tbl = self.data['intercell_summary']
-        
+
         hdr = tbl.columns
-        
+
         # filtering for category level
         if b'levels' in req.args:
-            
+
             levels = self._args_set(req, 'levels')
-            
+
             tbl = tbl[tbl.class_type.isin(levels)]
-        
+
         # filtering for categories
         if b'categories' in req.args:
-            
+
             categories = self._args_set(req, 'categories')
-            
+
             tbl = tbl[tbl.mainclass.isin(categories)]
-        
+
         tbl = tbl.loc[:,hdr]
-        
+
         return self._serve_dataframe(tbl, req)
-    
-    
+
+
     def complexes(self, req):
-        
+
         bad_req = self._check_args(req)
-        
+
         if bad_req:
-            
+
             return bad_req
-        
+
         # starting from the entire dataset
         tbl = self.data['complexes']
-        
+
         hdr = list(tbl.columns)
         hdr.remove('set_sources')
         hdr.remove('set_proteins')
-        
+
         # filtering for databases
         if b'databases' in req.args:
-            
+
             databases = self._args_set(req, 'databases')
-            
+
             tbl = tbl[
                 [
                     bool(sources & databases)
                     for sources in tbl.set_sources
                 ]
             ]
-        
+
         # filtering for proteins
         if b'proteins' in req.args:
-            
+
             proteins = self._args_set(req, 'proteins')
-            
+
             tbl = tbl[
                 [
                     bool(this_proteins & proteins)
                     for this_proteins in tbl.set_proteins
                 ]
             ]
-        
+
         tbl = tbl.loc[:,hdr]
-        
+
         return self._serve_dataframe(tbl, req)
-    
-    
+
+
     def resources(self, req):
-        
+
         datasets = (
-            
+
             {
                 self._query_type(dataset.decode('ascii'))
                 for dataset in req.args[b'datasets']
             }
-            
+
             if b'datasets' in req.args else
-            
+
             None
-            
+
         )
-        
+
         return json.dumps(
             dict(
                 (k, v)
@@ -2006,25 +2006,25 @@ class TableServer(BaseServer):
                 if not datasets or datasets & set(v['datasets'].keys())
             )
         )
-    
-    
+
+
     @classmethod
     def _serve_dataframe(cls, tbl, req):
-        
+
         if b'format' in req.args and req.args[b'format'][0] == b'json':
-            
+
             data_json = tbl.to_json(orient = 'records')
             # this is necessary because in the data frame we keep lists
             # as `;` separated strings but in json is nicer to serve
             # them as lists
             data_json = json.loads(data_json)
-            
+
             for i in data_json:
-                
+
                 for k, v in iteritems(i):
-                    
+
                     if k in cls.list_fields:
-                        
+
                         i[k] = (
                             [
                                 (
@@ -2040,23 +2040,23 @@ class TableServer(BaseServer):
                             if isinstance(v, common.basestring) else
                             []
                         )
-            
+
             return json.dumps(data_json)
-            
+
         else:
-            
+
             return tbl.to_csv(
                 sep = '\t',
                 index = False,
                 header = bool(req.args[b'header'])
             )
-    
-    
+
+
     @staticmethod
     def _args_set(req, arg):
-        
+
         arg = arg.encode('utf-8')
-        
+
         return (
             set(req.args[arg][0].decode('utf-8').split(','))
             if arg in req.args
@@ -2065,7 +2065,7 @@ class TableServer(BaseServer):
 
 
 class Rest(object):
-    
+
     def __init__(
             self,
             port,
@@ -2076,7 +2076,7 @@ class Rest(object):
         """
         Runs a webserver serving a `PyPath` instance listening
         to a custom port.
-        
+
         Args:
         -----
         :param int port:
@@ -2086,19 +2086,19 @@ class Rest(object):
         :param **kwargs:
             Arguments for initialization of the server class.
         """
-        
+
         self.port = port
         _log('Creating the server class.')
         self.server = serverclass(**kwargs)
         _log('Server class ready.')
-        
+
         if start:
-            
+
             _log('Starting the twisted server.')
             self.start()
-    
+
     def start(self):
-        
+
         self.site = twisted.web.server.Site(self.server)
         _log('Site created.')
         twisted.internet.reactor.listenTCP(self.port, self.site)
