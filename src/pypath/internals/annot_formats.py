@@ -159,16 +159,27 @@ class AnnotDef(
         )
 
 
-"""
-Annotation operations consist of list of annotation definitions or names as
-they can be looked up in the ``class_definitions`` of the
-``CustomAnnotation`` object and an operator to be called on the sets
-(union, intersection or difference).
-"""
-AnnotOp = collections.namedtuple(
-    'AnnotOp',
-    ['annots', 'op'],
-)
+
+class AnnotOp(
+        collections.namedtuple(
+            'AnnotOpBase',
+            ['annots', 'op'],
+        )
+    ):
+    """
+    Annotation operations consist of list of annotation definitions or names as
+    they can be looked up in the ``class_definitions`` of the
+    ``CustomAnnotation`` object and an operator to be called on the sets
+    (union, intersection or difference).
+    """
+
+    def __new__(cls, annots, op = set.union):
+
+        if op in AnnotationGroup._set_methods:
+
+            op = getattr(AnnotationGroup, op.__name__)
+
+        return super().__new__(cls, annots, op)
 
 
 class AnnotationGroup(collections_abc.Set):
@@ -220,6 +231,15 @@ class AnnotationGroup(collections_abc.Set):
         'cell_surface' then all cell_surface proteins will be removed from
         this category.
     """
+
+
+    _set_methods = {
+        set.union,
+        set.intersection,
+        set.difference,
+        set.symmetric_difference,
+    }
+
 
     def __init__(
             self,
@@ -346,6 +366,51 @@ class AnnotationGroup(collections_abc.Set):
                 entity_type = entity_type,
             )
         )
+
+
+    @staticmethod
+    def sets(*args):
+
+        return (
+            (
+                a
+                    if isinstance(a, set) else
+                a.members
+                    if hasattr(a, 'members') else
+                common.to_set(a)
+            )
+            for a in args
+        )
+
+
+    @classmethod
+    def union(cls, *args):
+
+        return set.union(*cls.sets(*args))
+
+
+    @classmethod
+    def intersection(cls, *args):
+
+        return set.intersection(*cls.sets(*args))
+
+
+    @classmethod
+    def difference(cls, *args):
+
+        return set.difference(*cls.sets(*args))
+
+
+    @classmethod
+    def symmetric_difference(cls, *args):
+
+        return set.symmetric_difference(*cls.sets(*args))
+
+
+    @classmethod
+    def isdisjoint(cls, *args):
+
+        return set.isdisjoint(*cls.sets(*args))
 
 
 _set_type = (set, AnnotationGroup)
