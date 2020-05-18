@@ -311,7 +311,7 @@ class AnnotationGroup(collections_abc.Set):
 
         return '%s%s@%s' % (
             self.parent,
-            '.%s' % self.name if self.name != self.parent else '',
+            '::%s' % self.name if self.name != self.parent else '',
             self.resource
         )
 
