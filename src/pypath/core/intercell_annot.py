@@ -4014,7 +4014,7 @@ annot_combined_classes = (
         args = {
             'keyword': 'Cytokine',
         },
-        limit = 'extracellular',
+        limit = 'secreted',
     ),
     af.AnnotDef(
         name = 'growth_factor',
@@ -5808,7 +5808,7 @@ annot_combined_classes = (
         name = 'secreted_peptidase',
         scope = 'generic',
         resource = 'GO_Intercell',
-        limit = 'extracellular',
+        limit = 'secreted',
         args = {
             'mainclass': 'peptidase',
         },
