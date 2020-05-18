@@ -513,7 +513,7 @@ class TableServer(BaseServer):
                 'composite',
             },
             'categories': None,
-            'mainclass': None,
+            'parent': None,
             'proteins': None,
             'fields': None,
             'entity_types': {
@@ -556,6 +556,7 @@ class TableServer(BaseServer):
                 'generic',
             },
             'categories': None,
+            'parent': None,
             'fields': None,
             'transmitter': {'1', '0', 'no', 'yes'},
             'receiver': {'1', '0', 'no', 'yes'},
@@ -1048,11 +1049,9 @@ class TableServer(BaseServer):
 
         self._log('Preprocessing intercell data.')
         tbl = self.data['intercell']
-        tbl.mainclass = tbl.mainclass.cat.add_categories('')
-        tbl.mainclass[tbl.mainclass.isna()] = ''
         tbl.drop('full_name', axis = 1, inplace = True, errors = 'ignore')
         self.data['intercell_summary'] = tbl.groupby(
-            ['category', 'mainclass', 'class_type'],
+            ['category', 'parent', 'database'],
             as_index = False,
         ).agg({})
 
@@ -1070,6 +1069,7 @@ class TableServer(BaseServer):
             tbl = self.data[query_type]
 
             for colname, argname in (
+                ('database', 'databases'),
                 ('sources', 'databases'),
                 ('source', 'databases'),
                 ('category', 'categories')
@@ -1085,42 +1085,7 @@ class TableServer(BaseServer):
                 ))
             ))
 
-            if query_type == 'intercell':
-
-                intercell_databases = dict(
-                    set(
-                        zip(
-                            self.data['intercell'].category,
-                            self.data['intercell'].database,
-                        )
-                    )
-                )
-
-                intercell_main_classes = dict(
-                    set(
-                        zip(
-                            self.data['intercell'].category,
-                            self.data['intercell'].mainclass,
-                        )
-                    )
-                )
-
             for db in values:
-
-                if query_type == 'intercell':
-
-                    if any(
-                        db in dbs
-                        for dbs in intercell_annot.class_types.values()
-                    ):
-
-                        continue
-
-                    db_class = db
-                    db = intercell_databases[db_class]
-                    class_label = intercell_annot.get_class_label(
-                        intercell_main_classes[db_class]
-                    )
 
                 if 'datasets' not in self._databases_dict[db]:
 
@@ -1141,11 +1106,6 @@ class TableServer(BaseServer):
                         []
 
                     )
-
-                if query_type == 'intercell':
-
-                    qt = self._databases_dict[db]['datasets'][query_type]
-                    qt['classes'][db_class] = class_label
 
             self.args_reference[query_type][argname] = values
 
@@ -1896,7 +1856,7 @@ class TableServer(BaseServer):
 
             if var.encode('ascii') in req.args:
 
-                values = self._args_set(var)
+                values = self._args_set(req, var)
 
                 tbl = tbl[getattr(tbl, var).isin(values)]
 
@@ -1916,7 +1876,7 @@ class TableServer(BaseServer):
 
                 this_arg = self._parse_arg(req.args[_long_b])
 
-            elif short_b in req_args:
+            elif short_b in req.args:
 
                 this_arg = self._parse_arg(req.args[short_b])
 

@@ -105,7 +105,7 @@ class WebserviceTables(session_mod.Logger):
 
             self._log('Building `%s` interactions.' % dataset)
 
-            netw = omnipath.data.get_db(dataset)
+            netw = omnipath.db.get_db(dataset)
 
             exp = export.Export(netw)
             exp.webservice_interactions_df()
@@ -131,7 +131,7 @@ class WebserviceTables(session_mod.Logger):
 
             del exp
             del netw
-            omnipath.data.remove_db(dataset)
+            omnipath.db.remove_db(dataset)
 
         self.df_interactions = pd.concat(dataframes)
         self.df_interactions.to_csv(
@@ -252,22 +252,22 @@ class WebserviceTables(session_mod.Logger):
 
         dataframes = []
 
-        enz_sub_a = omnipath.data.get_db('enz_sub')
+        enz_sub_a = omnipath.db.get_db('enz_sub')
         enz_sub_a.make_df(tax_id = True)
         dataframes.append(enz_sub_a.df)
-        omnipath.data.remove_db('enz_sub', ncbi_tax_id = 9606)
+        omnipath.db.remove_db('enz_sub', ncbi_tax_id = 9606)
 
         if not self.only_human:
 
             for rodent in (10090, 10116):
 
-                enz_sub_a = omnipath.data.get_db(
+                enz_sub_a = omnipath.db.get_db(
                     'enz_sub',
                     ncbi_tax_id = rodent,
                 )
                 enz_sub_a.make_df(tax_id = True)
                 dataframes.append(enz_sub_a.df)
-                omnipath.data.remove_db('enz_sub', ncbi_tax_id = rodent)
+                omnipath.db.remove_db('enz_sub', ncbi_tax_id = rodent)
                 del enz_sub_a
 
         self.df_enz_sub = pd.concat(dataframes)
@@ -286,7 +286,7 @@ class WebserviceTables(session_mod.Logger):
 
         self._log('Building `complexes` data frame.')
 
-        co = omnipath.data.get_db('complex')
+        co = omnipath.db.get_db('complex')
 
         co.make_df()
 
@@ -309,7 +309,7 @@ class WebserviceTables(session_mod.Logger):
 
         self._log('Building `annotations` data frame.')
 
-        an = omnipath.data.get_db('annotations')
+        an = omnipath.db.get_db('annotations')
 
         an.make_narrow_df()
 
@@ -329,7 +329,7 @@ class WebserviceTables(session_mod.Logger):
 
         self._log('Building `intercell` data frame.')
 
-        i = omnipath.data.get_db('intercell')
+        i = omnipath.db.get_db('intercell')
 
         i.make_df()
 
@@ -341,9 +341,9 @@ class WebserviceTables(session_mod.Logger):
         )
 
         del i
-        omnipath.data.remove_db('intercell')
-        omnipath.data.remove_db('complex')
-        omnipath.data.remove_db('annotations')
+        omnipath.db.remove_db('intercell')
+        omnipath.db.remove_db('complex')
+        omnipath.db.remove_db('annotations')
 
         self._log('Data frame `intercell` has been exported to `%s`.' % (
             self.outfile_intercell,

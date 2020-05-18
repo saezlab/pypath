@@ -736,6 +736,7 @@ annot_combined_classes = (
         parent = 'transmembrane',
         resource = 'UniProt_location',
         aspect = 'locational',
+        scope = 'generic',
         args = {
             'features': {
                 'Multi-pass membrane protein',
@@ -5017,6 +5018,11 @@ annot_combined_classes = (
         args = {
             'integrin': bool,
         },
+    ),
+    af.AnnotDef(
+        name = 'adhesion',
+        scope = 'generic',
+        resource = 'MCAM',
     ),
     af.AnnotDef(
         name = 'adhesion',
