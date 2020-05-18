@@ -236,6 +236,15 @@ class CustomAnnotation(session_mod.Logger):
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
 
+        imp.reload(annot_formats)
+        new_annotkey = annot_formats.AnnotDefKey
+        new_annotgroup = annot_formats.AnnotationGroup
+
+        for key, cls in iteritems(self.classes):
+
+            key.__class__ = new_annotkey
+            cls.__class__ = new_annotgroup
+
 
     def load(self):
 
@@ -773,6 +782,69 @@ class CustomAnnotation(session_mod.Logger):
             ),
             **kwargs
         )
+
+
+    def quality_check_table(self, path = None, fmt = 'tsv', **kwargs):
+        """
+        Exports a table in tsv format for quality check and browsing purposes.
+        Each protein represented in one row of this table with basic data
+        from UniProt and the list of annotation categories from this
+        database.
+
+        :param str path:
+            Path for the exported file.
+        :param str fmt:
+            Format: either `tsv` or `latex`.
+        """
+
+        features = kwargs['features'] if 'features' in kwargs else ()
+        proteins = list(self.get_proteins())
+        genesymbols = [mapping.label(uniprot) for uniprot in proteins]
+        proteins = [
+            uniprot
+            for uniprot, genesymbol in
+            sorted(
+                (
+                    (uniprot, genesymbol)
+                    for uniprot, genesymbol in
+                    zip(proteins, genesymbols)
+                ),
+                key = lambda it: it[1],
+            )
+        ][:10]
+
+        tbl = utils_uniprot.collect(proteins, *features)
+
+        tbl['intercell_composite'] = [
+            ', '.join(
+                cls
+                for cls in self.classes_by_entity(uniprot, labels = True)
+                if cls.endswith(self.composite_resource_name)
+            )
+            for uniprot in proteins
+        ]
+        tbl['intercell_all'] = [
+            ', '.join(
+                cls
+                for cls in self.classes_by_entity(uniprot, labels = True)
+                if not cls.endswith(self.composite_resource_name)
+            )
+            for uniprot in proteins
+        ]
+
+        if fmt == 'tsv':
+
+            result = common.tsv_table(tbl = tbl, path = path, **kwargs)
+
+        elif 'tex' in fmt:
+
+            result = common.latex_table(tbl = tbl, path = path, **kwargs)
+
+        else:
+
+            result = tbl
+
+        return result
 
 
     def _key(self, name, parent = None, resource = None):
@@ -2020,7 +2092,7 @@ class CustomAnnotation(session_mod.Logger):
         return set(
             cls.label if labels else key
             for key, cls in iteritems(self.classes)
-            if element & elements
+            if element & cls
         )
 
 
