@@ -266,6 +266,10 @@ def to_list(var):
 
         return []
 
+    elif not isinstance(var, basestring) and hasattr(var, '__iter__'):
+
+        return list(var)
+
     else:
 
         return [var]
