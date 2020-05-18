@@ -983,12 +983,12 @@ class CustomAnnotation(session_mod.Logger):
             [
                 # annotation category, entity id
                 [
-                    cls,
-                    cls.parent,
-                    cls.resource,
-                    cls.scope,
-                    cls.aspect,
-                    cls.source,
+                    annotgroup.name,
+                    annotgroup.parent,
+                    annotgroup.resource,
+                    annotgroup.scope,
+                    annotgroup.aspect,
+                    annotgroup.source,
                     uniprot.__str__(),
                     (
                         mapping.map_name0(uniprot, 'uniprot', 'genesymbol')
@@ -1025,8 +1025,8 @@ class CustomAnnotation(session_mod.Logger):
                         if all_annotations else
                     []
                 )
-                for cls, members in iteritems(self.classes)
-                for uniprot in members
+                for key, annotgroup in iteritems(self.classes)
+                for uniprot in annotgroup
             ],
             columns = header + (
                 ['all_annotations'] if all_annotations else []
