@@ -573,7 +573,7 @@ excludes = {
             'P00747', 'P01112', 'P01133', 'P01303', 'P01889', 'P01903',
             'P01906', 'P01909', 'P01911', 'P01920', 'P02649', 'P04004',
             'P04439', 'P05026', 'P05156', 'P05187', 'P05231', 'P05362',
-            'P05538', 'P07942', 'P08034', 'P08865', 'P09326', 'P09917',
+            'P05538', 'P07942', 'P08034', 'Q9Y6Y9', 'P09326', 'P09917',
             'P09923', 'P10321', 'P10589', 'P11168', 'P12830', 'P13056',
             'P13569', 'P13591', 'P13598', 'P13637', 'P13765', 'P15514',
             'P15813', 'P16422', 'P16581', 'P17302', 'P17693', 'P17813',
@@ -622,7 +622,7 @@ excludes = {
             'Q9ULT6', 'Q9UMD9', 'Q9UMF0', 'Q9UNG2', 'Q9UPU3', 'Q9UQ05',
             'Q9UQD0', 'Q9Y215', 'Q9Y219', 'Q9Y286', 'Q9Y2I2', 'Q9Y2J0',
             'Q9Y3R0', 'Q9Y466', 'Q9Y4C0', 'Q9Y566', 'Q9Y5R2', 'Q9Y5Y6',
-            'Q9Y5Y9', 'Q9Y624', 'Q9Y698', 'Q9Y6Y9',
+            'Q9Y5Y9', 'Q9Y624', 'Q9Y698',
         },
     # the proteins below are not ligands,
     # are excluded from all ligand categories
@@ -1776,13 +1776,13 @@ annot_combined_classes = (
             'Q01064', 'P54750', 'Q9NQS3', 'P29033', 'Q5VU97', 'Q96JQ0',
             'O43914', 'Q96AP7', 'Q16625', 'P13637', 'P09917', 'P57739',
             'P51828', 'Q13936', 'P29016', 'Q13520', 'O60291', 'P30301',
-            'Q8NEC5', 'O95477', 'O14493', 'P08865', 'P09326', 'P11168',
+            'Q8NEC5', 'O95477', 'O14493', 'P11279', 'P09326', 'P11168',
             'P16581', 'P18433', 'P20916', 'P21926', 'P29972', 'P30511',
             'P31431', 'P48509', 'P58401', 'Q02846', 'Q12884', 'Q30201',
             'Q7Z7D3', 'Q9NP59', 'Q9NRQ2', 'Q9ULB1', 'Q9Y4C0', 'Q9Y624',
             'Q9Y6Y9', 'Q12933', 'Q5TAT6', 'P34741', 'P78508', 'Q9HCN3',
             'Q8N158', 'Q5TAH2', 'Q9UHC6', 'Q9ULT6', 'Q5HYA8', 'P40145',
-            'P21589', 'Q15746', 'P11279',
+            'P21589', 'Q15746',
         },
     ),  # locations are correct, includes also adhesion receptors
     af.AnnotDef(
@@ -1827,7 +1827,7 @@ annot_combined_classes = (
             'O95967', 'P00734', 'P01303', 'P01889', 'P01903', 'P01906',
             'P01909', 'P01911', 'P01920', 'P02649', 'P04004', 'P04439',
             'P05026', 'P05156', 'P05187', 'P05231', 'P05362', 'P05538',
-            'P08865', 'P09326', 'P09923', 'P10321', 'P10589', 'P11168',
+            'Q9P2K9', 'P09326', 'P09923', 'P10321', 'P10589', 'P11168',
             'P12830', 'P13056', 'P13598', 'P13765', 'P15813', 'P16581',
             'P17693', 'P18433', 'P19256', 'P19801', 'P20827', 'P20916',
             'P21246', 'P21926', 'P22460', 'P22736', 'P23515', 'P25098',
@@ -1857,7 +1857,7 @@ annot_combined_classes = (
             'Q9UIR0', 'Q9UJZ1', 'Q9UL54', 'Q9ULB1', 'Q9ULD8', 'Q9UMF0',
             'Q9UQ05', 'Q9Y215', 'Q9Y219', 'Q9Y286', 'Q9Y2I2', 'Q9Y3R0',
             'Q9Y466', 'Q9Y4C0', 'Q9Y624', 'Q9Y698', 'Q9Y6Y9', 'Q8WXS5',
-            'Q9BX67', 'Q12933', 'Q96QT4', 'P20645', 'Q9P2K9',
+            'Q9BX67', 'Q12933', 'Q96QT4', 'P20645',
         },
     ),  # includes also secreted proteins, such as ligands, and intracellular
         # proteins, these we try to exclude;
@@ -1877,8 +1877,8 @@ annot_combined_classes = (
             'P09326', 'Q14524', 'Q99712', 'Q9NRQ2', 'Q16625', 'P27701',
             'P13637', 'Q9NZV8', 'P78562', 'P51828', 'P18433', 'Q13936',
             'Q9NSA2', 'P21926', 'Q12933', 'Q12884', 'P31431', 'Q9UQD0',
-            'Q03135', 'Q9ULB1', 'P08865', 'Q8WWX8', 'Q8NEC5', 'P48509',
-            'P57057', 'Q6NYC1',
+            'Q03135', 'Q9ULB1', 'Q6NYC1', 'Q8WWX8', 'Q8NEC5', 'P48509',
+            'P57057',
         },
     ),  # good contents, includes a few secreted and
         # intracellular receptors
@@ -1949,10 +1949,9 @@ annot_combined_classes = (
             'P09917', 'Q9Y4C0', 'P57739', 'P78562', 'Q13936', 'P29016',
             'Q9NSA2', 'P21926', 'O60291', 'Q12933', 'P36021', 'Q12884',
             'P31431', 'P30511', 'Q9UQD0', 'Q03135', 'Q02846', 'P48050',
-            'P58401', 'Q9ULB1', 'Q7Z7D3', 'Q9UKR5', 'P08865', 'Q8NEC5',
+            'P58401', 'Q9ULB1', 'Q7Z7D3', 'Q9UKR5', 'Q08828', 'Q8NEC5',
             'P48509', 'P57057', 'Q5TAT6', 'Q92542', 'Q02094', 'Q9Y6N8',
             'O14939', 'Q9ULT6', 'O75923', 'P21589', 'P13726', 'P13569',
-            'Q08828',
         },
     ),  # many non-receptors excluded
     af.AnnotDef(
@@ -1995,7 +1994,7 @@ annot_combined_classes = (
         scope = 'generic',
         exclude = {
             'O14493', 'O15374', 'O15554', 'O43525', 'O43914', 'O60291',
-            'O95477', 'O95994', 'O95998', 'P00747', 'P08865', 'P09326',
+            'O95477', 'O95994', 'O95998', 'P00747', 'Q9UKV5', 'P09326',
             'P09917', 'P11168', 'P13637', 'P15813', 'P16581', 'P18433',
             'P20916', 'P21926', 'P22001', 'P26038', 'P27701', 'P27824',
             'P29016', 'P29033', 'P29972', 'P30301', 'P30511', 'P31431',
@@ -2010,7 +2009,7 @@ annot_combined_classes = (
             'Q9NP59', 'Q9NQS3', 'Q9NR82', 'Q9NRQ2', 'Q9NSA2', 'Q9NZ08',
             'Q9NZV8', 'Q9P2U7', 'Q9UBH0', 'Q9UKR5', 'Q9ULB1', 'Q9ULH0',
             'Q9UMD9', 'Q9UQD0', 'Q9Y4C0', 'Q9Y5R2', 'Q9Y5Y9', 'Q9Y624',
-            'Q9Y6Y9', 'P31997', 'Q5TAT6', 'Q9ULT6', 'O75923', 'Q9UKV5',
+            'Q9Y6Y9', 'P31997', 'Q5TAT6', 'Q9ULT6', 'O75923',
         },
     ),  # wrong annotations added to exclude
     af.AnnotDef(
@@ -2018,7 +2017,6 @@ annot_combined_classes = (
         resource = 'Baccin2019',
         args = {
             'mainclass': 'receptor',
-            'location': {'membrane', 'both'},
         },
         scope = 'generic',
         # `exclude` defined in `excludes` dict
@@ -2803,7 +2801,7 @@ annot_combined_classes = (
         resource = 'HGNC',
         args = {
             'mainclass': (
-                'Receptor (G protein-coupled) activity modifying protein'
+                'Receptor (G protein-coupled) activity modifying proteins'
             ),
         },
     ),  # receptors for adrenomedullin
@@ -3040,7 +3038,7 @@ annot_combined_classes = (
         parent = 'receptor',
         resource = 'Almen2009',
         args = {
-            'classes': 'Butyrophilin',
+            'classes': 'Butyrophylin',
         },
     ),  # not clear if these are all receptors or some of them are ligands,
         # transporters or regulators of other membrane proteins
@@ -3121,7 +3119,7 @@ annot_combined_classes = (
         parent = 'receptor',
         resource = 'Almen2009',
         args = {
-            'mainclass': 'Receptor',
+            'mainclass': 'Receptors',
             'classes': 'IG',
         },
     ),
@@ -3130,7 +3128,7 @@ annot_combined_classes = (
         parent = 'receptor',
         resource = 'Almen2009',
         args = {
-            'mainclass': 'Receptor',
+            'mainclass': 'Receptors',
             'classes': 'IL17',
         },
     ),
@@ -3468,16 +3466,6 @@ annot_combined_classes = (
         resource = '~secreted_receptor',
         transmitter = True,
         receiver = False,
-    ),
-    af.AnnotDef(
-        name = 'secreted_receptor',
-        resource = 'Baccin2019',
-        args = {
-            'mainclass': 'receptor',
-            'location': {'secreted', 'both', 'ecm'},
-        },
-        scope = 'generic',
-        # `exclude` defined in `excludes` dict
     ),
     af.AnnotDef(
         name = 'ly6_plur',
@@ -3971,7 +3959,7 @@ annot_combined_classes = (
         scope = 'generic',
         resource = 'Matrisome',
         args = {
-            'subclass': 'ECM regulators',
+            'subclass': 'ECM Regulators',
         },
         exclude = {
             'O00469', 'O15460', 'O43548', 'O60911', 'O75063', 'O75635',
@@ -4976,7 +4964,7 @@ annot_combined_classes = (
         parent = 'cell_surface_ligand',
         resource = 'Almen2009',
         args = {
-            'classes': 'Semaphorin',
+            'classes': 'Semaphorins',
         },
     ),  # surface bound ligands for plexins, regulating axonal growth
 
@@ -7008,7 +6996,7 @@ annot_combined_classes = (
         parent = 'tight_junction',
         resource = 'Almen2009',
         args = {
-            'mainclass': 'Claudin',
+            'classes': 'Claudin',
         },
     ),
 

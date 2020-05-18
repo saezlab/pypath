@@ -347,11 +347,19 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
             for subclass in subclasses:
 
+                receptor = 'receptor' in subclass
+
                 args = {'subclass': subclass}
 
                 for location in ('surface', 'secreted'):
 
-                    args['location'] = location
+                    if receptor and location == 'secreted':
+
+                        continue
+
+                    if not receptor:
+
+                        args['location'] = location
 
                     members = baccin.select(**args)
 
@@ -359,14 +367,8 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
                         continue
 
-                    receptor = 'receptor' in subclass
-
                     parent = (
-                        (
-                            'secreted_receptor'
-                                if location == 'secreted' else
-                            'receptor'
-                        )
+                        'receptor'
                         if receptor else
                         (
                             'cell_surface_ligand'
