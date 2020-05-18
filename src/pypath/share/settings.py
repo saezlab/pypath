@@ -198,6 +198,12 @@ _defaults = {
 
     # maximum lenght of the strings in UniProt info printed tables
     'uniprot_info_maxlen': 500,
+    # at downloading UniProt datasheets the default very long timeouts,
+    # what we use in the curl module especially because many of our downloads
+    # are huge, are too long and better to start the next attempt sooner if
+    # the first fails to respond
+    'uniprot_datasheet_connect_timeout': 15,
+    'uniprot_datasheet_timeout': 30,
 
 }
 

@@ -210,7 +210,7 @@ def _remove(key):
 
 def protein_datasheet(identifier):
 
-    url = urls.urls['uniprot_basic']['datasheet'] % identifier
+    url = urls.urls['uniprot_basic']['datasheet'] % identifier.strip()
 
     datasheet =  _protein_datasheet(url)
 
@@ -263,7 +263,16 @@ def _protein_datasheet(url):
 
     for a in range(3):
 
-        c = curl.Curl(url, silent = True, large = False, cache = cache)
+        c = curl.Curl(
+            url,
+            silent = True,
+            large = False,
+            cache = cache,
+            connect_timeout = (
+                settings.get('uniprot_datasheet_connect_timeout')
+            ),
+            timeout = settings.get('uniprot_datasheet_timeout'),
+        )
 
         if not c.result or c.result.startswith('<!DOCTYPE'):
 
