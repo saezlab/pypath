@@ -40,12 +40,6 @@ import pypath.core.network as network_mod
 import pypath.internals.annot_formats as af
 
 
-IntercellRole = collections.namedtuple(
-    'IntercellRole',
-    ['source', 'role'],
-)
-
-
 class IntercellAnnotation(annot.CustomAnnotation):
 
 
@@ -270,9 +264,6 @@ class IntercellAnnotation(annot.CustomAnnotation):
     def setup_intercell_classes(self):
 
         pass
-        #self.set_classes()
-        #self.add_classes_to_df()
-        #self.collect_classes()
 
 
     def pre_build(self):
