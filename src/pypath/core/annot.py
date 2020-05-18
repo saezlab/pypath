@@ -444,10 +444,19 @@ class CustomAnnotation(session_mod.Logger):
                 else:
 
                     members = (
-                        self.annotdb.annots[classdef.resource].get_subset(
+                        self.annotdb.annots[classdef.resource].select(
                             **classdef.args
                         )
                     )
+
+            elif (
+                classdef.resource.startswith('~') or
+                classdef.resource.startswith('#')
+            ):
+
+                members = self._execute_operation(
+                    annot_formats.AnnotOp(annots = classdef.resource)
+                )
 
         elif callable(classdef.resource):
 
@@ -891,6 +900,42 @@ class CustomAnnotation(session_mod.Logger):
             other in self.classes or
             any(other in v for v in self.classes.values)
         )
+
+
+    @staticmethod
+    def sets(*args):
+
+        return annot_formats.AnnotationGroup.sets(*args)
+
+
+    @staticmethod
+    def union(*args):
+
+        return annot_formats.AnnotationGroup.union(*args)
+
+
+    @staticmethod
+    def intersection(*args):
+
+        return annot_formats.AnnotationGroup.intersection(*args)
+
+
+    @staticmethod
+    def difference(*args):
+
+        return annot_formats.AnnotationGroup.difference(*args)
+
+
+    @staticmethod
+    def symmetric_difference(*args):
+
+        return annot_formats.AnnotationGroup.symmetric_difference(*args)
+
+
+    @staticmethod
+    def isdisjoint(*args):
+
+        return annot_formats.AnnotationGroup.isdisjoint(*args)
 
 
     def make_df(self, all_annotations = False, full_name = False):
