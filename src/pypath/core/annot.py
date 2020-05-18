@@ -357,7 +357,7 @@ class CustomAnnotation(session_mod.Logger):
 
     def populate_classes(self, update = False):
         """
-        Creates a classification of proteins according to the custom 
+        Creates a classification of proteins according to the custom
         annotation definitions.
         """
 
@@ -379,7 +379,12 @@ class CustomAnnotation(session_mod.Logger):
 
         with open(pickle_file, 'rb') as fp:
 
-            self.classes = pickle.load(fp)
+            (
+                self.classes,
+                self.parents,
+                self.children,
+                self.composite_resource_name,
+            ) = pickle.load(fp)
 
         self._update_complex_attribute_classes()
 
@@ -395,7 +400,12 @@ class CustomAnnotation(session_mod.Logger):
         with open(pickle_file, 'wb') as fp:
 
             pickle.dump(
-                obj = self.classes,
+                obj = (
+                    self.classes,
+                    self.parents,
+                    self.children,
+                    self.composite_resource_name,
+                ),
                 file = fp,
             )
 
@@ -784,7 +794,13 @@ class CustomAnnotation(session_mod.Logger):
         )
 
 
-    def quality_check_table(self, path = None, fmt = 'tsv', **kwargs):
+    def quality_check_table(
+            self,
+            path = None,
+            fmt = 'tsv',
+            only_swissprot = True,
+            **kwargs
+        ):
         """
         Exports a table in tsv format for quality check and browsing purposes.
         Each protein represented in one row of this table with basic data
@@ -799,6 +815,11 @@ class CustomAnnotation(session_mod.Logger):
 
         features = kwargs['features'] if 'features' in kwargs else ()
         proteins = list(self.get_proteins())
+
+        if only_swissprot:
+
+            proteins = reflists.select(proteins, 'swissprot')
+
         genesymbols = [mapping.label(uniprot) for uniprot in proteins]
         proteins = [
             uniprot
@@ -811,7 +832,7 @@ class CustomAnnotation(session_mod.Logger):
                 ),
                 key = lambda it: it[1],
             )
-        ][:10]
+        ][:50]
 
         tbl = utils_uniprot.collect(proteins, *features)
 
