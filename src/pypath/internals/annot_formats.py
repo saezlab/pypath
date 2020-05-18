@@ -309,12 +309,10 @@ class AnnotationGroup(collections_abc.Set):
     @property
     def label(self):
 
-        return (
-            '%s%s__%s' % (
-                self.name,
-                '__%s' % self.parent if self.parent != self.name else '',
-                self.resource,
-            )
+        return '%s%s@%s' % (
+            self.parent,
+            '.%s' % self.name if self.name != self.parent else '',
+            self.resource
         )
 
 
