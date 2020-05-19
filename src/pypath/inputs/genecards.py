@@ -28,6 +28,7 @@ import warnings
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.share.session as session
+import pypath.share.settings as settings
 
 _logger = session.Logger(name = 'inputs.genecards')
 _log = _logger._log
@@ -51,7 +52,13 @@ def genecards_datasheet(gene):
     
     url = urls.urls['genecards']['url'] % gene
     
-    c = curl.Curl(url, silent = True, large = False)
+    c = curl.Curl(
+        url,
+        silent = True,
+        large = False,
+        connect_timeout = settings.get('genecards_datasheet_connect_timeout'),
+        timeout = settings.get('genecards_datasheet_timeout'),
+    )
     
     if c.status not in {0, 200}:
         

@@ -202,8 +202,10 @@ _defaults = {
     # what we use in the curl module especially because many of our downloads
     # are huge, are too long and better to start the next attempt sooner if
     # the first fails to respond
-    'uniprot_datasheet_connect_timeout': 15,
-    'uniprot_datasheet_timeout': 30,
+    'uniprot_datasheet_connect_timeout': 10,
+    'uniprot_datasheet_timeout': 20,
+    'genecards_datasheet_connect_timeout': 10,
+    'genecards_datasheet_timeout': 20,
 
 }
 
