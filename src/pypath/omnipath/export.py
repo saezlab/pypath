@@ -782,6 +782,7 @@ class Export(session.Logger):
         sources_ligrec_extra = set(netres.ligand_receptor.values())
         sources_pathway_extra = set(netres.pathway_noref.values())
         sources_mirna = set(netres.mirna_target.values())
+        sources_tf_target = set(netres.transcription_onebyone.values())
 
         self.make_df(
             unique_pairs = False,
@@ -848,12 +849,28 @@ class Export(session.Logger):
                     )
                 ),
                 'dorothea': lambda e, d: (
-                    bool(
+                    'DoRothEA' in (
                         e.get_resources(
                             direction = d,
                             interaction_type = 'transcriptional'
                         )
                     )
+                ),
+                'tf_target': lambda e, d: (
+                    bool(
+                        e.get_resources(
+                            direction = d,
+                            interaction_type = 'transcriptional'
+                        ) & sources_tf_target
+                    )
+                ),
+                'lncrna_mrna': lambda e, d: (
+                    'lncrna_post_transcriptional' in
+                    e.get_interaction_types(direction = d)
+                ),
+                'tf_mirna': lambda e, d: (
+                    'mirna_transcriptional' in
+                    e.get_interaction_types(direction = d)
                 ),
                 'dorothea_curated': 'dorothea_curated',
                 'dorothea_chipseq': 'dorothea_chipseq',
