@@ -2083,16 +2083,25 @@ def latex_table(
     ]
     
     _doc_template_default = [
-        r'\documentclass[10pt, a4paper]{article}',
+        r'\documentclass[9pt, a3paper, landscape]{article}',
     ]
     _doc_template_default.extend(
         _xelatex_header if latex_engine == 'xelatex' else _pdflatex_header
     )
     _doc_template_default.extend([
+        r'\usepackage{tabularx}'
         r'\usepackage{longtable}',
         r'\usepackage{booktabs}',
+        r'\usepackage[table]{xcolor}',
+        (
+            r'\usepackage[landscape,top=1cm,bottom=1cm,left=1cm,right=1cm]'
+            r'{geometry}'
+        ),
+        r'\newcolumntype{L}{>{\raggedright\arraybackslash}m{.1\linewidth}}'
         r'',
         r'\begin{document}',
+        r'\fontsize{3pt}{4pt}\selectfont'
+        r'\rowcolors{2}{gray!25}{white}'
         r'',
         r'%s',
         r'',
@@ -2110,8 +2119,17 @@ def latex_table(
     _ = kwargs.pop('wrap', None)
     
     kwargs['tablefmt'] = 'latex_%s' % ('booktabs' if booktabs else 'raw')
+    
+    tbl = table_textwrap(tbl, width = None, maxlen = maxlen)
+    tbl = collections.OrderedDict(
+        (
+            upper0(title.replace('_', ' ')),
+            column,
+        )
+        for title, column in iteritems(tbl)
+    )
 
-    latex_tabular = table_format(
+    latex_table = table_format(
         tbl = tbl,
         maxlen = maxlen,
         lineno = lineno,
@@ -2119,7 +2137,25 @@ def latex_table(
         **kwargs,
     )
     
-    latex_full = doc_template % latex_tabular
+    latex_table = latex_table.replace('tabular', 'longtable')
+    recolformat = re.compile(r'(longtable\}\{)(\w+)(\})')
+    m = recolformat.search(latex_table)
+    colformat = m.groups()[1].rsplit('r', maxsplit = 1)
+    colformat = '%sr%s' % (colformat[0], colformat[1].replace('l', 'L'))
+    latex_table = recolformat.sub(r'\g<1>%s\g<3>' % colformat, latex_table)
+    latex_table_head, latex_table_body = (
+        latex_table.split(r'\midrule', maxsplit = 1)
+    )
+    latex_table_head = os.linesep.join((
+        latex_table_head,
+        r'\midrule',
+        r'\endhead',
+        '',
+    ))
+    latex_table_body = (
+        latex_table_body.replace(r'\\', r'\\*')
+    )
+    latex_full = doc_template % (latex_table_head + latex_table_body)
     
     if not path and latex_compile:
         
@@ -2137,6 +2173,8 @@ def latex_table(
 
     if latex_compile and doc_template:
         
+        # doing twice to make sure it compiles all right
+        os.system('%s %s' % (latex_executable, path))
         os.system('%s %s' % (latex_executable, path))
     
     if not path:
