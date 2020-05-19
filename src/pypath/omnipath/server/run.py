@@ -636,6 +636,8 @@ class TableServer(BaseServer):
         'ligrecextra',
         'pathwayextra',
         'mirnatarget',
+        'tf_mirna',
+        'lncrna_mrna',
     }
     dorothea_methods = {'curated', 'coexp', 'chipseq', 'tfbs'}
     dataset2type = {
@@ -646,7 +648,9 @@ class TableServer(BaseServer):
         'kinaseextra': 'post_translational',
         'ligrecextra': 'post_translational',
         'pathwayextra': 'post_translational',
-        'mirnatarget': 'post_transcriptional'
+        'mirnatarget': 'post_transcriptional',
+        'tf_mirna': 'mirna_transcriptional',
+        'lncrna_mrna': 'lncrna_post_transcriptional',
     }
     interaction_fields = {
         'references', 'sources', 'dorothea_level',
@@ -1423,10 +1427,18 @@ class TableServer(BaseServer):
 
             args['types'].add('post_transcriptional')
 
+        if 'lncrna_mrna' in args['datasets']:
+
+            args['types'].add('lncrna_post_transcriptional')
+
+        if 'tf_mirna' in args['datasets']:
+
+            args['types'].add('mirna_transcriptional')
+
         # if no types provided we collect the types
         # for the datasets requested
         # or by default only the 'omnipath' dataset
-        # which belongs to the 'PPI' type
+        # which belongs to the 'post_translational' type
         if not args['types'] or args['datasets']:
 
             args['types'].update(
