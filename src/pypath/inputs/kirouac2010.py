@@ -24,8 +24,12 @@ import re
 import itertools
 
 import pypath.share.curl as curl
+import pypath.share.session as session
 import pypath.resources.urls as urls
 import pypath.inputs.common as inputs_common
+
+_logger = session.Logger(name = 'inputs.kirouac2010')
+_log = _logger._log
 
 
 def kirouac2010_interactions():
