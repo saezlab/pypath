@@ -463,13 +463,17 @@ class UniprotProtein(object):
         Returns the keywords as a list.
         """
 
-        return [self.remove_xrefs(kw) for kw in self.keywords_with_xrefs]
+        return (
+            self.remove_xrefs(
+                '\t'.join(self.keywords_with_xrefs)
+            ).split('\t')
+        )
 
 
     @classmethod
     def remove_xrefs(cls, value):
 
-        return cls._rexref.sub('', value)
+        return cls._rexref.sub('', value) if value else value
 
 
     @property
