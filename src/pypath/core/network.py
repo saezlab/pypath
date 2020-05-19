@@ -1489,7 +1489,7 @@ class Network(session_mod.Logger):
 
         else:
 
-            value = value.split(dir_sep) if dir_sep else line[dir_col]
+            value = line[dir_col].split(dir_sep) if dir_sep else line[dir_col]
             value = common.to_set(value)
 
             return bool(value & dir_val)
