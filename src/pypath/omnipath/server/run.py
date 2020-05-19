@@ -1575,9 +1575,10 @@ class TableServer(BaseServer):
 
             if arg in req.args:
 
-                req.args[arg] = (
-                    req.args[arg].replace(b'tfregulons', b'dorothea')
-                )
+                req.args[arg] = [
+                    it.replace(b'tfregulons', b'dorothea')
+                    for it in req.args[arg]
+                ]
 
         for postfix in (b'levels', b'methods'):
 
