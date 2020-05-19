@@ -26,11 +26,11 @@ import importlib as imp
 
 from setuptools.command.install import install as _install
 
+version_mod_path = os.path.join('src', 'pypath', '_version.py')
+spec = imp.util.spec_from_file_location('_version', version_mod_path)
+_version = imp.util.module_from_spec(spec)
+spec.loader.exec_module(_version)
 
-_version = imp.load_source(
-    '_version',
-    os.path.join('src', 'pypath', '_version.py')
-)
 __version__ = _version.__version__
 
 
