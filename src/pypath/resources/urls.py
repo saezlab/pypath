@@ -924,12 +924,15 @@ urls = {
     },
     'rami': {
         'label': 'Ligand-receptor interactions from Ramilowski 2015',
-        'url': 'https://media.nature.com/original/nature-assets/ncomms/'\
+        'url_old': 'https://media.nature.com/original/nature-assets/ncomms/'\
             '2015/150722/ncomms8866/extref/ncomms8866-s3.xlsx',
         'fantom_url': 'http://fantom.gsc.riken.jp/5/suppl/'\
             'Ramilowski_et_al_2015/data/PairsLigRec.txt',
         'loc': 'http://fantom.gsc.riken.jp/5/suppl/Ramilowski_et_al_2015/'\
             'data/SubcelLoc.Ages.Proteins.txt',
+        'url': r'https://static-content.springer.com/esm/'
+            r'art%3A10.1038%2Fncomms8866/MediaObjects/'
+            r'41467_2015_BFncomms8866_MOESM611_ESM.xlsx',
     },
     'kirouac2010': {
         'label': 'Intercellular (cytokine-receptor) interactions from'\
