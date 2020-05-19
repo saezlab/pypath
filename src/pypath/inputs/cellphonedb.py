@@ -33,6 +33,7 @@ import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 import pypath.internals.intera as intera
 import pypath.share.common as common
+import pypath.inputs.uniprot as uniprot_input
 
 
 CellPhoneDBAnnotation = collections.namedtuple(

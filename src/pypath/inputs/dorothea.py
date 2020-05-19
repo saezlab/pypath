@@ -20,10 +20,13 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
 import re
 import csv
 import collections
 import itertools
+import functools
 
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
