@@ -364,6 +364,8 @@ class TableServer(BaseServer):
                 'lncrna_post_transcriptional',
             },
             'sources':  None,
+            'resources': None,
+            'databases': None,
             'targets':  None,
             'partners': None,
             'genesymbols': {'1', '0', 'no', 'yes'},
@@ -384,6 +386,7 @@ class TableServer(BaseServer):
                 'type',
                 'ncbi_tax_id',
                 'databases',
+                'resources',
                 'organism',
                 'curation_effort',
             },
@@ -406,7 +409,6 @@ class TableServer(BaseServer):
                 '10090',
                 '10116',
             },
-            'databases': None,
             'source_target': {
                 'AND',
                 'OR',
@@ -442,6 +444,7 @@ class TableServer(BaseServer):
                 '10116',
             },
             'databases': None,
+            'resources': None,
             'residues':  None,
             'modification': None,
             'types': None,
@@ -451,6 +454,7 @@ class TableServer(BaseServer):
                 'ncbi_tax_id',
                 'organism',
                 'databases',
+                'resources',
                 'isoforms',
                 'curation_effort',
             },
@@ -471,6 +475,7 @@ class TableServer(BaseServer):
                 'table',
             },
             'databases': None,
+            'resources': None,
             'proteins': None,
             'fields': None,
             'genesymbols': {'1', '0', 'no', 'yes'},
@@ -492,6 +497,7 @@ class TableServer(BaseServer):
                 'table',
             },
             'databases': None,
+            'resources': None,
             'fields': None,
             'cytoscape': {'1', '0', 'no', 'yes'},
         },
@@ -517,6 +523,8 @@ class TableServer(BaseServer):
                 'composite',
             },
             'categories': None,
+            'databases': None,
+            'resources': None,
             'parent': None,
             'proteins': None,
             'fields': None,
@@ -560,6 +568,8 @@ class TableServer(BaseServer):
                 'generic',
             },
             'categories': None,
+            'resources': None,
+            'databases': None,
             'parent': None,
             'fields': None,
             'transmitter': {'1', '0', 'no', 'yes'},
@@ -583,6 +593,7 @@ class TableServer(BaseServer):
                 'table',
             },
             'databases': None,
+            'resources': None,
             'proteins': None,
             'fields': None,
         },
@@ -1285,7 +1296,7 @@ class TableServer(BaseServer):
 
         else:
 
-            return 'dataset\tdatabases\n%s' % '\n'.join(
+            return 'dataset\tresources\n%s' % '\n'.join(
                 '%s\t%s' % (k, ';'.join(v)) for k, v in iteritems(result)
             )
 
@@ -1357,6 +1368,10 @@ class TableServer(BaseServer):
         # changes the old, "tfregulons" names to new "dorothea"
         self._tfregulons_dorothea(req)
 
+        if b'databases' in req.args:
+
+            req.args[b'resources'] = req.args[b'databases']
+
         args = {}
 
         for arg in (
@@ -1365,7 +1380,7 @@ class TableServer(BaseServer):
             'sources',
             'targets',
             'partners',
-            'databases',
+            'resources',
             'organisms',
             'dorothea_levels',
             'dorothea_methods',
@@ -1572,7 +1587,7 @@ class TableServer(BaseServer):
                     hdr.append('entity_type_source')
                     hdr.append('entity_type_target')
 
-                elif f == 'databases':
+                elif f in {'databases', 'resources'}:
 
                     hdr.append('sources')
 
@@ -1631,11 +1646,15 @@ class TableServer(BaseServer):
                 req.args[b'enzyme_substrate'][0].decode('utf-8').upper()
             )
 
+        if b'databases' in req.args:
+
+            req.args[b'resources'] = req.args[b'databases']
+
         args = {}
 
         for arg in (
             'enzymes', 'substrates', 'partners',
-            'databases', 'organisms', 'types',
+            'resources', 'organisms', 'types',
             'residues'
         ):
 
@@ -1726,7 +1745,7 @@ class TableServer(BaseServer):
 
                     hdr.append('ncbi_tax_id')
 
-                elif f == 'databases':
+                elif f in {'databases', 'resources'}:
 
                     hdr.append('sources')
 
@@ -1754,17 +1773,22 @@ class TableServer(BaseServer):
 
             return bad_req
 
+        if b'databases' in req.args:
+
+            req.args[b'resources'] = req.args[b'databases']
+
+
         # starting from the entire dataset
         tbl = self.data['annotations']
 
         hdr = tbl.columns
 
-        # filtering for databases
-        if b'databases' in req.args:
+        # filtering for resources
+        if b'resources' in req.args:
 
-            databases = self._args_set(req, 'databases')
+            resources = self._args_set(req, 'resources')
 
-            tbl = tbl[tbl.source.isin(databases)]
+            tbl = tbl[tbl.source.isin(resources)]
 
         # filtering for entity types
         if b'entity_types' in req.args:
@@ -1806,17 +1830,21 @@ class TableServer(BaseServer):
 
             return bad_req
 
+        if b'databases' in req.args:
+
+            req.args[b'resources'] = req.args[b'databases']
+
         # starting from the entire dataset
         tbl = self.data['annotations_summary']
 
         hdr = tbl.columns
 
-        # filtering for databases
-        if b'databases' in req.args:
+        # filtering for resources
+        if b'resources' in req.args:
 
-            databases = self._args_set(req, 'databases')
+            resources = self._args_set(req, 'resources')
 
-            tbl = tbl[tbl.source.isin(databases)]
+            tbl = tbl[tbl.source.isin(resources)]
 
         if (
             b'cytoscape' in req.args and
@@ -1856,6 +1884,11 @@ class TableServer(BaseServer):
 
             return bad_req
 
+        if b'databases' in req.args:
+
+            req.args[b'resources'] = req.args[b'databases']
+
+
         # starting from the entire dataset
         tbl = self.data['intercell']
 
@@ -1869,6 +1902,7 @@ class TableServer(BaseServer):
             'transmitter',
             'receiver',
             'parent',
+            'resources',
         ):
 
             if var.encode('ascii') in req.args:
@@ -1940,24 +1974,38 @@ class TableServer(BaseServer):
 
             return bad_req
 
+        if b'databases' in req.args:
+
+            req.args[b'resources'] = req.args[b'databases']
+
         # starting from the entire dataset
         tbl = self.data['intercell_summary']
 
         hdr = tbl.columns
 
-        # filtering for category level
-        if b'levels' in req.args:
+        # filtering for category types
+        for var in (
+            'aspect',
+            'source',
+            'scope',
+            'transmitter',
+            'receiver',
+            'parent',
+            'resources',
+        ):
 
-            levels = self._args_set(req, 'levels')
+            if var.encode('ascii') in req.args:
 
-            tbl = tbl[tbl.class_type.isin(levels)]
+                values = self._args_set(req, var)
+
+                tbl = tbl[getattr(tbl, var).isin(values)]
 
         # filtering for categories
         if b'categories' in req.args:
 
             categories = self._args_set(req, 'categories')
 
-            tbl = tbl[tbl.mainclass.isin(categories)]
+            tbl = tbl[tbl.category.isin(categories)]
 
         tbl = tbl.loc[:,hdr]
 
@@ -1972,6 +2020,10 @@ class TableServer(BaseServer):
 
             return bad_req
 
+        if b'databases' in req.args:
+
+            req.args[b'resources'] = req.args[b'databases']
+
         # starting from the entire dataset
         tbl = self.data['complexes']
 
@@ -1979,14 +2031,14 @@ class TableServer(BaseServer):
         hdr.remove('set_sources')
         hdr.remove('set_proteins')
 
-        # filtering for databases
-        if b'databases' in req.args:
+        # filtering for resources
+        if b'resources' in req.args:
 
-            databases = self._args_set(req, 'databases')
+            resources = self._args_set(req, 'resources')
 
             tbl = tbl[
                 [
-                    bool(sources & databases)
+                    bool(sources & resources)
                     for sources in tbl.set_sources
                 ]
             ]
