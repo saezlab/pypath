@@ -1388,20 +1388,13 @@ class TableServer(BaseServer):
 
             args[arg] = self._args_set(req, arg)
 
-        # if user requested TF type interactions
-        # they likely want the tfregulons dataset
-        if 'transcriptional' in args['types']:
-
-            args['datasets'].add('dorothea')
-            args['datasets'].add('tf_target')
-
-        if 'post_transcriptional' in args['types']:
-
-            args['datasets'].add('mirnatarget')
-
         # here adjust on the defaults otherwise we serve empty
         # response by default
-        args['datasets'] = args['datasets'] or datasets
+        if not args['types']:
+
+            args['datasets'] = args['datasets'] or datasets
+
+        # keep only valid dataset names
         args['datasets'] = args['datasets'] & self.datasets_
 
         args['organisms'] = set(
@@ -1430,41 +1423,13 @@ class TableServer(BaseServer):
         else:
             genesymbols = False
 
-        # if user requested TF Regulons they likely want us
-        # to serve TF-target interactions
-        # but if they requested other types, then we
-        # serve those as well
-        if 'dorothea' in args['datasets'] or 'tf_target' in args['datasets']:
-
-            args['types'].add('transcriptional')
-
-        if 'mirnatarget' in args['datasets']:
-
-            args['types'].add('post_transcriptional')
-
-        if 'lncrna_mrna' in args['datasets']:
-
-            args['types'].add('lncrna_post_transcriptional')
-
-        if 'tf_mirna' in args['datasets']:
-
-            args['types'].add('mirna_transcriptional')
-
-        # if no types provided we collect the types
-        # for the datasets requested
-        # or by default only the 'omnipath' dataset
-        # which belongs to the 'post_translational' type
-        if not args['types'] or args['datasets']:
-
-            args['types'].update(
-                {self.dataset2type[ds] for ds in args['datasets']}
-            )
-
         # starting from the entire dataset
         tbl = self.data['interactions']
 
         # filter by type
-        tbl = tbl[tbl.type.isin(args['types'])]
+        if args['types']:
+
+            tbl = tbl[tbl.type.isin(args['types'])]
 
         # if partners provided those will overwrite
         # sources and targets
@@ -1509,7 +1474,7 @@ class TableServer(BaseServer):
         ]
 
         # filter by DoRothEA confidence levels
-        if 'transcriptional' in args['types'] and args['dorothea_levels']:
+        if args['dorothea_levels']:
 
             tbl = tbl[
                 np.logical_not(tbl.dorothea) |
@@ -1520,11 +1485,11 @@ class TableServer(BaseServer):
             ]
 
         # filter by databases
-        if args['databases']:
+        if args['resources']:
 
             tbl = tbl[
                 [
-                    bool(sources & args['databases'])
+                    bool(sources & args['resources'])
                     for sources in tbl.set_sources
                 ]
             ]
