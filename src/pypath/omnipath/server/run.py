@@ -51,7 +51,6 @@ from pypath.omnipath.server import generate_about_page
 import pypath.omnipath.server._html as _html
 import pypath.resources.urls as urls
 import pypath.share.common as common
-import pypath.legacy.db_categories as db_categories
 import pypath.core.intercell_annot as intercell_annot
 from pypath.share.common import flat_list
 from pypath._version import __version__
@@ -605,6 +604,7 @@ class TableServer(BaseServer):
                 'interactions',
                 'interaction',
                 'network',
+                'enzsub',
                 'enz_sub',
                 'enzyme-substrate',
                 'annotations',
@@ -873,7 +873,7 @@ class TableServer(BaseServer):
         self._preprocess_annotations()
         self._preprocess_complexes()
         self._preprocess_intercell()
-        self._update_databases()
+        self._update_resources()
 
         BaseServer.__init__(self)
         self._log('TableServer startup ready.')
@@ -1075,9 +1075,11 @@ class TableServer(BaseServer):
         ).agg({})
 
 
-    def _update_databases(self):
+    def _update_resources(self):
 
-        self._databases_dict = collections.defaultdict(dict)
+        self._log('Updating resource information.')
+
+        self._resources_dict = collections.defaultdict(dict)
 
         for query_type in self.data_query_types:
 
@@ -1106,29 +1108,52 @@ class TableServer(BaseServer):
 
             for db in values:
 
-                if 'datasets' not in self._databases_dict[db]:
+                if 'queries' not in self._resources_dict[db]:
 
-                    self._databases_dict[db]['datasets'] = {}
+                    self._resources_dict[db]['queries'] = {}
 
-                if query_type not in self._databases_dict[db]['datasets']:
+                if query_type not in self._resources_dict[db]['queries']:
 
-                    self._databases_dict[db]['datasets'][query_type] = (
+                    if query_type == 'interactions':
 
-                        {'classes': {}}
+                        datasets = {
+                            dataset
+                            for dataset in self.datasets_
+                            if (
+                                dataset in tbl.columns and
+                                np.any(
+                                    np.logical_and(
+                                        getattr(tbl, dataset),
+                                        [db in s for s in tbl.set_sources],
+                                    )
+                                )
+                            )
+                        }
 
-                            if query_type == 'intercell' else
+                        self._resources_dict[db]['queries'][query_type] = {
+                            'datasets': sorted(datasets),
+                        }
 
-                        sorted(db_categories.get_categories(db, names = True))
+                    elif query_type == 'intercell':
 
-                            if query_type == 'interactions' else
+                        tbl_db = tbl[tbl.database == db]
+                        tbl_db = tbl_db[tbl.scope == 'generic']
 
-                        []
+                        self._resources_dict[db]['queries'][query_type] = {
+                            'generic_categories': sorted(
+                                set(tbl_db.category)
+                            ),
+                        }
 
-                    )
+                    else:
+
+                        self._resources_dict[db]['queries'][query_type] = {}
 
             self.args_reference[query_type][argname] = values
 
-        self._databases_dict = dict(self._databases_dict)
+        self._resources_dict = dict(self._resources_dict)
+
+        self._log('Finished updating resource information.')
 
 
     def _check_args(self, req):
@@ -2043,7 +2068,7 @@ class TableServer(BaseServer):
         return json.dumps(
             dict(
                 (k, v)
-                for k, v in iteritems(self._databases_dict)
+                for k, v in iteritems(self._resources_dict)
                 if not datasets or datasets & set(v['datasets'].keys())
             )
         )
