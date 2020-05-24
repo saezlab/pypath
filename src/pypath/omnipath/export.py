@@ -783,6 +783,10 @@ class Export(session.Logger):
         sources_pathway_extra = set(netres.pathway_noref.values())
         sources_mirna = set(netres.mirna_target.values())
         sources_tf_target = set(netres.transcription_onebyone.values())
+        sources_dorothea = {
+            'DoRothEA_%s' % cl
+            for cl in ('A', 'B', 'C', 'D', 'E')
+        }
 
         self.make_df(
             unique_pairs = False,
@@ -849,11 +853,12 @@ class Export(session.Logger):
                     )
                 ),
                 'dorothea': lambda e, d: (
-                    'DoRothEA' in (
+                    bool(
                         e.get_resources(
                             direction = d,
                             interaction_type = 'transcriptional'
-                        )
+                        ) &
+                        sources_dorothea
                     )
                 ),
                 'tf_target': lambda e, d: (
@@ -861,7 +866,8 @@ class Export(session.Logger):
                         e.get_resources(
                             direction = d,
                             interaction_type = 'transcriptional'
-                        ) & sources_tf_target
+                        ) &
+                        sources_tf_target
                     )
                 ),
                 'lncrna_mrna': lambda e, d: (
@@ -942,7 +948,7 @@ class Export(session.Logger):
                 ),
                 'pathwayextra': lambda e, d: (
                     bool(e['dirs'].sources[d] & sources_pathway_extra) and
-                    'PPI' in e['type']
+                    'TF' in e['type']
                 ),
                 'mirnatarget': lambda e, d: (
                     bool(e['dirs'].sources[d] & sources_mirna) and
