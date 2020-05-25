@@ -1136,8 +1136,10 @@ class TableServer(BaseServer):
 
                     elif query_type == 'intercell':
 
-                        tbl_db = tbl[tbl.database == db]
-                        tbl_db = tbl_db[tbl.scope == 'generic']
+                        tbl_db = tbl[
+                            tbl.database == db &
+                            tbl.scope == 'generic'
+                        ]
 
                         self._resources_dict[db]['queries'][query_type] = {
                             'generic_categories': sorted(
