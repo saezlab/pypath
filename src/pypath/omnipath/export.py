@@ -854,7 +854,7 @@ class Export(session.Logger):
                 ),
                 'dorothea': lambda e, d: (
                     bool(
-                        e.get_resources(
+                        e.get_resource_names(
                             direction = d,
                             interaction_type = 'transcriptional'
                         ) &
