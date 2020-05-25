@@ -1714,11 +1714,11 @@ class TableServer(BaseServer):
         tbl = tbl[tbl.ncbi_tax_id.isin(args['organisms'])]
 
         # filter by databases
-        if args['databases']:
+        if args['resources']:
 
             tbl = tbl[
                 [
-                    bool(args['databases'] & sources)
+                    bool(args['resources'] & sources)
                     for sources in tbl.set_sources
                 ]
             ]
