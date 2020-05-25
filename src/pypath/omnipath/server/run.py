@@ -163,16 +163,20 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             request.getHeader(b'content-type').startswith(b'application/json')
         ):
 
-            args_raw = json.loads(request.content.getvalue())
-            request.args = dict(
-                (
-                    k.encode('utf-8'),
-                    [v.encode('utf-8')]
-                    if type(v) is not list else
-                    [','.join(v).encode('utf-8')]
+            post_content = request.content.getvalue()
+
+            if post_content:
+
+                args_raw = json.loads(post_content)
+                request.args = dict(
+                    (
+                        k.encode('utf-8'),
+                        [v.encode('utf-8')]
+                        if type(v) is not list else
+                        [','.join(v).encode('utf-8')]
+                    )
+                    for k, v in iteritems(args_raw)
                 )
-                for k, v in iteritems(args_raw)
-            )
 
         return self.render_GET(request)
 
