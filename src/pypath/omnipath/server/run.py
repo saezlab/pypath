@@ -1141,8 +1141,8 @@ class TableServer(BaseServer):
                     elif query_type == 'intercell':
 
                         tbl_db = tbl[
-                            tbl.database == db &
-                            tbl.scope == 'generic'
+                            (tbl.database == db) &
+                            (tbl.scope == 'generic')
                         ]
 
                         self._resources_dict[db]['queries'][query_type] = {
