@@ -620,6 +620,15 @@ class TableServer(BaseServer):
             },
             'subtypes': None,
         },
+        'queries': {
+            'format': {
+                'tab',
+                'text',
+                'tsv',
+                'table',
+                'json',
+            },
+        },
     }
 
 
