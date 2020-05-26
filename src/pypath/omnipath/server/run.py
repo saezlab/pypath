@@ -1267,6 +1267,8 @@ class TableServer(BaseServer):
                 'query `%s` or no such query available.' % query_type
             )
 
+        result = self._dict_set_to_list(result)
+
         if b'format' in req.args and req.args[b'format'][0] == b'json':
 
             return json.dumps(result)
@@ -1282,6 +1284,24 @@ class TableServer(BaseServer):
                 )
                 for k, v in iteritems(result)
             )
+
+
+    @classmethod
+    def _dict_set_to_list(cls, dct):
+
+        return dict(
+            (
+                key,
+                (
+                    sorted(val)
+                        if isinstance(val, common.list_like) else
+                    cls._dict_set_to_list(val)
+                        if isinstance(val, dict) else
+                    val
+                )
+            )
+            for key, val in iteritems(dct)
+        )
 
 
     def databases(self, req):
