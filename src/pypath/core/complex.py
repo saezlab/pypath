@@ -480,8 +480,8 @@ class GuideToPharmacology(AbstractComplexResource):
 
 
 class Icellnet(AbstractComplexResource):
-    
-    
+
+
     def __init__(self, input_args = None, **kwargs):
 
         input_args = input_args or {}
