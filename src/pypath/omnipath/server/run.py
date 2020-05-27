@@ -1174,7 +1174,12 @@ class TableServer(BaseServer):
     def _check_args(self, req):
 
         result = []
-        ref = self.args_reference[req.postpath[0]]
+        argname = req.postpath[0]
+        ref = (
+            self.args_reference['resources']
+                if argname == 'databases' else
+            self.args_reference[argname]
+        )
 
         for arg, val in iteritems(req.args):
 
