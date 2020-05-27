@@ -26,6 +26,7 @@ import re
 import collections
 import itertools
 import bs4
+import csv
 
 import pypath.inputs.common as inputs_common
 import pypath.share.progress as progress
@@ -93,7 +94,7 @@ def signor_interactions(organism = 9606, raw_records = False):
 
     for cplex in complexes.values():
 
-        for cplex_id in cplex.ids['Signor']:
+        for cplex_id in cplex.ids['SIGNOR']:
 
             complexes_by_id[cplex_id].add(cplex)
 
@@ -123,28 +124,18 @@ def signor_interactions(organism = 9606, raw_records = False):
         return_headers = True,
     )
 
-    _ = next(c.result)
-    sep = '@#@#@'
-    lines = ''.join(l for l in c.result)
-    lines = inputs_common.csv_sep_change(lines, '\t', sep).split('\n')
-
+    reader = csv.DictReader(c.result, delimiter = '\t')
     result = []
 
-    for line in lines:
-
-        line = line.split(sep)
-
-        if len(line) <= 1:
-
-            continue
+    for line in reader:
 
         if raw_records:
 
             result.append(line)
             continue
 
-        sources, source_isoform = process_name(line[2])
-        targets, target_isoform = process_name(line[6])
+        sources, source_isoform = process_name(line['IDA'])
+        targets, target_isoform = process_name(line['IDB'])
 
         for source, target in itertools.product(sources, targets):
 
@@ -153,16 +144,16 @@ def signor_interactions(organism = 9606, raw_records = False):
                 target = target,
                 source_isoform = source_isoform,
                 target_isoform = target_isoform,
-                source_type = line[1],
-                target_type = line[5],
-                effect = line[8],
-                mechanism = line[9],
-                ncbi_tax_id = line[12],
-                pubmeds = line[21],
-                direct = line[22] == 'YES',
-                ptm_type = line[9],
-                ptm_residue = line[10],
-                ptm_motif = line[11],
+                source_type = line['TYPEA'],
+                target_type = line['TYPEB'],
+                effect = line['EFFECT'],
+                mechanism = line['MECHANISM'],
+                ncbi_tax_id = line['TAX_ID'],
+                pubmeds = line['PMID'],
+                direct = line['DIRECT'] == 'YES',
+                ptm_type = line['MECHANISM'],
+                ptm_residue = line['RESIDUE'],
+                ptm_motif = line['SEQUENCE'],
             )
 
             result.append(this_record)
