@@ -548,6 +548,21 @@ class TableServer(BaseServer):
             'sec': {'1', '0', 'no', 'yes'},
             'pmp': {'1', '0', 'no', 'yes'},
             'pmtm': {'1', '0', 'no', 'yes'},
+            'causality': {
+                'transmitter',
+                'trans',
+                'receiver',
+                'rec',
+                'both'
+            },
+            'topology': {
+                'secreted',
+                'sec',
+                'plasma_membrane_peripheral',
+                'pmp',
+                'plasma_membrane_transmembrane',
+                'pmtm',
+            },
         },
         'intercell_summary': {
             'header': None,
@@ -1964,6 +1979,46 @@ class TableServer(BaseServer):
             if this_arg is not None:
 
                 tbl = tbl[getattr(tbl, _long) == this_arg]
+
+        if b'causality' in req.args:
+
+            causality = self._args_set(req, 'causality')
+
+            trans = causality & {'transmitter', 'trans', 'both'}
+            rec = causality & {'receiver', 'rec', 'both'}
+            tbl = (
+                tbl[tbl.transmitter | tbl.receiver]
+                    if trans and rec else
+                tbl[tbl.transmitter]
+                    if trans else
+                tbl[tbl.receiver]
+                    if rec else
+                tbl
+            )
+
+        if b'topology' in req.args:
+
+            topology = self._args_set(req, 'topology')
+            query = ' or '.join(
+                colname
+                for enabled, colname in
+                (
+                    (topology & {'secreted', 'sec'}, 'secreted'),
+                    (
+                        topology & {'plasma_membrane_peripheral', 'pmp'},
+                        'plasma_membrane_peripheral'
+                    ),
+                    (
+                        topology & {'plasma_membrane_transmembrane', 'pmtm'},
+                        'plasma_membrane_transmembrane'
+                    )
+                )
+                if enabled
+            )
+
+            if query:
+
+                tbl = tbl.query(query)
 
         # filtering for categories
         if b'categories' in req.args:
