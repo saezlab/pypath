@@ -1246,6 +1246,10 @@ urls = {
         'families': 'https://raw.githubusercontent.com/protwis/gpcrdb_data/'
             'master/protein_data/proteins_and_families.txt',
     },
+    'immunoglobe': {
+        'label': 'A literature curated resource about immune interactions',
+        'url': 'http://network.immunoglobe.org/networks.json',
+    },
 }
 
 
