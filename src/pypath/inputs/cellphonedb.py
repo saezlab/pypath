@@ -145,9 +145,10 @@ def _cellphonedb_annotations(url, name_method):
     return annot
 
 
-def cellphonedb_protein_annotations(add_complex_annotations = True):
+def cellphonedb_protein_annotations(add_complex_annotations = False):
     """
     :arg bool add_complex_annotations:
+        Deprecated because results wrong annotations.
         Copy the annotations of complexes to each of their member proteins.
     """
 
@@ -162,31 +163,6 @@ def cellphonedb_protein_annotations(add_complex_annotations = True):
         url = urls.urls['cellphonedb_git']['proteins'],
         name_method = name_method,
     )
-
-    if add_complex_annotations:
-
-        complex_annotations = cellphonedb_complex_annotations()
-
-        for cplex, a_cplex in iteritems(complex_annotations):
-
-            for uniprot in cplex.components.keys():
-
-                if uniprot in protein_annotations:
-
-                    protein_annotations[uniprot] = CellPhoneDBAnnotation(
-                        *(
-                            p or c if isinstance(p, bool) else p
-                            for p, c in
-                            zip(
-                                protein_annotations[uniprot],
-                                a_cplex
-                            )
-                        )
-                    )
-
-                else:
-
-                    protein_annotations[uniprot].add(a_cplex)
 
     return protein_annotations
 
