@@ -165,7 +165,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
             post_content = request.content.getvalue()
 
-            if post_content:
+            if post_content and post_content.strip():
 
                 args_raw = json.loads(post_content)
                 request.args = dict(
