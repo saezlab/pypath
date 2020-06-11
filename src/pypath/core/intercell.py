@@ -356,7 +356,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
                     parent = (
                         'receptor'
-                            if category == 'receptor' else
+                            if mainclass == 'receptor' else
                         'ligand'
                     )
 
@@ -365,7 +365,10 @@ class IntercellAnnotation(annot.CustomAnnotation):
                             name = category,
                             parent = parent,
                             resource = 'CellPhoneDB',
-                            args = {attr: category},
+                            args = {
+                                mainclass: bool,
+                                attr: category,
+                            },
                         )
                     )
 
