@@ -799,6 +799,7 @@ class CustomAnnotation(session_mod.Logger):
             path = None,
             fmt = 'tsv',
             only_swissprot = True,
+            top = None,
             **kwargs
         ):
         """
@@ -832,7 +833,7 @@ class CustomAnnotation(session_mod.Logger):
                 ),
                 key = lambda it: it[1],
             )
-        ][:50]
+        ][:top]
 
         tbl = utils_uniprot.collect(proteins, *features)
 
@@ -858,6 +859,10 @@ class CustomAnnotation(session_mod.Logger):
             result = common.tsv_table(tbl = tbl, path = path, **kwargs)
 
         elif 'tex' in fmt:
+
+            if 'colformat' not in kwargs:
+
+                kwargs['colformat'] = r'rllrrK{25mm}LK{20mm}K{20mm}K{25mm}L'
 
             result = common.latex_table(tbl = tbl, path = path, **kwargs)
 

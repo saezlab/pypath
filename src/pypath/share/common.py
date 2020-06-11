@@ -528,17 +528,17 @@ def upper0(string):
     """
 
     if not string:
-        
+
         return string
-        
+
     else:
-        
+
         words = string.split(' ', maxsplit = 1)
-        
+
         if words[0] and words[0].lower() == words[0]:
-            
+
             words[0] = words[0][0].upper() + words[0][1:]
-        
+
         return ' '.join(words)
 
 
@@ -1847,21 +1847,21 @@ def at_least_in(n = 2):
     ``intersection``. The returned method accepts an arbitrary number of
     sets as non-keyword arguments.
     """
-    
+
     def _at_least_in(*args):
-        
+
         if len(args) < n:
-            
+
             return set()
-        
+
         counter = collections.Counter(itertools.chain(*args))
-        
+
         return {
             key
             for key, count in iteritems(counter)
             if count >= n
         }
-    
+
     return _at_least_in
 
 
@@ -1884,30 +1884,30 @@ def sets_to_sorted_lists(obj):
 
 
 def wrap_truncate(text, width = None, maxlen = None):
-    
+
     if isinstance(text, list_like):
-        
+
         text = ', '.join(text)
-    
+
     if not isinstance(text, basestring):
-        
+
         text = str(text)
-    
+
     if maxlen:
-        
+
         text = textwrap.shorten(text, width = maxlen)
-    
+
     if width:
-        
+
         text = textwrap.wrap(text, width = width)
-    
+
     return os.linesep.join(text) if isinstance(text, list_like) else text
 
 
 def table_add_row_numbers(tbl, **kwargs):
 
     nrows = len(next(tbl.values().__iter__())) if len(tbl) else 0
-    
+
     return collections.OrderedDict(
         itertools.chain(
             (('No.', list(xrange(1, nrows + 1))),),
@@ -1922,9 +1922,9 @@ def table_textwrap(tbl, width = None, maxlen = None):
     The table is an ``OrderedDict`` with column titles as keys and column
     contents as lists.
     """
-    
+
     def get_width(i):
-        
+
         return (
             width[i]
                 if (
@@ -1939,8 +1939,8 @@ def table_textwrap(tbl, width = None, maxlen = None):
                 ) else
             width
         )
-    
-    
+
+
     return collections.OrderedDict(
         (
             wrap_truncate(title, width = get_width(i), maxlen = maxlen),
@@ -1967,19 +1967,19 @@ def table_format(
         lineno = True,
         **kwargs
     ):
-    
+
     if wrap:
-        
+
         tbl = table_textwrap(tbl, width = width, maxlen = maxlen)
-        
+
     if lineno:
-        
+
         tbl = table_add_row_numbers(tbl)
-    
+
     tabulate_param = copy.deepcopy(tabulate_defaults)
     tabulate_param.update(kwargs)
-    
-    
+
+
     return tabulate.tabulate(
         zip(*tbl.values()),
         tbl.keys(),
@@ -1997,7 +1997,7 @@ def print_table(
         lineno = True,
         **kwargs
     ):
-    
+
     sys.stdout.write(
         table_format(
             tbl,
@@ -2025,7 +2025,7 @@ def tsv_table(
     If ``path`` provided writes out the tsv into a file, otherwise returns
     the string.
     """
-    
+
     tbl = table_textwrap(tbl, width = None, maxlen = maxlen)
     tsv = []
     tsv.append('\t'.join(tbl.keys()))
@@ -2034,20 +2034,21 @@ def tsv_table(
         for row in zip(*tbl.values())
     ])
     tsv = os.linesep.join(tsv)
-    
+
     if path:
-        
+
         with open(path, 'w') as fp:
-            
+
             fp.write(tsv)
-        
+
     else:
-        
+
         return tsv
 
 
 def latex_table(
         tbl,
+        colformat = None,
         maxlen = None,
         lineno = True,
         path = None,
@@ -2065,9 +2066,9 @@ def latex_table(
     if ``latex_compile`` is True compiles the document, otherwise returns
     it as a string.
     """
-    
+
     maxlen = maxlen or 999999
-    
+
     _xelatex_header = [
         r'\usepackage[no-math]{fontspec}',
         r'\usepackage{xunicode}',
@@ -2075,39 +2076,41 @@ def latex_table(
         r'\setdefaultlanguage{english}',
         r'\usepackage{xltxtra}',
     ]
-    
+
     _pdflatex_header = [
         r'\usepackage[utf8]{inputenc}'
         r'\usepackage[T1]{fontenc}'
         r'\usepackage[english]{babel}'
     ]
-    
+
     _doc_template_default = [
-        r'\documentclass[9pt, a3paper, landscape]{article}',
+        r'\documentclass[9pt, a4paper, landscape]{article}',
     ]
     _doc_template_default.extend(
         _xelatex_header if latex_engine == 'xelatex' else _pdflatex_header
     )
     _doc_template_default.extend([
+        r'\usepackage{array}',
         r'\usepackage{tabularx}'
-        r'\usepackage{longtable}',
+        r'\usepackage{xltabular}',
         r'\usepackage{booktabs}',
         r'\usepackage[table]{xcolor}',
         (
-            r'\usepackage[landscape,top=1cm,bottom=1cm,left=1cm,right=1cm]'
+            r'\usepackage[landscape,top=1cm,bottom=2cm,left=1cm,right=1cm]'
             r'{geometry}'
         ),
-        r'\newcolumntype{L}{>{\raggedright\arraybackslash}m{.1\linewidth}}'
-        r'',
+        r'\newcolumntype{L}{>{\raggedright\arraybackslash}X}',
+        r'\newcolumntype{K}[1]{>{\raggedright\arraybackslash}p{#1}}'
+        r'\renewcommand{\arraystretch}{1.5}',
         r'\begin{document}',
-        r'\fontsize{3pt}{4pt}\selectfont'
+        r'\fontsize{4pt}{5pt}\selectfont'
         r'\rowcolors{2}{gray!25}{white}'
         r'',
         r'%s',
         r'',
         r'\end{document}',
     ])
-    
+
     doc_template = (
         doc_template
             if isinstance(doc_template, basestring) else
@@ -2115,11 +2118,11 @@ def latex_table(
             if doc_template or latex_compile else
         '%s'
     )
-    
+
     _ = kwargs.pop('wrap', None)
-    
+
     kwargs['tablefmt'] = 'latex_%s' % ('booktabs' if booktabs else 'raw')
-    
+
     tbl = table_textwrap(tbl, width = None, maxlen = maxlen)
     tbl = collections.OrderedDict(
         (
@@ -2136,12 +2139,18 @@ def latex_table(
         wrap = False,
         **kwargs,
     )
-    
-    latex_table = latex_table.replace('tabular', 'longtable')
-    recolformat = re.compile(r'(longtable\}\{)(\w+)(\})')
-    m = recolformat.search(latex_table)
-    colformat = m.groups()[1].rsplit('r', maxsplit = 1)
-    colformat = '%sr%s' % (colformat[0], colformat[1].replace('l', 'L'))
+
+    latex_table = latex_table.replace('tabular', 'xltabular')
+    latex_table = latex_table.replace(
+        r'\begin{xltabular',
+        r'\begin{xltabular}{\linewidth'
+    )
+    recolformat = re.compile(r'(xltabular\}\{\\linewidth\}\{)(\w+)(\})')
+    if not colformat:
+        m = recolformat.search(latex_table)
+        colformat = m.groups()[1].rsplit('r', maxsplit = 1)
+        colformat = '%sr%s' % (colformat[0], colformat[1].replace('l', 'L'))
+
     latex_table = recolformat.sub(r'\g<1>%s\g<3>' % colformat, latex_table)
     latex_table_head, latex_table_body = (
         latex_table.split(r'\midrule', maxsplit = 1)
@@ -2152,31 +2161,31 @@ def latex_table(
         r'\endhead',
         '',
     ))
-    latex_table_body = (
-        latex_table_body.replace(r'\\', r'\\*')
-    )
     latex_full = doc_template % (latex_table_head + latex_table_body)
-    
+    latex_full = latex_full.replace(r'\ensuremath{<}', r'\textless ')
+    latex_full = latex_full.replace(r'\ensuremath{>}', r'\textgreater ')
+    latex_full = latex_full.replace(r'\_', '-')
+
     if not path and latex_compile:
-        
+
         path = 'table-%s' % gen_session_id()
-    
+
     if path and os.path.splitext(path)[1] != '.tex':
-        
+
         path = '%s.tex' % path
-    
+
     if path:
-        
+
         with open(path, 'w') as fp:
-            
+
             fp.write(latex_full)
 
     if latex_compile and doc_template:
-        
+
         # doing twice to make sure it compiles all right
         os.system('%s %s' % (latex_executable, path))
         os.system('%s %s' % (latex_executable, path))
-    
+
     if not path:
-        
+
         return latex_full
