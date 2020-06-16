@@ -32,11 +32,7 @@ import collections
 import itertools
 import traceback
 
-try:
-    import cPickle as pickle
-except:
-    import pickle
-
+import dill as pickle
 import numpy as np
 import pandas as pd
 
@@ -384,6 +380,8 @@ class CustomAnnotation(session_mod.Logger):
                 self.parents,
                 self.children,
                 self.composite_resource_name,
+                self._class_definitions,
+                self._excludes,
             ) = pickle.load(fp)
 
         self._update_complex_attribute_classes()
@@ -405,8 +403,11 @@ class CustomAnnotation(session_mod.Logger):
                     self.parents,
                     self.children,
                     self.composite_resource_name,
+                    self._class_definitions,
+                    self._excludes,
                 ),
                 file = fp,
+                protocol = pickle.HIGHEST_PROTOCOL,
             )
 
         self._log('Saved to pickle `%s`.' % pickle_file)
@@ -5615,6 +5616,7 @@ class AnnotationTable(session_mod.Logger):
                     annots,
                 ),
                 file = fp,
+                protocol = pickle.HIGHEST_PROTOCOL,
             )
 
         self._log('Saved to pickle `%s`.' % pickle_file)

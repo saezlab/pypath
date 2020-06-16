@@ -89,6 +89,7 @@ setup(
     install_requires = [
         'beautifulsoup4',
         'configparser',
+        'dill',
         'pyopenssl',
         'numpy',
         'scipy',
