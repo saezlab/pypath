@@ -34,6 +34,7 @@ import pandas as pd
 
 import pypath.share.settings as settings
 import pypath.share.common as common
+import pypath.share.session as session
 import pypath.core.annot as annot
 import pypath.core.intercell_annot as intercell_annot
 import pypath.core.network as network_mod
@@ -85,6 +86,10 @@ class IntercellAnnotation(annot.CustomAnnotation):
             Execute the build upon instantiation or set up an empty object
             the build can be executed on later.
         """
+
+        if not hasattr(self, '_log_name'):
+
+            session.Logger.__init__(self, name = 'intercell')
 
         class_definitions = (
             class_definitions or
