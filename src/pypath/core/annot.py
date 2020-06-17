@@ -1719,11 +1719,7 @@ class CustomAnnotation(session_mod.Logger):
         ``kwargs`` passed to ``filter_interclass_network``.
         """
 
-        if 'network' not in kwargs:
-
-            kwargs['network'] = self.get_interclass_network_df()
-
-        network = self.filter_interclass_network(**kwargs)
+        network = self.network_df(**kwargs)
 
         self._log('Counting connections between classes.')
 
@@ -1761,6 +1757,16 @@ class CustomAnnotation(session_mod.Logger):
 
         param = {
             'only_directed': True,
+        }
+        kwargs.update(param)
+
+        return self.class_to_class_connections(**kwargs)
+
+
+    def class_to_class_connections_signed(self, **kwargs):
+
+        param = {
+            'only_signed': True,
         }
         kwargs.update(param)
 
@@ -1911,7 +1917,7 @@ class CustomAnnotation(session_mod.Logger):
 
             kwargs['network'] = self.get_interclass_network_df()
 
-        network = self.filter_interclass_network(**kwargs)
+        network = self.network_df(**kwargs)
 
         id_cols = ('id_a', 'id_b')
         groupby, unique = (
@@ -2037,7 +2043,7 @@ class CustomAnnotation(session_mod.Logger):
 
         query = ' and '.join(query)
 
-        return annot_df.query(query)
+        return annot_df.query(query) if query else annot_df
 
 
     @staticmethod

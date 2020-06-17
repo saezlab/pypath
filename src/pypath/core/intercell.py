@@ -712,7 +712,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
         query = ' and '.join(query)
 
-        return annot_df.query(query)
+        return annot_df.query(query) if query else annot_df
 
 
     @staticmethod
