@@ -659,6 +659,60 @@ class IntercellAnnotation(annot.CustomAnnotation):
         )
 
 
+    @classmethod
+    def filter_df(
+            cls,
+            annot_df,
+            category = None,
+            parent = None,
+            database = None,
+            scope = None,
+            aspect = None,
+            source = None,
+            entities = None,
+            entity_type = None,
+            causality = None,
+            topology = None,
+        ):
+
+        args = locals()
+
+        _topologies = {
+            'pmtm': 'plasma_membrane_transmembrane',
+            'pmp': 'plasma_membrane_peripheral',
+            'sec': 'secreted',
+        }
+
+        entities = args.pop('entities')
+        causality = args.pop('causality') or ()
+        topology = args.pop('topology') or ()
+
+        topology = [
+            _topologies[top] if top in _topologies else top
+            for top in common.to_set(topology)
+        ]
+
+        query = cls._process_query_args(
+            df = annot_df,
+            entities = entities,
+            args = args,
+        )
+
+        if causality:
+
+            q = ' or '.join(common.to_set(causality))
+            query.append('(%s)' % q)
+
+        if topology:
+
+            q = ' or '.join(topology)
+            query.append('(%s)' % q)
+
+        query = ' and '.join(query)
+
+        return annot_df.query(query)
+
+
 def init_db(**kwargs):
 
     globals()['db'] = IntercellAnnotation(**kwargs)

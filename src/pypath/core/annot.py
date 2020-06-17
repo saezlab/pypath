@@ -1138,6 +1138,19 @@ class CustomAnnotation(session_mod.Logger):
         )
 
 
+    def get_df(self):
+        """
+        Returns the data frame of custom annotations. If it does not exist yet
+        builds the data frame.
+        """
+
+        if not hasattr(self, 'df'):
+
+            self.make_df()
+
+        return self.df
+
+
     def counts(
             self,
             name = None,
@@ -1254,10 +1267,13 @@ class CustomAnnotation(session_mod.Logger):
     def network_df(
             self,
             network = None,
+            entities = None,
+            entities_source = None,
+            entities_target = None,
             resources = None,
-            classes = None,
-            source_classes = None,
-            target_classes = None,
+            annot_args = None,
+            annot_args_source = None,
+            annot_args_target = None,
             only_directed = False,
             only_undirected = False,
             only_effect = None,
@@ -1274,8 +1290,25 @@ class CustomAnnotation(session_mod.Logger):
             data.
         resources : set,None
             Use only these network resources.
-        classes : set,None
-            Use only these annotation classes.
+        entities : set,None
+            Limit the network only to these molecular entities.
+        entities_source : set,None
+            Limit the source side of network connections only to these
+            molecular entities.
+        entities_target : set,None
+            Limit the target side of network connections only to these
+            molecular entities.
+        annot_args : dict,None
+            Parameters for filtering annotation classes; note, the defaults
+            might include some filtering, provide an empty dict if you want
+            no filtering at all; however this might result in huge data
+            frame and consequently memory issues.
+        annot_args_source : dict,None
+            Same as ``annot_args`` but only for the source side of the
+            network connections.
+        annot_args_target : dict,None
+            Same as ``annot_args`` but only for the target side of the
+            network connections.
         only_directed : bool
             Use only the directed interactions.
         only_undirected : bool
@@ -1317,7 +1350,14 @@ class CustomAnnotation(session_mod.Logger):
 
             return
 
-        annot_df = self.df
+        entities_source = entities_source or entities or set()
+        entities_target = entities_target or entities or set()
+        annot_args_source = annot_args_source or annot_args or {}
+        annit_args_source['entities'] = entities_source
+        annot_args_target = annot_args_target or annot_args or {}
+        annot_args_target['entities'] = entities_target
+        annot_df_source = self.filter_df(**annot_args_source)
+        annot_df_target = self.filter_df(**annot_args_target)
 
         if only_class_levels:
 
@@ -2073,6 +2113,10 @@ class CustomAnnotation(session_mod.Logger):
     @staticmethod
     def _network_df(network):
 
+        if not hasattr(network, 'df') and hasattr(network, 'make_df'):
+
+            network.make_df()
+
         return (
             network.df
                 if hasattr(network, 'df') else
@@ -2080,20 +2124,62 @@ class CustomAnnotation(session_mod.Logger):
         )
 
 
-    @staticmethod
-    def _filter_by_classes(annot_df, classes = None, attr = 'category'):
+    def filtered(
+            self,
+            annot_df = None,
+            entities = None,
+            **kwargs
+        ):
 
-        if not classes:
+        annot_df = annot_df or self.get_df()
 
-            return annot_df
-
-        filter_op = (
-            getattr(annot_df, attr).eq
-                if isinstance(classes, common.basestring) else
-            getattr(annot_df, attr).isin
+        return self.filter_df(
+            annot_df = annot_df,
+            entities = entities,
+            **kwargs
         )
 
-        return annot_df[filter_op(classes)]
+
+    @classmethod
+    def filter_df(
+            cls,
+            annot_df,
+            entities = None,
+            **kwargs
+        ):
+
+        query = cls._process_query_args(
+            df = annot_df,
+            entities = entities,
+            args = kwargs,
+        )
+
+        query = ' and '.join(query)
+
+        return annot_df.query(query)
+
+
+    @staticmethod
+    def _process_query_args(df, args, entities = None):
+
+        query = []
+
+        for col, val in iteritems(args):
+
+            if val is not None and col in df.columns:
+
+                op = '==' if isinstance(val, common.simple_types) else 'in'
+
+                q = '%s %s %s' % (col, op, '@args["%s"]' % col)
+
+                query.append(q)
+
+        if entities:
+
+            q = '(uniprot in @entities or genesymbol in @entities)'
+            query.append(q)
+
+        return query
 
 
     def export(self, fname, **kwargs):
