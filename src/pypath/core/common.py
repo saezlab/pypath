@@ -145,6 +145,7 @@ def filter_network_df(
         for pf in node_postfix:
 
             var_pf = '%s%s' % (var, pf)
+            var_pf = var_pf.replace('entity_type', 'type')
 
             if var_pf in df.columns:
 

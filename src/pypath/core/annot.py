@@ -227,6 +227,7 @@ class CustomAnnotation(session_mod.Logger):
         Reloads the object from the module level.
         """
 
+        imp.reload(core_common)
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
@@ -1269,6 +1270,7 @@ class CustomAnnotation(session_mod.Logger):
             self,
             annot_df = None,
             network = None,
+            combined_df = None,
             network_args = None,
             annot_args = None,
             annot_args_source = None,
@@ -1292,6 +1294,9 @@ class CustomAnnotation(session_mod.Logger):
         network : pypath.network.Network,pandas.DataFrame
             A ``pypath.network.Network`` object or a data frame with network
             data.
+        combined_df : pandas.DataFrame
+            Optional, a network data frame already combined with annotations
+            for filtering only.
         resources : set,None
             Use only these network resources.
         entities : set,None
@@ -1330,28 +1335,26 @@ class CustomAnnotation(session_mod.Logger):
 
         if hasattr(self, 'interclass_network'):
 
-            return self.filter_interclass_network(
-                network = self.interclass_network,
-                resources = resources,
-                classes = classes,
-                source_classes = source_classes,
-                target_classes = target_classes,
-                only_directed = only_directed,
-                only_undirected = only_undirected,
-                only_effect = only_effect,
-                only_proteins = only_proteins,
-                only_class_levels = only_class_levels,
+            combined_df = self.interclass_network
+
+        if combined_df is not None:
+
+            self._log(
+                'Using previously created network-annotation data frame.'
+            )
+            network_df = None
+
+        else:
+
+            self._log('Combining custom annotation with network data frame.')
+
+            network_df = (
+                self._network_df(network)
+                    if network is not None else
+                self.network
             )
 
-        self._log('Combining custom annotation with network data frame.')
-
-        network_df = (
-            self._network_df(network)
-                if network is not None else
-            self.network
-        )
-
-        if network_df is None:
+        if network_df is None and combined_df is None:
 
             self._log('No network provided, no default network set.')
 
@@ -1376,10 +1379,10 @@ class CustomAnnotation(session_mod.Logger):
             entities_source = entities_source or entities or set()
             entities_target = entities_target or entities or set()
 
-        _annot_args_source = annot_args or {}
+        _annot_args_source = (annot_args or {}).copy()
         _annot_args_source.update(annot_args_source)
         _annot_args_source['entities'] = entities_source
-        _annot_args_target = annot_args or {}
+        _annot_args_target = (annot_args or {}).copy()
         _annot_args_target.update(annot_args_target)
         _annot_args_target['entities'] = entities_target
 
@@ -1388,48 +1391,68 @@ class CustomAnnotation(session_mod.Logger):
             _annot_args_source['entity_type'] = 'protein'
             _annot_args_target['entity_type'] = 'protein'
 
-        annot_df_source = self.filtered(
-            annot_df = annot_df,
-            **_annot_args_source
-        )
-        annot_df_target = self.filtered(
-            annot_df = annot_df,
-            **_annot_args_target
-        )
+        if combined_df is None:
 
-        network_df = core_common.filter_network_df(
-            df = network_df,
-            **_network_args
-        )
+            network_df = core_common.filter_network_df(
+                df = network_df,
+                **_network_args
+            )
+            annot_df_source = self.filtered(
+                annot_df = annot_df,
+                **_annot_args_source
+            )
+            annot_df_target = self.filtered(
+                annot_df = annot_df,
+                **_annot_args_target
+            )
 
-        annot_network_df = pd.merge(
-            network_df,
-            annot_df_source,
-            suffixes = ['', '_a'],
-            how = 'inner',
-            left_on = 'id_a',
-            right_on = 'uniprot',
-        )
+            annot_network_df = pd.merge(
+                network_df,
+                annot_df_source,
+                suffixes = ['', '_a'],
+                how = 'inner',
+                left_on = 'id_a',
+                right_on = 'uniprot',
+            )
 
-        annot_network_df.id_a = annot_network_df.id_a.astype('category')
+            annot_network_df.id_a = annot_network_df.id_a.astype('category')
 
-        annot_network_df = pd.merge(
-            annot_network_df,
-            annot_df_target,
-            suffixes = ['_a', '_b'],
-            how = 'inner',
-            left_on = 'id_b',
-            right_on = 'uniprot',
-        )
+            annot_network_df = pd.merge(
+                annot_network_df,
+                annot_df_target,
+                suffixes = ['_a', '_b'],
+                how = 'inner',
+                left_on = 'id_b',
+                right_on = 'uniprot',
+            )
 
-        annot_network_df.id_b = annot_network_df.id_b.astype('category')
+            annot_network_df.id_b = annot_network_df.id_b.astype('category')
 
-        # these columns are duplicates
-        annot_network_df.drop(
-            labels = ['type_a', 'type_b', 'uniprot_a', 'uniprot_b'],
-            inplace = True,
-            axis = 'columns',
-        )
+            # these columns are duplicates
+            annot_network_df.drop(
+                labels = ['type_a', 'type_b', 'uniprot_a', 'uniprot_b'],
+                inplace = True,
+                axis = 'columns',
+            )
+
+        else:
+
+            combined_df = core_common.filter_network_df(
+                df = combined_df,
+                **_network_args
+            )
+            combined_df = self.filtered(
+                annot_df = combined_df,
+                postfix = '_a',
+                **_annot_args_source
+            )
+            combined_df = self.filtered(
+                annot_df = combined_df,
+                postfix = '_b',
+                **_annot_args_target
+            )
+
+            annot_network_df = combined_df
 
         self._log(
             'Combined custom annotation data frame with network data frame. '
@@ -1618,24 +1641,24 @@ class CustomAnnotation(session_mod.Logger):
 
     def inter_class_network(
             self,
-            source_classes = None,
-            target_classes = None,
+            annot_args_source = None,
+            annot_args_target = None,
             network = None,
             **kwargs
-            ):
+        ):
 
         return self.network_df(
             network = network,
-            source_classes = source_classes,
-            target_classes = target_classes,
+            annot_args_source = annot_args_source,
+            annot_args_target = annot_args_target,
             **kwargs
         )
 
 
     def inter_class_network_undirected(
             self,
-            source_classes = None,
-            target_classes = None,
+            annot_args_source = None,
+            annot_args_target = None,
             network = None,
             **kwargs
         ):
@@ -1644,16 +1667,16 @@ class CustomAnnotation(session_mod.Logger):
 
         return self.network_df(
             network = network,
-            source_classes = source_classes,
-            target_classes = target_classes,
+            annot_args_source = annot_args_source,
+            annot_args_target = annot_args_target,
             **kwargs
         )
 
 
     def inter_class_network_directed(
             self,
-            source_classes = None,
-            target_classes = None,
+            annot_args_source = None,
+            annot_args_target = None,
             network = None,
             **kwargs
         ):
@@ -1662,16 +1685,34 @@ class CustomAnnotation(session_mod.Logger):
 
         return self.network_df(
             network = network,
-            source_classes = source_classes,
-            target_classes = target_classes,
+            annot_args_source = annot_args_source,
+            annot_args_target = annot_args_target,
+            **kwargs
+        )
+
+
+    def inter_class_network_signed(
+            self,
+            annot_args_source = None,
+            annot_args_target = None,
+            network = None,
+            **kwargs
+        ):
+
+        kwargs.update({'only_signed': True})
+
+        return self.network_df(
+            network = network,
+            annot_args_source = annot_args_source,
+            annot_args_target = annot_args_target,
             **kwargs
         )
 
 
     def inter_class_network_stimulatory(
             self,
-            source_classes = None,
-            target_classes = None,
+            annot_args_source = None,
+            annot_args_target = None,
             network = None,
             **kwargs
         ):
@@ -1683,16 +1724,16 @@ class CustomAnnotation(session_mod.Logger):
 
         return self.network_df(
             network = network,
-            source_classes = source_classes,
-            target_classes = target_classes,
+            annot_args_source = annot_args_source,
+            annot_args_target = annot_args_target,
             **kwargs
         )
 
 
     def inter_class_network_inhibitory(
             self,
-            source_classes = None,
-            target_classes = None,
+            annot_args_source = None,
+            annot_args_target = None,
             network = None,
             **kwargs
         ):
@@ -1704,8 +1745,8 @@ class CustomAnnotation(session_mod.Logger):
 
         return self.network_df(
             network = network,
-            source_classes = source_classes,
-            target_classes = target_classes,
+            annot_args_source = annot_args_source,
+            annot_args_target = annot_args_target,
             **kwargs
         )
 
@@ -1715,14 +1756,14 @@ class CustomAnnotation(session_mod.Logger):
 
     def count_inter_class_connections(
             self,
-            source_classes = None,
-            target_classes = None,
+            annot_args_source = None,
+            annot_args_target = None,
             **kwargs
         ):
 
         return self.inter_class_network(
-            source_classes = source_classes,
-            target_classes = target_classes,
+            annot_args_source = annot_args_source,
+            annot_args_target = annot_args_target,
             **kwargs
         ).groupby(['id_a', 'id_b']).ngroups
 
@@ -1733,56 +1774,70 @@ class CustomAnnotation(session_mod.Logger):
 
     def count_inter_class_connections_undirected(
             self,
-            source_classes = None,
-            target_classes = None,
+            annot_args_source = None,
+            annot_args_target = None,
             **kwargs
         ):
 
         return self.inter_class_network_undirected(
-            source_classes = source_classes,
-            target_classes = target_classes,
+            annot_args_source = annot_args_source,
+            annot_args_target = annot_args_target,
             **kwargs
         ).groupby(['id_a', 'id_b']).ngroups
 
 
     def count_inter_class_connections_directed(
             self,
-            source_classes = None,
-            target_classes = None,
+            annot_args_source = None,
+            annot_args_target = None,
             **kwargs
         ):
 
         return self.inter_class_network_directed(
-            source_classes = source_classes,
-            target_classes = target_classes,
+            annot_args_source = annot_args_source,
+            annot_args_target = annot_args_target,
+            **kwargs
+        ).groupby(['id_a', 'id_b']).ngroups
+
+
+    def count_inter_class_connections_signed(
+            self,
+            annot_args_source = None,
+            annot_args_target = None,
+            **kwargs
+        ):
+
+        return self.inter_class_network_signed(
+            annot_args_source = annot_args_source,
+            annot_args_target = annot_args_target,
             **kwargs
         ).groupby(['id_a', 'id_b']).ngroups
 
 
     def count_inter_class_connections_stimulatory(
             self,
-            source_classes = None,
-            target_classes = None,
+            annot_args_source = None,
+            annot_args_target = None,
             **kwargs
         ):
 
         return self.inter_class_network_stimulatory(
-            source_classes = source_classes,
-            target_classes = target_classes,
+            annot_args_source = annot_args_source,
+            annot_args_target = annot_args_target,
             **kwargs
         ).groupby(['id_a', 'id_b']).ngroups
 
 
     def count_inter_class_connections_inhibitory(
             self,
-            source_classes = None,
-            target_classes = None,
+            annot_args_source = None,
+            annot_args_target = None,
             **kwargs
         ):
 
         return self.inter_class_network_inhibitory(
-            source_classes = source_classes,
-            target_classes = target_classes,
+            annot_args_source = annot_args_source,
+            annot_args_target = annot_args_target,
             **kwargs
         ).groupby(['id_a', 'id_b']).ngroups
 
@@ -2110,6 +2165,8 @@ class CustomAnnotation(session_mod.Logger):
             postfix = postfix,
         )
 
+        args = cls._args_add_postfix(args, postfix)
+
         query = ' and '.join(query)
 
         return annot_df.query(query)
@@ -2134,10 +2191,42 @@ class CustomAnnotation(session_mod.Logger):
 
         if entities:
 
-            q = '(uniprot in @entities or genesymbol in @entities)'
+            entity_cols = {'id', 'genesymbol', 'uniprot'}
+
+            if postfix:
+
+                entity_cols = {
+                    '%s%s' % (col, postfix)
+                    for col in entity_cols
+                }
+
+            entity_cols = entity_cols & set(df.columns)
+
+            q = '(%s)' % (
+                ' or '.join(
+                    '%s in @entities' % col
+                    for col in entity_cols
+                )
+            )
             query.append(q)
 
         return query
+
+
+    @staticmethod
+    def _args_add_postfix(args, postfix):
+
+        if postfix:
+
+            args = dict(
+                (
+                    '%s%s' % (key, postfix),
+                    val
+                )
+                for key, val in iteritems(args)
+            )
+
+        return args
 
 
     def export(self, fname, **kwargs):

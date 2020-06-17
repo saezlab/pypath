@@ -708,6 +708,8 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
             query.append(cls._process_boolean_group_args(topology, postfix))
 
+        args = cls._args_add_postfix(args, postfix)
+
         query = ' and '.join(query)
 
         return annot_df.query(query)
@@ -719,7 +721,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
         if postfix:
 
             values = {
-                '%s%s' % (val, suffix)
+                '%s%s' % (val, postfix)
                 for val in common.to_list(values)
             }
 
@@ -730,6 +732,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             self,
             annot_df = None,
             network = None,
+            combined_df = None,
             network_args = None,
             annot_args = None,
             annot_args_source = None,
@@ -756,6 +759,9 @@ class IntercellAnnotation(annot.CustomAnnotation):
         network : pypath.network.Network,pandas.DataFrame
             A ``pypath.network.Network`` object or a data frame with network
             data.
+        combined_df : pandas.DataFrame
+            Optional, a network data frame already combined with annotations
+            for filtering only.
         resources : set,None
             Use only these network resources.
         entities : set,None
@@ -813,7 +819,16 @@ class IntercellAnnotation(annot.CustomAnnotation):
 
         if exclude_intracellular:
 
-            annot_df = annot_df[annot_df.parent != 'intracellular']
+            if combined_df is None:
+
+                annot_df = annot_df[annot_df.parent != 'intracellular']
+
+            else:
+
+                combined_df = combined_df.query(
+                    'parent_a != "intracellular" and '
+                    'parent_b != "intracellular"'
+                )
 
         annot_args = annot_args or {}
         annot_args_source = annot_args_source or {}
@@ -840,6 +855,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             self,
             annot_df = annot_df,
             network = network,
+            combined_df = combined_df,
             network_args = network_args,
             annot_args = annot_args,
             annot_args_source = annot_args_source,
