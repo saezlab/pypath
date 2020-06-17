@@ -1267,12 +1267,15 @@ class CustomAnnotation(session_mod.Logger):
 
     def network_df(
             self,
+            annot_df = None,
             network = None,
             network_args = None,
             annot_args = None,
             annot_args_source = None,
             annot_args_target = None,
             entities = None,
+            entities_source = None,
+            entities_target = None,
             only_directed = False,
             only_undirected = False,
             only_signed = None,
@@ -1307,10 +1310,12 @@ class CustomAnnotation(session_mod.Logger):
             method.
         annot_args_source : dict,None
             Same as ``annot_args`` but only for the source side of the
-            network connections.
+            network connections. These override ``annot_args`` but all the
+            criteria not defined here will be applied from ``annot_args``.
         annot_args_target : dict,None
             Same as ``annot_args`` but only for the target side of the
-            network connections.
+            network connections. These override ``annot_args`` but all the
+            criteria not defined here will be applied from ``annot_args``.
         only_directed : bool
             Use only the directed interactions.
         only_undirected : bool
@@ -1364,25 +1369,33 @@ class CustomAnnotation(session_mod.Logger):
             'swap_undirected': swap_undirected,
             'entities_or': entities_or,
         }
-        _network_args = _network_args.update(network_args)
+        _network_args.update(network_args or {})
 
         if not entities_or:
 
             entities_source = entities_source or entities or set()
             entities_target = entities_target or entities or set()
 
-        annot_args_source = annot_args_source or annot_args or {}
-        annit_args_source['entities'] = entities_source
-        annot_args_target = annot_args_target or annot_args or {}
-        annot_args_target['entities'] = entities_target
+        _annot_args_source = annot_args or {}
+        _annot_args_source.update(annot_args_source)
+        _annot_args_source['entities'] = entities_source
+        _annot_args_target = annot_args or {}
+        _annot_args_target.update(annot_args_target)
+        _annot_args_target['entities'] = entities_target
 
         if only_proteins:
 
-            annot_args_source['entity_type'] = 'protein'
-            annot_args_target['entity_type'] = 'protein'
+            _annot_args_source['entity_type'] = 'protein'
+            _annot_args_target['entity_type'] = 'protein'
 
-        annot_df_source = self.filtered(**annot_args_source)
-        annot_df_target = self.filtered(**annot_args_target)
+        annot_df_source = self.filtered(
+            annot_df = annot_df,
+            **_annot_args_source
+        )
+        annot_df_target = self.filtered(
+            annot_df = annot_df,
+            **_annot_args_target
+        )
 
         network_df = core_common.filter_network_df(
             df = network_df,
@@ -1410,6 +1423,13 @@ class CustomAnnotation(session_mod.Logger):
         )
 
         annot_network_df.id_b = annot_network_df.id_b.astype('category')
+
+        # these columns are duplicates
+        annot_network_df.drop(
+            labels = ['type_a', 'type_b', 'uniprot_a', 'uniprot_b'],
+            inplace = True,
+            axis = 'columns',
+        )
 
         self._log(
             'Combined custom annotation data frame with network data frame. '
@@ -2065,7 +2085,7 @@ class CustomAnnotation(session_mod.Logger):
             **kwargs
         ):
 
-        annot_df = annot_df or self.get_df()
+        annot_df = self.get_df() if annot_df is None else annot_df
 
         return self.filter_df(
             annot_df = annot_df,

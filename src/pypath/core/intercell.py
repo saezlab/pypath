@@ -713,6 +713,135 @@ class IntercellAnnotation(annot.CustomAnnotation):
         return annot_df.query(query)
 
 
+    def network_df(
+            self,
+            annot_df = None,
+            network = None,
+            network_args = None,
+            annot_args = None,
+            annot_args_source = None,
+            annot_args_target = None,
+            entities = None,
+            only_directed = False,
+            only_undirected = False,
+            only_signed = None,
+            only_effect = None,
+            only_proteins = False,
+            swap_undirected = True,
+            entities_or = False,
+            transmitter_receiver = False,
+            only_generic = True,
+            only_composite = True,
+            only_functional = True,
+            exclude_intracellular = True,
+        ):
+        """
+        Combines the annotation data frame and a network data frame.
+        Creates a ``pandas.DataFrame`` where each record is an interaction
+        between a pair of molecular enitities labeled by their annotations.
+
+        network : pypath.network.Network,pandas.DataFrame
+            A ``pypath.network.Network`` object or a data frame with network
+            data.
+        resources : set,None
+            Use only these network resources.
+        entities : set,None
+            Limit the network only to these molecular entities.
+        entities_source : set,None
+            Limit the source side of network connections only to these
+            molecular entities.
+        entities_target : set,None
+            Limit the target side of network connections only to these
+            molecular entities.
+        annot_args : dict,None
+            Parameters for filtering annotation classes; note, the defaults
+            might include some filtering, provide an empty dict if you want
+            no filtering at all; however this might result in huge data
+            frame and consequently memory issues. Passed to the ``filtered``
+            method.
+        annot_args_source : dict,None
+            Same as ``annot_args`` but only for the source side of the
+            network connections.
+        annot_args_target : dict,None
+            Same as ``annot_args`` but only for the target side of the
+            network connections.
+        only_directed : bool
+            Use only the directed interactions.
+        only_undirected : bool
+            Use only the undirected interactions. Specifically for retrieving
+            and counting the interactions without direction information.
+        only_effect : int,None
+            Use only the interactions with this effect. Either -1 or 1.
+        only_signed : bool
+            Use only the interactions with effect sign.
+        only_proteins : bool
+            Use only the interactions where each of the partners is a protein
+            (i.e. not complex, miRNA, small molecule or other kind of entity).
+        transmitter_receiver : bool
+            On the source side only transmitters, on the target side only
+            receivers.
+        only_generic : bool
+            Use only the generic classes. If specific classes allowed the
+            size of the combined data frame might be huge.
+        only_composite : bool
+            Use only the composite classes. If resource_specific classes
+            allowed the size of the combined data frame might be huge.
+        only_functional : bool
+            Use only the functional classes. Locational classes are often
+            not relevant and they largely increase the size of the
+            combined data frame.
+        exclude_intracellular : bool
+            Remove the intracellular parent class and it's children. These
+            classes are not relevant in intercellular signaling and having
+            them largely increases the size of the combined data frame.
+        """
+
+        annot_df = annot_df or self.get_df()
+
+        if exclude_intracellular:
+
+            annot_df = annot_df[annot_df.parent != 'intracellular']
+
+        annot_args = annot_args or {}
+        annot_args_source = annot_args_source or {}
+        annot_args_target = annot_args_target or {}
+
+        if only_generic:
+
+            annot_args['scope'] = 'generic'
+
+        if only_composite:
+
+            annot_args['source'] = 'composite'
+
+        if only_functional:
+
+            annot_args['aspect'] = 'functional'
+
+        if transmitter_receiver:
+
+            annot_args_source['causality'] = 'transmitter'
+            annot_args_target['causality'] = 'receiver'
+
+        return annot.CustomAnnotation.network_df(
+            self,
+            annot_df = annot_df,
+            network = network,
+            network_args = network_args,
+            annot_args = annot_args,
+            annot_args_source = annot_args_source,
+            annot_args_target = annot_args_target,
+            entities = entities,
+            only_directed = only_directed,
+            only_undirected = only_undirected,
+            only_signed = only_signed,
+            only_effect = only_effect,
+            only_proteins = only_proteins,
+            swap_undirected = swap_undirected,
+            entities_or = entities_or,
+        )
+
+
 def init_db(**kwargs):
 
     globals()['db'] = IntercellAnnotation(**kwargs)
