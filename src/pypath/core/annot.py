@@ -1278,7 +1278,6 @@ class CustomAnnotation(session_mod.Logger):
             only_undirected = False,
             only_effect = None,
             only_proteins = False,
-            only_class_levels = None,
         ):
         """
         Combines the annotation data frame and a network data frame.
@@ -1302,7 +1301,8 @@ class CustomAnnotation(session_mod.Logger):
             Parameters for filtering annotation classes; note, the defaults
             might include some filtering, provide an empty dict if you want
             no filtering at all; however this might result in huge data
-            frame and consequently memory issues.
+            frame and consequently memory issues. Passed to the ``filtered``
+            method.
         annot_args_source : dict,None
             Same as ``annot_args`` but only for the source side of the
             network connections.
@@ -1350,37 +1350,22 @@ class CustomAnnotation(session_mod.Logger):
 
             return
 
+        network_args = {}
         entities_source = entities_source or entities or set()
         entities_target = entities_target or entities or set()
         annot_args_source = annot_args_source or annot_args or {}
         annit_args_source['entities'] = entities_source
         annot_args_target = annot_args_target or annot_args or {}
         annot_args_target['entities'] = entities_target
-        annot_df_source = self.filter_df(**annot_args_source)
-        annot_df_target = self.filter_df(**annot_args_target)
 
-        if only_class_levels:
+        if only_proteins:
 
-            only_class_levels = common.to_set(only_class_levels)
-            annot_df = annot_df[annot_df.class_type.isin(only_class_levels)]
+            annot_args_source['entity_type'] = 'protein'
+            annot_args_target['entity_type'] = 'protein'
+            network_args['entity_type'] = 'protein'
 
-        if (
-            not only_directed and
-            not only_effect and
-            not classes and (
-                source_classes or
-                target_classes
-            )
-        ):
-
-            classes = set.union(
-                common.to_set(source_classes),
-                common.to_set(target_classes),
-            )
-
-        if classes:
-
-            annot_df = self._filter_by_classes(annot_df, classes)
+        annot_df_source = self.filtered(**annot_args_source)
+        annot_df_target = self.filtered(**annot_args_target)
 
         if resources:
 
