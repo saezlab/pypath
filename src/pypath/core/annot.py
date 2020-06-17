@@ -1799,8 +1799,8 @@ class CustomAnnotation(session_mod.Logger):
 
     def degree_inter_class_network(
             self,
-            source_classes = None,
-            target_classes = None,
+            annot_args_source = None,
+            annot_args_target = None,
             degrees_of = 'target',
             **kwargs
         ):
@@ -1819,8 +1819,8 @@ class CustomAnnotation(session_mod.Logger):
 
         degrees = (
             self.inter_class_network(
-                source_classes = source_classes,
-                target_classes = target_classes,
+                annot_args_source = annot_args_source,
+                annot_args_target = annot_args_target,
                 **kwargs
             ).groupby(groupby)[unique].nunique()
         )
@@ -1830,8 +1830,8 @@ class CustomAnnotation(session_mod.Logger):
 
     def degree_inter_class_network_undirected(
             self,
-            source_classes = None,
-            target_classes = None,
+            annot_args_source = None,
+            annot_args_target = None,
             **kwargs
         ):
 
@@ -1839,8 +1839,8 @@ class CustomAnnotation(session_mod.Logger):
 
         return (
             self.degree_inter_class_network(
-                source_classes = source_classes,
-                target_classes = target_classes,
+                annot_args_source = annot_args_source,
+                annot_args_target = annot_args_target,
                 **kwargs
             )
         )
@@ -1848,8 +1848,8 @@ class CustomAnnotation(session_mod.Logger):
 
     def degree_inter_class_network_directed(
             self,
-            source_classes = None,
-            target_classes = None,
+            annot_args_source = None,
+            annot_args_target = None,
             **kwargs
         ):
 
@@ -1857,8 +1857,8 @@ class CustomAnnotation(session_mod.Logger):
 
         return (
             self.degree_inter_class_network(
-                source_classes = source_classes,
-                target_classes = target_classes,
+                annot_args_source = annot_args_source,
+                annot_args_target = annot_args_target,
                 **kwargs
             )
         )
@@ -1866,8 +1866,8 @@ class CustomAnnotation(session_mod.Logger):
 
     def degree_inter_class_network_stimulatory(
             self,
-            source_classes = None,
-            target_classes = None,
+            annot_args_source = None,
+            annot_args_target = None,
             **kwargs
         ):
 
@@ -1878,8 +1878,8 @@ class CustomAnnotation(session_mod.Logger):
 
         return (
             self.degree_inter_class_network(
-                source_classes = source_classes,
-                target_classes = target_classes,
+                annot_args_source = annot_args_source,
+                annot_args_target = annot_args_target,
                 **kwargs
             )
         )
@@ -1887,8 +1887,8 @@ class CustomAnnotation(session_mod.Logger):
 
     def degree_inter_class_network_inhibitory(
             self,
-            source_classes = None,
-            target_classes = None,
+            annot_args_source = None,
+            annot_args_target = None,
             **kwargs
         ):
 
@@ -1899,8 +1899,8 @@ class CustomAnnotation(session_mod.Logger):
 
         return (
             self.degree_inter_class_network(
-                source_classes = source_classes,
-                target_classes = target_classes,
+                annot_args_source = annot_args_source,
+                annot_args_target = annot_args_target,
                 **kwargs
             )
         )
@@ -1912,10 +1912,6 @@ class CustomAnnotation(session_mod.Logger):
             sum_by_class = True,
             **kwargs
         ):
-
-        if 'network' not in kwargs:
-
-            kwargs['network'] = self.get_interclass_network_df()
 
         network = self.network_df(**kwargs)
 
