@@ -1462,6 +1462,10 @@ class CustomAnnotation(session_mod.Logger):
         return annot_network_df
 
 
+    # this became a synonym
+    filter_interclass_network = network_df
+
+
     def set_interclass_network_df(self, **kwargs):
         """
         Creates a data frame of the whole inter-class network and keeps it
@@ -1492,142 +1496,6 @@ class CustomAnnotation(session_mod.Logger):
         if hasattr(self, 'interclass_network'):
 
             del self.interclass_network
-
-
-    @classmethod
-    def filter_interclass_network(
-            cls,
-            network,
-            resources = None,
-            classes = None,
-            source_classes = None,
-            target_classes = None,
-            only_directed = False,
-            only_undirected = False,
-            only_effect = None,
-            only_proteins = False,
-            only_class_levels = None,
-        ):
-
-        filter_idx = np.full(network.shape[0], True)
-
-        if only_class_levels:
-
-            only_class_levels = common.to_set(only_class_levels)
-            filter_idx = np.logical_and(
-                filter_idx,
-                np.logical_and(
-                    network.class_type_a.isin(only_class_levels),
-                    network.class_type_b.isin(only_class_levels)
-                )
-            )
-
-        if (
-            not only_directed and
-            not only_effect and
-            not classes and (
-                source_classes or
-                target_classes
-            )
-        ):
-
-            classes = set.union(
-                common.to_set(source_classes),
-                common.to_set(target_classes),
-            )
-
-        if classes:
-
-            op = 'eq' if isinstance(classes, common.basestring) else 'isin'
-
-            filter_idx = np.logical_and(
-                filter_idx,
-                np.logical_or(
-                    getattr(network.category_a, op)(classes),
-                    getattr(network.category_b, op)(classes),
-                )
-            )
-
-        if source_classes:
-
-            op = (
-                'eq'
-                    if isinstance(source_classes, common.basestring) else
-                'isin'
-            )
-            filter_idx = np.logical_and(
-                filter_idx,
-                np.logical_or(
-                    getattr(network.category_a, op)(source_classes),
-                    np.logical_and(
-                        np.logical_not(network.directed),
-                        getattr(network.category_b, op)(source_classes)
-                    )
-                )
-            )
-
-        if target_classes:
-
-            op = (
-                'eq'
-                    if isinstance(target_classes, common.basestring) else
-                'isin'
-            )
-            filter_idx = np.logical_and(
-                filter_idx,
-                np.logical_or(
-                    getattr(network.category_b, op)(target_classes),
-                    np.logical_and(
-                        np.logical_not(network.directed),
-                        getattr(network.category_a, op)(target_classes)
-                    )
-                )
-            )
-
-        if resources:
-
-            filter_op = (
-                network.sources.eq
-                    if isinstance(resources, common.basestring) else
-                network.sources.isin
-            )
-
-            filter_idx = np.logical_and(
-                filter_idx,
-                filter_op(resources)
-            )
-
-        if only_directed:
-
-            filter_idx = np.logical_and(filter_idx, network.directed)
-
-        if only_undirected:
-
-            filter_idx = np.logical_and(
-                filter_idx,
-                np.logical_not(network.directed)
-            )
-
-        if only_effect:
-
-            filter_idx = np.logical_and(
-                filter_idx,
-                network.effect == only_effect
-            )
-
-        if only_proteins:
-
-            filter_idx = np.logical_and(
-                filter_idx,
-                np.logical_and(
-                    network.type_a == 'protein',
-                    network.type_b == 'protein'
-                )
-            )
-
-        network = network[filter_idx]
-
-        return network
 
 
     #

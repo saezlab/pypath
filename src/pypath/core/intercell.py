@@ -871,6 +871,10 @@ class IntercellAnnotation(annot.CustomAnnotation):
         )
 
 
+    # this became a synonym
+    filter_interclass_network = network_df
+
+
 def init_db(**kwargs):
 
     globals()['db'] = IntercellAnnotation(**kwargs)
