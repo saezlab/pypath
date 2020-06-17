@@ -673,6 +673,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             entity_type = None,
             causality = None,
             topology = None,
+            postfix = None,
         ):
 
         args = locals()
@@ -696,21 +697,33 @@ class IntercellAnnotation(annot.CustomAnnotation):
             df = annot_df,
             entities = entities,
             args = args,
+            postfix = postfix,
         )
 
         if causality:
 
-            q = ' or '.join(common.to_set(causality))
-            query.append('(%s)' % q)
+            query.append(cls._process_boolean_group_args(causality, postfix))
 
         if topology:
 
-            q = ' or '.join(topology)
-            query.append('(%s)' % q)
+            query.append(cls._process_boolean_group_args(topology, postfix))
 
         query = ' and '.join(query)
 
         return annot_df.query(query)
+
+
+    @staticmethod
+    def _process_boolean_group_args(values, postfix):
+
+        if postfix:
+
+            values = {
+                '%s%s' % (val, suffix)
+                for val in common.to_list(values)
+            }
+
+        return ' or '.join(common.to_set(values))
 
 
     def network_df(

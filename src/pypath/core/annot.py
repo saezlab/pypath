@@ -2099,6 +2099,7 @@ class CustomAnnotation(session_mod.Logger):
             cls,
             annot_df,
             entities = None,
+            postfix = None,
             **kwargs
         ):
 
@@ -2106,6 +2107,7 @@ class CustomAnnotation(session_mod.Logger):
             df = annot_df,
             entities = entities,
             args = kwargs,
+            postfix = postfix,
         )
 
         query = ' and '.join(query)
@@ -2114,11 +2116,13 @@ class CustomAnnotation(session_mod.Logger):
 
 
     @staticmethod
-    def _process_query_args(df, args, entities = None):
+    def _process_query_args(df, args, entities = None, postfix = None):
 
         query = []
 
         for col, val in iteritems(args):
+
+            col = '%s%s' % (col, postfix) if postfix else col
 
             if val is not None and col in df.columns:
 
