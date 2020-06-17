@@ -47,6 +47,7 @@ import pypath.utils.uniprot as utils_uniprot
 import pypath.internals.resource as resource
 import pypath.utils.go as go
 import pypath.core.intercell_annot as intercell_annot
+import pypath.core.common as core_common
 import pypath.share.session as session_mod
 import pypath.internals.annot_formats as annot_formats
 import pypath.core.complex as complex
@@ -1267,17 +1268,18 @@ class CustomAnnotation(session_mod.Logger):
     def network_df(
             self,
             network = None,
-            entities = None,
-            entities_source = None,
-            entities_target = None,
-            resources = None,
+            network_args = None,
             annot_args = None,
             annot_args_source = None,
             annot_args_target = None,
+            entities = None,
             only_directed = False,
             only_undirected = False,
+            only_signed = None,
             only_effect = None,
             only_proteins = False,
+            swap_undirected = True,
+            entities_or = False,
         ):
         """
         Combines the annotation data frame and a network data frame.
@@ -1350,9 +1352,25 @@ class CustomAnnotation(session_mod.Logger):
 
             return
 
-        network_args = {}
-        entities_source = entities_source or entities or set()
-        entities_target = entities_target or entities or set()
+        _network_args = {
+            'only_proteins': only_proteins,
+            'only_effect': only_effect,
+            'only_signed': only_signed,
+            'only_directed': only_directed,
+            'only_undirected': only_undirected,
+            'entities': entities,
+            'source_entities': entities_source,
+            'target_entities': entities_target,
+            'swap_undirected': swap_undirected,
+            'entities_or': entities_or,
+        }
+        _network_args = _network_args.update(network_args)
+
+        if not entities_or:
+
+            entities_source = entities_source or entities or set()
+            entities_target = entities_target or entities or set()
+
         annot_args_source = annot_args_source or annot_args or {}
         annit_args_source['entities'] = entities_source
         annot_args_target = annot_args_target or annot_args or {}
@@ -1362,92 +1380,29 @@ class CustomAnnotation(session_mod.Logger):
 
             annot_args_source['entity_type'] = 'protein'
             annot_args_target['entity_type'] = 'protein'
-            network_args['entity_type'] = 'protein'
 
         annot_df_source = self.filtered(**annot_args_source)
         annot_df_target = self.filtered(**annot_args_target)
 
-        if resources:
-
-            filter_op = (
-                network_df.sources.eq
-                    if isinstance(resources, common.basestring) else
-                network_df.sources.isin
-            )
-
-            network_df = network_df[filter_op(resources)]
-
-        if only_directed:
-
-            network_df = network_df[network_df.directed]
-
-        if only_undirected:
-
-            network_df = network_df[np.logical_not(network_df.directed)]
-
-        if only_effect:
-
-            network_df = network_df[network_df.effect == only_effect]
-
-        if only_proteins:
-
-            network_df = network_df[
-                (network_df.type_a == 'protein') &
-                (network_df.type_b == 'protein')
-            ]
+        network_df = core_common.filter_network_df(
+            df = network_df,
+            **_network_args
+        )
 
         annot_network_df = pd.merge(
             network_df,
-            self._filter_by_classes(annot_df, source_classes),
+            annot_df_source,
             suffixes = ['', '_a'],
             how = 'inner',
             left_on = 'id_a',
             right_on = 'uniprot',
         )
 
-        # if we deal with undirected interactions but source & target classes
-        if (
-            not only_directed and
-            not only_effect and (
-                source_classes or
-                target_classes
-            )
-        ):
-
-            annot_network_df = pd.concat(
-                (
-
-                    annot_network_df,
-
-                    pd.merge(
-                        network_df[
-                            np.logical_not(network_df.directed)
-                        ][
-                            network_df.columns[
-                                np.r_[1, 0, 3, 2, 4:len(network_df.columns)]
-                            ]
-                        ][
-                            ['id_a', 'id_b', 'type_a', 'type_b'] +
-                            list(network_df.columns)[4:]
-                        ],
-                        self._filter_by_classes(annot_df, source_classes),
-                        suffixes = ['', '_a'],
-                        how = 'inner',
-                        left_on = 'id_a',
-                        right_on = 'uniprot',
-                    ),
-
-                ),
-
-                sort = False,
-                ignore_index = True,
-            )
-
         annot_network_df.id_a = annot_network_df.id_a.astype('category')
 
         annot_network_df = pd.merge(
             annot_network_df,
-            self._filter_by_classes(annot_df, target_classes),
+            annot_df_target,
             suffixes = ['_a', '_b'],
             how = 'inner',
             left_on = 'id_b',
@@ -1455,12 +1410,6 @@ class CustomAnnotation(session_mod.Logger):
         )
 
         annot_network_df.id_b = annot_network_df.id_b.astype('category')
-
-        #annot_network_df.set_index(
-            #'id_a',
-            #drop = False,
-            #inplace = True,
-        #)
 
         self._log(
             'Combined custom annotation data frame with network data frame. '
