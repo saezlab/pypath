@@ -1865,6 +1865,36 @@ def at_least_in(n = 2):
     return _at_least_in
 
 
+def eqs(one, other):
+    """
+    Equality between ``one`` and ``other``. If any of them is type of `set`,
+    returns True if it contains the other. If both of them are `set`,
+    returns True if they share any element. Lists, tuples and similar objects
+    will be converted to `set`.
+    """
+
+    one = one if isinstance(one, simple_types) else to_set(one)
+    other = other if isinstance(other, simple_types) else to_set(other)
+
+    if isinstance(one, set):
+
+        if isinstance(other, set):
+
+            return bool(one & other)
+
+        else:
+
+            return other in one
+
+    elif isinstance(other, set):
+
+        return one in other
+
+    else:
+
+        return one == other
+
+
 def sets_to_sorted_lists(obj):
 
     if isinstance(obj, dict):
