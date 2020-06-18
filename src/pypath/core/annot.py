@@ -1153,19 +1153,7 @@ class CustomAnnotation(session_mod.Logger):
         return self.df
 
 
-    def counts(
-            self,
-            name = None,
-            parent = None,
-            resource = None,
-            scope = None,
-            aspect = None,
-            source = None,
-            transmitter = None,
-            receiver = None,
-            entity_type = 'protein',
-            labels = True,
-        ):
+    def counts(self, entity_type = 'protein', labels = True, **kwargs):
         """
         Returns a dict with number of elements in each class.
 
@@ -1178,18 +1166,9 @@ class CustomAnnotation(session_mod.Logger):
         return dict(
             (
                 cls.label if labels else cls.key,
-                len(cls)
+                cls.count_entity_type(entity_type = entity_type)
             )
-            for cls in self.iter_classes(
-                parent = parent,
-                resource = resource,
-                scope = scope,
-                aspect = aspect,
-                source = source,
-                transmitter = transmitter,
-                receiver = receiver,
-                entity_type = entity_type,
-            )
+            for cls in self.iter_classes(**kwargs)
             if len(cls) > 0
         )
 
@@ -1197,68 +1176,45 @@ class CustomAnnotation(session_mod.Logger):
     count_by_class = counts
 
 
-    def iter_classes(
-            self,
-            name = None,
-            parent = None,
-            resource = None,
-            scope = None,
-            aspect = None,
-            source = None,
-            transmitter = None,
-            receiver = None,
-            entity_type = None,
-        ):
+    def iter_classes(self, **kwargs):
 
         return filter_classes(
             classes = self.classes.values(),
-            name = name,
-            parent = parent,
-            resource = resource,
-            scope = scope,
-            aspect = aspect,
-            source = source,
-            transmitter = transmitter,
-            receiver = receiver,
-            entity_type = entity_type,
+            **kwargs
         )
 
 
-    def filter_classes(
-            self,
-            classes,
-            name = None,
-            parent = None,
-            resource = None,
-            scope = None,
-            aspect = None,
-            source = None,
-            transmitter = None,
-            receiver = None,
-            entity_type = None,
-        ):
+    @staticmethod
+    def filter_classes(classes = None, **kwargs):
+        """
+        Returns a list of annotation classes filtered by their attributes.
+        ``**kwargs`` contains attributes and values.
+        """
 
-        name = common.to_set(name)
-        parent = common.to_set(parent)
-        resource = common.to_set(resource)
-        scope = common.to_set(scope)
-        aspect = common.to_set(aspect)
-        source = common.to_set(source)
+        classes = classes
 
-        for cls in classes:
+        return (
+            cls
+            for cls in classes
+            if all(
+                common.eqs(val, getattr(cls, attr))
+                for attr, val in iteritems(kwargs)
+            )
+        )
 
-            if (
-                (not name or cls.name in name) and
-                (not parent or cls.parent in parent) and
-                (not resource or cls.resource in resource) and
-                (not scope or cls.scope in scope) and
-                (not aspect or cls.aspect in aspect) and
-                (not source or cls.source in source) and
-                (transmitter is None or cls.transmitter == transmitter) and
-                (receiver is None or cls.receiver == receiver)
-            ):
 
-                yield self.filter_entity_type(cls, entity_type = entity_type)
+    def filter(self, entity_type = None, **kwargs):
+        """
+        Filters the annotated entities by annotation class attributes and
+        ``entity_type``. ``**kwargs`` passed to ``filter_classes``.
+        """
+
+        return set(
+            itertools.chain(*(
+                cls.filter_entity_type(entity_type = entity_type)
+                for cls in self.iter_classes(**kwargs)
+            ))
+        )
 
 
     def filter_entity_type(self, cls):
@@ -2126,7 +2082,7 @@ class CustomAnnotation(session_mod.Logger):
         )
 
 
-    def entities_by_resource(self, entity_types = None):
+    def entities_by_resource(self, entity_types = None, **kwargs):
 
         by_resource = collections.defaultdict(set)
 
@@ -2137,6 +2093,7 @@ class CustomAnnotation(session_mod.Logger):
             )
 
         return dict(by_resource)
+
 
     # TODO: this kind of methods should be implemented by metaprogramming
     def proteins_by_resource(self):
@@ -2243,43 +2200,68 @@ class CustomAnnotation(session_mod.Logger):
         return self.numof_records(entity_types = 'mirna')
 
 
+    def resources_in_category(self, key):
+        """
+        Returns a list of resources contributing to the definition of
+        a category.
+        """
+
+        if not isinstance(key, tuple):
+
+            key = (key, key, self.composite_resource_name)
+
+        if key in self.children:
+
+            return sorted({child.resource for child in self.children[key]})
+
+
+    def all_resources(self):
+
+        return sorted({grp.resource for grp in self.classes.values()})
+
+
     def update_summaries(self):
 
         self.summaries = {}
 
-        for cat, level in iteritems(self.class_types):
+        for key, group in iteritems(self.classes):
 
-            if level == 'sub':
+            if group.source == 'resource_specific':
 
                 continue
 
-            label = self.class_labels[cat]
-
-            self.summaries[label] = {
-                'label': label,
-                'level': level,
-                'resources': sorted(
-                    self.resource_labels[res]
-                    for res in self.children[cat]
-                    if res in self.resource_labels
-                ),
-                'n_proteins': sum(
-                    1 for entity in self.classes[cat]
-                    if not isinstance(entity, intera.Complex)
-                ),
-                'n_complexes': sum(
-                    1 for entity in self.classes[cat]
-                    if isinstance(entity, intera.Complex)
-                ),
+            self.summaries[key] = {
+                'name': group.name,
+                'aspect': group.aspect,
+                'transmitter': group.transmitter,
+                'receiver': group.receiver,
+                'resources': self.resources_in_category(key),
+                'n_proteins': group.n_proteins,
+                'n_mirnas': group.n_mirnas,
+                'n_complexes': group.n_complexes,
             }
+
+        self.summaries[('Total', 'Total', 'OmniPath')] = {
+            'name': 'Total',
+            'aspect': '',
+            'transmitter': '',
+            'receiver': '',
+            'resources': self.all_resources(),
+            'n_proteins': self.numof_proteins(),
+            'n_mirnas': self.numof_mirnas(),
+            'n_complexes': self.numof_complexes(),
+        }
 
 
     def summaries_tab(self, outfile = None, return_table = False):
 
         columns = (
-            ('label', 'Category'),
-            ('level', 'Category level'),
+            ('name', 'Category'),
+            ('aspect', 'Aspect'),
+            ('transmitter', 'Transmitter'),
+            ('receiver', 'Receiver'),
             ('n_proteins', 'Proteins'),
+            ('n_proteins', 'miRNAs'),
             ('n_complexes', 'Complexes'),
             ('resources', 'Resources'),
         )
@@ -2290,13 +2272,16 @@ class CustomAnnotation(session_mod.Logger):
         tab.extend([
             [
                 (
-                    ', '.join(self.summaries[src][f[0]])
-                        if isinstance(self.summaries[src][f[0]], list) else
-                    str(self.summaries[src][f[0]])
+                    ', '.join(self.summaries[key][f[0]])
+                        if isinstance(self.summaries[key][f[0]], list) else
+                    str(self.summaries[key][f[0]])
                 )
                 for f in columns
             ]
-            for src in sorted(self.summaries.keys())
+            for key in sorted(
+                self.summaries.keys(),
+                key = lambda k: k.name if k.name != 'Total' else 'zzzz',
+            )
         ])
 
         if outfile:
@@ -2321,19 +2306,7 @@ class CustomAnnotation(session_mod.Logger):
             return self.classes_by_entity(item)
 
 
-    def browse(
-            self,
-            name = None,
-            parent = None,
-            resource = None,
-            scope = None,
-            aspect = None,
-            source = None,
-            transmitter = None,
-            receiver = None,
-            start = 0,
-            **kwargs
-        ):
+    def browse(self, start = 0, **kwargs):
         """
         Presents information about annotation classes as ascii tables printed
         in the terminal. If one class provided, prints one table. If multiple
@@ -2345,18 +2318,11 @@ class CustomAnnotation(session_mod.Logger):
         """
 
         classes = dict(
-            (cls.label, cls)
-            for cls in self.iter_classes(
-                name = name,
-                parent = parent,
-                resource = resource,
-                scope = scope,
-                aspect = aspect,
-                source = source,
-                transmitter = transmitter,
-                receiver = receiver,
-                entity_type = 'protein',
+            (
+                cls.label,
+                cls.filter_entity_type(entity_type = entity_type)
             )
+            for cls in self.iter_classes(**kwargs)
         )
 
         utils_uniprot.browse(groups = classes, start = start, **kwargs)
