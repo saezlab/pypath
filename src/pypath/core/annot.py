@@ -1178,7 +1178,7 @@ class CustomAnnotation(session_mod.Logger):
 
     def iter_classes(self, **kwargs):
 
-        return filter_classes(
+        return self.filter_classes(
             classes = self.classes.values(),
             **kwargs
         )
@@ -2218,81 +2218,6 @@ class CustomAnnotation(session_mod.Logger):
     def all_resources(self):
 
         return sorted({grp.resource for grp in self.classes.values()})
-
-
-    def update_summaries(self):
-
-        self.summaries = {}
-
-        for key, group in iteritems(self.classes):
-
-            if group.source == 'resource_specific':
-
-                continue
-
-            self.summaries[key] = {
-                'name': group.name,
-                'aspect': group.aspect,
-                'transmitter': group.transmitter,
-                'receiver': group.receiver,
-                'resources': self.resources_in_category(key),
-                'n_proteins': group.n_proteins,
-                'n_mirnas': group.n_mirnas,
-                'n_complexes': group.n_complexes,
-            }
-
-        self.summaries[('Total', 'Total', 'OmniPath')] = {
-            'name': 'Total',
-            'aspect': '',
-            'transmitter': '',
-            'receiver': '',
-            'resources': self.all_resources(),
-            'n_proteins': self.numof_proteins(),
-            'n_mirnas': self.numof_mirnas(),
-            'n_complexes': self.numof_complexes(),
-        }
-
-
-    def summaries_tab(self, outfile = None, return_table = False):
-
-        columns = (
-            ('name', 'Category'),
-            ('aspect', 'Aspect'),
-            ('transmitter', 'Transmitter'),
-            ('receiver', 'Receiver'),
-            ('n_proteins', 'Proteins'),
-            ('n_proteins', 'miRNAs'),
-            ('n_complexes', 'Complexes'),
-            ('resources', 'Resources'),
-        )
-
-        tab = []
-        tab.append([f[1] for f in columns])
-
-        tab.extend([
-            [
-                (
-                    ', '.join(self.summaries[key][f[0]])
-                        if isinstance(self.summaries[key][f[0]], list) else
-                    str(self.summaries[key][f[0]])
-                )
-                for f in columns
-            ]
-            for key in sorted(
-                self.summaries.keys(),
-                key = lambda k: k.name if k.name != 'Total' else 'zzzz',
-            )
-        ])
-
-        if outfile:
-
-            with open(outfile, 'w') as fp:
-
-                fp.write('\n'.join('\t'.join(row) for row in tab))
-
-        if return_table:
-
-            return tab
 
 
     def __getitem__(self, item):
