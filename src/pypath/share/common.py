@@ -1895,6 +1895,23 @@ def eqs(one, other):
         return one == other
 
 
+def dict_str(dct):
+
+    if not isinstance(dct, dict):
+
+        return str(dct)
+
+    return ', '.join(
+        '%s=%s' % (str(key), str(val))
+        for key, val in iteritems(dct)
+    )
+
+
+def none_or_len(value):
+
+    return None if not hasattr(value, '__len__') else len(value)
+
+
 def sets_to_sorted_lists(obj):
 
     if isinstance(obj, dict):
