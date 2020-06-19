@@ -141,6 +141,11 @@ class IntercellAnnotation(annot.CustomAnnotation):
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
 
+        for k, v in iteritems(self.classes):
+
+            k.__class__ = getattr(af, k.__class__.__name__)
+            v.__class__ = getattr(af, v.__class__.__name__)
+
 
     def set_classes(self):
 
@@ -665,6 +670,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             cls,
             annot_df,
             category = None,
+            name = None,
             parent = None,
             database = None,
             scope = None,
@@ -677,6 +683,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             postfix = None,
         ):
 
+        category = category or name
         args = locals()
 
         _topologies = {
