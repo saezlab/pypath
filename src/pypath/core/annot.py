@@ -1302,7 +1302,27 @@ class CustomAnnotation(session_mod.Logger):
 
         else:
 
-            self._log('Combining custom annotation with network data frame.')
+
+            param_str = ', '.join([
+                'network_args=[%s]' % common.dict_str(network_args),
+                'annot_args=[%s]' % common.dict_str(annot_args),
+                'annot_args_source=[%s]' % common.dict_str(annot_args_source),
+                'annot_args_target=[%s]' % common.dict_str(annot_args_target),
+                'entities=%s' % common.none_or_len(entities),
+                'entities_source=%s' % common.none_or_len(entities_source),
+                'entities_target=%s' % common.none_or_len(entities_target),
+                'only_directed=%s' % only_directed,
+                'only_undirected=%s' % only_undirected,
+                'only_signed=%s' % only_signed,
+                'only_effect=%s' % only_effect,
+                'only_proteins=%s' % only_proteins,
+                'swap_undirected=%s' % swap_undirected,
+                'entities_or=%s' % entities_or,
+            ])
+            self._log(
+                'Combining custom annotation with network data frame. '
+                'Parameters: %s' % param_str
+            )
 
             network_df = (
                 self._network_df(network)
