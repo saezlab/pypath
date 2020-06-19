@@ -64,6 +64,11 @@ class Session(object):
         self.log.msg('Session `%s` finished.' % self.label)
 
 
+    def __repr__(self):
+
+        return '<Session %s>' % self.label
+
+
     def __del__(self):
 
         if hasattr(self, 'log'):
