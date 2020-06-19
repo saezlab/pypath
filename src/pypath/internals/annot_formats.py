@@ -317,6 +317,12 @@ class AnnotationGroup(collections_abc.Set):
 
 
     @property
+    def name_label(self):
+
+        return common.upper0(self.name).replace('_', ' ')
+
+
+    @property
     def key(self):
 
         return AnnotDefKey(
@@ -364,6 +370,22 @@ class AnnotationGroup(collections_abc.Set):
                 entity_type = entity_type,
             )
         )
+
+
+    @property
+    def args(self):
+
+        return dict(**self)
+
+
+    def keys(self):
+
+        return ['name', 'parent', 'source', 'scope']
+
+
+    def __getitem__(self, key):
+
+        return getattr(self, key)
 
 
     @property
