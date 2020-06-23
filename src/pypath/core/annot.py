@@ -656,7 +656,7 @@ class CustomAnnotation(session_mod.Logger):
             name,
             parent = None,
             resource = None,
-            entity_types = None,
+            entity_type = None,
         ):
         """
         Retrieves a class by its name and loads it if hasn't been loaded yet
@@ -707,9 +707,9 @@ class CustomAnnotation(session_mod.Logger):
 
         if selected is not None:
 
-            return entity.Entity.filter_entity_type(
+            return self._filter_entity_type(
                 selected,
-                entity_type = entity_types,
+                entity_type = entity_type,
             )
 
         self._log(
@@ -732,7 +732,7 @@ class CustomAnnotation(session_mod.Logger):
         which defines the contents as an operation over other definitions.
         """
 
-        return (
+        selected = (
             self._execute_operation(definition)
                 if isinstance(definition, annot_formats.AnnotOp) else
             self.process_annot(definition)
@@ -745,6 +745,8 @@ class CustomAnnotation(session_mod.Logger):
                 if isinstance(definition, dict) else
             self._select(definition)
         )
+
+        return self._filter_entity_type(selected, entity_type = entity_type)
 
 
     # synonym for old name
@@ -1039,6 +1041,23 @@ class CustomAnnotation(session_mod.Logger):
         return annot_formats.AnnotationGroup.isdisjoint(*args)
 
 
+    @staticmethod
+    def _filter_entity_type(group, entity_type):
+
+        if hasattr(group, 'filter_entity_type'):
+
+            group = group.filter_entity_type(entity_type = entity_type)
+
+        else:
+
+            group = entity.Entity.filter_entity_type(
+                group,
+                entity_type = entity_type,
+            )
+
+        return group
+
+
     def make_df(self, all_annotations = False, full_name = False):
         """
         Creates a ``pandas.DataFrame`` where each record assigns a
@@ -1293,32 +1312,33 @@ class CustomAnnotation(session_mod.Logger):
 
             combined_df = self.interclass_network
 
+        param_str = ', '.join([
+            'network_args=[%s]' % common.dict_str(network_args),
+            'annot_args=[%s]' % common.dict_str(annot_args),
+            'annot_args_source=[%s]' % common.dict_str(annot_args_source),
+            'annot_args_target=[%s]' % common.dict_str(annot_args_target),
+            'entities=%s' % common.none_or_len(entities),
+            'entities_source=%s' % common.none_or_len(entities_source),
+            'entities_target=%s' % common.none_or_len(entities_target),
+            'only_directed=%s' % only_directed,
+            'only_undirected=%s' % only_undirected,
+            'only_signed=%s' % only_signed,
+            'only_effect=%s' % only_effect,
+            'only_proteins=%s' % only_proteins,
+            'swap_undirected=%s' % swap_undirected,
+            'entities_or=%s' % entities_or,
+        ])
+
         if combined_df is not None:
 
             self._log(
-                'Using previously created network-annotation data frame.'
+                'Using previously created network-annotation data frame. '
+                'Parameters: %s' % param_str
             )
             network_df = None
 
         else:
 
-
-            param_str = ', '.join([
-                'network_args=[%s]' % common.dict_str(network_args),
-                'annot_args=[%s]' % common.dict_str(annot_args),
-                'annot_args_source=[%s]' % common.dict_str(annot_args_source),
-                'annot_args_target=[%s]' % common.dict_str(annot_args_target),
-                'entities=%s' % common.none_or_len(entities),
-                'entities_source=%s' % common.none_or_len(entities_source),
-                'entities_target=%s' % common.none_or_len(entities_target),
-                'only_directed=%s' % only_directed,
-                'only_undirected=%s' % only_undirected,
-                'only_signed=%s' % only_signed,
-                'only_effect=%s' % only_effect,
-                'only_proteins=%s' % only_proteins,
-                'swap_undirected=%s' % swap_undirected,
-                'entities_or=%s' % entities_or,
-            ])
             self._log(
                 'Combining custom annotation with network data frame. '
                 'Parameters: %s' % param_str
