@@ -380,7 +380,7 @@ class AnnotationGroup(collections_abc.Set):
 
     def keys(self):
 
-        return ['name', 'parent', 'source', 'scope']
+        return ['name', 'parent', 'source', 'scope', 'aspect']
 
 
     def __getitem__(self, key):
