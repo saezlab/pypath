@@ -406,6 +406,24 @@ class AnnotationGroup(collections_abc.Set):
         return self.count_entity_type(entity_type = 'complex')
 
 
+    @property
+    def proteins(self):
+
+        return self.filter_entity_type(entity_type = 'protein')
+
+
+    @property
+    def complexes(self):
+
+        return self.filter_entity_type(entity_type = 'complex')
+
+
+    @property
+    def mirnas(self):
+
+        return self.filter_entity_type(entity_type = 'mirna')
+
+
     @staticmethod
     def sets(*args):
 
