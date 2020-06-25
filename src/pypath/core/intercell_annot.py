@@ -4188,7 +4188,8 @@ annot_combined_classes = (
         },
     ),  # many non-ligand proteins excluded
     af.AnnotDef(
-        name = 'ligand_kirouac',
+        name = 'ligand',
+        scope = 'generic',
         resource = 'Kirouac2010',
         args = {
             'mainclass': 'ligand',
@@ -4206,7 +4207,7 @@ annot_combined_classes = (
         },
     ),  # great collection of ligands
     af.AnnotDef(
-        name = 'ligand_dgidb',
+        name = 'ligand',
         resource = af.AnnotOp(
             annots = '~ligand~DGIdb',
             op = set.union,
