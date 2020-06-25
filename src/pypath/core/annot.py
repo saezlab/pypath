@@ -1204,7 +1204,7 @@ class CustomAnnotation(session_mod.Logger):
 
 
     @staticmethod
-    def filter_classes(classes = None, **kwargs):
+    def filter_classes(classes, **kwargs):
         """
         Returns a list of annotation classes filtered by their attributes.
         ``**kwargs`` contains attributes and values.
@@ -1629,7 +1629,7 @@ class CustomAnnotation(session_mod.Logger):
             annot_args_source = annot_args_source,
             annot_args_target = annot_args_target,
             **kwargs
-        ).groupby(['id_a', 'id_b']).ngroups
+        ).groupby(['id_a', 'id_b'], as_index = False).ngroups
 
 
     # synonym
@@ -1647,7 +1647,7 @@ class CustomAnnotation(session_mod.Logger):
             annot_args_source = annot_args_source,
             annot_args_target = annot_args_target,
             **kwargs
-        ).groupby(['id_a', 'id_b']).ngroups
+        ).groupby(['id_a', 'id_b'], as_index = False).ngroups
 
 
     def count_inter_class_connections_directed(
@@ -1661,7 +1661,7 @@ class CustomAnnotation(session_mod.Logger):
             annot_args_source = annot_args_source,
             annot_args_target = annot_args_target,
             **kwargs
-        ).groupby(['id_a', 'id_b']).ngroups
+        ).groupby(['id_a', 'id_b'], as_index = False).ngroups
 
 
     def count_inter_class_connections_signed(
@@ -1675,7 +1675,7 @@ class CustomAnnotation(session_mod.Logger):
             annot_args_source = annot_args_source,
             annot_args_target = annot_args_target,
             **kwargs
-        ).groupby(['id_a', 'id_b']).ngroups
+        ).groupby(['id_a', 'id_b'], as_index = False).ngroups
 
 
     def count_inter_class_connections_stimulatory(
@@ -1689,7 +1689,7 @@ class CustomAnnotation(session_mod.Logger):
             annot_args_source = annot_args_source,
             annot_args_target = annot_args_target,
             **kwargs
-        ).groupby(['id_a', 'id_b']).ngroups
+        ).groupby(['id_a', 'id_b'], as_index = False).ngroups
 
 
     def count_inter_class_connections_inhibitory(
@@ -1703,7 +1703,7 @@ class CustomAnnotation(session_mod.Logger):
             annot_args_source = annot_args_source,
             annot_args_target = annot_args_target,
             **kwargs
-        ).groupby(['id_a', 'id_b']).ngroups
+        ).groupby(['id_a', 'id_b'], as_index = False).ngroups
 
 
     #
@@ -4684,7 +4684,7 @@ class GOIntercell(AnnotationBase):
 class CellPhoneDB(AnnotationBase):
 
 
-    record = cellphonedb.CellPhoneDBAnnotation
+    _eq_fields = ('receptor', 'peripheral', 'secreted', 'transmembrane')
 
 
     def __init__(self, **kwargs):
@@ -4706,20 +4706,6 @@ class CellPhoneDB(AnnotationBase):
             (uniprot, {annot, })
             for uniprot, annot in
             iteritems(self.data)
-        )
-
-
-    def _eq_fields(self, *args):
-
-        return self.record(
-            *tuple(
-                all(a)
-                    if all(isinstance(aa, bool) for aa in a) else
-                tuple(sorted(set(
-                    itertools.chain(*a)
-                )))
-                for a in zip(*args)
-            )
         )
 
 
