@@ -351,13 +351,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
                 cpdb = self.annotdb.annots['CellPhoneDB']
                 attr = '%s_class' % mainclass
 
-                categories = set(
-                    itertools.chain(*(
-                        getattr(c, attr)
-                        for cc in cpdb.annot.values()
-                        for c in cc
-                    ))
-                )
+                categories = cpdb.get_values(attr)
 
                 for category in categories:
 
