@@ -1031,6 +1031,15 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         ))
 
 
+    @property
+    def resources_sorted(self):
+
+        return sorted(
+            self.resources,
+            key = lambda res: (res[0], '') if res[1] is None else res
+        )
+
+
     def update_summaries(self):
 
         self.summaries = {}
@@ -1061,21 +1070,21 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
             for resource in self.resources
         )
 
-        for resource in sorted(self.resources):
+        for resource in self.resources_sorted:
 
             n_total = sum(
                 1
                 for es in self
-                if resource in es.get_resource_names_via(via = None)
+                if resource in es.evidences.get_resource_names_via(via = None)
             )
 
             n_unique = sum(
                 1 for es in self
-                if len(es.sources) == 1 and resource in es.sources
+                if len(es.evidences) == 1 and resource[0] in es.evidences
             )
             n_shared = sum(
                 1 for es in self
-                if len(es.sources) > 1 and resource in es.sources
+                if len(es.evidences) > 1 and resource[0] in es.evidences
             )
 
             curation_effort = len(curation_effort_by_resource[resource])
@@ -1105,12 +1114,12 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
             enzymes = len(set(
                 es.domain.protein
                 for es in self
-                if resource in es.sources
+                if resource[0] in es.evidences
             ))
             substrates = len(set(
                 es.ptm.protein
                 for es in self
-                if resource in es.sources
+                if resource[0] in es.evidences
             ))
 
             modification_types = ', '.join(
@@ -1121,7 +1130,7 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                         iteritems(collections.Counter(
                             es.ptm.typ
                             for es in self
-                            if resource in es.sources
+                            if resource[0] in es.evidences
                         )),
                         key = lambda type_cnt: type_cnt[1],
                         reverse = True,
@@ -1157,7 +1166,7 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
             ('n_enzymes', 'Enzymes'),
             ('n_substrates', 'Substrates'),
             ('references', 'References'),
-            ('reference_shared', 'Shared references'),
+            ('references_shared', 'Shared references'),
             ('references_unique', 'Unique references'),
             ('curation_effort', 'Curation effort'),
             ('curation_effort_shared', 'Shared curation effort'),
@@ -1173,7 +1182,10 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                 str(self.summaries[src][f[0]])
                 for f in columns
             ]
-            for src in sorted(self.summaries.keys())
+            for src in sorted(
+                self.summaries.keys(),
+                key = lambda res: (res[0], '') if res[1] is None else res,
+            )
         ])
 
         if outfile:
