@@ -236,7 +236,7 @@ class Entity(session_mod.Logger):
             list, set or tuple, otherwise a generator.
         """
         
-        if not entity_type:
+        if not entity_type or not entities:
             
             return entities
         
