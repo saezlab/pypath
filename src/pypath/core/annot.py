@@ -1192,7 +1192,28 @@ class CustomAnnotation(session_mod.Logger):
         )
 
     # synonym
-    count_by_class = counts
+    counts_by_class = counts
+
+
+    def counts_df(self, groupby = None, **kwargs):
+
+        df = self.filtered(**kwargs)
+
+        # n.b. pandas is horrible, I can't understand how it could got
+        # released for production use, how one can build business on it???
+        groupby = groupby or ['category', 'parent', 'database']
+        df = df.groupby(groupby)
+        counts = df.uniprot.nunique().reset_index()
+        counts.rename(columns = {'uniprot': 'n_uniprot'}, inplace = True)
+        df = df.agg('head', n = 1).reset_index()
+        df.drop(
+            ['uniprot', 'entity_type', 'genesymbol', 'index'],
+            axis = 1,
+            inplace = True,
+        )
+        df = df.merge(counts, on = groupby)
+
+        return df
 
 
     def iter_classes(self, **kwargs):
@@ -1236,7 +1257,7 @@ class CustomAnnotation(session_mod.Logger):
         )
 
 
-    def filter_entity_type(self, cls):
+    def filter_entity_type(self, cls, entity_type = None):
 
         return cls.filter_entity_type(entity_type = entity_type)
 
@@ -2129,7 +2150,7 @@ class CustomAnnotation(session_mod.Logger):
         for key, cls in iteritems(self.classes):
 
             by_resource[cls.resource].update(
-                cls.filter_entity_type(entity_type = entity_type)
+                cls.filter_entity_type(entity_type = entity_types)
             )
 
         return dict(by_resource)
