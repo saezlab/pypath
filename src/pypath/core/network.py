@@ -3618,7 +3618,7 @@ class Network(session_mod.Logger):
             )
 
 
-    def update_summaries(self):
+    def update_summaries(self, collect_args = None):
 
 
         def get_labels(lab, key, segments):
@@ -3720,6 +3720,9 @@ class Network(session_mod.Logger):
             return rec
 
 
+        collect_args = collect_args or {'via': False}
+
+
         required = collections.OrderedDict(
             entities = 'Entities',
             proteins = 'Proteins',
@@ -3750,7 +3753,9 @@ class Network(session_mod.Logger):
 
         for method in required.keys():
 
-            coll[method] = getattr(self, 'collect_%s' % method)()
+            coll[method] = getattr(self, 'collect_%s' % method)(
+                **collect_args
+            )
 
         for itype in self.get_interaction_types():
 
@@ -3760,6 +3765,7 @@ class Network(session_mod.Logger):
                     self.get_resource_names(
                         interaction_type = itype,
                         data_model = dmodel,
+                        **collect_args
                     ),
                     key = lambda r: r.lower()
                 ):
