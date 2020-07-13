@@ -34,6 +34,7 @@ from pypath.internals import intera
 import pypath.share.session as session_mod
 import pypath.utils.mapping as mapping
 import pypath.utils.uniprot as uniprot
+import pypath.share.settings as settings
 
 
 EntityKey = collections.namedtuple(
@@ -79,11 +80,26 @@ class Entity(session_mod.Logger):
     ]
 
 
+    _default_id_types = settings.get('default_name_types')
+
+    _id_type_to_entity_type = {
+        'uniprot': 'protein',
+        'genesymbol': 'protein',
+        'mir-name': 'mirna',
+        'mir-mat-name': 'mirna',
+        'mir-pre': 'mirna',
+        'mir-mat': 'mirna',
+        'lncrna-genesymbol': 'lncrna',
+    }
+
+    _label_types = set(settings.get('default_label_types').values())
+
+
     def __init__(
             self,
             identifier,
-            entity_type = 'protein',
-            id_type = 'uniprot',
+            entity_type = None,
+            id_type = None,
             taxon = 9606,
             attrs = None,
         ):
@@ -105,12 +121,7 @@ class Entity(session_mod.Logger):
                 identifier.taxon,
             )
 
-        self.identifier = identifier
-        self.entity_type = entity_type or self.get_entity_type()
-        # override `protein` in case this is a `complex`
-        self.entity_type = 'complex' if self.is_complex() else entity_type
-        self.id_type = id_type
-        self.taxon = taxon
+        self._bootstrap(identifier, id_type, entity_type, taxon)
         self.key = self._key
 
         self.attrs = attrs or {}
@@ -126,6 +137,77 @@ class Entity(session_mod.Logger):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+
+
+    def _bootstrap(self, identifier, id_type, entity_type, taxon):
+
+        if self._is_complex(identifier):
+
+            entity_type = 'complex'
+            id_type = 'complex'
+            taxon = (
+                identifier.ncbi_tax_id
+                    if hasattr(identifier, 'ncbi_tax_id') else
+                taxon
+            )
+
+        taxon = taxon or settings.get('default_organism')
+
+        if not entity_type:
+
+            if id_type and id_type in self._id_type_to_entity_type:
+
+                entity_type = self._id_type_to_entity_type[id_type]
+
+
+        if not id_type:
+
+            id_type, entity_type = mapping.guess_type(
+                identifier,
+                entity_type = entity_type,
+            )
+
+        if not id_type and (not entity_type or entity_type == 'protein'):
+
+            id_type, entity_type = 'genesymbol', 'protein'
+
+        if id_type in self._label_types:
+
+            _identifier = mapping.id_from_label0(
+                label = identifier,
+                label_id_type = id_type,
+                ncbi_tax_id = taxon,
+            )
+
+
+
+            if _identifier and _identifier != identifier:
+
+                id_type = mapping.mapper.label_type_to_id_type[id_type]
+                identifier = _identifier
+
+            if id_type == 'mir-pre':
+
+                _identifier = mapping.map_name0(
+                    identifier,
+                    id_type,
+                    'mirbase',
+                    ncbi_tax_id = taxon,
+                )
+
+                if _identifier and _identifier != identifier:
+
+                    identifier = _identifier
+                    id_type = 'mirbase'
+
+        entity_type = entity_type or self._get_entity_type(identifier)
+
+        self.identifier = identifier
+        self.id_type = id_type
+        self.entity_type = entity_type
+        self.taxon = taxon
+
+
 
 
     @staticmethod
