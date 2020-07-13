@@ -92,7 +92,7 @@ class Entity(session_mod.Logger):
         'lncrna-genesymbol': 'lncrna',
     }
 
-    _label_types = set(settings.get('default_label_types').values())
+    _label_types = set(mapping.Mapper.label_type_to_id_type.keys())
 
 
     def __init__(
