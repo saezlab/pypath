@@ -35,13 +35,13 @@ import sys
 import importlib as imp
 import collections
 import itertools
-from collections import Counter
 
 # from pypath:
 import pypath.share.common as common
 import pypath.utils.mapping as mapping
 import pypath.core.evidence as evidence
 import pypath.core.entity as entity
+import pypath.utils.taxonomy as taxonomy
 
 __all__ = [
     'Residue',
@@ -1215,6 +1215,7 @@ class Complex(object):
     def __init__(
             self,
             components,
+            ncbi_tax_id = 9606,
             name = None,
             ids = None,
             sources = None,
@@ -1231,6 +1232,10 @@ class Complex(object):
             and stoichiometric coefficients as values. List of identifiers
             also assumed to represent stoichiometry by repetition
             of identifiers.
+        ncbi_tax_id : int
+            NCBI taxonomy identifier of the complex. It implies all members
+            of the complex belong to the same organism. Support for multi-
+            organism complexes will be implemented in the future.
         name : str
             A custom name or identifier of the complex.
         ids : dict
@@ -1264,6 +1269,7 @@ class Complex(object):
         self.add_ids(ids, source = sources)
         self.sources = common.to_set(sources)
         self.references = common.to_set(references)
+        self.ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(ncbi_tax_id)
         self.attrs = {}
         if isinstance(attrs, dict):
             self.attrs.update(attrs)
