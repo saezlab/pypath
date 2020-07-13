@@ -617,21 +617,24 @@ class Evidences(object):
         }
 
 
-    def contains_database(self, database):
+    def contains_database(self, database, **kwargs):
 
-        return any(ev.resource.name == database for ev in self)
-
-
-    def contains_reference(self, reference):
-
-        return any(reference in ev.references for ev in self)
+        return any(
+            ev.resource.name == database
+            for ev in self.filter(**kwargs)
+        )
 
 
-    def has_database_via(self, database, via):
+    def contains_reference(self, reference, **kwargs):
+
+        return any(reference in ev.references for ev in self.filter(**kwargs))
+
+
+    def has_database_via(self, database, via, **kwargs):
 
         return any(
             ev.has_database_via(database, via)
-            for ev in self
+            for ev in self.filter(**kwargs)
         )
 
 
@@ -652,9 +655,12 @@ class Evidences(object):
         )
 
 
-    def has_data_model(self, data_model):
+    def has_data_model(self, data_model, **kwargs):
 
-        return any(ev.has_data_model(data_model) for ev in self)
+        return any(
+            ev.has_data_model(data_model)
+            for ev in self.filter(**kwargs)
+        )
 
 
     def get_resources(self, **kwargs):
@@ -669,12 +675,12 @@ class Evidences(object):
 
     def get_interaction_types(self, **kwargs):
 
-        return {ev.resource.interaction_type for ev in self}
+        return {ev.resource.interaction_type for ev in self.filter(**kwargs)}
 
 
     def get_data_models(self, **kwargs):
 
-        return {ev.resource.data_model for ev in self}
+        return {ev.resource.data_model for ev in self.filter(**kwargs)}
 
 
     def __isub__(self, other):
