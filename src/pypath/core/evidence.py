@@ -664,7 +664,7 @@ class Evidences(object):
 
     def get_resource_names(self, **kwargs):
 
-        return {ev.resource.name for ev in self}
+        return {ev.resource.name for ev in self.filter(**kwargs)}
 
 
     def get_interaction_types(self, **kwargs):
