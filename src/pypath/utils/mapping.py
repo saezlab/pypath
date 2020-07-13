@@ -1453,6 +1453,38 @@ class Mapper(session_mod.Logger):
         # further attempts to set it right if
         # first attempt was not successful
 
+        # for miRNAs if the translation from mature miRNA name failed
+        # we still try if maybe it is a hairpin name
+        # or the other way around
+        if not mapped_names and id_type in {'mir-mat-name', 'mir-name'}:
+
+            for id_type0, id_type1, target_id_type0, target_id_type1 in (
+                ('mir-name', 'mir-mat-name', 'mir-pre', 'mirbase'),
+                ('mir-mat-name', 'mir-name', 'mirbase', 'mir-pre'),
+            ):
+
+                if id_type == id_type0:
+
+                    mapped_names = self._map_name(
+                        name = name,
+                        id_type = id_type1,
+                        target_id_type = target_id_type1,
+                        ncbi_tax_id = ncbi_tax_id,
+                    )
+
+                    if mapped_names and target_id_type == target_id_type0:
+
+                        mapped_names = self.map_names(
+                            names = mapped_names,
+                            id_type = target_id_type1,
+                            target_id_type = target_id_type0,
+                            ncbi_tax_id = ncbi_tax_id,
+                        )
+
+                    if mapped_names:
+
+                        break
+
         if not mapped_names:
 
             # maybe it should be all uppercase (e.g. human gene symbols)?
@@ -1549,16 +1581,6 @@ class Mapper(session_mod.Logger):
                         ncbi_tax_id = ncbi_tax_id,
                     )
 
-        # for miRNAs if the translation from mature miRNA name failed
-        # we still try if maybe it is a hairpin name
-        if not mapped_names and id_type == 'mir-mat-name':
-
-            mapped_names = self._map_name(
-                name = name,
-                id_type = 'mir-name',
-                target_id_type = target_id_type,
-                ncbi_tax_id = ncbi_tax_id,
-            )
 
         # for UniProt IDs we do a few more steps to
         # try to find out the primary SwissProt ID
