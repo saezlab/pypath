@@ -951,6 +951,7 @@ class Mapper(session_mod.Logger):
         )
         self.cachedir = cache_mod.get_cachedir()
         self.ncbi_tax_id = ncbi_tax_id or settings.get('default_organism')
+        self.default_name_types = settings.get('default_name_types')
 
         self.unmapped = []
         self.tables = {}
@@ -973,6 +974,17 @@ class Mapper(session_mod.Logger):
         self.names_uniprot_static = (
             common.swap_dict_simple(self.uniprot_static_names)
         )
+
+        self.label_type_to_id_type = dict(
+            (
+                label_type,
+                self.default_name_types[entity_type],
+            )
+            for entity_type, label_type in
+            iteritems(settings.get('default_label_types'))
+        )
+        #TODO: some nicer solution
+        self.label_type_to_id_type['mir-pre-name'] = 'mir-pre'
 
 
     def reload(self):
@@ -1796,7 +1808,7 @@ class Mapper(session_mod.Logger):
 
             if self.remimatac.match(name):
 
-                return 'mir-mat', 'mirna'
+                return 'mirbase', 'mirna'
 
             if self.remimatid.match(name):
 
@@ -1807,6 +1819,40 @@ class Mapper(session_mod.Logger):
                 return 'mir-name', 'mirna'
 
         return None, entity_type
+
+
+    def id_from_label(
+            self,
+            label,
+            label_id_type = 'genesymbol',
+            ncbi_tax_id = None,
+        ):
+
+        if label_id_type in self.label_type_to_id_type:
+
+            ids = self.map_name(
+                label,
+                label_id_type,
+                self.label_type_to_id_type[label_id_type],
+                ncbi_tax_id = ncbi_tax_id,
+            )
+
+        return ids or {label}
+
+    def id_from_label0(
+            self,
+            label,
+            label_id_type = 'genesymbol',
+            ncbi_tax_id = None,
+        ):
+
+        return next(
+            self.id_from_label(
+                label = label,
+                label_id_type = label_id_type,
+                ncbi_tax_id = ncbi_tax_id
+            ).__iter__()
+        )
 
 
     def primary_uniprot(self, uniprots):
@@ -2461,3 +2507,32 @@ def guess_type(name, entity_type = None):
     mapper = get_mapper()
 
     return mapper.guess_type(name = name, entity_type = entity_type)
+
+
+def id_from_label(label, label_id_type = 'genesymbol', ncbi_tax_id = None):
+    """
+    For a label (e.g. Gene Symbol) returns the corresponding IDs (e.g.
+    UniProt IDs).
+    """
+
+    mapper = get_mapper()
+
+    return mapper.id_from_label(
+        label = label,
+        label_id_type = label_id_type,
+        ncbi_tax_id = ncbi_tax_id,
+    )
+
+
+def id_from_label0(label, label_id_type = 'genesymbol', ncbi_tax_id = None):
+    """
+    For a label (e.g. Gene Symbol) returns a single ID (e.g. UniProt IDs).
+    """
+
+    mapper = get_mapper()
+
+    return mapper.id_from_label0(
+        label = label,
+        label_id_type = label_id_type,
+        ncbi_tax_id = ncbi_tax_id,
+    )

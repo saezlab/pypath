@@ -82,6 +82,11 @@ _defaults = {
         'drug': 'chembl',
         'lncrna': 'lncrna-genesymbol',
     },
+    'default_label_types': {
+        'protein': 'genesymbol',
+        'mirna': 'mir-name',
+        'lncrna': 'lncrna-genesymbol',
+    },
     'uniprot_uploadlists_chunk_size': 10000,
     'trip_preprocessed': 'trip_preprocessed.pickle',
     'deathdomain': 'deathdomain.tsv',
