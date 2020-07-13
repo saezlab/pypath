@@ -936,7 +936,19 @@ class Mapper(session_mod.Logger):
         self._mapper_cleanup_timeloop.start(block = False)
 
         # regex for matching UniProt AC format
-        self.reuniprot = uniprot_input.reac
+        self.reuniprot = re.compile(r'^(?:%s)$' % uniprot_input.reac.pattern)
+        self.remipreac = re.compile(r'^MI\d{7}$')
+        self.remimatac = re.compile(r'^MIMAT\d{7}$')
+        self.remipreid = re.compile(
+            r'^[a-z]{3}-'
+            r'(?:mir|MIR|let|lsy|lin)-?'
+            r'\d+-?[A-z\*]*(?:-((?!p)[\w\*\.-])+)?$'
+        )
+        self.remimatid = re.compile(
+            r'^[a-z]{3}-'
+            r'(?:miR|let|lsy|lin)-?'
+            r'\d+[a-z\*]*(?:-((?!p)[\w\*])+)?(?:-(3|5)p)?$'
+        )
         self.cachedir = cache_mod.get_cachedir()
         self.ncbi_tax_id = ncbi_tax_id or settings.get('default_organism')
 
@@ -1760,6 +1772,43 @@ class Mapper(session_mod.Logger):
             return str(name)
 
 
+    def guess_type(self, name, entity_type = None):
+        """
+        From a string, tries to guess the ID type and optionally the entity
+        type. Returns a tuple of strings: ID type and entity type.
+        """
+
+        if (
+            (
+                not entity_type or
+                entity_type == 'protein'
+            ) and
+            self.reuniprot.match(name)
+        ):
+
+            return 'uniprot', 'protein'
+
+        if not entity_type or entity_type == 'mirna':
+
+            if self.remipreac.match(name):
+
+                return 'mir-pre', 'mirna'
+
+            if self.remimatac.match(name):
+
+                return 'mir-mat', 'mirna'
+
+            if self.remimatid.match(name):
+
+                return 'mir-mat-name', 'mirna'
+
+            if self.remipreid.match(name):
+
+                return 'mir-name', 'mirna'
+
+        return None, entity_type
+
+
     def primary_uniprot(self, uniprots):
         """
         For an iterable of UniProt IDs returns a set with the secondary IDs
@@ -2401,3 +2450,14 @@ def label(name, id_type = None, ncbi_tax_id = 9606):
         id_type = id_type,
         ncbi_tax_id = ncbi_tax_id,
     )
+
+
+def guess_type(name, entity_type = None):
+    """
+    From a string, tries to guess the ID type and optionally the entity
+    type. Returns a tuple of strings: ID type and entity type.
+    """
+
+    mapper = get_mapper()
+
+    return mapper.guess_type(name = name, entity_type = entity_type)
