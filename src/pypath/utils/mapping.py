@@ -861,6 +861,25 @@ class MappingTable(session_mod.Logger):
 
 class Mapper(session_mod.Logger):
 
+    default_name_types = settings.get('default_name_types')
+
+    def _get_label_type_to_id_type(default_name_types):
+
+        label_type_to_id_type = dict(
+            (
+                label_type,
+                default_name_types[entity_type],
+            )
+            for entity_type, label_type in
+            iteritems(settings.get('default_label_types'))
+        )
+        #TODO: some nicer solution
+        label_type_to_id_type['mir-name'] = 'mir-pre'
+
+        return label_type_to_id_type
+
+    label_type_to_id_type = _get_label_type_to_id_type(default_name_types)
+
 
     def __init__(
             self,
@@ -951,7 +970,6 @@ class Mapper(session_mod.Logger):
         )
         self.cachedir = cache_mod.get_cachedir()
         self.ncbi_tax_id = ncbi_tax_id or settings.get('default_organism')
-        self.default_name_types = settings.get('default_name_types')
 
         self.unmapped = []
         self.tables = {}
@@ -974,17 +992,6 @@ class Mapper(session_mod.Logger):
         self.names_uniprot_static = (
             common.swap_dict_simple(self.uniprot_static_names)
         )
-
-        self.label_type_to_id_type = dict(
-            (
-                label_type,
-                self.default_name_types[entity_type],
-            )
-            for entity_type, label_type in
-            iteritems(settings.get('default_label_types'))
-        )
-        #TODO: some nicer solution
-        self.label_type_to_id_type['mir-pre-name'] = 'mir-pre'
 
 
     def reload(self):
