@@ -41,6 +41,7 @@ import pypath.share.session as session_mod
 import pypath.utils.taxonomy as taxonomy
 import pypath.inputs as inputs
 import pypath.core.evidence as evidence
+import pypath.core.entity as entity
 import pypath.resources as resources
 
 
@@ -768,6 +769,25 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         return '<Enzyme-substrate database: %s relationships>' % len(self)
 
 
+    def __getitem__(self, *args):
+
+        args = args[0] if isinstance(args[0], tuple) else args
+
+        return self.get_enzyme_substrate(*args)
+
+
+    def get_enzyme_substrate(self, enzyme, substrate):
+
+        enzyme = entity.Entity(enzyme)
+        substrate = entity.Entity(substrate)
+
+        key = (enzyme, substrate)
+
+        if key in self.enz_sub:
+
+            return self.enz_sub[key]
+
+
     def set_inputs(self):
 
         self.input_param = (
@@ -1040,9 +1060,20 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         )
 
 
-    def update_summaries(self):
+    def update_summaries(self, collect_args = None):
+
+        collect_args = collect_args or {'via': False}
 
         self.summaries = {}
+
+        resources = [
+            res for res in self.resources_sorted
+            if (
+                res[1] is None or
+                'via' not in collect_args or
+                collect_args['via'] != False
+            )
+        ]
 
         refs_by_resource = dict(
             (
@@ -1053,7 +1084,7 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                     )
                 )
             )
-            for resource in self.resources
+            for resource in resources
         )
         curation_effort_by_resource = dict(
             (
@@ -1067,24 +1098,32 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                     for ref in refs
                 }
             )
-            for resource in self.resources
+            for resource in resources
         )
 
-        for resource in self.resources_sorted:
+        resources_sorted = sorted(resources)
+
+        for resource in resources:
 
             n_total = sum(
                 1
                 for es in self
-                if resource in es.evidences.get_resource_names_via(via = None)
+                if resource in es.evidences.get_resource_names(**collect_args)
             )
 
             n_unique = sum(
                 1 for es in self
-                if len(es.evidences) == 1 and resource[0] in es.evidences
+                if (
+                    resource[0] in es.evidences and
+                    es.evidences.count_resources(**collect_args) == 1
+                )
             )
             n_shared = sum(
                 1 for es in self
-                if len(es.evidences) > 1 and resource[0] in es.evidences
+                if (
+                    resource[0] in es.evidences and
+                    es.evidences.count_resources(**collect_args) > 1
+                )
             )
 
             curation_effort = len(curation_effort_by_resource[resource])

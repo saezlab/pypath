@@ -84,7 +84,7 @@ _defaults = {
     },
     'default_label_types': {
         'protein': 'genesymbol',
-        'mirna': 'mir-name',
+        'mirna': 'mir-mat-name',
         'lncrna': 'lncrna-genesymbol',
     },
     'uniprot_uploadlists_chunk_size': 10000,
