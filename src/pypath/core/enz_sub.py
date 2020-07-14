@@ -958,7 +958,7 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         return enz_sub_uniq
 
 
-    def make_df(self, tax_id = False):
+    def make_df(self, tax_id = False, resources_only_primary = False):
 
         self._log('Creating enzyme-substrate interaction data frame.')
 
@@ -978,7 +978,10 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
         ]
 
         self.df = pd.DataFrame(
-            [dm.get_line() for dm in self],
+            [
+                dm.get_line(resources_only_primary = resources_only_primary)
+                for dm in self
+            ],
             columns = hdr,
         ).astype(
             {

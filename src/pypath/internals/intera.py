@@ -919,10 +919,13 @@ class DomainDomain(object):
             ' %s %s\n'\
             ' Data sources: %s\n'\
             ' References: %s\n'\
-            ' 3D structures: %s\n' % (self.domains[0].__str__(),
-                                      self.domains[1].__str__(), ', '.join(
-                                          self.sources),
-                                      ', '.join(self.refs), ', '.join(self.pdbs))
+            ' 3D structures: %s\n' % (
+                self.domains[0].__str__(),
+                self.domains[1].__str__(),
+                ', '.join(self.sources),
+                ', '.join(self.refs),
+                ','.join(self.pdbs)
+            )
 
 
 class DomainMotif(object):
@@ -1098,7 +1101,7 @@ class DomainMotif(object):
         ))
 
 
-    def get_line(self):
+    def get_line(self, resources_only_primary = False):
         """
         Returns a list intended to be a row in a data frame of
         enzyme-substrate relationships.
@@ -1126,7 +1129,9 @@ class DomainMotif(object):
             self.ptm.residue.name,
             '%u' % self.ptm.residue.number,
             self.ptm.typ,
-            ';'.join(sorted(self.resources())),
+            ';'.join(sorted(
+                self.resources(only_primary = resources_only_primary)
+            )),
             self.references_by_resource_str(),
             self.evidences.count_curation_effort(),
         ]
