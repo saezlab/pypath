@@ -3855,9 +3855,21 @@ class Network(session_mod.Logger):
 
     def homology_translate(self, taxon, exclude = None):
 
+        self._log(
+            'Translating network by homology from organism `%u` to `%u`.' % (
+                self.ncbi_tax_id,
+                taxon,
+            )
+        )
+
         new = Network(ncbi_tax_id = taxon)
 
+        n_ia_translated = 0
+        entities_translated = set()
+
         for ia in self:
+
+            ia_translated = False
 
             for new_ia in ia.homology_translate(
                 taxon = taxon,
@@ -3865,6 +3877,24 @@ class Network(session_mod.Logger):
             ):
 
                 new.add_interaction(new_ia)
+                ia_translated = True
+                entities_translated.update(ia.get_entities())
+
+            n_ia_translated += ia_translated
+
+        self._log(
+            'Homology translation ready. '
+            '%u out of %u interactions (%.02f%%), '
+            '%u out of %u entities (%.02f%%) '
+            'have been translated.' % (
+                n_ia_translated,
+                len(self),
+                n_ia_translated / len(self) * 100,
+                len(entities_translated),
+                len(self.nodes),
+                len(entities_translated) / len(self.nodes) * 100,
+            )
+        )
 
         return new
 
