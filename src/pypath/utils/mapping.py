@@ -751,17 +751,20 @@ class MapReader(session_mod.Logger):
     def read_mapping_biomart(self):
 
         biomart_data = biomart_input.biomart_query(
-            attr = self.param.attr,
+            attrs = self.param.attr,
             transcript = self.param.transcript,
         )
 
         ens_to_other = collections.defaultdict(set)
 
-        for line in biomart_data:
+        for rec in biomart_data:
 
-            if line[1]:
+            ens_id = getattr(rec, self.param.ens_id_type)
+            foreign_id = getattr(rec, self.param.attr)
 
-                ens_to_other[line[0]].add(line[1])
+            if foreign_id:
+
+                ens_to_other[ens_id].add(foreign_id)
 
         self.a_to_b = (
             None

@@ -277,6 +277,9 @@ class BiomartMapping(MappingInput):
         id_type_b = id_type_b or ('enst' if transcript else 'ensg')
         self.transcript = 'enst' in {id_type_a, id_type_b}
         self.to_ensembl = id_type_b in ens_id_types
+        self.ens_id_type = 'ensembl_%s_id' % (
+            'transcript' if self.transcript else 'gene'
+        )
 
         self.biomart_id_type_a = self._get_biomart_id_type(
             id_type_a,
@@ -489,8 +492,11 @@ biomart_mapping = {
     'gene_name': 'external_gene_name',
     'transcript_name': 'external_transcript_name',
     'gene_description': 'description',
-    'description': 'description',
     'gene_synonym': 'external_synonym',
+    'interpro_description': 'interpro_description',
+    'interpro': 'interpro',
+    'interpro_short_description': 'interpro_short_description',
+
 }
 
 
