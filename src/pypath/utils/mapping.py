@@ -62,6 +62,7 @@ import pypath.share.curl as curl
 import pypath.inputs as inputs
 import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.pro as pro_input
+import pypath.inputs.biomart as biomart_input
 import pypath.internals.input_formats as input_formats
 import pypath.utils.reflists as reflists
 import pypath.utils.taxonomy as taxonomy
@@ -76,10 +77,6 @@ __all__ = ['MapReader', 'MappingTable', 'Mapper']
 Classes for reading and use serving ID mapping data
 from UniProt, file, mysql or pickle.
 """
-
-
-
-
 
 MappingTableKey = collections.namedtuple(
     'MappingTableKey',
@@ -515,8 +512,6 @@ class MapReader(session_mod.Logger):
                 uniprot_id_type_b = self.param.uniprot_id_type_a,
             )
 
-            _ = next(u_target)
-
             upload_ac_list = [l.split('\t')[1].strip() for l in u_target]
 
         else:
@@ -527,7 +522,7 @@ class MapReader(session_mod.Logger):
             upload_ac_list = upload_ac_list,
         )
 
-        for l in uniprot_data.split('\n'):
+        for l in uniprot_data:
 
             if not l:
 
@@ -579,6 +574,7 @@ class MapReader(session_mod.Logger):
         uniprot_id_type_b = uniprot_id_type_b or self.param.uniprot_id_type_b
 
         upload_ac_list = upload_ac_list or self.uniprots
+        upload_ac_list = sorted(upload_ac_list)
 
         self._log(
             'Querying the UniProt uploadlists service for ID translation '
@@ -587,7 +583,7 @@ class MapReader(session_mod.Logger):
 
         url = urls.urls['uniprot_basic']['lists']
 
-        result = ''
+        result = []
 
         # loading data in chunks of 10,000 by default
         for i in range(math.ceil(len(upload_ac_list) / chunk_size)):
@@ -640,7 +636,7 @@ class MapReader(session_mod.Logger):
             # removing the header row
             _ = next(c.result)
 
-            result += c.fileobj.read()
+            result.extend(list(c.fileobj)[1:])
 
         return result
 
@@ -749,6 +745,37 @@ class MapReader(session_mod.Logger):
             dict(pro_to_other)
                 if self.param.to_pro else
             common.swap_dict(pro_to_other)
+        )
+
+
+    def read_mapping_biomart(self):
+
+        biomart_data = biomart_input.biomart_query(
+            attr = self.param.attr,
+            transcript = self.param.transcript,
+        )
+
+        ens_to_other = collections.defaultdict(set)
+
+        for line in biomart_data:
+
+            if line[2]:
+
+                ens_to_other[line[0]].add(line[2])
+
+        self.a_to_b = (
+            None
+                if not self.load_a_to_b else
+            common.swap_dict(ens_to_other)
+                if self.param.to_ensembl else
+            dict(ens_to_other)
+        )
+        self.b_to_a = (
+            None
+                if not self.load_b_to_a else
+            dict(ens_to_other)
+                if self.param.to_ensembl else
+            common.swap_dict(ens_to_other)
         )
 
 
@@ -1132,6 +1159,11 @@ class Mapper(session_mod.Logger):
                         'pro',
                         input_formats.ProMapping,
                     ),
+                    (
+                        input_formats.biomart_mapping,
+                        'biomart',
+                        input_formats.BiomartMapping,
+                    )
                 ):
 
                     if (
@@ -1150,6 +1182,17 @@ class Mapper(session_mod.Logger):
                                 (
                                     id_type == service_id_type or
                                     target_id_type == service_id_type
+                                )
+                            )
+                        ) or (
+                            service_id_type == 'biomart' and (
+                                (
+                                    id_type in service_ids and
+                                    target_id_type in {'enst', 'ensg'}
+                                ) or
+                                (
+                                    target_id_type in service_ids and
+                                    id_type in {'enst', 'ensg'}
                                 )
                             )
                         )

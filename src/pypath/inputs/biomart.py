@@ -53,4 +53,10 @@ def biomart_query(attr, transcript = False):
 
     c = curl.Curl(biomart_url, large = True, silent = False)
 
-    return c
+    for line in c.result:
+
+        line = line.strip('\n\r').split('\t')
+
+        if len(line) >= 3:
+
+            yield line

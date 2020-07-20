@@ -259,6 +259,63 @@ class ProMapping(MappingInput):
         self.entity_type = 'protein'
 
 
+class BiomartMapping(MappingInput):
+
+
+    def __init__(
+            self,
+            id_type_a,
+            id_type_b = None,
+            transcript = False,
+            biomart_id_type_a = None,
+            biomart_id_type_b = None,
+            ncbi_tax_id = 9606,
+        ):
+
+        ens_id_types = {'enst', 'ensg'}
+
+        id_type_b = id_type_b or ('enst' if transcript else 'ensg')
+        self.transcript = 'enst' in {id_type_a, id_type_b}
+        self.to_ensembl = id_type_b in ens_id_types
+
+        self.biomart_id_type_a = self._get_biomart_id_type(
+            id_type_a,
+            biomart_id_type_a,
+        )
+        self.biomart_id_type_b = self._get_biomart_id_type(
+            id_type_b,
+            biomart_id_type_b,
+        )
+        self.attr = (
+            self.biomart_id_type_a
+                if self.to_ensembl else
+            self.biomart_id_type_b
+        )
+
+        self.biomart_mapping = biomart_mapping
+
+        MappingInput.__init__(
+            self,
+            type_ = 'biomart',
+            id_type_a = id_type_a,
+            id_type_b = id_type_b,
+            ncbi_tax_id = 9606,
+        )
+
+
+    @staticmethod
+    def _get_biomart_id_type(id_type, biomart_id_type):
+
+        return (
+            biomart_id_type or
+            (
+                biomart_mapping[id_type]
+                    if id_type in biomart_mapping else
+                id_type
+            )
+        )
+
+
 class PickleMapping(MappingInput):
 
 
@@ -422,6 +479,12 @@ ac_mapping = {
     'ensgt': 'ENSEMBLGENOME_TRS_ID',
     'hgnc': 'HGNC_ID'
 }
+
+
+biomart_mapping = {
+    'hgnc_symbol': 'hgnc_symbol',
+}
+
 
 pro_mapping = {
     'alzforum': 'Alzforum_mut',
