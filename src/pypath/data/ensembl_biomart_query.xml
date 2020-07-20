@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Query>
+<Query  virtualSchemaName="default" formatter="TSV" header="0" uniqueRows="0" count="" datasetConfigVersion="0.6" completionStamp="1" >
+
+	<Dataset name="hsapiens_gene_ensembl" interface="default" >
+		<Attribute name="ensembl_%s_id" />
+		<Attribute name="ensembl_%s_id_version" />
+		<Attribute name="%s" />
+	</Dataset>
+</Query>
