@@ -272,15 +272,6 @@ class BiomartMapping(MappingInput):
             ncbi_tax_id = 9606,
         ):
 
-        ens_id_types = {'enst', 'ensg'}
-
-        id_type_b = id_type_b or ('enst' if transcript else 'ensg')
-        self.transcript = 'enst' in {id_type_a, id_type_b}
-        self.to_ensembl = id_type_b in ens_id_types
-        self.ens_id_type = 'ensembl_%s_id' % (
-            'transcript' if self.transcript else 'gene'
-        )
-
         self.biomart_id_type_a = self._get_biomart_id_type(
             id_type_a,
             biomart_id_type_a,
@@ -289,10 +280,9 @@ class BiomartMapping(MappingInput):
             id_type_b,
             biomart_id_type_b,
         )
-        self.attr = (
-            self.biomart_id_type_a
-                if self.to_ensembl else
-            self.biomart_id_type_b
+        self.attrs = (
+            self.biomart_id_type_a,
+            self.biomart_id_type_b,
         )
 
         self.biomart_mapping = biomart_mapping
@@ -496,6 +486,10 @@ biomart_mapping = {
     'interpro_description': 'interpro_description',
     'interpro': 'interpro',
     'interpro_short_description': 'interpro_short_description',
+    'enst': 'ensembl_transcript_id',
+    'ensg': 'ensembl_gene_id',
+    'ensembl_gene_id': 'ensembl_gene_id',
+    'ensembl_transcript_id': 'ensembl_transcript_id',
 
 }
 

@@ -750,36 +750,30 @@ class MapReader(session_mod.Logger):
 
     def read_mapping_biomart(self):
 
-        biomart_data = biomart_input.biomart_query(
-            attrs = self.param.attr,
-            transcript = self.param.transcript,
-        )
+        biomart_data = biomart_input.biomart_query(attrs = self.param.attrs)
 
-        ens_to_other = collections.defaultdict(set)
+        a_to_b = collections.defaultdict(set)
+        b_to_a = collections.defaultdict(set)
 
         for rec in biomart_data:
 
-            ens_id = getattr(rec, self.param.ens_id_type)
-            foreign_id = getattr(rec, self.param.attr)
+            id_a = getattr(rec, self.param.biomart_id_type_a)
+            id_b = getattr(rec, self.param.biomart_id_type_b)
 
-            if foreign_id:
+            if id_a and id_b:
 
-                ens_to_other[ens_id].add(foreign_id)
+                if self.load_a_to_b:
 
-        self.a_to_b = (
-            None
-                if not self.load_a_to_b else
-            common.swap_dict(ens_to_other)
-                if self.param.to_ensembl else
-            dict(ens_to_other)
-        )
-        self.b_to_a = (
-            None
-                if not self.load_b_to_a else
-            dict(ens_to_other)
-                if self.param.to_ensembl else
-            common.swap_dict(ens_to_other)
-        )
+                    a_to_b[id_a].add(id_b)
+
+                if self.load_b_to_a:
+
+                    b_to_a[id_b].add(id_a)
+
+
+
+        self.a_to_b = dict(a_to_b) if self.load_a_to_b else None
+        self.b_to_a = dict(b_to_a) if self.load_b_to_a else None
 
 
     @staticmethod
@@ -1191,11 +1185,7 @@ class Mapper(session_mod.Logger):
                             service_id_type == 'biomart' and (
                                 (
                                     id_type in service_ids and
-                                    target_id_type in {'enst', 'ensg'}
-                                ) or
-                                (
-                                    target_id_type in service_ids and
-                                    id_type in {'enst', 'ensg'}
+                                    target_id_type in service_ids
                                 )
                             )
                         )
@@ -1716,7 +1706,7 @@ class Mapper(session_mod.Logger):
                 )
                 for name in names
             )
-        )
+        ) if names else set()
 
 
     def _map_refseq(
