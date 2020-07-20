@@ -759,9 +759,9 @@ class MapReader(session_mod.Logger):
 
         for line in biomart_data:
 
-            if line[2]:
+            if line[1]:
 
-                ens_to_other[line[0]].add(line[2])
+                ens_to_other[line[0]].add(line[1])
 
         self.a_to_b = (
             None

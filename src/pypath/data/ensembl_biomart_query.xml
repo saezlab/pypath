@@ -4,7 +4,6 @@
 
 	<Dataset name="hsapiens_gene_ensembl" interface="default" >
 		<Attribute name="ensembl_%s_id" />
-		<Attribute name="ensembl_%s_id_version" />
 		<Attribute name="%s" />
 	</Dataset>
 </Query>

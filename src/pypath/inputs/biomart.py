@@ -44,7 +44,6 @@ def biomart_query(attr, transcript = False):
 
     xml_query = xml_template % (
         ens_id_type,
-        ens_id_type,
         attr,
     )
     xml_query = rewsp.sub('', xml_query)
@@ -57,6 +56,6 @@ def biomart_query(attr, transcript = False):
 
         line = line.strip('\n\r').split('\t')
 
-        if len(line) >= 3:
+        if len(line) >= 2:
 
             yield line
