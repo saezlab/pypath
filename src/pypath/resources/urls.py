@@ -1250,6 +1250,10 @@ urls = {
         'label': 'A literature curated resource about immune interactions',
         'url': 'http://network.immunoglobe.org/networks.json',
     },
+    'ensembl': {
+        'label': 'Genome and transcript reference database',
+        'biomart_url': 'http://www.ensembl.org/biomart/martservice?query=%s',
+    },
 }
 
 
