@@ -1954,6 +1954,10 @@ class TableServer(BaseServer):
 
                 values = self._args_set(req, var)
 
+                if var == 'resources':
+
+                    var = 'databases'
+
                 tbl = tbl[getattr(tbl, var).isin(values)]
 
         for (_long, short) in (
