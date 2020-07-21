@@ -54,6 +54,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             hpmr_categories = None,
             surfaceome_categories = None,
             gpcrdb_categories = None,
+            icellnet_categories = None,
             build = True,
             composite_resource_name = None,
             **kwargs
@@ -114,6 +115,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
                 'hpmr',
                 'surfaceome',
                 'gpcrdb',
+                'icellnet',
             )
         )
 
@@ -336,6 +338,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
         self.add_hpmr_categories()
         self.add_surfaceome_categories()
         self.add_gpcrdb_categories()
+        self.add_icellnet_categories()
 
 
     def add_cellphonedb_categories(self):
@@ -642,6 +645,61 @@ class IntercellAnnotation(annot.CustomAnnotation):
                     )
 
             self._class_definitions_provided += tuple(surfaceome_categories)
+
+
+    def add_icellnet_categories(self):
+
+        icellnet_categories = []
+
+        if self._resource_categories['icellnet']:
+
+            self.ensure_annotdb()
+
+            icellnet = self.annotdb['ICELLNET']
+
+            names = icellnet.get_names()[:3]
+
+            combinations = {
+                a[:3]
+                for aa in icellnet.annot.values()
+                for a in aa
+            }
+
+            for values in combinations:
+
+                for l in (2, 3):
+
+                    _fields = names[:l]
+                    _values = values[:l]
+
+                    if _values[-1] is None:
+
+                        continue
+
+                    args = dict(zip(_fields, _values))
+
+                    members = icellnet.select(**args)
+
+                    if not members:
+
+                        continue
+
+                    name = '_'.join(
+                        val.lower().replace('.', '').replace(' ', '_')
+                        for val in _values[1:]
+                        if val is not None
+                    )
+
+                    icellnet_categories.append(
+                        af.AnnotDef(
+                            name = name,
+                            resource = 'ICELLNET',
+                            args = args,
+                            parent = values[0],
+                        )
+                    )
+
+            self._class_definitions_provided += tuple(icellnet_categories)
 
 
     def post_load(self):

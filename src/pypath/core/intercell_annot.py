@@ -1928,6 +1928,14 @@ annot_combined_classes = (
     ),  # includes adhesion molecules e.g. intergrins
     af.AnnotDef(
         name = 'receptor',
+        resource = 'ICELLNET',
+        args = {
+            'role': 'receptor',
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'receptor',
         resource = 'Surfaceome',
         args = {
             'mainclass': 'Receptors',
@@ -4148,6 +4156,14 @@ annot_combined_classes = (
             'role': 'Ligand',
         },
         # `exclude` defined in the `excludes` dict
+    ),
+    af.AnnotDef(
+        name = 'ligand',
+        resource = 'ICELLNET',
+        args = {
+            'role': 'ligand',
+        },
+        scope = 'generic',
     ),
     af.AnnotDef(
         name = 'ligand',

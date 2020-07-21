@@ -129,6 +129,7 @@ _defaults = {
     'intercell_hpmr_categories': True,
     'intercell_surfaceome_categories': True,
     'intercell_gpcrdb_categories': True,
+    'intercell_icellnet_categories': True,
 
     # parameters for pypath.omnipath
     'timestamp_format': '%Y%m%d',
