@@ -1954,9 +1954,9 @@ class TableServer(BaseServer):
 
                 values = self._args_set(req, var)
 
-                if var == 'resources':
+                if var in {'resources', 'databases'}:
 
-                    var = 'databases'
+                    var = 'database'
 
                 tbl = tbl[getattr(tbl, var).isin(values)]
 

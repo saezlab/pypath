@@ -19,6 +19,10 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
+import os
+import json
 import warnings
 
 import pypath.share.common as common
@@ -41,11 +45,15 @@ class License(object):
     }
 
 
-    def __init__(self, name, full_name = None, features = None):
+    def __init__(self, name, full_name = None, features = None, **kwargs):
 
         self.name = name
         self.full_name = full_name or name
         self.features = common.to_set(features)
+
+        for k, v in iteritems(kwargs):
+
+            setattr(self, k, v)
 
 
     def __repr__(self):
@@ -118,3 +126,13 @@ class License(object):
     def allowed(self, use):
 
         return self.max_level >= self.level(use)
+
+
+    @classmethod
+    def from_json(cls, path):
+
+        with open(path, 'r') as fp:
+
+            json_data = json.load(fp)
+
+        return cls.__new__(cls, **json_data)
