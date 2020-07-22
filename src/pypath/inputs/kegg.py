@@ -39,15 +39,15 @@ def kegg_interactions():
     Returns list of interactions.
     """
 
-    effect_terms = {'activation', 'inhibition'}
+    positive_terms = {'activation', 'expression'}
+    negative_terms = {'inhibition', 'repression'}
+    transc_terms = {'expression', 'repression'}
     mechanism_terms = {
         'phosphorylation',
         'binding/association',
-        'expression',
         'dissociation',
         'ubiquitination',
         'dephosphorylation',
-        'repression',
         'glycosylation',
         'state change',
         'methylation',
@@ -63,6 +63,7 @@ def kegg_interactions():
             'pathway',
             'mechanism',
             'is_direct',
+            'transcriptional',
         ],
     )
 
@@ -126,11 +127,15 @@ def kegg_interactions():
             ):
 
                 is_direct = 'indirect effect' not in subtypes
-                effect = common.first(
-                    effect_terms & subtypes,
-                    default = 'unknown',
+                effect = (
+                    'inhibition'
+                        if negative_terms & subtypes else
+                    'activation'
+                        if positive_terms & subtypes else
+                    'unknown'
                 )
                 mechanism = ';'.join(mechanism_terms & subtypes)
+                transcriptional = bool(transc_terms & subtypes)
 
                 for u1 in uentries[rel.attrs['entry1']]:
 
@@ -144,6 +149,7 @@ def kegg_interactions():
                                 pathway = pw,
                                 mechanism = mechanism,
                                 is_direct = is_direct,
+                                transcriptional = transcriptional,
                             )
                         )
 

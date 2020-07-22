@@ -656,12 +656,18 @@ pathway_noref = {
         entity_type_a = "protein",
         entity_type_b = "protein",
         ncbi_tax_id = 9606,
-        is_directed = (2, ('activation', 'inhibition')),
+        is_directed = (2, 'activation', 'inhibition'),
         sign = (2, 'activation', 'inhibition'),
         input = 'kegg.kegg_interactions',
         references = False,
         must_have_references = False,
         header = False,
+        positive_filters = [
+            (5, True), # is_direct
+        ],
+        negative_filters = [
+            (6, True), # transcriptional
+        ],
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
@@ -1876,6 +1882,30 @@ transcription_onebyone = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         interaction_type = 'transcriptional',
+    ),
+    'kegg': input_formats.NetworkInput(
+        name = "KEGG",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        ncbi_tax_id = 9606,
+        is_directed = (2, ('repression', 'expression')),
+        sign = (2, 'expression', 'repression'),
+        input = 'kegg.kegg_interactions',
+        references = False,
+        must_have_references = False,
+        header = False,
+        positive_filters = [
+            (5, True), # is_direct
+            (6, True), # transcriptional
+        ],
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
     ),
 }
 
