@@ -542,6 +542,19 @@ def upper0(string):
         return ' '.join(words)
 
 
+def first(it, default = None):
+    """
+    Returns the first element of the iterable ``it`` or the value of
+    ``default`` if the iterable is empty.
+    """
+
+    for i in it:
+
+        return i
+
+    return default
+
+
 def something(anything):
     """Checks if argument is empty.
 
