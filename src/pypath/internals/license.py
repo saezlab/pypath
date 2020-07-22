@@ -31,10 +31,25 @@ import pypath.share.common as common
 class License(object):
 
 
-    _levels = {
+    _purpose_levels = {
         'commercial': 10,
         'academic': 5,
         'ignore': 0,
+    }
+
+    _sharing_levels = {
+        'ignore': 20,
+        'free': 15,
+        'share': 10,
+        'alike': 5,
+        'noderiv': 2,
+        'noshare': 0,
+    }
+
+    _attrib_levels = {
+        'ignore': 10,
+        'noattrib': 5,
+        'attrib': 0,
     }
 
     _synonyms = {
@@ -45,15 +60,34 @@ class License(object):
     }
 
 
-    def __init__(self, name, full_name = None, features = None, **kwargs):
+    def __init__(
+            self,
+            name,
+            full_name = None,
+            purpose = None,
+            sharing = None,
+            attrib = 'attrib',
+            url = None,
+            **kwargs
+        ):
 
         self.name = name
         self.full_name = full_name or name
-        self.features = common.to_set(features)
+        self.purpose = common.to_set(purpose)
+        self.sharing = common.to_set(sharing)
+        self.attrib = common.to_set(attrib)
 
         for k, v in iteritems(kwargs):
 
             setattr(self, k, v)
+
+        for aspect in ('purpose', 'sharing', 'attrib'):
+
+            setattr(
+                self,
+                '_%s_labels' % aspect,
+                common.swap_dict(getattr(self, '_%s_levels' % aspect))
+            )
 
 
     def __repr__(self):
@@ -93,19 +127,19 @@ class License(object):
 
 
     @property
-    def levels(self):
+    def purpose_levels(self):
 
-        return {self._levels[f] for f in self.features if f in self._levels}
+        return {self._levels[f] for f in self.purpose if f in self._levels}
 
 
     @property
-    def max_level(self):
+    def max_purpose_level(self):
 
         return max(self.levels)
 
 
     @classmethod
-    def level(cls, use):
+    def purpose_level(cls, use):
 
         use = self._synonyms[use] if use in self._synonyms else use
 
@@ -116,8 +150,8 @@ class License(object):
         else:
 
             warnings.warn(
-                'Unknown usage level for licenses: `%s`. '
-                'This will always disable the usage.' % use
+                'Unknown purpose level for licenses: `%s`. '
+                'This will always disable the purpose.' % use
             )
 
             return 99
