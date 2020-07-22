@@ -39,6 +39,33 @@ def kegg_interactions():
     Returns list of interactions.
     """
 
+    effect_terms = {'activation', 'inhibition'}
+    mechanism_terms = {
+        'phosphorylation',
+        'binding/association',
+        'expression',
+        'dissociation',
+        'ubiquitination',
+        'dephosphorylation',
+        'repression',
+        'glycosylation',
+        'state change',
+        'methylation',
+    }
+    direct_terms = {'indirect effect'}
+
+    KeggInteraction = collections.namedtuple(
+        'KeggInteraction',
+        [
+            'id_a',
+            'id_b',
+            'effect',
+            'pathway',
+            'mechanism',
+            'is_direct',
+        ],
+    )
+
     rehsa = re.compile(r'.*(hsa[0-9]+).*')
     req_hdrs = [
         'Referer: http://www.genome.jp/kegg-bin/show_pathway'
@@ -58,14 +85,17 @@ def kegg_interactions():
             hsa_list.append((m.groups(0)[0], a.text))
 
     prg = progress.Progress(
-        len(hsa_list), 'Processing KEGG Pathways', 1, percent = False)
+        len(hsa_list), 'Processing KEGG Pathways', 1, percent = False
+    )
 
     for hsa, pw in hsa_list:
 
         prg.step()
-        c = curl.Curl(urls.urls['kegg_pws']['kgml_url_2'] % hsa,
-                      silent = True,
-                      req_headers = req_hdrs)
+        c = curl.Curl(
+            urls.urls['kegg_pws']['kgml_url_2'] % hsa,
+            silent = True,
+            req_headers = req_hdrs
+        )
         kgml = c.result
         kgmlsoup = bs4.BeautifulSoup(kgml, 'html.parser')
         entries = {}
@@ -86,17 +116,36 @@ def kegg_interactions():
             ]))) for eid, gns in iteritems(entries)])
 
         for rel in kgmlsoup.find_all('relation'):
-            st = rel.find('subtype')
+
+            subtypes = {st.attrs['name'] for st in rel.find_all('subtype')}
 
             if (
                 rel.attrs['entry1'] in uentries and
                 rel.attrs['entry2'] in uentries and
-                st and
-                'name' in st.attrs
+                subtypes
             ):
+
+                is_direct = 'indirect effect' not in subtypes
+                effect = common.first(
+                    effect_terms & subtypes,
+                    default = 'unknown',
+                )
+                mechanism = ';'.join(mechanism_terms & subtypes)
+
                 for u1 in uentries[rel.attrs['entry1']]:
+
                     for u2 in uentries[rel.attrs['entry2']]:
-                        interactions.append((u1, u2, st.attrs['name'], pw))
+
+                        interactions.append(
+                            KeggInteraction(
+                                id_a = u1,
+                                id_b = u2,
+                                effect = effect,
+                                pathway = pw,
+                                mechanism = mechanism,
+                                is_direct = is_direct,
+                            )
+                        )
 
     prg.terminate()
 
@@ -111,6 +160,7 @@ def kegg_pathways():
     interactions_pws = dict(map(lambda pw: (pw, set([])), pws))
 
     for u1, u2, eff, pw in data:
+
         proteins_pws[pw].add(u1)
         proteins_pws[pw].add(u2)
         interactions_pws[pw].add((u1, u2))
