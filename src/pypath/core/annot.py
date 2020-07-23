@@ -1280,6 +1280,7 @@ class CustomAnnotation(session_mod.Logger):
             only_effect = None,
             only_proteins = False,
             swap_undirected = True,
+            undirected_orientation = None,
             entities_or = False,
         ):
         """
@@ -1327,6 +1328,14 @@ class CustomAnnotation(session_mod.Logger):
         only_proteins : bool
             Use only the interactions where each of the partners is a protein
             (i.e. not complex, miRNA, small molecule or other kind of entity).
+        swap_undirected : bool
+            Convert undirected interactions to a pair of mutual interactions.
+        undirected_orientation : str,None
+            Ignore the direction at all interactions and make sure all of
+            them have a uniform orientation. If `id`, all interactions will
+            be oriented by the identifiers of the partenrs; if `category`,
+            the interactions will be oriented by the categories of the
+            partners.
         """
 
         if hasattr(self, 'interclass_network'):
@@ -1470,6 +1479,60 @@ class CustomAnnotation(session_mod.Logger):
             )
 
             annot_network_df = combined_df
+
+        if undirected_orientation:
+
+            # which columns we consider for the orientation
+            by = undirected_orientation
+            by = by if by in {'id', 'category'} else 'category'
+            by_col_a = getattr(annot_network_df, '%s_a' % by)
+            by_col_b = getattr(annot_network_df, '%s_b' % by)
+            # indices of the records with the wrong orientation
+            idx_wrong_orient = [a > b for a, b in zip(by_col_a, by_col_b)]
+            # split the data frame
+            wrong_orient = annot_network_df.iloc[idx_wrong_orient].copy()
+            good_orient = annot_network_df.iloc[
+                np.logical_not(idx_wrong_orient)
+            ].copy()
+            column_order = list(annot_network_df.columns)
+            # swap the orientation
+            column_map = dict(
+                (
+                    col,
+                    common.swap_suffix(col)
+                )
+                for col in column_order
+            )
+            wrong_orient = wrong_orient.rename(columns = column_map)
+            # make sure the column order is correct
+            wrong_orient = wrong_orient[column_order]
+            # concatenate the slices
+            orientation_swapped = pd.concat([good_orient, wrong_orient])
+            orientation_swapped = orientation_swapped.drop_duplicates(
+                subset = [
+                    'id_a',
+                    'id_b',
+                    'type',
+                    'category_a',
+                    'category_b',
+                    'parent_a',
+                    'parent_b',
+                    'source_a',
+                    'source_b',
+                    'scope_a',
+                    'scope_b',
+                    'entity_type_a',
+                    'entity_type_b',
+                ]
+            )
+            # removing direction and effect columns
+            # as they are not valid any more
+            orientation_swapped.drop(
+                ['directed', 'effect'],
+                axis = 1,
+                inplace = True,
+            )
+            annot_network_df = orientation_swapped
 
         self._log(
             'Combined custom annotation data frame with network data frame. '

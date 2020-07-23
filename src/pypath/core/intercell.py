@@ -800,6 +800,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             entities = None,
             only_directed = False,
             only_undirected = False,
+            undirected_orientation = None,
             only_signed = None,
             only_effect = None,
             only_proteins = False,
@@ -849,6 +850,12 @@ class IntercellAnnotation(annot.CustomAnnotation):
         only_undirected : bool
             Use only the undirected interactions. Specifically for retrieving
             and counting the interactions without direction information.
+        undirected_orientation : str,None
+            Ignore the direction at all interactions and make sure all of
+            them have a uniform orientation. If `id`, all interactions will
+            be oriented by the identifiers of the partenrs; if `category`,
+            the interactions will be oriented by the categories of the
+            partners.
         only_effect : int,None
             Use only the interactions with this effect. Either -1 or 1.
         only_signed : bool
@@ -928,6 +935,7 @@ class IntercellAnnotation(annot.CustomAnnotation):
             only_proteins = only_proteins,
             swap_undirected = swap_undirected,
             entities_or = entities_or,
+            undirected_orientation = undirected_orientation,
         )
 
 
