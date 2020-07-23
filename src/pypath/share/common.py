@@ -555,6 +555,26 @@ def first(it, default = None):
     return default
 
 
+def swap_suffix(name, sep = '_', suffixes = None):
+    """
+    Changes the suffix of a string.
+
+    suffixes : dict
+        A mapping for the swap, by default is `{'a': 'b', 'b': 'a'}`.
+    """
+
+    suffixes = suffixes or {'a': 'b', 'b': 'a'}
+
+    name_suffix = name.rsplit(sep, maxsplit = 1)
+
+    if len(name_suffix) == 2 and name_suffix[1] in suffixes:
+
+        name = '%s%s%s' % (name_suffix[0], sep, suffixes[name_suffix[1]])
+
+    return name
+
+
+
 def something(anything):
     """Checks if argument is empty.
 
