@@ -89,10 +89,12 @@ def hprd_enzyme_substrate(in_vivo = True):
 
             for resnum in resnums:
 
+                modtype = ptm[8].lower().replace('proteolytic', '').strip()
+
                 ptms.append({
                     'resaa': ptm[5],
                     'resnum': resnum,
-                    'typ': ptm[8].lower(),
+                    'typ': modtype,
                     'references': ptm[10].split(','),
                     'kinase': ptm[6],
                     'substrate_refseqp': ptm[3],
