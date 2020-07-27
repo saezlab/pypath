@@ -126,56 +126,89 @@ reaction = {
         must_have_references = False)
 }
 
-pathwaycommons = {
-    'PathwayCommons': input_formats.NetworkInput(
-        name = "PathwayCommons",
-        separator = None,
-        id_col_a = 0,
-        id_col_b = 2,
-        id_type_a = "genesymbol",
-        id_type_b = "genesymbol",
-        entity_type_a = "protein",
-        entity_type_b = "protein",
-        is_directed = (1, ['state-chanege', 'controls-phosphorylation-of']),
-        sign = None,
-        resource = 3,
-        input = 'get_pathwaycommons',
-        references = None,
-        ncbi_tax_id = 9606,
-        extra_edge_attrs = {"sif_rule": 1},
-        extra_node_attrs_a = {},
-        extra_node_attrs_b = {},
-        must_have_references = False,
-        input_args = {
-            'types': [
-                'state-change', 'in-same-component', 'interacts-with',
-                'controls-state-change-of', 'in-complex-with',
-                'controls-transport-of', 'controls-phosphorylation-of'
-            ]
-        })
-}
+pathwaycommons_all = input_formats.NetworkInput(
+    name = "PathwayCommons",
+    separator = None,
+    id_col_a = 0,
+    id_col_b = 2,
+    id_type_a = "genesymbol",
+    id_type_b = "genesymbol",
+    entity_type_a = "protein",
+    entity_type_b = "protein",
+    is_directed = (
+        1,
+        [
+            'state-chanege',
+            'controls-phosphorylation-of',
+            'controls-state-change-of',
+            'controls-transport-of',
+        ],
+    ),
+    sign = None,
+    input = 'pathwaycommons.pathwaycommons_interactions',
+    references = None,
+    ncbi_tax_id = 9606,
+    resource = 3,
+    extra_edge_attrs = {"pc_rule": 1},
+    extra_node_attrs_a = {},
+    extra_node_attrs_b = {},
+    must_have_references = False,
+    input_args = {
+        'types': {
+            'state-change',
+            'in-same-component',
+            'interacts-with',
+            'controls-state-change-of',
+            'in-complex-with',
+            'controls-transport-of',
+            'controls-phosphorylation-of',
+        },
+    }
+)
 
-pathwaycommons1 = {
-    'PathwayCommons': input_formats.NetworkInput(
-        name = "PathwayCommons",
-        separator = None,
-        id_col_a = 0,
-        id_col_b = 1,
-        id_type_a = "genesymbol",
-        id_type_b = "genesymbol",
-        entity_type_a = "protein",
-        entity_type_b = "protein",
-        is_directed = (4, '1'),
-        sign = None,
-        input = 'get_pathwaycommons',
-        references = None,
-        ncbi_tax_id = 9606,
-        extra_edge_attrs = {},
-        extra_node_attrs_a = {},
-        extra_node_attrs_b = {},
-        must_have_references = False,
-        input_args = {'sources_separated': False})
-}
+
+def _pathwaycommons_single_resource(resource):
+
+    dmodel_interaction = {'CORUM', 'IntAct', 'DIP', 'BioGRID', 'BIND', 'INOH'}
+
+    input_def = copy.deepcopy(pathwaycommons_all)
+    input_def.input_args['resources'] = resource
+    input_def.data_model = (
+        'interaction'
+            if resource in dmodel_interaction else
+        'activity_flow'
+    )
+
+    return input_def
+
+
+pathwaycommons = dict(
+    (
+        resource.lower().replace('-', '_'),
+        _pathwaycommons_single_resource(resource),
+
+    )
+    for resource in (
+        'NCI-PID',
+        'KEGG',
+        'CORUM',
+        'BIND',
+        'HPRD',
+        'WikiPathways',
+        'INOH',
+        'BioGRID',
+        'NetPath',
+        'Reactome',
+        'DIP',
+        'IntAct',
+        'PANTHER',
+        'PhosphoSite',
+    )
+)
+
+# synonym for old name
+reactome_pc = pathwaycommons['reactome']
+
 
 reaction_misc = {
     'nci_pid': input_formats.NetworkInput(
@@ -311,29 +344,6 @@ reaction_pc = {
 }
 
 
-reactome_pc = {
-    'reactome': input_formats.NetworkInput(
-        name = 'Reactome',
-        separator = None,
-        id_col_a = 0,
-        id_col_b = 2,
-        id_type_a = 'genesymbol',
-        id_type_b = 'genesymbol',
-        entity_type_a = 'protein',
-        entity_type_b = 'protein',
-        is_directed = (1, ['state-chanege', 'controls-phosphorylation-of']),
-        sign = None,
-        resource = 3,
-        input = 'get_pathwaycommons',
-        references = None,
-        ncbi_tax_id = 9606,
-        extra_edge_attrs = {},
-        extra_node_attrs_a = {},
-        extra_node_attrs_b = {},
-        must_have_references = False,
-        input_args = {'sources': ('reactome',)},
-    ),
-}
 '''
 Pathway databases included in OmniPath.
 These are manually curated, directed, and in most
