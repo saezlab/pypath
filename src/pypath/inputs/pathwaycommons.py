@@ -31,46 +31,78 @@ import pypath.resources.urls as urls
 import pypath.share.common as common
 
 
+PathwayCommonsInteraction = collections.namedtuple(
+    'PathwayCommonsInteraction',
+    [
+        'id_a',
+        'interaction_type',
+        'id_b',
+        'resource',
+    ],
+)
+
+
+PathwayCommonsResource = collections.namedtuple(
+    'PathwayCommonsResource',
+    [
+        'name',
+        'pc_label',
+        'version',
+    ]
+)
+PathwayCommonsResource.__new__.__defaults__ = (12,)
+
+
+pathwaycommons_resources = {
+    PathwayCommonsResource('WikiPathways', 'wp', 11),
+    PathwayCommonsResource('KEGG', 'kegg'),
+    PathwayCommonsResource('BIND', 'bind'),
+    PathwayCommonsResource('IntAct', 'intact'),
+    PathwayCommonsResource('IntAct', 'intact_complex'),
+    PathwayCommonsResource('PANTHER', 'panther'),
+    PathwayCommonsResource('NCI-PID', 'pid'),
+    PathwayCommonsResource('Reactome', 'reactome'),
+    PathwayCommonsResource('DIP', 'dip'),
+    PathwayCommonsResource('HPRD', 'hprd'),
+    PathwayCommonsResource('INOH', 'inoh'),
+    PathwayCommonsResource('NetPath', 'netpath'),
+    PathwayCommonsResource('BioGRID', 'biogrid'),
+    PathwayCommonsResource('CORUM', 'corum'),
+    PathwayCommonsResource('PhosphoSite', 'psp'),
+}
+
+
+pathwaycommons_directed_types = {
+    'state-change',
+    'controls-state-change-of',
+    'controls-transport-of',
+    'controls-phosphorylation-of',
+}
+
+
 def pathwaycommons_interactions(
-        sources = None,
+        resources = None,
         types = None,
-        sources_separated = True,
+        by_interaction = False,
+        version = 12,
     ):
 
-    result = {}
-    interactions = []
+    interactions = collections.defaultdict(set) if by_interaction else []
 
     types = common.to_set(types)
 
-    source_names = {
-        'wp': 'WikiPathways',
-        'kegg': 'KEGG',
-        'bind': 'BIND',
-        'intact': 'IntAct',
-        'intact_complex': 'IntAct',
-        'panther': 'PANTHER',
-        'pid': 'NCI-PID',
-        'reactome': 'Reactome',
-        'dip': 'DIP',
-        'hprd': 'HPRD',
-        'inoh': 'INOH',
-        'netpath': 'NetPath',
-        'biogrid': 'BioGRID',
-        'corum': 'CORUM',
-        'psp': 'PhosphoSite',
+    resources = {
+        res.lower()
+        for res in (
+            common.to_list(resources) or (
+                pc_res.name
+                for pc_res in pathwaycommons_resources
+            )
+        )
     }
-
-    directed = {
-        'state-change',
-        'controls-state-change-of',
-        'controls-transport-of',
-        'controls-phosphorylation-of',
-    }
-
-    sources = list(source_names.keys()) if sources is None else sources
 
     prg = progress.Progress(
-        len(sources),
+        len(resources),
         'Processing PathwayCommons',
         1,
         percent = False,
@@ -78,11 +110,16 @@ def pathwaycommons_interactions(
 
     url = urls.urls['pwcommons']['url']
 
-    for s in sources:
+    for resource in pathwaycommons_resources:
+
+        if not resources & {resource.pc_label, resource.name.lower()}:
+
+            continue
 
         prg.step()
-        surl = url % s
-        c = curl.Curl(surl, silent = False, large = True)
+        _version = min(resource.version, version)
+        resource_url = url % (_version, _version, resource.pc_label)
+        c = curl.Curl(resource_url, silent = False, large = True)
 
         for l in c.result:
 
@@ -90,35 +127,55 @@ def pathwaycommons_interactions(
 
                 l = l.decode('ascii')
 
-            l = l.strip().split('\t')
+            l = l.strip('\n\r').split('\t')
 
-            if types is None or l[1] in types:
+            if not types or l[1] in types:
 
-                if sources_separated:
+                if by_interaction:
 
-                    l.append(source_names[s])
-                    interactions.append(l)
+                    a_b = (l[0], l[1], l[2])
+                    b_a = (l[2], l[1], l[0])
+
+                    directed = l[1] in pathwaycommons_directed_types
+
+                    key = (
+                        b_a
+                            if (
+                                a_b not in interactions and
+                                not directed and
+                                b_a in interactions
+                            ) else
+                        a_b
+                    )
+
+                    interactions[key].add(
+                        PathwayCommonsInteraction(
+                            *key,
+                            resource = resource.name
+                        )
+                    )
 
                 else:
 
-                    pair = (l[0], l[2])
-
-                    if pair not in result:
-
-                        result[pair] = [set(), set(), 0]
-
-                    result[pair][0].add(source_names[s])
-                    result[pair][1].add(l[1])
-
-                    if l[1] in directed:
-
-                        result[pair][2] = 1
-
-    if not sources_separated:
-        for pair, details in iteritems(result):
-            interactions.append([
-                pair[0], pair[1], ';'.join(details[0]), ';'.join(details[1]),
-                str(details[2])
-            ])
+                    l.append(resource.name)
+                    interactions.append(PathwayCommonsInteraction(*l))
 
     return interactions
+
+
+def _create_single_resource_method(resource):
+
+    def _pc_single_resource(**kwargs):
+
+        kwargs['resources'] = resource.name
+
+        return pathwaycommons_interactions(**kwargs)
+
+
+    return _pc_single_resource
+
+
+for res in pathwaycommons_resources:
+
+    method_name = 'pathwaycommons_%s_interactions' % res.name.lower()
+    globals()[method_name] = _create_single_resource_method(res)
