@@ -192,3 +192,220 @@ def kegg_pathway_annotations():
             result[uniprot].add(record)
 
     return result
+
+
+def kegg_medicus_interactions():
+
+
+    reentity = re.compile(r'[,\+\(\)]|\w+')
+
+
+    KeggMedicusInteraction = collections.namedtuple(
+        'KeggMedicusInteraction',
+        [
+            'id_a',
+            'id_b',
+            'name_a',
+            'name_b',
+            'effect',
+            'itype',
+            'pw_type',
+            'type_a',
+            'type_b',
+        ],
+    )
+
+
+    i_code = {
+        '->': ('post_translational', 'stimulation'),
+        '=>': ('transcriptional', 'stimulation'),
+        '//': ('post_translational', 'missing'),
+        '-|': ('post_translational', 'inhibition'),
+        '=|': ('transcriptional', 'inhibition'),
+        '--': ('post_translational', 'undirected'),
+    }
+
+
+    def process_entity(e):
+
+        if isinstance(e, common.basestring):
+
+            e = reentity.findall(e)
+
+        sub = 0
+        stack = []
+        cplex = False
+
+        for it in e:
+
+            if it == ',':
+
+                continue
+
+            elif it == ')':
+
+                sub -= 1
+
+                if not sub:
+
+                    stack.append(process_entity(this_stack))
+
+                else:
+
+                    this_stack.append(it)
+
+            elif sub:
+
+                this_stack.append(it)
+
+                if it == '(':
+
+                    sub += 1
+
+            elif it == '(':
+
+                if not sub:
+
+                    this_stack = []
+
+                sub += 1
+
+            elif it == '+':
+
+                cplex = True
+
+            else:
+
+                stack.append(it)
+
+        if cplex:
+
+            stack = tuple(stack)
+
+        return stack
+
+
+    def flatten_entity(e):
+
+        flat = []
+
+        if isinstance(e, common.basestring):
+
+            flat.append(e)
+
+        elif isinstance(e, tuple):
+
+            flat.extend(
+                itertools.product(*(
+                    (c,) if isinstance(c, common.basestring) else c
+                    for c in e
+                ))
+            )
+
+        elif isinstance(e, list):
+
+            flat.extend(itertools.chain(*(flatten_entity(c) for c in e)))
+
+        return flat
+
+
+    def get_interactions(connections, enames, pw_type):
+
+        entities = dict(
+            (
+                i,
+                flatten_entity(process_entity(connections[i]))
+            )
+            for i in range(0, len(connections), 2)
+        )
+
+        for i in range(0, len(connections) - 1, 2):
+
+            itype, effect = i_code[connections[i + 1]]
+
+            for id_a, id_b in itertools.product(entities[i], entities[i + 2]):
+
+                name_a, type_a = get_name_type(id_a, enames)
+                name_b, type_b = get_name_type(id_b, enames)
+
+                yield KeggMedicusInteraction(
+                    id_a = id_a,
+                    id_b = id_b,
+                    name_a = name_a,
+                    name_b = name_b,
+                    effect = effect,
+                    itype = itype,
+                    pw_type = pw_type,
+                    type_a = type_a,
+                    type_b = type_b,
+                )
+
+
+    def get_name_type(_id, enames):
+
+        return (
+            tuple(zip(*(enames[i] for i in _id)))
+                if isinstance(_id, tuple) else
+            enames[_id]
+        )
+
+
+    recollect = re.compile(r'^(GENE|PERTURBANT|VARIANT|METABOLITE)')
+    result = set()
+    url = urls.urls['kegg_pws']['medicus']
+    c = curl.Curl(url, silent = False, large = True)
+    enames = {}
+    collecting = None
+
+    for row in c.result:
+
+        begin_coll = recollect.match(row)
+
+        if begin_coll:
+
+            collecting = begin_coll.group()
+            row = row.split(maxsplit = 1)[-1]
+
+        if collecting:
+
+            if not begin_coll and row[0] != ' ':
+
+                collecting = None
+                continue
+
+            if collecting == 'GENE':
+
+                row = row.split(';')[0]
+
+            try:
+                _id, name = row.split(maxsplit = 1)
+            except ValueError:
+                print(row)
+                return
+            enames[_id] = (name, collecting.lower())
+
+    c.fileobj.seek(0)
+
+    for row in c.result:
+
+        if row.startswith('ENTRY'):
+
+            pw_type = None
+            collecting = None
+            print(row.split()[1])
+
+        elif row.startswith('TYPE'):
+
+            pw_type = row.strip().split()[-1].lower()
+
+        elif row.startswith('  EXPANDED'):
+
+            connections = row.split()[1:]
+
+        elif row.startswith('///'):
+
+            result.update(
+                set(get_interactions(connections, enames, pw_type))
+            )
+
+    return result

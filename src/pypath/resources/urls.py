@@ -349,6 +349,8 @@ urls = {
         'biopax_l3': 'http://www.pathwaycommons.org/archives/PC2/'
         'v8/PathwayCommons.8.kegg.BIOPAX.owl.gz',
         'kgml_url_2': 'http://rest.kegg.jp/get/%s/kgml',
+        'medicus': 'ftp://ftp.genome.jp/pub/kegg/medicus/network/network',
+        'dbget': 'https://www.kegg.jp/dbget-bin/www_bget?%s',
     },
     'depod': {
         'label': 'Dephosphorylation substrates and sites',
