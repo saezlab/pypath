@@ -31,6 +31,8 @@ import pypath.resources.urls as urls
 import pypath.share.progress as progress
 import pypath.share.common as common
 import pypath.utils.mapping as mapping
+import pypath.internals.intera as intera
+import pypath.core.entity as entity
 
 
 def kegg_interactions():
@@ -194,7 +196,24 @@ def kegg_pathway_annotations():
     return result
 
 
-def kegg_medicus_interactions():
+def kegg_medicus(max_entity_variations = 10):
+    """
+    Retrieves and preprocesses the KEGG MEDICUS database. Returns a set of
+    raw interaction records (with the original identifiers and some further
+    attributes). Nested complexes and protein families are flattened which
+    means each interacting pair is either a single protein or a protein
+    complex. Then the combination of all variants of each interacting partner
+    yields a separate record. E.g. if a family of 3 proteins interacts with
+    a protein complex where one of the members can be 2 alternative proteins
+    then this interaction yields 6 records.
+
+    max_entity_variations : int
+        In KEGG MEDICUS many molecular entities are protein families or
+        families of often large and nested protein complexes. By this option
+        you can limit largest number of variants a single entity might yield,
+        so you won't end up with one complex yielding hundreds of
+        combinatiorial variants.
+    """
 
 
     reentity = re.compile(r'[,\+\(\)]|\w+')
@@ -202,8 +221,8 @@ def kegg_medicus_interactions():
     renetref = re.compile(r'\[N\d{5}\]')
 
 
-    KeggMedicusInteraction = collections.namedtuple(
-        'KeggMedicusInteraction',
+    KeggMedicusRawInteraction = collections.namedtuple(
+        'KeggMedicusRawInteraction',
         [
             'id_a',
             'id_b',
@@ -214,6 +233,7 @@ def kegg_medicus_interactions():
             'pw_type',
             'type_a',
             'type_b',
+            'network_id',
         ],
     )
 
@@ -314,8 +334,6 @@ def kegg_medicus_interactions():
 
             flat.extend(itertools.chain(*(flatten_entity(c) for c in e)))
 
-        print
-
         if any(
             any(isinstance(c, list) for c in flate)
             for flate in flat
@@ -361,7 +379,7 @@ def kegg_medicus_interactions():
         )
 
 
-    def get_interactions(connections, enames, pw_type):
+    def get_interactions(connections, enames, pw_type, network_id):
 
         entities = dict(
             (
@@ -375,12 +393,19 @@ def kegg_medicus_interactions():
 
             itype, effect = i_code[connections[i + 1]]
 
+            if (
+                len(entities[i]) > max_entity_variations or
+                len(entities[i + 2]) > max_entity_variations
+            ):
+
+                continue
+
             for id_a, id_b in itertools.product(entities[i], entities[i + 2]):
 
                 name_a, type_a = get_name_type(id_a, enames)
                 name_b, type_b = get_name_type(id_b, enames)
 
-                yield KeggMedicusInteraction(
+                yield KeggMedicusRawInteraction(
                     id_a = id_a,
                     id_b = id_b,
                     name_a = name_a,
@@ -390,6 +415,7 @@ def kegg_medicus_interactions():
                     pw_type = pw_type,
                     type_a = type_a,
                     type_b = type_b,
+                    network_id = network_id,
                 )
 
 
@@ -403,10 +429,6 @@ def kegg_medicus_interactions():
 
 
     def _get_name_type(_id, enames):
-
-        if not isinstance(_id, (str, tuple)):
-
-                    print(_id)
 
         if _id not in enames:
 
@@ -489,7 +511,7 @@ def kegg_medicus_interactions():
 
             pw_type = None
             collecting = None
-            print(row.split()[1])
+            network_id = row.split()[1]
 
         elif row.startswith('TYPE'):
 
@@ -504,10 +526,136 @@ def kegg_medicus_interactions():
         elif row.startswith('///'):
 
             result.update(
-                set(get_interactions(connections, enames, pw_type))
+                set(get_interactions(
+                    connections,
+                    enames,
+                    pw_type,
+                    network_id
+                ))
             )
 
     return result
+
+
+def kegg_medicus_interactions(max_entity_variations = 10, complexes = False):
+    """
+    Retrieves and preprocesses human protein-protein and transcriptional
+    regulatory interactions from the KEGG MEDICUS database. Optionally
+    it returns protein complexes instead of interactions.
+
+    max_entity_variations : int
+        In KEGG MEDICUS many molecular entities are protein families or
+        families of often large and nested protein complexes. By this option
+        you can limit largest number of variants a single entity might yield,
+        so you won't end up with one complex yielding hundreds of
+        combinatiorial variants.
+    complexes : bool
+        Return a set of protein complexes instead of a list of molecular
+        interactions.
+    """
+
+    KeggMedicusInteraction = collections.namedtuple(
+        'KeggMedicusInteraction',
+        [
+            'id_a',
+            'id_b',
+            'entity_type_a',
+            'entity_type_b',
+            'interaction_type',
+            'effect',
+        ]
+    )
+
+
+    result = []
+    cplexes = {}
+
+
+    def process_complex(ids, symbols, types):
+
+        if ids not in cplexes:
+
+            if not all(t == 'gene' for t in types):
+
+                cplexes[ids] = set()
+
+            uniprots = [
+                process_protein(id_, symbol)
+                for id_, symbol in zip(ids, symbols)
+            ]
+
+            this_cplexes = {
+                intera.Complex(
+                    components = components,
+                    sources = 'KEGG-MEDICUS',
+                )
+                for components in itertools.product(*uniprots)
+            }
+
+            cplexes[ids] = this_cplexes
+
+        return cplexes[ids]
+
+
+    def process_protein(id_, symbol):
+
+        return (
+            mapping.map_name(id_, 'entrez', 'uniprot') or
+            mapping.map_name(id_, 'genesymbol', 'uniprot')
+        )
+
+
+    def process_partner(ids, symbols, types = None):
+
+        return (
+            process_protein(ids, symbols)
+                if isinstance(ids, common.basestring) else
+            process_complex(ids, symbols, types)
+        )
+
+
+    for rec in kegg_medicus(max_entity_variations = max_entity_variations):
+
+        for id_a, id_b in itertools.product(
+            process_partner(rec.id_a, rec.name_a, rec.type_a),
+            process_partner(rec.id_b, rec.name_b, rec.type_b),
+        ):
+
+            if not complexes:
+
+                result.append(
+                    KeggMedicusInteraction(
+                        id_a = id_a,
+                        id_b = id_b,
+                        entity_type_a = entity.Entity._get_entity_type(id_a),
+                        entity_type_b = entity.Entity._get_entity_type(id_b),
+                        interaction_type = rec.itype,
+                        effect = rec.effect,
+                    )
+                )
+
+    return set.union(*cplexes.values()) if complexes else result
+
+
+
+def kegg_medicus_complexes(max_entity_variations = 10):
+    """
+    Extracts a set of protein complexes from the KEGG MEDICUS database.
+
+    max_entity_variations : int
+        In KEGG MEDICUS many molecular entities are protein families or
+        families of often large and nested protein complexes. By this option
+        you can limit largest number of variants a single entity might yield,
+        so you won't end up with one complex yielding hundreds of
+        combinatiorial variants.
+    """
+
+    return kegg_medicus_interactions(
+        max_entity_variations = max_entity_variations,
+        complexes = True,
+    )
+
+
 
 
 def kegg_dbget(entry):
