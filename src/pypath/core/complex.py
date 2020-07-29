@@ -399,6 +399,19 @@ class ComplexPortal(AbstractComplexResource):
         )
 
 
+class Kegg(AbstractComplexResource):
+
+
+    def __init__(self, input_args = None, **kwargs):
+
+        AbstractComplexResource.__init__(
+            self,
+            name = 'KEGG',
+            input_method = 'kegg.kegg_medicus_complexes',
+            input_args = input_args or {},
+        )
+
+
 class Pdb(AbstractComplexResource):
 
 

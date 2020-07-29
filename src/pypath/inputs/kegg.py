@@ -640,7 +640,7 @@ def kegg_medicus_interactions(max_entity_variations = 10, complexes = False):
 
 def kegg_medicus_complexes(max_entity_variations = 10):
     """
-    Extracts a set of protein complexes from the KEGG MEDICUS database.
+    Extracts a `dict` of protein complexes from the KEGG MEDICUS database.
 
     max_entity_variations : int
         In KEGG MEDICUS many molecular entities are protein families or
@@ -650,10 +650,14 @@ def kegg_medicus_complexes(max_entity_variations = 10):
         combinatiorial variants.
     """
 
-    return kegg_medicus_interactions(
+    cplexes = kegg_medicus_interactions(
         max_entity_variations = max_entity_variations,
         complexes = True,
     )
+
+    cplexes = dict((cplex.__str__(), cplex) for cplex in cplexes)
+
+    return cplexes
 
 
 
