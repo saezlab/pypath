@@ -35,6 +35,12 @@ import pypath.internals.intera as intera
 import pypath.core.entity as entity
 
 
+KeggPathway = collections.namedtuple(
+    'KeggPathway',
+    ['pathway'],
+)
+
+
 def kegg_interactions():
     """
     Downloads and processes KEGG Pathways.
@@ -167,8 +173,9 @@ def kegg_pathways():
     proteins_pws = dict(map(lambda pw: (pw, set([])), pws))
     interactions_pws = dict(map(lambda pw: (pw, set([])), pws))
 
-    for u1, u2, eff, pw in data:
+    for rec in data:
 
+        u1, u2, eff, pw = rec[:4]
         proteins_pws[pw].add(u1)
         proteins_pws[pw].add(u2)
         interactions_pws[pw].add((u1, u2))
@@ -177,11 +184,6 @@ def kegg_pathways():
 
 
 def kegg_pathway_annotations():
-
-    KeggPathway = collections.namedtuple(
-        'KeggPathway', ['pathway'],
-    )
-
 
     result = collections.defaultdict(set)
 
@@ -192,6 +194,29 @@ def kegg_pathway_annotations():
 
         for uniprot in uniprots:
             result[uniprot].add(record)
+
+    return result
+
+
+def kegg_pathway_annotations_pathwaycommons():
+
+    result = collections.defaultdict(set)
+
+    url = urls.urls['kegg_pws']['pw_annot']
+    c = curl.Curl(url, large = True, silent = False)
+
+    for row in c.result:
+
+        row = row.split('\t')
+        name = row[1].split(';', maxsplit = 1)[0]
+        name = name.split(':', maxsplit = 1)[1].strip()
+        uniprots = row[2:]
+
+        annot = KeggPathway(pathway = name)
+
+        for uniprot in uniprots:
+
+            result[uniprot].add(annot)
 
     return result
 
