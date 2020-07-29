@@ -87,6 +87,7 @@ protein_sources_default = {
     'SignalinkPathways',
     'SignalinkFunctions',
     'KeggPathways',
+    'KeggPathwaysPC',
     'NetpathPathways',
     'Cpad',
     'Disgenet',
@@ -4601,6 +4602,33 @@ class KeggPathways(AnnotationBase):
             name = 'KEGG',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'kegg.kegg_pathway_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class KeggPathwaysPC(AnnotationBase):
+
+    _eq_fields = ('pathway',)
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Pathway annotations from KEGG via PathwayCommons.
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'KEGG-PC',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'kegg.kegg_pathway_annotations_pathwaycommons',
             **kwargs
         )
 

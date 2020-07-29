@@ -207,7 +207,7 @@ def kegg_pathway_annotations_pathwaycommons():
 
     for row in c.result:
 
-        row = row.split('\t')
+        row = row.strip().split('\t')
         name = row[1].split(';', maxsplit = 1)[0]
         name = name.split(':', maxsplit = 1)[1].strip()
         uniprots = row[2:]
