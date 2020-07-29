@@ -342,15 +342,23 @@ urls = {
         'url': 'http://phosphonetworks.org/download/highResolutionNetwork.csv'
     },
     'kegg_pws': {
-        'label': 'KEGG Pathways',
+        'label': 'KEGG Pathways and KEGG MEDICUS',
         'list_url': 'http://www.genome.jp/kegg/pathway.html',
         'kgml_url':
         'http://www.kegg.jp/kegg-bin/download?entry=%s&format=kgml',
         'biopax_l3': 'http://www.pathwaycommons.org/archives/PC2/'
-        'v8/PathwayCommons.8.kegg.BIOPAX.owl.gz',
+            'v8/PathwayCommons.8.kegg.BIOPAX.owl.gz',
         'kgml_url_2': 'http://rest.kegg.jp/get/%s/kgml',
         'medicus': 'ftp://ftp.genome.jp/pub/kegg/medicus/network/network',
         'dbget': 'https://www.kegg.jp/dbget-bin/www_bget?%s',
+        'pw_annot': 'https://www.pathwaycommons.org/archives/PC2/v12/'
+            'PathwayCommons12.kegg.uniprot.gmt.gz',
+    },
+    'pathbank': {
+        'label': 'A functional annotation and process description network '
+            'database.',
+        'pw_annot': 'https://pathbank.org/downloads/'
+            'pathbank_all_proteins.csv.zip',
     },
     'depod': {
         'label': 'Dephosphorylation substrates and sites',
