@@ -198,6 +198,8 @@ def kegg_medicus_interactions():
 
 
     reentity = re.compile(r'[,\+\(\)]|\w+')
+    renminus2 = re.compile(r'\(n(?:-2)?\)')
+    renetref = re.compile(r'\[N\d{5}\]')
 
 
     KeggMedicusInteraction = collections.namedtuple(
@@ -223,6 +225,7 @@ def kegg_medicus_interactions():
         '-|': ('post_translational', 'inhibition'),
         '=|': ('transcriptional', 'inhibition'),
         '--': ('post_translational', 'undirected'),
+        '>>': ('post_translational', 'enzyme_enzyme'),
     }
 
 
@@ -230,6 +233,7 @@ def kegg_medicus_interactions():
 
         if isinstance(e, common.basestring):
 
+            e = renminus2.sub('', e)
             e = reentity.findall(e)
 
         sub = 0
@@ -297,7 +301,11 @@ def kegg_medicus_interactions():
 
             flat.extend(
                 itertools.product(*(
-                    (c,) if isinstance(c, common.basestring) else c
+                    (c,)
+                        if isinstance(c, common.basestring) else
+                    (flatten_entity(c),)
+                        if isinstance(c, tuple) else
+                    c
                     for c in e
                 ))
             )
@@ -306,7 +314,51 @@ def kegg_medicus_interactions():
 
             flat.extend(itertools.chain(*(flatten_entity(c) for c in e)))
 
+        print
+
+        if any(
+            any(isinstance(c, list) for c in flate)
+            for flate in flat
+        ):
+
+            flat = list(
+                itertools.chain(*(
+                    flatten_entity(flate) for flate in flat
+                ))
+            )
+
+        flat = [flatten_nested_complex(flate) for flate in flat]
+
         return flat
+
+
+    def flatten_nested_complex(cplex):
+
+        if is_nested_complex(cplex):
+
+            cplex = tuple(
+                member
+                for members in cplex
+                for member in (
+                    members
+                        if isinstance(members, tuple) else
+                    (members,)
+                )
+            )
+
+            if is_nested_complex(cplex):
+
+                cplex = flatten_nested_complex(cplex)
+
+        return cplex
+
+
+    def is_nested_complex(cplex):
+
+        return (
+            isinstance(cplex, tuple) and
+            any(isinstance(member, tuple) for member in cplex)
+        )
 
 
     def get_interactions(connections, enames, pw_type):
@@ -344,13 +396,42 @@ def kegg_medicus_interactions():
     def get_name_type(_id, enames):
 
         return (
-            tuple(zip(*(enames[i] for i in _id)))
+            tuple(zip(*(_get_name_type(i, enames) for i in _id)))
                 if isinstance(_id, tuple) else
-            enames[_id]
+            _get_name_type(_id, enames)
         )
 
 
+    def _get_name_type(_id, enames):
+
+        if not isinstance(_id, (str, tuple)):
+
+                    print(_id)
+
+        if _id not in enames:
+
+            dbget = kegg_dbget(_id)
+
+            if not dbget:
+
+                name, entity_type = (None, None)
+
+            else:
+
+                name = (
+                    dbget['Name'][-1]
+                        if isinstance(dbget['Name'], list) else
+                    dbget['Name']
+                )
+                entity_type = dbget['Type'].lower()
+
+            enames[_id] = (name, entity_type)
+
+        return enames[_id]
+
+
     recollect = re.compile(r'^(GENE|PERTURBANT|VARIANT|METABOLITE)')
+    recon = re.compile(r'(->|--|//|-\||=>|>>|=\|)')
     result = set()
     url = urls.urls['kegg_pws']['medicus']
     c = curl.Curl(url, silent = False, large = True)
@@ -377,16 +458,32 @@ def kegg_medicus_interactions():
 
                 row = row.split(';')[0]
 
-            try:
-                _id, name = row.split(maxsplit = 1)
-            except ValueError:
-                print(row)
-                return
-            enames[_id] = (name, collecting.lower())
+            id_name = row.split(maxsplit = 1)
+
+            if len(id_name) == 2:
+
+                _id, name = id_name
+
+            else:
+
+                _id = id_name[0]
+                dbget = kegg_dbget(_id)
+
+                name = (
+                    dbget['Name']
+                        if 'Name' in dbget else
+                    dbget['Composition']
+                )
+
+                if isinstance(name, list):
+
+                    name = name[-1]
+
+            enames[_id] = (name.strip(), collecting.lower())
 
     c.fileobj.seek(0)
 
-    for row in c.result:
+    for row in c.fileobj:
 
         if row.startswith('ENTRY'):
 
@@ -400,12 +497,126 @@ def kegg_medicus_interactions():
 
         elif row.startswith('  EXPANDED'):
 
-            connections = row.split()[1:]
+            connections = renetref.sub('', row)
+            connections = recon.sub(' \g<1> ', connections)
+            connections = connections.split()[1:]
 
         elif row.startswith('///'):
 
             result.update(
                 set(get_interactions(connections, enames, pw_type))
             )
+
+    return result
+
+
+def kegg_dbget(entry):
+    """
+    Retrieves an entry (e.g. compounds, network modules) by the KEGG DBGET
+    interface (kegg.jp/dbget-bin/www_bget).
+    """
+
+    rexa = re.compile(r'\xa0+')
+    stripchars = '\r\n; '
+    reffields = {'Authors', 'Title', 'Journal'}
+
+    result = {}
+
+    if isinstance(entry, int):
+
+        entry = 'hsa:%u' % entry
+
+    if entry.isdigit():
+
+        entry = 'hsa:%s' % entry
+
+    url = urls.urls['kegg_pws']['dbget'] % entry
+    c = curl.Curl(url, silent = True, large = False)
+    soup = bs4.BeautifulSoup(c.result, 'html.parser')
+
+    tbl = soup.find_all('table', limit = 4)
+
+    if not tbl:
+
+        return None
+
+    tbl = tbl[-1]
+
+    collecting_ref = False
+    last_ref = {}
+
+    for row in tbl.findChildren('tr', recursive = False):
+
+        key = row.find('th').text.strip()
+        td = row.find('td')
+
+        if collecting_ref:
+
+            if key in reffields:
+
+                last_ref[key] = td.text
+                continue
+
+            else:
+
+                if 'References' not in result:
+
+                    result['References'] = []
+
+                result['References'].append(last_ref)
+                last_ref = {}
+                collecting_ref = False
+
+        if key == 'Reference':
+
+            collecting_ref = True
+            last_ref['PMID'] = re.findall(r'\d+', td.text)[-1]
+            continue
+
+        subtbl = td.find_all('table')
+
+        if subtbl:
+
+            value = {}
+
+            for st in subtbl:
+
+                for subrow in st.find_all('tr'):
+
+                    subtd = subrow.find_all('td')
+
+                    if len(subtd) > 1 and subtd[1].text:
+
+                        value[rexa.sub('', subtd[0].text)] = (
+                            subtd[1].text.strip(stripchars)
+                        )
+
+                    else:
+
+                        subcontent = rexa.sub(' ', subtd[0].text).split()
+
+                        if len(subcontent) > 1:
+
+                            value[subcontent[0]] = (
+                                subcontent[1].strip(stripchars)
+                            )
+
+        else:
+
+            value = rexa.sub(' ', td.text).strip(stripchars)
+
+            if '\n' in value:
+
+                value = [
+                    lval.strip(stripchars)
+                    for lval in re.split(r'\s*[\n\r]+\s*', value)
+                ]
+
+
+        if key == 'Entry':
+
+            value, result['Type'] = next(value.items().__iter__())
+
+        result[key] = value
 
     return result
