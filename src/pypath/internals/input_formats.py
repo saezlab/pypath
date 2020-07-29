@@ -347,7 +347,7 @@ class NetworkInput:
             is_directed = False,
             sign = False,
             input = None,
-            references = False,
+            references = None,
             extra_edge_attrs = None,
             extra_node_attrs_a = None,
             extra_node_attrs_b = None,
@@ -392,7 +392,7 @@ class NetworkInput:
         self.name = name
         self.separator = separator
         self.header = header
-        self.refs = references
+        self.refs = references or None
         self.sign = sign
         self.taxon_a = taxon_a
         self.taxon_b = taxon_b
