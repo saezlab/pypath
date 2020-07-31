@@ -1942,6 +1942,7 @@ transcription_onebyone = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        interaction_type = 'transcriptional',
     ),
     'kegg-medicus': input_formats.NetworkInput(
         name = "KEGG-MEDICUS",
@@ -1968,6 +1969,7 @@ transcription_onebyone = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        interaction_type = 'transcriptional',
     ),
 }
 
