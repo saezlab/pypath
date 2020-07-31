@@ -4032,6 +4032,11 @@ class Network(session_mod.Logger):
         )
 
 
+    def count_loops(self):
+
+        return sum(ia.is_loop() for ia in self)
+
+
 Network._generate_get_methods()
 Network._generate_partners_methods()
 Network._generate_count_methods()
