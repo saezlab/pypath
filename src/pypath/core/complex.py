@@ -57,6 +57,7 @@ complex_resources = (
     'GuideToPharmacology',
     'Humap',
     'Icellnet',
+    'Kegg',
 )
 
 
