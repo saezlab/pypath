@@ -28,36 +28,241 @@ import warnings
 import pypath.share.common as common
 
 
+# these are all ordinal scales from the smallest to the greatest freedom
+_purpose_levels = {
+    'composite': 25,
+    'free': 20,
+    'commercial': 15,
+    'for_profit': 15,
+    'forprofit': 15,
+    'nonprofit': 10,
+    'academic': 5,
+    'ignore': 0,
+}
+
+_sharing_levels = {
+    'composite': 20,
+    'free': 25,
+    'share': 20,
+    'alike': 15,
+    'noderiv': 10,
+    'noshare': 5,
+    'ignore': 0,
+}
+
+_attrib_levels = {
+    'composite': 20,
+    'free': 10,
+    'noattrib': 10,
+    'attrib': 5,
+    'ignore': 0,
+}
+
+_int_purpose_levels = common.swap_dict(_purpose_levels)
+_int_sharing_levels = common.swap_dict(_sharing_levels)
+_int_attrib_levels = common.swap_dict(_attrib_levels)
+
+
+class LicenseFeature(object):
+
+    levels = {}
+    name = 'feature'
+    int_levels = common.swap_dict(levels)
+
+
+    def __init__(self, level):
+
+        self.level = level
+        _ = self.check_level(level)
+
+
+    @classmethod
+    def level_to_int(cls, level):
+        """
+        Return the value for the key ``level`` as an integer on the ordinal
+        scale of the levels.
+        """
+
+        if cls.check_level(level):
+
+            return cls.levels[level]
+
+        return 99
+
+
+    @classmethod
+    def int_to_level(cls, i):
+        """
+        Returns a set of labels corresponding to the level nearest to the
+        integer ``i`` on the ordinal scale of levels.
+        """
+
+        if i > max(cls.int_levels.keyd()):
+
+            i = max(cls.int_levels.keys())
+
+        elif i not in cls.int_levels:
+
+            for _i in sorted(cls.int_levels.keys()):
+
+                if _i > i:
+
+                    i = _i
+                    break
+
+        return cls.int_levels[i]
+
+
+    def __str__(self):
+
+        return self.level
+
+
+    def __repr__(self):
+
+        return '<License %s: %s>' % (self.name, self.level)
+
+
+    @classmethod
+    def check_level(cls, level):
+        """
+        Checks of ``level`` is a valid key for the
+        """
+
+        if level not in cls.levels:
+
+            cls.unknown_warning(level)
+            return False
+
+        return True
+
+
+    def to_int(self):
+        """
+        Returns the value of the current level of this license feature as
+        an integer on the ordinal scale of levels.
+        """
+
+        return self.level_to_int(self.level)
+
+
+    def __int__(self):
+
+        return self.to_int()
+
+
+    @classmethod
+    def ensure_int(cls, other):
+
+        if isinstance(other, int):
+
+            return other
+
+        elif isinstance(other, common.basestring):
+
+            return cls.level_to_int(other)
+
+        else:
+
+            try:
+
+                return int(other)
+
+            except (TypeError, ValueError):
+
+                cls.unknown_warning(other)
+                return 99
+
+
+    def __eq__(self, other):
+
+        i_level = self.ensure_int(other)
+
+        return int(self) == i_level
+
+
+    def __gt__(self, other):
+
+        i_level = self.ensure_int(other)
+
+        return int(self) > i_level
+
+
+    def __ge__(self, other):
+
+        i_level = self.ensure_int(other)
+
+        return int(self) >= i_level
+
+
+    def __lt__(self, other):
+
+        i_level = self.ensure_int(other)
+
+        return int(self) < i_level
+
+
+    def __le__(self, other):
+
+        i_level = self.ensure_int(other)
+
+        return int(self) <= i_level
+
+
+    def enabled(self, other):
+
+        return self >= other
+
+
+    @classmethod
+    def unknown_warning(cls, value):
+
+        warnings.warn(
+            'Unknown `%s` level for licenses: `%s`. '
+            'This will always disable the resource.' % (
+                cls.name,
+                str(value),
+            )
+        )
+
+
+class LicensePurpose(LicenseFeature):
+
+    levels = _purpose_levels
+    name = 'purpose'
+    int_levels = _int_purpose_levels
+
+
+    def __init__(self, level):
+
+        LicenseFeature.__init__(self, level)
+
+
+class LicenseSharing(LicenseFeature):
+
+    levels = _sharing_levels
+    name = 'sharing'
+    int_levels = _int_sharing_levels
+
+
+    def __init__(self, level):
+
+        LicenseFeature.__init__(self, level)
+
+
+class LicenseAttrib(LicenseFeature):
+
+    levels = _attrib_levels
+    name = 'attrib'
+    int_levels = _int_attrib_levels
+
+
+    def __init__(self, level):
+
+        LicenseFeature.__init__(self, level)
+
+
 class License(object):
-
-
-    _purpose_levels = {
-        'commercial': 10,
-        'academic': 5,
-        'ignore': 0,
-    }
-
-    _sharing_levels = {
-        'ignore': 20,
-        'free': 15,
-        'share': 10,
-        'alike': 5,
-        'noderiv': 2,
-        'noshare': 0,
-    }
-
-    _attrib_levels = {
-        'ignore': 10,
-        'noattrib': 5,
-        'attrib': 0,
-    }
-
-    _synonyms = {
-        'for_profit': 'commercial',
-        'non_profit': 'academic',
-        'free': 'ignore',
-        'freedom': 'ignore',
-    }
 
 
     def __init__(
@@ -73,21 +278,13 @@ class License(object):
 
         self.name = name
         self.full_name = full_name or name
-        self.purpose = common.to_set(purpose)
-        self.sharing = common.to_set(sharing)
-        self.attrib = common.to_set(attrib)
+        self.purpose = LicensePurpose(purpose)
+        self.sharing = LicenseSharing(sharing)
+        self.attrib = LicenseAttrib(attrib)
 
         for k, v in iteritems(kwargs):
 
             setattr(self, k, v)
-
-        for aspect in ('purpose', 'sharing', 'attrib'):
-
-            setattr(
-                self,
-                '_%s_labels' % aspect,
-                common.swap_dict(getattr(self, '_%s_levels' % aspect))
-            )
 
 
     def __repr__(self):
@@ -100,66 +297,21 @@ class License(object):
         return self.name
 
 
-    @property
-    def commercial(self):
-        """
-        Returns `True` if the license allows commercial (for-profit) use.
-        """
+    def enabled(self, purpose, sharing = None, attrib = None):
 
-        return self.allowed('commercial')
-
-
-    # a synonym
-    for_profit = commercial
-
-
-    @property
-    def academic(self):
-        """
-        Returns `True` if the license allows academic use.
-        """
-
-        return self.allowed('academic')
-
-
-    # a synonym
-    non_profit = academic
-
-
-    @property
-    def purpose_levels(self):
-
-        return {self._levels[f] for f in self.purpose if f in self._levels}
-
-
-    @property
-    def max_purpose_level(self):
-
-        return max(self.levels)
-
-
-    @classmethod
-    def purpose_level(cls, use):
-
-        use = self._synonyms[use] if use in self._synonyms else use
-
-        if use in cls._levels:
-
-            return cls._levels[use]
-
-        else:
-
-            warnings.warn(
-                'Unknown purpose level for licenses: `%s`. '
-                'This will always disable the purpose.' % use
+        return (
+            (
+                not attrib or
+                self.attrib.enabled(attrib)
+            ) and
+            (
+                not sharing or
+                self.sharing.enabled(sharing)
+            ) and
+            (
+                self.purpose.enabled(purpose)
             )
-
-            return 99
-
-
-    def allowed(self, use):
-
-        return self.max_level >= self.level(use)
+        )
 
 
     @classmethod
@@ -169,4 +321,35 @@ class License(object):
 
             json_data = json.load(fp)
 
-        return cls.__new__(cls, **json_data)
+        return cls(**json_data)
+
+
+    # some shortcut methods
+    @classmethod
+    def _generate_enabled_methods(cls):
+
+        def get_enabled_method(aspect, level):
+
+            @property
+            def enabled_method(self):
+
+                return getattr(self, aspect).enabled(level)
+
+            return enabled_method
+
+
+        for aspect in ('attrib', 'sharing', 'purpose'):
+
+            for level in globals()['_%s_levels' % aspect]:
+
+                if level in ('composite', 'ignore', 'free', 'attrib'):
+
+                    continue
+
+                method = get_enabled_method(aspect, level)
+                method_name = level
+
+                setattr(cls, level, method)
+
+
+License._generate_enabled_methods()
