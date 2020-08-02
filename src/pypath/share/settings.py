@@ -28,7 +28,13 @@ import os
 import copy
 import collections
 
-ROOT = os.path.abspath(os.path.dirname(__file__))
+ROOT = os.path.join(
+    *os.path.split(
+        os.path.abspath(
+            os.path.dirname(__file__)
+        )
+    )[:-1]
+)
 
 
 _defaults = {
@@ -72,6 +78,11 @@ _defaults = {
     'slk3_edges': 'signalink3_edges.tsv',
     'slk01human': 'slk01human.csv',
     'cachedir': None,
+    # directory in datadir with licenses
+    'license_dir': 'licenses',
+    # password file for within company license-free redistribution
+    'secrets_dir': None,
+    'license_free_pw': 'license_free_pw',
     'pubmed_cache': 'pubmed.pickle',
     'mapping_use_cache': True,
     'use_intermediate_cache': True,
@@ -233,6 +244,7 @@ in_datadir = {
     'slk3_edges',
     'slk01human',
     'deathdomain',
+    'license_dir',
 }
 
 
@@ -240,6 +252,11 @@ in_cachedir = {
     'pubmed_cache',
     'trip_preprocessed',
     'hpmr_preprocessed',
+}
+
+
+in_secrets_dir = {
+    'license_free_pw',
 }
 
 
@@ -266,12 +283,19 @@ def reset_all():
         val = getattr(defaults, k)
 
         if k in in_datadir:
+
             val = os.path.join(ROOT, 'data', val)
 
         setattr(settings, k, val)
 
-    # special director with built in default at user level
-    for _key, _dir in (('cachedir', 'cache'), ('pickle_dir', 'pickles')):
+    # special directories with built in default at user level
+    pypath_dirs = (
+        ('cachedir', 'cache'),
+        ('pickle_dir', 'pickles'),
+        ('secrets_dir', 'secrets'),
+    )
+
+    for _key, _dir in pypath_dirs:
 
         if getattr(settings, _key) is None:
 
@@ -288,6 +312,10 @@ def reset_all():
     for k in in_cachedir:
 
         setattr(settings, k, os.path.join(settings.cachedir, _defaults[k]))
+
+    for k in in_secrets_dir:
+
+        setattr(settings, k, os.path.join(settings.secrets_dir, _defaults[k]))
 
     globals()['settings'] = settings
 
