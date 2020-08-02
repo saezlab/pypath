@@ -36,6 +36,7 @@ _purpose_levels = {
     'for_profit': 15,
     'forprofit': 15,
     'nonprofit': 10,
+    'non_profit': 10,
     'academic': 5,
     'ignore': 0,
 }
@@ -44,6 +45,7 @@ _sharing_levels = {
     'composite': 20,
     'free': 25,
     'share': 20,
+    'deriv': 20,
     'alike': 15,
     'noderiv': 10,
     'noshare': 5,
@@ -209,7 +211,7 @@ class LicenseFeature(object):
         return int(self) <= i_level
 
 
-    def enabled(self, other):
+    def enables(self, other):
 
         return self >= other
 
@@ -297,45 +299,70 @@ class License(object):
         return self.name
 
 
-    def enabled(self, purpose, sharing = None, attrib = None):
+    def enables(self, purpose, sharing = None, attrib = None):
+        """
+        Checks if the license enables a particular use, according to purpose,
+        sharing and attribution. For example, to check if the license enables
+        academic use with redistribution under a compatible license, call
+        ``License.enables(purpose = 'academic', sharing = 'alike')``.
+        """
 
         return (
             (
                 not attrib or
-                self.attrib.enabled(attrib)
+                self.attrib.enables(attrib)
             ) and
             (
                 not sharing or
-                self.sharing.enabled(sharing)
+                self.sharing.enables(sharing)
             ) and
             (
-                self.purpose.enabled(purpose)
+                self.purpose.enables(purpose)
             )
         )
 
 
+    @property
+    def features(self):
+
+        return dict(
+            (
+                aspect,
+                getattr(self, aspect).level
+            )
+            for aspect in ('purpose', 'sharing', 'attrib')
+        )
+
+
+    @property
+    def features_str(self):
+
+        return common.dict_str(self.features)
+
+
     @classmethod
-    def from_json(cls, path):
+    def from_json(cls, path, **kwargs):
 
         with open(path, 'r') as fp:
 
             json_data = json.load(fp)
+            json_data.update(kwargs)
 
         return cls(**json_data)
 
 
     # some shortcut methods
     @classmethod
-    def _generate_enabled_methods(cls):
+    def _generate_enables_methods(cls):
 
-        def get_enabled_method(aspect, level):
+        def get_enables_method(aspect, level):
 
             @property
-            def enabled_method(self):
+            def enables_method(self):
 
-                return getattr(self, aspect).enabled(level)
+                return getattr(self, aspect).enables(level)
 
-            return enabled_method
+            return enables_method
 
 
         for aspect in ('attrib', 'sharing', 'purpose'):
@@ -346,10 +373,10 @@ class License(object):
 
                     continue
 
-                method = get_enabled_method(aspect, level)
+                method = get_enables_method(aspect, level)
                 method_name = level
 
                 setattr(cls, level, method)
 
 
-License._generate_enabled_methods()
+License._generate_enables_methods()
