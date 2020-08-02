@@ -2990,8 +2990,7 @@
       "format": [
         "pypath.data_formats.pathway[\"spike\"]",
         "pypath.data_formats.omnipath[\"spike\"]"
-      ],
-      "data": ["pypath.data/spike_hc.csv"]
+      ]
     },
     "pathguide": 317,
     "dateUpdated":"Nov 2016"
@@ -3273,7 +3272,8 @@
         "http://nar.oxfordjournals.org/content/36/suppl_1/D637.long",
         "http://nar.oxfordjournals.org/content/39/suppl_1/D698.long",
         "http://nar.oxfordjournals.org/content/41/D1/D816.long",
-        "http://nar.oxfordjournals.org/content/43/D1/D470.long"
+        "http://nar.oxfordjournals.org/content/43/D1/D470.long",
+        "https://academic.oup.com/nar/article/47/D1/D529/5204333"
       ],
       "omictools": [
         "http://omictools.com/biological-general-repository-for-interaction-datasets-tool"
