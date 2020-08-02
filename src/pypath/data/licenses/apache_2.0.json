@@ -2,6 +2,6 @@
     "name": "Apache 2.0",
     "full_name": "Apache License, version 2.0",
     "url": "http://www.apache.org/licenses/LICENSE-2.0",
-    "purpose": ["commercial"],
-    "sharing": ["alike"]
+    "purpose": "commercial",
+    "sharing": "alike"
 }

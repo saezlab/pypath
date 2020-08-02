@@ -2,6 +2,6 @@
     "name": "CC BY-NC-ND 4.0",
     "full_name": "Creative Commons Attribution-NonCommercial-NoDerivs 4.0 International",
     "url": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
-    "purpose": ["academic"],
-    "sharing": ["noderiv"]
+    "purpose": "academic",
+    "sharing": "noderiv"
 }

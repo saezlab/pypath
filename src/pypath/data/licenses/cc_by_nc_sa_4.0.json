@@ -2,6 +2,6 @@
     "name": "CC BY-NC-SA 4.0",
     "full_name": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
     "url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
-    "purpose": ["academic"],
-    "sharing": ["alike"]
+    "purpose": "academic",
+    "sharing": "alike"
 }

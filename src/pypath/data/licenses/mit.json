@@ -2,6 +2,6 @@
     "name": "MIT",
     "full_name": "MIT License",
     "url": "https://spdx.org/licenses/MIT.html",
-    "purpose": ["commercial"],
-    "sharing": ["free"]
+    "purpose": "commercial",
+    "sharing": "free"
 }

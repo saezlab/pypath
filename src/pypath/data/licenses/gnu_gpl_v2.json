@@ -2,6 +2,6 @@
     "name": "GPLv2",
     "full_name": "GNU General Public License version 2",
     "url": "https://www.gnu.org/licenses/gpl-2.0.html",
-    "purpose": ["commercial"],
-    "sharing": ["alike"]
+    "purpose": "commercial",
+    "sharing": "alike"
 }

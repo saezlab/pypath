@@ -2,6 +2,6 @@
     "name": "CC BY 2.5",
     "full_name": "Creative Commons Attribution 2.5 International",
     "url": "https://creativecommons.org/licenses/by/2.5/",
-    "purpose": ["commercial"],
-    "sharing": ["free"]
+    "purpose": "commercial",
+    "sharing": "free"
 }

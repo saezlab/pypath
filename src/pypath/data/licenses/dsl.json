@@ -2,6 +2,6 @@
     "name": "DSL",
     "full_name": "Design Science License",
     "url": "https://www.gnu.org/licenses/license-list.html#dsl",
-    "purpose": ["commercial"],
-    "sharing": ["alike"]
+    "purpose": "commercial",
+    "sharing": "alike"
 }

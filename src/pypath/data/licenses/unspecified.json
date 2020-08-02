@@ -2,7 +2,7 @@
     "name": "Unspecified NC SA",
     "full_name": "Unspecified Non-commercial Redistributable",
     "url": "",
-    "purpose": ["academic"],
-    "sharing": ["alike"],
+    "purpose": "academic",
+    "sharing": "alike",
     "note": "This is not a real license but a temporary label meaning either that we are working on clarifying the licensing terms (because the copyright holders hasn't specified it anywhere) or we as OmniPath got a permission from the copyright holders to redistribute the data from the resource."
 }

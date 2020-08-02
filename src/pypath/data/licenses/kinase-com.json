@@ -2,6 +2,6 @@
     "name": "Kinase.com License",
     "full_name": "Kinase.com License",
     "url": "http://kinase.com/about/Disclaimer.html",
-    "purpose": ["commercial"],
-    "sharing": ["alike"]
+    "purpose": "commercial",
+    "sharing": "alike"
 }

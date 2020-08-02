@@ -2,6 +2,6 @@
     "name": "BSD",
     "full_name": "3-clause BSD License",
     "url": "https://www.gnu.org/licenses/license-list.html#ModifiedBSD",
-    "purpose": ["commercial"],
-    "sharing": ["alike"]
+    "purpose": "commercial",
+    "sharing": "alike"
 }
