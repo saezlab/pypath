@@ -3601,6 +3601,8 @@
     "license": "CC BY-SA 4.0"
   },
   "HTRIdb": {
+    "synonyms": ["HTRI"],
+    "full_name": "Human Transcriptional Reference Interactome",
     "license": "LGPLv3"
   },
   "NFIRegulomeDB": {
@@ -3629,6 +3631,7 @@
     "license": "NAR Open Access"
   },
   "Fantom4": {
+    "synonyms": ["FANTOM4", "FANTOM5", "Fantom5", "Fantom", "FANTOM"],
     "urls": {
       "webpages": ["https://fantom.gsc.riken.jp/4/"]
     },
@@ -3641,6 +3644,7 @@
     "license": "LGPLv3"
   },
   "TfactS": {
+    "synonyms": ["Tfact"],
     "urls": {
       "webpages": ["http://www.tfacts.org/"]
     },
@@ -3903,7 +3907,8 @@
     "urls": {
       "webpages": ["https://www.encodeproject.org/"]
     },
-    "license": "CC BY 4.0"
+    "license": "CC BY 4.0",
+    "synonyms": ["ENCODE-distal", "ENCODE-proximal"]
   },
   "lncRNADisease": {
     "urls": {
@@ -4142,5 +4147,33 @@
       "webpages": ["https://app1.unmc.edu/mcam/"]
     },
     "license": "Unspecified NC-SA"
+  },
+  "DoRothEA": {
+    "urls": {
+      "webpages": ["https://saezlab.github.io/dorothea/"]
+    },
+    "synonyms": [
+      "DoRothEA_A",
+      "DoRothEA_B",
+      "DoRothEA_C",
+      "DoRothEA_D",
+      "DoRothEA_E"
+    ],
+    "license": "Composite"
+  },
+  "ARACNE-GTEx": {
+    "license": "CC BY 4.0"
+  },
+  "JASPAR-v2018": {
+    "license": "CC BY 4.0"
+  },
+  "HOCOMOCO-v11": {
+    "license": "CC BY 4.0"
+  },
+  "ReMap": {
+    "license": "CC BY 4.0"
+  },
+  "DoRothEA-reviews": {
+    "license": "CC BY 4.0"
   }
 }
