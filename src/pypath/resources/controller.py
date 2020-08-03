@@ -140,6 +140,7 @@ class ResourceController(session_mod.Logger):
         self.license_db = licenses.Licenses()
         self.licenses = {}
         self.synonyms = {}
+        self.secondary = {}
 
         self._log('Updating resource license information.')
 
@@ -158,6 +159,10 @@ class ResourceController(session_mod.Logger):
 
                             self.licenses[synonym] = res_data['license']
                             self.synonyms[synonym] = res
+
+                    if 'components' in res_data:
+
+                        self.secondary[res] = set(res_data['components'])
 
             else:
 
