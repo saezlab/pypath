@@ -27,6 +27,7 @@ import re
 import copy
 import collections
 import itertools
+import hashlib
 
 from pypath.share import session as session_mod
 
@@ -52,6 +53,7 @@ import pypath.omnipath.server._html as _html
 import pypath.resources.urls as urls
 import pypath.share.common as common
 import pypath.core.intercell_annot as intercell_annot
+import pypath.share.settings as settings
 from pypath.share.common import flat_list
 from pypath._version import __version__
 
@@ -84,6 +86,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         ) % __version__
 
         self.isLeaf = True
+        self._read_license_secret()
 
         twisted.web.resource.Resource.__init__(self)
         self._log('Twisted resource initialized.')
@@ -302,6 +305,21 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             arg = True
 
         return bool(arg)
+
+
+    def _read_license_secret(self):
+
+        self._license_secret = None
+
+        path = settings.get('license_secret')
+
+        if os.path.exists(path):
+
+            self._log('Reading license unlocking secret from `%s`.' % path)
+
+            with open(path, 'r') as fp:
+
+                self._license_secret = fp.read().strip()
 
 
 class TableServer(BaseServer):

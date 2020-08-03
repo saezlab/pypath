@@ -82,7 +82,7 @@ _defaults = {
     'license_dir': 'licenses',
     # password file for within company license-free redistribution
     'secrets_dir': None,
-    'license_free_pw': 'license_free_pw',
+    'license_secret': 'license_secret',
     'pubmed_cache': 'pubmed.pickle',
     'mapping_use_cache': True,
     'use_intermediate_cache': True,
