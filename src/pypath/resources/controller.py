@@ -137,7 +137,9 @@ class ResourceController(session_mod.Logger):
 
     def update_licenses(self):
 
-        self.licenses = licenses.Licenses()
+        self.license_db = licenses.Licenses()
+        self.licenses = {}
+        self.synonyms = {}
 
         self._log('Updating resource license information.')
 
@@ -148,6 +150,14 @@ class ResourceController(session_mod.Logger):
                 if isinstance(res_data['license'], common.basestring):
 
                     self._update_license(res_data)
+                    self.licenses[res] = res_data['license']
+
+                    if 'synonyms' in res_data:
+
+                        for synonym in res_data['synonyms']:
+
+                            self.licenses[synonym] = res_data['license']
+                            self.synonyms[synonym] = res
 
             else:
 
@@ -157,7 +167,43 @@ class ResourceController(session_mod.Logger):
     def _update_license(self, resource_data):
 
         license_key = resource_data['license']
-        resource_data['license'] = self.licenses[license_key]
+        resource_data['license'] = self.license_db[license_key]
+
+
+    def __getitem__(self, key):
+
+        return self.resource(key)
+
+
+    def resource(self, name):
+
+        return self._get(name, dct = self.data)
+
+
+    def _get(self, name, dct):
+
+        if name in dct:
+
+            return dct[name]
+
+        elif name in self.synonyms:
+
+            name = self.synonyms[name]
+            return dct[name]
+
+        elif '_' in name:
+
+            name = name.split('_', maxsplit = 1)[0]
+            return self._get(name, dct)
+
+        else:
+
+            self._log('Could not find resource `%s`.' % name)
+
+
+    def license(self, name):
+
+        return self._get(name, dct = self.licenses)
 
 
     def collect(self, data_type):
