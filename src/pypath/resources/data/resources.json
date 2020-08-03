@@ -748,6 +748,7 @@
     "dateUpdated": "Nov 2016"
   },
   "SignaLink3": {
+    "synonyms": ["SignaLink", "SignaLink2"],
     "yearUsedRelease": 2015,
     "releases": [
       2010,
@@ -3644,7 +3645,7 @@
     "license": "LGPLv3"
   },
   "TfactS": {
-    "synonyms": ["Tfact"],
+    "synonyms": ["Tfact", "TFactS"],
     "urls": {
       "webpages": ["http://www.tfacts.org/"]
     },
@@ -4161,7 +4162,7 @@
     ],
     "license": "Composite"
   },
-  "ARACNE-GTEx": {
+  "ARACNe-GTEx": {
     "license": "CC BY 4.0"
   },
   "JASPAR-v2018": {
