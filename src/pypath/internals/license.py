@@ -283,6 +283,7 @@ class License(object):
         self.purpose = LicensePurpose(purpose)
         self.sharing = LicenseSharing(sharing)
         self.attrib = LicenseAttrib(attrib)
+        self.url = url
 
         for k, v in iteritems(kwargs):
 
