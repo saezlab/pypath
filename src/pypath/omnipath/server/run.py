@@ -51,6 +51,7 @@ import pypath.resources as resources
 from pypath.omnipath.server import generate_about_page
 import pypath.omnipath.server._html as _html
 import pypath.resources.urls as urls
+import pypath.resources as resources_mod
 import pypath.share.common as common
 import pypath.core.intercell_annot as intercell_annot
 import pypath.share.settings as settings
@@ -87,6 +88,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
         self.isLeaf = True
         self._read_license_secret()
+        self._res_ctrl = resources_mod.get_controller()
 
         twisted.web.resource.Resource.__init__(self)
         self._log('Twisted resource initialized.')
