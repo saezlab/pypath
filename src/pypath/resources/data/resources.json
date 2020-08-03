@@ -862,6 +862,7 @@
     "dateUpdated": "Nov 2016"
   },
   "ARN": {
+    "full_name": "Autophagy Regulatory Network",
     "yearUsedRelease": 2014,
     "releases": [2014],
     "authors": ["NetBiol Group"],
@@ -3709,12 +3710,14 @@
     "license": "CC BY-SA 4.0"
   },
   "Kirouac2010": {
+    "label": "Kirouac 2010",
     "urls": {
       "webpages": ["https://www.embopress.org/doi/full/10.1038/msb.2010.71"]
     },
     "license": "CC BY-NC-ND 3.0"
   },
   "Ramilowski2015": {
+    "label": "Ramilowski 2015",
     "urls": {
       "webpages": ["https://doi.org/10.1038/ncomms8866"]
     },
@@ -3733,6 +3736,7 @@
     "license": "CC BY 4.0"
   },
   "Zhong2015": {
+    "label": "Zhong 2015",
     "urls": {
       "webpages": ["https://doi.org/10.1111/nyas.12776"]
     },
@@ -3760,6 +3764,7 @@
     "license": "Apache 2.0"
   },
   "Havugimana2012": {
+    "label": "Havugimana 2012",
     "full_name": "Census of Human Soluble Protein Complexes",
     "urls": {
       "webpages": ["https://www.sciencedirect.com/science/article/pii/S0092867412010069"]
@@ -3845,6 +3850,7 @@
     }
   },
   "Li2012": {
+    "label": "Li 2012",
     "full_name": "Human Phosphotyrosine Signaling Network",
     "license": "CC BY-NC 3.0",
     "inputs": {
@@ -4014,6 +4020,7 @@
     "emails": ["gsea-team@broadinstitute.org", "GSEA Team"]
   },
   "Baccin2019": {
+    "label": "Baccin 2019",
     "urls": {
       "webpages": ["https://doi.org/10.1038/s41556-019-0439-6"]
     },
@@ -4025,6 +4032,7 @@
     ]
   },
   "ABS": {
+    "full_name": "Annotated Regulatory Binding Sites",
     "urls": {
       "webpages": ["http://genome.crg.es/datasets/abs2005/index.html"]
     },
