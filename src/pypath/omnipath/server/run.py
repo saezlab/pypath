@@ -1234,6 +1234,8 @@ class TableServer(BaseServer):
 
             tbl = self.data[query_type]
 
+            # finding out what is the name of the column with the resources
+            # as this is different across the tables
             for colname, argname in (
                 ('database', 'databases'),
                 ('sources', 'databases'),
@@ -1245,6 +1247,7 @@ class TableServer(BaseServer):
 
                     break
 
+            # collecting all resource names
             values = sorted(set(
                 itertools.chain(*(
                     val.split(';') for val in getattr(tbl, colname)
@@ -1261,19 +1264,23 @@ class TableServer(BaseServer):
 
                     if query_type == 'interactions':
 
-                        datasets = {
-                            dataset
-                            for dataset in self.datasets_
-                            if (
-                                dataset in tbl.columns and
-                                np.any(
-                                    np.logical_and(
-                                        getattr(tbl, dataset),
-                                        [db in s for s in tbl.set_sources],
-                                    )
-                                )
-                            )
-                        }
+                        datasets = set()
+
+                        for dataset in self.datasets_:
+
+                            if dataset not in tbl.columns:
+
+                                continue
+
+                            for in_dataset, resources in zip(
+                                getattr(tbl, dataset),
+                                tbl.set_sources,
+                            ):
+
+                                if in_dataset and db in resources:
+
+                                    datasets.add(db)
+                                    break
 
                         self._resources_dict[db]['queries'][query_type] = {
                             'datasets': sorted(datasets),
@@ -2354,7 +2361,7 @@ class TableServer(BaseServer):
         return cls._filter_by_license(
             tbl = tbl,
             license = license,
-            res_col = 'resource',
+            res_col = 'source',
             simple = True,
         )
 
@@ -2379,6 +2386,31 @@ class TableServer(BaseServer):
             prefix_col = None,
         ):
 
+        def filter_resources(res):
+
+            res = {
+                r for r in res
+                if res_ctrl.license(r).enables(license)
+            }
+
+            composite = [
+                r for r in res
+                if res_ctrl.license(r).name == 'Composite'
+            ]
+
+            if composite:
+
+                composite_to_remove = {
+                    comp_res
+                    for comp_res in composite
+                    if not res_ctrl.components[comp_res] & res
+                }
+
+                res = res - composite_to_remove
+
+            return res
+
+
         if license == LICENSE_IGNORE:
 
             return tbl
@@ -2398,15 +2430,14 @@ class TableServer(BaseServer):
 
             _set_res_col = tbl.set_sources
 
-            _new_res_col = [
-                ';'.join(sorted(
-                    res
-                    for res in ress
-                    if res_ctrl.license(res).enables(license)
-                ))
+            _res_to_keep = [
+                filter_resources(ress)
                 for ress in _set_res_col
             ]
-            tbl[res_col] = _new_res_col
+            tbl[res_col] = [
+                ';'.join(sorted(ress))
+                for ress in _res_to_keep
+            ]
 
             if prefix_col:
 
@@ -2417,21 +2448,22 @@ class TableServer(BaseServer):
                     ';'.join(sorted(
                         pref_res
                         for pref_res in pref_ress.split(';')
-                        if res_ctrl.license(
-                            pref_res.split(':', maxsplit = 1)[0]
-                        ).enables(license)
+                        if (
+                            pref_res.split(':', maxsplit = 1)[0] in
+                            _res_to_keep[i]
+                        )
                     ))
 
                         if isinstance(pref_ress, common.basestring) else
 
                     pref_ress
 
-                    for pref_ress in _prefix_col
+                    for i, pref_ress in enumerate(_prefix_col)
                 ]
 
-            bool_idx = [bool(res) for res in _new_res_col]
+                tbl[prefix_col] = _new_prefix_col
 
-        tbl[prefix_col] = _new_prefix_col
+            bool_idx = [bool(res) for res in _new_res_col]
 
         tbl = tbl[bool_idx]
 
