@@ -223,6 +223,40 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             request.args[b'fields']
         )
 
+        self._set_license(request)
+
+
+    def _set_license(self, req):
+
+        auth = False
+
+        if b'password' in req.args:
+
+            req_secret = hashlib.md5sum(req.args[b'password'][0]).hexdigest()
+
+            auth = (
+                self._license_secret is not None and
+                self._license_secret == req_secret
+            )
+
+            # if someone sent a good password
+            # why not to ignore the licenses
+            if auth:
+
+                req.args[b'license'] = [b'ignore']
+
+        # if the license level is not set
+        # or set to `ignore` but no successfull authentication
+        # we fall back to the default license level
+        if (
+            b'license' not in req.args or (
+                not auth and
+                req.args[b'license'][0] == b'ignore')
+            )
+        ):
+
+            req.args[b'license'] = self._default_license
+
 
     def _process_postpath(self, req):
 
@@ -321,6 +355,10 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
                 self._license_secret = fp.read().strip()
 
+        self._default_license = [
+            settings.get('server_default_license').encode('ascii')
+        ]
+
 
 class TableServer(BaseServer):
 
@@ -365,6 +403,16 @@ class TableServer(BaseServer):
                 'tsv',
                 'table'
             },
+            'license': {
+                'ignore',
+                'academic',
+                'non_profit',
+                'nonprofit',
+                'for_profit',
+                'forprofit',
+                'commercial',
+            },
+            'password': None,
             'datasets': {
                 'omnipath',
                 'tfregulons',
@@ -455,6 +503,16 @@ class TableServer(BaseServer):
                 'tsv',
                 'table',
             },
+            'license': {
+                'ignore',
+                'academic',
+                'non_profit',
+                'nonprofit',
+                'for_profit',
+                'forprofit',
+                'commercial',
+            },
+            'password': None,
             'enzymes':     None,
             'substrates':  None,
             'partners':    None,
@@ -495,6 +553,16 @@ class TableServer(BaseServer):
                 'tsv',
                 'table',
             },
+            'license': {
+                'ignore',
+                'academic',
+                'non_profit',
+                'nonprofit',
+                'for_profit',
+                'forprofit',
+                'commercial',
+            },
+            'password': None,
             'databases': None,
             'resources': None,
             'proteins': None,
@@ -531,6 +599,16 @@ class TableServer(BaseServer):
                 'tsv',
                 'table',
             },
+            'license': {
+                'ignore',
+                'academic',
+                'non_profit',
+                'nonprofit',
+                'for_profit',
+                'forprofit',
+                'commercial',
+            },
+            'password': None,
             'scope': {
                 'specific',
                 'generic',
@@ -628,6 +706,16 @@ class TableServer(BaseServer):
                 'tsv',
                 'table',
             },
+            'license': {
+                'ignore',
+                'academic',
+                'non_profit',
+                'nonprofit',
+                'for_profit',
+                'forprofit',
+                'commercial',
+            },
+            'password': None,
             'databases': None,
             'resources': None,
             'proteins': None,
