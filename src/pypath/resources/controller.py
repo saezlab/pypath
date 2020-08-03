@@ -143,12 +143,15 @@ class ResourceController(session_mod.Logger):
 
         for res, res_data in iteritems(self.data):
 
-            if (
-                'license' in res_data and
-                isinstance(res_data['license'], common.basestring)
-            ):
+            if 'license' in res_data:
 
-                self._update_license(res_data)
+                if isinstance(res_data['license'], common.basestring):
+
+                    self._update_license(res_data)
+
+            else:
+
+                self._log('No license for resource `%s`.' % res)
 
 
     def _update_license(self, resource_data):
