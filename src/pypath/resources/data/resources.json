@@ -3733,6 +3733,7 @@
     "license": "CC BY-NC-ND 3.0"
   },
   "Ramilowski2015": {
+      "synonyms": ["Ramilowski"],
     "label": "Ramilowski 2015",
     "urls": {
       "webpages": ["https://doi.org/10.1038/ncomms8866"]
@@ -3968,6 +3969,7 @@
     "license": "CC BY-NC 4.0"
   },
   "COSMIC": {
+    "synonyms": ["CancerGeneCensus"],
     "urls": {
       "webpages": ["https://cancer.sanger.ac.uk/cosmic/"]
     },
@@ -4057,7 +4059,7 @@
     "license": "GPLv2",
     "emails": ["eblanco@imim.es", "Enrique Blanco"]
   },
-  "CacncerSEA": {
+  "CancerSEA": {
     "urls": {
       "webpages": ["http://biocc.hrbmu.edu.cn/CancerSEA/"]
     },
@@ -4172,7 +4174,26 @@
       "DoRothEA_D",
       "DoRothEA_E"
     ],
-    "license": "Composite"
+    "license": "Composite",
+    "components": [
+      "ARACNe-GTEx",
+      "FANTOM4",
+      "HOCOMOCO-v11",
+      "HTRIdb",
+      "IntAct",
+      "JASPAR-v2018",
+      "KEGG",
+      "NFIRegulomeDB",
+      "ORegAnno",
+      "PAZAR",
+      "ReMap",
+      "RegNetwork",
+      "TFactS",
+      "TFe",
+      "TRED",
+      "TRRD",
+      "TRRUST"
+    ]
   },
   "ARACNe-GTEx": {
     "license": "CC BY 4.0"
@@ -4217,7 +4238,7 @@
   "Sparser": {
     "license": "CC BY 4.0"
   },
-  "cFinder": {
+  "CFinder": {
     "license": "CC BY 4.0"
   },
   "NetworkBlast": {
@@ -4228,6 +4249,12 @@
     "license": "I2D"
   },
   "OmniPath": {
+    "license": "CC BY 4.0"
+  },
+  "Phobius": {
+    "license": "CC BY 4.0"
+  },
+  "GPCRdb": {
     "license": "CC BY 4.0"
   }
 }
