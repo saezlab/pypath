@@ -252,6 +252,11 @@
     "dateUpdated":"Nov 2016"
   },
   "Guide2Pharma": {
+    "synonyms": [
+      "guidetopharmacology",
+      "Guide to Pharmacology",
+      "GuideToPharmacology"
+    ],
     "yearUsedRelease": 2015,
     "releases": [
       2007,
@@ -325,6 +330,7 @@
     "dateUpdated":"Nov 2016"
   },
   "phosphoELM": {
+    "synonyms": ["phospho.ELM"],
     "yearUsedRelease": 2010,
     "releases": [
       2004,
@@ -622,7 +628,8 @@
     }
   },
   "SIGNOR": {
-    "yearUsedRelease": 2015,
+    "synonyms": ["Signor"],
+    "yearUsedRelease": 2020,
     "releases": [2015],
     "urls": {
       "webpages": ["http://signor.uniroma2.it/"],
@@ -1350,6 +1357,7 @@
     "dateUpdated":"Nov 2016"
   },
   "BioCarta": {
+    "synonyms": ["Biocarta"],
     "yearUsedRelease": 2006,
     "releases": [2006],
     "authors": ["Community"],
@@ -2127,6 +2135,7 @@
     "dateUpdated":"Nov 2016"
   },
   "InnateDB": {
+    "synonyms": ["InnateDB-All"],
     "yearUsedRelease": 2015,
     "urls": {
       "articles": [
@@ -3653,6 +3662,7 @@
   },
   "GO": {
     "full_name": "Gene Ontology",
+    "synonyms": ["GO-lig-rec"],
     "urls": {
       "webpages": ["http://geneontology.org/"]
     },
@@ -3777,6 +3787,7 @@
     "license": "CC BY 4.0"
   },
   "Compleat": {
+    "synonyms": ["COMPLEAT"],
     "full_name": "COMPLEAT protein COMPLex Enrichment Analysis Tool",
     "urls": {
       "webpages": ["https://www.flyrnai.org/compleat/"]
@@ -4176,5 +4187,43 @@
   },
   "DoRothEA-reviews": {
     "license": "CC BY 4.0"
+  },
+  "BEL-Large-Corpus": {
+    "license": "NAR Open Access"
+  },
+  "Dinarello2013": {
+    "label": "Dinarello 2013",
+    "license": "CC BY 4.0"
+  },
+  "REACH": {
+    "license": "CC BY 4.0"
+  },
+  "RLIMS-P": {
+    "license": "CC BY 4.0"
+  },
+  "cellsignal.com": {
+    "license": "No license"
+  },
+  "Kinexus": {
+    "license": "CC BY 4.0"
+  },
+  "NetworKIN": {
+    "license": "CC BY 4.0"
+  },
+  "iMEX": {
+    "license": "CC BY 4.0"
+  },
+  "Sparser": {
+    "license": "CC BY 4.0"
+  },
+  "cFinder": {
+    "license": "CC BY 4.0"
+  },
+  "NetworkBlast": {
+    "license": "CC BY 4.0"
+  },
+  "I2D": {
+    "full_name": "Interologous Interaction Database",
+    "license": "I2D"
   }
 }
