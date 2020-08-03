@@ -56,14 +56,19 @@ def generate_about_html(descriptions, format = 'b'):
     or can be saved locally with `write_html()`.
     """
     # Header
-    title = 'Metadata about signaling pathway resources'
+    title = 'Metadata about resources in OmniPath and pypath'
     doc = (
         '<div class="yellowbox box">\n'
         '<p>\n'
             '<em>\n'
-            'Information on this page has been last revised in Nov 2016.\n'
-            'As of Oct 2019 we are working on updating and extending this\n'
-            'page and will publish the new version soon.\n'
+            'We created this webpage in Nov 2016.\n'
+            'Since the end of 2019 we have been gradually updating and \n'
+            'extending the information. As of July 2020 we updated the URLs\n'
+            'and licensing terms of most of the resources.\n'
+            'Most of the "pypath methods" and the\n'
+            'years of releases are out of date.\n'
+            'We will keep updating these, if you find any wrong information\n'
+            'please notify us at omnipathdb@gmail.com.\n'
             'About updates of the OmniPath database content please refer to\n'
             '<a href="http://archive.omnipathdb.org/README.txt">\n'
                 'our archive.\n'
@@ -71,43 +76,52 @@ def generate_about_html(descriptions, format = 'b'):
             '</em>\n'
         '</p>\n'
         '</div>\n'
-        '<p>This collection was created during the construction '
-        'of OmniPath when we considered more than 50 resources and '
-        'selected the ones containing literature curation effort. '
-        'OmniPath is a network '
-        'of signaling pathways intending to '
-        'combine all high quality, manually curated efforts. The '
+        '<p>This collection is a byproduct of the development of\n'
+        'OmniPath, a database built from above 100 resources.\n'
+        'Initially OmniPath focused on the literature curatied activity\n'
+        'flow networks. Today it covers a much broader range of molecular\n'
+        'interaction data, and besides its network database OmniPath\n'
+        'has four other databases: enzyme-PTM relationships, protein\n'
+        'complexes, molecular annotations (function, localization,\n'
+        'structure, etc) and intercellular communication roles.\n'
+        'The "omnipath" dataset of the network database follows the\n'
+        'principles of the initial release of OmniPath, focusing on \n'
+        'high quality, manually curated signaling pathways. The '
         'descriptions here cite the relevant sentences '
-        'about the curation protocols from the original articles and webpages. '
-        'URLs pointing to the articles and the webpages, and some '
-        'additional metadata are provided where available. '
-        'The resources with green title are included by default in '
-        'OmniPath. <span class="code">pypath</span> methods are listed '
-        ' where available, to know more please look at <a '
+        'about the curation protocols from the original articles and\n'
+        'webpages. URLs pointing to the articles and the webpages, and some\n'
+        'additional metadata are provided where available.\n'
+        'The resources with green title are included by default in\n'
+        'OmniPath. <span class="code">pypath</span> methods are listed\n'
+        ' where available, to know more please look at\n<a '
         'target="_blank" href="http://pypath.omnipathdb.org/">'
-        'pypath documentation.</a> This list is only about network '
-        'resources. <span class="code">pypath</span> is able to '
-        'process and integrate many other resources, please see '
-        'the paper and the documentation to know more.</p>'
-        '<p class="small">We searched for license information '
-        'in the main, About, Download and FAQ sections of the webpages, '
-        'and run Google searches for the database name and license. '
-        'Where we could not find anything about licensing, we assumed '
-        'no license. Unfortunately due to todays restrictive copyright '
-        'legislations, users don\'t have the freedom to use, modify and '
-        'redistribute the data without a license explicitely granting '
-        'these to them. Despite the clear intention from the authors to '
-        'make their data public, and statements on the webpage like '
-        '"free to use" or "available for download".</p>\n'
+        'pypath documentation.</a>\n'
+        '<p class="small">We searched for license information\n'
+        'in the main, About, Download and FAQ sections of the webpages,\n'
+        'and run Google searches for the database name and license.\n'
+        'Where we could not find anything about licensing, we assumed\n'
+        'no license. Unfortunately due to todays restrictive copyright\n'
+        'legislations, users don\'t have the freedom to use, modify and\n'
+        'redistribute the data without a license explicitely granting\n'
+        'these to them. Despite the clear intention from the authors to\n'
+        'make their data public, and statements on the webpage like\n'
+        '"free to use" or "available for download". In these cases\n'
+        'we contacted the authors for permission to redistribute their\n'
+        'data.</p>\n'
     )
     doc += '\t<h2>Contents</h2>\n'
     doc += '\t<ul>\n'
 
     # Table of Content
     for k, v in sorted(descriptions.items(), key=lambda x: x[0].lower()):
-        doc += '\t\t\t<li><a href="#%s" class="%s">%s</a></li>\n' % \
-            (k, 'omnipath' if 'omnipath' in v and v['omnipath'] else 'base',
-             v['label'] if 'label' in v else k)
+        doc += '\t\t\t<li><a href="#%s" class="%s">%s%s</a></li>\n' % \
+            (
+                k,
+                'omnipath'
+                    if 'omnipath' in v and v['omnipath'] else 'base',
+                v['label'] if 'label' in v else k,
+                (' – %s' % v['full_name']) if 'full_name' in v else ''
+            )
     doc += '\t</ul>\n'
 
     # Sections
@@ -143,14 +157,22 @@ def generate_about_html(descriptions, format = 'b'):
             )
         if 'license' in v:
             try:
-                doc += '\t\t\t<p><b>License:</b> %s%s%s\n' % (
-                    ('<a href="%s" target="_blank">' % v['license']['url']) if
-                    'url' in v['license'] else '', v['license']['name'], '</a>'
-                    if 'url' in v['license'] else '')
-                doc += '\t\t\t%s\n</p>' % "".join(v['license']['comment'])\
-                        if 'comment' in v['license'] else ''
+                license = v['license']
+
+                doc += (
+                    '\t\t\t<p><b>License:</b> '
+                    '<a href="%s" target="_blank">%s%s</a>%s</p>\n' % (
+                        license.url,
+                        license.full_name,
+                        (' (%s)' % license.name) if license.name != k else '',
+                        ('</p>\n\t\t\t<p><em>"%s"</em>' % license.note)
+                            if hasattr(license, 'note') else
+                        ''
+                    )
+                )
 
             except KeyError:
+
                 _log(
                     'Wrong license format or incomplete '
                     'information for `%s`.' % k
