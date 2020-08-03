@@ -908,6 +908,7 @@
     "dateUpdated": "Nov 2016"
   },
   "HPRD": {
+    "synonyms": ["HPRD-phos"],
     "yearUsedRelease": 2010,
     "releases": [
       2002,
@@ -4225,5 +4226,8 @@
   "I2D": {
     "full_name": "Interologous Interaction Database",
     "license": "I2D"
+  },
+  "OmniPath": {
+    "license": "CC BY 4.0"
   }
 }

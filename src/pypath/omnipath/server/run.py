@@ -62,6 +62,9 @@ if 'unicode' not in __builtins__:
     unicode = str
 
 
+LICENSE_IGNORE = 'ignore'
+
+
 def stop_server():
 
     reactor.removeAll()
@@ -234,7 +237,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
         if b'password' in req.args:
 
-            req_secret = hashlib.md5sum(req.args[b'password'][0]).hexdigest()
+            req_secret = hashlib.md5(req.args[b'password'][0]).hexdigest()
 
             auth = (
                 self._license_secret is not None and
@@ -253,7 +256,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         if (
             b'license' not in req.args or (
                 not auth and
-                req.args[b'license'][0] == b'ignore')
+                req.args[b'license'][0] == b'ignore'
             )
         ):
 
@@ -368,6 +371,7 @@ class TableServer(BaseServer):
         'annotations',
         'intercell',
         'interactions',
+        'enz_sub',
         'enzsub',
         'ptms',
         'complexes',
@@ -1753,6 +1757,10 @@ class TableServer(BaseServer):
 
                     hdr.append(f)
 
+        license = self._get_license(req)
+
+        tbl = self._filter_by_license_interactions(tbl, license)
+
         tbl = tbl.loc[:,hdr]
 
         return self._serve_dataframe(tbl, req)
@@ -1911,12 +1919,23 @@ class TableServer(BaseServer):
 
                     hdr.append(f)
 
+        license = self._get_license(req)
+
+        tbl = self._filter_by_license_interactions(tbl, license)
+
         tbl = tbl.loc[:,hdr]
 
         return self._serve_dataframe(tbl, req)
 
 
     def ptms(self, req):
+
+        req.postpath[0] = 'enzsub'
+
+        return self.enzsub(req)
+
+
+    def enz_sub(self, req):
 
         req.postpath[0] = 'enzsub'
 
@@ -1974,6 +1993,10 @@ class TableServer(BaseServer):
             hdr.insert(1, 'genesymbol')
         else:
             genesymbols = False
+
+        license = self._get_license(req)
+
+        tbl = self._filter_by_license_annotations(tbl, license)
 
         tbl = tbl.loc[:,hdr]
 
@@ -2163,6 +2186,10 @@ class TableServer(BaseServer):
                 )
             ]
 
+        license = self._get_license(req)
+
+        tbl = self._filter_by_license_intercell(tbl, license)
+
         tbl = tbl.loc[:,hdr]
 
         return self._serve_dataframe(tbl, req)
@@ -2257,6 +2284,10 @@ class TableServer(BaseServer):
                 ]
             ]
 
+        license = self._get_license(req)
+
+        tbl = self._filter_by_license_complexes(tbl, license)
+
         tbl = tbl.loc[:,hdr]
 
         return self._serve_dataframe(tbl, req)
@@ -2284,6 +2315,127 @@ class TableServer(BaseServer):
                 if not datasets or datasets & set(v['datasets'].keys())
             )
         )
+
+
+
+    @staticmethod
+    def _get_license(req):
+
+        return req.args[b'license'][0].decode('utf-8')
+
+
+    @classmethod
+    def _filter_by_license_complexes(cls, tbl, license):
+
+        return cls._filter_by_license(
+            tbl = tbl,
+            license = license,
+            res_col = 'sources',
+            simple = False,
+            prefix_col = 'identifiers',
+        )
+
+
+    @classmethod
+    def _filter_by_license_interactions(cls, tbl, license):
+
+        return cls._filter_by_license(
+            tbl = tbl,
+            license = license,
+            res_col = 'sources',
+            simple = False,
+            prefix_col = 'references',
+        )
+
+
+    @classmethod
+    def _filter_by_license_annotations(cls, tbl, license):
+
+        return cls._filter_by_license(
+            tbl = tbl,
+            license = license,
+            res_col = 'resource',
+            simple = True,
+        )
+
+
+    @classmethod
+    def _filter_by_license_intercell(cls, tbl, license):
+
+        return cls._filter_by_license(
+            tbl = tbl,
+            license = license,
+            res_col = 'database',
+            simple = True,
+        )
+
+
+    @staticmethod
+    def _filter_by_license(
+            tbl,
+            license,
+            res_col,
+            simple = False,
+            prefix_col = None,
+        ):
+
+        if license == LICENSE_IGNORE:
+
+            return tbl
+
+        res_ctrl = resources_mod.get_controller()
+
+        _res_col = getattr(tbl, res_col)
+
+        if simple:
+
+            bool_idx = [
+                res_ctrl.license(res).enables(license)
+                for res in _res_col
+            ]
+
+        else:
+
+            _set_res_col = tbl.set_sources
+
+            _new_res_col = [
+                ';'.join(sorted(
+                    res
+                    for res in ress
+                    if res_ctrl.license(res).enables(license)
+                ))
+                for ress in _set_res_col
+            ]
+            tbl[res_col] = _new_res_col
+
+            if prefix_col:
+
+                _prefix_col = getattr(tbl, prefix_col)
+
+                _new_prefix_col = [
+
+                    ';'.join(sorted(
+                        pref_res
+                        for pref_res in pref_ress.split(';')
+                        if res_ctrl.license(
+                            pref_res.split(':', maxsplit = 1)[0]
+                        ).enables(license)
+                    ))
+
+                        if isinstance(pref_ress, common.basestring) else
+
+                    pref_ress
+
+                    for pref_ress in _prefix_col
+                ]
+
+            bool_idx = [bool(res) for res in _new_res_col]
+
+        tbl[prefix_col] = _new_prefix_col
+
+        tbl = tbl[bool_idx]
+
+        return tbl
 
 
     @classmethod
