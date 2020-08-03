@@ -98,7 +98,22 @@ class Licenses(session.Logger):
 
     def __getitem__(self, key):
 
-        return self.licenses[key]
+        if isinstance(key, license.License):
+
+            if key.name not in self:
+
+                self.licenses[key.name] = key
+
+            return key
+
+        elif key in self:
+
+            return self.licenses[key]
+
+        else:
+
+            self._log('Missing license: `%s`.' % str(key))
+            return key
 
 
     def __contains__(self, key):

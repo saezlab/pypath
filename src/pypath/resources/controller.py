@@ -148,15 +148,13 @@ class ResourceController(session_mod.Logger):
                 isinstance(res_data['license'], common.basestring)
             ):
 
-                license_key = res_data['license']
+                self._update_license(res_data)
 
-                if license_key in self.licenses:
 
-                    res_data['license'] = self.licenses[license_key]
+    def _update_license(self, resource_data):
 
-                else:
-
-                    self._log('Missing license: `%s`' % str(license_key))
+        license_key = resource_data['license']
+        resource_data['license'] = self.licenses[license_key]
 
 
     def collect(self, data_type):
