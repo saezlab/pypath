@@ -415,6 +415,7 @@ class TableServer(BaseServer):
                 'commercial',
             },
             'password': None,
+            'limit': None,
             'datasets': {
                 'omnipath',
                 'tfregulons',
@@ -515,6 +516,7 @@ class TableServer(BaseServer):
                 'commercial',
             },
             'password': None,
+            'limit': None,
             'enzymes':     None,
             'substrates':  None,
             'partners':    None,
@@ -565,6 +567,7 @@ class TableServer(BaseServer):
                 'commercial',
             },
             'password': None,
+            'limit': None,
             'databases': None,
             'resources': None,
             'proteins': None,
@@ -611,6 +614,7 @@ class TableServer(BaseServer):
                 'commercial',
             },
             'password': None,
+            'limit': None,
             'scope': {
                 'specific',
                 'generic',
@@ -718,6 +722,7 @@ class TableServer(BaseServer):
                 'commercial',
             },
             'password': None,
+            'limit': None,
             'databases': None,
             'resources': None,
             'proteins': None,
@@ -2283,6 +2288,15 @@ class TableServer(BaseServer):
 
     @classmethod
     def _serve_dataframe(cls, tbl, req):
+
+        if b'limit' in req.args:
+
+            limit = req.args[b'limit'][0].decode('utf-8')
+
+            if limit.isdigit():
+
+                limit = int(limit)
+                tbl = tbl.head(limit)
 
         if b'format' in req.args and req.args[b'format'][0] == b'json':
 
