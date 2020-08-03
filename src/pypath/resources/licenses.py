@@ -99,3 +99,8 @@ class Licenses(session.Logger):
     def __getitem__(self, key):
 
         return self.licenses[key]
+
+
+    def __contains__(self, key):
+
+        return key in self.licenses

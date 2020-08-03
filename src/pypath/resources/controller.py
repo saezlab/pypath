@@ -29,6 +29,7 @@ import importlib as imp
 import pypath.share.session as session_mod
 import pypath.share.common as common
 import pypath.internals.resource as resource_base
+import pypath.resources.licenses as licenses
 
 
 _logger = session_mod.Logger(name = 'resources.controller')
@@ -124,6 +125,7 @@ class ResourceController(session_mod.Logger):
                 self._log(
                     'Resource information has been read from `%s`.' % path
                 )
+                self.update_licenses()
 
         except IOError:
 
@@ -131,6 +133,30 @@ class ResourceController(session_mod.Logger):
                 'File %s with resources information cannot be accessed. '
                 'Check the name of the file.' % path
             )
+
+
+    def update_licenses(self):
+
+        self.licenses = licenses.Licenses()
+
+        self._log('Updating resource license information.')
+
+        for res, res_data in iteritems(self.data):
+
+            if (
+                'license' in res_data and
+                isinstance(res_data['license'], common.basestring)
+            ):
+
+                license_key = res_data['license']
+
+                if license_key in self.licenses:
+
+                    res_data['license'] = self.licenses[license_key]
+
+                else:
+
+                    self._log('Missing license: `%s`' % str(license_key))
 
 
     def collect(self, data_type):

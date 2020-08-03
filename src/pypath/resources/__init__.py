@@ -22,7 +22,7 @@
 from pypath.resources import controller as _controller_mod
 
 
-def get_controller():
+def get_controller(reload = False):
     """
     Returns the resource controller.
 
@@ -30,7 +30,7 @@ def get_controller():
     attempt. The instance is stored in the module and provided on demand.
     """
 
-    if '_controller' not in globals():
+    if '_controller' not in globals() or reload:
 
         globals()['_controller'] = _controller_mod.ResourceController()
 

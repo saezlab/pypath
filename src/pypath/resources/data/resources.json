@@ -1723,7 +1723,7 @@
       "hhe@ebi.ac.uk",
       "Henning Hermjakob"
     ],
-    "license": "CC0",
+    "license": "CC0 1.0",
     "pypath": {
       "data": [
         "pypath.urls.urls[\"reactome\"][\"sbml\"]",
@@ -2110,7 +2110,7 @@
     "subtype": "process description",
     "data_integration": "dynamic",
     "omnipath": false,
-    "license": "Cc BY 2.5",
+    "license": "CC BY 2.5",
     "pypath": {
       "input": ["pypath.dataio.netpath_names()"],
       "intr": ["pypath.dataio.netpath()"],
@@ -3637,7 +3637,7 @@
     "urls": [
       "https://membranome.org/"
     ],
-    "license": "Apache 2.0",
+    "license": "Apache 2.0"
   },
   "Exocarta": {
     "urls": [
@@ -3703,8 +3703,8 @@
   },
   "Adhesome": {
     "urls": [
-      "http://www.adhesome.org/index.html
-    "],
+      "http://www.adhesome.org/index.html"
+    ],
     "license": "CC BY 4.0"
   },
   "Integrins": {
@@ -3748,7 +3748,7 @@
     "license": "CC BY 4.0"
   },
   "Compleat": {
-    "COMPLEAT protein COMPLex Enrichment Analysis Tool",
+    "full_name": "COMPLEAT protein COMPLex Enrichment Analysis Tool",
     "urls": [
       "https://www.flyrnai.org/compleat/"
     ],
@@ -3826,7 +3826,7 @@
     }
   },
   "Li2012": {
-    "Human Phosphotyrosine Signaling Network",
+    "full_name": "Human Phosphotyrosine Signaling Network",
     "license": "CC BY-NC 3.0",
     "inputs": {
       "enzyme_substrate": {
@@ -3852,7 +3852,7 @@
     "urls": [
       "http://mirbase.org/"
     ],
-    "license": "CC0",
+    "license": "CC0 1.0",
     "emails": ["mirbase@manchester.ac.uk", "miRBase Team"]
   },
   "mir2Disease": {
