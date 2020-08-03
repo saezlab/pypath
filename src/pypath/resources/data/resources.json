@@ -1,6 +1,6 @@
 {
   "HuRI": {
-    "yearUsedRelease": 2016,
+    "yearUsedRelease": 2020,
     "releases": [
       2012,
       2014,
@@ -68,6 +68,7 @@
     "dateUpdated":"Nov 2016"
   },
   "ELM": {
+    "full_name": "Eukaryotic Linear Motif resource",
     "yearUsedRelease": 2014,
     "releases": [
       2003,
@@ -3034,8 +3035,20 @@
     },
     "dateUpdated":"Nov 2016"
   },
+  "KEGG-MEDICUS": {
+    "yearUsedRelease": 2020,
+    "releases": [
+      2017,
+      2018,
+      2019
+    ],
+    "urls": {
+      "webpages": ["ftp://ftp.genome.jp/pub/kegg/medicus/"]
+    },
+    "license": "CC BY-SA 4.0"
+  },
   "BioGRID": {
-    "yearUsedRelease": 2016,
+    "yearUsedRelease": 2020,
     "releases": [
       2003,
       2006,
@@ -3048,7 +3061,10 @@
       2013,
       2014,
       2015,
-      2016
+      2016,
+      2017,
+      2018,
+      2019
     ],
     "label": "BioGRID",
     "authors": ["Tyers Lab"],
@@ -3183,7 +3199,7 @@
     "dateUpdated":"Nov 2016"
   },
   "IntAct": {
-    "yearUsedRelease": 2016,
+    "yearUsedRelease": 2020,
     "releases": [
       2003,
       2006,
@@ -3195,7 +3211,10 @@
       2013,
       2014,
       2015,
-      2016
+      2016,
+      2017,
+      2018,
+      2019
     ],
     "authors": ["EBI"],
     "label": "IntAct",
@@ -3584,207 +3603,207 @@
     "license": "LGPLv3"
   },
   "NFIRegulomeDB": {
-    "license": {
-      "name": "GNU LGPLv3",
-      "url": "http://www.gnu.org/licenses/license-list.html#LGPLv3",
-      "commercial_use": true
-    }
+    "urls": {
+      "webpages": ["http://nfiregulome.ccr.buffalo.edu/basicquery1.0.php"]
+    },
+    "license": "LGPLv3"
   },
   "TFe": {
-    "urls": [
-      "https://github.com/wassermanlab/TFe"
-    ],
+    "full_name": "Transcription Factor Encyclopedia",
+    "urls": {
+      "webpages": ["https://github.com/wassermanlab/TFe"]
+    },
     "license": "CC BY-SA 3.0"
   },
   "TRRD": {
-    "urls": [
-      "http://wwwmgs.bionet.nsc.ru/mgs/gnw/trrd/"
-    ],
+    "urls": {
+      "webpages": ["http://wwwmgs.bionet.nsc.ru/mgs/gnw/trrd/"]
+    },
     "license": "CC BY 4.0"
   },
   "TRED": {
-    "urls": [
-      "http://rulai.cshl.edu/cgi-bin/TRED/tred.cgi?process=home"
-    ],
+    "urls": {
+      "webpages": ["http://rulai.cshl.edu/cgi-bin/TRED/tred.cgi?process=home"]
+    },
     "license": "NAR Open Access"
   },
   "Fantom4": {
-    "urls": [
-      "https://fantom.gsc.riken.jp/4/"
-    ],
+    "urls": {
+      "webpages": ["https://fantom.gsc.riken.jp/4/"]
+    },
     "license": "CC BY 4.0"
   },
   "RegNetwork": {
-    "urls": [
-      "http://regnetworkweb.org/"
-    ],
+    "urls": {
+      "webpages": ["http://regnetworkweb.org/"]
+    },
     "license": "LGPLv3"
   },
   "TfactS": {
-    "urls": [
-      "http://www.tfacts.org/"
-    ],
+    "urls": {
+      "webpages": ["http://www.tfacts.org/"]
+    },
     "license": "CC BY 4.0"
   },
   "GO": {
     "full_name": "Gene Ontology",
-    "urls": [
-      "http://geneontology.org/"
-    ],
+    "urls": {
+      "webpages": ["http://geneontology.org/"]
+    },
     "license": "CC BY 4.0"
   },
   "Membranome": {
-    "urls": [
-      "https://membranome.org/"
-    ],
+    "urls": {
+      "webpages": ["https://membranome.org/"]
+    },
     "license": "Apache 2.0"
   },
   "Exocarta": {
-    "urls": [
-      "http://www.exocarta.org/"
-    ],
+    "urls": {
+      "webpages": ["http://www.exocarta.org/"]
+    },
     "license": "CC BY 4.0"
   },
   "Vesiclepedia": {
-    "urls": [
-      "http://microvesicles.org"
-    ],
+    "urls": {
+      "webpages": ["http://microvesicles.org"]
+    },
     "license": "CC BY 4.0"
   },
   "Matrisome": {
-    "urls": [
-      "http://matrisomeproject.mit.edu/"
-    ],
+    "urls": {
+      "webpages": ["http://matrisomeproject.mit.edu/"]
+    },
     "license": "CC BY-NC 4.0"
   },
   "CSPA": {
     "full_name": "Cell Surface Protein Atlas",
-    "urls": [
-      "http://wlab.ethz.ch/cspa/"
-    ],
+    "urls": {
+      "webpages": ["http://wlab.ethz.ch/cspa/"]
+    },
     "license": "CC BY 4.0"
   },
   "HPMR": {
     "full_name": "Human Plasma Membrane Receptome",
-    "urls": [
-      "http://www.receptome.org/"
-    ],
+    "urls": {
+      "webpages": ["http://www.receptome.org/"]
+    },
     "license": "CC BY-NC 4.0"
   },
   "LOCATE": {
-    "urls": [
-      "http://web.archive.org/web/20190504002456/http://locate.imb.uq.edu.au/"
-    ],
+    "urls": {
+      "webpages": ["http://web.archive.org/web/20190504002456/http://locate.imb.uq.edu.au/"]
+    },
     "license": "NAR Open Access"
   },
   "CellPhoneDB": {
-    "urls": [
-      "https://www.cellphonedb.org/"
-    ],
+    "urls": {
+      "webpages": ["https://www.cellphonedb.org/"]
+    },
     "license": "MIT"
   },
   "ComPPI": {
-    "urls": [
-      "http://comppi.linkgroup.hu/"
-    ],
+    "urls": {
+      "webpages": ["http://comppi.linkgroup.hu/"]
+    },
     "license": "CC BY-SA 4.0"
   },
   "Kirouac2010": {
-    "urls": [
-      "https://www.embopress.org/doi/full/10.1038/msb.2010.71"
-    ],
+    "urls": {
+      "webpages": ["https://www.embopress.org/doi/full/10.1038/msb.2010.71"]
+    },
     "license": "CC BY-NC-ND 3.0"
   },
   "Ramilowski2015": {
-    "urls": [
-      "https://doi.org/10.1038/ncomms8866"
-    ],
+    "urls": {
+      "webpages": ["https://doi.org/10.1038/ncomms8866"]
+    },
     "license": "CC BY 4.0"
   },
   "Adhesome": {
-    "urls": [
-      "http://www.adhesome.org/index.html"
-    ],
+    "urls": {
+      "webpages": ["http://www.adhesome.org/index.html"]
+    },
     "license": "CC BY 4.0"
   },
   "Integrins": {
-    "urls": [
-      "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1929136/"
-    ],
+    "urls": {
+      "webpages": ["https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1929136/"]
+    },
     "license": "CC BY 4.0"
   },
   "Zhong2015": {
-    "urls": [
-      "https://doi.org/10.1111/nyas.12776"
-    ],
+    "urls": {
+      "webpages": ["https://doi.org/10.1111/nyas.12776"]
+    },
     "license": "CC BY 4.0"
   },
   "HGNC": {
     "full_name": "Human Gene Nomenclature Committee",
-    "urls": [
-      "https://www.genenames.org/"
-    ],
+    "urls": {
+      "webpages": ["https://www.genenames.org/"]
+    },
     "license": "HGNC"
   },
   "TopDB": {
     "full_name": "Topology Data Bank of Transmembrane Proteins",
-    "urls": [
-      "http://topdb.enzim.hu/"
-    ],
+    "urls": {
+      "webpages": ["http://topdb.enzim.hu/"]
+    },
     "license": "CC BY-NC 4.0"
   },
   "OPM": {
     "full_name": "Orientations of Proteins in Membranes",
-    "urls": [
-      "https://opm.phar.umich.edu/"
-    ],
+    "urls": {
+      "webpages": ["https://opm.phar.umich.edu/"]
+    },
     "license": "Apache 2.0"
   },
   "Havugimana2012": {
     "full_name": "Census of Human Soluble Protein Complexes",
-    "urls": [
-      "https://www.sciencedirect.com/science/article/pii/S0092867412010069"
-    ],
+    "urls": {
+      "webpages": ["https://www.sciencedirect.com/science/article/pii/S0092867412010069"]
+    },
     "license": "CC BY 4.0"
   },
   "Compleat": {
     "full_name": "COMPLEAT protein COMPLex Enrichment Analysis Tool",
-    "urls": [
-      "https://www.flyrnai.org/compleat/"
-    ],
+    "urls": {
+      "webpages": ["https://www.flyrnai.org/compleat/"]
+    },
     "license": "CC BY-SA 4.0"
   },
   "ComplexPortal": {
-    "urls": [
-      "https://www.ebi.ac.uk/complexportal"
-    ],
+    "urls": {
+      "webpages": ["https://www.ebi.ac.uk/complexportal"]
+    },
     "license": "CC BY 4.0"
   },
   "HPA": {
     "full_name": "Human Protein Atlas",
-    "urls": [
-      "https://www.proteinatlas.org/"
-    ],
+    "urls": {
+      "webpages": ["https://www.proteinatlas.org/"]
+    },
     "license": "CC BY-SA 3.0"
   },
   "PDB": {
     "full_name": "Protein Data Bank",
-    "urls": [
-      "https://www.wwpdb.org/"
-    ],
+    "urls": {
+      "webpages": ["https://www.wwpdb.org/"]
+    },
     "license": "PDB"
   },
   "hu.MAP": {
     "full_name": "Human Protein Complex Map",
-    "urls": [
-      "http://hu.proteincomplexes.org/"
-    ],
+    "urls": {
+      "webpages": ["http://hu.proteincomplexes.org/"]
+    },
     "license": "CC BY 4.0"
   },
   "PhosphoNetworks": {
-    "urls": [
-      "https://phosphonetworks.org/"
-    ],
+    "urls": {
+      "webpages": ["https://phosphonetworks.org/"]
+    },
     "license": "PhosphoNetworks",
     "inputs": {
       "enzyme_substrate": {
@@ -3803,9 +3822,9 @@
   },
   "MIMP": {
     "full_name": "Mutations IMpact on Phosphorylation",
-    "urls": [
-      "http://mimp.baderlab.org/"
-    ],
+    "urls": {
+      "webpages": ["http://mimp.baderlab.org/"]
+    },
     "license": "LGPLv3",
     "inputs": {
       "enzyme_substrate": {
@@ -3842,129 +3861,129 @@
     }
   },
   "UniProt": {
-    "urls": [
-      "https://uniprot.org/"
-    ],
+    "urls": {
+      "webpages": ["https://uniprot.org/"]
+    },
     "license": "CC BY 4.0",
     "emails": ["help@uniprot.org", "Uniprot Consortium"]
   },
   "miRBase": {
-    "urls": [
-      "http://mirbase.org/"
-    ],
+    "urls": {
+      "webpages": ["http://mirbase.org/"]
+    },
     "license": "CC0 1.0",
     "emails": ["mirbase@manchester.ac.uk", "miRBase Team"]
   },
   "mir2Disease": {
-    "urls": [
-      "http://web.archive.org/web/20171006225859/http://www.mir2disease.org/"
-    ],
+    "urls": {
+      "webpages": ["http://web.archive.org/web/20171006225859/http://www.mir2disease.org/"]
+    },
     "license": "CC BY-NC 2.0"
   },
   "miRDeatdhDB": {
-    "urls": [
-      "http://web.archive.org/web/20160425074155/http://rna-world.org/mirdeathdb/"
-    ],
+    "urls": {
+      "webpages": ["http://web.archive.org/web/20160425074155/http://rna-world.org/mirdeathdb/"]
+    },
     "license": "CC BY-NC 4.0"
   },
   "TransmiR": {
-    "urls": [
-      "http://www.cuilab.cn/transmir"
-    ],
+    "urls": {
+      "webpages": ["http://www.cuilab.cn/transmir"]
+    },
     "license": "CC BY-NC 4.0"
   },
   "ENCODE": {
     "full_name": "Encyclopedia of DNA Elements",
-    "urls": [
-      "https://www.encodeproject.org/"
-    ],
+    "urls": {
+      "webpages": ["https://www.encodeproject.org/"]
+    },
     "license": "CC BY 4.0"
   },
   "lncRNADisease": {
-    "urls": [
-      "http://www.cuilab.cn/lncrnadisease"
-    ],
+    "urls": {
+      "webpages": ["http://www.cuilab.cn/lncrnadisease"]
+    },
     "license": "CC BY-NC 4.0"
   },
   "lncrnadb": {
-    "urls": [
-      "http://web.archive.org/web/20190505115633/http://lncrnadb.org/"
-    ],
+    "urls": {
+      "webpages": ["http://web.archive.org/web/20190505115633/http://lncrnadb.org/"]
+    },
     "license": "NAR Open Access"
   },
   "miRecords": {
-    "urls": [
-      "http://c1.accurascience.com/miRecords/"
-    ],
+    "urls": {
+      "webpages": ["http://c1.accurascience.com/miRecords/"]
+    },
     "license": "miRecords"
   },
   "miRTarBase": {
-    "urls": [
-      "http://mirtarbase.cuhk.edu.cn/php/index.php"
-    ],
+    "urls": {
+      "webpages": ["http://mirtarbase.cuhk.edu.cn/php/index.php"]
+    },
     "license": "miRTarBase"
   },
   "HIPPIE": {
     "full_name": "Human Integrated Protein-Protein Interaction rEference",
-    "urls": [
-      "http://cbdm-01.zdv.uni-mainz.de/~mschaefer/hippie/"
-    ],
+    "urls": {
+      "webpages": ["http://cbdm-01.zdv.uni-mainz.de/~mschaefer/hippie/"]
+    },
     "license": "CC BY 4.0"
   },
   "CPAD": {
-    "urls": [
-      "http://bio-bigdata.hrbmu.edu.cn/CPAD/download.jsp"
-    ],
+    "urls": {
+      "webpages": ["http://bio-bigdata.hrbmu.edu.cn/CPAD/download.jsp"]
+    },
     "license": "No license",
     "emails": ["lixia@hrbmu.edu.cn", "Li Xia"]
   },
   "IntOGen": {
-    "urls": [
-      "https://www.intogen.org/search"
-    ],
+    "urls": {
+      "webpages": ["https://www.intogen.org/search"]
+    },
     "license": "CC BY-NC 4.0"
   },
   "COSMIC": {
-    "urls": [
-      "https://cancer.sanger.ac.uk/cosmic/"
-    ],
+    "urls": {
+      "webpages": ["https://cancer.sanger.ac.uk/cosmic/"]
+    },
     "license": "COSMIC"
   },
   "DGIdb": {
-    "urls": [
-      "http://www.dgidb.org/"
-    ],
+    "urls": {
+      "webpages": ["http://www.dgidb.org/"]
+    },
     "license": "MIT"
   },
   "DisGeNet": {
-    "urls": [
-      "https://www.disgenet.org/"
-    ],
+    "urls": {
+      "webpages": ["https://www.disgenet.org/"]
+    },
     "license": "CC BY-NC-SA 4.0"
   },
   "kinase.com": {
-    "urls": [
-      "http://kinase.com/web/current/"
-    ],
+    "urls": {
+      "webpages": ["http://kinase.com/web/current/"]
+    },
     "license": "Kinase.com"
   },
   "Phosphatome": {
-    "urls": [
-      "http://phosphatome.net/3.0"
-    ],
+    "urls": {
+      "webpages": ["http://phosphatome.net/3.0"]
+    },
     "license": "CC BY 4.0"
   },
   "TFcensus": {
     "full_name": "Census of Human Transcription Factors",
-    "urls": [
-      "https://doi.org/10.1038/nrg2538"
-    ],
+    "urls": {
+      "webpages": ["https://doi.org/10.1038/nrg2538"]
+    },
     "license": "CC BY 4.0"
   },
   "ProtMapper": {
-    "urls": [
-      "https://www.biorxiv.org/content/10.1101/822668v3"
-    ],
+    "urls": {
+      "webpages": ["https://www.biorxiv.org/content/10.1101/822668v3"]
+    },
     "license": "CC BY 4.0",
     "inputs": {
       "enzyme_substrate": {
@@ -3980,23 +3999,24 @@
     }
   },
   "LRdb": {
-    "urls": [
-      "https://github.com/SCA-IRCM/LRdb"
-    ],
+    "urls": {
+      "webpages": ["https://github.com/SCA-IRCM/LRdb"]
+    },
     "license": "GPLv3",
     "emails": ["jacques.colinge@inserm.fr", "Jacques Colinge"]
   },
   "MSigDB": {
-    "urls": [
-      "https://www.gsea-msigdb.org/gsea/msigdb/index.jsp"
-    ],
+    "full_name": "Molecular Signatures Database",
+    "urls": {
+      "webpages": ["https://www.gsea-msigdb.org/gsea/msigdb/index.jsp"]
+    },
     "license": "CC BY 4.0",
     "emails": ["gsea-team@broadinstitute.org", "GSEA Team"]
   },
   "Baccin2019": {
-    "urls": [
-      "https://doi.org/10.1038/s41556-019-0439-6"
-    ],
+    "urls": {
+      "webpages": ["https://doi.org/10.1038/s41556-019-0439-6"]
+    },
     "license": "CC BY-NC 4.0",
     "emails": [
         "lars.velten@embl.de", "Lars Velten",
@@ -4005,30 +4025,31 @@
     ]
   },
   "ABS": {
-    "urls": [
-      "http://genome.crg.es/datasets/abs2005/index.html"
-    ],
+    "urls": {
+      "webpages": ["http://genome.crg.es/datasets/abs2005/index.html"]
+    },
     "license": "GPLv2",
     "emails": ["eblanco@imim.es", "Enrique Blanco"]
   },
   "CacncerSEA": {
-    "urls": [
-      "http://biocc.hrbmu.edu.cn/CancerSEA/"
-    ],
+    "urls": {
+      "webpages": ["http://biocc.hrbmu.edu.cn/CancerSEA/"]
+    },
     "license": "CC BY-NC 4.0",
     "emails": ["xiaoyun@ems.hrbmu.edu.cn", "Yun Xiao"]
   },
   "Surfaceome": {
-    "urls": [
-      "http://wlab.ethz.ch/surfaceome/"
-    ],
+    "urls": {
+      "webpages": ["http://wlab.ethz.ch/surfaceome/"]
+    },
     "license": "CC BY 4.0",
     "emails": ["wbernd@ethz.ch", "Bernd Wollscheid"]
   },
   "KEA": {
-    "urls": [
-      "https://www.maayanlab.net/KEA2/"
-    ],
+    "full_name": "Kinase Enrichment Analysis",
+    "urls": {
+      "webpages": ["https://www.maayanlab.net/KEA2/"]
+    },
     "license": "Unspecified NC-SA",
     "inputs": {
       "enzyme_substrate": {
@@ -4044,16 +4065,16 @@
     }
   },
   "iTALK": {
-    "urls": [
-      "https://github.com/Coolgenome/iTALK"
-    ],
+    "urls": {
+      "webpages": ["https://github.com/Coolgenome/iTALK"]
+    },
     "license": "CC BY-NC-SA 3.0",
     "emails": ["ywang65@mdanderson.org", "Yuanxin Wang"]
   },
   "ICELLNET": {
-    "urls": [
-      "https://www.biorxiv.org/content/biorxiv/early/2020/03/05/2020.03.05.976878"
-    ],
+    "urls": {
+      "webpages": ["https://www.biorxiv.org/content/biorxiv/early/2020/03/05/2020.03.05.976878"]
+    },
     "license": "GPLv3",
     "emails": [
         "vassili.soumelis@aphp.fr", "Vassili Soumelis",
@@ -4062,17 +4083,17 @@
     ]
   },
   "CellCellInteractions": {
-    "urls": [
-      "https://baderlab.org/CellCellInteractions"
-    ],
+    "urls": {
+      "webpages": ["https://baderlab.org/CellCellInteractions"]
+    },
     "license": "CellCellInteractions",
     "authors": ["Bader Lab"],
     "emails": ["gary.bader@utoronto.ca", "Gary Bader"]
   },
   "EMBRACE": {
-    "urls": [
-      "https://www.cell.com/iscience/fulltext/S2589-0042(19)30405-5"
-    ],
+    "urls": {
+      "webpages": ["https://www.cell.com/iscience/fulltext/S2589-0042(19)30405-5"]
+    },
     "license": "CC BY 4.0",
     "emails": [
       "sheikh@ie-freiburg.mpg.de", "Bilal N. Sheikh",
@@ -4080,9 +4101,9 @@
     ]
   },
   "Almen2009": {
-    "urls": [
-      "https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-7-50"
-    ],
+    "urls": {
+      "webpages": ["https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-7-50"]
+    },
     "license": "CC BY 4.0",
     "emails": [
       "markus.sallman-almen@neuro.uu.se", "Markus Sällman Almén",
@@ -4091,9 +4112,9 @@
   },
   "TCDB": {
     "full_name": "Transporter Classification Database",
-    "urls": [
-      "http://www.tcdb.org/"
-    ],
+    "urls": {
+      "webpages": ["http://www.tcdb.org/"]
+    },
     "license": "CC BY-SA 3.0",
     "authors": ["Saier Lab"],
     "emails": [
@@ -4101,17 +4122,17 @@
     ]
   },
   "iPTMnet": {
-    "urls": [
-      "https://research.bioinformatics.udel.edu/iptmnet/"
-    ],
+    "urls": {
+      "webpages": ["https://research.bioinformatics.udel.edu/iptmnet/"]
+    },
     "license": "CC BY-NC-SA 4.0",
     "emails": ["huang@dbi.udel.edu", "Hongzhan Huang"]
   },
   "MCAM": {
     "full_name": "Mammalian Cell Adhesion Molecule Database",
-    "urls": [
-      "https://app1.unmc.edu/mcam/"
-    ],
+    "urls": {
+      "webpages": ["https://app1.unmc.edu/mcam/"]
+    },
     "license": "Unspecified NC-SA"
   }
 }
