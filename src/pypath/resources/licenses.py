@@ -98,7 +98,7 @@ class Licenses(session.Logger):
 
     def __getitem__(self, key):
 
-        if isinstance(key, license.License):
+        if isinstance(key, license_mod.License):
 
             if key.name not in self:
 
