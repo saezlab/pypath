@@ -2403,7 +2403,7 @@ class TableServer(BaseServer):
                 composite_to_remove = {
                     comp_res
                     for comp_res in composite
-                    if not res_ctrl.components[comp_res] & res
+                    if not res_ctrl.secondary_resources(comp_res) & res
                 }
 
                 res = res - composite_to_remove
@@ -2463,7 +2463,7 @@ class TableServer(BaseServer):
 
                 tbl[prefix_col] = _new_prefix_col
 
-            bool_idx = [bool(res) for res in _new_res_col]
+            bool_idx = [bool(res) for res in tbl[res_col]]
 
         tbl = tbl[bool_idx]
 

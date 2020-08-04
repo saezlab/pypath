@@ -185,6 +185,22 @@ class ResourceController(session_mod.Logger):
         return self._get(name, dct = self.data)
 
 
+    def name(self, name):
+
+        if name in self.synonyms:
+
+            name = self.synonyms[name]
+
+        return name
+
+
+    def secondary_resources(self, name):
+
+        name = self.name(name)
+
+        return self.secondary[name] if name in self.secondary else set()
+
+
     def _get(self, name, dct):
 
         if name in dct:
