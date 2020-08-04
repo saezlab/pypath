@@ -118,6 +118,10 @@ def topdb_annotations(ncbi_tax_id = 9606):
                 uniprots,
             ):
 
+                if uniprot is None:
+
+                    continue
+
                 result[uniprot].add(
                     TopdbAnnotation(
                         membrane = membrane,
