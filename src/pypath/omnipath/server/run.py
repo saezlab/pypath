@@ -103,7 +103,13 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
         request.postpath = [i.decode('utf-8') for i in request.postpath]
 
-        self._log('Processing request: `%s`.' % request.uri.decode('utf-8'))
+        self._log(
+            'Processing request: `%s` from `%s`; headers: [%s].' % (
+                request.uri.decode('utf-8'),
+                str(request.getClientAddress()),
+                common.dict_str(request.getAllHeaders()),
+            )
+        )
 
         html = len(request.postpath) == 0 or request.postpath[0] in self.htmls
         self._set_defaults(request, html = html)
