@@ -127,6 +127,10 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
         )
 
     for rec in data[3:]:
+
+        if rec[4].strip().lower() == 'incorrect':
+            continue
+
         ligand_components = raw_to_uniprots(rec[1])
 
         if not ligand_components:
