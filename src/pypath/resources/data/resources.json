@@ -3404,6 +3404,7 @@
     "dateUpdated":"Nov 2016"
   },
   "PathwayCommons": {
+    "synonyms": ["KEGG-PC"],
     "yearUsedRelease": 2016,
     "releases": [
       2010,
@@ -3898,7 +3899,7 @@
     "license": "CC0 1.0",
     "emails": ["mirbase@manchester.ac.uk", "miRBase Team"]
   },
-  "mir2Disease": {
+  "miR2Disease": {
     "urls": {
       "webpages": ["http://web.archive.org/web/20171006225859/http://www.mir2disease.org/"]
     },
