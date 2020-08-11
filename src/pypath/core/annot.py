@@ -213,6 +213,8 @@ class CustomAnnotation(session_mod.Logger):
         self._excludes_extra_original = excludes_extra or {}
         self.network = None
         self.classes = {}
+        self.consensus_scores = {}
+        self.composite_numof_resources = {}
         self.composite_resource_name = (
             composite_resource_name or
             settings.get('annot_composite_database_name')
@@ -371,6 +373,45 @@ class CustomAnnotation(session_mod.Logger):
 
                 self.create_class(classdef)
 
+        self.populate_scores()
+
+
+    def populate_scores(self):
+        """
+        Creates the consensus score dictionaries based on the number of
+        resources annotating an entity for each composite category.
+        """
+
+        for classdef in self._class_definitions.values():
+
+
+            if classdef.source != 'composite':
+
+                continue
+
+            components = self._execute_operation(
+                classdef.resource,
+                execute = False,
+                only_generic = True,
+            )
+
+            name = classdef.name
+            #components = self._collect_by_parent(
+                #classdef.resource,
+                #only_generic = True,
+            #)
+
+            n_resources = len(components)
+
+            n_resources_by_entity = dict(
+                collections.Counter(
+                    itertools.chain(*components)
+                )
+            )
+
+            self.composite_numof_resources[name] = n_resources
+            self.consensus_scores[name] = n_resources_by_entity
+
 
     def load_from_pickle(self, pickle_file):
 
@@ -380,6 +421,7 @@ class CustomAnnotation(session_mod.Logger):
 
             (
                 self.classes,
+                self.consensus_scores,
                 self.parents,
                 self.children,
                 self.composite_resource_name,
@@ -403,6 +445,7 @@ class CustomAnnotation(session_mod.Logger):
             pickle.dump(
                 obj = (
                     self.classes,
+                    self.consensus_scores,
                     self.parents,
                     self.children,
                     self.composite_resource_name,
@@ -546,57 +589,55 @@ class CustomAnnotation(session_mod.Logger):
         )
 
 
-    def _execute_operation(self, annotop):
+    def _execute_operation(self, annotop, execute = True, **kwargs):
         """
         Executes a set operation on anntation sets.
         """
 
-        if (
-            isinstance(annotop.annots, common.basestring) and (
-                annotop.annots.startswith('~') or
-                annotop.annots.startswith('#')
-            )
-        ):
+        if self._is_short_notation(annotop):
 
-            annots = self._collect_by_parent(annotop.annots)
+            annots = self._collect_by_parent(annotop, **kwargs)
+            op = set.union
+
+        elif self._is_short_notation(annotop.annots):
+
+            annots = self._collect_by_parent(annotop.annots, **kwargs)
+            op = annotop.op
 
         else:
 
             annots = tuple(
-                self.select(_annot)
+                self.select(_annot, execute = execute, **kwargs)
                 for _annot in annotop.annots
                 if (
                     not hasattr(_annot, 'enabled') or
                     _annot.enabled
                 )
             )
+            annots = tuple(itertools.chain(*(
+                (a,) if isinstance(a, set) else a
+                for a in annots
+            )))
+            op = annotop.op
 
-        return annotop.op(*(
-            a if isinstance(a, set) else set(a)
-            for a in annots
-        ))
+        if execute:
+
+            annots = op(*(
+                a if isinstance(a, set) else set(a)
+                for a in annots
+            ))
+
+        return annots
 
 
-    def _collect_by_parent(self, parent):
+    def _collect_by_parent(self, parent, only_generic = False):
         """
         Processes the shorthand (single string) notation
         `[#name]~parent[~resource]`.
+        Returns tuple of sets.
         """
 
-        name = None
-        resource = None
-
-        if parent.startswith('#'):
-
-            name, parent = parent.split('~', maxsplit = 1)
-            name = name.strip('#')
-
-        parent = parent.strip('~')
-        parent_resource = parent.split('~')
-
-        if len(parent_resource) == 2:
-
-            parent, resource = parent_resource
+        name, parent, resource = self._process_short_notation(parent)
 
         return tuple(
             self.select(classdef.key)
@@ -613,7 +654,48 @@ class CustomAnnotation(session_mod.Logger):
                         classdef.source == 'composite' or
                         classdef.resource_name == resource
                     )
+                ) and
+                (
+                    not only_generic or
+                    classdef.scope == 'generic'
                 )
+            )
+        )
+
+
+    @staticmethod
+    def _process_short_notation(shortdef):
+        """
+        Extracts name, parent and resource froms the shorthand (single string)
+        notation `[#name]~parent[~resource]`.
+        """
+
+        parent = shortdef
+        name = None
+        resource = None
+
+        if parent.startswith('#'):
+
+            name, parent = parent.split('~', maxsplit = 1)
+            name = name.strip('#')
+
+        parent = parent.strip('~')
+        parent_resource = parent.split('~')
+
+        if len(parent_resource) == 2:
+
+            parent, resource = parent_resource
+
+        return name, parent, resource
+
+
+    @staticmethod
+    def _is_short_notation(obj):
+
+        return (
+            isinstance(obj, common.basestring) and (
+                obj.startswith('~') or
+                obj.startswith('#')
             )
         )
 
@@ -658,6 +740,8 @@ class CustomAnnotation(session_mod.Logger):
             parent = None,
             resource = None,
             entity_type = None,
+            execute = True,
+            **kwargs
         ):
         """
         Retrieves a class by its name and loads it if hasn't been loaded yet
@@ -666,18 +750,15 @@ class CustomAnnotation(session_mod.Logger):
 
         selected = None
 
-        if (
-            isinstance(name, common.basestring) and (
-                name.startswith('~') or
-                name.startswith('#')
-            )
-        ):
+        if self._is_short_notation(name):
 
-            annots = self._collect_by_parent(name)
-            selected = set.union(*(
+            annots = self._collect_by_parent(name, **kwargs)
+            annots = tuple(
                 a if isinstance(a, set) else set(a)
                 for a in annots
-            ))
+            )
+
+            selected = set.union(*annots) if execute else annots
 
         else:
 
@@ -725,6 +806,7 @@ class CustomAnnotation(session_mod.Logger):
             parent = None,
             resource = None,
             entity_type = None,
+            **kwargs
         ):
         """
         Retrieves a class by its name or definition. The definition can be
@@ -744,7 +826,7 @@ class CustomAnnotation(session_mod.Logger):
                 if isinstance(definition, (tuple, list)) else
             self._select(**definition)
                 if isinstance(definition, dict) else
-            self._select(definition)
+            self._select(definition, **kwargs)
         )
 
         return self._filter_entity_type(selected, entity_type = entity_type)
@@ -966,6 +1048,29 @@ class CustomAnnotation(session_mod.Logger):
         }
 
 
+    def consensus_score(self, name, entity):
+
+        if name in self.consensus_scores:
+
+            if entity in self.consensus_scores[name]:
+
+                return self.consensus_scores[name][entity]
+
+        return np.nan
+
+
+    def consensus_score_normalized(self, name, entity):
+
+        score = self.consensus_score(name, entity)
+
+        if not np.isnan(score):
+
+            n_resources = self.composite_numof_resources[name]
+            score = score / float(n_resources)
+
+        return score
+
+
     def get_resource(self, name, parent = None):
         """
         For a category name and its parent returns a single resource name.
@@ -1078,6 +1183,7 @@ class CustomAnnotation(session_mod.Logger):
             'uniprot',
             'genesymbol',
             'entity_type',
+            'consensus_score',
         ]
 
         dtypes = {
@@ -1090,6 +1196,7 @@ class CustomAnnotation(session_mod.Logger):
             'uniprot':     'category',
             'genesymbol':  'category',
             'entity_type': 'category',
+            'consensus_score': 'float64',
         }
 
         if full_name:
@@ -1132,13 +1239,19 @@ class CustomAnnotation(session_mod.Logger):
                     ]
                     if full_name else []
                 ) +
-                # entity type
+                # entity type and consensus score
                 [
-                    'complex'
-                        if hasattr(uniprot, 'genesymbol_str') else
-                    'mirna'
-                        if uniprot.startswith('MIMAT') else
-                    'protein'
+                    (
+                        'complex'
+                            if hasattr(uniprot, 'genesymbol_str') else
+                        'mirna'
+                            if uniprot.startswith('MIMAT') else
+                        'protein'
+                    ),
+                    self.consensus_score_normalized(
+                        annotgroup.name,
+                        uniprot,
+                    ),
                 ] +
                 # all annotations
                 (

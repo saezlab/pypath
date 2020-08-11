@@ -3463,7 +3463,7 @@
       "BIND",
       "CORUM"
     ],
-    "license": "Composite",
+    "license": "PathwayCommons",
     "type": "combined",
     "subtype": "interaction",
     "pubmeds": [21071392],

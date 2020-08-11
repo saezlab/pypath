@@ -903,6 +903,7 @@ class TableServer(BaseServer):
             'scope': 'category',
             'source': 'category',
             'entity_type': 'category',
+            'consensus_score': 'float64',
             'transmitter': 'bool',
             'receiver': 'bool',
             'secreted': 'bool',

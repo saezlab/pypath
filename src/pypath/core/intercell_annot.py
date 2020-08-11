@@ -906,10 +906,7 @@ annot_combined_classes = (
         source = 'composite',
         scope = 'generic',
         aspect = 'locational',
-        resource = af.AnnotOp(
-            annots = '~peripheral',
-            op = set.union,
-        ),
+        resource = '~peripheral',
     ),
     af.AnnotDef(
         name = 'peripheral',
@@ -3697,14 +3694,6 @@ annot_combined_classes = (
         },
     ),
     af.AnnotDef(
-        name = 'ccn_family',
-        parent = 'ligand',
-        resource = 'Matrisome',
-        args = {
-            'subsubclass': 'CCN Family',
-        },
-    ),
-    af.AnnotDef(
         name = 'fibril_associated_collagen_with_interrupted_triple_helices',
         parent = 'ecm',
         resource = 'Matrisome',
@@ -3991,10 +3980,7 @@ annot_combined_classes = (
     # ligand
     af.AnnotDef(
         name = 'ligand',
-        resource = af.AnnotOp(
-            annots = '~ligand',
-            op = set.union,
-        ),
+        resource = '~ligand',
         receiver = False,
         transmitter = True,
         scope = 'generic',
@@ -4085,6 +4071,14 @@ annot_combined_classes = (
             'subclass': 'cytokine',
         },
     ),  # looks good
+    af.AnnotDef(
+        name = 'ccn_family',
+        parent = 'ligand',
+        resource = 'Matrisome',
+        args = {
+            'subsubclass': 'CCN Family',
+        },
+    ),
     af.AnnotDef(
         name = 'ligand',
         resource = 'CellCellInteractions',
