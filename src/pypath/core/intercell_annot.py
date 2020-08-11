@@ -692,6 +692,11 @@ excludes = {
             'Q9XRX5', 'Q9Y215', 'Q9Y2I2', 'Q9Y4D7', 'Q9Y566', 'Q9Y5U5',
             'Q9Y624', 'Q9Y625', 'Q9Y6N7',
         },
+    # the proteins below are not cell surface ligand proteins,
+    # are excluded from all cell surface ligand categories
+    'cell_surface_ligand': {
+            'P00533', 'P0DPD6',
+        },
     # the proteins below are not adhesion proteins,
     # are excluded from all adhesion categories
     'adhesion':
@@ -4851,7 +4856,6 @@ annot_combined_classes = (
         scope = 'generic',
         source = 'composite',
         resource = '~cell_surface_ligand',
-        exclude = {'P0DPD6'},
         transmitter = True,
         receiver = False,
     ),
