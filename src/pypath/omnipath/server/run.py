@@ -1590,6 +1590,10 @@ class TableServer(BaseServer):
         # changes the old, "tfregulons" names to new "dorothea"
         self._tfregulons_dorothea(req)
 
+        if b'sources' in req.args:
+
+            req.args[b'resources'] = req.args[b'sources']
+
         if b'databases' in req.args:
 
             req.args[b'resources'] = req.args[b'databases']
