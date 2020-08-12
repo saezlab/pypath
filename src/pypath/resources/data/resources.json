@@ -4257,5 +4257,8 @@
   },
   "GPCRdb": {
     "license": "CC BY 4.0"
+  },
+  "ncRDeathDB": {
+    "license": "CC BY-NC 4.0"
   }
 }
