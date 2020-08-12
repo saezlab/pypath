@@ -1972,22 +1972,20 @@ class Mapper(session_mod.Logger):
                 ncbi_tax_id = ncbi_tax_id,
             )
 
-            for genesymbol in genesymbols:
+            this_swissprots = self.map_names(
+                names = genesymbols,
+                id_type = 'genesymbol',
+                target_id_type = 'swissprot',
+                ncbi_tax_id = ncbi_tax_id,
+            )
 
-                swissprot = self.map_name(
-                    name = genesymbol,
-                    id_type = 'genesymbol',
-                    target_id_type = 'swissprot',
-                    ncbi_tax_id = ncbi_tax_id,
-                )
-
-            if not swissprot:
+            if not swissprots:
 
                 swissprots.add(uniprot)
 
             else:
 
-                swissprots.update(swissprot)
+                swissprots.update(this_swissprots)
 
         return swissprots
 
