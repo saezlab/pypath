@@ -126,13 +126,24 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
             if hasattr(toCall, '__call__'):
 
-                response = toCall(request)
-                response = (
-                    response.encode('utf-8')
-                    if type(response) is unicode else
-                    response
-                )
-                response = [response]
+                try:
+
+                    response = toCall(request)
+                    response = (
+                        response.encode('utf-8')
+                        if type(response) is unicode else
+                        response
+                    )
+                    response = [response]
+
+                except:
+
+                    self._log(
+                        'Error while rendering `%s`:' %
+                        request.uri.decode('utf-8')
+                    )
+                    self._log_traceback()
+                    raise
 
         elif not request.postpath:
 
