@@ -422,6 +422,7 @@ class CustomAnnotation(session_mod.Logger):
             (
                 self.classes,
                 self.consensus_scores,
+                self.composite_numof_resources,
                 self.parents,
                 self.children,
                 self.composite_resource_name,
@@ -446,6 +447,7 @@ class CustomAnnotation(session_mod.Logger):
                 obj = (
                     self.classes,
                     self.consensus_scores,
+                    self.composite_numof_resources,
                     self.parents,
                     self.children,
                     self.composite_resource_name,
@@ -1056,7 +1058,7 @@ class CustomAnnotation(session_mod.Logger):
 
                 return self.consensus_scores[name][entity]
 
-        return np.nan
+        return 0
 
 
     def consensus_score_normalized(self, name, entity):
@@ -1196,7 +1198,7 @@ class CustomAnnotation(session_mod.Logger):
             'uniprot':     'category',
             'genesymbol':  'category',
             'entity_type': 'category',
-            'consensus_score': 'float64',
+            'consensus_score': 'uint16',
         }
 
         if full_name:
@@ -1248,7 +1250,7 @@ class CustomAnnotation(session_mod.Logger):
                             if uniprot.startswith('MIMAT') else
                         'protein'
                     ),
-                    self.consensus_score_normalized(
+                    self.consensus_score(
                         annotgroup.name,
                         uniprot,
                     ),

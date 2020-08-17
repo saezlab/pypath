@@ -914,7 +914,7 @@ class TableServer(BaseServer):
             'scope': 'category',
             'source': 'category',
             'entity_type': 'category',
-            'consensus_score': 'float64',
+            'consensus_score': 'uint16',
             'transmitter': 'bool',
             'receiver': 'bool',
             'secreted': 'bool',
@@ -1589,10 +1589,6 @@ class TableServer(BaseServer):
 
         # changes the old, "tfregulons" names to new "dorothea"
         self._tfregulons_dorothea(req)
-
-        if b'sources' in req.args:
-
-            req.args[b'resources'] = req.args[b'sources']
 
         if b'databases' in req.args:
 
