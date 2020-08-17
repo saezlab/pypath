@@ -3905,7 +3905,7 @@
     },
     "license": "CC BY-NC 2.0"
   },
-  "miRDeatdhDB": {
+  "miRDeathDB": {
     "urls": {
       "webpages": ["http://web.archive.org/web/20160425074155/http://rna-world.org/mirdeathdb/"]
     },
@@ -3926,6 +3926,7 @@
     "synonyms": ["ENCODE-distal", "ENCODE-proximal"]
   },
   "lncRNADisease": {
+    "synonyms": ["LncRNADisease"],
     "urls": {
       "webpages": ["http://www.cuilab.cn/lncrnadisease"]
     },
