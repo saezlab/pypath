@@ -251,6 +251,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
     def _set_license(self, req):
 
         query_type = req.postpath[0] if req.postpath else None
+        query_type = self._query_type(query_type)
 
         if (
             not hasattr(self, 'args_reference') or
