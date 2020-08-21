@@ -2453,7 +2453,7 @@ class TableServer(BaseServer):
             return res
 
 
-        if license == LICENSE_IGNORE:
+        if license == LICENSE_IGNORE or tbl.shape[0] == 0:
 
             return tbl
 
