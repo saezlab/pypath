@@ -256,26 +256,26 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             {}
         )
 
-        req.args[b'fields'] = (
-            req.args[b'fields']
-                if b'fields' in req.args else
-            []
-        )
+        if b'fields' in req.args:
 
-        used = set()
+            used = set()
 
-        fields_checked = []
+            fields_checked = []
 
-        for field in req.args[b'fields'][0].decode('utf-8').split(','):
+            for field in req.args[b'fields'][0].decode('utf-8').split(','):
 
-            field = synonyms[field] if field in synonyms else field
+                field = synonyms[field] if field in synonyms else field
 
-            if field not in used:
+                if field not in used:
 
-                fields_checked.append(field)
-                used.add(field)
+                    fields_checked.append(field)
+                    used.add(field)
 
-        req.args[b'fields'] = [','.join(fields_checked).encode('utf-8')]
+            req.args[b'fields'] = [','.join(fields_checked).encode('utf-8')]
+
+        else:
+
+            req.args[b'fields'] = []
 
 
     def _set_license(self, req):
