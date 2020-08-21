@@ -1711,3 +1711,12 @@ def main_page():
         'literature curated mammalian signaling pathways',
         logos_bottom=True,
         above_title=above_title)
+
+
+def http_500():
+
+    with open(os.path.join(common.ROOT, 'data', 'http500.html'), 'r') as f:
+
+        html = f.read()
+
+    return html

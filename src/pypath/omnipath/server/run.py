@@ -81,7 +81,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
         self._log('Initializing BaseServer.')
 
-        self.htmls = ['info', '']
+        self.htmls = ['info', 'error_page.html']
         self.welcome_message = (
             'Hello, this is the REST service of pypath %s. Welcome!\n'
             'For the descriptions of pathway resources go to `/info`.\n'
@@ -120,9 +120,14 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             request.postpath[0][0] != '_'
         ):
 
-            self._process_postpath(request)
+            if request.postpath[0] == 'error_page.html':
 
-            toCall = getattr(self, request.postpath[0])
+                toCall = self._error_page
+
+            else:
+
+                self._process_postpath(request)
+                toCall = getattr(self, request.postpath[0])
 
             if hasattr(toCall, '__call__'):
 
@@ -392,6 +397,13 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         self._default_license = [
             settings.get('server_default_license').encode('ascii')
         ]
+
+
+    def _error_page(self, req):
+
+        req.setResponseCode(500)
+
+        return _html.http_500()
 
 
 class TableServer(BaseServer):
