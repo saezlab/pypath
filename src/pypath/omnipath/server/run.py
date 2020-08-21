@@ -244,13 +244,38 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             request.args[b'header']
         )
 
-        request.args[b'fields'] = (
-            []
-                if b'fields' not in request.args else
-            request.args[b'fields']
+        self._set_fields(request)
+        self._set_license(request)
+
+
+    def _set_fields(self, req):
+
+        synonyms = (
+            self.field_synonyms
+                if hasattr(self, 'field_synonyms') else
+            {}
         )
 
-        self._set_license(request)
+        req.args[b'fields'] = (
+            req.args[b'fields']
+                if b'fields' in req.args else
+            []
+        )
+
+        used = set()
+
+        fields_checked = []
+
+        for field in req.args[b'fields'][0].decode('utf-8').split(','):
+
+            field = synonyms[field] if field in synonyms else field
+
+            if field not in used:
+
+                fields_checked.append(field)
+                used.add(field)
+
+        req.args[b'fields'] = [','.join(fields_checked).encode('utf-8')]
 
 
     def _set_license(self, req):
@@ -438,6 +463,17 @@ class TableServer(BaseServer):
     int_list_fields = {
         'references',
         'isoforms',
+    }
+
+    field_synonyms = {
+        'organism': 'ncbi_tax_id',
+        'tfregulons_level': 'dorothea_level',
+        'tfregulons_curated': 'dorothea_curated',
+        'tfregulons_chipseq': 'dorothea_chipseq',
+        'tfregulons_tfbs': 'dorothea_tfbs',
+        'tfregulons_coexp': 'dorothea_coexp',
+        'sources': 'resources',
+        'databases': 'resources',
     }
 
     args_reference = {
