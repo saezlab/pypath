@@ -101,7 +101,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
         response = []
 
-        request.postpath = [i.decode('utf-8') for i in request.postpath]
+        request.postpath = [i.decode('utf-8') for i in request.postpath if i]
 
         self._log(
             'Processing request: `%s` from `%s`; headers: [%s].' % (
@@ -111,12 +111,19 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             )
         )
 
-        html = len(request.postpath) == 0 or request.postpath[0] in self.htmls
+        html = (
+            len(request.postpath) == 0 or
+            request.postpath[0] in self.htmls or
+            request.postpath[0] == 'error_page.html'
+        )
         self._set_defaults(request, html = html)
 
         if (
             request.postpath and
-            hasattr(self, request.postpath[0]) and
+            (
+                hasattr(self, request.postpath[0]) or
+                request.postpath[0] == 'error_page.html'
+            ) and
             request.postpath[0][0] != '_'
         ):
 
