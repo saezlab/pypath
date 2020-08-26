@@ -1877,6 +1877,7 @@ transcription_onebyone = {
         id_type_b = "uniprot",
         # only direct TF-target interactions
         positive_filters = [
+            (10, True),
             (
                 7,
                 {
@@ -1884,7 +1885,7 @@ transcription_onebyone = {
                     'transcriptional activation',
                     'transcriptional repression',
                 }
-            )
+            ),
         ],
         entity_type_a = "protein",
         entity_type_b = "protein",
