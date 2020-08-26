@@ -828,7 +828,12 @@ class CustomAnnotation(session_mod.Logger):
                 if isinstance(definition, (tuple, list)) else
             self._select(**definition)
                 if isinstance(definition, dict) else
-            self._select(definition, **kwargs)
+            self._select(
+                definition,
+                parent = parent,
+                resource = resource,
+                **kwargs
+            )
         )
 
         return self._filter_entity_type(selected, entity_type = entity_type)

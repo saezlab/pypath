@@ -81,7 +81,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
         self._log('Initializing BaseServer.')
 
-        self.htmls = ['info', '']
+        self.htmls = ['info', 'error_page.html']
         self.welcome_message = (
             'Hello, this is the REST service of pypath %s. Welcome!\n'
             'For the descriptions of pathway resources go to `/info`.\n'
@@ -101,7 +101,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
         response = []
 
-        request.postpath = [i.decode('utf-8') for i in request.postpath]
+        request.postpath = [i.decode('utf-8') for i in request.postpath if i]
 
         self._log(
             'Processing request: `%s` from `%s`; headers: [%s].' % (
@@ -111,18 +111,30 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             )
         )
 
-        html = len(request.postpath) == 0 or request.postpath[0] in self.htmls
+        html = (
+            len(request.postpath) == 0 or
+            request.postpath[0] in self.htmls or
+            request.postpath[0] == 'error_page.html'
+        )
         self._set_defaults(request, html = html)
 
         if (
             request.postpath and
-            hasattr(self, request.postpath[0]) and
+            (
+                hasattr(self, request.postpath[0]) or
+                request.postpath[0] == 'error_page.html'
+            ) and
             request.postpath[0][0] != '_'
         ):
 
-            self._process_postpath(request)
+            if request.postpath[0] == 'error_page.html':
 
-            toCall = getattr(self, request.postpath[0])
+                toCall = self._error_page
+
+            else:
+
+                self._process_postpath(request)
+                toCall = getattr(self, request.postpath[0])
 
             if hasattr(toCall, '__call__'):
 
@@ -239,13 +251,38 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             request.args[b'header']
         )
 
-        request.args[b'fields'] = (
-            []
-                if b'fields' not in request.args else
-            request.args[b'fields']
+        self._set_fields(request)
+        self._set_license(request)
+
+
+    def _set_fields(self, req):
+
+        synonyms = (
+            self.field_synonyms
+                if hasattr(self, 'field_synonyms') else
+            {}
         )
 
-        self._set_license(request)
+        if b'fields' in req.args:
+
+            used = set()
+
+            fields_checked = []
+
+            for field in req.args[b'fields'][0].decode('utf-8').split(','):
+
+                field = synonyms[field] if field in synonyms else field
+
+                if field not in used:
+
+                    fields_checked.append(field)
+                    used.add(field)
+
+            req.args[b'fields'] = [','.join(fields_checked).encode('utf-8')]
+
+        else:
+
+            req.args[b'fields'] = []
 
 
     def _set_license(self, req):
@@ -394,6 +431,13 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         ]
 
 
+    def _error_page(self, req):
+
+        req.setResponseCode(500)
+
+        return _html.http_500()
+
+
 class TableServer(BaseServer):
 
     query_types = {
@@ -426,6 +470,17 @@ class TableServer(BaseServer):
     int_list_fields = {
         'references',
         'isoforms',
+    }
+
+    field_synonyms = {
+        'organism': 'ncbi_tax_id',
+        'tfregulons_level': 'dorothea_level',
+        'tfregulons_curated': 'dorothea_curated',
+        'tfregulons_chipseq': 'dorothea_chipseq',
+        'tfregulons_tfbs': 'dorothea_tfbs',
+        'tfregulons_coexp': 'dorothea_coexp',
+        'sources': 'resources',
+        'databases': 'resources',
     }
 
     args_reference = {
@@ -844,12 +899,12 @@ class TableServer(BaseServer):
         'tfregulons_level', 'tfregulons_curated',
         'tfregulons_chipseq', 'tfregulons_tfbs', 'tfregulons_coexp',
         'type', 'ncbi_tax_id', 'databases', 'organism',
-        'curation_effort',
+        'curation_effort', 'resources',
     }
     enzsub_fields = {
         'references', 'sources', 'databases',
         'isoforms', 'organism', 'ncbi_tax_id',
-        'curation_effort',
+        'curation_effort', 'resources',
     }
     default_input_files = {
         'interactions': 'omnipath_webservice_interactions.tsv',
@@ -2441,7 +2496,7 @@ class TableServer(BaseServer):
             return res
 
 
-        if license == LICENSE_IGNORE:
+        if license == LICENSE_IGNORE or tbl.shape[0] == 0:
 
             return tbl
 
