@@ -601,10 +601,10 @@ default in the ``~/.pypath/pickles/`` directory. With the ``omnipath``
 module it's easy to get an instance of a database. For example to get the
 `omnipath` PPI network dataset:
 
-`
-from pypath import omnipath
-op = omnipath.db.get_db('omnipath')
-`
+.. code:: python
+
+    from pypath import omnipath
+    op = omnipath.db.get_db('omnipath')
 
 **Important:** Building the databases for the first time requires the
 download of several MB or GB of data from the original resources. This
@@ -638,11 +638,12 @@ are predefined, such as all the IDs in **UniProt mapping service,** while
 users are able to load any table from **file** using the classes provided
 in the module ``input_formats``. An example how to translate identifiers:
 
-`
-from pypath.utils import mapping
-mapping.map_name('P00533', 'uniprot', 'genesymbol')
-# {'EGFR'}
-`
+.. code:: python
+
+    from pypath.utils import mapping
+    mapping.map_name('P00533', 'uniprot', 'genesymbol')
+    # {'EGFR'}
+
 
 Homology translation
 --------------------
@@ -652,8 +653,8 @@ between two organisms. It uses data from NCBI HomoloGene, and soon we will
 extend it to use Ensembl or UniProt as alternatives. This module is really
 simple to use:
 
-`
-from pypath.utils import homology
-homology.translate('P00533', 10090) # translating the human EGFR to mouse
-# ['Q01279'] # it returns the mouse Egfr UniProt AC
-`
+.. code:: python
+
+    from pypath.utils import homology
+    homology.translate('P00533', 10090) # translating the human EGFR to mouse
+    # ['Q01279'] # it returns the mouse Egfr UniProt AC
