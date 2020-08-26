@@ -553,6 +553,10 @@ Main improvements in the past releases:
 * New module structure: modules grouped into `core`, `inputs`, `internals`,
   `legacy`, `omnipath`, `resources`, `share` and `utils` submodules.
 
+0.11.0
+------
+* Redesign of the intercell (intercellular communication roles) database
+
 Upcoming
 --------
 
