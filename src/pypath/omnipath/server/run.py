@@ -899,12 +899,12 @@ class TableServer(BaseServer):
         'tfregulons_level', 'tfregulons_curated',
         'tfregulons_chipseq', 'tfregulons_tfbs', 'tfregulons_coexp',
         'type', 'ncbi_tax_id', 'databases', 'organism',
-        'curation_effort',
+        'curation_effort', 'resources',
     }
     enzsub_fields = {
         'references', 'sources', 'databases',
         'isoforms', 'organism', 'ncbi_tax_id',
-        'curation_effort',
+        'curation_effort', 'resources',
     }
     default_input_files = {
         'interactions': 'omnipath_webservice_interactions.tsv',
