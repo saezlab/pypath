@@ -17,22 +17,24 @@
     class is still available in the ``pypath.legacy`` module.
 
 :Py2/3: Although we still keep the compatibility with Python 2, we don't
-        test ``pypath`` in this environment and very few people uses it
-        already. We highly recommend to use ``pypath`` in Python 3.6+.
+        test ``pypath`` in this environment and already very few people use
+        Python 2. We highly recommend to use ``pypath`` in Python 3.6+.
 
-:documentation: http://saezlab.github.io/pypath
+:documentation: https://saezlab.github.io/pypath
 :issues: https://github.com/saezlab/pypath/issues
 :contact: omnipathdb@gmail.com
-:developers: ``pypath`` is developed in the Saez Lab (http://saezlab.org) by
+:developers: ``pypath`` is developed in the Saez Lab (https://saezlab.org) by
   Olga Ivanova, Nicolàs Palacio and Dénes Türei; the R package and the
   Cytoscape app are developed and maintained by Francesco Ceccarelli, Attila
-  Gábor, Alberto Valdeolivas and Nicolàs Palacio.
+  Gábor, Alberto Valdeolivas, Dénes Türei and Nicolàs Palacio.
 
 **pypath** is a Python module for processing molecular biology data resources,
 combining them into databases and providing a versatile interface in Python
 as well as exporting the data for access through other platforms such as
-the R (the OmnipathR R/Bioconductor package), web service (at
-https://omnipathdb.org), Cytoscape (the OmniPath Cytoscape app) and BEL
+the R (the OmnipathR R/Bioconductor package;
+https://github.com/saezlab/OmnipathR), web service (at
+https://omnipathdb.org), Cytoscape (the OmniPath Cytoscape app;
+https://apps.cytoscape.org/apps/omnipath) and BEL
 (Biological Expression Language).
 
 **pypath** provides access to more than 100 resources! It builds 5 major
