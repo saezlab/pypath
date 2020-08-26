@@ -22,7 +22,7 @@ Interaction datasets
 --------------------
 
 The instance of the ``pypath`` webserver running at the domain
-http://omnipathdb.org/, serves not only the OmniPath data but also other
+https://omnipathdb.org/, serves not only the OmniPath data but also other
 datasets. Each of them has a short name what you can use in the queries
 (e.g. ``&datasets=omnipath,pathwayextra``).
 
@@ -57,13 +57,13 @@ Examples
 
 A request without any parameter provides the main webpage:
 
-    http://omnipathdb.org
+    https://omnipathdb.org
 
 The ``info`` returns a HTML page with comprehensive information about the
 resources. The list here should be and will be updated as currently OmniPath
 includes much more databases:
 
-    http://omnipathdb.org/info
+    https://omnipathdb.org/info
 
 Molecular interaction network
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -72,46 +72,46 @@ The ``interactions`` query accepts some parameters and returns interactions in
 tabular format. This example returns all interactions of EGFR (P00533), with
 sources and references listed.
 
-    http://omnipathdb.org/interactions/?partners=P00533&fields=sources,references
+    https://omnipathdb.org/interactions/?partners=P00533&fields=sources,references
 
 By default only the OmniPath dataset used, to include any other dataset you
 have to set additional parameters. For example to query the transcriptional regulators of EGFR:
 
-    http://omnipathdb.org/interactions/?targets=EGFR&types=transcriptional
+    https://omnipathdb.org/interactions/?targets=EGFR&types=transcriptional
 
 The DoRothEA database assigns confidence levels to the interactions. You
 might want to select only the highest confidence, *A* category:
 
-    http://omnipathdb.org/interactions/?targets=EGFR&types=transcriptional&dorothea_levels=A
+    https://omnipathdb.org/interactions/?targets=EGFR&types=transcriptional&dorothea_levels=A
 
 Show the transcriptional targets of Smad2 homology translated to rat including
 the confidence levels from TF Regulons:
 
-    http://omnipathdb.org/interactions/?genesymbols=1&fields=type,ncbi_tax_id,dorothea_level&organisms=10116&sources=Smad2&types=transcriptional
+    https://omnipathdb.org/interactions/?genesymbols=1&fields=type,ncbi_tax_id,dorothea_level&organisms=10116&sources=Smad2&types=transcriptional
 
 Query interactions from PhosphoNetworks which is part of the *kinaseextra*
 dataset:
 
-    http://omnipathdb.org/interactions/?genesymbols=1&fields=sources&databases=PhosphoNetworks&datasets=kinaseextra
+    https://omnipathdb.org/interactions/?genesymbols=1&fields=sources&databases=PhosphoNetworks&datasets=kinaseextra
 
 Get the interactions from Signor, SPIKE and SignaLink3:
 
-    http://omnipathdb.org/interactions/?genesymbols=1&fields=sources,references&databases=Signor,SPIKE,SignaLink3
+    https://omnipathdb.org/interactions/?genesymbols=1&fields=sources,references&databases=Signor,SPIKE,SignaLink3
 
 All interactions of MAP1LC3B:
 
-    http://omnipathdb.org/interactions/?genesymbols=1&partners=MAP1LC3B
+    https://omnipathdb.org/interactions/?genesymbols=1&partners=MAP1LC3B
 
 By default ``partners`` queries the interaction where either the source or the
 arget is among the partners. If you set the ``source_target`` parameter to
 ``AND`` both the source and the target must be in the queried set:
 
-    http://omnipathdb.org/interactions/?genesymbols=1&fields=sources,references&sources=ATG3,ATG7,ATG4B,SQSTM1&targets=MAP1LC3B,MAP1LC3A,MAP1LC3C,Q9H0R8,GABARAP,GABARAPL2&source_target=AND
+    https://omnipathdb.org/interactions/?genesymbols=1&fields=sources,references&sources=ATG3,ATG7,ATG4B,SQSTM1&targets=MAP1LC3B,MAP1LC3A,MAP1LC3C,Q9H0R8,GABARAP,GABARAPL2&source_target=AND
 
 As you see above you can use UniProt IDs and Gene Symbols in the queries and
 also mix them. Get the miRNA regulating NOTCH1:
 
-    http://omnipathdb.org/interactions/?genesymbols=1&fields=sources,references&datasets=mirnatarget&targets=NOTCH1
+    https://omnipathdb.org/interactions/?genesymbols=1&fields=sources,references&datasets=mirnatarget&targets=NOTCH1
 
 Note: with the exception of mandatory fields and genesymbols, the columns
 appear exactly in the order you provided in your query.
@@ -122,20 +122,20 @@ Enzyme-substrate interactions
 Another query type available is ``ptms`` which provides enzyme-substrate
 interactions. It is very similar to the ``interactions``:
 
-    http://omnipathdb.org/enz_sub?genesymbols=1&fields=sources,references,isoforms&enzymes=FYN
+    https://omnipathdb.org/enz_sub?genesymbols=1&fields=sources,references,isoforms&enzymes=FYN
 
 Is there any ubiquitination reaction?
 
-    http://omnipathdb.org/ens_sub?genesymbols=1&fields=sources,references&types=ubiquitination
+    https://omnipathdb.org/ens_sub?genesymbols=1&fields=sources,references&types=ubiquitination
 
 And acetylation in mouse?
 
-    http://omnipathdb.org/ptms?genesymbols=1&fields=sources,references&types=acetylation&organisms=10090
+    https://omnipathdb.org/ptms?genesymbols=1&fields=sources,references&types=acetylation&organisms=10090
 
 Rat interactions, both directly from rat and homology translated from human,
 from the PhosphoSite database:
 
-    http://omnipathdb.org/enz_sub?genesymbols=1&fields=sources,references&organisms=10116&databases=PhosphoSite,PhosphoSite_noref
+    https://omnipathdb.org/enz_sub?genesymbols=1&fields=sources,references&organisms=10116&databases=PhosphoSite,PhosphoSite_noref
 
 
 Molecular complexes
@@ -145,7 +145,7 @@ The ``complexes`` query provides a comprehensive database of more than 22,000
 protein complexes. For example, to query all complexes from CORUM and PDB
 containing MTOR (P42345):
 
-    http://omnipathdb.org/complexes?proteins=P42345&databases=CORUM,PDB
+    https://omnipathdb.org/complexes?proteins=P42345&databases=CORUM,PDB
 
 
 Annotations
@@ -162,37 +162,48 @@ to connect the related key-value pairs. You can easily do this with ``tidyr``
 and ``dplyr`` in R or ``pandas`` in Python. An example to query the pathway
 annotations from SignaLink:
 
-    http://omnipathdb.org/annotations?databases=SignaLink3
+    https://omnipathdb.org/annotations?databases=SignaLink_pathway
 
 Or the tissue expression of BMP7 from Human Protein Atlas:
 
-    http://omnipathdb.org/annotations?databases=HPA_tissue&proteins=BMP7
+    https://omnipathdb.org/annotations?databases=HPA_tissue&proteins=BMP7
 
 
 Roles in inter-cellular communication
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Another query type is ``intercell`` providing information on the roles in
-inter-cellular signaling. E.g. if a protein is a ligand, a receptor, an
-extracellular matrix (ECM) component, etc. This query type is very similar
-to ``annotations`` but here the data does not come from original sources but
-combined from several databases by us. However we refer also to the original
-databases whenever the ``class_type`` is ``sub`` (subclass). E.g. the main
-class ``ligand`` is a combination of ``Ramilowski 2015``, ``CellPhoneDB``,
-``HPMR`` and many other databases, hence besides the ``ligand`` category you
-will find sub-categories like ``ligand_ramilowski``, ``ligand_cellphonedb``
-and so on. An example how to get all intercell annotations for 4 selected
-proteins:
+Another query type is the ``intercell``, providing information about the
+roles in inter-cellular signaling. E.g. if a protein is a ligand, a receptor,
+an extracellular matrix (ECM) component, etc. The proteins and protein
+complexes are classified into categories. The categories are defined by a
+number of attributes:
+    * `aspect`: funtional (e.g. ion channel) or locational (e.g. plasma
+      membrane transmembrane).
+    * `scope`: generic (e.g. ligand) or specific (e.g. interleukin)
+    * `source`: resource specific (from one resource) or composite (combined
+      from more resources)
+    * `causality`: transmitter (delivering signal from the expressing cell)
+      or receiver (receiving signal into the expressing cell) or both
+    * `topology`: major localization categories derived from the locational
+      categories: plasma membrane transmembrane or peripheral or secreted
 
-    http://omnipathdb.org/intercell?proteins=EGFR,ULK1,ATG4A,BMP8B
+The `intercell` database defines 25 functional and 10 locational generic,
+composite categories. The number of specific categories is above 1,000.
 
-Or all the main classes for one protein:
+You can use all these attributes in your queries, see the exact keys and
+values at https://omnipathdb.org/queries/intercell
 
-    http://omnipathdb.org/intercell?levels=main&proteins=P00533
+Some example queries:
 
-Or a list of all ECM proteins:
+    https://omnipathdb.org/intercell?proteins=EGFR,ULK1,ATG4A,BMP8B
 
-    http://omnipathdb.org/intercell?categories=ecm
+All the resource specific functional classes for one protein:
+
+    https://omnipathdb.org/intercell?source=resource_specific&aspect=functional&proteins=P00533
+
+A list of all ECM proteins:
+
+    https://omnipathdb.org/intercell?categories=ecm
 
 
 Exploring possible parameters
@@ -205,4 +216,4 @@ query type. The server checks the parameter names and values exactly against
 these rules and if any of them don't match you will get an error message
 instead of reply. To see the parameters for the ``interactions`` query:
 
-    http://omnipathdb.org/queries/interactions
+    https://omnipathdb.org/queries/interactions
