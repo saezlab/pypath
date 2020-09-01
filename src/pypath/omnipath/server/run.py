@@ -1368,7 +1368,7 @@ class TableServer(BaseServer):
 
                                 if in_dataset and db in resources:
 
-                                    datasets.add(db)
+                                    datasets.add(dataset)
                                     break
 
                         self._resources_dict[db]['queries'][query_type] = {
