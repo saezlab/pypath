@@ -1324,6 +1324,8 @@ class TableServer(BaseServer):
 
         self._resources_dict = collections.defaultdict(dict)
 
+        res_ctrl = resources_mod.get_controller()
+
         for query_type in self.data_query_types:
 
             if query_type not in self.data:
@@ -1353,6 +1355,14 @@ class TableServer(BaseServer):
             ))
 
             for db in values:
+
+                if 'license' not in self._resources_dict[db]:
+
+                    license = res_ctrl.license(db)
+                    license_data = license.features
+                    license_data['name'] = license.name
+                    license_data['full_name'] = license.full_name
+                    self._resources_dict[db]['license'] = license_data
 
                 if 'queries' not in self._resources_dict[db]:
 
