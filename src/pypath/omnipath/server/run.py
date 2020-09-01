@@ -2404,11 +2404,20 @@ class TableServer(BaseServer):
 
         )
 
+        res_ctrl = resources_mod.get_controller()
+        license = self._get_license(req)
+
         return json.dumps(
             dict(
                 (k, v)
                 for k, v in iteritems(self._resources_dict)
-                if not datasets or datasets & set(v['datasets'].keys())
+                if (
+                    res_ctrl.license(k).enables(license) and
+                    (
+                        not datasets or
+                        datasets & set(v['datasets'].keys())
+                    )
+                )
             )
         )
 
