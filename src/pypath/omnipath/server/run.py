@@ -231,7 +231,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
         if request.postpath and request.postpath[0] == 'resources':
 
-            request.args[b'format'] == b'json'
+            request.args[b'format'] = [b'json']
 
         request.setHeader('Access-Control-Allow-Origin', '*')
 
@@ -821,6 +821,15 @@ class TableServer(BaseServer):
             'fields': None,
         },
         'resources': {
+            'license': {
+                'ignore',
+                'academic',
+                'non_profit',
+                'nonprofit',
+                'for_profit',
+                'forprofit',
+                'commercial',
+            },
             'format': {
                 'json',
             },
