@@ -229,6 +229,10 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         if '' in request.postpath:
             request.postpath.remove('')
 
+        if request.postpath and request.postpath[0] == 'resources':
+
+            request.args[b'format'] == b'json'
+
         request.setHeader('Access-Control-Allow-Origin', '*')
 
         if html:
