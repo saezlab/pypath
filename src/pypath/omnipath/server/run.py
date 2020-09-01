@@ -161,6 +161,14 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
             response = [self._root(request)]
 
+        elif request.postpath[0] == 'favicon.ico':
+
+            favicon_path = os.path.join(common.ROOT, 'data', 'favicon.ico')
+
+            with open(favicon_path, 'rb') as fp:
+
+                response = [fp.read()]
+
         if not response:
 
             response = [
@@ -245,6 +253,8 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
                 'Content-Type',
                 'application/json'
             )
+        elif request.postpath[0] == 'favicon.ico':
+            request.setHeader('Content-Type', 'image/vnd.microsoft.icon')
         else:
             request.args[b'format'] = [b'text']
             request.setHeader('Content-Type', 'text/plain; charset=utf-8')
