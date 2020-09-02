@@ -291,6 +291,8 @@ our colleague Attila Gabor we have a dedicated package for this:
 Installation
 ============
 
+**Warning:** ``pip install pypath`` installs another package, the present package is not in PyPI.
+
 Linux
 -----
 
@@ -392,6 +394,15 @@ Troubleshooting
   main Python installation. You need to install all modules within Anaconda's
   directory. **mac-install-conda.sh** does exactly this. If you still
   experience issues, please contact us.
+
+* ``error: openssl/ssl.h: No such file or directory``: In order to install
+  the Python modules ``pyopenssl`` and its dependency ``cryptography`` on
+  some systems the development headers of OpenSSL need to be available. This
+  is not the case if you can install ``pyopenssl`` from a wheel. If you get
+  an error about a missing libssl header, just install the appropriate
+  packages, in Debian based distros these are ``libssl-dev`` and
+  ``libffi-dev``, in Red Hat based distros ``openssl-devel`` and
+  ``libffi-devel``. In Mac OS X install ``openssl`` by ``homebrew``.
 
 Microsoft Windows
 -----------------

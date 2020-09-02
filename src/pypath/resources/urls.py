@@ -960,6 +960,8 @@ urls = {
         'label': 'DoRothEA TF-taget database from its git repo',
         'url': 'https://github.com/saezlab/DoRothEA/raw/master/data/'
             'TFregulons/consensus/table/database_normal_20180915.csv.zip',
+        'rda': 'https://github.com/saezlab/dorothea/raw/master/data/'
+            'entire_database.rda',
     },
     'hpmri': {
         'label': 'Human Plasma Membrane Receptome "browse" view',

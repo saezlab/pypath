@@ -27,6 +27,7 @@ import csv
 import collections
 import itertools
 import functools
+import pyreadr
 
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
@@ -244,6 +245,19 @@ def get_dorothea(
                 )
             ))
         )
+
+
+def dorothea_rda_raw():
+
+    url = urls.urls['dorothea_git']['rda']
+
+    c = curl.Curl(url, silent = False, large = True)
+    rdata_path = c.fileobj.name
+    c.fileobj.close()
+
+    rdata = pyreadr.read_r(rdata_path)['entire_database']
+
+    return rdata
 
 
 # synonyms
