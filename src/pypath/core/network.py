@@ -31,6 +31,7 @@ import functools
 import copy as copy_mod
 import pickle
 
+import numpy as np
 import pandas as pd
 
 import pypath.share.session as session_mod
@@ -2074,7 +2075,7 @@ class Network(session_mod.Logger):
                 with_references = with_references,
             )
 
-        if not isinstance(records, (list, tuple, pd.np.ndarray)):
+        if not isinstance(records, (list, tuple, np.ndarray)):
 
             records = list(records)
 

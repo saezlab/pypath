@@ -1673,12 +1673,12 @@ def df_memory_usage(df, deep = True):
     Modified from ``pandas.DataFrame.info``.
     """
 
-    counts = df._data.get_dtype_counts()
+    dtypes = {str(dt) for dt in df.dtypes}
 
     size_qualifier = (
         '+'
             if (
-                'object' in counts or
+                'object' in dtypes or
                 df.index._is_memory_usage_qualified()
             ) else
         ''
