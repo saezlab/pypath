@@ -34,10 +34,14 @@ spec.loader.exec_module(_version)
 __version__ = _version.__version__
 
 
-with open('README.rst') as f:
+with open('README.rst', 'r') as f:
     readme = f.read()
-with open('HISTORY.rst') as f:
+with open('HISTORY.rst', 'r') as f:
     history = f.read()
+
+with open('desc.rst', 'w') as f:
+    f.write(readme + '\n' + history)
+
 
 ENTRY_POINTS = {
     'console_scripts': [
@@ -48,29 +52,58 @@ ENTRY_POINTS = {
     ],
 }
 
+
+def read_requirements():
+
+    with open('requirements.txt', 'r') as fp:
+
+        requirements = [
+            name.strip()
+            for name in fp
+            if name and not name.startswith('-')
+        ]
+
+    return requirements
+
+
 setup(
-    name = 'pypath',
+    name = 'pypath-omnipath',
     version = __version__,
     maintainer = 'Dénes Türei, Nicolàs Palacio, Olga Ivanova',
     maintainer_email = 'turei.denes@gmail.com',
     author = 'Dénes Türei, Nicolàs Palacio, Olga Ivanova',
     author_email = 'turei.denes@gmail.com',
-    long_description = readme + '\n\n' + history,
-    keywords = [
-        'protein', 'mRNA', 'DNA', 'signaling',
-        'SignaLink', 'Signor', 'InnateDB', 'IntAct', 'Reactome',
+    long_description = readme + '\n' + history,
+    description_content_type = 'text/x-rst; charset=UTF-8',
+    keywords = sorted({
+        'protein', 'mRNA', 'miRNA', 'DNA', 'signaling',
+        'SignaLink', 'SIGNOR', 'InnateDB', 'IntAct', 'Reactome',
         'MPPI', 'NCI-PID', 'DIP', 'MatrixDB', 'PANTHER',
         'PhosphoSite', 'PhosphoPoint', 'DEPOD', 'SPIKE', 'KEGG',
-        'Autophagy', 'ARN', 'NRF2', 'NRF2ome', 'Guide to Pharmacology',
+        'Autophagy', 'ARN', 'NRF2ome', 'Guide to Pharmacology',
+        'UniProt', 'BioPAX', 'Ensembl', 'Surfaceome',
+        'Exocarta', 'Vesiclepedia', 'Matrisome', 'Human Protein Atlas',
+        'Compleat', 'CORUM', 'ComplexPortal', 'BioGRID', 'STRING',
+        'ICELLNET', 'Cell Surface Protein Atlas', 'COSMIC',
+        'Cancer Gene Census', 'IntOGen', 'TopDB', 'iTALK',
+        'Human Plasma Membrane Receptome', 'EMBRACE', 'ELM', 'phospho.ELM',
+        'CancerSEA', 'ComPPI', 'CellPhoneDB', 'DGIdb', 'DisGeNet',
+        'PAZAR', 'ORegAnno', 'TRED', 'DoRothEA', 'TRRD', 'CPAD',
         'regulation', 'phosphorylation', 'kinase', 'phosphatase',
-        'dephosphorylation', 'directed graph', 'annotations',
-        'complexes', 'inter-cellular communication',
-    ],
-    description = 'Molecular signaling prior knowledge in Python',
+        'dephosphorylation', 'directed graph', 'annotations', 'cancer',
+        'complexes', 'intercellular communication', 'HGNC', 'GPCRdb',
+        'MSigDB', 'GSEA', 'Phobius', 'Phosphatome', 'NetPath',
+        'gene', 'gene symbol', 'mouse', 'rat', 'HomoloGene',
+        'integrin', 'adhesion', 'receptor', 'ligand', 'transporter',
+        'ion channel', 'disease', 'activity flow', 'transcription', 'PPI',
+        'subcellular localization', 'pathway', 'signaling pathway'
+    }),
+    #description = 'Molecular signaling prior knowledge in Python',
     license = 'GPLv3',
     platforms = ['Linux', 'Unix', 'MacOSX', 'Windows'],
-    url = ['http://pypath.omnipathdb.org/'],
-    download_url = ['http://pypath.omnipathdb.org/releases/'],
+    url = 'https://omnipathdb.org/',
+    download_url = 'https://pypath.omnipathdb.org/releases/',
+    project_url = ('Git repo', 'https://github.com/saezlab/pypath'),
     classifiers = [
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
@@ -86,26 +119,7 @@ setup(
     packages = list(set(find_packages() + ['pypath', 'pypath.data'])),
     include_package_data = True,
     # dependency_links = deplinks
-    install_requires = [
-        'beautifulsoup4',
-        'configparser',
-        'dill',
-        'pyopenssl',
-        'numpy',
-        'scipy',
-        'matplotlib',
-        'pandas',
-        'pyreadr',
-        'statsmodels',
-        'pycurl',
-        'lxml',
-        'xlrd',
-        'future',
-        'tqdm',
-        'fabric3',
-        'timeloop',
-        'tabulate',
-    ],
+    install_requires = read_requirements(),
     extras_require = {
         'tests': [
             'pytest',

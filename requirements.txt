@@ -1,15 +1,12 @@
 --index-url https://pypi.python.org/simple/
 
 beautifulsoup4
-configparser
 dill
-pyopenssl
-ndg-httpsclient
 numpy
 scipy
 timeloop
 matplotlib
-statsmodels
+pandas
 pycurl
 pyreadr
 lxml
