@@ -526,6 +526,10 @@ class CustomAnnotation(session_mod.Logger):
                     annot_formats.AnnotOp(annots = classdef.resource)
                 )
 
+            else:
+
+                self._log('Resource not found: %s' % classdef.resource)
+
         elif callable(classdef.resource):
 
             members = classdef.resource(**(classdef.args or {}))
