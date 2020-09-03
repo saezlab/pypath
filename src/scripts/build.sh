@@ -24,4 +24,4 @@ rm -r src/pypath.egg-info
 
 sed -i 's/\([0-9]*\.[0-9]*\.\)\([0-9]*\)/echo \1$\(\(\2+1\)\)/ge' src/pypath/__version__
 
-python setup.py sdist
+python setup.py sdist bdist_wheel
