@@ -31,6 +31,10 @@ import pyreadr
 
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
+import pypath.share.session as session
+
+
+_logger = session.Logger(name = 'dorothea_input')
 
 
 def get_dorothea_old(
@@ -255,7 +259,17 @@ def dorothea_rda_raw():
     rdata_path = c.fileobj.name
     c.fileobj.close()
 
-    rdata = pyreadr.read_r(rdata_path)['entire_database']
+    rdata = None
+
+    try:
+        rdata = pyreadr.read_r(rdata_path)['entire_database']
+    except pyreadr.custom_errors.LibrdataError as e:
+        _logger._log(
+            'Could not parse DoRothEA data from Rdata file: '
+            '`%s`. '
+            'Make sure your `pyreadr` installation supports the xz '
+            'compression.' % e.args[0]
+        )
 
     return rdata
 

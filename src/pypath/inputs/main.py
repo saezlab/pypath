@@ -2888,27 +2888,15 @@ def elm_interactions():
 
 
 def pfam_uniprot(uniprots, infile = None):
+
     result = {}
     url = urls.urls['pfam_up']['url']
-    infile = infile if infile is not None \
-        else os.path.join(settings.get('cachedir'), 'pfam-regions.tab.gz')
+    c = curl.Curl(url, large = True, silent = False)
 
-    if not os.path.exists(infile):
-        sys.stdout.write('\t:: Downloading data...\n')
-        sys.stdout.flush()
-
-        if hasattr(urllib, 'urlretrieve'):
-            urllib.urlretrieve(url, infile)
-
-        else:
-            _urllib.request.urlretrieve(url, infile)
-
-    sys.stdout.write('\t:: Processing domains...\n')
-    sys.stdout.flush()
-    gzfile = gzip.open(infile, mode = 'r')
     prg = progress.Progress(len(uniprots), 'Looking up domains', 1)
 
-    for l in gzfile:
+    for l in c.result:
+
         l = l.split('\t')
 
         if l[0] in uniprots:
