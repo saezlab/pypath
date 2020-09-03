@@ -1,6 +1,6 @@
-############################################################################
+============================================================================
 *pypath:* A Python module for molecular signaling prior knowledge processing
-############################################################################
+============================================================================
 
     **Important:** New module structure and new network API
 
@@ -237,15 +237,16 @@ roles in inter-cellular signaling. E.g. if a protein is a ligand, a receptor,
 an extracellular matrix (ECM) component, etc. The proteins and protein
 complexes are classified into categories. The categories are defined by a
 number of attributes:
-    * `aspect`: funtional (e.g. ion channel) or locational (e.g. plasma
-      membrane transmembrane).
-    * `scope`: generic (e.g. ligand) or specific (e.g. interleukin)
-    * `source`: resource specific (from one resource) or composite (combined
-      from more resources)
-    * `causality`: transmitter (delivering signal from the expressing cell)
-      or receiver (receiving signal into the expressing cell) or both
-    * `topology`: major localization categories derived from the locational
-      categories: plasma membrane transmembrane or peripheral or secreted
+
+* `aspect`: funtional (e.g. ion channel) or locational (e.g. plasma
+  membrane transmembrane).
+* `scope`: generic (e.g. ligand) or specific (e.g. interleukin)
+* `source`: resource specific (from one resource) or composite (combined
+  from more resources)
+* `causality`: transmitter (delivering signal from the expressing cell)
+  or receiver (receiving signal into the expressing cell) or both
+* `topology`: major localization categories derived from the locational
+  categories: plasma membrane transmembrane or peripheral or secreted
 
 The `intercell` database defines 25 functional and 10 locational generic,
 composite categories. The number of specific categories is above 1,000.
@@ -291,7 +292,12 @@ our colleague Attila Gabor we have a dedicated package for this:
 Installation
 ============
 
-**Warning:** ``pip install pypath`` installs another package, the present package is not in PyPI.
+**Warning:** ``pip install pypath`` installs another package, you find
+``pypath`` in PyPI under the name ``pypath-omnipath``:
+
+.. code:: bash
+
+    pip install pypath-omnipath
 
 Linux
 -----
@@ -345,7 +351,7 @@ you can simply install by **pip** (see above).
 When ``igraph`` was a mandatory dependency and it didn't provide wheels
 the OS X installation was not straightforward primarily because cairo needs to
 be compiled from source. If you want igraph and cairo we provide two scripts
-`here <src/scripts>`_: the **mac-install-brew.sh** installs everything with HomeBrew and
+in ``src/scripts``: the **mac-install-brew.sh** installs everything with HomeBrew and
 **mac-install-conda.sh** installs from Anaconda distribution. With these
 scripts, installation of igraph, cairo and graphviz goes smoothly most of the
 time and options are available to omit the last two. To know more, see
@@ -439,7 +445,7 @@ external dependencies, after *pip* install should work. On Windows certain
 packages can not be installed by compiled from source by *pip*, instead the
 easiest to install them precompiled. These are in our case *fisher, lxml,
 numpy (mkl version), pycairo, igraph, pygraphviz, scipy and statsmodels*. The
-precompiled packages are available `here <http://www.lfd.uci.edu/~gohlke/pythonlibs/>`_.
+precompiled packages are available `here <http://www.lfd.uci.edu/~gohlke/pythonlibs/>`__.
 We tested the setup with Python 3.4.3 and Python 2.7.11. The former should just
 work fine, while with the latter we have issues to be resolved.
 
@@ -590,11 +596,12 @@ change. Today ``pypath`` builds a number of different databases, exposes them
 by a rich API and each of them can be converted to ``pandas.DataFrame``.
 The modules and classes responsible for the integrated databases are located
 in ``pypath.core``. The five main databases are the followings:
-    * *network* - ``core.network``
-    * *enzyme-substrate* - ``core.enz_sub``
-    * *complexes* - ``core.complex``
-    * *annotations* - ``core.annot``
-    * *intercell* - ``core.intercell``
+
+* *network* - ``core.network``
+* *enzyme-substrate* - ``core.enz_sub``
+* *complexes* - ``core.complex``
+* *annotations* - ``core.annot``
+* *intercell* - ``core.intercell``
 
 Some of the databases have different variants (e.g. PPI and transcriptional
 network) and all can be customized by many parameters.
