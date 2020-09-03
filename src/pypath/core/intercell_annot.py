@@ -767,7 +767,7 @@ annot_combined_classes = (
         name = 'transmembrane',
         parent = 'transmembrane',
         scope = 'generic',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         aspect = 'locational',
         args = {
             'keyword': {
@@ -1236,7 +1236,7 @@ annot_combined_classes = (
         name = 'secreted',
         parent = 'secreted',
         scope = 'generic',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         aspect = 'locational',
         args = {
             'keyword': 'Secreted',
@@ -2046,7 +2046,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'receptor',
         scope = 'generic',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Receptor',
         },
@@ -2060,7 +2060,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'integrin',
         parent = 'receptor',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Integrin',
         },
@@ -3428,7 +3428,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'gpcr',
         parent = 'receptor',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'G-protein coupled receptor',
         },
@@ -3454,7 +3454,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'lectin',
         parent = 'receptor',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Lectin',
         },
@@ -3510,7 +3510,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'lectin',
         parent = 'secreted_receptor',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Lectin',
         },
@@ -3534,7 +3534,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'secreted_receptor',
         scope = 'generic',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Receptor',
         },
@@ -3613,7 +3613,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'lectin',
         parent = 'ecm',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Lectin',
         },
@@ -3628,7 +3628,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'collagen',
         parent = 'ecm',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Lectin',
         },
@@ -3998,7 +3998,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'cytokine',
         parent = 'ligand',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Cytokine',
         },
@@ -4007,7 +4007,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'growth_factor',
         parent = 'ligand',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Growth factor',
         },
@@ -4780,7 +4780,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'growth_factor_binder',
         parent = 'ligand_regulator',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Growth factor binding',
         },
@@ -5019,7 +5019,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'adhesion',
         scope = 'generic',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Cell adhesion',
         },
@@ -5378,7 +5378,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'integrin',
         parent = 'matrix_adhesion',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Integrin',
         },
@@ -5768,7 +5768,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'lipase',
         parent = 'secreted_enzyme',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Lipid degradation',
         },
@@ -5824,7 +5824,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'secreted_peptidase',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         scope = 'generic',
         args = {
             'keyword': {
@@ -5837,7 +5837,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'collagen_degrading',
         parent = 'secreted_peptidase',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Collagen degradation',
         },
@@ -6015,7 +6015,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'secreted_peptidase_inhibitor',
         scope = 'generic',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': {
                 'Protease inhibitor',
@@ -6161,7 +6161,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'transporter',
         scope = 'generic',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Transport',
         },
@@ -6461,7 +6461,7 @@ annot_combined_classes = (
         name = 'ion_channel',
         parent = 'ion_channel',
         scope = 'generic',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Ion channel',
         },
@@ -6471,7 +6471,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'ligand_gated_channel',
         parent = 'ion_channel',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Ligand-gated ion channel',
         },
@@ -6480,7 +6480,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'chloride_channel',
         parent = 'ion_channel',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Chloride channel',
         },
@@ -6489,7 +6489,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'calcium_channel',
         parent = 'ion_channel',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Calcium channel',
         },
@@ -6498,7 +6498,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'potassium_channel',
         parent = 'ion_channel',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Potassium channel',
         },
@@ -6507,7 +6507,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'sodium_channel',
         parent = 'ion_channel',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Sodium channel',
         },
@@ -6942,7 +6942,7 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'gap_junction',
         scope = 'generic',
-        resource = 'UniProt_keywords',
+        resource = 'UniProt_keyword',
         args = {
             'keyword': 'Gap junction',
         },
