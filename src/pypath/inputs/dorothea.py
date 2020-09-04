@@ -37,6 +37,80 @@ import pypath.share.session as session
 _logger = session.Logger(name = 'dorothea_input')
 
 
+DorotheaInteraction = collections.namedtuple(
+    'DorotheaInteraction',
+    [
+        'tf',
+        'target',
+        'effect',
+        'level',
+        'curated',
+        'chipseq',
+        'predicted',
+        'coexp',
+        'curated_sources',
+        'chipseq_sources',
+        'predicted_sources',
+        'coexp_sources',
+        'all_sources',
+        'pubmed',
+        'kegg_pathways',
+    ]
+)
+
+
+_resources_upper = (
+    'jaspar',
+    'trred',
+    'kegg',
+    'trrust',
+    'tred',
+    'trrd',
+    'hocomoco',
+    'fantom4',
+    'pazar',
+)
+
+_resources_special_case = {
+    'tfact': 'TFactS',
+    'tf_act': 'TFactS',
+    'htri_db': 'HTRIdb',
+    'int_act': 'IntAct',
+    'fantom_4': 'FANTOM4',
+    'oreganno': 'ORegAnno',
+    'reviews': 'DoRothEA-reviews',
+    'HOCOMOCO_v11': 'HOCOMOCO-v11',
+    'hocomoco_v11': 'HOCOMOCO-v11',
+    'JASPAR_v2018': 'JASPAR-v2018',
+    'remap': 'ReMap',
+    'gtex': 'ARACNe-GTEx',
+}
+
+
+def _process_resources(sources):
+
+    if sources == 'none':
+
+        return ''
+
+    revia = re.compile(r',|_via_')
+
+    sources = functools.reduce(
+        lambda s, r: s.replace(r, r.upper()),
+        _resources_upper,
+        sources,
+    )
+
+    sources = functools.reduce(
+        lambda s, r: s.replace(*r),
+        iteritems(_resources_special_case),
+        sources,
+    )
+
+    return ','.join(revia.split(sources))
+
+
+
 def get_dorothea_old(
         levels = {'A', 'B'},
         only_curated = False
@@ -111,73 +185,11 @@ def get_dorothea(
     For details see https://github.com/saezlab/DoRothEA.
     """
 
-    def process_sources(sources):
-        
-        upper = (
-            'jaspar',
-            'trred',
-            'kegg',
-            'trrust',
-            'tred',
-            'trrd',
-            'hocomoco',
-            'fantom4',
-        )
-
-        special_case = {
-            'tfact': 'TFactS',
-            'oreganno': 'ORegAnno',
-            'reviews': 'DoRothEA-reviews',
-            'HOCOMOCO_v11': 'HOCOMOCO-v11',
-            'JASPAR_v2018': 'JASPAR-v2018',
-        }
-
-        revia = re.compile(r',|_via_')
-
-        sources = functools.reduce(
-            lambda s, r: s.replace(r, r.upper()),
-            upper,
-            sources,
-        )
-
-        sources = functools.reduce(
-            lambda s, r: s.replace(*r),
-            iteritems(special_case),
-            sources,
-        )
-
-        return ','.join(
-            '%s_DoRothEA' % s
-            for s in revia.split(sources)
-        )
-
-
     evidence_types = (
         'chipSeq',
         'TFbindingMotif',
         'coexpression',
         'curateddatabase'
-    )
-
-    DorotheaInteraction = collections.namedtuple(
-        'DorotheaInteraction',
-        [
-            'tf',
-            'target',
-            'effect',
-            'level',
-            'curated',
-            'chipseq',
-            'predicted',
-            'coexp',
-            'curated_sources',
-            'chipseq_sources',
-            'predicted_sources',
-            'coexp_sources',
-            'all_sources',
-            'pubmed',
-            'kegg_pathways',
-        ]
     )
 
     url = urls.urls['dorothea_git']['url']
@@ -230,7 +242,7 @@ def get_dorothea(
                     ),
                     # all data sources (or only the curated ones)
                     (
-                        process_sources(
+                        _process_resources(
                             ','.join(
                             rec[key]
                                 for key in
@@ -274,7 +286,100 @@ def dorothea_rda_raw():
     return rdata
 
 
+def dorothea_interactions(
+        levels = {'A', 'B'},
+        only_curated = False
+    ):
+    """
+    Retrieves TF-target interactions from TF regulons.
+
+    :param set levels:
+        Confidence levels to be used.
+    :param bool only_curated:
+            Retrieve only literature curated interactions.
+
+    Details
+    -------
+    TF regulons is a comprehensive resource of TF-target interactions
+    combining multiple lines of evidences: literature curated databases,
+    ChIP-Seq data, PWM based prediction using HOCOMOCO and JASPAR matrices
+    and prediction from GTEx expression data by ARACNe. As KEGG is not longer
+    part of the public version of DoRothEA the `kegg_pathways` field is
+    always empty.
+
+    For details see https://github.com/saezlab/DoRothEA.
+    """
+
+    evidence_types = (
+        'curated',
+        'chip_seq',
+        'tfbs', # inferred
+        'inferred', # coexp
+    )
+
+    df = dorothea_rda_raw()
+    df = df[df.confidence.isin(levels)]
+
+    if only_curated:
+
+        df = df[df.is_evidence_curated]
+
+    for rec in df.itertuples():
+
+        yield(
+            DorotheaInteraction(
+                **dict(zip(
+                    DorotheaInteraction._fields,
+                    itertools.chain(
+                        # TF, target, effect, score
+                        (
+                            rec.tf,
+                            rec.target,
+                            int(rec.mor),
+                            rec.confidence,
+                        ),
+
+                        # boolean values for curated, chipseq, motif pred.
+                        # and coexp
+                        (
+                            getattr(rec, 'is_evidence_%s' % evt)
+                            for evt in evidence_types
+                        ),
+                        # databases & datasets
+                        (
+                            _process_resources(
+                                getattr(rec, 'which_%s' % evt)
+                            )
+                            for evt in evidence_types
+                        ),
+                        # all data sources (or only the curated ones)
+                        (
+                            _process_resources(
+                                ','.join(
+                                    getattr(rec, key)
+                                    for key in
+                                    (
+                                        'which_%s' % evt
+                                        for evt in evidence_types
+                                    )
+                                    if getattr(rec, key) != 'none'
+                                )
+                                    if not only_curated else
+                                rec.which_curated
+                            ),
+                        ),
+                        # PubMed and KEGG pw
+                        (
+                            rec.pubmed_id if rec.pubmed_id.isdigit() else '',
+                            '',
+                        )
+                    )
+                ))
+            )
+        )
+
+
 # synonyms
-tfregulons_interactions = get_dorothea
+tfregulons_interactions_old = get_dorothea
 get_tfregulons = get_dorothea
-dorothea_interactions = get_dorothea
+dorothea_interactions_old = get_dorothea
