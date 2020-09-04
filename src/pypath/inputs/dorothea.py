@@ -116,7 +116,7 @@ def get_dorothea_old(
         only_curated = False
     ):
     """
-    Retrieves TF-target interactions from TF regulons.
+    Retrieves TF-target interactions from DoRothEA.
 
     :param set levels:
         Confidence levels to be used.
@@ -125,7 +125,7 @@ def get_dorothea_old(
 
     Details
     -------
-    TF regulons is a comprehensive resource of TF-target interactions
+    DoRothEA is a comprehensive resource of TF-target interactions
     combining multiple lines of evidences: literature curated databases,
     ChIP-Seq data, PWM based prediction using HOCOMOCO and JASPAR matrices
     and prediction from GTEx expression data by ARACNe.
@@ -163,12 +163,12 @@ def get_dorothea_old(
     )
 
 
-def get_dorothea(
+def dorothea_old_csv(
         levels = {'A', 'B'},
         only_curated = False
     ):
     """
-    Retrieves TF-target interactions from TF regulons.
+    Retrieves TF-target interactions from DoRothEA.
 
     :param set levels:
         Confidence levels to be used.
@@ -177,7 +177,10 @@ def get_dorothea(
 
     Details
     -------
-    TF regulons is a comprehensive resource of TF-target interactions
+    Note: this method processes DoRothEA from an old CSV file generated in
+    2018. For an up to date version of DoRothEA please use the
+    ``dorothea_interactions`` method.
+    DoRothEA is a comprehensive resource of TF-target interactions
     combining multiple lines of evidences: literature curated databases,
     ChIP-Seq data, PWM based prediction using HOCOMOCO and JASPAR matrices
     and prediction from GTEx expression data by ARACNe.
@@ -380,6 +383,7 @@ def dorothea_interactions(
 
 
 # synonyms
-tfregulons_interactions_old = get_dorothea
-get_tfregulons = get_dorothea
-dorothea_interactions_old = get_dorothea
+dorothea_interactions_old = dorothea_old_csv
+tfregulons_interactions_old = dorothea_old_csv
+get_tfregulons = dorothea_rda_raw
+tfregulons_interactions = dorothea_interactions
