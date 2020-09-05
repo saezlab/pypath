@@ -41,7 +41,7 @@ class Progress(object):
     def __init__(
             self,
             total = None,
-            name = "Progress",
+            name = 'Progress',
             interval = None,
             percent = True,
             status = 'initializing',
@@ -49,6 +49,7 @@ class Progress(object):
             init = True,
             unit = 'it',
             off = None,
+            iterable = None,
         ):
 
         if off is None:
@@ -61,9 +62,14 @@ class Progress(object):
 
         self.name = name
         self.interval = (
-            max(int(total / 100), 1) if interval is None else interval
+            interval
+                if interval is not None else
+            max(int(total / 100), 1)
+                if isinstance(total, (int, float)) else
+            1
         )
         self.total = total
+        self.iterable = iterable
         self.done = done
         self.status = status
         self.unit = unit
@@ -90,11 +96,34 @@ class Progress(object):
         Creates a tqdm instance.
         """
 
-        self.tqdm = tqdm.tqdm(total = self.total,
-                              desc = '%s: %s' % (self.name, self.status),
-                              unit_scale = True,
-                              unit = self.unit)
+        self.tqdm = tqdm.tqdm(
+            iterable = self.iterable,
+            total = self.total,
+            desc = '%s: %s' % (self.name, self.status),
+            unit_scale = True,
+            unit = self.unit,
+            dynamic_ncols = True,
+        )
         self.last_updated = time.time()
+
+
+    def __iter__(self):
+
+        iterable = (
+            self.tqdm.__iter__()
+                if hasattr(self, 'tqdm') else
+            self.iterable
+                if hasattr(self.iterable, '__iter__') else
+            ()
+        )
+
+        for it in iterable:
+
+            self.set_status('busy')
+
+            yield it
+
+        self.set_status('finished')
 
 
     def step(self, step = 1, msg = None, status = 'busy', force = False):
@@ -109,8 +138,12 @@ class Progress(object):
 
             return
 
-        if force or (self.done % self.interval < 1.0 and \
-            time.time() - self.last_updated > self.min_update_interval):
+        if (
+            force or (
+                self.done % self.interval < 1.0 and
+                time.time() - self.last_updated > self.min_update_interval
+            )
+        ):
 
             self.set_status(status)
 
