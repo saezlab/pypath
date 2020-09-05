@@ -1036,7 +1036,12 @@ class Network(session_mod.Logger):
             lnum = 0 # we need to define it here to avoid errors if the
                      # loop below runs zero cycles
 
-            for lnum, line in enumerate(infile):
+            prg = progress.Progress(
+                iterable = infile,
+                name = 'Reading network data - %s' % networkinput.name,
+            )
+
+            for lnum, line in enumerate(prg):
 
                 if len(line) <= 1 or (lnum == 1 and networkinput.header):
                     # empty lines
@@ -1757,7 +1762,12 @@ class Network(session_mod.Logger):
 
         self._filtered_loops = 0
 
-        for e in edge_list:
+        prg = progress.Progress(
+            iterable = edge_list,
+            name = 'Processing interactions',
+        )
+
+        for e in prg:
 
             self._add_update_edge(
                 e,
