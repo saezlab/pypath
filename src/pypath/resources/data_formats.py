@@ -1995,6 +1995,39 @@ pa = pypath.PyPath()
 pa.init_network(pypath.data_formats.transcription)
 
 """
+transcription_dorothea_old = {
+    'dorothea': input_formats.NetworkInput(
+        name = "DoRothEA",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "genesymbol",
+        id_type_b = "genesymbol",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = True,
+        sign = (2, '1', '-1'),
+        ncbi_tax_id = 9606,
+        input = 'dorothea.dorothea_interactions_old',
+        interaction_type = 'transcriptional',
+        resource = (12, ','),
+        references = (13, ','),
+        header = False,
+        extra_edge_attrs = {
+            'dorothea_curated': 4,
+            'dorothea_chipseq': 5,
+            'dorothea_tfbs':    6,
+            'dorothea_coexp':   7,
+            'dorothea_level':   3,
+            'dorothea_kegg_pathways': (14, '|'),
+        },
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+        must_have_references = False,
+    ),
+}
+
+
 transcription_dorothea = {
     'dorothea': input_formats.NetworkInput(
         name = "DoRothEA",
@@ -2008,7 +2041,7 @@ transcription_dorothea = {
         is_directed = True,
         sign = (2, '1', '-1'),
         ncbi_tax_id = 9606,
-        input = 'dorothea.get_dorothea',
+        input = 'dorothea.dorothea_interactions',
         interaction_type = 'transcriptional',
         resource = (12, ','),
         references = (13, ','),
