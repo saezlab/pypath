@@ -4056,11 +4056,9 @@ Network._generate_collect_methods()
 
 def init_db(use_omnipath = False, **kwargs):
 
+    method_name = 'load_omnipath' if use_omnipath else 'init_network'
     n = Network()
-    getattr(
-        n,
-        'load_omnipath' if use_omnipath else 'init_network'
-    )(**kwargs)
+    getattr(n, method_name)(**kwargs)
 
     globals()['db'] = n
 

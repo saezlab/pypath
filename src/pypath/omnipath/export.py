@@ -53,7 +53,7 @@ class Export(session.Logger):
                                   'Direction_B-A', 'Stimulatory_A-B',
                                   'Inhibitory_A-B', 'Stimulatory_B-A',
                                   'Inhibitory_B-A', 'Category']
-    
+
     default_dtypes_uniquepairs = {
         'UniProt_A': 'category',
         'GeneSymbol_A': 'category',
@@ -77,7 +77,7 @@ class Export(session.Logger):
                              'consensus_inhibition',
                              'sources',
                              'references', 'dip_url']
-    
+
     default_dtypes_bydirs = {
         'source': 'category',
         'target': 'category',
@@ -109,7 +109,7 @@ class Export(session.Logger):
         ):
 
         session.Logger.__init__(self, name = 'export')
-        
+
         self._log('Export object created for network.')
 
         self.extra_node_attrs = extra_node_attrs or {}
@@ -140,17 +140,17 @@ class Export(session.Logger):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-    
-    
+
+
     def _set_graph(self):
-        
+
         self.graph = (
             self.pa._get_undirected()
                 if hasattr(self.pa, '_get_undirected') else
             None
         )
-    
-    
+
+
     def make_df(
             self,
             unique_pairs = True,
@@ -189,23 +189,23 @@ class Export(session.Logger):
             Name of the output file. If `None` a file name
             "netrowk-<session id>.tab" is used.
         """
-        
+
         self._log('Creating data frame of type `%s`.' % (
             'unique pairs' if unique_pairs else 'by direction'
         ))
-        
+
         kwargs = locals()
         _ = kwargs.pop('self')
-        
+
         if self.graph:
-            
+
             self._make_df_igraph(**kwargs)
-            
+
         else:
-            
+
             self._make_df_network(**kwargs)
-    
-    
+
+
     def _make_df_network(
             self,
             unique_pairs = True,
@@ -215,51 +215,51 @@ class Export(session.Logger):
         """
         See docs at method ``make_df``.
         """
-        
+
         self._log('Creating data frame from `core.network.Network` object.')
-        
+
         if unique_pairs:
-            
+
             self._log(
                 'Data frame with unique pairs from `core.network.Network` '
                 'is not implemented yet, only possible to create it from '
                 '`legacy.main.PyPath` object.')
-            
+
             raise NotImplementedError
-        
+
         self.extra_node_attrs = extra_node_attrs or self.extra_node_attrs
         self.extra_edge_attrs = extra_edge_attrs or self.extra_edge_attrs
-        
+
         dtypes = (
             self.default_dtypes_uniquepairs
                 if unique_pairs else
             self.default_dtypes_bydirs
         )
-        
+
         header = self.get_header(unique_pairs = unique_pairs)
-        
+
         result = []
-        
+
         for ia in self.network:
-            
+
             result.extend(self.process_interaction(ia))
-        
+
         self.df = pd.DataFrame(result, columns = header)
         self.df = self.df.astype(dtypes)
 
 
     def process_interaction(self, ia):
-        
+
         result = []
-        
+
         consensus = ia.consensus()
-        
+
         for _dir in ('a_b', 'b_a'):
-            
+
             nodes = getattr(ia, _dir)
             directed = bool(ia.direction[nodes])
             directed_rev = bool(ia.direction[tuple(reversed(nodes))])
-            
+
             if (
                 (
                     not directed and
@@ -269,24 +269,38 @@ class Export(session.Logger):
                     _dir == 'b_a'
                 )
             ):
-                
+
                 continue
-            
+
             positive = getattr(ia, 'positive_%s' % _dir)()
             negative = getattr(ia, 'negative_%s' % _dir)()
-            
+
             resources = ';'.join(
                 sorted(set(
+                    '%s%s' % (
+                        res,
+                        ('_%s' % via) if via else '',
+                    )
+                    for res, via in
                     itertools.chain(
-                        ia.get_resource_names(direction = 'undirected'),
-                        ia.get_resource_names(direction = nodes),
+                        ia.get_resource_names_via(
+                            direction = 'undirected',
+                            via = None,
+                        ),
+                        ia.get_resource_names_via(
+                            direction = nodes,
+                            via = None,
+                        ),
                     )
                 ))
             )
-            
+
             references = ';'.join(
                 sorted(set(
-                    '%s:%s' % (ev.resource.name, ref.pmid)
+                    '%s:%s' % (
+                        ev.resource.via or ev.resource.name,
+                        ref.pmid
+                    )
                     for ev in itertools.chain(
                         ia.get_evidences(direction = 'undirected'),
                         ia.get_evidences(direction = nodes),
@@ -322,23 +336,23 @@ class Export(session.Logger):
                 references,
                 self._dip_urls(ia),
             ]
-            
+
             this_row = self.add_extra_fields(ia, this_row, nodes)
-            
+
             result.append(this_row)
-        
+
         return result
 
 
     @staticmethod
     def match_consensus(consensus, nodes, effect = None):
-        
+
         param = list(nodes) + ['directed']
-        
+
         if effect:
-            
+
             param.append(effect)
-        
+
         return int(
             any(
                 co[:len(param)] == param
@@ -397,8 +411,8 @@ class Export(session.Logger):
 
         self.df = pd.DataFrame(result, columns = header)
         self.df = self.df.astype(dtypes)
-    
-    
+
+
     def get_header(
             self,
             unique_pairs = True,
@@ -407,10 +421,10 @@ class Export(session.Logger):
         Creates a data frame header (list of field names) according to the
         data frame type and the extra fields.
         """
-        
+
         suffix_a = 'A' if unique_pairs else 'source'
         suffix_b = 'B' if unique_pairs else 'target'
-        
+
         header = copy.copy(
             self.default_header_uniquepairs
             if unique_pairs else
@@ -425,7 +439,7 @@ class Export(session.Logger):
             '%s_%s' % (x, suffix_b)
             for x in self.extra_node_attrs.keys()
         ]
-        
+
         return header
 
 
@@ -447,7 +461,7 @@ class Export(session.Logger):
 
         vertex_a = self.graph.vs[e.source]
         vertex_b = self.graph.vs[e.target]
-        
+
         name_a, label_a = entity.Entity.igraph_vertex_name_label(vertex_a)
         name_b, label_b = entity.Entity.igraph_vertex_name_label(vertex_b)
 
@@ -505,7 +519,7 @@ class Export(session.Logger):
         """
 
         lines = []
-        
+
         consensus_edges = set(map(tuple, e['dirs'].consensus_edges()))
         consensus_dir = set(c[:3] for c in consensus_edges)
 
@@ -514,7 +528,7 @@ class Export(session.Logger):
             uniprots = getattr(e['dirs'], d)
 
             if e['dirs'].dirs[uniprots]:
-                
+
                 is_stimulation = int(e['dirs'].is_stimulation(uniprots))
                 is_inhibition = int(e['dirs'].is_inhibition(uniprots))
 
@@ -567,7 +581,7 @@ class Export(session.Logger):
                 lines.append(this_edge)
 
         if not e['dirs'].is_directed():
-            
+
             this_edge = [
                 entity.Entity.entity_name_str(e['dirs'].nodes[0]),
                 entity.Entity.entity_name_str(e['dirs'].nodes[1]),
@@ -633,13 +647,13 @@ class Export(session.Logger):
             )
 
         # extra vertex attributes
-        
+
         nodes = (
             (self.graph.vs[e.source], self.graph.vs[e.target])
                 if self.graph else
             dr
         )
-        
+
         for vertex in nodes:
 
             for k, v in iteritems(self.extra_node_attrs):
@@ -704,7 +718,7 @@ class Export(session.Logger):
         have no better way than try: if calling with 2 arguments fails with
         `TypeError` we call with one argument.
         """
-        
+
         dr = (
             'undirected'
                 if (
@@ -714,7 +728,7 @@ class Export(session.Logger):
                 ) else
             dr
         )
-        
+
         try:
 
             return proc(obj, dr)

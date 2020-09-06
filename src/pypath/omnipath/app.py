@@ -243,9 +243,11 @@ class DatabaseManager(session_mod.Logger):
 
             args['ncbi_tax_id'] = ncbi_tax_id
 
-            if hasattr(mod, 'db'):
+        if hasattr(mod, 'db'):
 
-                delattr(mod, 'db')
+            delattr(mod, 'db')
+
+        print(args)
 
         db = mod.get_db(**args)
 
@@ -390,7 +392,7 @@ class DatabaseManager(session_mod.Logger):
         """
         Returns the arguments for building the TF-target network dataset.
         """
-        
+
         transcription = (
             netres.dorothea_expand_levels(
                 resources = netres.transcription,
