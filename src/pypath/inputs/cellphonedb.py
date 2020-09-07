@@ -308,14 +308,12 @@ def cellphonedb_interactions():
                     if rec['annotation_strategy'] == 'curated' else
                 '%s;CellPhoneDB' % (
                     ';'.join(
-                        '%s_CellPhoneDB' % (
-                            res.replace(
+                        recomma.split(
+                            rec['annotation_strategy'].replace(
                                 'guidetopharmacology.org',
                                 'Guide2Pharma'
                             )
                         )
-                        for res in
-                        recomma.split(rec['annotation_strategy'])
                     )
                 )
             )
