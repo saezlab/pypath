@@ -800,7 +800,8 @@ interaction = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'ccmap': input_formats.NetworkInput(
         name = "CancerCellMap",
         id_col_a = 0,
@@ -816,7 +817,8 @@ interaction = {
         references = (3, ";"),
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'mppi': input_formats.NetworkInput(
         name = "MPPI",
         separator = "|",
@@ -833,7 +835,8 @@ interaction = {
         ncbi_tax_id = 9606,
         extra_edge_attrs = {"mppi_evidences": (1, ";")},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'dip': input_formats.NetworkInput(
         name = "DIP",
         id_col_a = 0,
@@ -853,7 +856,8 @@ interaction = {
             'dip_id': 5
         },
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'netpath': input_formats.NetworkInput(
         name = "NetPath",
         separator = None,
@@ -874,7 +878,8 @@ interaction = {
             "netpath_pathways": (7, ';')
         },
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'innatedb': input_formats.NetworkInput(
         name = "InnateDB",
         id_col_a = 0,
@@ -890,7 +895,47 @@ interaction = {
         ncbi_tax_id = 9606,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
+    'intact': input_formats.NetworkInput(
+        name = "IntAct",
+        separator = ",",
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = False,
+        sign = False,
+        input = 'intact.intact_interactions',
+        references = 4,
+        ncbi_tax_id = 9606,
+        extra_edge_attrs = {"intact_methods": 5},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
+    'lit17': input_formats.NetworkInput(
+        name = "Lit-BM-17",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = False,
+        sign = False,
+        ncbi_tax_id = 9606,
+        references = (2, ';'),
+        input = 'huri.lit_bm_17_interactions',
+        header = False,
+        extra_edge_attrs = {
+            'mentha_score': 3,
+        },
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
     'alz': input_formats.NetworkInput(
         name = 'AlzPathway',
         separator = None,
@@ -907,7 +952,8 @@ interaction = {
         ncbi_tax_id = 9606,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'matrixdb': input_formats.NetworkInput(
         name = "MatrixDB",
         id_col_a = 0,
@@ -923,7 +969,8 @@ interaction = {
         ncbi_tax_id = 9606,
         extra_edge_attrs = {"matrixdb_methods": (3, '|')},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
 }
 '''
 PTM databases included in OmniPath.
@@ -1287,24 +1334,6 @@ or because we could not separate the low throughput,
 manually curated interactions.
 '''
 interaction_misc = {
-    'intact': input_formats.NetworkInput(
-        name = "IntAct",
-        separator = ",",
-        id_col_a = 0,
-        id_col_b = 1,
-        id_type_a = "uniprot",
-        id_type_b = "uniprot",
-        entity_type_a = "protein",
-        entity_type_b = "protein",
-        is_directed = False,
-        sign = False,
-        input = 'intact.intact_interactions',
-        references = 4,
-        ncbi_tax_id = 9606,
-        extra_edge_attrs = {"intact_methods": 5},
-        extra_node_attrs_a = {},
-        extra_node_attrs_b = {},
-    ),
     'hippie': input_formats.NetworkInput(
         name = "HIPPIE",
         separator = None,
@@ -1374,26 +1403,6 @@ interaction_misc = {
         references = False,
         header = False,
         extra_edge_attrs = {},
-        extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
-    'lit17': input_formats.NetworkInput(
-        name = "Lit-BM-17",
-        separator = None,
-        id_col_a = 0,
-        id_col_b = 1,
-        id_type_a = "uniprot",
-        id_type_b = "uniprot",
-        entity_type_a = "protein",
-        entity_type_b = "protein",
-        is_directed = False,
-        sign = False,
-        ncbi_tax_id = 9606,
-        references = (2, ';'),
-        input = 'huri.lit_bm_17_interactions',
-        header = False,
-        extra_edge_attrs = {
-            'mentha_score': 3,
-        },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}),
     'huri': input_formats.NetworkInput(
@@ -1588,6 +1597,25 @@ interaction_deprecated = {
 
 
 interaction_htp = {
+    'hprd': input_formats.NetworkInput(
+        name = "HPRD",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 3,
+        id_type_a = "genesymbol",
+        id_type_b = "genesymbol",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = 0,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'hprd.hprd_interactions_htp',
+        references = (7, ','),
+        header = False,
+        extra_edge_attrs = {'hprd_methods': (6, ';')},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
     'intact': input_formats.NetworkInput(
         name = "IntAct",
         id_col_a = 0,
@@ -1702,25 +1730,6 @@ interaction_htp = {
         references = (2, "|"),
         ncbi_tax_id = 9606,
         extra_edge_attrs = {"matrixdb_methods": (3, '|')},
-        extra_node_attrs_a = {},
-        extra_node_attrs_b = {}
-    ),
-    'hprd': input_formats.NetworkInput(
-        name = "HPRD",
-        separator = None,
-        id_col_a = 0,
-        id_col_b = 3,
-        id_type_a = "genesymbol",
-        id_type_b = "genesymbol",
-        entity_type_a = "protein",
-        entity_type_b = "protein",
-        is_directed = 0,
-        sign = False,
-        ncbi_tax_id = 9606,
-        input = 'hprd.hprd_interactions_htp',
-        references = (7, ','),
-        header = False,
-        extra_edge_attrs = {'hprd_methods': (6, ';')},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}
     ),
@@ -2052,7 +2061,6 @@ transcription_dorothea = {
             'dorothea_tfbs':    6,
             'dorothea_coexp':   7,
             'dorothea_level':   3,
-            'dorothea_kegg_pathways': (14, '|'),
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
@@ -2619,9 +2627,6 @@ omnipath.update(interaction)
 del omnipath['netpath']
 #del omnipath['innatedb']
 del omnipath['alz']
-#del omnipath['biogrid']
-omnipath['intact'] = interaction_htp['intact']
-omnipath['biogrid'] = interaction_htp['biogrid']
 omnipath['hprd'] = interaction_htp['hprd']
 '''
 Manually curated negative interactions, i.e. pairs of
