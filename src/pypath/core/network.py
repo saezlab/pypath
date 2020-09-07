@@ -2711,24 +2711,18 @@ class Network(session_mod.Logger):
         self.load(resources = resources, only_directions = True)
 
 
-    def load_omnipath(
-            self,
+    @staticmethod
+    def omnipath_resources(
             omnipath = None,
             kinase_substrate_extra = False,
             ligand_receptor_extra = False,
             pathway_extra = False,
-            extra_directions = True,
-            remove_htp = False,
-            htp_threshold = 1,
-            keep_directed = True,
-            min_refs_undirected = 2,
             old_omnipath_resources = False,
             exclude = None,
-            pickle_file = None,
         ):
 
 
-        def reference_constraints(resources, interaction_type, release):
+        def reference_constraints(resources, data_model, relax):
 
             resources = (
                 resources.values()
@@ -2738,32 +2732,35 @@ class Network(session_mod.Logger):
 
             for res in resources:
 
-                if res.networkinput.interaction_type == interaction_type:
+                if res.data_model == data_model:
 
-                    res.networkinput.must_have_references = not release
+                    res.networkinput.must_have_references = not relax
 
-
-        self._log('Loading the `OmniPath` network.')
-
-        if pickle_file:
-
-            self.load(pickle_file = pickle_file)
-            return
 
         omnipath = omnipath or copy_mod.deepcopy(network_resources.omnipath)
+        exclude = common.to_set(exclude)
 
         if old_omnipath_resources:
 
+            interaction_resources = (
+                copy_mod.deepcopy(network_resources.interaction)
+            )
+
             omnipath = copy_mod.deepcopy(omnipath)
-            omnipath['biogrid'] = network_resources.interaction['biogrid']
-            omnipath['alz'] = network_resources.interaction['alz']
-            omnipath['netpath'] = network_resources.interaction['netpath']
-            exclude = exclude or []
-            exclude.extend(['IntAct', 'HPRD'])
+            omnipath['biogrid'] = interaction_resources['biogrid']
+            omnipath['alz'] = interaction_resources['alz']
+            omnipath['netpath'] = interaction_resources['netpath']
+            exclude.update({'IntAct', 'HPRD'})
+
+        else:
+
+            omnipath['huri'] = copy_mod.deepcopy(
+                network_resources.interaction_misc['huri']
+            )
 
         reference_constraints(
             omnipath,
-            'pathway',
+            'activity_flow',
             pathway_extra,
         )
         reference_constraints(
@@ -2775,6 +2772,49 @@ class Network(session_mod.Logger):
             omnipath,
             'enzyme_substrate',
             kinase_substrate_extra,
+        )
+
+        omnipath = dict(
+            (key, resource)
+            for key, resource in iteritems(omnipath)
+            if resource.name not in exclude
+        )
+
+        return omnipath
+
+
+    def load_omnipath(
+            self,
+            omnipath = None,
+            kinase_substrate_extra = False,
+            ligand_receptor_extra = False,
+            pathway_extra = False,
+            extra_directions = True,
+            remove_htp = False,
+            htp_threshold = 1,
+            keep_directed = True,
+            remove_undirected = True,
+            min_refs_undirected = None,
+            min_resources_undirected = 2,
+            old_omnipath_resources = False,
+            exclude = None,
+            pickle_file = None,
+        ):
+
+        self._log('Loading the `OmniPath` network.')
+
+        if pickle_file:
+
+            self.load(pickle_file = pickle_file)
+            return
+
+        omnipath = self.omnipath_resources(
+            omnipath = omnipath,
+            kinase_substrate_extra = kinase_substrate_extra,
+            ligand_receptor_extra = ligand_receptor_extra,
+            pathway_extra = pathway_extra,
+            old_omnipath_resources = old_omnipath_resources,
+            exclude = exclude,
         )
 
         self.load(omnipath, exclude = exclude)
@@ -2808,9 +2848,12 @@ class Network(session_mod.Logger):
                 keep_directed = keep_directed,
             )
 
-        if not keep_directed:
+        if remove_undirected:
 
-            self.remove_undirected(min_refs = min_refs_undirected)
+            self.remove_undirected(
+                min_refs = min_refs_undirected,
+                min_resources = min_resources_undirected,
+            )
 
         self._log('Finished loading the `OmniPath` network.')
 
@@ -2899,33 +2942,45 @@ class Network(session_mod.Logger):
         return htp_int
 
 
-    def remove_undirected(self, min_refs = None):
+    def remove_undirected(self, min_refs = None, min_resources = None):
 
         self._log(
-            'Removing undirected interactions%s.' % (
+            'Removing undirected interactions%s%s%s.' % (
                 (
-                    'with less than %u references' % min_refs
+                    ' with less than %u references' % min_refs
                 )
-                if min_refs else ''
+                if min_refs else '',
+                ' and' if min_refs and min_resources else '',
+                (
+                    ' with less than %u resources ' % min_resources
+                ),
             )
         )
 
         ecount_before = self.ecount
         vcount_before = self.vcount
 
-        removed = 0
+        to_remove = set()
 
         for key, ia in iteritems(self.interactions):
 
             if (
-                ia.is_directed() and (
+                not ia.is_directed() and
+                (
                     not min_refs or
-                    len(ia.get_references()) < min_refs
+                    ia.count_references() < min_refs
+                ) and
+                (
+                    not min_resources or
+                    ia.count_resource_names() < min_resources
                 )
             ):
 
-                self.remove_interaction(*key)
-                removed += 1
+                to_remove.add(key)
+
+        for key in to_remove:
+
+            self.remove_interaction(*key)
 
         self._log(
             'Undirected interactions %s have been removed. '
@@ -2935,7 +2990,7 @@ class Network(session_mod.Logger):
                 ''
                     if min_refs is None else
                 'with less than %u references' % min_refs,
-                removed,
+                len(to_remove),
                 ecount_before,
                 self.ecount,
                 vcount_before,
