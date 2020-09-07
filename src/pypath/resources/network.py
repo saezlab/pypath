@@ -171,3 +171,4 @@ omnipath = {}
 omnipath.update(pathway)
 omnipath.update(ptm)
 omnipath.update(interaction)
+omnipath['hprd'] = interaction_htp['hprd']

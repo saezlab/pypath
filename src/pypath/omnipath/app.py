@@ -247,8 +247,6 @@ class DatabaseManager(session_mod.Logger):
 
             delattr(mod, 'db')
 
-        print(args)
-
         db = mod.get_db(**args)
 
         pickle_path = self.pickle_path(dataset, ncbi_tax_id = ncbi_tax_id)
