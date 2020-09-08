@@ -84,6 +84,9 @@ _resources_special_case = {
     'JASPAR_v2018': 'JASPAR-v2018',
     'remap': 'ReMap',
     'gtex': 'ARACNe-GTEx',
+    'nfi_regulome_db': 'NFIRegulomeDB',
+    'tf_e': 'TFe',
+    'reg_network': 'RegNetwork',
 }
 
 
