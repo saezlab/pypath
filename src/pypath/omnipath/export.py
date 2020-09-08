@@ -797,10 +797,7 @@ class Export(session.Logger):
         sources_pathway_extra = set(netres.pathway_noref.values())
         sources_mirna = set(netres.mirna_target.values())
         sources_tf_target = set(netres.transcription_onebyone.values())
-        sources_dorothea = {
-            'DoRothEA_%s' % cl
-            for cl in ('A', 'B', 'C', 'D', 'E')
-        }
+        sources_dorothea = {'DoRothEA'}
 
         self.make_df(
             unique_pairs = False,
