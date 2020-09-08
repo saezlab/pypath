@@ -18,6 +18,8 @@ import time
 import itertools
 import collections
 import json
+import importlib as imp
+
 
 _urls = (
     'https://omnipathdb.org/',
@@ -32,6 +34,7 @@ _queries = {
                 'transcriptional',
                 'post_translational',
                 'mirna_transcriptional',
+                'lncrna_post_transcriptional',
             ),
         },
         {
@@ -62,6 +65,16 @@ class ServerTest(object):
         )
         self.urls = urls or _urls
         self.queries = queries or _queries
+
+
+    def reload(self):
+
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        import importlib as imp
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
 
 
     def main(self):
@@ -98,26 +111,28 @@ class ServerTest(object):
 
         self.targets = []
 
-        for query_type, param in self.queries.items():
+        for query_type, params in self.queries.items():
 
-            keys, values = zip(*param.items())
+            for param in params:
 
-            values = [
-                (val,) if isinstance(val, str) else val
-                for val in values
-            ]
+                keys, values = zip(*param.items())
 
-            for this_values in itertools.product(values):
+                values = [
+                    (val,) if isinstance(val, str) else val
+                    for val in values
+                ]
 
-                this_url_param = '%s?%s' % (
-                    query_type,
-                    '&'.join(
-                        '%s=%s' % (key, value)
-                        for key, value in zip(keys, this_values)
-                    ),
-                )
+                for this_values in itertools.product(*values):
 
-                self.targets.append(this_url_param)
+                    this_url_param = '%s?%s' % (
+                        query_type,
+                        '&'.join(
+                            '%s=%s' % (key, value)
+                            for key, value in zip(keys, this_values)
+                        ),
+                    )
+
+                    self.targets.append(this_url_param)
 
 
     def retrieve(self):
@@ -129,7 +144,7 @@ class ServerTest(object):
             self.result.append(
                 [target] +
                 [
-                    self.retrieve_one('%s%s' % url, target)
+                    self.retrieve_one('%s%s' % (url, target))
                     for url in self.urls
                 ]
             )
@@ -141,13 +156,13 @@ class ServerTest(object):
 
         con = urllib.request.urlopen(url)
 
-        if content.getcode() == 200:
+        if con.getcode() == 200:
 
             content = con.read()
 
-            if not content.startswith('Something is not'):
+            if not content.startswith(b'Something is not'):
 
-                return len(content.split('\n'))
+                return len(content.split(b'\n')) - 2
 
 
     def export(self, outfile = None):
