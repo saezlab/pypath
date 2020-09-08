@@ -395,6 +395,10 @@ class Evidences(object):
 
     def __iadd__(self, other):
 
+        if isinstance(other, common.basestring):
+
+            other = Evidence(other)
+
         other = (
             other
                 if hasattr(other, '__iter__') else
