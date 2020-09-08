@@ -1627,8 +1627,9 @@ class PyReact(session_mod.Logger):
                                     if self.seq[protein].has_isoform(isof):
                                         frag = (protein, isof, start, end)
                                         if frag in self.frags:
-                                            self.frags[frag].add_source(
-                                                self.source)
+                                            self.frags[frag].add_evidences(
+                                                self.source
+                                            )
                                         else:
                                             instance = \
                                                 self.seq[protein].get(
@@ -1639,7 +1640,8 @@ class PyReact(session_mod.Logger):
                                                 end,
                                                 isoform=isof,
                                                 instance=instance,
-                                                source=self.source)
+                                                evidences=self.source,
+                                            )
                                             self.frags[frag] = mot
                                         self.proteins[protein].update_attr([
                                             self.source, 'pids', pid, 'frags',
@@ -1658,7 +1660,7 @@ class PyReact(session_mod.Logger):
                                     get_residue(protein, isof, resnum, resname)
                                 mod = (protein, isof, resnum, resname, typ)
                                 if mod in self.mods:
-                                    self.mods[mod].add_source(self.source)
+                                    self.mods[mod].add_evidences(self.source)
                                 else:
                                     res = intera.Residue(
                                         resnum, resname, protein, isoform=isof)
@@ -1671,12 +1673,14 @@ class PyReact(session_mod.Logger):
                                         end,
                                         isoform=isof,
                                         instance=instance)
-                                    ptm = intera.Ptm(protein,
-                                                     motif=mot,
-                                                     residue=res,
-                                                     source=self.source,
-                                                     isoform=isof,
-                                                     typ=typ)
+                                    ptm = intera.Ptm(
+                                        protein,
+                                        motif=mot,
+                                        residue=res,
+                                        evidences=self.source,
+                                        isoform=isof,
+                                        typ=typ,
+                                    )
                                     self.mods[mod] = ptm
                                 try:
                                     self.proteins[protein].update_attr([
@@ -2235,10 +2239,11 @@ class PyReact(session_mod.Logger):
             )
             for e in getattr(self, etyp).values():
                 for c in comb:
-                    if type(e.sources) is list:
-                        _sources = set(e.sources)
-                    else:
-                        _sources = e.sources
+                    _sources = (
+                        e.evidences.get_resource_names()
+                            if hasattr(e, 'evidences') else
+                        common.to_set(e.sources)
+                    )
                     if c[1] <= _sources:
                         if \
                             not exclude_empty \
