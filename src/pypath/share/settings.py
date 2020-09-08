@@ -182,7 +182,7 @@ _defaults = {
     },
 
     # only for pypath.omnipath.app and pypath.core.network
-    'dorothea_expand_levels': True,
+    'dorothea_expand_levels': False,
 
     'dependencies': {
         'intercell': ('annotations',),

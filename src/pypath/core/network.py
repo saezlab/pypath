@@ -3087,13 +3087,19 @@ class Network(session_mod.Logger):
             settings.get('dorothea_expand_levels')
         )
 
+        dorothea_resource = copy_mod.deepcopy(network_resources.dorothea)
+
+        if levels:
+
+            dorothea_resource.networkinput.input_args['levels'] = levels
+
         dorothea = (
             network_resources.dorothea_expand_levels(
-                network_resources.dorothea,
+                dorothea_resource,
                 levels = levels,
             )
                 if expand_levels else
-            network_resources.dorothea
+            dorothea_resource
         )
 
         self.load(dorothea, **kwargs)
