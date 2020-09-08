@@ -29,6 +29,15 @@
     }
   },
   "HuRI Lit-BM": {
+    "synonyms": [
+      "Lit-BM-17",
+      "Lit-BM-13",
+      "HI-II",
+      "HI-III",
+      "HU-union",
+      "Yu2011",
+      "Yang2016"
+    ],
     "yearUsedRelease": 2017,
     "releases": [2013, 2017],
     "label": "HuRI Lit-BM-17",
@@ -755,7 +764,7 @@
     "dateUpdated": "Nov 2016"
   },
   "SignaLink3": {
-    "synonyms": ["SignaLink", "SignaLink2"],
+    "synonyms": ["SignaLink", "SignaLink2", "TCRcuration"],
     "yearUsedRelease": 2015,
     "releases": [
       2010,
@@ -4200,10 +4209,12 @@
   "ARACNe-GTEx": {
     "license": "CC BY 4.0"
   },
-  "JASPAR-v2018": {
+  "JASPAR": {
+    "synonyms": ["JASPAR-v2018"],
     "license": "CC BY 4.0"
   },
-  "HOCOMOCO-v11": {
+  "HOCOMOCO": {
+    "synonyms": ["HOCOMOCO-v11"],
     "license": "CC BY 4.0"
   },
   "ReMap": {
@@ -4261,5 +4272,12 @@
   },
   "ncRDeathDB": {
     "license": "CC BY-NC 4.0"
+  },
+  "IMEx": {
+    "full_name": " International Molecular Interaction Exchange Consortium",
+    "urls": {
+      "webpages": ["http://www.imexconsortium.org/"]
+    },
+    "license": "CC BY 2.5"
   }
 }
