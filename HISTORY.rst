@@ -20,21 +20,21 @@ This is a summary of the changelog.
 
 0.4.0:
 ^^^^^^^^^^^
-* **pyreact** module with **BioPaxReader** and **PyReact** classes added
+* **pyreact** module with **BioPaxReader** and **PyReact** classes
 * Process description databases, BioPax and PathwayCommons SIF conversion
   rules are supported
 * Format definitions for 6 process description databases included.
 
 0.5.0:
 ^^^^^^^^^^^
-* Many classes have been added to the **plot** module
+* Many new classes in the **plot** module
 * All figures and tables in the manuscript can be generated automatically
 * This is supported by a new module, **analysis**, which implements a
   generic workflow in its **Workflow** class.
 
 0.5.32:
 ^^^^^^^^^^^
-* `chembl`, `unichem`, `mysql` and `mysql_connect` modules made Python3
+* `chembl`, `unichem`, `mysql` and `mysql_connect` modules are Python3
   compatible
 
 0.6.31:
@@ -91,6 +91,16 @@ This is a summary of the changelog.
 * The network database is not dependent any more on `python-igraph` hence it
   has been removed from the mandatory dependencies
 * New API for the network, interactions, evidences, molecular entities
+
+0.10.0
+^^^^^^^^^^^
+* A complete reorganization of the module structure: submodules sorted into a
+  few major groups: core, inputs, internals, omnipath, share, utils
+
+0.11.0
+^^^^^^^^^^^
+* A complete redesign of the intercellular communication database
+* License support
 
 Upcoming:
 ^^^^^^^^^^^
