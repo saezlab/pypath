@@ -202,8 +202,8 @@ class Ptm(object):
         )
         self.isoforms = set()
         self.add_isoform(isoform)
-
-        self.evidences = evidences or evidence.Evidences()
+        self.evidences = evidence.Evidences()
+        self.add_evidences(evidences)
 
 
     def __hash__(self):
