@@ -1795,8 +1795,17 @@ class TableServer(BaseServer):
             tbl.ncbi_tax_id_target.isin(args['organisms'])
         ]
 
+        dorothea_included = (
+            'dorothea' in args['datasets'] or
+            any(res.endswith('DoRothEA') for res in args['resources']) or
+            (
+                'transcriptional' in args['types'] and
+                not args['datasets']
+            )
+        )
+
         # filter by DoRothEA confidence levels
-        if args['dorothea_levels']:
+        if dorothea_included and args['dorothea_levels']:
 
             tbl = tbl[
                 np.logical_not(tbl.dorothea) |
@@ -1827,7 +1836,7 @@ class TableServer(BaseServer):
             ]
 
         # filtering by DoRothEA methods
-        if 'transcriptional' in args['types'] and args['dorothea_methods']:
+        if dorothea_included and args['dorothea_methods']:
 
             q = ['dorothea_%s' % m for m in args['dorothea_methods']]
 
