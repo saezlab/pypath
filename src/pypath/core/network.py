@@ -3087,7 +3087,9 @@ class Network(session_mod.Logger):
             settings.get('dorothea_expand_levels')
         )
 
-        dorothea_resource = copy_mod.deepcopy(network_resources.dorothea)
+        dorothea_resource = copy_mod.deepcopy(
+            network_resources.transcription_dorothea['dorothea']
+        )
 
         if levels:
 
@@ -4115,9 +4117,13 @@ Network._generate_count_methods()
 Network._generate_collect_methods()
 
 
-def init_db(use_omnipath = False, **kwargs):
+def init_db(use_omnipath = False, method = None, **kwargs):
 
-    method_name = 'load_omnipath' if use_omnipath else 'init_network'
+    method_name = (
+        'load_omnipath'
+            if use_omnipath else
+        (method or 'init_network')
+    )
     n = Network()
     getattr(n, method_name)(**kwargs)
 
