@@ -181,6 +181,11 @@ _defaults = {
         'pathway_extra': True,
     },
 
+    'tf_target_args': {
+        'method': 'load_transcription',
+        'dorothea_levels': {'A', 'B', 'C', 'D'},
+    },
+
     # only for pypath.omnipath.app and pypath.core.network
     'dorothea_expand_levels': False,
 

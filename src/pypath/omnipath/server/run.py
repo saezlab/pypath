@@ -1808,7 +1808,7 @@ class TableServer(BaseServer):
         if dorothea_included and args['dorothea_levels']:
 
             tbl = tbl[
-                np.logical_not(tbl.dorothea) |
+                self._dorothea_dataset_filter(tbl, args) |
                 [
                     bool(levels & args['dorothea_levels'])
                     for levels in tbl.set_dorothea_level
@@ -1841,8 +1841,8 @@ class TableServer(BaseServer):
             q = ['dorothea_%s' % m for m in args['dorothea_methods']]
 
             tbl = tbl[
-                tbl[q].any(1) |
-                np.logical_not(tbl.dorothea)
+                self._dorothea_dataset_filter(tbl, args) |
+                tbl[q].any(1)
             ]
 
         # filter directed & signed
@@ -1898,6 +1898,27 @@ class TableServer(BaseServer):
         tbl = tbl.loc[:,hdr]
 
         return self._serve_dataframe(tbl, req)
+
+
+    @staticmethod
+    def _dorothea_dataset_filter(tbl, args):
+
+        return (
+            np.logical_not(tbl.dorothea) |
+            (
+                # if the tf_target dataset is requested
+                # we need to serve it including the parts which
+                # don't fit the filters below
+                (
+                    ('tf_target' in args['datasets']) |
+                    (
+                        (not args['datasets']) &
+                        ('transcriptional' in args['types'])
+                    )
+                ) &
+                tbl.tf_target
+            )
+        )
 
 
     def _tfregulons_dorothea(self, req):

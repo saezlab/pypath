@@ -227,7 +227,7 @@ basic = {
             col_b = 1,
             separator = None,
             header = 0,
-            ncbi_tax_id = 0
+            ncbi_tax_id = 0,
         ),
     ('genesymbol', 'trembl'):
         input_formats.UniprotMapping(
