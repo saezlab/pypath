@@ -2413,7 +2413,12 @@ class PyPath(session_mod.Logger):
         if dir_col is None or dir_val is None:
             return False
 
+        elif isinstance(line[dir_col], bool):
+
+            return line[dir_col]
+
         else:
+
             this_directed = set(line[dir_col].split(dir_sep))
             return len(this_directed & dir_val) > 0
 
