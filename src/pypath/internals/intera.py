@@ -1206,6 +1206,7 @@ class Regulation(object):
             self.add_sources(other.sources)
             self.add_refs(other.refs)
 
+
 #TODO this class does not belong here, find a better place
 class Complex(object):
     
@@ -1337,6 +1338,11 @@ class Complex(object):
     def __gt__(self, other):
         
         return self.__str__() > other
+
+
+    def __len__(self):
+
+        return len(self.components)
     
     
     def merge(self, other):
