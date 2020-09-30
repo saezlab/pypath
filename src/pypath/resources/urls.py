@@ -743,7 +743,7 @@ urls = {
         'hi-i-05':
         'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-I-05.tsv',
         'hi-iii': 'http://interactome-atlas.org/download',
-        'lit-bm-17': 'http://interactome.baderlab.org/data/LitBM-17.psi',
+        'lit-bm-17': 'https://rescued.omnipathdb.org/LitBM-17.psi',
         'huri': 'http://www.interactome-atlas.org/data/HuRI.pmi',
         'hi-union': 'http://www.interactome-atlas.org/data/HI-union.pmi',
         'yang-2016': 'http://www.interactome-atlas.org/data/Yang-16.pmi',
