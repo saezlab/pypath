@@ -6716,11 +6716,13 @@ def mitab_field_uniprot(field):
         return None
 
 
-def get_dip(url = None,
-            organism = 9606,
-            core_only = True,
-            direct_only = True,
-            small_scale_only = True):
+def get_dip(
+        url = None,
+        organism = 9606,
+        core_only = True,
+        direct_only = True,
+        small_scale_only = True,
+    ):
 
     strDipCore = 'dip-quality-status:core'
     strDirect = 'direct interaction'

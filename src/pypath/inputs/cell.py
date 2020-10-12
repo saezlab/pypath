@@ -31,16 +31,21 @@ _logger = session.Logger(name = 'inputs.cell')
 _log = _logger._log
 
 
-def cell_suplementary(supp_url, article_url):
+def cell_supplementary(supp_url, article_url):
     """
     Downloads a supplementary material from the Cell journal webpage.
+
+    :param str supp_url:
+        URL of the supplementary material.
+    :param str article_url:
+        URL of the article page.
 
     :return:
         The path of the downloaded file.
     """
 
     c_nocall = curl.Curl(
-        url,
+        supp_url,
         call = False,
         setup = False,
         process = False,
@@ -114,7 +119,7 @@ def cell_suplementary(supp_url, article_url):
                 break
 
     c_table = curl.Curl(
-        url,
+        supp_url,
         silent = False,
         large = True,
         empty_attempt_again = False,
