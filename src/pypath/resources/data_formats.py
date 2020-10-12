@@ -138,7 +138,7 @@ pathwaycommons_all = input_formats.NetworkInput(
     is_directed = (
         1,
         [
-            'state-chanege',
+            'state-change',
             'controls-phosphorylation-of',
             'controls-state-change-of',
             'controls-transport-of',
