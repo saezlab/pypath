@@ -4284,5 +4284,15 @@
       "webpages": ["http://www.imexconsortium.org/"]
     },
     "license": "CC BY 2.5"
+  },
+  "Wojtowicz2020": {
+    "urls": {
+      "webpages": ["https://www.cell.com/cell/fulltext/S0092-8674(20)30933-8"]
+    },
+    "license": "CC BY 4.0",
+    "emails": [
+      "kcgarcia@stanford.edu", "K Christopher Garcia",
+      "woj@stanford.edu", "Woj M Wojtowicz"
+    ]
   }
 }
