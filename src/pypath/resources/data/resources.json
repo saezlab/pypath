@@ -4137,6 +4137,11 @@
     "emails": [
       "sheikh@ie-freiburg.mpg.de", "Bilal N. Sheikh",
       "akhtar@ie-freiburg.mpg.de", "Asifa Akhtar"
+    ],
+    "descriptions": [
+      "Inter-cellular ligand-receptor interaction networks were calculated ",
+      "based on the publically available database collated by Ramilowski ",
+      "and co-workers (Ramilowski et al., 2015)."
     ]
   },
   "Almen2009": {
