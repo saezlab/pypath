@@ -2539,6 +2539,23 @@ ligand_receptor = {
         header = False,
         data_model = 'ligand_receptor',
     ),
+    'wojtowicz2020': input_formats.NetworkInput(
+        name = 'Wojtowicz2020',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = False,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'wojtowicz2020.wojtowicz2020_interactions',
+        must_have_references = False,
+        header = False,
+        data_model = 'ligand_receptor',
+    ),
 }
 
 small_molecule_protein = {
