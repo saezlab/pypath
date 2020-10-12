@@ -51,7 +51,7 @@ def ramilowski_interactions(putative = False):
             ';'.join(filter(len, itertools.chain(r[5:11], [r[15]])))
         ]
         for r in raw
-        if r[15] != 'EXCLUDED not ligand' and (
+        if not r[15].startswith('EXCLUDED') and (
             putative or r[15] != 'putative'
         )
     ]
