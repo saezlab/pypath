@@ -19,7 +19,9 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import re
 import collections
+import itertools
 
 import pypath.inputs.common as inputs_common
 import pypath.resources.urls as urls
@@ -41,18 +43,48 @@ def wojtowicz2020_raw():
 
     content = inputs_common.read_xls(path)
 
-    return content
+    fields = content.pop(0)
+    fields = [re.sub('[- ]', '_', f.lower()) for f in fields]
+
+    Wojtowicz2020RawRecord = collections.namedtuple(
+        'Wojtowicz2020RawRecord',
+        fields
+    )
+
+    return [
+        Wojtowicz2020RawRecord(
+            *(
+                float(f)
+                    if 5 < i < 17 else
+                f
+                for i, f in enumerate(line)
+            )
+        )
+        for line in content
+    ]
 
 
-    #Wojtowicz2020RawRecord = collections.namedtuple(
-        #'Wojtowicz2020RawRecord',
-        #content[0]
-    #)
+def _id_translate(name):
 
-    #return [
-        #Wojtowicz2020RawRecord(
-            #*(line[:2] + [int(float(n)) for n in line[2:]])
-        #)
-        #for line in
-        #content[1:]
-    #]
+    return mapping.map_name(name, 'genesymbol', 'uniprot')
+
+
+def wojtowicz2020_interactions():
+
+    Wojtowicz2020Interaction = collections.namedtuple(
+        'Wojtowicz2020Interaction',
+        ['id_a', 'id_b'],
+    )
+
+    result = []
+
+    for rec in wojtowicz2020_raw():
+
+        preys = _id_translate(rec.prey_gene_name)
+        baits = _id_translate(rec.bait_gene_name)
+
+        for id_a, id_b in itertools.product(preys, baits):
+
+            result.append(Wojtowicz2020Interaction(id_a, id_b))
+
+    return result
