@@ -110,6 +110,7 @@ import pypath.resources.data_formats as data_formats
 import pypath.utils.mapping as mapping
 import pypath.resources.descriptions as descriptions
 import pypath.inputs.main as dataio
+import pypath.inputs.pubmed as pubmed_input
 import pypath.inputs as inputs
 import pypath.core.network as network
 import pypath.utils.homology as homology
@@ -2837,7 +2838,9 @@ class PyPath(session_mod.Logger):
 
                         refs = common.del_empty(list(set(refs)))
 
-                    refs = dataio.only_pmids([str(r).strip() for r in refs])
+                    refs = pubmed_input.only_pmids(
+                        [str(r).strip() for r in refs]
+                    )
 
                     if len(refs) == 0 and must_have_references:
                         rFiltered += 1

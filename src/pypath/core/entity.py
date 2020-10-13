@@ -30,10 +30,8 @@ import importlib as imp
 import collections
 
 import pypath.share.common as common
-from pypath.internals import intera
 import pypath.share.session as session_mod
 import pypath.utils.mapping as mapping
-import pypath.utils.uniprot as uniprot
 import pypath.share.settings as settings
 
 
@@ -263,7 +261,7 @@ class Entity(session_mod.Logger):
     @staticmethod
     def _is_complex(key):
 
-        return isinstance(key, intera.Complex) or (
+        return key.__class__.__name__ == 'Complex' or (
             isinstance(key, common.basestring) and
             key.startswith('COMPLEX')
         )
@@ -468,6 +466,7 @@ class Entity(session_mod.Logger):
 
         if cls._is_protein(identifier):
 
+            import pypath.utils.uniprot as uniprot
             return utils_uniprot.info(identifier)
 
 

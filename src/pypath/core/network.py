@@ -45,6 +45,7 @@ import pypath.share.settings as settings
 import pypath.share.cache as cache_mod
 import pypath.utils.mapping as mapping
 import pypath.inputs.main as dataio
+import pypath.inputs.pubmed as pubmed_input
 import pypath.share.curl as curl
 import pypath.internals.refs as refs_mod
 import pypath.utils.reflists as reflists
@@ -1104,7 +1105,7 @@ class Network(session_mod.Logger):
 
                     refs = common.del_empty(list(set(refs)))
 
-                refs = dataio.only_pmids([str(r).strip() for r in refs])
+                refs = pubmed_input.only_pmids([str(r).strip() for r in refs])
 
                 if len(refs) == 0 and must_have_references:
                     ref_filtered += 1

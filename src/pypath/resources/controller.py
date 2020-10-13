@@ -29,7 +29,7 @@ import importlib as imp
 import pypath.share.session as session_mod
 import pypath.share.common as common
 import pypath.internals.resource as resource_base
-import pypath.resources.licenses as licenses
+from . import licenses as licenses
 
 
 _logger = session_mod.Logger(name = 'resources.controller')
