@@ -167,11 +167,48 @@ pathwaycommons_all = input_formats.NetworkInput(
 )
 
 
-def _pathwaycommons_single_resource(resource):
+pathwaycommons_transcription_all = input_formats.NetworkInput(
+    name = "PathwayCommons",
+    separator = None,
+    id_col_a = 0,
+    id_col_b = 2,
+    id_type_a = "genesymbol",
+    id_type_b = "genesymbol",
+    entity_type_a = "protein",
+    entity_type_b = "protein",
+    is_directed = (
+        1,
+        'controls-expression-of',
+    ),
+    sign = None,
+    input = 'pathwaycommons.pathwaycommons_interactions',
+    references = None,
+    ncbi_tax_id = 9606,
+    interaction_type = 'transcriptional',
+    resource = 3,
+    extra_edge_attrs = {"pc_rule": 1},
+    extra_node_attrs_a = {},
+    extra_node_attrs_b = {},
+    must_have_references = False,
+    input_args = {
+        'types': {
+            'controls-expression-of',
+        },
+    }
+)
+
+
+def _pathwaycommons_single_resource(resource, transcription = False):
 
     dmodel_interaction = {'CORUM', 'IntAct', 'DIP', 'BioGRID', 'BIND', 'INOH'}
 
-    input_def = copy.deepcopy(pathwaycommons_all)
+    _pathwaycommons_all = (
+        pathwaycommons_transcription_all
+            if transcription else
+        pathwaycommons_all
+    )
+
+    input_def = copy.deepcopy(_pathwaycommons_all)
     input_def.input_args['resources'] = resource
     input_def.data_model = (
         'interaction'
@@ -182,29 +219,42 @@ def _pathwaycommons_single_resource(resource):
     return input_def
 
 
+_pathwaycommons_resources = (
+    'NCI-PID',
+    'KEGG',
+    'CORUM',
+    'BIND',
+    'HPRD',
+    'WikiPathways',
+    'INOH',
+    'BioGRID',
+    'NetPath',
+    'Reactome',
+    'DIP',
+    'IntAct',
+    'PANTHER',
+    'PhosphoSite',
+)
+
+
 pathwaycommons = dict(
     (
         resource.lower().replace('-', '_'),
         _pathwaycommons_single_resource(resource),
 
     )
-    for resource in (
-        'NCI-PID',
-        'KEGG',
-        'CORUM',
-        'BIND',
-        'HPRD',
-        'WikiPathways',
-        'INOH',
-        'BioGRID',
-        'NetPath',
-        'Reactome',
-        'DIP',
-        'IntAct',
-        'PANTHER',
-        'PhosphoSite',
-    )
+    for resource in _pathwaycommons_resources
 )
+
+pathwaycommons_transcription = dict(
+    (
+        resource.lower().replace('-', '_'),
+        _pathwaycommons_single_resource(resource, transcription = True),
+
+    )
+    for resource in _pathwaycommons_resources
+)
+
 
 # synonym for old name
 reactome_pc = pathwaycommons['reactome']
