@@ -978,7 +978,7 @@ class Interaction(object):
             ``False`` otherwise.
         """
 
-        return self._by_resource(resources, op = operator.or_)
+        return self._dir_by_resource(resources, op = operator.or_)
 
 
     def is_mutual(self, resources = None):
@@ -999,7 +999,7 @@ class Interaction(object):
         according to some resource(s).
         """
 
-        return self._by_resource(resources, op = operator.and_)
+        return self._dir_by_resource(resources, op = operator.and_)
 
 
     def is_loop(self):
@@ -1012,7 +1012,7 @@ class Interaction(object):
         return self.a == self.b
 
 
-    def _by_resource(self, resources = None, op = operator.or_):
+    def _dir_by_resource(self, resources = None, op = operator.or_):
 
         resources = self._resources_set(resources)
 
@@ -2775,9 +2775,10 @@ class Interaction(object):
         by = (by,) if isinstance(by, common.basestring) else by
 
         @functools.wraps(method)
-        def by_method(*args, name_keys = True, **kwargs):
+        def by_method(*args, **kwargs):
 
             self = args[0]
+            name_keys = kwargs.pop('name_keys', True)
 
             for _by in by:
 
@@ -2792,7 +2793,7 @@ class Interaction(object):
             )
 
             levels = list(itertools.product(*(
-                getattr(self, levels_method)()
+                getattr(self, levels_method)(**kwargs)
                 for levels_method in levels_methods
             )))
 
