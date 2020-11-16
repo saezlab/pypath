@@ -44,6 +44,10 @@ def biomart_query(
         gene = False,
         dataset = 'hsapiens_gene_ensembl',
     ):
+    """
+    Use https://www.ensembl.org/biomart/martview/ to check for attribute
+    and dataset names.
+    """
 
     _attrs = []
 

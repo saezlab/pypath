@@ -1271,6 +1271,12 @@ urls = {
         'url': 'https://www.cell.com/cms/10.1016/j.cell.2020.07.025/'
             'attachment/9b456de0-24a4-4728-b071-b631fb7b96d6/mmc4.xlsx',
     },
+    'celltalkdb': {
+        'label': 'Manually curated ligand-receptor interactions',
+        'url': 'http://tcm.zju.edu.cn/celltalkdb/handler/download.php',
+        'ref_url': 'http://tcm.zju.edu.cn/celltalkdb/',
+        'init_url': 'http://tcm.zju.edu.cn/celltalkdb/download.php',
+    }
 }
 
 

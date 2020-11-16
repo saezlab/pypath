@@ -25,7 +25,6 @@ import sys
 import copy
 
 import pypath.share.settings as settings
-import pypath.reader.network as network
 
 __all__ = [
     'FileMapping', 'PickleMapping', 'NetworkInput', 'ReadList',
@@ -412,10 +411,10 @@ class NetworkInput:
         self.expand_complexes = expand_complexes
         self.data_model = data_model
         self.allow_loops = allow_loops
-    
-    
+
+
     def _field(self, value, cls):
-        
+
         return value if isinstance(value, cls) else cls(compact = value)
 
 

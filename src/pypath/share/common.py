@@ -1322,12 +1322,15 @@ def shared_unique(by_group, group, op = 'shared'):
 
     return _op(
         by_group[group] if group in by_group else set(),
-        set.union(*(
-            elements
-            for label, elements
-            in iteritems(by_group)
-            if label != group
-        ), set())
+        set.union(
+            set(),
+            *(
+                elements
+                for label, elements
+                in iteritems(by_group)
+                if label != group
+            )
+        )
     )
 
 
@@ -2097,7 +2100,7 @@ def tsv_table(
         tbl,
         path = None,
         maxlen = None,
-        **kwargs,
+        **kwargs
     ):
     """
     From a table represented by an OrderedDict with column titles as keys
@@ -2217,7 +2220,7 @@ def latex_table(
         maxlen = maxlen,
         lineno = lineno,
         wrap = False,
-        **kwargs,
+        **kwargs
     )
 
     latex_table = latex_table.replace('tabular', 'xltabular')
