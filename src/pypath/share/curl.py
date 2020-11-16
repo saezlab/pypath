@@ -1455,6 +1455,10 @@ class Curl(FileOpener):
 
     def get_hash(self):
 
+        if isinstance(self.cache, common.basestring):
+
+            return
+
         self.post_str = (
             ''
                 if self.post is None else
@@ -1489,9 +1493,15 @@ class Curl(FileOpener):
 
     def get_cache_file_name(self):
 
-        self.cache_file_name = os.path.join(os.getcwd(), self.cache_dir,
-                                            '%s-%s' %
-                                            (self.urlmd5, self.filename))
+        self.cache_file_name = (
+            self.cache
+                if isinstance(self.cache, common.basestring) else
+            os.path.join(
+                os.getcwd(),
+                self.cache_dir,
+                '%s-%s' % (self.urlmd5, self.filename)
+            )
+        )
 
 
     def delete_cache_file(self):
