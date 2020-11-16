@@ -155,6 +155,32 @@ dbptm_to_ncbi_tax_id = common.swap_dict(dbptm_taxids)
 latin_name_to_ncbi_tax_id = common.swap_dict(phosphoelm_taxids)
 
 
+def ensure_common_name(taxon_id):
+
+    ncbi_tax_id = ensure_ncbi_tax_id(taxon_id)
+
+    ncbi_to_common = get_db('ncbi_to_common')
+
+    if ncbi_tax_id in ncbi_to_common:
+
+        return ncbi_to_common[ncbi_tax_id]
+
+    _log('Could not find common taxon name for `%s`.' % str(taxon_id))
+
+
+def ensure_latin_name(taxon_id):
+
+    ncbi_tax_id = ensure_ncbi_tax_id(taxon_id)
+
+    ncbi_to_common = get_db('ncbi_to_latin')
+
+    if ncbi_tax_id in ncbi_to_common:
+
+        return ncbi_to_common[ncbi_tax_id]
+
+    _log('Could not find latin taxon name for `%s`.' % str(taxon_id))
+
+
 def taxid_from_common_name(taxon_name):
     
     taxon_name = taxon_name.lower().strip()
@@ -318,8 +344,15 @@ def init_db(key):
 
     ncbi_data = uniprot_input.uniprot_ncbi_taxids_2()
     this_db = None
+    swap = False
+    _key = key
 
-    if key == 'latin':
+    if key.startswith('ncbi_to_'):
+
+        swap = True
+        _key = key.rsplit('_', maxsplit = 1)[-1]
+
+    if _key == 'latin':
 
         this_db = dict(
             (
@@ -329,7 +362,7 @@ def init_db(key):
             for taxon in ncbi_data.values()
         )
 
-    elif key == 'common':
+    elif _key == 'common':
 
         this_db = dict(
             (
@@ -340,7 +373,7 @@ def init_db(key):
             if taxon.english
         )
 
-    elif key == 'swissprot':
+    elif _key == 'swissprot':
 
         uniprot_data = uniprot_input.uniprot_taxonomy()
         latin_to_ncbi = get_db('latin')
@@ -355,6 +388,11 @@ def init_db(key):
             if name in latin_to_ncbi
         )
 
+    if swap:
+
+        this_db = common.swap_dict(this_db)
+
     if this_db:
 
         globals()['db'][key] = this_db
+        globals()['_last_used'][key] = time.time()
