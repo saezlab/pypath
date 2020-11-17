@@ -31,6 +31,7 @@ import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.share.cache as cache
 import pypath.utils.taxonomy as taxonomy
+import pypath.utils.mapping as mapping
 
 
 def celltalkdb_download(filename = 'lr_pair', organism = 9606):
@@ -150,3 +151,52 @@ def celltalkdb_interactions(organism = 9606):
         )
         for rec in celltalkdb_download(organism = organism)
     ]
+
+
+def celltalkdb_annotations(organism = 9606):
+    """
+    Retrieves annotation of protein ligand and receptor roles from CellTalkDB
+    http://tcm.zju.edu.cn/celltalkdb/index.php
+
+    :param int,str organism:
+        Human and mouse supported, in case of incomprehensible value will
+        fall back to human.
+
+    :return:
+        Dictionary of annotations with UniProt IDs as keys.
+    """
+
+    CellTalkDBAnnotation = collections.namedtuple(
+        'CellTalkDBAnnotation',
+        [
+            'role',
+            'pmid',
+        ]
+    )
+
+    ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism)
+    ncbi_tax_id = ncbi_tax_id if ncbi_tax_id in {9606, 10090} else 9606
+
+    annot = collections.defaultdict(set)
+
+    for rec in celltalkdb_download(organism = ncbi_tax_id):
+
+        for role in ('ligand', 'receptor'):
+
+            uniprots = mapping.map_name(
+                getattr(rec, '%s_gene_symbol' % role),
+                'genesymbol',
+                'uniprot',
+                ncbi_tax_id = ncbi_tax_id,
+            )
+
+            for uniprot in uniprots:
+
+                annot[uniprot].add(
+                    CellTalkDBAnnotation(
+                        role = role,
+                        pmid = rec.evidence,
+                    )
+                )
+
+    return annot
