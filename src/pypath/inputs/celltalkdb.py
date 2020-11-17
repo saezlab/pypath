@@ -121,5 +121,32 @@ def celltalkdb_download(filename = 'lr_pair', organism = 9606):
 
 
 def celltalkdb_interactions(organism = 9606):
+    """
+    Retrieves ligand-receptor interactions from CellTalkDB
+    http://tcm.zju.edu.cn/celltalkdb/index.php
 
-    pass
+    :param int,str organism:
+        Human and mouse supported, in case of incomprehensible value will
+        fall back to human.
+
+    :return:
+        List of interactions as named tuples.
+    """
+
+    CellTalkDBInteraction = collections.namedtuple(
+        'CellTalkDBInteraction',
+        [
+            'ligand_genesymbol',
+            'receptor_genesymbol',
+            'reference',
+        ]
+    )
+
+    return [
+        CellTalkDBInteraction(
+            ligand_genesymbol = rec.ligand_gene_symbol,
+            receptor_genesymbol = rec.receptor_gene_symbol,
+            reference = rec.evidence,
+        )
+        for rec in celltalkdb_download(organism = organism)
+    ]
