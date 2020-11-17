@@ -4294,5 +4294,14 @@
       "kcgarcia@stanford.edu", "K Christopher Garcia",
       "woj@stanford.edu", "Woj M Wojtowicz"
     ]
+  },
+  "CellTalkDB": {
+    "urls": {
+      "webpages": ["http://tcm.zju.edu.cn/celltalkdb/index.php"]
+    },
+    "license": "GPLv3",
+    "emails": [
+      "fanxh@zju.edu.cn"
+    ]
   }
 }
