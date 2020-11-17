@@ -697,6 +697,25 @@ pathway = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
     ),
+    'celltalkdb': input_formats.NetworkInput(
+        name = "CellTalkDB",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "genesymbol",
+        id_type_b = "genesymbol",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        ncbi_tax_id = 9606,
+        is_directed = True,
+        sign = None,
+        input = 'celltalkdb.celltalkdb_interactions',
+        references = 2,
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
 }
 
 # synonym
@@ -2665,6 +2684,9 @@ ligand_receptor['guide2pharma'].data_model = 'ligand_receptor'
 ligand_receptor['icellnet'] = copy.deepcopy(pathway['icellnet'])
 ligand_receptor['icellnet'].must_have_references = False
 ligand_receptor['icellnet'].data_model = 'ligand_receptor'
+ligand_receptor['celltalkdb'] = copy.deepcopy(pathway['celltalkdb'])
+ligand_receptor['celltalkdb'].must_have_references = False
+ligand_receptor['celltalkdb'].data_model = 'ligand_receptor'
 
 pathway['hpmr'] = copy.deepcopy(ligand_receptor['hpmr'])
 pathway['hpmr'].data_model = 'activity_flow'
