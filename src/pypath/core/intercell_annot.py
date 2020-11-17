@@ -1938,6 +1938,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'receptor',
+        resource = 'CellTalkDB',
+        args = {
+            'role': 'receptor',
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'receptor',
         resource = 'Surfaceome',
         args = {
             'mainclass': 'Receptors',
@@ -4159,6 +4167,14 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'ligand',
         resource = 'ICELLNET',
+        args = {
+            'role': 'ligand',
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'ligand',
+        resource = 'CellTalkDB',
         args = {
             'role': 'ligand',
         },
