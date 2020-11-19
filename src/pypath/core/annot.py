@@ -115,6 +115,7 @@ protein_sources_default = {
     'Mcam',
     'Gpcrdb',
     'Celltalkdb',
+    'Cellchatdb',
 }
 
 #TODO this should be part of json files
@@ -124,6 +125,7 @@ complex_sources_default = {
     'CorumGO',
     'HpmrComplex',
     'IcellnetComplex',
+    'CellchatdbComplex',
 }
 
 #TODO this should be part of json files
@@ -4972,6 +4974,32 @@ class Icellnet(AnnotationBase):
         delattr(self, 'data')
 
 
+class Cellchatdb(AnnotationBase):
+
+    _eq_fields = ('role', 'category')
+
+
+    def __init__(self, **kwargs):
+
+        _ = kwargs.pop('ncbi_tax_id', None)
+
+        AnnotationBase.__init__(
+            self,
+            name = 'CellChatDB',
+            input_method = 'cellchatdb.cellchatdb_annotations',
+            ncbi_tax_id = 9606,
+            complexes = False,
+        )
+
+
+    def _process_method(self, *args, **kwargs):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
 class Celltalkdb(AnnotationBase):
 
     _eq_fields = ('role',)
@@ -5011,6 +5039,32 @@ class IcellnetComplex(AnnotationBase):
             self,
             name = 'ICELLNET_complex',
             input_method = 'icellnet.icellnet_annotations',
+            ncbi_tax_id = 9606,
+            entity_type = 'complex',
+        )
+
+
+    def _process_method(self, *args, **kwargs):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class CellchatdbComplex(AnnotationBase):
+
+    _eq_fields = ('role', 'category')
+
+
+    def __init__(self, **kwargs):
+
+        _ = kwargs.pop('ncbi_tax_id', None)
+
+        AnnotationBase.__init__(
+            self,
+            name = 'CellChatDB_complex',
+            input_method = 'cellchatdb.cellchatdb_annotations',
             ncbi_tax_id = 9606,
             entity_type = 'complex',
         )
