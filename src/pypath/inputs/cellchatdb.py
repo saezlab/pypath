@@ -20,6 +20,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import itertools
 import collections
 
 import rdata
@@ -27,6 +28,7 @@ import rdata
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.utils.taxonomy as taxonomy
+import pypath.utils.mapping as mapping
 import pypath.internals.intera as intera
 
 
@@ -83,7 +85,37 @@ def cellchatdb_complexes(organism = 9606):
     ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism)
     ncbi_tax_id = 10090 if ncbi_tax_id == 10090 else 9606
 
-    raw = cellchatdb_download(organism = ncbi_tax_id)
+    raw = cellchatdb_download(organism = ncbi_tax_id)['complex']
+
+    complexes = {}
+
+    for row in raw.itertuples():
+
+        genesymbols = [c for c in row[1:-1] if c]
+
+        uniprots = [
+            mapping.map_name(
+                gs,
+                'genesymbol',
+                'uniprot',
+                ncbi_tax_id = ncbi_tax_id,
+            )
+            for gs in genesymbols
+        ]
+
+        uniprots = [up for up in uniprots if up]
+
+        for components in itertools.product(*uniprots):
+
+            cplex = intera.Complex(
+                name = row.rownames,
+                components = components,
+                sources = 'CellTalkDB',
+            )
+            complexes[cplex.__str__()] = cplex
+
+    return complexes
+
 
 
 
