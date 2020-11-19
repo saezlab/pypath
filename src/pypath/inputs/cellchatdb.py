@@ -57,7 +57,91 @@ def cellchatdb_download(organism = 9606, dataset = 'CellChatDB'):
     rdata_path = c.fileobj.name
     c.fileobj.close()
 
-    return rdata.conversion.convert(rdata.parser.parse_file(rdata_path))[key]
+    rdata_parsed = rdata.parser.parse_file(rdata_path)
+    rdata_converted = rdata.conversion.convert(rdata_parsed)[key]
+
+    if dataset == 'CellChatDB':
+
+        df_names = _rdata_list_get_names(rdata_parsed.object.value[0])
+
+        rownames = [
+            _rdata_data_frame_get_rownames(df_obj)
+            for df_obj in rdata_parsed.object.value[0].value
+        ]
+
+        rownames = dict(zip(df_names, rownames))
+
+        for name, df in rdata_converted.items():
+
+            df['rownames'] = rownames[name]
+
+    return rdata_converted
+
+
+def cellchatdb_complexes(organism = 9606):
+
+    ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism)
+    ncbi_tax_id = 10090 if ncbi_tax_id == 10090 else 9606
+
+    raw = cellchatdb_download(organism = ncbi_tax_id)
+
+
+
+def _rdata_data_frame_get_rownames(robj):
+
+    for i, attr in enumerate(robj.attributes):
+
+        if (
+            attr and
+            attr[1] and (
+                (
+                    hasattr(attr[1].value[1], 'tag') and
+                    attr[1].value[1].tag and (
+                        (
+                            attr[1].value[1].tag.referenced_object and
+                            attr[1].value[1].tag.referenced_object.value and
+                            attr[1].value[1].tag.referenced_object.value.\
+                                value == b'row.names'
+                        ) or (
+                            attr[1].value[1].tag.value and
+                            attr[1].value[1].tag.value.value == b'row.names'
+                        )
+                    )
+                ) or (
+                    attr[1].tag and
+                    attr[1].tag.referenced_object and
+                    attr[1].tag.referenced_object.value and
+                    attr[1].tag.referenced_object.value.value == b'row.names'
+                ) or (
+                    attr[1].tag and
+                    attr[1].tag.value and
+                    attr[1].tag.value.value == b'row.names'
+                )
+            )
+        ):
+
+            break
+
+    rownames = (
+        attr[1].value[1].value[0].value
+            if attr[1].value[0].value[0].value == b'data.frame' else
+        attr[1].value[0].value
+            if (
+                attr[1].value[1].value[0].value[0].value ==
+                b'data.frame'
+            ) else
+        []
+    )
+
+    return [rn.value.decode('utf-8') for rn in rownames]
+
+
+def _rdata_list_get_names(robj):
+
+    return [
+        item.value.decode('utf-8')
+        for item in robj.attributes.value[0].value
+    ]
 
 
 def _patch_rdata():
