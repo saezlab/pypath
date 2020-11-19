@@ -82,11 +82,15 @@ def cellchatdb_download(organism = 9606, dataset = 'CellChatDB'):
 
 def cellchatdb_complexes(organism = 9606):
 
+    raw = cellchatdb_download(organism = organism)['complex']
+
+    return _cellchatdb_process_complexes(raw, organism = organism)
+
+
+def _cellchatdb_process_complexes(raw, organism = 9606):
+
     ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism)
     ncbi_tax_id = 10090 if ncbi_tax_id == 10090 else 9606
-
-    raw = cellchatdb_download(organism = ncbi_tax_id)['complex']
-
     complexes = {}
 
     for row in raw.itertuples():
@@ -115,8 +119,6 @@ def cellchatdb_complexes(organism = 9606):
             complexes[cplex.__str__()] = cplex
 
     return complexes
-
-
 
 
 def _rdata_data_frame_get_rownames(robj):
