@@ -1938,6 +1938,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'receptor',
+        resource = 'CellChatDB',
+        args = {
+            'role': 'receptor',
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'receptor',
         resource = 'CellTalkDB',
         args = {
             'role': 'receptor',
@@ -3559,6 +3567,24 @@ annot_combined_classes = (
         receiver = False,
     ),
     af.AnnotDef(
+        name = 'activating_cofactor',
+        parent = 'receptor_regulator',
+        resource = 'CellChatDB',
+        args = {
+            'role': 'co_A_receptor',
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'inhibitory_cofactor',
+        parent = 'receptor_regulator',
+        resource = 'CellChatDB',
+        args = {
+            'role': 'co_I_receptor',
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
         name = 'ms4',
         parent = 'receptor_regulator',
         resource = af.AnnotOp(
@@ -3616,6 +3642,15 @@ annot_combined_classes = (
         source = 'composite',
         transmitter = True,
         receiver = False,
+    ),
+    af.AnnotDef(
+        name = 'ecm',
+        resource = 'CellChatDB',
+        args = {
+            'role': 'ligand',
+            'category': 'ECM-Receptor',
+        },
+        scope = 'generic',
     ),
     # ecm: UniProt specific categories
     af.AnnotDef(
@@ -3996,6 +4031,15 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'ligand',
+        resource = 'CellChatDB',
+        args = {
+            'role': 'ligand',
+            'category': 'Secreted Signaling',
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'ligand',
         scope = 'generic',
         resource = 'Matrisome',
         args = {
@@ -4169,6 +4213,15 @@ annot_combined_classes = (
         resource = 'ICELLNET',
         args = {
             'role': 'ligand',
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'receptor',
+        resource = 'CellChatDB',
+        args = {
+            'role': 'ligand',
+            'category': 'Secreted signaling',
         },
         scope = 'generic',
     ),
@@ -4742,6 +4795,24 @@ annot_combined_classes = (
         receiver = False,
     ),
     af.AnnotDef(
+        name = 'ligand_agonist',
+        parent = 'ligand_regulator',
+        resource = 'CellChatDB',
+        args = {
+            'role': 'agonist',
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'ligand_antagonist',
+        parent = 'ligand_regulator',
+        resource = 'CellChatDB',
+        args = {
+            'role': 'antagonist',
+        },
+        scope = 'generic',
+    ),
+    af.AnnotDef(
         name = 'proteoglycan',
         parent = 'ligand_regulator',
         resource = {'Q03167'},
@@ -4868,6 +4939,15 @@ annot_combined_classes = (
         resource = '~cell_surface_ligand',
         transmitter = True,
         receiver = False,
+    ),
+    af.AnnotDef(
+        name = 'cell_surface_ligand',
+        resource = 'CellChatDB',
+        scope = 'generic',
+        args = {
+            'role': 'ligand',
+            'category': 'Cell-Cell Contact',
+        },
     ),
     af.AnnotDef(
         name = 'cell_surface_ligand',
