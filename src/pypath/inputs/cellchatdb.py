@@ -236,7 +236,7 @@ def cellchatdb_interactions(organism = 9606):
             set(repmid.findall(row.evidence)) |
             set(pubmed.only_pmids(repmcid.findall(row.evidence)))
         )
-        # PMIDs starting with 23209 are a mistake in CellCellDB
+        # PMIDs starting with 23209 are a mistake in CellChatDB
         refs = sorted(pmid for pmid in refs if not pmid.startswith('23209'))
 
         ligands = process_name(row.ligand)
@@ -293,6 +293,36 @@ def cellchatdb_interactions(organism = 9606):
                 )
 
     return result
+
+
+def cellchatdb_annotations(organism = 9606):
+
+    CellChatDBAnnotation = collections.namedtuple(
+        'CellChatDBAnnotation',
+        [
+            'role',
+            'pathway',
+            'category',
+        ]
+    )
+
+
+    annotations = collections.defaultdict(set)
+    interactions = cellchatdb_interactions(organism = organism)
+
+    for ia in interactions:
+
+        for side in ('a', 'b'):
+
+            annotations[getattr(ia, 'id_%s' % side)].add(
+                CellChatDBAnnotation(
+                    role = getattr(ia, 'role_%s' % side),
+                    pathway = ia.pathway,
+                    category = ia.category,
+                )
+            )
+
+    return annotations
 
 
 def _cellchatdb_organism(organism = 9606):
