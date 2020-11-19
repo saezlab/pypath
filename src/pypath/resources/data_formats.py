@@ -716,6 +716,25 @@ pathway = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
     ),
+    'cellchatdb': input_formats.NetworkInput(
+        name = "CellChatDB",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        ncbi_tax_id = 9606,
+        is_directed = True,
+        sign = (4, 'stimulation', 'inhibition'),
+        input = 'cellchatdb.cellchatdb_interactions',
+        references = 6,
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
 }
 
 # synonym
@@ -2687,6 +2706,9 @@ ligand_receptor['icellnet'].data_model = 'ligand_receptor'
 ligand_receptor['celltalkdb'] = copy.deepcopy(pathway['celltalkdb'])
 ligand_receptor['celltalkdb'].must_have_references = False
 ligand_receptor['celltalkdb'].data_model = 'ligand_receptor'
+ligand_receptor['cellchatdb'] = copy.deepcopy(pathway['cellchatdb'])
+ligand_receptor['cellchatdb'].must_have_references = False
+ligand_receptor['cellchatdb'].data_model = 'ligand_receptor'
 
 pathway['hpmr'] = copy.deepcopy(ligand_receptor['hpmr'])
 pathway['hpmr'].data_model = 'activity_flow'
