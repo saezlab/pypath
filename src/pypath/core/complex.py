@@ -58,6 +58,7 @@ complex_resources = (
     'Humap',
     'Icellnet',
     'Kegg',
+    'Cellchatdb',
 )
 
 
@@ -504,6 +505,25 @@ class Icellnet(AbstractComplexResource):
             self,
             name = 'ICELLNET',
             input_method = 'icellnet.icellnet_complexes',
+            input_args = input_args or {},
+        )
+
+
+class Cellchatdb(AbstractComplexResource):
+
+
+    def __init__(self, input_args = None, **kwargs):
+
+        input_args = input_args or {}
+
+        if 'organism' not in input_args:
+
+            input_args['organism'] = settings.get('default_organism')
+
+        AbstractComplexResource.__init__(
+            self,
+            name = 'CellChatDB',
+            input_method = 'cellchatdb.cellchatdb_complexes',
             input_args = input_args or {},
         )
 
