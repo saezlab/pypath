@@ -4303,5 +4303,18 @@
     "emails": [
       "fanxh@zju.edu.cn", "Xiaohui Fan"
     ]
+  },
+  "CellChatDB": {
+    "urls": {
+      "webpages": [
+        "https://github.com/sqjin/CellChat",
+        "http://www.cellchat.org/"
+      ]
+    },
+    "license": "GPLv3",
+    "emails": [
+      "plikus@uci.edu", "Maksim V. Plikus",
+      "qnie@uci.edu", "Qing Nie"
+    ]
   }
 }

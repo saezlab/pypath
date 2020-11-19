@@ -1276,7 +1276,12 @@ urls = {
         'url': 'http://tcm.zju.edu.cn/celltalkdb/handler/download.php',
         'ref_url': 'http://tcm.zju.edu.cn/celltalkdb/',
         'init_url': 'http://tcm.zju.edu.cn/celltalkdb/download.php',
-    }
+    },
+    'cellchatdb': {
+        'label': 'Manually curated ligand-receptor interactions',
+        'url': 'https://raw.githubusercontent.com/sqjin/CellChat/'
+            'master/data/%s.rda',
+    },
 }
 
 
