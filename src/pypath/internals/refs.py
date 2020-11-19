@@ -34,6 +34,7 @@ import pypath.share.common as common
 import pypath.resources.urls as urls
 from pypath.inputs import pubmed as pubmed_input
 import pypath.share.settings as settings
+import pypath.inputs.pubmed as pubmed
 
 
 class Reference(object):

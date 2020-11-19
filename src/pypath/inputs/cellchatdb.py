@@ -20,6 +20,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import re
 import itertools
 import collections
 
@@ -30,6 +31,7 @@ import pypath.resources.urls as urls
 import pypath.utils.taxonomy as taxonomy
 import pypath.utils.mapping as mapping
 import pypath.internals.intera as intera
+import pypath.inputs.pubmed as pubmed
 
 
 def cellchatdb_download(organism = 9606, dataset = 'CellChatDB'):
@@ -81,6 +83,16 @@ def cellchatdb_download(organism = 9606, dataset = 'CellChatDB'):
 
 
 def cellchatdb_complexes(organism = 9606):
+    """
+    Retrieves data from CellChatDB and processes protein complexes.
+
+    :param int,str organism:
+        Human and mouse are available, for incomprehensive values falls back
+        to human.
+
+    :return:
+        Dictionary of complexes.
+    """
 
     raw = cellchatdb_download(organism = organism)['complex']
 
@@ -89,8 +101,12 @@ def cellchatdb_complexes(organism = 9606):
 
 def _cellchatdb_process_complexes(raw, organism = 9606):
 
-    ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism)
-    ncbi_tax_id = 10090 if ncbi_tax_id == 10090 else 9606
+    if isinstance(raw, dict):
+
+        raw = raw['complex']
+
+    ncbi_tax_id = _cellchatdb_organism(organism)
+
     complexes = {}
 
     for row in raw.itertuples():
@@ -115,10 +131,176 @@ def _cellchatdb_process_complexes(raw, organism = 9606):
                 name = row.rownames,
                 components = components,
                 sources = 'CellTalkDB',
+                ncbi_tax_id = ncbi_tax_id,
             )
             complexes[cplex.__str__()] = cplex
 
     return complexes
+
+
+def cellchatdb_cofactors(organism = 9606):
+
+    raw = cellchatdb_download(organism = organism)
+
+    return _cellchatdb_process_cofactors(raw, organism = organism)
+
+
+def _cellchatdb_process_cofactors(raw, organism = 9606):
+
+    if isinstance(raw, dict):
+
+        raw = raw['cofactor']
+
+    ncbi_tax_id = _cellchatdb_organism(organism)
+
+    cofactors = {}
+
+    for row in raw.itertuples():
+
+        genesymbols = [c for c in row[1:-1] if c]
+
+        uniprots = mapping.map_names(
+            genesymbols,
+            'genesymbol',
+            'uniprot',
+            ncbi_tax_id = ncbi_tax_id,
+        )
+
+        cofactors[row.rownames] = uniprots
+
+    return cofactors
+
+
+def cellchatdb_interactions(organism = 9606):
+    """
+    Retrieves data from CellChatDB and processes interactions.
+
+    :param int,str organism:
+        Human and mouse are available, for incomprehensive values falls back
+        to human.
+
+    :return:
+        Interactions as list of named tuples.
+    """
+
+    def process_name(name):
+
+        return (
+            (complexes_by_name[name],)
+                if name in complexes_by_name else
+            mapping.map_name(
+                name,
+                'genesymbol',
+                'uniprot',
+                ncbi_tax_id = ncbi_tax_id,
+            )
+        )
+
+
+    CellChatDBInteraction = collections.namedtuple(
+        'CellChatDBInteraction',
+        [
+            'id_a',
+            'id_b',
+            'role_a',
+            'role_b',
+            'effect',
+            'pathway',
+            'refs',
+            'category',
+        ]
+    )
+
+    repmid = re.compile('PMID:\s*?(\d+)')
+    repmcid = re.compile('PMC\d+')
+
+    ncbi_tax_id = _cellchatdb_organism(organism)
+
+    raw = cellchatdb_download(organism = organism)
+
+    complexes = _cellchatdb_process_complexes(raw, organism = organism)
+    cofactors = _cellchatdb_process_cofactors(raw, organism = organism)
+
+    complexes_by_name = dict(
+        (cplex.name, cplex)
+        for cplex in complexes.values()
+    )
+
+    raw_ia = raw['interaction']
+
+    result = []
+
+    for row in raw_ia.itertuples():
+
+        refs = (
+            set(repmid.findall(row.evidence)) |
+            set(pubmed.only_pmids(repmcid.findall(row.evidence)))
+        )
+        # PMIDs starting with 23209 are a mistake in CellCellDB
+        refs = sorted(pmid for pmid in refs if not pmid.startswith('23209'))
+
+        ligands = process_name(row.ligand)
+        receptors = process_name(row.receptor)
+
+        for ligand, receptor in itertools.product(ligands, receptors):
+
+            result.append(
+                CellChatDBInteraction(
+                    id_a = ligand,
+                    id_b = receptor,
+                    role_a = 'ligand',
+                    role_b = 'receptor',
+                    effect = 'unknown',
+                    pathway = row.pathway_name,
+                    refs = refs,
+                    category = row.annotation,
+                )
+            )
+
+        for cofactor_col, effect, targets in (
+            ('agonist', 'stimulation', ligands),
+            ('antagonist', 'inhibition', ligands),
+            ('co_A_receptor', 'stimulation', receptors),
+            ('co_I_receptor', 'inhibition', receptors),
+        ):
+
+            cofact_label = getattr(row, cofactor_col)
+
+            if cofact_label not in cofactors:
+
+                continue
+
+            for cofactor, target in itertools.product(
+                cofactors[cofact_label],
+                targets
+            ):
+
+                result.append(
+                    CellChatDBInteraction(
+                        id_a = cofactor,
+                        id_b = target,
+                        role_a = cofactor_col,
+                        role_b = (
+                            'ligand'
+                                if cofactor_col.endswith('onist') else
+                            'receptor'
+                        ),
+                        effect = effect,
+                        pathway = row.pathway_name,
+                        refs = refs,
+                        category = row.annotation,
+                    )
+                )
+
+    return result
+
+
+def _cellchatdb_organism(organism = 9606):
+
+    ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism)
+    ncbi_tax_id = 10090 if ncbi_tax_id == 10090 else 9606
+
+    return ncbi_tax_id
 
 
 def _rdata_data_frame_get_rownames(robj):
