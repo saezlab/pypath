@@ -655,7 +655,9 @@ urls = {
     'hiii14': {
         'label': 'Rolland et al 2014, Human Interactome II',
         'url':
-        'http://www.cell.com/cms/attachment/2021150198/2041343422/mmc3.xlsx'
+        'http://www.cell.com/cms/attachment/2021150198/2041343422/mmc3.xlsx',
+        'article_url': 'https://www.cell.com/cell/fulltext/'
+            'S0092-8674(14)01422-6',
     },
     'kinome': {
         'label': 'List of human kinases',
@@ -735,20 +737,20 @@ urls = {
     },
     'hid': {
         'label': 'CCSB Human Interactome Project',
-        'lit-bm-13':
-        'http://interactome.dfci.harvard.edu/H_sapiens/'\
+        'lit-bm-13': 'http://interactome.dfci.harvard.edu/H_sapiens/'
             'download/Lit-BM-13.tsv',
         'hi-ii-14':
-        'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-II-14.tsv',
+        'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-II-14.psi',
         'hi-i-05':
-        'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-I-05.tsv',
-        'hi-iii': 'http://interactome-atlas.org/download',
+        'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-I-05.psi',
         'lit-bm-17': 'https://rescued.omnipathdb.org/LitBM-17.psi',
-        'huri': 'http://www.interactome-atlas.org/data/HuRI.pmi',
-        'hi-union': 'http://www.interactome-atlas.org/data/HI-union.pmi',
-        'yang-2016': 'http://www.interactome-atlas.org/data/Yang-16.pmi',
-        'hi-i-05-pmi': 'http://www.interactome-atlas.org/data/H-I-05.pmi',
-        'yu-2011': 'http://www.interactome-atlas.org/data/Yu-11.pmi',
+        'lit-bm': 'http://www.interactome-atlas.org/data/Lit-BM.tsv',
+        'huri': 'http://www.interactome-atlas.org/data/HuRI.psi',
+        'hi-union': 'http://www.interactome-atlas.org/data/HI-union.psi',
+        'yang-2016': 'http://www.interactome-atlas.org/data/Yang-16.psi',
+        'hi-i-05-pmi': 'http://www.interactome-atlas.org/data/H-I-05.psi',
+        'hi-ii-14-pmi': 'http://www.interactome-atlas.org/data/HI-II-14.psi',
+        'yu-2011': 'http://www.interactome-atlas.org/data/Yu-11.psi',
     },
     'ca1': {
         'label': 'Supplementary Online Materials for Ma\'ayan 2005',

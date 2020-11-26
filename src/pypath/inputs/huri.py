@@ -27,6 +27,7 @@ import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.utils.mapping as mapping
 import pypath.inputs.common as inputs_common
+import pypath.inputs.cell as cell
 
 
 def rolland_hi_ii_14():
@@ -35,10 +36,11 @@ def rolland_hi_ii_14():
     of from Rolland 2014.
     Returns list of interactions.
     """
-    url = urls.urls['hiii14']['url']
-    c = curl.Curl(url, silent = False, large = True)
-    xlsname = c.fileobj.name
-    c.fileobj.close()
+
+    xlsname = cell.cell_supplementary(
+        supp_url = urls.urls['hiii14']['url'],
+        article_url = urls.urls['hiii14']['article_url'],
+    )
     tbl = inputs_common.read_xls(xlsname, sheet = '2G')
 
     for row in tbl[1:]:
@@ -63,7 +65,7 @@ def vidal_hi_iii_old(fname):
     return [l.strip().split('\t') for l in f.result][1:]
 
 
-def hi_iii():
+def hi_iii_old():
     """
     Loads the unbiased human interactome version III (HI-III).
     This is an unpublished data and its use is limited.
@@ -217,6 +219,50 @@ def yang2016_interactions():
     return _huri_interactions(dataset = 'yang-2016')
 
 
+def hi_ii_interactions():
+    """
+    Interactions from Rolland 2014 https://pubmed.ncbi.nlm.nih.gov/25416956/.
+    """
+
+    return _huri_interactions(dataset = 'hi-ii-14-pmi')
+
+
+def hi_i_interactions():
+    """
+    Interactions from Rual 2005 https://pubmed.ncbi.nlm.nih.gov/16189514/.
+    """
+
+    return _huri_interactions(dataset = 'hi-i-05-pmi')
+
+
+def lit_bm_interactions():
+    """
+    Literature collected interactions from Luck 2020.
+    """
+
+    LitBmInteraction = collections.namedtuple(
+        'LitBmInteraction',
+        ['uniprot_a', 'uniprot_b'],
+    )
+
+    url = urls.urls['hid']['lit-bm']
+    c = curl.Curl(url, large = True, silent = False)
+
+    for row in c.result:
+
+        row = row.strip().split('\t')
+
+        uniprots_a = mapping.map_name(row[0], 'ensembl', 'uniprot')
+        uniprots_b = mapping.map_name(row[1], 'ensembl', 'uniprot')
+
+        for uniprot_a, uniprot_b in itertools.product(uniprots_a, uniprots_b):
+
+            yield LitBmInteraction(
+                uniprot_a = uniprot_a,
+                uniprot_b = uniprot_b,
+            )
+
+
 def _huri_interactions(dataset):
 
     reuniprot = re.compile(r'[a-z]+:([\w\.]+)(?:-?([0-9]?))?')
@@ -245,6 +291,13 @@ def _huri_interactions(dataset):
 
     url = dataset if dataset.startswith('http') else urls.urls['hid'][dataset]
     c = curl.Curl(url, large = True, silent = False)
+    path = (
+        c.fileobj.name
+            if hasattr(c, 'fileobj') else
+        c.cache_file_name or c.outfile
+    )
+    del c
+    c = curl.FileOpener(path)
 
     for row in c.result:
 
@@ -268,6 +321,7 @@ def _huri_interactions(dataset):
 
         for uniprot_a, uniprot_b in itertools.product(uniprots_a, uniprots_b):
 
+            #pass
             yield HuriInteraction(
                 uniprot_a = uniprot_a,
                 uniprot_b = uniprot_b,
