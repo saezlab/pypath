@@ -284,16 +284,15 @@
       "webpages": ["http://www.guidetopharmacology.org/"],
       "articles": [
         "http://nar.oxfordjournals.org/content/42/D1/D1098.long",
-        "http://onlinelibrary.wiley.com/doi/10.1111/j.1476-5381.2011.01649_1.x/full"
+        "http://onlinelibrary.wiley.com/doi/10.1111/j.1476-5381.2011.01649_1.x/full",
+        "https://academic.oup.com/nar/article/48/D1/D1006/5613677"
       ],
       "omictools": [
         "http://omictools.com/international-union-of-basic-and-clinical-pharmacology-british-pharmacological-society-guide-to-pharmacology-tool"
       ]
     },
     "recommend": [
-      "one of the strongest in ligand-receptor interactions;",
-      "still does not contain everything, therefore worth to combine",
-      "with larger activity flow resources like SIGNOR"
+      "a well curated ligand-receptor resource including many small molecule compounds"
     ],
     "descriptions": [
       "Presently, the resource describes the interactions between target proteins",
@@ -316,7 +315,20 @@
       "‘Other names’, target-specific fields such as ‘Principal transduction’, text from the",
       "‘Overview’ and ‘Comments’ sections and reference citations (downloaded from PubMed;",
       "http://www.ncbi.nlm.nih.gov/pubmed) were captured from GRAC and uploaded into the database",
-      "against a unique Object ID."
+      "against a unique Object ID.",
+      "The selection of content for curation was supported through the ",
+      "identification of key articles and literature reviews by NC-IUPHAR ",
+      "subcommittees. The focus was on immunology and inflammation ",
+      "literature that identified lead compounds, their molecular targets ",
+      "and contained evidence of pharmacological modulation and relevance ",
+      "to human disease. Other useful resources include pharmaceutical ",
+      "companies’ declared development programmes, key papers circulated ",
+      "on Twitter and analysis of patents to identify pharmacological data ",
+      "beyond peer-reviewed publications. We also review clinical trial ",
+      "registries and applications to the WHO for new INNs (International ",
+      "Nonproprietary Name) (which provides an indication of developments ",
+      "in the immunity/inflammation/immuno-oncology fields), and monitor ",
+      "new drug approvals."
     ],
     "emails": [
       "enquiries@guidetopharmacology.org",
@@ -325,7 +337,7 @@
       "Cristopher Southan"
   ],
     "type": "literature curated",
-    "subtype": "activity flow",
+    "subtype": ["activity flow", "complexes"],
     "omnipath": true,
     "license": "CC BY-SA 3.0",
     "pypath": {
@@ -644,7 +656,8 @@
       "webpages": ["http://signor.uniroma2.it/"],
       "articles": [
         "http://nar.oxfordjournals.org/content/44/D1/D548",
-        "http://f1000research.com/posters/1098359"
+        "http://f1000research.com/posters/1098359",
+        "https://academic.oup.com/nar/article/48/D1/D504/5608992"
       ],
       "omictools": ["http://omictools.com/signaling-network-open-resource-tool"]
     },
@@ -669,7 +682,10 @@
       "relationship is linked to the literature reporting the experimental evidence. In addition",
       "each node is annotated with the chemical inhibitors that modulate its activity. The",
       "signaling information is mapped to the human proteome even if the experimental evidence",
-      "is based on experiments on mammalian model organisms."
+      "is based on experiments on mammalian model organisms.",
+      "SIGNOR 2.0 now stores almost 23 000 manually-annotated causal ",
+      "relationships between proteins and other biologically relevant ",
+      "entities: chemicals, phenotypes, complexes, etc."
     ],
     "authors": ["Cesareni Group"],
     "label": "SIGNOR",
@@ -678,7 +694,7 @@
       "PhosphoSite"
     ],
     "type": "literature curated",
-    "subtype": "activity flow",
+    "subtype": ["activity flow", "complexes"],
     "omnipath": true,
     "emails": [
       "perfetto@live.it",
@@ -2238,7 +2254,8 @@
     "urls": {
       "articles": [
         "http://nar.oxfordjournals.org/content/36/suppl_1/D646.long",
-        "http://nar.oxfordjournals.org/content/38/suppl_1/D497.long"
+        "http://nar.oxfordjournals.org/content/38/suppl_1/D497.long",
+        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6323970/"
       ],
       "webpages": ["http://mips.helmholtz-muenchen.de/genre/proj/corum"],
       "omictools": [
@@ -2270,20 +2287,27 @@
       "characterized by reliable experimental evidence are included in CORUM. To be considered for",
       "CORUM, a protein complex has to be isolated as one molecule and must not be a",
       "construct derived from several experiments. Also, artificial constructs of subcomplexes",
-      "are not taken into account. Since information from high-throughput experi ments",
+      "are not taken into account. Since information from high-throughput experiments",
       "contains a significant fraction of false-positive results, this type of data is",
       "excluded. References for relevant articles were mainly found in general review articles,",
       "cross-references to related protein complexes within analysed literature and comments on",
-      "referenced articles in UniProt."
+      "referenced articles in UniProt.",
+      "In order to obtain a high quality and reliability of the data, we ",
+      "only include protein complexes that have been isolated and ",
+      "characterized in individual experiments. [...] Experienced ",
+      "biocurators critically extract information from the scientific ",
+      "literature and transfer it into CORUM using established vocabularies ",
+      "and stable identifiers from well-known resources such as UniProt and ",
+      "Gene Ontology."
     ],
     "notes": [
       "CORUM is not part of the OmniPath pathways network, because we did not applied",
-      "any complex expansion. But it has an interface built in the pypath module."
+      "any complex expansion. It is part of the OmniPath protein complex database."
     ],
     "type": "literature curated",
     "data_integration": "dynamic",
     "subtype": "complexes",
-    "omnipath": false,
+    "omnipath": true,
     "license": "CC BY-NC 4.0",
     "pypath": {
       "data": ["pypath.urls.urls[\"corum\"][\"url\"]"],
@@ -3066,7 +3090,10 @@
     "urls": {
       "webpages": ["ftp://ftp.genome.jp/pub/kegg/medicus/"]
     },
-    "license": "CC BY-SA 4.0"
+    "license": "CC BY-SA 4.0",
+    "type": "literature curated",
+    "subtype": ["activity flow", "complexes"],
+    "omnipath": true
   },
   "BioGRID": {
     "yearUsedRelease": 2020,
@@ -3712,10 +3739,20 @@
   },
   "HPMR": {
     "full_name": "Human Plasma Membrane Receptome",
+    "pubmeds": ["12815191"],
     "urls": {
       "webpages": ["http://www.receptome.org/"]
     },
-    "license": "CC BY-NC 4.0"
+    "license": "CC BY-NC 4.0",
+    "type": ["literature curated"],
+    "subtype": ["activity flow", "complexes", "annotations", "intercell"],
+    "descriptions": [
+      "This review provides a global categorization of most known signal ",
+      "transduction-associated receptors as enzymes, recruiters, and latent ",
+      "transcription factors. [...] The human receptor families involved ",
+      "in signaling (with the exception of channels) are presented in ",
+      "the Human Plasma Membrane Receptome database."
+    ]
   },
   "LOCATE": {
     "urls": {
@@ -3725,9 +3762,18 @@
   },
   "CellPhoneDB": {
     "urls": {
-      "webpages": ["https://www.cellphonedb.org/"]
+      "webpages": ["https://www.cellphonedb.org/"],
+      "articles": ["https://www.nature.com/articles/s41586-018-0698-6"]
     },
-    "license": "MIT"
+    "omnipath": true,
+    "license": "MIT",
+    "type": ["literature curated"],
+    "subtype": ["complexes", "annotations", "network", "intercell"],
+    "descriptions": [
+      "Heteromeric receptors and ligands (that is, proteins that are ",
+      "complexes of multiple gene products) were annotated by reviewing the ",
+      "literature and Uniprot descriptions."
+    ]
   },
   "ComPPI": {
     "urls": {
@@ -3796,21 +3842,60 @@
     "urls": {
       "webpages": ["https://www.sciencedirect.com/science/article/pii/S0092867412010069"]
     },
-    "license": "CC BY 4.0"
+    "license": "CC BY 4.0",
+    "type": ["original experiment", "prediction"],
+    "subtype": ["complexes"],
+    "descriptions": [
+      "To isolate human protein complexes in a sensitive and unbiased ",
+      "manner, we subjected cytoplasmic and nuclear soluble protein ",
+      "extracts isolated from human HeLa S3 and HEK293 cells grown as ",
+      "suspension and adherent cultures, respectively, to extensive ",
+      "complementary biochemical fractionation procedures. [...]  Because ",
+      "physically interacting cocomplexed proteins often perform related ",
+      "biological functions and are often evolutionarily coconserved , we ",
+      "devised a machine learning procedure to score and select ",
+      "higher-confidence physical interactions based on both the ",
+      "experimentally measured coelution profiles and the existence of ",
+      "additional supporting functional association evidence inferred from ",
+      "correlated evolutionary rates and functional genomics data sets ",
+      "compiled for H. sapiens, S. cerevisiae, D. melanogaster, and ",
+      "C. elegans."
+    ]
   },
   "Compleat": {
     "synonyms": ["COMPLEAT"],
     "full_name": "COMPLEAT protein COMPLex Enrichment Analysis Tool",
     "urls": {
-      "webpages": ["https://www.flyrnai.org/compleat/"]
+      "webpages": ["https://www.flyrnai.org/compleat/"],
+      "articles": ["https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3756668/"]
     },
-    "license": "CC BY-SA 4.0"
+    "type": ["literature curated", "prediction"],
+    "subtype": ["complexes"],
+    "license": "CC BY-SA 4.0",
+    "descriptions": [
+      "Literature-based complex information was retrieved from databases ",
+      "such as CORUM, PINdb, CYC2008, GO, KEGG, and Drosophila AP-MS ",
+      "pulldown complexes (table S1). With the exception of protein ",
+      "complexes that are annotated by GO, all the other complexes were ",
+      "mapped across human, Drosophila, and yeast. [...] We applied CFinder ",
+      "to identify protein complexes from human, Drosophila, and yeast PPI ",
+      "networks. We filtered the PPI networks using co-expression values or ",
+      "colocalization information to remove low-confidence PPIs"
+    ]
   },
   "ComplexPortal": {
     "urls": {
-      "webpages": ["https://www.ebi.ac.uk/complexportal"]
+      "webpages": ["https://www.ebi.ac.uk/complexportal"],
+      "articles": ["https://academic.oup.com/nar/article/47/D1/D550/5144138"]
     },
-    "license": "CC BY 4.0"
+    "type": ["literature curated"],
+    "subtype": ["complexes"],
+    "license": "CC BY 4.0",
+    "descriptions": [
+      "The Complex Portal is a manually curated, encyclopaedic database ",
+      "that collates and summarizes information on stable, macromolecular ",
+      "complexes of known function."
+    ]
   },
   "HPA": {
     "full_name": "Human Protein Atlas",
@@ -3822,16 +3907,42 @@
   "PDB": {
     "full_name": "Protein Data Bank",
     "urls": {
-      "webpages": ["https://www.wwpdb.org/"]
+      "webpages": ["https://www.wwpdb.org/"],
+      "articles": ["https://www.nature.com/articles/nsb1203-980"]
     },
-    "license": "PDB"
+    "license": "PDB",
+    "type": ["original experiment", "literature curated"],
+    "subtype": ["complexes"],
+    "descriptions": [
+      "The Research Collaboratory for Structural Bioinformatics (RCSB), ",
+      "the Macromolecular Structure Database (MSD) at the European ",
+      "Bioinformatics Institute (EBI) and the Protein Data Bank Japan ",
+      "(PDBj) at the Institute for Protein Research in Osaka University ",
+      "will serve as custodians of the wwPDB, with the goal of maintaining ",
+      "a single archive of macromolecular structural data that is freely ",
+      "and publicly available to the global community."
+    ]
   },
   "hu.MAP": {
     "full_name": "Human Protein Complex Map",
     "urls": {
-      "webpages": ["http://hu.proteincomplexes.org/"]
+      "webpages": ["http://hu.proteincomplexes.org/"],
+      "articles": ["https://www.embopress.org/doi/full/10.15252/msb.20167490"]
     },
-    "license": "CC BY 4.0"
+    "license": "CC BY 4.0",
+    "type": ["literature curated", "original experiment"],
+    "subtype": ["complexes"],
+    "descriptions": [
+      "Here, through the synthesis of over 9,000 published mass ",
+      "spectrometry experiments, we present hu.MAP, the most comprehensive ",
+      "and accurate human protein complex map to date, containing > 4,600 ",
+      "total complexes, > 7,700 proteins, and > 56,000 unique interactions, ",
+      "including thousands of confident protein interactions not identified ",
+      "by the original publications. [...] Second, we developed a machine ",
+      "learning framework that can easily incorporate new data types to ",
+      "build more comprehensive protein complex maps by integrating ",
+      "evidence across many experiments."
+    ]
   },
   "PhosphoNetworks": {
     "urls": {
@@ -4112,13 +4223,27 @@
   },
   "ICELLNET": {
     "urls": {
-      "webpages": ["https://www.biorxiv.org/content/biorxiv/early/2020/03/05/2020.03.05.976878"]
+      "webpages": [
+        "https://www.biorxiv.org/content/biorxiv/early/2020/03/05/2020.03.05.976878",
+        "https://github.com/soumelis-lab/ICELLNET"
+      ]
     },
     "license": "GPLv3",
     "emails": [
         "vassili.soumelis@aphp.fr", "Vassili Soumelis",
         "lucile.massenet@espci.org", "Lucile Massenet-Regad",
         "floriane.noel@inserm.fr", "Floriane Noël"
+    ],
+    "type": "literature curated",
+    "subtype": ["activity flow", "annotations", "intercell", "complexes"],
+    "descriptions": [
+      "ICELLNET, a transcriptomic-based framework integrating: 1) an ",
+      "original expert-curated database of ligand-receptor interactions ",
+      "accounting for multiple subunits expression, 2) quantification of ",
+      "communication scores, 3) the possibility to connect a cell ",
+      "population of interest with 31 reference human cell types (BioGPS), ",
+      "and 4) three visualization modes to facilitate biological ",
+      "interpretation."
     ]
   },
   "CellCellInteractions": {
@@ -4315,6 +4440,20 @@
     "emails": [
       "plikus@uci.edu", "Maksim V. Plikus",
       "qnie@uci.edu", "Qing Nie"
+    ]
+  },
+  "3DComplexes": {
+    "urls": {
+      "webpages": ["https://shmoo.weizmann.ac.il/elevy/3dcomplexV6/Home.cgi"],
+      "articles": ["https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.0020155"]
+    },
+    "type": "literature curated",
+    "subtype": "complexes",
+    "descriptions": [
+      "We retrieved all Biological Units from the PDB (October 2005), ",
+      "which are the protein complexes in their physiological state, ",
+      "according to the PDB curators. [...] After applying these filters, ",
+      "we obtained 21,037 structures, which we use throughout this study."
     ]
   }
 }
