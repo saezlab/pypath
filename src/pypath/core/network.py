@@ -4112,6 +4112,127 @@ class Network(session_mod.Logger):
         return sum(ia.is_loop() for ia in self)
 
 
+    def direction_consistency(self):
+        """
+        Collects statistics about the consistency of interaction
+        directions between resources.
+        * total_directed: number of directed edges
+        * shared_directed: number of directed edges in overlap with other
+          resources
+        * consistent_edges: number of edges consistent with other resources
+        * inconsistent_edges: number of edges inconsistent with other
+          resources
+        * total_consistency: sum of consistencies (for all edges and all
+          resources)
+        * total_inconsistency: sum of inconsistencies (for all edges and all
+          resources)
+        """
+
+        DirectionConsistency = collections.namedtuple(
+            'DirectionConsistency',
+            [
+                'total_directed',
+                'shared_directed',
+                'consistent_edges',
+                'inconsistent_edges',
+                'total_consistency',
+                'total_inconsistency',
+            ]
+        )
+
+        summary = {}
+
+        resources = sorted(self.get_resource_names(via = False))
+
+        for resource in resources:
+
+            total_directed = 0
+            shared_directed = 0
+            consistent_edges = 0
+            inconsistent_edges = 0
+            total_consistency = 0
+            total_inconsistency = 0
+
+            for ia in self:
+
+                if not ia.is_directed():
+
+                    continue
+
+                res_a_b = ia.direction[ia.a_b].get_resource_names(via = False)
+                res_b_a = ia.direction[ia.b_a].get_resource_names(via = False)
+
+                if resource in res_a_b or resource in res_b_a:
+
+                    total_directed += 1
+
+                else:
+
+                    continue
+
+                if len(res_a_b) <= 1 and len(res_b_a) <= 1:
+
+                    continue
+
+                else:
+
+                    shared_directed += 1
+
+                if (
+                    (resource in res_a_b and len(res_a_b) > 1) or
+                    (resource in res_b_a and len(res_b_a) > 1)
+                ):
+
+                    consistent_edges += 1
+
+                if (
+                    (
+                        resource in res_a_b and
+                        resource not in res_b_a and
+                        res_b_a
+                    ) or
+                    (
+                        resource in res_b_a and
+                        resource not in res_a_b and
+                        res_a_b
+                    )
+                ):
+
+                    inconsistent_edges += 1
+
+                if resource in res_a_b:
+
+                    total_consistency += len(res_a_b) - 1
+
+                else:
+
+                    total_inconsistency += len(res_a_b)
+
+                if resource in res_b_a:
+
+                    total_consistency += len(res_b_a) - 1
+
+                else:
+
+                    total_inconsistency += len(res_b_a)
+
+            summary[resource] = DirectionConsistency(
+                total_directed = total_directed,
+                shared_directed = shared_directed,
+                consistent_edges = consistent_edges,
+                inconsistent_edges = inconsistent_edges,
+                total_consistency = total_consistency,
+                total_inconsistency = total_inconsistency,
+            )
+
+
+        matrix = pd.DataFrame(
+
+        )
+
+        return summary, matrix
+
+
 Network._generate_get_methods()
 Network._generate_partners_methods()
 Network._generate_count_methods()
