@@ -563,6 +563,7 @@ class TableServer(BaseServer):
                 'resources',
                 'organism',
                 'curation_effort',
+                'datasets',
             },
             'tfregulons_levels':  {'A', 'B', 'C', 'D', 'E'},
             'tfregulons_methods': {
@@ -922,7 +923,7 @@ class TableServer(BaseServer):
         'tfregulons_level', 'tfregulons_curated',
         'tfregulons_chipseq', 'tfregulons_tfbs', 'tfregulons_coexp',
         'type', 'ncbi_tax_id', 'databases', 'organism',
-        'curation_effort', 'resources',
+        'curation_effort', 'resources', 'entity_type',
     }
     enzsub_fields = {
         'references', 'sources', 'databases',
@@ -1660,7 +1661,7 @@ class TableServer(BaseServer):
             databases = None,
             dorothea_levels = {'A', 'B'},
             organisms = {9606},
-            source_target = 'OR'
+            source_target = 'OR',
         ):
 
         bad_req = self._check_args(req)
@@ -1886,6 +1887,18 @@ class TableServer(BaseServer):
                 elif f in {'databases', 'resources'}:
 
                     hdr.append('sources')
+
+                elif f == 'datasets':
+
+                    for col in tbl.columns:
+
+                        all_datasets = (
+                            self.args_reference['interactions']['datasets']
+                        )
+
+                        if col in all_datasets:
+
+                            hdr.append(col)
 
                 else:
 

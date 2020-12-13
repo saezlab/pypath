@@ -4226,8 +4226,17 @@ class Network(session_mod.Logger):
             )
 
 
-        matrix = pd.DataFrame(
+        consistency = []
+        inconsistency = []
 
+        matrix = pd.DataFrame(
+            [
+
+            ]
+            columns = [
+                'partner_resource',
+
+            ]
         )
 
         return summary, matrix
