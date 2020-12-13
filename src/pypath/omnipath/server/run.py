@@ -39,7 +39,7 @@ try:
     import twisted.web.server
     import twisted.internet
 except:
-    _log('No module `twisted` available.', -1)
+    _log('No module `twisted` available. Necessary to run HTTP server.', -1)
 
 import urllib
 import json
@@ -924,6 +924,7 @@ class TableServer(BaseServer):
         'tfregulons_chipseq', 'tfregulons_tfbs', 'tfregulons_coexp',
         'type', 'ncbi_tax_id', 'databases', 'organism',
         'curation_effort', 'resources', 'entity_type',
+        'datasets',
     }
     enzsub_fields = {
         'references', 'sources', 'databases',
@@ -1890,15 +1891,11 @@ class TableServer(BaseServer):
 
                 elif f == 'datasets':
 
-                    for col in tbl.columns:
-
-                        all_datasets = (
-                            self.args_reference['interactions']['datasets']
-                        )
-
-                        if col in all_datasets:
-
-                            hdr.append(col)
+                    hdr.extend(
+                        set(tbl.columns) &
+                        self.args_reference['interactions']['datasets'] &
+                        args['datasets']
+                    )
 
                 else:
 
