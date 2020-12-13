@@ -98,13 +98,6 @@ import tarfile
 import hashlib
 import re
 
-
-try:
-    from fabric.network import connect, HostConnectionCache
-    from fabric.state import env
-except:
-    _logger.msg('Module `fabric` not available.', 'curl', -1)
-
 from contextlib import closing
 
 import pypath.share.progress as progress
@@ -505,8 +498,10 @@ class RemoteFile(object):
                  sep = '\t',
                  header = True,
                  rownames = True):
+
         for key, val in iteritems(locals()):
             setattr(self, key, val)
+        self.conf = fabric.config.Config()
         env.keepalive = 60
         env.connection_attempts = 5
         env.password = self.passwd
