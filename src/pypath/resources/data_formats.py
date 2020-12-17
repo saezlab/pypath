@@ -735,6 +735,21 @@ pathway = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
     ),
+    'connectomedb': input_formats.NetworkInput(
+        name = "connectomeDB2020",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 2,
+        id_type_a = "genesymbol",
+        id_type_b = "genesymbol",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        ncbi_tax_id = 9606,
+        is_directed = True,
+        input = 'connectomedb.connectomedb_interactions',
+        references = 3,
+        header = False,
+    ),
 }
 
 # synonym
@@ -2709,6 +2724,9 @@ ligand_receptor['celltalkdb'].data_model = 'ligand_receptor'
 ligand_receptor['cellchatdb'] = copy.deepcopy(pathway['cellchatdb'])
 ligand_receptor['cellchatdb'].must_have_references = False
 ligand_receptor['cellchatdb'].data_model = 'ligand_receptor'
+ligand_receptor['connectomedb'] = copy.deepcopy(pathway['connectomedb'])
+ligand_receptor['connectomedb'].must_have_references = False
+ligand_receptor['connectomedb'].data_model = 'ligand_receptor'
 
 pathway['hpmr'] = copy.deepcopy(ligand_receptor['hpmr'])
 pathway['hpmr'].data_model = 'activity_flow'

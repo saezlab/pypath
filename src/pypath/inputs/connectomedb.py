@@ -29,6 +29,10 @@ import pypath.utils.mapping as mapping
 
 
 def connectomedb_interactions():
+    """
+    Retrieves ligand-receptor interactions from ConnectomeDB2020
+    https://asrhou.github.io/NATMI/
+    """
 
     ConnectomedbInteraction = collections.namedtuple(
         'ConnectomedbInteraction',
@@ -41,6 +45,7 @@ def connectomedb_interactions():
     )
 
     rea = re.compile(r'<a[^>]+>([^<]*)</a>')
+    resemicol = re.compile(r'; ?')
 
     url = urls.urls['connectomedb2020']['url']
     c = curl.Curl(url, large = True, silent = False)
@@ -49,7 +54,7 @@ def connectomedb_interactions():
     return [
         ConnectomedbInteraction(
             ligand = row['Ligand gene symbol'],
-            ligand_location = row['Ligand location'],
+            ligand_location = resemicol.split(row['Ligand location']),
             receptor = row['Receptor gene symbol'],
             references = rea.findall(row['PMID support']),
         )
