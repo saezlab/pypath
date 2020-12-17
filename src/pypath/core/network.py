@@ -4231,8 +4231,7 @@ class Network(session_mod.Logger):
 
         matrix = pd.DataFrame(
             [
-
-            ]
+            ],
             columns = [
                 'partner_resource',
 

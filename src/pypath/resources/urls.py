@@ -1284,6 +1284,12 @@ urls = {
         'url': 'https://raw.githubusercontent.com/sqjin/CellChat/'
             'master/data/%s.rda',
     },
+    'connectomedb2020': {
+        'label': 'Ligand-receptor interactions from original curation '
+            'and from other databases',
+        'url': 'https://raw.githubusercontent.com/asrhou/NATMI/'
+            'gh-pages/_data/lsps.csv',
+    },
 }
 
 
