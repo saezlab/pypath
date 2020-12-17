@@ -22,6 +22,7 @@
 import re
 import csv
 import collections
+import itertools
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
@@ -30,7 +31,7 @@ import pypath.utils.mapping as mapping
 
 def connectomedb_interactions():
     """
-    Retrieves ligand-receptor interactions from ConnectomeDB2020
+    Retrieves ligand-receptor interactions from connectomeDB2020
     https://asrhou.github.io/NATMI/
     """
 
@@ -62,4 +63,48 @@ def connectomedb_interactions():
     ]
 
 
+def connectomedb_annotations():
+    """
+    Retrieves ligand and receptor annotations from connectomeDB2020
+    https://asrhou.github.io/NATMI/
+    """
 
+    ConnectomedbAnnotation = collections.namedtuple(
+        'ConnectomedbAnnotation',
+        [
+            'role',
+            'location',
+        ]
+    )
+
+    interactions = connectomedb_interactions()
+
+    result = collections.defaultdict(set)
+
+    for ia in interactions:
+
+        for role in ('ligand', 'receptor'):
+
+            loc_attr = '%s_location' % role
+            locations = (
+                getattr(ia, loc_attr)
+                    if hasattr(ia, loc_attr) else
+                ('plasma membrane',)
+            )
+
+            uniprots = mapping.map_name(
+                getattr(ia, role),
+                'genesymbol',
+                'uniprot',
+            )
+
+            for uniprot, location in itertools.product(uniprots, locations):
+
+                result[uniprot].add(
+                    ConnectomedbAnnotation(
+                        role = role,
+                        location = location,
+                    )
+                )
+
+    return dict(result)

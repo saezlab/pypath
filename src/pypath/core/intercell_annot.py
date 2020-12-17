@@ -1266,6 +1266,16 @@ annot_combined_classes = (
         name = 'secreted',
         parent = 'secreted',
         scope = 'generic',
+        aspect = 'locational',
+        resource = 'connectomeDB2020',
+        args = {
+            'location': 'secreted',
+        },
+    ),
+    af.AnnotDef(
+        name = 'secreted',
+        parent = 'secreted',
+        scope = 'generic',
         resource = 'Baccin2019',
         aspect = 'locational',
         args = {
@@ -1367,6 +1377,16 @@ annot_combined_classes = (
             'Q96T83', 'Q9NP78', 'A6NFC5', 'Q8TBB6', 'O00400', 'Q8WWZ7',
             'Q71RS6', 'Q9GZU1', 'O95528', 'Q8NDX2', 'O43826', 'O94778',
             'Q9HD20', 'Q9UGQ3', 'Q14108',
+        },
+    ),
+    af.AnnotDef(
+        name = 'cell_surface',
+        parent = 'cell_surface',
+        scope = 'generic',
+        aspect = 'locational',
+        resource = 'connectomeDB2020',
+        args = {
+            'location': 'plasma membrane',
         },
     ),
     af.AnnotDef(
@@ -1761,6 +1781,14 @@ annot_combined_classes = (
         source = 'composite',
         receiver = True,
         transmitter = False,
+    ),
+    af.AnnotDef(
+        name = 'receptor',
+        scope = 'generic',
+        resource = 'connectomeDB2020',
+        args = {
+            'role': 'receptor',
+        },
     ),
     af.AnnotDef(
         name = 'receptor',
@@ -4041,6 +4069,15 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'ligand',
         scope = 'generic',
+        resource = 'connectomeDB2020',
+        args = {
+            'role': 'ligand',
+            'location': 'secreted',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand',
+        scope = 'generic',
         resource = 'Matrisome',
         args = {
             'subclass': 'Secreted Factors',
@@ -4939,6 +4976,15 @@ annot_combined_classes = (
         resource = '~cell_surface_ligand',
         transmitter = True,
         receiver = False,
+    ),
+    af.AnnotDef(
+        name = 'cell_surface_ligand',
+        scope = 'generic',
+        resource = 'connectomeDB2020',
+        args = {
+            'role': 'ligand',
+            'location': 'plasma membrane',
+        },
     ),
     af.AnnotDef(
         name = 'cell_surface_ligand',
