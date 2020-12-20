@@ -4455,5 +4455,20 @@
       "according to the PDB curators. [...] After applying these filters, ",
       "we obtained 21,037 structures, which we use throughout this study."
     ]
+  },
+  "connectomeDB2020": {
+    "urls": {
+      "webpages": [
+        "https://github.com/asrhou/NATMI"
+      ],
+      "articles": [
+        "https://www.nature.com/articles/s41467-020-18873-z"
+      ]
+    },
+    "license": "MIT",
+    "emails": [
+      "rui.hou@research.uwa.edu.au", "Rui Hou",
+      "alistair.forrest@gmail.com", "Alistair R. R. Forrest"
+    ]
   }
 }
