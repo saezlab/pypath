@@ -4128,6 +4128,19 @@ class Network(session_mod.Logger):
           resources)
         """
 
+        def dd_matrix(dd):
+
+            names = list(dd.keys())
+
+            return pd.DataFrame(
+                [
+                    [key] + list(val.values())
+                    for key, val in dd.items()
+                ],
+                columns = ['resource'] + names,
+            )
+
+
         DirectionConsistency = collections.namedtuple(
             'DirectionConsistency',
             [
@@ -4137,12 +4150,31 @@ class Network(session_mod.Logger):
                 'inconsistent_edges',
                 'total_consistency',
                 'total_inconsistency',
+                'total_signed',
+                'shared_signed',
+                'consistent_signed_edges',
+                'inconsistent_signed_edges',
+                'total_sign_consistency',
+                'total_sign_inconsistency',
             ]
         )
 
         summary = {}
 
         resources = sorted(self.get_resource_names(via = False))
+        consistencies = collections.OrderedDict(
+            (
+                resource1,
+                collections.OrderedDict(
+                    (resource2, 0)
+                    for resource2 in resources
+                )
+            )
+            for resource1 in resources
+        )
+        inconsistencies = copy_mod.deepcopy(consistencies)
+        sign_consistencies = copy_mod.deepcopy(consistencies)
+        sign_inconsistencies = copy_mod.deepcopy(consistencies)
 
         for resource in resources:
 
@@ -4152,6 +4184,12 @@ class Network(session_mod.Logger):
             inconsistent_edges = 0
             total_consistency = 0
             total_inconsistency = 0
+            total_signed = 0
+            shared_signed = 0
+            consistent_signed_edges = 0
+            inconsistent_signed_edges = 0
+            total_sign_consistency = 0
+            total_sign_inconsistency = 0
 
             for ia in self:
 
@@ -4161,6 +4199,18 @@ class Network(session_mod.Logger):
 
                 res_a_b = ia.direction[ia.a_b].get_resource_names(via = False)
                 res_b_a = ia.direction[ia.b_a].get_resource_names(via = False)
+                res_a_b_pos = ia.positive[ia.a_b].get_resource_names(
+                    via = False
+                )
+                res_a_b_neg = ia.negative[ia.a_b].get_resource_names(
+                    via = False
+                )
+                res_b_a_pos = ia.positive[ia.b_a].get_resource_names(
+                    via = False
+                )
+                res_b_a_neg = ia.negative[ia.b_a].get_resource_names(
+                    via = False
+                )
 
                 if resource in res_a_b or resource in res_b_a:
 
@@ -4170,13 +4220,25 @@ class Network(session_mod.Logger):
 
                     continue
 
-                if len(res_a_b) <= 1 and len(res_b_a) <= 1:
+                if resource in res_a_b_pos or resource in res_a_b_neg:
 
-                    continue
+                    total_signed += 1
 
-                else:
+                if resource in res_b_a_pos or resource in res_b_a_neg:
+
+                    total_signed += 1
+
+                if len(res_a_b | res_b_a) > 1:
 
                     shared_directed += 1
+
+                if len(res_a_b_pos | res_a_b_neg) > 1:
+
+                    shared_signed += 1
+
+                if len(res_b_a_pos | res_b_a_neg) > 1:
+
+                    shared_signed += 1
 
                 if (
                     (resource in res_a_b and len(res_a_b) > 1) or
@@ -4184,6 +4246,20 @@ class Network(session_mod.Logger):
                 ):
 
                     consistent_edges += 1
+
+                if (
+                    (resource in res_a_b_pos and len(res_a_b_pos) > 1) or
+                    (resource in res_a_b_neg and len(res_a_b_neg) > 1)
+                ):
+
+                    consistent_signed_edges += 1
+
+                if (
+                    (resource in res_b_a_pos and len(res_b_a_pos) > 1) or
+                    (resource in res_b_a_neg and len(res_b_a_neg) > 1)
+                ):
+
+                    consistent_signed_edges += 1
 
                 if (
                     (
@@ -4200,6 +4276,36 @@ class Network(session_mod.Logger):
 
                     inconsistent_edges += 1
 
+                if (
+                    (
+                        resource in res_a_b_pos and
+                        resource not in res_a_b_neg and
+                        res_a_b_neg
+                    ) or
+                    (
+                        resource in res_a_b_neg and
+                        resource not in res_a_b_pos and
+                        res_a_b_pos
+                    )
+                ):
+
+                    inconsistent_signed_edges += 1
+
+                if (
+                    (
+                        resource in res_b_a_pos and
+                        resource not in res_b_a_neg and
+                        res_b_a_neg
+                    ) or
+                    (
+                        resource in res_b_a_neg and
+                        resource not in res_b_a_pos and
+                        res_b_a_pos
+                    )
+                ):
+
+                    inconsistent_signed_edges += 1
+
                 if resource in res_a_b:
 
                     total_consistency += len(res_a_b) - 1
@@ -4207,6 +4313,38 @@ class Network(session_mod.Logger):
                 else:
 
                     total_inconsistency += len(res_a_b)
+
+                if resource in res_a_b_pos:
+
+                    total_sign_consistency += len(res_a_b_pos) - 1
+
+                if resource in res_a_b_neg:
+
+                    total_sign_consistency += len(res_a_b_neg) - 1
+
+                if resource in res_b_a_pos:
+
+                    total_sign_consistency += len(res_b_a_pos) - 1
+
+                if resource in res_b_a_neg:
+
+                    total_sign_consistency += len(res_b_a_neg) - 1
+
+                if resource not in res_a_b_pos:
+
+                    total_sign_inconsistency += len(res_a_b_pos)
+
+                if resource not in res_a_b_neg:
+
+                    total_sign_inconsistency += len(res_a_b_neg)
+
+                if resource not in res_b_a_pos:
+
+                    total_sign_inconsistency += len(res_b_a_pos)
+
+                if resource not in res_b_a_neg:
+
+                    total_sign_inconsistency += len(res_b_a_neg)
 
                 if resource in res_b_a:
 
@@ -4216,6 +4354,35 @@ class Network(session_mod.Logger):
 
                     total_inconsistency += len(res_b_a)
 
+                for dir_resources in (res_a_b, res_b_a):
+
+                    for res_other in dir_resources:
+
+                        if resource in dir_resources:
+
+                            consistencies[resource][res_other] += 1
+
+                        else:
+
+                            inconsistencies[resource][res_other] += 1
+
+                for sign_resources in (
+                    res_a_b_pos,
+                    res_a_b_neg,
+                    res_b_a_pos,
+                    res_a_b_neg,
+                ):
+
+                    for res_other in sign_resources:
+
+                        if resource in sign_resources:
+
+                            sign_consistencies[resource][res_other] += 1
+
+                        else:
+
+                            sign_inconsistencies[resource][res_other] += 1
+
             summary[resource] = DirectionConsistency(
                 total_directed = total_directed,
                 shared_directed = shared_directed,
@@ -4223,22 +4390,34 @@ class Network(session_mod.Logger):
                 inconsistent_edges = inconsistent_edges,
                 total_consistency = total_consistency,
                 total_inconsistency = total_inconsistency,
+                total_signed = total_signed,
+                shared_signed = shared_signed,
+                consistent_signed_edges = consistent_signed_edges,
+                inconsistent_signed_edges = inconsistent_signed_edges,
+                total_sign_consistency = total_sign_consistency,
+                total_sign_inconsistency = total_sign_inconsistency,
             )
 
+        consistencies = dd_matrix(consistencies)
+        inconsistencies = dd_matrix(inconsistencies)
+        sign_consistencies = dd_matrix(sign_consistencies)
+        sign_inconsistencies = dd_matrix(sign_inconsistencies)
 
-        consistency = []
-        inconsistency = []
-
-        matrix = pd.DataFrame(
+        summary = pd.DataFrame(
             [
+                [resource] + list(values)
+                for resource, values in summary.items()
             ],
-            columns = [
-                'partner_resource',
-
-            ]
+            columns = ['resource'] + list(DirectionConsistency._fields),
         )
 
-        return summary, matrix
+        return {
+            'summary': summary,
+            'consistencies': consistencies,
+            'inconsistencies': inconsistencies,
+            'sign_consistencies': sign_consistencies,
+            'sign_inconsistencies': sign_inconsistencies,
+        }
 
 
 Network._generate_get_methods()
