@@ -24,46 +24,117 @@ from past.builtins import xrange, range
 
 import sys
 import xlrd
+xlrd.xlsx.ensure_elementtree_imported(False, None)
+xlrd.xlsx.Element_has_iter = True
 from xlrd.biffh import XLRDError
-
 import pypath.share.session as session_mod
+import pypath.share.common as common
 
 _logger = session_mod.Logger(name = 'dataio')
 _log = _logger._log
 _console = _logger._console
 
+try:
+    import openpyxl
+except:
+    _log('No module `openpyxl` available.')
+
 if 'unicode' not in __builtins__: unicode = str
 
 
-def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
+def read_xls(
+        xls_file,
+        sheet = 0,
+        use_openpyxl = False,
+    ):
     """
     Generic function to read MS Excel XLS file, and convert one sheet
     to CSV, or return as a list of lists
     """
-    try:
-        if hasattr(xls_file, 'read'):
-            book = xlrd.open_workbook(
-                file_contents = xls_file.read(),
+
+    table = []
+
+    if not use_openpyxl:
+
+        try:
+
+            if hasattr(xls_file, 'read'):
+
+                book = xlrd.open_workbook(
+                    file_contents = xls_file.read(),
+                    on_demand = True,
+                )
+
+            else:
+
+                book = xlrd.open_workbook(xls_file, on_demand = True)
+
+            try:
+                if isinstance(sheet, int):
+                    sheet = book.sheet_by_index(sheet)
+                else:
+                    sheet = book.sheet_by_name(sheet)
+            except xlrd.biffh.XLRDError:
+                sheet = book.sheet_by_index(0)
+
+            table = [
+                [common.basestring(c.value) for c in sheet.row(i)]
+                for i in xrange(sheet.nrows)
+            ]
+
+            use_openpyxl = False
+
+        except IOError:
+
+            raise FileNotFoundError(xls_file)
+
+        except:
+
+            use_openpyxl = True
+
+    if use_openpyxl and 'openpyxl' in sys.modules:
+
+        try:
+
+            book = openpyxl.load_workbook(
+                filename = xls_file,
+                read_only = True,
                 on_demand = True,
             )
-        else:
-            book = xlrd.open_workbook(xls_file, on_demand = True)
+
+        except:
+
+            raise ValueError('Could not open xls: %s' % xls_file)
+
+            if not os.path.exists(xls_file):
+
+                raise FileNotFoundError(xls_file)
+
         try:
-            sheet = book.sheet_by_name(sheet)
-        except xlrd.biffh.XLRDError:
-            sheet = book.sheet_by_index(0)
-        table = [[unicode(c.value) for c in sheet.row(i)]
-                 for i in xrange(sheet.nrows)]
-        if csv_file:
-            with open(csv_file, 'w') as csv:
-                csv.write('\n'.join(['\t'.join(r) for r in table]))
-        if not return_table:
-            table = None
+
+            if type(sheet) is int:
+                sheet = book.worksheets[sheet]
+            else:
+                sheet = book[sheet]
+
+        except:
+
+            sheet = book.worksheets[0]
+
+        cells = sheet.get_squared_range(
+            1, 1, sheet.max_column, sheet.max_row
+        )
+
+        table = [
+            [common.basestring(c.value) if c.value else '' for row in cells]
+            for c in row
+        ]
+
+    if 'book' in locals() and hasattr(book, 'release_resources'):
+
         book.release_resources()
-        return table
-    except IOError:
-        sys.stdout.write('No such file: %s\n' % xls_file)
-        sys.stdout.flush()
+
+    return table
 
 
 def csv_sep_change(csv, old, new):
