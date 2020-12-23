@@ -70,6 +70,21 @@ def stop_server():
     reactor.removeAll()
 
 
+formats = {
+    'png': ('image', 'png'),
+    'jpeg': ('image', 'jpeg'),
+    'jpg': ('image', 'jpeg'),
+    'ico': ('image', 'x-icon'),
+    'css': ('text', 'css'),
+    'html': ('text', 'html'),
+    'svg': ('image', 'svg+xml'),
+    'js': ('text', 'javascript'),
+    'txt': ('text', 'plain'),
+    'tsv': ('text', 'plain'),
+    'csv': ('text', 'plain'),
+}
+
+
 class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
 
@@ -90,6 +105,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         ) % __version__
 
         self.isLeaf = True
+        self._set_www_root()
         self._read_license_secret()
         self._res_ctrl = resources_mod.get_controller()
 
@@ -111,12 +127,11 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             )
         )
 
-        html = (
-            len(request.postpath) == 0 or
-            request.postpath[0] in self.htmls or
-            request.postpath[0] == 'error_page.html'
-        )
-        self._set_defaults(request, html = html)
+        if not request.postpath:
+
+            request.postpath = ['index.html']
+
+        self._set_defaults(request)
 
         if (
             request.postpath and
@@ -157,17 +172,19 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
                     self._log_traceback()
                     raise
 
-        elif not request.postpath:
+        else:
 
-            response = [self._root(request)]
+            for wwwroot in (self.wwwroot, self.wwwbuiltin):
 
-        elif request.postpath[0] == 'favicon.ico':
+                path = os.path.join(wwwroot, *request.postpath)
 
-            favicon_path = os.path.join(common.ROOT, 'data', 'favicon.ico')
+                if os.path.exists(path):
 
-            with open(favicon_path, 'rb') as fp:
+                    with open(path, 'rb') as fp:
 
-                response = [fp.read()]
+                        response = [fp.read()]
+
+                    break
 
         if not response:
 
@@ -226,13 +243,24 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         return self.render_GET(request)
 
 
-    def _set_defaults(self, request, html=False):
+    def _set_www_root(self):
+
+        self.wwwbuiltin = os.path.join(common.ROOT, 'data', 'www')
+        self.wwwroot = settings.get('www_root')
+
+        if not os.path.exists(self.wwwroot):
+
+            self.wwwroot = self.wwwbuiltin
+
+
+    def _set_defaults(self, request):
 
         for k, v in iteritems(request.args):
 
             request.args[k] = [b','.join(v)]
 
         request.setHeader('Cache-Control', 'Public')
+        request.setHeader('Access-Control-Allow-Origin', '*')
 
         if '' in request.postpath:
             request.postpath.remove('')
@@ -241,23 +269,46 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
             request.args[b'format'] = [b'json']
 
-        request.setHeader('Access-Control-Allow-Origin', '*')
+        path = os.path.join(self.wwwroot, *request.postpath)
 
-        if html:
-            request.setHeader('Content-Type', 'text/html; charset=utf-8')
+        if os.path.exists(path):
+
+            _, ext = os.path.splitext(path)
+            ext = ext[1:]
+            format_ = formats[ext] if ext in formats else ('text', 'plain')
+
+        elif (
+            not request.postpath or
+            request.postpath[0] in self.htmls or
+            request.postpath[0] == 'error_page.html'
+        ):
+
+            format_ = ('text', 'html')
+
         elif (
             b'format' in request.args and
             request.args[b'format'][0] == b'json'
         ):
-            request.setHeader(
-                'Content-Type',
-                'application/json'
-            )
+
+            format_ = ('application', 'json')
+
         elif request.postpath[0] == 'favicon.ico':
-            request.setHeader('Content-Type', 'image/vnd.microsoft.icon')
+
+            format_ = ('image', 'vnd.microsoft.icon')
+
         else:
+
             request.args[b'format'] = [b'text']
-            request.setHeader('Content-Type', 'text/plain; charset=utf-8')
+            format_ = ('text', 'plain')
+
+        request.setHeader(
+            'Content-Type',
+            '%s/%s%s' % (
+                format_ + (
+                    '; charset=utf-8' if format_[0] == 'text' else '',
+                )
+            )
+        )
 
         request.args[b'header'] = (
             [b'1']

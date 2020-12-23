@@ -82,6 +82,8 @@ _defaults = {
     'license_dir': 'licenses',
     # password file for within company license-free redistribution
     'secrets_dir': None,
+    # web contents root directory path (for server)
+    'www_root': 'www',
     'license_secret': 'license_secret',
     'server_default_license': 'academic',
     'pubmed_cache': 'pubmed.pickle',
