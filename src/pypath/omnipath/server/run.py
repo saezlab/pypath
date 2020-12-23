@@ -131,7 +131,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
             request.postpath = ['index.html']
 
-        self._set_defaults(request)
+        self._set_headers(request)
 
         if (
             request.postpath and
@@ -174,17 +174,13 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
         else:
 
-            for wwwroot in (self.wwwroot, self.wwwbuiltin):
+            local_path = self._local_path(request)
 
-                path = os.path.join(wwwroot, *request.postpath)
+            if local_path:
 
-                if os.path.exists(path):
+                with open(local_path, 'rb') as fp:
 
-                    with open(path, 'rb') as fp:
-
-                        response = [fp.read()]
-
-                    break
+                    response = [fp.read()]
 
         if not response:
 
@@ -253,7 +249,18 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
             self.wwwroot = self.wwwbuiltin
 
 
-    def _set_defaults(self, request):
+    def _local_path(self, request):
+
+        for wwwroot in (self.wwwroot, self.wwwbuiltin):
+
+            path =  os.path.join(wwwroot, *request.postpath)
+
+            if os.path.exists(path):
+
+                return path
+
+
+    def _set_headers(self, request):
 
         for k, v in iteritems(request.args):
 
@@ -263,17 +270,22 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         request.setHeader('Access-Control-Allow-Origin', '*')
 
         if '' in request.postpath:
+
             request.postpath.remove('')
+
+        if not request.postpath:
+
+            request.postpath = ['index.html']
 
         if request.postpath and request.postpath[0] == 'resources':
 
             request.args[b'format'] = [b'json']
 
-        path = os.path.join(self.wwwroot, *request.postpath)
+        local_path = self._local_path(request)
 
-        if os.path.exists(path):
+        if local_path:
 
-            _, ext = os.path.splitext(path)
+            _, ext = os.path.splitext(local_path)
             ext = ext[1:]
             format_ = formats[ext] if ext in formats else ('text', 'plain')
 
