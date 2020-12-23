@@ -43,6 +43,7 @@ except:
 
 import urllib
 import json
+import mimetypes
 
 import pandas as pd
 import numpy as np
@@ -68,21 +69,6 @@ LICENSE_IGNORE = 'ignore'
 def stop_server():
 
     reactor.removeAll()
-
-
-formats = {
-    'png': ('image', 'png'),
-    'jpeg': ('image', 'jpeg'),
-    'jpg': ('image', 'jpeg'),
-    'ico': ('image', 'x-icon'),
-    'css': ('text', 'css'),
-    'html': ('text', 'html'),
-    'svg': ('image', 'svg+xml'),
-    'js': ('text', 'javascript'),
-    'txt': ('text', 'plain'),
-    'tsv': ('text', 'plain'),
-    'csv': ('text', 'plain'),
-}
 
 
 class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
@@ -285,9 +271,12 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
         if local_path:
 
-            _, ext = os.path.splitext(local_path)
-            ext = ext[1:]
-            format_ = formats[ext] if ext in formats else ('text', 'plain')
+            format_ = mimetypes.guess_type(local_path)[0]
+            format_ = (
+                tuple(format_.split('/'))
+                    if format_ else
+                ('text', 'plain')
+            )
 
         elif (
             not request.postpath or
