@@ -4471,40 +4471,6 @@ def get_integrins():
     return mapping.map_names(integrins, 'uniprot', 'uniprot')
 
 
-def get_tfcensus(classes = ('a', 'b', 'other')):
-    """
-    Downloads and processes the list of all known transcription factors from
-    TF census (Vaquerizas 2009). This resource is human only.
-    Returns set of UniProt IDs.
-    """
-
-    ensg = []
-    hgnc = []
-    reensg = re.compile(r'ENSG[0-9]{11}')
-    url = urls.urls['vaquerizas2009']['url']
-    c = curl.Curl(url, silent = False, large = True)
-    f = c.result
-
-    for l in f:
-        if len(l) > 0 and l.split('\t')[0] in classes:
-            ensg += reensg.findall(l)
-            h = l.split('\t')[5].strip()
-
-            if len(h) > 0:
-                hgnc.append(h)
-
-    return (
-        set.union(*(
-            mapping.map_name(e, 'ensembl', 'uniprot')
-            for e in ensg
-        )) |
-        set.union(*(
-            mapping.map_name(h, 'genesymbol', 'uniprot')
-            for h in hgnc
-        ))
-    )
-
-
 def get_guide2pharma(
         organism = 'human',
         endogenous = True,

@@ -4551,9 +4551,17 @@ class Tfcensus(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'TFcensus',
-            input_method = 'get_tfcensus',
+            input_method = 'tfcensus.tfcensus_annotations',
             **kwargs
         )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
 
 
 class Dgidb(AnnotationBase):

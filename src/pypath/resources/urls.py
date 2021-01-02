@@ -582,8 +582,9 @@ urls = {
     'tfcensus': {
         'label': 'A census of human transcription factors (Vaquerizas 2009)',
         'url': (
-            'http://www.nature.com/nrg/journal/'
-            'v10/n4/extref/nrg2538-s3.txt'
+            r'https://static-content.springer.com/esm/'
+            r'art%3A10.1038%2Fnrg2538/MediaObjects/'
+            r'41576_2009_BFnrg2538_MOESM6_ESM.txt'
         )
     },
     'tfcheckp': {
@@ -812,7 +813,11 @@ urls = {
     'vaquerizas2009': {
         'label': 'A census of human transcription factors: function, '
         'expression and evolution; Supplementary Table S3',
-        'url': 'http://www.nature.com/nrg/journal/v10/n4/extref/nrg2538-s3.txt'
+        'url': (
+            r'https://static-content.springer.com/esm/'
+            r'art%3A10.1038%2Fnrg2538/MediaObjects/'
+            r'41576_2009_BFnrg2538_MOESM6_ESM.txt'
+        ),
     },
     'spike': {
         'label': 'SPIKE database XML',
