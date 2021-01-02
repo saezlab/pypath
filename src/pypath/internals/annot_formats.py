@@ -6,7 +6,7 @@
 #  Meta-classes used for annotation functionality
 #
 #  Copyright
-#  2014-2020
+#  2014-2021
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #

@@ -6,7 +6,7 @@
 #  Enables ID translations and mapping
 #
 #  Copyright
-#  2014-2020
+#  2014-2021
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
