@@ -189,6 +189,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
                 ).encode('utf-8')
             ]
 
+        request.setHeader('Content-Length',  str(len(response[0])))
         request.write(response[0])
 
         self._log(

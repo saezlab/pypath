@@ -18,6 +18,9 @@ from pypath.omnipath.server import run
 
 run.Rest(33333, serverclass = run.TableServer)
 
+# without tables:
+# run.Rest(33333, serverclass = run.TableServer, only_tables = [])
+
 # run.Rest(33333, serverclass = run.TableServer, only_tables = {'annotations', 'intercell', 'interactions'})
 
 #srv = server.Rest(
