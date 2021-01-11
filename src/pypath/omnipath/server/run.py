@@ -238,6 +238,10 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
     def _local_path(self, request):
 
+        if request.postpath and request.postpath[-1].startswith('_'):
+
+            return
+
         for wwwroot in (self.wwwroot, self.wwwbuiltin):
 
             path =  os.path.join(wwwroot, *request.postpath)
