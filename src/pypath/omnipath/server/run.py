@@ -144,7 +144,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
                     response = toCall(request)
                     response = (
                         response.encode('utf-8')
-                        if type(response) is unicode else
+                        if hasattr(response, 'encode') else
                         response
                     )
                     response = [response]
