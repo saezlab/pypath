@@ -74,6 +74,9 @@ def stop_server():
 class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
 
+    recomment = re.compile(b'<!--\s*Title:(.*?)-->')
+
+
     def __init__(self):
 
         if not hasattr(self, '_log_name'):
@@ -167,6 +170,8 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
                 with open(local_path, 'rb') as fp:
 
                     response = [fp.read()]
+
+                response = self._add_html_header(local_path, response)
 
         if not response:
 
@@ -439,6 +444,44 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
                 req.args[b'enzyme_substrate'] = left_right
             else:
                 req.args[b'source_target'] = left_right
+
+
+    def _add_html_header(self, local_path, response):
+
+        if (
+            local_path.endswith('html') or
+            local_path.endswith('htm')
+        ) and not response[0].startswith(b'<!DOCTYPE html>'):
+
+            head_foot = [
+                (
+                    b'<!DOCTYPE html>\n<html lang="en">\n'
+                    b'<head><title>%s</title></head>\n<body>\n'
+                ),
+                b'</body>\n</html>',
+            ]
+
+            for wwwroot in (self.wwwroot, self.wwwbuiltin):
+
+                for i, part in enumerate(('header', 'footer')):
+
+                    path =  os.path.join(wwwroot, '_%s.html' % part)
+
+                    if os.path.exists(path):
+
+                        with open(path, 'rb') as fp:
+
+                            head_foot[i] = fp.read()
+
+            if b'%s' in head_foot[0]:
+
+                title = self.recomment.search(response[0])
+                title = title.groups()[0] if title else b'pypath server'
+                head_foot[0] = head_foot[0] % title.strip()
+
+            response[0] = head_foot[0] + response[0] + head_foot[1]
+
+        return response
 
 
     def about(self, req):
