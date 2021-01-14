@@ -3739,7 +3739,7 @@
   },
   "HPMR": {
     "full_name": "Human Plasma Membrane Receptome",
-    "pubmeds": ["12815191"],
+    "pubmeds": [12815191],
     "urls": {
       "webpages": ["http://www.receptome.org/"]
     },

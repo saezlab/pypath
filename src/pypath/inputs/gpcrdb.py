@@ -23,7 +23,6 @@ import collections
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
-import pypath.utils.mapping as mapping
 import pypath.utils.taxonomy as taxonomy
 
 

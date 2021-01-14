@@ -25,6 +25,7 @@ from future.utils import iteritems
 import pypath.omnipath.server._html as _html
 import pypath.resources.urls as urls
 
+import pypath.share.common as common
 import pypath.share.session as session_mod
 _logger = session_mod.Logger(name = 'generate_about_page')
 _log = _logger._log
@@ -129,13 +130,21 @@ def generate_about_html(descriptions, format = 'b'):
     # Sections
     for k, v in sorted(descriptions.items(), key=lambda x: x[0].lower()):
 
+        resource_type = (
+            common.to_list(v['type']) if 'type' in v else ['Undefined']
+        )
+        resource_subtype = (
+            common.to_list(v['subtype']) if 'subtype' in v else ['Undefined']
+        )
+        resource_type = ', '.join(t.capitalize() for t in resource_type)
+        resource_subtype = ', '.join(t.capitalize() for t in resource_subtype)
+
         doc += u'\t\t<br>\n\t\t<h2 id="%s" class="%s">%s%s</h2>\n' % \
             (k, 'omnipath' if 'omnipath' in v and v['omnipath'] else 'base',
              v['label'] if 'label' in v else k,
              (u' – %s' % (v['full_name'],)) if 'full_name' in v else '')
         doc += '\t\t\t<p><b>Category || Subcategory &gt;&gt;&gt;</b> %s || %s</p>\n' % \
-            (v['type'].capitalize() if 'type' in v else 'Undefined',
-                v['subtype'].capitalize() if 'subtype' in v else 'Undefined')
+            (resource_type, resource_subtype)
         if 'year' in v:
             doc += '\t\t\t<h3>Last released: %u<\h3>\n' % v['year']
         if 'releases' in v:
