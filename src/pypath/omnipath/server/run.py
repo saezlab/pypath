@@ -1439,11 +1439,9 @@ class TableServer(BaseServer):
         self._log('Preprocessing intercell data.')
         tbl = self.data['intercell']
         tbl.drop('full_name', axis = 1, inplace = True, errors = 'ignore')
-        # something is not ok here with pandas > 1.1.5
-        self.data['intercell_summary'] = tbl.groupby(
+        self.data['intercell_summary'] = tbl.filter(
             ['category', 'parent', 'database'],
-            as_index = False,
-        ).agg({})
+        ).drop_duplicates()
 
 
     def _update_resources(self):
