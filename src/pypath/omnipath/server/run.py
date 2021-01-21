@@ -1424,6 +1424,7 @@ class TableServer(BaseServer):
         self._log('Preprocessing intercell data.')
         tbl = self.data['intercell']
         tbl.drop('full_name', axis = 1, inplace = True, errors = 'ignore')
+        # something is not ok here with pandas > 1.1.5
         self.data['intercell_summary'] = tbl.groupby(
             ['category', 'parent', 'database'],
             as_index = False,
@@ -2219,6 +2220,21 @@ class TableServer(BaseServer):
 
             req.args[b'resources'] = req.args[b'databases']
 
+        if (
+            not settings.get('server_annotations_full_download') and
+            not b'resources' in req.args and
+            not b'proteins' in req.args
+        ):
+
+            return (
+                'Downloading the entire annotations database by the REST '
+                'API is not allowed because of its huge size (>1GB). '
+                'We recommend to query a set of proteins or a few '
+                'resources, depending on your interest. '
+                'You can always download the full database from '
+                'https://archive.omnipathdb.org/'
+                'omnipath_webservice_annotations__recent.tsv'
+            )
 
         # starting from the entire dataset
         tbl = self.data['annotations']

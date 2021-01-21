@@ -86,6 +86,7 @@ _defaults = {
     'www_root': 'www',
     'license_secret': 'license_secret',
     'server_default_license': 'academic',
+    'server_annotations_full_download': False,
     'pubmed_cache': 'pubmed.pickle',
     'mapping_use_cache': True,
     'use_intermediate_cache': True,
