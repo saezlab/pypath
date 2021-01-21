@@ -120,6 +120,8 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
             request.postpath = ['index.html']
 
+        request.postpath[0] = self._query_type(request.postpath[0])
+
         self._set_headers(request)
 
         if (
@@ -444,6 +446,18 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
                 req.args[b'enzyme_substrate'] = left_right
             else:
                 req.args[b'source_target'] = left_right
+
+
+    def _query_type(self, query_type):
+
+        return (
+            self.query_type_synonyms[query_type]
+                if (
+                    hasattr(self, 'query_type_synonyms') and
+                    query_type in self.query_type_synonyms
+                ) else
+            query_type
+        )
 
 
     def _add_html_header(self, local_path, response):
@@ -977,6 +991,7 @@ class TableServer(BaseServer):
         'interaction': 'interactions',
         'network': 'interactions',
         'enz_sub': 'enzsub',
+        'enz-sub': 'enzsub',
         'ptms': 'enzsub',
         'ptm': 'enzsub',
         'enzyme-substrate': 'enzsub',
@@ -1586,15 +1601,6 @@ class TableServer(BaseServer):
                 'https://github.com/saezlab/pypath/issues'
                 '' % '\n'.join(result)
             )
-
-
-    def _query_type(self, query_type):
-
-        return (
-            self.query_type_synonyms[query_type]
-                if query_type in self.query_type_synonyms else
-            query_type
-        )
 
 
     def queries(self, req):
