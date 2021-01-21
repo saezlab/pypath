@@ -24,8 +24,9 @@ from past.builtins import xrange, range
 
 import sys
 import xlrd
-xlrd.xlsx.ensure_elementtree_imported(False, None)
-xlrd.xlsx.Element_has_iter = True
+if hasattr(xlrd, 'xlsx'):
+    xlrd.xlsx.ensure_elementtree_imported(False, None)
+    xlrd.xlsx.Element_has_iter = True
 from xlrd.biffh import XLRDError
 import pypath.share.session as session_mod
 import pypath.share.common as common
