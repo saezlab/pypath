@@ -22,23 +22,19 @@
 from future.utils import iteritems
 from past.builtins import xrange, range
 
+import os
 import sys
+import warnings
+
 import xlrd
-if hasattr(xlrd, 'xlsx'):
-    xlrd.xlsx.ensure_elementtree_imported(False, None)
-    xlrd.xlsx.Element_has_iter = True
-from xlrd.biffh import XLRDError
+import openpyxl
+
 import pypath.share.session as session_mod
 import pypath.share.common as common
 
 _logger = session_mod.Logger(name = 'dataio')
 _log = _logger._log
 _console = _logger._console
-
-try:
-    import openpyxl
-except:
-    _log('No module `openpyxl` available.')
 
 if 'unicode' not in __builtins__: unicode = str
 
@@ -93,23 +89,23 @@ def read_xls(
 
             use_openpyxl = True
 
-    if use_openpyxl and 'openpyxl' in sys.modules:
+    if use_openpyxl:
+
+        if not os.path.exists(xls_file):
+
+            raise FileNotFoundError(xls_file)
 
         try:
 
             book = openpyxl.load_workbook(
                 filename = xls_file,
                 read_only = True,
-                on_demand = True,
+                data_only = True,
             )
 
         except:
 
             raise ValueError('Could not open xls: %s' % xls_file)
-
-            if not os.path.exists(xls_file):
-
-                raise FileNotFoundError(xls_file)
 
         try:
 
@@ -122,14 +118,18 @@ def read_xls(
 
             sheet = book.worksheets[0]
 
-        cells = sheet.get_squared_range(
-            1, 1, sheet.max_column, sheet.max_row
-        )
+        # this is to suppress the openpyxl unknown extension warnings
+        # which we can not avoid as the xlsx files were produced not by us
+        with warnings.catch_warnings():
 
-        table = [
-            [common.basestring(c.value) if c.value else '' for row in cells]
-            for c in row
-        ]
+            warnings.simplefilter("ignore")
+            table = [
+                [
+                    common.basestring(cell) if cell is not None else ''
+                    for cell in row
+                ]
+                for row in sheet.values
+            ]
 
     if 'book' in locals() and hasattr(book, 'release_resources'):
 
