@@ -11,6 +11,7 @@ pycurl
 pyreadr
 lxml
 xlrd
+openpyxl
 future
 tqdm
 tabulate
