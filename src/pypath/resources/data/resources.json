@@ -4470,5 +4470,19 @@
       "rui.hou@research.uwa.edu.au", "Rui Hou",
       "alistair.forrest@gmail.com", "Alistair R. R. Forrest"
     ]
+  },
+  "talklr": {
+    "urls": {
+      "webpages": [
+        "https://github.com/yuliangwang/talklr"
+      ],
+      "articles": [
+        "https://www.biorxiv.org/content/10.1101/2020.02.01.930602v2"
+      ]
+    },
+    "license": "GPLv3",
+    "emails": [
+      "yuliangwang86@gmail.com", "Yuliang Wang"
+    ]
   }
 }
