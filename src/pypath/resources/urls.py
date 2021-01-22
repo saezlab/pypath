@@ -1295,6 +1295,12 @@ urls = {
         'url': 'https://raw.githubusercontent.com/asrhou/NATMI/'
             'gh-pages/_data/lsps.csv',
     },
+    'talklr': {
+        'label': 'Ligand-receptor interactions from other databases with '
+            '187 literature references',
+        'url': 'https://github.com/yuliangwang/talklr/raw/master/'
+            'data/receptor_ligand.rda',
+    },
 }
 
 
