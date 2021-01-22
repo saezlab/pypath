@@ -117,6 +117,7 @@ protein_sources_default = {
     'Celltalkdb',
     'Cellchatdb',
     'Connectomedb',
+    'Talklr',
 }
 
 #TODO this should be part of json files
@@ -5048,6 +5049,32 @@ class Connectomedb(AnnotationBase):
             self,
             name = 'connectomeDB2020',
             input_method = 'connectomedb.connectomedb_annotations',
+            ncbi_tax_id = 9606,
+            complexes = False,
+        )
+
+
+    def _process_method(self, *args, **kwargs):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class Talklr(AnnotationBase):
+
+    _eq_fields = ('role',)
+
+
+    def __init__(self, **kwargs):
+
+        _ = kwargs.pop('ncbi_tax_id', None)
+
+        AnnotationBase.__init__(
+            self,
+            name = 'talklr',
+            input_method = 'talklr.talklr_annotations',
             ncbi_tax_id = 9606,
             complexes = False,
         )
