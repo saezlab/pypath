@@ -750,6 +750,22 @@ pathway = {
         references = 3,
         header = False,
     ),
+    'talklr': input_formats.NetworkInput(
+        name = "talklr",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "genesymbol",
+        id_type_b = "genesymbol",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        ncbi_tax_id = 9606,
+        is_directed = True,
+        input = 'talklr.talklr_interactions',
+        references = 2,
+        resource = 3,
+        header = False,
+    ),
 }
 
 # synonym
@@ -2727,6 +2743,9 @@ ligand_receptor['cellchatdb'].data_model = 'ligand_receptor'
 ligand_receptor['connectomedb'] = copy.deepcopy(pathway['connectomedb'])
 ligand_receptor['connectomedb'].must_have_references = False
 ligand_receptor['connectomedb'].data_model = 'ligand_receptor'
+ligand_receptor['talklr'] = copy.deepcopy(pathway['talklr'])
+ligand_receptor['talklr'].must_have_references = False
+ligand_receptor['talklr'].data_model = 'ligand_receptor'
 
 pathway['hpmr'] = copy.deepcopy(ligand_receptor['hpmr'])
 pathway['hpmr'].data_model = 'activity_flow'
