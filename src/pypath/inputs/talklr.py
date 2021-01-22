@@ -26,6 +26,7 @@ import pyreadr
 import pypath.share.curl as curl
 import pypath.share.common as common
 import pypath.resources.urls as urls
+import pypath.utils.mapping as mapping
 
 
 def talklr_raw(putative = True):
@@ -49,7 +50,7 @@ def talklr_interactions(putative = True):
 
     TalklrInteraction = collections.namedtuple(
         'TalklrInteraction',
-        ['ligand', 'receptor', 'pmids', 'resources'],
+        ['ligand', 'receptor', 'pmids', 'resources', 'putative'],
     )
 
     resource_columns = {
@@ -84,6 +85,42 @@ def talklr_interactions(putative = True):
                 receptor = rec.Receptor_ApprovedSymbol,
                 pmids = pmids,
                 resources = resources,
+                putative = rec.Pair_Evidence == 'putative',
             )
         )
 
+
+def talklr_annotations(putative = True):
+
+    TalklrAnnotation = collections.namedtuple(
+        'TalklrAnnotation',
+        ['role', 'pmid', 'putative']
+    )
+
+
+    result = collections.defaultdict(set)
+
+    for ia in talklr_interactions(putative = putative):
+
+        for role in ('ligand', 'receptor'):
+
+            uniprots = mapping.map_name(
+                getattr(ia, role),
+                'genesymbol',
+                'uniprot',
+                ncbi_tax_id = 9606,
+            )
+
+            for uniprot in uniprots:
+
+                for pmid in (ia.pmids or (None,)):
+
+                    result[uniprot].add(
+                        TalklrAnnotation(
+                            role = role,
+                            pmid = pmid,
+                            putative = ia.putative,
+                        )
+                    )
+
+    return result
