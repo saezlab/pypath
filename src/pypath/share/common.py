@@ -1966,6 +1966,14 @@ def sets_to_sorted_lists(obj):
         return obj
 
 
+def is_str(obj):
+    """
+    Checks if ``obj`` is a string.
+    """
+
+    return isinstance(obj, basestring)
+
+
 def wrap_truncate(text, width = None, maxlen = None):
 
     if isinstance(text, list_like):
