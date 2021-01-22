@@ -1785,6 +1785,15 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'receptor',
         scope = 'generic',
+        resource = 'talklr',
+        args = {
+            'role': 'receptor',
+            'putative': False,
+        },
+    ),
+    af.AnnotDef(
+        name = 'receptor',
+        scope = 'generic',
         resource = 'connectomeDB2020',
         args = {
             'role': 'receptor',
@@ -4065,6 +4074,15 @@ annot_combined_classes = (
             'category': 'Secreted Signaling',
         },
         scope = 'generic',
+    ),
+    af.AnnotDef(
+        name = 'ligand',
+        scope = 'generic',
+        resource = 'talklr',
+        args = {
+            'role': 'ligand',
+            'putative': False,
+        },
     ),
     af.AnnotDef(
         name = 'ligand',
