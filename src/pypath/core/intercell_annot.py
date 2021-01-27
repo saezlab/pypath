@@ -4068,15 +4068,6 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'ligand',
-        resource = 'CellChatDB',
-        args = {
-            'role': 'ligand',
-            'category': 'Secreted Signaling',
-        },
-        scope = 'generic',
-    ),
-    af.AnnotDef(
-        name = 'ligand',
         scope = 'generic',
         resource = 'talklr',
         args = {
@@ -4272,7 +4263,7 @@ annot_combined_classes = (
         scope = 'generic',
     ),
     af.AnnotDef(
-        name = 'receptor',
+        name = 'ligand',
         resource = 'CellChatDB',
         args = {
             'role': 'ligand',
