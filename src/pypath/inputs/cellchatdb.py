@@ -130,7 +130,7 @@ def _cellchatdb_process_complexes(raw, organism = 9606):
             cplex = intera.Complex(
                 name = row.rownames,
                 components = components,
-                sources = 'CellTalkDB',
+                sources = 'CellChatDB',
                 ncbi_tax_id = ncbi_tax_id,
             )
             complexes[cplex.__str__()] = cplex
