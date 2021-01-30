@@ -690,7 +690,7 @@ excludes = {
             'Q9NWZ3', 'Q9NX52', 'Q9NZC2', 'Q9NZR2', 'Q9UBY5', 'Q9UHG3',
             'Q9UIW2', 'Q9UJU6', 'Q9UKQ2', 'Q9ULP9', 'Q9UM47', 'Q9UQ26',
             'Q9XRX5', 'Q9Y215', 'Q9Y2I2', 'Q9Y4D7', 'Q9Y566', 'Q9Y5U5',
-            'Q9Y624', 'Q9Y625', 'Q9Y6N7',
+            'Q9Y624', 'Q9Y625', 'Q9Y6N7', 'P11362', 'P14778', 'P36897',
         },
     # the proteins below are not cell surface ligand proteins,
     # are excluded from all cell surface ligand categories
@@ -4267,7 +4267,7 @@ annot_combined_classes = (
         resource = 'CellChatDB',
         args = {
             'role': 'ligand',
-            'category': 'Secreted signaling',
+            'category': 'Secreted Signaling',
         },
         scope = 'generic',
     ),
