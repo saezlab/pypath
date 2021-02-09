@@ -27,10 +27,18 @@ data from various resources.
 
 import sys
 import os
-import importlib as importlib
+import importlib
 
 import pypath._version as _version_mod
 import pypath.share.session as _session_mod
+
+
+def log():
+    """
+    Browse the current pypath logfile.
+    """
+
+    _session_mod.get_log().browse()
 
 
 class pypath(object):

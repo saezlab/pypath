@@ -21,6 +21,7 @@
 
 import os
 import sys
+import pydoc
 import textwrap
 import time
 import datetime
@@ -249,3 +250,18 @@ class Logger(object):
         if hasattr(self, 'fp') and not self.fp.closed:
 
             self.fp.flush()
+
+
+    def browse(self):
+        """
+        Browse the log file.
+        """
+
+        with open(self.fname, 'r') as fp:
+
+            pydoc.pager(fp.read())
+
+
+    def __repr__(self):
+
+        return 'Logger [%s]' % self.fname
