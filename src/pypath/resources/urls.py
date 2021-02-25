@@ -434,8 +434,9 @@ urls = {
     },
     'htri': {
         'label': 'TF-target gene lists from HTRI',
-        'url': 'http://www.lbbc.ibb.unesp.br/htri/datasHTRIdb?down=3',
-        'url_old': 'http://www.lbbc.ibb.unesp.br/htri/consulta?'\
+        'url': 'https://rescued.omnipathdb.org/HTRIdb.csv',
+        'url_old1': 'http://www.lbbc.ibb.unesp.br/htri/datasHTRIdb?down=3',
+        'url_old2': 'http://www.lbbc.ibb.unesp.br/htri/consulta?'\
             'type=1&all=true&down=3&iconss1.x=57&iconss1.y=48',
         'init_url': 'http://www.lbbc.ibb.unesp.br/htri/consulta?'\
             'type=1&all=true&down=3',
