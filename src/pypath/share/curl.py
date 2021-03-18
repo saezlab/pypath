@@ -1222,11 +1222,17 @@ class Curl(FileOpener):
         self._log('Setting up and calling pycurl.')
 
         for attempt in xrange(self.retries):
+
             try:
+
                 if self.debug:
+
                     self.print_debug_info(
-                        'INFO', 'pypath.curl.Curl().curl_call() :: attempt #%u'
-                        % attempt)
+                        'INFO',
+                        'pypath.curl.Curl().curl_call() :: attempt #%u'
+                        % attempt
+                    )
+
                 self.curl.perform()
 
                 self.target.flush()
@@ -1259,12 +1265,18 @@ class Curl(FileOpener):
                         break
 
             except pycurl.error as e:
+
                 self.status = 500
                 if self.progress is not None:
                     self.progress.terminate(status = 'failed')
                     self.progress = None
-                self.print_debug_info('ERROR',
-                                      'PycURL error: %s' % str(e.args))
+                self.print_debug_info(
+                    'ERROR',
+                    'PycURL error: %s' % str(e.args)
+                )
+
+        self.curl.close()
+        self.target.close()
 
         if self.status != 200:
             self.download_failed = True
@@ -1277,9 +1289,11 @@ class Curl(FileOpener):
             self.status = 500
             self.download_failed = True
             self._log('Download error: empty file retrieved.')
-
-        self.curl.close()
-        self.target.close()
+            self._log(
+                'Removing empty file from cache: `%s`' %
+                self.cache_file_name
+            )
+            os.remove(self.cache_file_name)
 
 
     def progress_setup(self):
