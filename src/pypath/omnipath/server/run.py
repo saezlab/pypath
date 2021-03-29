@@ -706,6 +706,7 @@ class TableServer(BaseServer):
             },
             'directed': {'1', '0', 'no', 'yes'},
             'signed': {'1', '0', 'no', 'yes'},
+            'loops': {'1', '0', 'no', 'yes'},
             'entity_types': {
                 'protein',
                 'complex',
@@ -1969,6 +1970,18 @@ class TableServer(BaseServer):
                 tbl.is_stimulation == 1,
                 tbl.is_inhibition == 1
             )]
+
+        # loops: remove by default
+        if (
+            b'loops' not in req.args or
+            not self._parse_arg(req.args[b'loops'])
+        ):
+
+            # pandas is a disaster:
+            tbl = tbl[
+                tbl.source.astype('string') !=
+                tbl.target.astype('string')
+            ]
 
         if req.args[b'fields']:
 
