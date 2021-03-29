@@ -299,7 +299,7 @@ def cellphonedb_interactions():
 
             type_a = get_type(partner_a)
             type_b = get_type(partner_b)
-            rev = partner_b == 'ligand' and partner_b == 'receptor'
+            rev = type_b == 'ligand' and type_a == 'receptor'
             _type_a = type_b if rev else type_a
             _type_b = type_a if rev else type_b
 
@@ -318,8 +318,6 @@ def cellphonedb_interactions():
                 )
             )
             refs   = ';'.join(repmid.findall(rec['source']))
-
-            type_b if rev else type_b
 
             yield (
                 CellphonedbInteraction(
