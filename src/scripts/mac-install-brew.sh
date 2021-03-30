@@ -297,7 +297,7 @@ then
         fi
     done
 
-    $PYTHONNAME -c "import pypath; pa = pypath.PyPath()" >/dev/null 2>&1
+    $PYTHONNAME -c "import pypath.core.network as network; n = network.Network()" >/dev/null 2>&1
     if [[ $? == 0 ]];
     then
         echo -en "\t [ OK ] Congratulations! You have pypath installed! :)\n"\

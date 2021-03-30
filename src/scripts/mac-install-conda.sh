@@ -159,7 +159,7 @@ then
         fi
     done
 
-    $CONDAPY -c "import pypath; pa = pypath.PyPath()" >/dev/null 2>&1
+    $CONDAPY -c "import pypath.core.network as network; n = network.Network()" >/dev/null 2>&1
     if [[ $? == 0 ]];
     then
         echo -en "\t [ OK ] Congratulations! You have pypath installed! :)\n"\
