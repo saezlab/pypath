@@ -1938,10 +1938,22 @@ class TableServer(BaseServer):
 
             entity_types = self._args_set(req, 'entity_types')
 
-            tbl = tbl[
-                tbl.entity_type_source.isin(entity_types) |
-                tbl.entity_type_target.isin(entity_types)
-            ]
+            if len(entity_types) == 1 and 'protein' in entity_types:
+
+                # pandas is awful:
+                tbl = tbl[
+                    np.logical_and(
+                        tbl.entity_type_source.astype('string') == 'protein',
+                        tbl.entity_type_target.astype('string') == 'protein',
+                    )
+                ]
+
+            else:
+
+                tbl = tbl[
+                    tbl.entity_type_source.isin(entity_types) |
+                    tbl.entity_type_target.isin(entity_types)
+                ]
 
         # filtering by DoRothEA methods
         if dorothea_included and args['dorothea_methods']:
