@@ -287,7 +287,7 @@ def cellchatdb_interactions(organism = 9606):
                         ),
                         effect = effect,
                         pathway = row.pathway_name,
-                        refs = refs,
+                        refs = set(),
                         category = row.annotation,
                     )
                 )
