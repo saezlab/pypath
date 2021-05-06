@@ -1262,27 +1262,6 @@ ptm = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}
     ),
-    'protmapper': input_formats.NetworkInput(
-        name = "ProtMapper",
-        separator = None,
-        id_col_a = 0,
-        id_col_b = 1,
-        id_type_a = 'uniprot',
-        id_type_b = 'uniprot',
-        entity_type_a = 'protein',
-        entity_type_b = 'protein',
-        is_directed = 1,
-        sign = False,
-        ncbi_tax_id = 9606,
-        input = 'protmapper.protmapper_interactions',
-        references = 3,
-        resource = 2,
-        header = False,
-        extra_edge_attrs = {},
-        extra_node_attrs_a = {},
-        extra_node_attrs_b = {},
-        must_have_references = True,
-    ),
     'kea': input_formats.NetworkInput(
         name = 'KEA',
         separator = None,
@@ -1431,11 +1410,28 @@ ptm_misc = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {}
     ),
-
+    'protmapper': input_formats.NetworkInput(
+        name = "ProtMapper",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = 'uniprot',
+        id_type_b = 'uniprot',
+        entity_type_a = 'protein',
+        entity_type_b = 'protein',
+        is_directed = 1,
+        sign = False,
+        ncbi_tax_id = 9606,
+        input = 'protmapper.protmapper_interactions',
+        references = 3,
+        resource = 2,
+        header = False,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+        must_have_references = False,
+    ),
 }
-
-ptm_misc['protmapper'] = copy.deepcopy(ptm['protmapper'])
-ptm_misc['protmapper'].must_have_references = False
 
 # synonym
 ptm_noref = ptm_misc
@@ -1446,6 +1442,7 @@ ptm_all.update(ptm)
 extra_directions = copy.deepcopy(ptm_misc)
 extra_directions.update(copy.deepcopy(pathway_noref))
 extra_directions['acsn'] = copy.deepcopy(reaction_pc['acsn'])
+
 '''
 Interaction databases not included in OmniPath.
 These were omitted because lack of references,

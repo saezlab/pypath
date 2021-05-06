@@ -4541,8 +4541,6 @@ def get_guide2pharma(
 
     data = csv.DictReader(c.result)
 
-    #return data
-
     if organism is not None:
         data = [
             d for d in data
