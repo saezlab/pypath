@@ -547,29 +547,6 @@ def compleat_complexes(predicted = True):
     return complexes
 
 
-def humap_complexes():
-
-    url = urls.urls['proteincomplexes']['url']
-    c = curl.Curl(url, large = True)
-
-    complexes = {}
-
-    for l in c.result:
-        l = l.strip().split()
-
-        for uniprots in itertools.product(*(
-            mapping.map_name(entrez, 'entrez', 'uniprot') for entrez in l
-        )):
-            cplex = intera.Complex(
-                components = uniprots,
-                sources = 'hu.MAP',
-            )
-
-            complexes[cplex.__str__()] = cplex
-
-    return complexes
-
-
 def get_pdb_chains():
     def to_int(i):
         if i == 'None':
