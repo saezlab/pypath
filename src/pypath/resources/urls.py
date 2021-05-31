@@ -1049,10 +1049,13 @@ urls = {
         'url': 'http://locate.imb.uq.edu.au/info_files/'\
             'LOCATE_%s_v6_20081121.xml.zip',
     },
-    'proteincomplexes': {
+    'humap': {
         'label': 'Map of human protein complexes from '\
             'integration of 9,000 MS experiments',
-        'url': 'http://proteincomplexes.org/static/downloads/clusters.txt',
+        'humap_url': 'http://proteincomplexes.org/static/'\
+            'downloads/clusters.txt',
+        'humap2_url': 'http://humap2.proteincomplexes.org/static/'\
+            'downloads/humap2/humap2_complexes_20200809.txt',
     },
     'adhesome': {
         'label': 'Literature curated database about adhesion related '\

@@ -29,7 +29,7 @@ import pypath.internals.intera as intera
 
 def humap_complexes():
 
-    url = urls.urls['proteincomplexes']['url']
+    url = urls.urls['humap']['humap_url']
     c = curl.Curl(url, large = True)
 
     complexes = {}
@@ -39,12 +39,48 @@ def humap_complexes():
         l = l.strip().split()
 
         for uniprots in itertools.product(*(
-            mapping.map_name(entrez, 'entrez', 'uniprot') for entrez in l
+            mapping.map_name(entrez, 'entrez', 'uniprot')
+            for entrez in l
         )):
 
             cplex = intera.Complex(
                 components = uniprots,
                 sources = 'hu.MAP',
+            )
+
+            complexes[cplex.__str__()] = cplex
+
+    return complexes
+
+
+def humap2_complexes(min_confidence = 0):
+
+    url = urls.urls['humap']['humap2_url']
+    c = curl.Curl(url, large = True)
+
+    complexes = {}
+
+    _ = next(c.result)
+
+    for l in c.result:
+
+        l = l.strip().split(',')
+
+        confidence = int(l[1])
+
+        if confidence < min_confidence:
+
+            continue
+
+        for uniprots in itertools.product(*(
+            mapping.map_name(uniprot, 'uniprot', 'uniprot')
+            for uniprot in l[2].split()
+        )):
+
+            cplex = intera.Complex(
+                components = uniprots,
+                sources = 'hu.MAP2',
+                attrs = {'humap2_confidence': confidence},
             )
 
             complexes[cplex.__str__()] = cplex
