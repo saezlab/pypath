@@ -118,6 +118,7 @@ protein_sources_default = {
     'Cellchatdb',
     'Connectomedb',
     'Talklr',
+    'Humancellmap',
 }
 
 #TODO this should be part of json files
@@ -5568,6 +5569,33 @@ class UniprotTopologies(AnnotationBase):
             name = 'UniProt_topology',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'uniprot.uniprot_topology',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class Humancellmap(AnnotationBase):
+
+    _eq_fields = ('localization', 'method')
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Protein families from UniProt.
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'HumanCellMap',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'humancellmap.humancellmap_annotations',
             **kwargs
         )
 

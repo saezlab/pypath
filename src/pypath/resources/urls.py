@@ -1305,6 +1305,12 @@ urls = {
         'url': 'https://github.com/yuliangwang/talklr/raw/master/'
             'data/receptor_ligand.rda',
     },
+    'humancellmap': {
+        'label': 'A BioID screen for proximity based localization of '
+            'proteins in HEK cells',
+        'preys_url': 'https://humancellmap.org/resources/downloads/'
+            'preys-latest.txt',
+    },
 }
 
 
