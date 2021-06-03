@@ -3944,6 +3944,18 @@
       "evidence across many experiments."
     ]
   },
+  "hu.MAP2": {
+    "full_name": "hu.MAP 2.0",
+    "urls": {
+      "webpages": ["http://humap2.proteincomplexes.org/"],
+      "articles": [
+        "https://www.biorxiv.org/content/10.1101/2020.09.15.298216v1"
+      ]
+    },
+    "license": "CC BY 4.0",
+    "type": ["literature curated", "original experiment"],
+    "subtype": ["complexes"]
+  },
   "PhosphoNetworks": {
     "urls": {
       "webpages": ["https://phosphonetworks.org/"]
@@ -4487,5 +4499,16 @@
   },
   "DLRP": {
     "license": "Unspecified NC-SA"
+  },
+  "HumanCellMap": {
+    "full_name": "Human Cell Map",
+    "license": "CC BY 4.0",
+    "urls": {
+      "webpages": ["https://humancellmap.org/"],
+      "articles": ["https://www.biorxiv.org/content/10.1101/796391v2"]
+    },
+    "emails": [
+      "contact@cell-map.org", "Human Cell Map"
+    ]
   }
 }
