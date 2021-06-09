@@ -34,7 +34,6 @@ import pypath.core.complex as complex
 import pypath.core.annot as annot
 import pypath.core.intercell as intercell
 import pypath.omnipath.export as export
-import pypath.legacy.main as main
 import pypath.resources.data_formats as data_formats
 import pypath.share.session as session_mod
 import pypath.omnipath as omnipath
@@ -150,6 +149,9 @@ class WebserviceTables(session_mod.Logger):
             'Building `interactions` data frame from '
             '`legacy.main.PyPath` object.'
         )
+
+        import pypath.legacy.main as main
+
         dataframes = []
 
         tf_target = copy.deepcopy(data_formats.transcription)

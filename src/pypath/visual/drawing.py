@@ -36,7 +36,6 @@ import igraph
 import time
 
 from pypath.share.common import *
-from pypath.visual.igraph_drawing import *
 import pypath.share.session as session_mod
 
 __all__ = ['Plot', 'InterSet']
@@ -344,13 +343,19 @@ class Plot(session_mod.Logger):
             self.kwargs['edge_curved'] = self.edge_curved
         else:
             self.kwargs['autocurve'] = self.autocurve
+
+        if igraph.__version__ < '0.9.4':
+            import pypath.visual.igraph_drawing as ig_drawing
+            self.kwargs['drawer_factory'] = (
+                ig_drawing.DefaultGraphDrawerFFsupport
+            )
+
         self.plots.append(
             igraph.plot(
                 g,
                 layout=self.layout_data,
                 target=sf,
                 bbox=self.bbox,
-                drawer_factory=DefaultGraphDrawerFFsupport,
                 vertex_size=self.vertex_size,
                 vertex_frame_width=self.vertex_frame_width,
                 vertex_label=self.vertex_label,
@@ -370,7 +375,7 @@ class Plot(session_mod.Logger):
         self._log("Plot saved to %s" % self.nextfile)
         if return_data:
             return (self.plots[-1], g, self.layout_data, sf, self.bbox,
-                    DefaultGraphDrawerFFsupport, self.vertex_size,
+                    self.vertex_size,
                     self.vertex_frame_width, self.vertex_label,
                     self.vertex_label_size, self.edge_width, self.edge_curved,
                     self.edge_arrow_size, self.edge_arrow_width, self.kwargs)
