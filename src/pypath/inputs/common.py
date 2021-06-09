@@ -91,7 +91,10 @@ def read_xls(
 
     if use_openpyxl:
 
-        if not os.path.exists(xls_file):
+        if (
+            isinstance(xls_file, common.basestring) and
+            not os.path.exists(xls_file)
+        ):
 
             raise FileNotFoundError(xls_file)
 
