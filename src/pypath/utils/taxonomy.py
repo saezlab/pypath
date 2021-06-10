@@ -24,8 +24,8 @@ from future.utils import iteritems
 
 import time
 import datetime
+
 import timeloop
-timeloop.app.logging.disable(level = 9999)
 
 import pypath.share.common as common
 import pypath.share.session as session
@@ -290,6 +290,7 @@ def uniprot_taxid(uniprot):
 
 
 _cleanup_timeloop = timeloop.Timeloop()
+_cleanup_timeloop.logger.setLevel(9999)
 
 @_cleanup_timeloop.job(
     interval = datetime.timedelta(

@@ -48,9 +48,6 @@ except:
     import pickle
 
 import timeloop
-# we use this for simple little tasks only
-# and don't want engage another logger
-timeloop.app.logging.disable(level = 9999)
 
 # from pypath:
 import pypath.share.progress as progress
@@ -955,6 +952,7 @@ class Mapper(session_mod.Logger):
         )
 
         self._mapper_cleanup_timeloop = timeloop.Timeloop()
+        self._mapper_cleanup_timeloop.logger.setLevel(9999)
 
         for job in self._mapper_cleanup_timeloop.jobs:
 

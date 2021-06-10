@@ -46,8 +46,8 @@ import pypath.share.session as session_mod
 import pypath.utils.taxonomy as taxonomy
 import pypath.share.cache as cache_mod
 
-timeloop.app.logging.disable(level = 9999)
 _homology_cleanup_timeloop = timeloop.Timeloop()
+_homology_cleanup_timeloop.logger.setLevel(9999)
 
 _logger = session_mod.Logger(name = 'homology')
 _log = _logger._log

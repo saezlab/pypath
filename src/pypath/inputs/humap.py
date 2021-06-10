@@ -77,6 +77,10 @@ def humap2_complexes(min_confidence = 0):
             for uniprot in l[2].split()
         )):
 
+            if not uniprots:
+
+                continue
+
             cplex = intera.Complex(
                 components = uniprots,
                 sources = 'hu.MAP2',

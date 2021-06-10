@@ -25,7 +25,6 @@ import os
 import json
 import datetime
 import time
-import timeloop
 
 try:
     import cPickle as pickle
@@ -33,9 +32,7 @@ try:
 except ImportError:
     import pickle
 
-# we use this for simple little tasks only
-# and don't want engage another logger
-timeloop.app.logging.disable(level = 9999)
+import timeloop
 
 import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.mirbase as mirbase_input
@@ -56,6 +53,7 @@ inputs = {
 
 
 _reflists_cleanup_timeloop = timeloop.Timeloop()
+_reflists_cleanup_timeloop.logger.setLevel(9999)
 
 
 class ReferenceListManager(session_mod.Logger):

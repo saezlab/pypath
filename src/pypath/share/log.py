@@ -27,9 +27,6 @@ import time
 import datetime
 
 import timeloop
-# we use this for simple little tasks only
-# and don't want engage another logger
-timeloop.app.logging.disable(level=9999)
 
 import pypath.share.settings as settings
 
@@ -38,6 +35,7 @@ __all__ = ['new_logger', 'Logger']
 
 
 _log_flush_timeloop = timeloop.Timeloop()
+_log_flush_timeloop.logger.setLevel(9999)
 
 
 def new_logger(name = None, logdir = None, verbosity = None, **kwargs):

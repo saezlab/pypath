@@ -26,8 +26,8 @@ import time
 import datetime
 import collections
 import itertools
+
 import timeloop
-timeloop.app.logging.disable(level = 9999)
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
@@ -171,6 +171,7 @@ def is_trembl(name, organism = 9606):
 
 
 _cleanup_timeloop = timeloop.Timeloop()
+_cleanup_timeloop.logger.setLevel(9999)
 
 @_cleanup_timeloop.job(
     interval = datetime.timedelta(
