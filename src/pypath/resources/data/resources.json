@@ -4442,6 +4442,7 @@
     ]
   },
   "CellChatDB": {
+    "synonyms": ["CellChatDB-cofactors"],
     "urls": {
       "webpages": [
         "https://github.com/sqjin/CellChat",
