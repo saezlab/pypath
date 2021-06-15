@@ -171,13 +171,22 @@ def _cellchatdb_process_cofactors(raw, organism = 9606):
     return cofactors
 
 
-def cellchatdb_interactions(organism = 9606):
+def cellchatdb_interactions(
+    organism = 9606,
+    ligand_receptor = True,
+    cofactors = True,
+):
     """
     Retrieves data from CellChatDB and processes interactions.
 
     :param int,str organism:
         Human and mouse are available, for incomprehensive values falls back
         to human.
+    :param bool ligand_receptor:
+        Include ligand-receptor interactions.
+    :param bool cofactors:
+        Include interactions between cofactors (agonists, antagonists),
+        coreceptors and receptors.
 
     :return:
         Interactions as list of named tuples.
@@ -242,55 +251,59 @@ def cellchatdb_interactions(organism = 9606):
         ligands = process_name(row.ligand)
         receptors = process_name(row.receptor)
 
-        for ligand, receptor in itertools.product(ligands, receptors):
+        if ligand_receptor:
 
-            result.append(
-                CellChatDBInteraction(
-                    id_a = ligand,
-                    id_b = receptor,
-                    role_a = 'ligand',
-                    role_b = 'receptor',
-                    effect = 'unknown',
-                    pathway = row.pathway_name,
-                    refs = refs,
-                    category = row.annotation,
-                )
-            )
-
-        for cofactor_col, effect, targets in (
-            ('agonist', 'stimulation', ligands),
-            ('antagonist', 'inhibition', ligands),
-            ('co_A_receptor', 'stimulation', receptors),
-            ('co_I_receptor', 'inhibition', receptors),
-        ):
-
-            cofact_label = getattr(row, cofactor_col)
-
-            if cofact_label not in cofactors:
-
-                continue
-
-            for cofactor, target in itertools.product(
-                cofactors[cofact_label],
-                targets
-            ):
+            for ligand, receptor in itertools.product(ligands, receptors):
 
                 result.append(
                     CellChatDBInteraction(
-                        id_a = cofactor,
-                        id_b = target,
-                        role_a = cofactor_col,
-                        role_b = (
-                            'ligand'
-                                if cofactor_col.endswith('onist') else
-                            'receptor'
-                        ),
-                        effect = effect,
+                        id_a = ligand,
+                        id_b = receptor,
+                        role_a = 'ligand',
+                        role_b = 'receptor',
+                        effect = 'unknown',
                         pathway = row.pathway_name,
-                        refs = set(),
+                        refs = refs,
                         category = row.annotation,
                     )
                 )
+
+        if cofactors:
+
+            for cofactor_col, effect, targets in (
+                ('agonist', 'stimulation', ligands),
+                ('antagonist', 'inhibition', ligands),
+                ('co_A_receptor', 'stimulation', receptors),
+                ('co_I_receptor', 'inhibition', receptors),
+            ):
+
+                cofact_label = getattr(row, cofactor_col)
+
+                if cofact_label not in cofactors:
+
+                    continue
+
+                for cofactor, target in itertools.product(
+                    cofactors[cofact_label],
+                    targets
+                ):
+
+                    result.append(
+                        CellChatDBInteraction(
+                            id_a = cofactor,
+                            id_b = target,
+                            role_a = cofactor_col,
+                            role_b = (
+                                'ligand'
+                                    if cofactor_col.endswith('onist') else
+                                'receptor'
+                            ),
+                            effect = effect,
+                            pathway = row.pathway_name,
+                            refs = set(),
+                            category = row.annotation,
+                        )
+                    )
 
     return result
 
