@@ -227,12 +227,12 @@ def cellchatdb_interactions(
 
     raw = cellchatdb_download(organism = organism)
 
-    complexes = _cellchatdb_process_complexes(raw, organism = organism)
-    cofactors = _cellchatdb_process_cofactors(raw, organism = organism)
+    _complexes = _cellchatdb_process_complexes(raw, organism = organism)
+    _cofactors = _cellchatdb_process_cofactors(raw, organism = organism)
 
     complexes_by_name = dict(
         (cplex.name, cplex)
-        for cplex in complexes.values()
+        for cplex in _complexes.values()
     )
 
     raw_ia = raw['interaction']
@@ -252,6 +252,8 @@ def cellchatdb_interactions(
         receptors = process_name(row.receptor)
 
         if ligand_receptor:
+
+            i = 0
 
             for ligand, receptor in itertools.product(ligands, receptors):
 
@@ -279,12 +281,12 @@ def cellchatdb_interactions(
 
                 cofact_label = getattr(row, cofactor_col)
 
-                if cofact_label not in cofactors:
+                if cofact_label not in _cofactors:
 
                     continue
 
                 for cofactor, target in itertools.product(
-                    cofactors[cofact_label],
+                    _cofactors[cofact_label],
                     targets
                 ):
 

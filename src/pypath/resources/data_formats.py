@@ -2693,6 +2693,7 @@ ligand_receptor = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'ligand_receptor',
     ),
 }
 
