@@ -1701,7 +1701,7 @@ class TableServer(BaseServer):
 
             if datasets is not None:
 
-                tbl = tbl[tbl.type.isin(datasets)]
+                tbl = tbl.loc[tbl.type.isin(datasets)]
 
             else:
 
@@ -1859,7 +1859,7 @@ class TableServer(BaseServer):
         # filter by type
         if args['types']:
 
-            tbl = tbl[tbl.type.isin(args['types'])]
+            tbl = tbl.loc[tbl.type.isin(args['types'])]
 
         # if partners provided those will overwrite
         # sources and targets
@@ -1871,7 +1871,7 @@ class TableServer(BaseServer):
         # and gene symbols
         if args['sources'] and args['targets'] and source_target == 'OR':
 
-            tbl = tbl[
+            tbl = tbl.loc[
                 tbl.target.isin(args['targets']) |
                 tbl.target_genesymbol.isin(args['targets']) |
                 tbl.source.isin(args['sources']) |
@@ -1881,13 +1881,13 @@ class TableServer(BaseServer):
         else:
 
             if args['sources']:
-                tbl = tbl[
+                tbl = tbl.loc[
                     tbl.source.isin(args['sources']) |
                     tbl.source_genesymbol.isin(args['sources'])
                 ]
 
             if args['targets']:
-                tbl = tbl[
+                tbl = tbl.loc[
                     tbl.target.isin(args['targets']) |
                     tbl.target_genesymbol.isin(args['targets'])
                 ]
@@ -1898,7 +1898,7 @@ class TableServer(BaseServer):
             tbl = tbl.query(' or '.join(args['datasets']))
 
         # filter by organism
-        tbl = tbl[
+        tbl = tbl.loc[
             tbl.ncbi_tax_id_source.isin(args['organisms']) |
             tbl.ncbi_tax_id_target.isin(args['organisms'])
         ]
@@ -1915,7 +1915,7 @@ class TableServer(BaseServer):
         # filter by DoRothEA confidence levels
         if dorothea_included and args['dorothea_levels']:
 
-            tbl = tbl[
+            tbl = tbl.loc[
                 self._dorothea_dataset_filter(tbl, args) |
                 [
                     bool(levels & args['dorothea_levels'])
@@ -1926,7 +1926,7 @@ class TableServer(BaseServer):
         # filter by databases
         if args['resources']:
 
-            tbl = tbl[
+            tbl = tbl.loc[
                 [
                     bool(sources & args['resources'])
                     for sources in tbl.set_sources
@@ -1941,7 +1941,7 @@ class TableServer(BaseServer):
             if len(entity_types) == 1 and 'protein' in entity_types:
 
                 # pandas is awful:
-                tbl = tbl[
+                tbl = tbl.loc[
                     np.logical_and(
                         tbl.entity_type_source.astype('string') == 'protein',
                         tbl.entity_type_target.astype('string') == 'protein',
@@ -1950,7 +1950,7 @@ class TableServer(BaseServer):
 
             else:
 
-                tbl = tbl[
+                tbl = tbl.loc[
                     tbl.entity_type_source.isin(entity_types) |
                     tbl.entity_type_target.isin(entity_types)
                 ]
@@ -1960,7 +1960,7 @@ class TableServer(BaseServer):
 
             q = ['dorothea_%s' % m for m in args['dorothea_methods']]
 
-            tbl = tbl[
+            tbl = tbl.loc[
                 self._dorothea_dataset_filter(tbl, args) |
                 tbl[q].any(1)
             ]
@@ -1971,14 +1971,14 @@ class TableServer(BaseServer):
             self._parse_arg(req.args[b'directed'])
         ):
 
-            tbl = tbl[tbl.is_directed == 1]
+            tbl = tbl.loc[tbl.is_directed == 1]
 
         if (
             b'signed' in req.args and
             self._parse_arg(req.args[b'signed'])
         ):
 
-            tbl = tbl[np.logical_or(
+            tbl = tbl.loc[np.logical_or(
                 tbl.is_stimulation == 1,
                 tbl.is_inhibition == 1
             )]
@@ -1990,7 +1990,7 @@ class TableServer(BaseServer):
         ):
 
             # pandas is a disaster:
-            tbl = tbl[
+            tbl = tbl.loc[
                 tbl.source.astype('string') !=
                 tbl.target.astype('string')
             ]
@@ -2142,7 +2142,7 @@ class TableServer(BaseServer):
 
         # filter by type
         if args['types']:
-            tbl = tbl[tbl.modification.isin(args['types'])]
+            tbl = tbl.loc[tbl.modification.isin(args['types'])]
 
         # if partners provided those will overwrite
         # enzymes and substrates
@@ -2158,7 +2158,7 @@ class TableServer(BaseServer):
             enzyme_substrate == 'OR'
         ):
 
-            tbl = tbl[
+            tbl = tbl.loc[
                 tbl.substrate.isin(args['substrates']) |
                 tbl.substrate_genesymbol.isin(args['substrates']) |
                 tbl.enzyme.isin(args['enzymes']) |
@@ -2168,24 +2168,24 @@ class TableServer(BaseServer):
         else:
 
             if args['enzymes']:
-                tbl = tbl[
+                tbl = tbl.loc[
                     tbl.enzyme.isin(args['enzymes']) |
                     tbl.enzyme_genesymbol.isin(args['enzymes'])
                 ]
 
             if args['substrates']:
-                tbl = tbl[
+                tbl = tbl.loc[
                     tbl.substrate.isin(args['substrates']) |
                     tbl.substrate_genesymbol.isin(args['substrates'])
                 ]
 
         # filter by organism
-        tbl = tbl[tbl.ncbi_tax_id.isin(args['organisms'])]
+        tbl = tbl.loc[tbl.ncbi_tax_id.isin(args['organisms'])]
 
         # filter by databases
         if args['resources']:
 
-            tbl = tbl[
+            tbl = tbl.loc[
                 [
                     bool(args['resources'] & sources)
                     for sources in tbl.set_sources
@@ -2275,21 +2275,21 @@ class TableServer(BaseServer):
 
             resources = self._args_set(req, 'resources')
 
-            tbl = tbl[tbl.source.isin(resources)]
+            tbl = tbl.loc[tbl.source.isin(resources)]
 
         # filtering for entity types
         if b'entity_types' in req.args:
 
             entity_types = self._args_set(req, 'entity_types')
 
-            tbl = tbl[tbl.entity_type.isin(entity_types)]
+            tbl = tbl.loc[tbl.entity_type.isin(entity_types)]
 
         # filtering for proteins
         if b'proteins' in req.args:
 
             proteins = self._args_set(req, 'proteins')
 
-            tbl = tbl[
+            tbl = tbl.loc[
                 tbl.uniprot.isin(proteins) |
                 tbl.genesymbol.isin(proteins)
             ]
@@ -2335,7 +2335,7 @@ class TableServer(BaseServer):
 
             resources = self._args_set(req, 'resources')
 
-            tbl = tbl[tbl.source.isin(resources)]
+            tbl = tbl.loc[tbl.source.isin(resources)]
 
         if (
             b'cytoscape' in req.args and
@@ -2404,7 +2404,7 @@ class TableServer(BaseServer):
 
                     var = 'database'
 
-                tbl = tbl[getattr(tbl, var).isin(values)]
+                tbl = tbl.loc[getattr(tbl, var).isin(values)]
 
         for (_long, short) in (
             ('transmitter', 'trans'),
@@ -2428,7 +2428,7 @@ class TableServer(BaseServer):
 
             if this_arg is not None:
 
-                tbl = tbl[getattr(tbl, _long) == this_arg]
+                tbl = tbl.loc[getattr(tbl, _long) == this_arg]
 
         if b'causality' in req.args:
 
@@ -2437,11 +2437,11 @@ class TableServer(BaseServer):
             trans = causality & {'transmitter', 'trans', 'both'}
             rec = causality & {'receiver', 'rec', 'both'}
             tbl = (
-                tbl[tbl.transmitter | tbl.receiver]
+                tbl.loc[tbl.transmitter | tbl.receiver]
                     if trans and rec else
-                tbl[tbl.transmitter]
+                tbl.loc[tbl.transmitter]
                     if trans else
-                tbl[tbl.receiver]
+                tbl.loc[tbl.receiver]
                     if rec else
                 tbl
             )
@@ -2475,21 +2475,21 @@ class TableServer(BaseServer):
 
             categories = self._args_set(req, 'categories')
 
-            tbl = tbl[tbl.category.isin(categories)]
+            tbl = tbl.loc[tbl.category.isin(categories)]
 
         # filtering for entity types
         if b'entity_types' in req.args:
 
             entity_types = self._args_set(req, 'entity_types')
 
-            tbl = tbl[tbl.entity_type.isin(entity_types)]
+            tbl = tbl.loc[tbl.entity_type.isin(entity_types)]
 
         # filtering for proteins
         if b'proteins' in req.args:
 
             proteins = self._args_set(req, 'proteins')
 
-            tbl = tbl[
+            tbl = tbl.loc[
                 np.logical_or(
                     tbl.uniprot.isin(proteins),
                     tbl.genesymbol.isin(proteins),
@@ -2537,14 +2537,14 @@ class TableServer(BaseServer):
 
                 values = self._args_set(req, var)
 
-                tbl = tbl[getattr(tbl, var).isin(values)]
+                tbl = tbl.loc[getattr(tbl, var).isin(values)]
 
         # filtering for categories
         if b'categories' in req.args:
 
             categories = self._args_set(req, 'categories')
 
-            tbl = tbl[tbl.category.isin(categories)]
+            tbl = tbl.loc[tbl.category.isin(categories)]
 
         tbl = tbl.loc[:,hdr]
 
@@ -2575,7 +2575,7 @@ class TableServer(BaseServer):
 
             resources = self._args_set(req, 'resources')
 
-            tbl = tbl[
+            tbl = tbl.loc[
                 [
                     bool(sources & resources)
                     for sources in tbl.set_sources
@@ -2587,7 +2587,7 @@ class TableServer(BaseServer):
 
             proteins = self._args_set(req, 'proteins')
 
-            tbl = tbl[
+            tbl = tbl.loc[
                 [
                     bool(this_proteins & proteins)
                     for this_proteins in tbl.set_proteins
@@ -2777,7 +2777,7 @@ class TableServer(BaseServer):
 
             bool_idx = [bool(res) for res in tbl[res_col]]
 
-        tbl = tbl[bool_idx]
+        tbl = tbl.loc[bool_idx]
 
         return tbl
 
