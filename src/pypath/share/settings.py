@@ -182,11 +182,13 @@ _defaults = {
         'kinase_substrate_extra': True,
         'ligand_receptor_extra': True,
         'pathway_extra': True,
+        'allow_loops': True,
     },
 
     'tf_target_args': {
         'method': 'load_transcription',
         'dorothea_levels': {'A', 'B', 'C', 'D'},
+        'allow_loops': True,
     },
 
     # only for pypath.omnipath.app and pypath.core.network

@@ -6,7 +6,8 @@
             "args": {
                 "kinase_substrate_extra": true,
                 "ligand_receptor_extra": true,
-                "pathway_extra": true
+                "pathway_extra": true,
+                "allow_loops": true
             }
         }
     },

@@ -2800,6 +2800,7 @@ class Network(session_mod.Logger):
             old_omnipath_resources = False,
             exclude = None,
             pickle_file = None,
+            allow_loops = None,
         ):
 
         self._log('Loading the `OmniPath` network.')
@@ -2818,7 +2819,7 @@ class Network(session_mod.Logger):
             exclude = exclude,
         )
 
-        self.load(omnipath, exclude = exclude)
+        self.load(omnipath, exclude = exclude, allow_loops = allow_loops)
 
         if kinase_substrate_extra:
 
