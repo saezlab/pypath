@@ -1977,7 +1977,7 @@ class Mapper(session_mod.Logger):
                 ncbi_tax_id = ncbi_tax_id,
             )
 
-            if not swissprots:
+            if not this_swissprots:
 
                 swissprots.add(uniprot)
 
