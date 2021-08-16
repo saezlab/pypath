@@ -413,7 +413,7 @@ def signor_complexes(organism = 9606):
                 cplex = intera.Complex(
                     name = rec[1].replace('"', '').strip(),
                     components = this_components,
-                    sources = 'Signor',
+                    sources = 'SIGNOR',
                     ids = rec[0],
                 )
 
