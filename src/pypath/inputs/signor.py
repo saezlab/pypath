@@ -38,12 +38,28 @@ import pypath.resources.urls as urls
 import pypath.share.common as common
 
 
-def signor_interactions(organism = 9606, raw_records = False):
+def signor_interactions(
+    organism = 9606,
+    raw_records = False,
+    expand_families = 0
+):
     """
-    Downloads the full dataset from Signor.
+    Downloads the full dataset from SIGNOR (https://signor.uniroma2.it/).
     Returns the records with the most important fields.
-    IF ``raw_records`` is `True` it returns the table split to list of
+    If ``raw_records`` is `True` it returns the table split to list of
     lists but unchanged content.
+
+    Args:
+        organism (int, str): The NCBI Taxonomy ID or name of the organism.
+            Human (9606), mouse (10090) and rat (10116) are available.
+        raw_records (bool): Process the records or return them raw,
+            as they are.
+        expand_families (int): Expand protein families up to this size.
+            Zero or one means no expansion.
+
+    Return:
+        list: A list with processed records as named tuples or dicts of
+            raw records if ``raw_records`` is True.
     """
 
 
@@ -53,7 +69,11 @@ def signor_interactions(organism = 9606, raw_records = False):
 
         if name in families:
 
-            main = families[name]
+            main = (
+                families[name]
+                    if len(families[name]) <= expand_families else
+                ()
+            )
 
         elif name in complexes_by_id:
 
@@ -98,7 +118,7 @@ def signor_interactions(organism = 9606, raw_records = False):
 
             complexes_by_id[cplex_id].add(cplex)
 
-    if type(organism) is int:
+    if isinstance(organism, int):
         if organism in taxonomy.taxids:
             _organism = taxonomy.taxids[organism]
         else:
