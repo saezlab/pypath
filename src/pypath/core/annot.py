@@ -1368,7 +1368,7 @@ class CustomAnnotation(session_mod.Logger):
             cls
             for cls in classes
             if all(
-                common.eqs(val, getattr(cls, attr))
+                common.eq(val, getattr(cls, attr))
                 for attr, val in iteritems(kwargs)
             )
         )

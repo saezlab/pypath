@@ -1903,7 +1903,7 @@ def at_least_in(n = 2):
     return _at_least_in
 
 
-def eqs(one, other):
+def eq(one, other):
     """
     Equality between ``one`` and ``other``. If any of them is type of `set`,
     returns True if it contains the other. If both of them are `set`,
@@ -2340,3 +2340,65 @@ def values(obj, field):
         )
     }
 
+
+def match(obj, condition):
+    """
+    Tests a condition on an object.
+
+    Args:
+        obj: An object to test against.
+        condition: A simple value, a set of values or a callable. In the
+            latter case the object will be passed to the callable, otherwise
+            the ``eq`` function, defined here, will be used to match the
+            object against the condition.
+
+    Returns:
+        bool: The outcome of the test.
+    """
+
+    return (
+        bool(condition(obj))
+            if callable(condition) else
+        eq(obj, condition)
+    )
+
+
+def filtr(obj, and_or = 'AND', *args, **kwargs):
+    """
+    Filters an iterable by simple conditions on one or more fields.
+
+    Args:
+        obj (iterable): An iterable of lists, (named) tuples, dicts or
+            other objects.
+        and_or (str):
+            Whether all conditions should be met for an item to be selected
+            (`AND`) or only one of them (`OR`).
+        *args (tuples): The first element of each tuple is a key or index,
+            the second is a condition (see details below).
+        **kwargs: Names of the keyword arguments are keys or attributes,
+            the values are conditions (see details below).
+
+    Yields:
+        The selected elements, which meet the conditions.
+
+    Note:
+        The conditions can be simple values or sets of values which will be
+        passed to the ``eq`` function defined here. Alternatively, they
+        can be callables, accepting the value of the field and returning
+        bool values (otherwise the return value will be casted to bool).
+    """
+
+    conditions = args + list(iteritems(kwargs))
+    _and_or = any if and_or.lower() == 'or' else all
+
+    for it in obj:
+
+        if _and_or(
+            match(
+                get(it, field),
+                condition
+            )
+            for field, condition in conditions
+        ):
+
+            yield it
