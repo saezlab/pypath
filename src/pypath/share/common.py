@@ -2363,7 +2363,7 @@ def match(obj, condition):
     )
 
 
-def filtr(obj, and_or = 'AND', *args, **kwargs):
+def filtr(obj, *args, and_or = 'AND', **kwargs):
     """
     Filters an iterable by simple conditions on one or more fields.
 
@@ -2386,19 +2386,46 @@ def filtr(obj, and_or = 'AND', *args, **kwargs):
         passed to the ``eq`` function defined here. Alternatively, they
         can be callables, accepting the value of the field and returning
         bool values (otherwise the return value will be casted to bool).
+        Conditions can be negated by adding one more element to the tuple,
+        which should be True for negation: e.g. a tuple of
+        ``(3, 'foobar', True)`` will check the index 3 in each object and
+        keep those which are not equal to "foobar".
     """
 
-    conditions = args + list(iteritems(kwargs))
+    conditions = list(
+        (condition + (False,))[:3]
+        for condition in
+        itertools.chain(args, iteritems(kwargs))
+    )
     _and_or = any if and_or.lower() == 'or' else all
 
     for it in obj:
 
         if _and_or(
-            match(
-                get(it, field),
-                condition
+            negate(
+                match(
+                    get(it, field),
+                    condition
+                ),
+                neg
             )
-            for field, condition in conditions
+            for field, condition, neg in conditions
         ):
 
             yield it
+
+
+def negate(value, neg = True):
+    """
+    Negates a value.
+
+    Args:
+        value: Anything that can be casted to bool.
+        neg (bool): Whether to negate or not. If False, the value won't be
+            negated.
+
+    Returns:
+        bool: The value casted to bool and optionally negated.
+    """
+
+    return not value if neg else bool(value)
