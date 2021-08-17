@@ -609,14 +609,23 @@ pathway = {
         # only direct interactions
         positive_filters = [(10, True)],
         # exclude TF-target interactions
-        negative_filters = [(7, 'transcriptional regulation')],
+        negative_filters = [
+            (
+                7,
+                {
+                    'transcriptional regulation',
+                    'transcriptional activation',
+                    'transcriptional repression',
+                }
+            ),
+        ],
         entity_type_a = "protein",
         entity_type_b = "protein",
         ncbi_tax_id = {
             'col': 8,
             'dict': {
                 '9606;9606': 9606,
-                '9606': 9606
+                '9606': 9606,
             },
         },
         is_directed = (
@@ -2015,11 +2024,13 @@ transcription_onebyone = {
         ],
         entity_type_a = "protein",
         entity_type_b = "protein",
-        ncbi_tax_id = {'col': 8,
-                   'dict': {
-                       '9606;9606': 9606,
-                       '9606': 9606
-                   }},
+        ncbi_tax_id = {
+            'col': 8,
+            'dict': {
+                '9606;9606': 9606,
+                '9606': 9606
+            },
+        },
         is_directed = True,
         sign = (
             6,
@@ -2351,7 +2362,58 @@ mirna_target = {
         header = False,
         extra_edge_attrs = {'mirtarbase_evidence': (6, '//')},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {})
+        extra_node_attrs_b = {},
+    ),
+    'signor': input_formats.NetworkInput(
+        name = 'SIGNOR',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = 'mir-pre',
+        id_type_b = 'uniprot',
+        # only direct miRNA-target interactions
+        positive_filters = [
+            (10, True),
+            (
+                7,
+                'post transcriptional regulation',
+            ),
+        ],
+        entity_type_a = 'mirna',
+        entity_type_b = 'protein',
+        ncbi_tax_id = {
+            'col': 8,
+            'dict': {
+                '9606;9606': 9606,
+                '9606': 9606
+            },
+        },
+        is_directed = True,
+        sign = (
+            6,
+            {
+                'up-regulates',
+                'up-regulates activity',
+                'up-regulates quantity',
+                'up-regulates quantity by stabilization',
+                'up-regulates quantity by expression',
+            },
+            {
+                'down-regulates',
+                'down-regulates activity',
+                'down-regulates quantity by destabilization',
+                'down-regulates quantity',
+                'down-regulates quantity by repression',
+            }
+        ),
+        input = 'signor.signor_interactions',
+        references = (9, ';'),
+        header = True,
+        extra_edge_attrs = {'signor_mechanism': (7, ';')},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+        interaction_type = 'post_transcriptional',
+    ),
 }
 
 tf_mirna = {
