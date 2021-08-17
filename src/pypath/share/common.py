@@ -2280,3 +2280,47 @@ def latex_table(
     if not path:
 
         return latex_full
+
+
+def values(obj, field):
+    """
+    All values of a field.
+
+    Args:
+        obj (iterable): An iterable of (named) tuples or lists or dicts.
+        field (int, str): The key or index of the field.
+
+    Return:
+        set: All possible unique values of the field. Unhashable values
+            will be ignored.
+    """
+
+    NO_VALUE = '__pypath_no_value__'
+
+    return {
+        val for val in
+        (
+            (
+                getattr(it, field)
+                    if (
+                        isinstance(field, basestring) and
+                        hasattr(it, field)
+                    ) else
+                it[field]
+                    if (
+                        isinstance(it, dict) and
+                        field in it
+                    ) or (
+                        isinstance(it, (tuple, list)) and
+                        isinstance(field, int)
+                    ) else
+                NO_VALUE
+            )
+            for it in obj
+        )
+        if (
+            val.__hash__ is not None and
+            val != NO_VALUE
+        )
+    }
+
