@@ -44,6 +44,8 @@ import tabulate
 
 import numpy as np
 
+from pypath.share.constants import *
+
 
 __all__ = [
     'ROOT',
@@ -2282,6 +2284,37 @@ def latex_table(
         return latex_full
 
 
+def get(obj, field):
+    """
+    Extracts elements from lists, dicts and tuples in a uniform way.
+
+    Args:
+        obj (iterable): An iterable of (named) tuples or lists or dicts.
+        field (int, str): The key or index of the field.
+
+    Returns:
+        The extracted value, or `PYPATH_NO_VALUE` if the field does not
+        exist.
+    """
+
+    return (
+        getattr(obj, field)
+            if (
+                isinstance(field, basestring) and
+                hasattr(obj, field)
+            ) else
+        obj[field]
+            if (
+                isinstance(obj, dict) and
+                field in obj
+            ) or (
+                isinstance(obj, (tuple, list)) and
+                isinstance(field, int)
+            ) else
+        NO_VALUE
+    )
+
+
 def values(obj, field):
     """
     All values of a field.
@@ -2290,32 +2323,15 @@ def values(obj, field):
         obj (iterable): An iterable of (named) tuples or lists or dicts.
         field (int, str): The key or index of the field.
 
-    Return:
+    Returns:
         set: All possible unique values of the field. Unhashable values
             will be ignored.
     """
 
-    NO_VALUE = '__pypath_no_value__'
-
     return {
         val for val in
         (
-            (
-                getattr(it, field)
-                    if (
-                        isinstance(field, basestring) and
-                        hasattr(it, field)
-                    ) else
-                it[field]
-                    if (
-                        isinstance(it, dict) and
-                        field in it
-                    ) or (
-                        isinstance(it, (tuple, list)) and
-                        isinstance(field, int)
-                    ) else
-                NO_VALUE
-            )
+            get(it, field)
             for it in obj
         )
         if (
