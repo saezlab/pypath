@@ -621,13 +621,6 @@ pathway = {
         ],
         entity_type_a = "protein",
         entity_type_b = "protein",
-        ncbi_tax_id = {
-            'col': 8,
-            'dict': {
-                '9606;9606': 9606,
-                '9606': 9606,
-            },
-        },
         is_directed = (
             6,
             {
@@ -2024,13 +2017,6 @@ transcription_onebyone = {
         ],
         entity_type_a = "protein",
         entity_type_b = "protein",
-        ncbi_tax_id = {
-            'col': 8,
-            'dict': {
-                '9606;9606': 9606,
-                '9606': 9606
-            },
-        },
         is_directed = True,
         sign = (
             6,
@@ -2381,13 +2367,6 @@ mirna_target = {
         ],
         entity_type_a = 'mirna',
         entity_type_b = 'protein',
-        ncbi_tax_id = {
-            'col': 8,
-            'dict': {
-                '9606;9606': 9606,
-                '9606': 9606
-            },
-        },
         is_directed = True,
         sign = (
             6,
@@ -2773,11 +2752,6 @@ small_molecule_protein = {
         negative_filters = [(7, 'transcriptional regulation')],
         entity_type_a = "small_molecule",
         entity_type_b = "protein",
-        ncbi_tax_id = {'col': 8,
-                   'dict': {
-                       '9606;9606': 9606,
-                       '9606': 9606
-                   }},
         is_directed = (
             6,
             [
