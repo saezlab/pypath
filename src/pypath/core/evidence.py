@@ -238,6 +238,14 @@ class Evidence(object):
     @staticmethod
     def _contains(obj, other):
 
+        if isinstance(other, int):
+
+            other = '%u' % other
+
+        if isinstance(other, common.basestring) and other.isdigit():
+
+            other = refs.Reference(other)
+
         if isinstance(other, refs.Reference):
 
             return obj.contains_reference(other)
