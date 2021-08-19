@@ -486,7 +486,7 @@ class Interaction(object):
 
     def __eq__(self, other):
 
-        return self.key == other.key
+        return hasattr(other, 'key') and self.key == other.key
 
 
     @property
@@ -594,8 +594,8 @@ class Interaction(object):
     def __contains__(self, other):
 
         return (
-            other == self.a or other == self.b
-                if isinstance(other, entity.Entity) else
+            other == self.a or
+            other == self.b or
             self.evidences.__contains__(other)
         )
 
