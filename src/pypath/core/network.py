@@ -501,6 +501,11 @@ class Network(session_mod.Logger):
             yield ia
 
 
+    def __contains__(self, other):
+
+        return any(other in ia for ia in self.interactions.values())
+
+
     def reset(self):
         """
         Removes network data i.e. creates empty interaction and node
