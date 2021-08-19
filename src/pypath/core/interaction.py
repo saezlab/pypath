@@ -2889,6 +2889,9 @@ class Interaction(object):
 
         def _create_degree_method(mode, direction, effect):
 
+            wrap_args = mode, direction, effect
+
+            @functools.wraps(wrap_args)
             def _degree_method(*args, **kwargs):
 
                 mode, direction, effect = wrap_args
