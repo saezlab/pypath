@@ -403,7 +403,7 @@ class Entity(session_mod.Logger):
         return (
             self.__hash__() == other.__hash__()
                 if hasattr(other, 'key') else
-            self.identifier == other
+            self.identifier == other or self.label == other
         )
 
 
