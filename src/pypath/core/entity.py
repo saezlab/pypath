@@ -462,12 +462,17 @@ class Entity(session_mod.Logger):
 
 
     @classmethod
-    def info(cls, identifier):
+    def entity_info(cls, identifier):
 
         if cls._is_protein(identifier):
 
             import pypath.utils.uniprot as uniprot
-            return utils_uniprot.info(identifier)
+            return uniprot.info(identifier)
+
+
+    def info(self):
+
+        self.entity_info(self.identifier)
 
 
 class EntityList(object):

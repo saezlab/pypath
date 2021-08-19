@@ -742,9 +742,11 @@ def info(
     header = (
         header or
         '=====> [%u proteins] <=====\n' % len(
-            entity.Entity.filter_entity_type(
-                uniprot_ids,
-                entity_type = 'protein',
+            list(
+                entity.Entity.filter_entity_type(
+                    common.to_list(uniprot_ids),
+                    entity_type = 'protein',
+                )
             )
         )
     )
@@ -752,7 +754,7 @@ def info(
     fileobj.write(header)
 
     print_features(
-        uniprot_ids,
+        common.to_list(uniprot_ids),
         *features,
         fileobj = fileobj,
         **kwargs
