@@ -30,6 +30,7 @@ import itertools
 import functools
 import copy as copy_mod
 import pickle
+import random
 
 import numpy as np
 import pandas as pd
@@ -2515,6 +2516,33 @@ class Network(session_mod.Logger):
         elif key_ba in self.interactions:
 
             return self.interactions[key_ba]
+
+
+    def random_interaction(self, **kwargs):
+        """
+        Picks a random interaction from the network.
+
+        Returns:
+            An Interaction object, or None if the network is empty.
+        """
+
+        key = None
+
+        keys = (
+            self.get_interactions(**kwargs)
+                if kwargs else
+            self.interactions.keys()
+        )
+
+        for _, key in zip(range(random.randint(0, len(self)) + 1), keys):
+
+            pass
+
+        if key:
+
+            key = tuple(sorted(key, key = lambda e: e.identifier))
+
+        return self.interactions[key] if key else None
 
 
     def _get_interaction(self, id_a, id_b, name_type = 'id'):
