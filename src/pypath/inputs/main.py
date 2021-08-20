@@ -4835,63 +4835,6 @@ def intogen_annotations():
     return result
 
 
-def get_innatedb(organism = 9606):
-
-    url = urls.urls['innatedb']['url']
-    c = curl.Curl(url, silent = False, large = True)
-    f = c.result
-    i = []
-    lnum = 0
-
-    for l in f:
-        if lnum == 0:
-            lnum += 1
-
-            continue
-
-        l = l.replace('\n', '').replace('\r', '')
-        l = l.split('\t')
-        specA = 0 if l[9] == '-' else int(l[9].split(':')[1].split('(')[0])
-        specB = 0 if l[10] == '-' else int(l[10].split(':')[1].split('(')[0])
-
-        if organism is None or (specA == organism and specB == organism):
-            pm = l[8].replace('pubmed:', '')
-            l = [l[4], l[5]]
-            interaction = ()
-
-            for ll in l:
-                ll = ll.split('|')
-                hgnc = ''
-                uniprot = ''
-
-                for lll in ll:
-                    nm = lll.split(':')
-
-                    if nm[0] == 'hgnc':
-                        hgnc = nm[1].split('(')[0]
-
-                    if nm[0] == 'uniprotkb' and len(nm[1]) == 6:
-                        uniprot = nm[1]
-
-                interaction += (uniprot, hgnc)
-
-            interaction += (pm, )
-            i.append(interaction)
-
-        lnum += 1
-
-    f.close()
-    s = ''
-
-    for l in i:
-        line = ';'.join(list(l)) + "\n"
-
-        if len(line) > 12:
-            s += line
-
-    return i
-
-
 def mitab_field_list(field):
 
     return common.uniq_list(

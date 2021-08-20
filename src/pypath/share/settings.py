@@ -227,13 +227,18 @@ _defaults = {
     # maximum lenght of the strings in UniProt info printed tables
     'uniprot_info_maxlen': 500,
     # at downloading UniProt datasheets the default very long timeouts,
-    # what we use in the curl module especially because many of our downloads
+    # that we use in the curl module, especially because many of our downloads
     # are huge, are too long and better to start the next attempt sooner if
     # the first fails to respond
     'uniprot_datasheet_connect_timeout': 10,
     'uniprot_datasheet_timeout': 20,
     'genecards_datasheet_connect_timeout': 10,
     'genecards_datasheet_timeout': 20,
+
+    # certain servers (e.g. Cloudflare) banned curl as an user agent;
+    # we use the header below to override the default value in those cases:
+    'user_agent': 'User-Agent: Mozilla/5.0 '
+        '(X11; U; Linux i686; en-US; rv:54.0) Gecko/20110304 Firefox/54.0',
 
 }
 

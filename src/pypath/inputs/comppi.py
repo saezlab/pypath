@@ -24,6 +24,7 @@ import collections
 
 import pypath.share.curl as curl
 import pypath.share.session as session
+import pypath.share.settings as settings
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 import pypath.utils.taxonomy as taxonomy
@@ -85,10 +86,7 @@ def comppi_interaction_locations(organism = 9606):
         )
 
     url = urls.urls['comppi']['url']
-    headers = [
-        'User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:54.0) '
-            'Gecko/20110304 Firefox/54.0',
-    ]
+    headers = [settings.get('user_agent')]
 
     # obtaining cookie
     c = curl.Curl(url, cache = False, req_headers = headers)
