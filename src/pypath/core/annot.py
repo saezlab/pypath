@@ -4173,7 +4173,7 @@ class Cpad(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'CPAD',
-            input_method = 'cpad_annotations',
+            input_method = 'cpad.cpad_annotations',
             ncbi_tax_id = ncbi_tax_id,
             **kwargs
         )
