@@ -384,7 +384,7 @@ class Compleat(AbstractComplexResource):
         AbstractComplexResource.__init__(
             self,
             name = 'Compleat',
-            input_method = 'compleat_complexes',
+            input_method = 'compleat.compleat_complexes',
             input_args = input_args or {},
         )
 
@@ -397,7 +397,7 @@ class ComplexPortal(AbstractComplexResource):
         AbstractComplexResource.__init__(
             self,
             name = 'ComplexPortal',
-            input_method = 'complexportal_complexes',
+            input_method = 'complexportal.complexportal_complexes',
             input_args = input_args or {},
         )
 
