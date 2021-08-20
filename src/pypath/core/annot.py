@@ -4368,7 +4368,7 @@ class Intogen(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'IntOGen',
-            input_method = 'intogen_annotations',
+            input_method = 'intogen.intogen_annotations',
             **kwargs
         )
 
