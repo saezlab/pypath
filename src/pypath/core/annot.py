@@ -4503,7 +4503,7 @@ class HumanPlasmaMembraneReceptome(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'HPMR',
-            input_method = 'hpmr_annotations',
+            input_method = 'hpmr.hpmr_annotations',
             **kwargs
         )
 

@@ -463,7 +463,7 @@ class Hpmr(AbstractComplexResource):
         AbstractComplexResource.__init__(
             self,
             name = 'HPMR',
-            input_method = 'hpmr_complexes',
+            input_method = 'hpmr.hpmr_complexes',
             input_args = input_args or {},
         )
 
