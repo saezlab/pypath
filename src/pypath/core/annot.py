@@ -5405,7 +5405,7 @@ class GuideToPharmacology(LigandReceptor):
         LigandReceptor.__init__(
             self,
             name = 'Guide2Pharma',
-            input_method = 'guide2pharma_interactions',
+            input_method = 'guide2pharma.guide2pharma_interactions',
             ligand_col = 0,
             receptor_col = 2,
             ligand_id_type = 'genesymbol',

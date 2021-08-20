@@ -502,7 +502,7 @@ class GuideToPharmacology(AbstractComplexResource):
         AbstractComplexResource.__init__(
             self,
             name = 'Guide2Pharma',
-            input_method = 'guide2pharma_complexes',
+            input_method = 'guide2pharma.guide2pharma_complexes',
             input_args = input_args or {},
         )
 
