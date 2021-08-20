@@ -126,8 +126,9 @@ urls = {
     },
     'compleat': {
         'label': 'Curated and inferred complexes from multiple databases',
-        'url': 'http://www.flyrnai.org/compleat/ComplexDownload'
-        '?requestType=complexDownload&org=Human'
+        'old_url': 'http://www.flyrnai.org/compleat/ComplexDownload'
+        '?requestType=complexDownload&org=Human',
+        'rescued': 'https://rescued.omnipathdb.org/compleat.tsv',
     },
     'switches.elm': {
         'label': 'Curated data on molecular switches in cellular regulation',
