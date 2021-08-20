@@ -723,9 +723,9 @@ urls = {
         'sigdir':
         'http://dp.univr.it/~laudanna/LCTST/downloads/files/'\
             'SignalingDirection.EA',
-        'sigdir_rescued': 'http://rescued.omnipathdb.org/'\
+        'sigdir_rescued': 'https://rescued.omnipathdb.org/'\
             'Laudanna_SignalingDirection.EA',
-        'sigflow_rescued': 'http://rescued.omnipathdb.org/'\
+        'sigflow_rescued': 'https://rescued.omnipathdb.org/'\
             'Laudanna_SignalingFlow.EA',
     },
     'biogrid': {
@@ -737,8 +737,10 @@ urls = {
     'wang': {
         'label':
         'Human Signaling Network compiled by Wang Group, version 6 (2014)',
-        'url':
-        'http://www.bri.nrc.ca/wang/cancerMap/HumanSignalingNetwork_v6.csv'
+        'old_url': 'http://www.bri.nrc.ca/wang/cancerMap/'
+            'HumanSignalingNetwork_v6.csv',
+        'rescued': 'https://rescued.omnipathdb.org/'
+            'WangLab_HumanSignalingNetwork_v6-format2.csv',
     },
     'graphviz': {
         'label': 'List of Graphviz attributes',

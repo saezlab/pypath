@@ -3212,21 +3212,6 @@ def get_goslim(url = None):
     return result
 
 
-def get_hsn():
-    """
-    Downloads and processes HumanSignalingNetwork version 6
-    (published 2014 Jan by Edwin Wang).
-    Returns list of interactions.
-    """
-
-    url = urls.urls['hsn']['url']
-    c = curl.Curl(url, silent = False, large = True)
-    data = c.result
-    data = [r.split(',') for r in data if len(r) > 0]
-
-    return data
-
-
 def load_macrophage():
     """
     Loads Macrophage from local file.
@@ -4452,44 +4437,6 @@ def get_acsn_effects():
 
             elif len(eff & directed) > 0:
                 effects.append([l[0], l[1], '*'])
-
-    return effects
-
-
-def wang_interactions():
-    """
-    Downloads and processes Wang Lab HumanSignalingNetwork.
-    Returns list of interactions.
-    """
-
-    url = urls.urls['wang']['url']
-    c = curl.Curl(url, silent = False)
-    data = c.result
-    data = data.split('\n')
-    effects = []
-    nodes = {}
-    reading_nodes = False
-    reading_edges = False
-
-    for l in data:
-        if len(l.strip()) == 0:
-            reading_nodes = False
-            reading_edges = False
-
-        l = l.split(',')
-
-        if reading_nodes:
-            nodes[l[0]] = l[1]
-
-        if reading_edges:
-            effects.append([nodes[l[0]], nodes[l[1]], l[2]])
-
-        if l[0].startswith('Node'):
-            reading_nodes = True
-
-        if l[0].startswith('From'):
-            reading_nodes = False
-            reading_edges = True
 
     return effects
 
