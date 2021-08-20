@@ -3193,20 +3193,6 @@ def get_goslim(url = None):
     return result
 
 
-def load_macrophage():
-    """
-    Loads Macrophage from local file.
-    Returns list of interactions.
-    """
-    fname = urls.files['macrophage']
-    fname = os.path.join(common.ROOT, 'data', fname)
-
-    with open(fname, 'r') as f:
-        data = f.read()
-
-    data = data.replace('?', '').replace('->', ',')
-
-
 def phosphatome_annotations():
     """
     Downloads the list of phosphatases from Chen et al, Science Signaling
@@ -4894,54 +4880,6 @@ def negatome_pairs():
         result.append(l)
 
     return result
-
-
-def trim_macrophage_gname(gname):
-    gname = re.sub(r'\[.*\]', '', re.sub(r'\(.*\)', '', gname))
-    gname = re.sub(r'[A-Z]{0,1}[a-z]{1,}', '', gname)
-    gname = gname.split(':')
-
-    for i, g in enumerate(gname):
-        gname[i] = gname[i].strip()
-
-    return gname
-
-
-def macrophage_interactions():
-    url = urls.urls['macrophage']['url']
-    c = curl.Curl(url, silent = False, large = True)
-    fname = c.fileobj.name
-    del c
-    tbl = inputs_common.read_xls(fname)[5:]
-    types = ["Protein", "Complex"]
-    lst = []
-    lnum = 0
-
-    for l in tbl:
-        null = ['', '-']
-        if len(l) > 11:
-            if l[3].strip() in types and l[7].strip() in types:
-                alist = trim_macrophage_gname(l[1])
-                blist = trim_macrophage_gname(l[5])
-
-                if len(alist) > 0 and len(blist) > 0:
-                    for i in alist:
-                        for j in blist:
-                            if i != j not in null and i not in null:
-                                pm = l[11].replace(',',
-                                                   '').strip().split('.')[0]
-
-                                if not pm.startswith('INF'):
-                                    d = "0" if l[9].strip(
-                                    ) == "Binding" else "1"
-                                    lst.append([
-                                        i, j, l[9].strip(), d, l[10].strip(),
-                                        pm
-                                    ])
-
-        lnum += 1
-
-    return lst
 
 
 def get_string_effects(ncbi_tax_id = 9606,
