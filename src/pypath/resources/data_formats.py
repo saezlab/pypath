@@ -1188,7 +1188,7 @@ ptm = {
             'A': {'col': 13, 'include': {9606}},
             'B': {'col': 14, 'include': {9606}},
         },
-        input = 'elm_interactions',
+        input = 'elm.elm_interactions',
         references = 12,
         header = False,
         extra_edge_attrs = {},
