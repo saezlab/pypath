@@ -1826,92 +1826,6 @@ class ResidueMapper(object):
         self.mappers = {}
 
 
-def comppi_interaction_locations(organism = 9606):
-    """
-    Downloads and preprocesses protein interaction and cellular compartment
-    association data from the ComPPI database.
-    This data provides scores for occurrence of protein-protein interactions
-    in various compartments.
-    """
-
-    ComppiLocation = collections.namedtuple(
-        'ComppiLocation',
-        [
-            'location',
-            'score',
-        ],
-    )
-
-    ComppiInteraction = collections.namedtuple(
-        'ComppiInteraction',
-        [
-            'id_a',
-            'id_b',
-            'loc_a',
-            'loc_b',
-        ],
-    )
-
-    def process_locations(loc):
-
-        return tuple(
-            ComppiLocation(location = llloc[0], score = float(llloc[1]))
-            for llloc in
-            (lloc.split(':') for lloc in loc.split('|'))
-        )
-
-    url = urls.urls['comppi']['url']
-    post = {
-        'fDlSet': 'comp',
-        'fDlSpec': '0',
-        'fDlMLoc': 'all',
-        'fDlSubmit': 'Download'
-    }
-    c = curl.Curl(
-        url,
-        post = post,
-        large = True,
-        silent = False,
-        compr = 'gz',
-    )
-
-    _ = next(c.result)
-
-    for l in c.result:
-        l = l.strip('\r\n').split('\t')
-
-        organism_a = int(l[7])
-        organism_b = int(l[15])
-
-        if organism and (organism_a != organism or organism_b != organism):
-            continue
-
-        for uniprot1, uniprot2 in itertools.product(
-            mapping.map_name(l[0], 'uniprot', 'uniprot'),
-            mapping.map_name(l[8], 'uniprot', 'uniprot'),
-        ):
-            yield ComppiInteraction(
-                id_a = uniprot1,
-                id_b = uniprot2,
-                loc_a = process_locations(l[2]),
-                loc_b = process_locations(l[10]),
-            )
-
-
-def comppi_locations(organism = 9606, score_threshold = .7):
-    result = collections.defaultdict(set)
-
-    for iloc in comppi_interaction_locations(organism = organism):
-        for label in ('a', 'b'):
-            for loc in getattr(iloc, 'loc_%s' % label):
-                if loc.location == 'N/A' or loc.score < score_threshold:
-                    continue
-
-                result[getattr(iloc, 'id_%s' % label)].add(loc)
-
-    return dict(result)
-
-
 def get_ielm_huge(ppi,
                   id_type = 'UniProtKB_AC',
                   mydomains = 'HMMS',
@@ -3299,26 +3213,55 @@ def get_goslim(url = None):
 
 
 def get_lincs_compounds():
-    sys.stdout.write(
-        '\n\tReturned dict has names, brand names or company specific\n'
-        '\tIDs of compounds as keys, and tuples of PubChem, ChEMBL, ChEBI, InChi, \n'
-        '\tInChi Key, SMILES and LINCS as values.\n\n')
-    sys.stdout.flush()
+    """
+    The returned dict has names, brand names or company specific IDs of
+    compounds as keys, and tuples of PubChem, ChEMBL, ChEBI, InChi,
+    InChi Key, SMILES and LINCS as values.
+    """
+
     c = curl.Curl(urls.urls['lincs-compounds']['url'], silent = False)
 
     return dict(
-        [(key, pair[1])
-         for pair in [([
-             it for sl in [
-                 filter(lambda z: len(z) > 0, y.split(';')) for y in x[1:4]
-                 if len(y) > 0
-             ] for it in sl
-         ], (x[4], '' if len(x[7]) == 0 else 'CHEMBL%s' % x[7], ''
-             if len(x[8]) == 0 else 'CHEBI:%s' % x[8], x[9], x[10], x[11], x[3]
-             )) for x in [[b.strip() for b in a.split('\t')] for a in ''.join([
-                 s.replace(',', '\t') if i % 2 == 0 else s.replace('\n', '')
-                 for i, s in enumerate(c.result.split('"'))
-             ]).split('\n')[1:] if len(a) > 0]] for key in pair[0]])
+        [
+            (key, pair[1])
+            for pair in [
+                (
+                    [
+                        it for sl in
+                        [
+                            filter(
+                                lambda z: len(z) > 0,
+                                y.split(';')
+                            )
+                            for y in x[1:4]
+                            if len(y) > 0
+                        ]
+                        for it in sl
+                    ],
+                    (
+                        x[4],
+                        '' if len(x[7]) == 0 else 'CHEMBL%s' % x[7],
+                        '' if len(x[8]) == 0 else 'CHEBI:%s' % x[8],
+                        x[9],
+                        x[10],
+                        x[11],
+                        x[3],
+                    )
+                )
+                for x in [
+                    [b.strip() for b in a.split('\t')]
+                    for a in ''.join([
+                        s.replace(',', '\t')
+                            if i % 2 == 0 else
+                        s.replace('\n', '')
+                        for i, s in enumerate(c.result.split('"'))
+                    ]).split('\n')[1:]
+                    if len(a) > 0
+                ]
+            ]
+            for key in pair[0]
+        ]
+    )
 
 
 def get_hsn():
