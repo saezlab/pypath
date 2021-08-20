@@ -3921,43 +3921,6 @@ def get_lincs_compounds():
              ]).split('\n')[1:] if len(a) > 0]] for key in pair[0]])
 
 
-def get_integrins():
-    """
-    Returns a set of the UniProt IDs of the human integrins from
-    Table 1 of Takada et al 2007 (10.1186/gb-2007-8-5-215).
-    """
-
-    url = urls.urls['integrins']['url']
-
-    req_headers = [
-        'Host: www.ncbi.nlm.nih.gov',
-        'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:67.0) '\
-            'Gecko/20100101 Firefox/67.0',
-        'Accept: text/html,application/xhtml+xml,'
-            'application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language: en-US,en;q=0.5',
-        'Connection: keep-alive',
-        'Upgrade-Insecure-Requests: 1',
-        'Pragma: no-cache',
-        'Cache-Control: no-cache',
-    ]
-
-    c = curl.Curl(
-        url, silent = False, req_headers = req_headers, large = True,
-    )
-    soup = bs4.BeautifulSoup(c.fileobj.read(), 'lxml')
-
-    integrins = []
-
-    rows = soup.find_all('tr')
-
-    for tr in rows[1:]:
-        cells = [td for td in tr.find_all('td')]
-        integrins.append(cells[-1].text.split('}')[-1])
-
-    return mapping.map_names(integrins, 'uniprot', 'uniprot')
-
-
 def load_lmpid(organism = 9606):
     """
     Reads and processes LMPID data from local file
@@ -4130,40 +4093,6 @@ def get_dgidb_old():
         genesymbols.extend([tr.find('td').text.strip() for tr in trs])
 
     return mapping.map_names(genesymbols, 'genesymbol', 'uniprot')
-
-
-def dgidb_annotations():
-    """
-    Downloads druggable protein annotations from DGIdb.
-    """
-
-    DgidbAnnotation = collections.namedtuple(
-        'DgidbAnnotation',
-        ['category'],
-    )
-
-
-    url = urls.urls['dgidb']['categories']
-    c = curl.Curl(url = url, silent = False, large = True)
-    data = csv.DictReader(c.result, delimiter = '\t')
-
-    result = collections.defaultdict(set)
-
-    for rec in data:
-        uniprots = mapping.map_name(
-            rec['entrez_gene_symbol'],
-            'genesymbol',
-            'uniprot',
-        )
-
-        for uniprot in uniprots:
-            result[uniprot].add(
-                DgidbAnnotation(
-                    category = rec['category']
-                )
-            )
-
-    return result
 
 
 def reactome_sbml():

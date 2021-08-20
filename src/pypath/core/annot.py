@@ -4244,7 +4244,7 @@ class Integrins(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'Integrins',
-            input_method = 'get_integrins',
+            input_method = 'integrins.get_integrins',
             **kwargs
         )
 
@@ -4579,7 +4579,7 @@ class Dgidb(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'DGIdb',
-            input_method = 'dgidb_annotations',
+            input_method = 'dgidb.dgidb_annotations',
             **kwargs
         )
 
