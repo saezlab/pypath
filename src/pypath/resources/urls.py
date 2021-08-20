@@ -35,16 +35,17 @@ urls = {
         'lists': 'https://www.uniprot.org/uploadlists/',
         'datasheet': 'https://www.uniprot.org/uniprot/%s.txt',
         'history': 'https://www.uniprot.org/uniprot/%s.tab?version=*',
-        'deleted_sp': r'ftp://ftp.uniprot.org/pub/databases/uniprot/'
-            r'knowledgebase/docs/delac%5Fsp.txt',
-        'deleted_tr': r'ftp://ftp.uniprot.org/pub/databases/uniprot/'
-            r'knowledgebase/docs/delac%5Ftr.txt.gz',
-        'speindex': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'
+        'deleted_sp': 'ftp://ftp.expasy.org/databases/uniprot/'
+            'current_release/knowledgebase/complete/docs/delac_sp.txt',
+        'deleted_tr': 'ftp://ftp.expasy.org/databases/uniprot/'
+            'current_release/knowledgebase/complete/docs/delac_tr.txt.gz',
+        'speindex_old': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'
             'knowledgebase/docs/speindex.txt',
+        'speindex': 'ftp://ftp.expasy.org/databases/uniprot/current_release/'
+            'knowledgebase/complete/docs/speindex.txt',
         'taxids': 'https://www.uniprot.org/taxonomy/?query='
             '*&format=tab&force=true&columns=id&compress=yes',
-        'speclist': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'
-            'knowledgebase/docs/speclist.txt',
+        'speclist': 'https://www.uniprot.org/docs/speclist.txt',
     },
     'corum': {
         'label':
