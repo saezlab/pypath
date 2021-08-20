@@ -358,7 +358,7 @@ class Corum(AbstractComplexResource):
         AbstractComplexResource.__init__(
             self,
             name = 'CORUM',
-            input_method = 'corum_complexes',
+            input_method = 'corum.corum_complexes',
             input_args = input_args or {},
         )
 
