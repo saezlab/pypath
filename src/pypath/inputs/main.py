@@ -2321,25 +2321,6 @@ def pfam_uniprot(uniprots, infile = None):
     return result
 
 
-def phosphopoint_interactions():
-    interactions = []
-
-    url = urls.urls['phosphopoint']['url']
-    c = curl.Curl(url, silent = False, large = True)
-    _ = next(c.result)
-
-    return [
-        l.strip().split(';')
-        for l in c.result
-    ]
-
-
-def phosphopoint_directions():
-    return [
-        l[:2] for l in phosphopoint_interactions()
-    ]
-
-
 def get_acsn():
     greek = {
         '_alpha_': 'A',
