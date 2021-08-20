@@ -592,7 +592,7 @@ pathway = {
             'col': 7,
             'include': {9606},
         },
-        input = 'pdzbase_interactions',
+        input = 'pdzbase.pdzbase_interactions',
         references = 8,
         header = False,
         extra_edge_attrs = {},
