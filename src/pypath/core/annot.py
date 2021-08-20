@@ -4606,7 +4606,7 @@ class Phosphatome(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'Phosphatome',
-            input_method = 'phosphatome_annotations',
+            input_method = 'phosphatome.phosphatome_annotations',
             **kwargs
         )
 

@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright
+#  2014-2021
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  File author(s): Dénes Türei (turei.denes@gmail.com)
+#                  Nicolàs Palacio
+#                  Olga Ivanova
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
+
+import collections
+
+import pypath.resources.urls as urls
+import pypath.share.curl as curl
+import pypath.utils.mapping as mapping
+import pypath.inputs.common as inputs_common
+
+
+def phosphatome_annotations():
+    """
+    Downloads the list of phosphatases from Chen et al, Science Signaling
+    (2017) Table S1.
+    """
+
+    PhosphatomeAnnotation = collections.namedtuple(
+        'PhosphatomeAnnotation',
+        [
+            'fold',
+            'family',
+            'subfamily',
+            'has_protein_substrates',
+            'has_non_protein_substrates',
+            'has_catalytic_activity',
+        ],
+    )
+
+    url = urls.urls['phosphatome']['url']
+    c = curl.Curl(url, large = True, silent = False, default_mode = 'rb')
+    tbl = inputs_common.read_xls(c.result['aag1796_Tables S1 to S23.xlsx'])
+
+    result = collections.defaultdict(set)
+
+    for rec in tbl[2:]:
+
+        uniprots = mapping.map_name(rec[0], 'genesymbol', 'uniprot')
+
+        for uniprot in uniprots:
+
+            result[uniprot].add(
+                PhosphatomeAnnotation(
+                    fold = rec[2],
+                    family = rec[3],
+                    subfamily = rec[4],
+                    has_protein_substrates = rec[21].strip().lower() == 'yes',
+                    has_non_protein_substrates = (
+                        rec[22].strip().lower() == 'yes'
+                    ),
+                    has_catalytic_activity = rec[23].strip().lower() == 'yes',
+                )
+            )
+
+    return result

@@ -2177,6 +2177,7 @@ def pepcyber_uniprot(num):
 
 
 def get_domino(none_values = False, outfile = None):
+
     result = []
     taxid = re.compile(r'taxid:(.*)\([a-zA-Z ]*\)')
     miont = re.compile(r'MI:[0-9]{4}\((.*)\)')
@@ -3191,50 +3192,6 @@ def get_goslim(url = None):
             result += rego.findall(l)
 
     return result
-
-
-def phosphatome_annotations():
-    """
-    Downloads the list of phosphatases from Chen et al, Science Signaling
-    (2017) Table S1.
-    """
-
-    PhosphatomeAnnotation = collections.namedtuple(
-        'PhosphatomeAnnotation',
-        [
-            'fold',
-            'family',
-            'subfamily',
-            'has_protein_substrates',
-            'has_non_protein_substrates',
-            'has_catalytic_activity',
-        ],
-    )
-
-    url = urls.urls['phosphatome']['url']
-    c = curl.Curl(url, large = True, silent = False, default_mode = 'rb')
-    tbl = inputs_common.read_xls(c.result['aag1796_Tables S1 to S23.xlsx'])
-
-    data = collections.defaultdict(set)
-
-    for rec in tbl[2:]:
-        uniprots = mapping.map_name(rec[0], 'genesymbol', 'uniprot')
-
-        for uniprot in uniprots:
-            data[uniprot].add(
-                PhosphatomeAnnotation(
-                    fold = rec[2],
-                    family = rec[3],
-                    subfamily = rec[4],
-                    has_protein_substrates = rec[21].strip().lower() == 'yes',
-                    has_non_protein_substrates = (
-                        rec[22].strip().lower() == 'yes'
-                    ),
-                    has_catalytic_activity = rec[23].strip().lower() == 'yes',
-                )
-            )
-
-    return data
 
 
 def get_dgidb_old():
