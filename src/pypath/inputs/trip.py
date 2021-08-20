@@ -31,7 +31,7 @@ import pypath.share.settings as settings
 import pypath.share.session as session
 import pypath.share.common as common
 
-_logger = session.Logger(name = 'inputs.trip')
+_logger = session.Logger(name = 'trip_input')
 _log = _logger._log
 
 
