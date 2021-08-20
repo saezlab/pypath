@@ -371,7 +371,7 @@ class Havugimana(AbstractComplexResource):
         AbstractComplexResource.__init__(
             self,
             name = 'Havugimana2012',
-            input_method = 'havugimana_complexes',
+            input_method = 'havugimana.havugimana_complexes',
             input_args = input_args or {},
         )
 

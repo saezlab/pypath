@@ -430,43 +430,6 @@ def complexportal_complexes(organism = 9606, return_details = False):
         return complexes
 
 
-def get_havugimana():
-    """
-    Downloads data from
-    Supplement Table S3/1 from Havugimana 2012
-    Cell. 150(5): 1068–1081.
-    """
-
-    url = urls.urls['havugimana']['url']
-    c = curl.Curl(url, silent = False, large = True)
-    fname = c.fileobj.name
-    del c
-    table = inputs_common.read_xls(fname)
-
-    return table[3:]
-
-
-def havugimana_complexes():
-    """
-    Retrieves complexes from
-    Supplement Table S3/1 from Havugimana 2012
-    Cell. 150(5): 1068–1081.
-    """
-
-    complexes = {}
-
-    for rec in get_havugimana():
-        cplex = intera.Complex(
-            components = rec[2].split(','),
-            sources = 'Havugimana2012',
-            ids = rec[0],
-        )
-
-        complexes[cplex.__str__()] = cplex
-
-    return complexes
-
-
 def compleat_complexes(predicted = True):
     """
     Retrieves complexes from the Compleat database.

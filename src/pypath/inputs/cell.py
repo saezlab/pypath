@@ -27,7 +27,7 @@ import pypath.share.curl as curl
 import pypath.share.session as session
 
 
-_logger = session.Logger(name = 'inputs.cell')
+_logger = session.Logger(name = 'cell_input')
 _log = _logger._log
 
 

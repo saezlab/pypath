@@ -791,8 +791,9 @@ urls = {
     },
     'havugimana': {
         'label': 'Census of human soluble protein complexes',
-        'url':
-        'http://www.cell.com/cms/attachment/2021768736/2041631145/mmc3.xls'
+        'url': 'https://www.cell.com/cms/10.1016/j.cell.2012.08.011/'
+            'attachment/852fdb4f-ef77-4001-b513-a6687e6e070f/mmc3.xls',
+        'article': 'https://www.cell.com/fulltext/S0092-8674(12)01006-9',
     },
     'matrixdb': {
         'label': 'MatrixDB in house curated interactions, PSI-MI tab format',
