@@ -4389,7 +4389,7 @@ class Comppi(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'ComPPI',
-            input_method = 'comppi_locations',
+            input_method = 'comppi.comppi_locations',
             **kwargs
         )
 
