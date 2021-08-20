@@ -3212,58 +3212,6 @@ def get_goslim(url = None):
     return result
 
 
-def get_lincs_compounds():
-    """
-    The returned dict has names, brand names or company specific IDs of
-    compounds as keys, and tuples of PubChem, ChEMBL, ChEBI, InChi,
-    InChi Key, SMILES and LINCS as values.
-    """
-
-    c = curl.Curl(urls.urls['lincs-compounds']['url'], silent = False)
-
-    return dict(
-        [
-            (key, pair[1])
-            for pair in [
-                (
-                    [
-                        it for sl in
-                        [
-                            filter(
-                                lambda z: len(z) > 0,
-                                y.split(';')
-                            )
-                            for y in x[1:4]
-                            if len(y) > 0
-                        ]
-                        for it in sl
-                    ],
-                    (
-                        x[4],
-                        '' if len(x[7]) == 0 else 'CHEMBL%s' % x[7],
-                        '' if len(x[8]) == 0 else 'CHEBI:%s' % x[8],
-                        x[9],
-                        x[10],
-                        x[11],
-                        x[3],
-                    )
-                )
-                for x in [
-                    [b.strip() for b in a.split('\t')]
-                    for a in ''.join([
-                        s.replace(',', '\t')
-                            if i % 2 == 0 else
-                        s.replace('\n', '')
-                        for i, s in enumerate(c.result.split('"'))
-                    ]).split('\n')[1:]
-                    if len(a) > 0
-                ]
-            ]
-            for key in pair[0]
-        ]
-    )
-
-
 def get_hsn():
     """
     Downloads and processes HumanSignalingNetwork version 6
