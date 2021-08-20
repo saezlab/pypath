@@ -257,11 +257,13 @@ urls = {
     },
     'elm_inst': {
         'label': 'List of ELM instances',
-        'url': 'http://elm.eu.org/elms/browse_instances.tsv?q=*'
+        'url_old': 'http://elm.eu.org/elms/browse_instances.tsv?q=*',
+        'url': 'http://elm.eu.org/instances.tsv?q=*',
     },
     'elm_class': {
         'label': 'List of ELM classes',
-        'url': 'http://elm.eu.org/elms/browse_elms.tsv'
+        'url_old': 'http://elm.eu.org/elms/browse_elms.tsv',
+        'url': 'http://elm.eu.org/elms/elms_index.tsv',
     },
     'dbptm_benchmark': {
         'label': 'dbPTM is a PTM database compiled from multiple other dbs',
