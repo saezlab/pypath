@@ -489,7 +489,7 @@ pathway = {
         is_directed = (10, ['_', '+']),
         sign = (10, '+', '_'),
         header = False,
-        input = 'get_ca1',
+        input = 'ca1.ca1_interactions',
         references = (12, ";"),
         ncbi_tax_id = 9606,
         extra_edge_attrs = {"ca1_effect": 10,
@@ -497,7 +497,8 @@ pathway = {
         extra_node_attrs_a = {"ca1_location": 4,
                          "ca1_function": 3},
         extra_node_attrs_b = {"ca1_location": 9,
-                         "ca1_function": 8}),
+                         "ca1_function": 8}
+    ),
     'arn': input_formats.NetworkInput(
         name = "ARN",
         separator = None,

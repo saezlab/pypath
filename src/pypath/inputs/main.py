@@ -4560,21 +4560,6 @@ def get_graphviz_attrs():
     return graph_attrs, vertex_attrs, edge_attrs
 
 
-def get_ca1():
-    """
-    Downloads and processes the CA1 signaling network (Ma\'ayan 2005).
-    Returns list of interactions.
-    """
-
-    url = urls.urls['ca1']['url']
-    c = curl.Curl(url, silent = False, files_needed = ['S1.txt'])
-    data = c.result
-
-    return filter(lambda l: len(l) == 13,
-                  map(lambda l: l.strip().split(),
-                      data['S1.txt'].split('\n')[1:]))
-
-
 def get_ccmap(organism = 9606):
     """
     Downloads and processes CancerCellMap.
