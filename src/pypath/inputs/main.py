@@ -2936,17 +2936,6 @@ def get_acsn():
     return data
 
 
-def get_pazar():
-    url = urls.urls['pazar']['url_rescued']
-    c = curl.Curl(url, silent = False)
-    data = c.result
-
-    return [
-        list(map(x.split('\t').__getitem__, (1, 4, 10)))
-        for x in ''.join(data.values()).split('\n') if len(x) > 0
-    ]
-
-
 def get_htri():
     HTRIInteraction = collections.namedtuple(
         'HTRIInteraction',
