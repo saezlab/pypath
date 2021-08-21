@@ -116,6 +116,7 @@ import pypath.inputs.phosphosite as phosphosite_input
 import pypath.inputs.phosphonetworks as phosphonetworks_input
 import pypath.inputs.mimp as mimp_input
 import pypath.inputs.laudanna as laudanna_input
+import pypath.inputs.string as string_input
 import pypath.inputs as inputs
 import pypath.core.network as network
 import pypath.utils.homology as homology
@@ -13647,7 +13648,7 @@ class PyPath(session_mod.Logger):
         """
         """
 
-        string = dataio.get_string_effects()
+        string = string_input.string_effects()
         self.process_directions(string, 'STRING', stimulation='+',
                                 inhibition='-', directed='*', id_type='ensp',
                                 graph=graph)
