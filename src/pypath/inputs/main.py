@@ -4270,46 +4270,6 @@ def _reactome_collect_species(elem, tag):
     return res
 
 
-def get_laudanna_directions():
-    """
-    Downloads and processes the SignalingFlow edge attributes
-    from Laudanna Lab.
-    Returns list of directions.
-    """
-
-    url = urls.urls['laudanna']['sigflow_rescued']
-    c = curl.Curl(url, silent = False)
-    data = c.result
-    data = data.split('\n')[1:]
-    directions = []
-
-    for l in data:
-        if len(l) > 0:
-            directions.append(l.split('=')[0].strip().split(' (pp) '))
-
-    return directions
-
-
-def get_laudanna_effects():
-    """
-    Downloads and processes the SignalingDirection edge attributes
-    from Laudanna Lab.
-    Returns list of effects.
-    """
-    url = urls.urls['laudanna']['sigdir_rescued']
-    c = curl.Curl(url, silent = False)
-    data = c.result
-    data = data.split('\n')[1:]
-    effects = []
-
-    for l in data:
-        if len(l) > 0:
-            l = l.split('=')
-            effects.append(l[0].strip().split(' (pp) ') + [l[1].strip()])
-
-    return effects
-
-
 def get_acsn_effects():
     """
     Processes ACSN data, returns list of effects.

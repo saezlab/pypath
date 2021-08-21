@@ -115,6 +115,7 @@ import pypath.inputs.kegg as kegg_input
 import pypath.inputs.phosphosite as phosphosite_input
 import pypath.inputs.phosphonetworks as phosphonetworks_input
 import pypath.inputs.mimp as mimp_input
+import pypath.inputs.laudanna as laudanna_input
 import pypath.inputs as inputs
 import pypath.core.network as network
 import pypath.utils.homology as homology
@@ -13628,7 +13629,7 @@ class PyPath(session_mod.Logger):
         """
         """
 
-        laud = dataio.get_laudanna_directions()
+        laud = laudanna_input.laudanna_directions()
         self.process_directions(laud, 'Laudanna_sigflow', dirs_only=True,
                                 id_type='genesymbol', graph=graph)
 
@@ -13636,7 +13637,7 @@ class PyPath(session_mod.Logger):
         """
         """
 
-        laud = dataio.get_laudanna_effects()
+        laud = laudanna_input.laudanna_effects()
         self.process_directions(laud, 'Laudanna_effects',
                                 stimulation='activation',
                                 inhibition='inhibition', directed='docking',
