@@ -4347,7 +4347,7 @@ class CancerGeneCensus(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'CancerGeneCensus',
-            input_method = 'cancer_gene_census_annotations',
+            input_method = 'cosmic.cancer_gene_census_annotations',
             **kwargs
         )
 
