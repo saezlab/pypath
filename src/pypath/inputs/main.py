@@ -4617,28 +4617,6 @@ def get_reactions(types = None, sources = None):
             ]
 
 
-def mirdeathdb_interactions():
-    url = urls.urls['mirdeathdb']['url_rescued']
-    c = curl.Curl(url, silent = False, large = True)
-
-    _ = next(c.result)
-
-    for l in c.result:
-        l = l.strip().split('\t')
-
-        if len(l) < 11:
-            continue
-
-        mirnas = l[2].replace('"', '').split(',')
-        organism = int(l[9])
-        pubmed = l[8]
-        geneid = l[10]
-        function = '%s_%s' % (l[4], l[5])
-
-        for mirna in mirnas:
-            yield (mirna.strip(), geneid, organism, pubmed, function)
-
-
 def ncrdeathdb_interactions():
     NcrdeathdbInteraction = collections.namedtuple(
         'NcrdeathdbInteraction',

@@ -27,6 +27,10 @@ import pypath.share.curl as curl
 
 
 def mir2disease_interactions():
+    """
+    Retrieves literature curated miRNA-target gene interactions from the
+    miR2Disease database (http://www.mir2disease.org/).
+    """
 
     Mir2diseaseInteraction = collections.namedtuple(
         'Mir2diseaseInteraction',

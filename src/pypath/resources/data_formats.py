@@ -2240,7 +2240,8 @@ mirna_target = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'mirdeath': input_formats.NetworkInput(
         name = "miRDeathDB",
         separator = None,
@@ -2252,15 +2253,18 @@ mirna_target = {
         entity_type_b = "protein",
         is_directed = True,
         sign = False,
-        ncbi_tax_id = {'col': 2,
-                   'include': set([9606])},
-        input = 'mirdeathdb_interactions',
+        ncbi_tax_id = {
+            'col': 2,
+            'include': {9606],
+        },
+        input = 'mirdeathdb.mirdeathdb_interactions',
         interaction_type = 'post_transcriptional',
         references = 3,
         header = False,
         extra_edge_attrs = {'mirdeathdb_function': 4},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'ncrdeath': input_formats.NetworkInput(
         name = "ncRDeathDB",
         separator = None,
