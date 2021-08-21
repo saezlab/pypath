@@ -4617,40 +4617,6 @@ def get_reactions(types = None, sources = None):
             ]
 
 
-def transmir_interactions():
-    url = urls.urls['transmir']['url']
-    c = curl.Curl(
-        url,
-        silent = False,
-        large = True,
-        encoding = 'iso-8859-1',
-    )
-
-    TransmirInteraction = collections.namedtuple(
-        'TransmirInteraction',
-        [
-            'tf_genesymbol',
-            'mirna',
-            'effect',
-            'pubmed',
-        ]
-    )
-
-    result = []
-
-    for l in c.result:
-        l = l.strip().split('\t')
-
-        result.append(TransmirInteraction(
-            tf_genesymbol = l[0],
-            mirna = l[1],
-            effect = l[4].split('(')[0],
-            pubmed = l[5],
-        ))
-
-    return result
-
-
 def encode_tf_mirna_interactions():
     url = urls.urls['encode']['tf-mirna']
     c = curl.Curl(url, silent = False, large = True,
