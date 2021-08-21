@@ -4617,33 +4617,6 @@ def get_reactions(types = None, sources = None):
             ]
 
 
-def lncrnadb_interactions():
-    renondigit = re.compile(r'[^\d]+')
-
-    url = urls.urls['lncrnadb']['url_rescued']
-    c = curl.Curl(
-        url,
-        silent = False,
-        large = True,
-        encoding = 'utf-8',
-    )
-
-    b = bs4.BeautifulSoup(c.fileobj, 'lxml')
-
-    for res in b.findAll('results'):
-        lncrna = res.find('nomenclature').find('name').text
-
-        for sp in res.find('species').findAll('entry'):
-            spec = sp.attrs['species'].split('(')[0].strip()
-
-            for assoc in res.find('association').findAll('association'):
-                partner  = assoc.find('componentid').text
-                typ      = assoc.find('componenttype').text.lower()
-                pmid     = renondigit.sub('', assoc.find('pubmedid').text)
-
-                yield (lncrna, partner, typ, spec, pmid)
-
-
 def transmir_interactions():
     url = urls.urls['transmir']['url']
     c = curl.Curl(

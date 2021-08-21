@@ -2488,7 +2488,7 @@ lncrna_target = {
                 'include': set([9606])
             },
         positive_filters = [(2, 'protein')],
-        input = 'lncrnadb_interactions',
+        input = 'lncrnadb.lncrnadb_interactions',
         interaction_type = 'lncrna_post_transcriptional',
         references = 4,
         header = False,
