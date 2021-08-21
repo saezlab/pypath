@@ -4617,16 +4617,6 @@ def get_reactions(types = None, sources = None):
             ]
 
 
-def mir2disease_interactions():
-
-    url = urls.urls['mir2dis']['url_rescued']
-    c = curl.Curl(url, silent = True, large = True, encoding = 'iso-8859-1')
-
-    return [
-        l.strip().split('\t')
-        for l in itertools.islice(c.result, 3, None)
-    ]
-
 def mirdeathdb_interactions():
     url = urls.urls['mirdeathdb']['url_rescued']
     c = curl.Curl(url, silent = False, large = True)
