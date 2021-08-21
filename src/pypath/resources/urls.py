@@ -913,10 +913,16 @@ urls = {
     'mirtarbase': {
         'label': 'miRTarBase experimentally validated'\
             'miRNA-target interactions',
-        'strong': 'http://mirtarbase.mbc.nctu.edu.tw/cache/download/'\
+        'strong_old': 'http://mirtarbase.mbc.nctu.edu.tw/cache/download/'\
             '6.1/miRTarBase_SE_WR.xls',
-        'all': 'http://mirtarbase.mbc.nctu.edu.tw/cache/download/'\
-            '6.1/miRTarBase_MTI.xlsx'
+        'strong': 'https://mirtarbase.cuhk.edu.cn/~miRTarBase/'\
+            'miRTarBase_2019/cache/download/8.0/miRTarBase_SE_WR.xls',
+        'all_old': 'http://mirtarbase.mbc.nctu.edu.tw/cache/download/'\
+            '6.1/miRTarBase_MTI.xlsx',
+        'all': 'https://mirtarbase.cuhk.edu.cn/~miRTarBase/miRTarBase_2019/'\
+            'cache/download/8.0/miRTarBase_MTI.xlsx',
+        'curated': 'https://mirtarbase.cuhk.edu.cn/~miRTarBase/'\
+            'miRTarBase_2019/cache/download/8.0/MicroRNA_Target_Sites.xlsx',
     },
     'lncdisease': {
         'label': 'lncRNA and disease database: experimentally '\

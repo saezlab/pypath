@@ -4617,55 +4617,6 @@ def get_reactions(types = None, sources = None):
             ]
 
 
-def mirecords_interactions():
-    url = urls.urls['mirecords']['url']
-    c = curl.Curl(url, silent = False, large = True)
-
-    tbl = inputs_common.read_xls(c.fileobj.name)
-
-    c.close()
-
-    return (
-        (l[6], l[3], l[2], l[1], l[5], l[0].split('.')[0])
-        for l in
-        ([f.strip() for f in ll] for ll in tbl[1:])
-    )
-
-
-def mirtarbase_interactions():
-    url = urls.urls['mirtarbase']['strong']
-    c = curl.Curl(url, silent = False, large = True)
-
-    tbl = inputs_common.read_xls(c.fileobj.name)
-
-    c.close()
-
-    for i in xrange(len(tbl)):
-        tbl[i][4] = tbl[i][4].split('.')[0]
-        tbl[i][8] = tbl[i][8].split('.')[0]
-
-    return tbl[1:]
-
-
-def lncdisease_interactions():
-
-    url = urls.urls['lncdisease']['url_rescued']
-    c = curl.Curl(url, silent = False, large = True)
-
-    for l in c.result:
-        l = l.strip().split('\t')
-
-        yield (
-            l[1],
-            l[2],
-            l[3].split('-')[0],
-            l[3].split('-')[1] if '-' in l[3] else '',
-            l[4].lower(),
-            l[6].lower(),
-            l[9],
-        )
-
-
 def lncrnadb_interactions():
     renondigit = re.compile(r'[^\d]+')
 

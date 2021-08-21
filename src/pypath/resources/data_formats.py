@@ -2318,7 +2318,7 @@ mirna_target = {
                 'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
                 'include': {9606},
             }},
-        input = 'mirecords_interactions',
+        input = 'mirecords.mirecords_interactions',
         interaction_type = 'post_transcriptional',
         references = 5,
         header = False,
@@ -2340,15 +2340,16 @@ mirna_target = {
         ncbi_tax_id = {'A': {
                 'col': 2,
                 'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
-                'include': set([9606])
+                'include': {9606},
             },
             'B': {
                 'col': 5,
                 'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
-                'include': set([9606])
-            }},
+                'include': {9606},
+            },
+        },
         positive_filters = [(7, 'Functional MTI')],
-        input = 'mirtarbase_interactions',
+        input = 'mirtarbase.mirtarbase_interactions',
         interaction_type = 'post_transcriptional',
         references = 8,
         header = False,
@@ -2440,7 +2441,8 @@ tf_mirna = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {})
+        extra_node_attrs_b = {}
+    ),
 }
 
 lncrna_target = {
@@ -2461,13 +2463,14 @@ lncrna_target = {
                 'include': set([9606])
             },
         positive_filters = [(2, 'RNA'), (3, 'Protein')],
-        input = 'lncdisease_interactions',
+        input = 'lncdisease.lncdisease_interactions',
         interaction_type = 'lncrna_post_transcriptional',
         references = 6,
         header = False,
         extra_edge_attrs = {'lncrnadisease_mechanism': 4},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {}
+    ),
     'lncrnadb': input_formats.NetworkInput(
         name = "lncrnadb",
         separator = None,
