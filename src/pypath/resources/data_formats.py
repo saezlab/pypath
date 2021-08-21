@@ -2255,7 +2255,7 @@ mirna_target = {
         sign = False,
         ncbi_tax_id = {
             'col': 2,
-            'include': {9606],
+            'include': {9606},
         },
         input = 'mirdeathdb.mirdeathdb_interactions',
         interaction_type = 'post_transcriptional',
@@ -2280,7 +2280,7 @@ mirna_target = {
             'col': 6,
             'include': {9606},
         },
-        input = 'ncrdeathdb_interactions',
+        input = 'ncrdeathdb.ncrdeathdb_interactions',
         interaction_type = 'post_transcriptional',
         references = 5,
         header = False,
@@ -2311,12 +2311,12 @@ mirna_target = {
         ncbi_tax_id = {'A': {
                 'col': 3,
                 'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
-                'include': set([9606])
+                'include': {9606},
             },
             'B': {
                 'col': 4,
                 'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
-                'include': set([9606])
+                'include': {9606},
             }},
         input = 'mirecords_interactions',
         interaction_type = 'post_transcriptional',
@@ -2324,7 +2324,8 @@ mirna_target = {
         header = False,
         extra_edge_attrs = {'mirdeathdb_function': 4},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'mirtarbase': input_formats.NetworkInput(
         name = "miRTarBase",
         separator = None,
