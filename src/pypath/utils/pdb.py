@@ -20,12 +20,20 @@
 #
 
 import re
-import bs4
+import urllib
 
 try:
     import urllib2
 except:
     import urllib.request as urllib2
+
+try:
+    import urlparse
+except:
+    import urllib.parse
+    urlparse = urllib.parse
+
+import bs4
 
 import pypath.resources.data_formats as data_formats
 
@@ -115,3 +123,28 @@ class ResidueMapper(object):
         """
         
         self.mappers = {}
+
+
+def residue_pdb(pdb, chain, residue):
+
+    url = urls.urls['pdbsws']['url']
+    params = urlparse.urlencode({
+        'plain': 1,
+        'qtype': 'pdb',
+        'id': pdb,
+        'chain': chain,
+        'res': residue
+    })
+    data = urllib2.urlopen(url + "?%s" % params)
+    result = {}
+
+    return data
+
+    for l in data:
+
+        if not l.startswith('//'):
+
+            l = [x.strip() for x in l.split(':')]
+            result[l[0]] = l[1]
+
+    return result
