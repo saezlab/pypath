@@ -4617,18 +4617,6 @@ def get_reactions(types = None, sources = None):
             ]
 
 
-def encode_tf_mirna_interactions():
-    url = urls.urls['encode']['tf-mirna']
-    c = curl.Curl(url, silent = False, large = True,
-                  encoding = 'ascii')
-
-    for l in c.result:
-        l = l.strip().split()
-
-        if l[1] == '(TF-miRNA)':
-            yield (l[0], l[2])
-
-
 def _get_imweb():
 
     def init_fun(resp_hdr):
