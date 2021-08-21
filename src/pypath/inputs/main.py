@@ -4270,24 +4270,6 @@ def _reactome_collect_species(elem, tag):
     return res
 
 
-def _netbiol_interactions(database):
-
-    url = urls.urls[database]['url']
-    c = curl.Curl(url, silent = True, large = False)
-
-    return [row.split(',') for row in c.result.split('\n')]
-
-
-def arn_interactions():
-
-    return _netbiol_interactions(database = 'arn')
-
-
-def nrf2ome_interactions():
-
-    return _netbiol_interactions(database = 'nrf2ome')
-
-
 def get_laudanna_directions():
     """
     Downloads and processes the SignalingFlow edge attributes
