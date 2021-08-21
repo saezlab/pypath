@@ -429,7 +429,7 @@ class Pdb(AbstractComplexResource):
         AbstractComplexResource.__init__(
             self,
             name = 'PDB',
-            input_method = 'pdb_complexes',
+            input_method = 'pdb.pdb_complexes',
             input_args = input_args or {},
         )
 
