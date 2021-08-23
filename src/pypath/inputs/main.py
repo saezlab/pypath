@@ -3559,48 +3559,6 @@ def get_acsn_effects():
     return effects
 
 
-def get_graphviz_attrs():
-    """
-    Downloads graphviz attribute list from graphviz.org.
-    Returns 3 dicts of dicts: graph_attrs, vertex_attrs and edge_attrs.
-    """
-
-    url = urls.urls['graphviz']['url']
-    c = curl.Curl(url)
-    html = c.result
-    soup = bs4.BeautifulSoup(html, 'lxml')
-    vertex_attrs = {}
-    edge_attrs = {}
-    graph_attrs = {}
-
-    for tbl in soup.find_all('table'):
-        if tbl.find('tr').text.startswith('Name'):
-            for r in tbl.find_all('tr'):
-                r = r.find_all('td')
-
-                if len(r) > 0:
-                    usedby = r[1].text
-                    this_attr = {
-                        'type': r[2].text.strip(),
-                        'default': r[3].text.strip(),
-                        'min': r[4].text.strip(),
-                        'notes': r[5].text.strip()
-                    }
-                    attr_name = r[0].text.strip()
-
-                    if 'N' in usedby:
-                        vertex_attrs[attr_name] = this_attr
-
-                    if 'E' in usedby:
-                        edge_attrs[attr_name] = this_attr
-
-                    if 'G' in usedby:
-                        graph_attrs[attr_name] = this_attr
-            break
-
-    return graph_attrs, vertex_attrs, edge_attrs
-
-
 def get_reactions(types = None, sources = None):
     if type(types) is list:
         types = set(types)
