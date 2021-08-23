@@ -241,9 +241,13 @@ class Ptm(object):
 
     def __repr__(self):
 
-        return '<PTM %s:%s>' % (
-            self.residue.__repr__().strip('<>'),
-            self.typ,
+        return '<PTM %s%s>' % (
+            (
+                self.residue.__repr__().strip('<>')
+                    if self.residue else
+                self.protein.label
+            ),
+            ':%s' % self.typ if self.residue else '',
         )
 
 
