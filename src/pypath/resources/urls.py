@@ -161,14 +161,15 @@ urls = {
     },
     'pepcyber': {
         'label': 'MySQL injection to PEPCyber website :)',
-        'url':
-        'http://www.pepcyber.org/PPEP/search_result.php?domain=Any&ppbd_symbol'
-        '=Any&search_field=symbol&query_value=%27+OR+1&binding_sequence=&go_id='
-        'Any&Submit=Search'
-    },
-    'pepcyber_details': {
-        'label': 'Interaction details from pepcyber',
-        'url': 'http://www.pepcyber.org/PPEP/idetail.php?iid=%u'
+        'url': 'http://www.pepcyber.org/PPEP/search_result.php'
+            '?domain=Any&ppbd_symbol=Any&search_field=symbol&'
+            'query_value=%27+OR+1&binding_sequence=&go_id=Any&'
+            'Submit=Search',
+        'rescued': 'https://rescued.omnipathdb.org/'
+            'pepcyber_search_result.html',
+        'details': 'http://www.pepcyber.org/PPEP/idetail.php?iid=%u',
+        'details_rescued': 'https://rescued.omnipathdb.org/pepcyber_details/'
+            'pepcyber_%u.html',
     },
     'pdzbase': {
         'label': 'Manually curated interactions of PDZ domain proteins',
