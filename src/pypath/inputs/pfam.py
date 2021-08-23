@@ -279,3 +279,32 @@ def get_pfam_pdb():
             pfam_pdb[pfam][pdb] = [chain, start, end]
 
     return pdb_pfam, pfam_pdb
+
+
+def pfam_uniprot(uniprots, infile = None):
+
+    result = {}
+    url = urls.urls['pfam_up']['url']
+    c = curl.Curl(url, large = True, silent = False)
+
+    prg = progress.Progress(len(uniprots), 'Looking up domains', 1)
+
+    for l in c.result:
+
+        l = l.split('\t')
+
+        if l[0] in uniprots:
+            prg.step()
+
+            if l[0] not in result:
+                result[l[0]] = {}
+
+            if l[4] not in result[l[0]]:
+                result[l[0]][l[4]] = []
+
+            result[l[0]][l[4]].append([l[1], l[5], l[6]])
+
+    prg.terminate()
+
+    return result
+
