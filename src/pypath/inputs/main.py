@@ -1599,31 +1599,6 @@ def pfam_uniprot(uniprots, infile = None):
     return result
 
 
-def get_acsn():
-    greek = {
-        '_alpha_': 'A',
-        '_beta_': 'B',
-        '_gamma_': 'C',
-        '_delta_': 'D',
-        '_epsilon_': 'E'
-    }
-    regreek = re.compile(r'\b(' + '|'.join(greek.keys()) + r')\b')
-    result = []
-    url = urls.urls['acsn']['sif']
-    c = curl.Curl(url, silent = False)
-    data = c.result
-    data = [
-        x.split('\t')
-        for x in data.replace('\r', '').replace('*', '').strip().split('\n')
-    ]
-
-    for l in data:
-        l[0] = regreek.sub('', l[0]).split('_')[0].split('~')[0]
-        l[2] = regreek.sub('', l[2]).split('_')[0].split('~')[0]
-
-    return data
-
-
 def get_cpdb_ltp():
     return get_cpdb(
         ['HPRD', 'BioGRID', 'PhosphoPOINT', 'MINT', 'BIND', 'IntAct'])
