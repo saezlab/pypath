@@ -49,6 +49,7 @@ def ontology(ontology, fields = None):
             (i.obo_id, i.label)
             for i in result
         )
+        result.pop(None, None)
 
     return result
 
@@ -73,5 +74,6 @@ def listof_ontologies(fields = None, full_config = False):
             (i.ontologyId, i.config['title'])
             for i in result
         )
+        result.pop(None, None)
 
     return result
