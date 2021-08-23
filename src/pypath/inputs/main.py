@@ -1280,36 +1280,6 @@ def get_cpdb(exclude = None):
     return result
 
 
-def get_dgidb_old():
-    """
-    Deprecated. Will be removed soon.
-
-    Downloads and processes the list of all human druggable proteins.
-    Returns a list of GeneSymbols.
-    """
-
-    genesymbols = []
-    url = urls.urls['dgidb']['main_url']
-    c = curl.Curl(url, silent = False)
-    html = c.result
-    soup = bs4.BeautifulSoup(html, 'html.parser')
-    cats = [
-        o.attrs['value']
-        for o in soup.find('select', {'id': 'gene_categories'})
-        .find_all('option')
-    ]
-
-    for cat in cats:
-        url = urls.urls['dgidb']['url'] % cat
-        c = curl.Curl(url)
-        html = c.result
-        soup = bs4.BeautifulSoup(html, 'html.parser')
-        trs = soup.find('tbody').find_all('tr')
-        genesymbols.extend([tr.find('td').text.strip() for tr in trs])
-
-    return mapping.map_names(genesymbols, 'genesymbol', 'uniprot')
-
-
 def reactome_sbml():
     """
     Downloads Reactome human reactions in SBML format.
