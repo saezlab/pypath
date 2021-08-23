@@ -3740,28 +3740,6 @@ def dip_login(user, passwd):
     return res, hdr
 
 
-def negatome_pairs():
-    url = urls.urls['negatome']['manual']
-    c = curl.Curl(url, silent = False, large = True)
-    f = c.result
-    result = []
-
-    for l in f:
-        l = l.strip().split('\t')
-
-        if len(l) == 4:
-            l[3] = ';'.join(
-                map(lambda x: x.split('-')[1].strip(),
-                    filter(lambda x: '-' in x, l[3].replace('–', '-').split(
-                        ','))))
-
-        l[0] = l[0].split('-')[0]
-        l[1] = l[1].split('-')[0]
-        result.append(l)
-
-    return result
-
-
 def get_reactions(types = None, sources = None):
     if type(types) is list:
         types = set(types)
