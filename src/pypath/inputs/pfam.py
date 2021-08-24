@@ -48,16 +48,22 @@ _log = _logger._log
 
 
 def pfam_uniprot(uniprots = None, organism = 9606):
+    """
+    Mappings between Pfam and UniProt.
 
-    if uniprots is None:
+    Args:
+        uniprots (set): The UniProt IDs to query.
+        organism (int): NCBI Taxonomy ID of an organism.
 
-        uniprots = uniprot_input.all_uniprots(
-            organism = organism,
-            swissprot = True,
-        )
+    Returns:
+        A pair of dicts of sets, the first mapping from UniProt ACs to
+        Pfam ACs, the second the other way around.
+    """
 
-    u_pfam = {}
-    pfam_u = {}
+    uniprots = uniprots or uniprot_input.all_swissprots(organism = organism)
+    uniprots = common.to_list(uniprots)
+    u_pfam = collections.defaultdict(set)
+    pfam_u = collections.defaultdict(set)
 
     if uniprots is not None:
 
@@ -68,9 +74,9 @@ def pfam_uniprot(uniprots = None, organism = 9606):
         )
         data_all = []
 
-        for i in xrange(0, len(uniprots), 30):
+        for i in xrange(0, len(uniprots), 200):
 
-            to = i + 30
+            to = i + 200
             thisPart = uniprots[i:to]
             thisPart = ' OR '.join(['accession:%s' % u for u in thisPart])
             get = {
@@ -78,13 +84,16 @@ def pfam_uniprot(uniprots = None, organism = 9606):
                 'format': 'tab',
                 'columns': 'id,database(Pfam)'
             }
+
             for j in xrange(3):
+
                 c = curl.Curl(urls.urls['uniprot_basic']['url'], get = get)
                 data = c.result
-                if data is not None:
+
+                if data:
+
                     break
-            if data is None:
-                return None, None
+
             data = data.split('\n')
             del data[0]
             del data[-1]
@@ -117,11 +126,10 @@ def pfam_uniprot(uniprots = None, organism = 9606):
                 outf = 'uniprot-pfam-%u.tab' % organism,
             )
             data_all = c.result
-            if data_all is not None:
-                break
 
-        if data_all is None:
-            return None
+            if data_all:
+
+                break
 
         data_all = data_all.split('\n')
         del data_all[0]
@@ -131,22 +139,14 @@ def pfam_uniprot(uniprots = None, organism = 9606):
         l = l.split('\t')
 
         pfams = re.sub(';$', '', l[1]).strip()
-        pfams = pfams.split(';') if pfams else []
-
-        if l[0] not in u_pfam:
-
-            u_pfam[l[0]] = []
-
-        u_pfam[l[0]] += pfams
+        pfams = common.to_set(pfams.split(';') if pfams else set())
+        u_pfam[l[0]].update(pfams)
 
         for pfam in pfams:
 
-            if pfam not in pfam_u:
-                pfam_u[pfam] = []
+            pfam_u[pfam].add(l[0])
 
-            pfam_u[pfam].append(l[0])
-
-    return u_pfam, pfam_u
+    return dict(u_pfam), dict(pfam_u)
 
 
 def pfam_regions(
@@ -305,10 +305,13 @@ def pfam_pdb():
             chain = l[1]
             start = int(common.non_digit.sub('', l[2]))
             end = int(common.non_digit.sub('', l[3]))
+
             if pdb not in pdb_pfam:
                 pdb_pfam[pdb] = {}
+
             if pfam not in pfam_pdb:
                 pfam_pdb[pfam] = {}
+
             pdb_pfam[pdb][pfam] = [chain, start, end]
             pfam_pdb[pfam][pdb] = [chain, start, end]
 
