@@ -281,18 +281,31 @@ def pfam_names():
 
 
 def pfam_pdb():
+    """
+    Mappings between Pfam and PDB.
+
+    Returns:
+        A pair of dicts of dicts, the first mapping from PDB IDs to
+        Pfam ACs, the second the other way around. Each inner dict contains
+        sets of domains as values, each domain defined by the PDB chain ID,
+        and its start and end positions.
+    """
+
+    PfamDomain = collections.namedtuple(
+        'PfamDomain',
+        (
+            'chain',
+            'start',
+            'end',
+        ),
+    )
 
     c = curl.Curl(urls.urls['pfam_pdb']['url'], silent = False)
     data = c.result
 
-    if data is None:
-
-        return None, None
-
-    pdb_pfam = {}
-    pfam_pdb = {}
-    data = data.replace('\r', '').split('\n')
-    del data[0]
+    pdb_pfam = collections.defaultdict(dict)
+    pfam_pdb = collections.defaultdict(dict)
+    data = data.strip().split('\n')[2:]
 
     for l in data:
 
@@ -300,20 +313,15 @@ def pfam_pdb():
 
         if len(l) > 4:
 
-            pfam = l[4].split('.')[0]
+            pfam = common.prefix(l[4], '.')
             pdb = l[0].lower()
             chain = l[1]
             start = int(common.non_digit.sub('', l[2]))
             end = int(common.non_digit.sub('', l[3]))
 
-            if pdb not in pdb_pfam:
-                pdb_pfam[pdb] = {}
-
-            if pfam not in pfam_pdb:
-                pfam_pdb[pfam] = {}
-
-            pdb_pfam[pdb][pfam] = [chain, start, end]
-            pfam_pdb[pfam][pdb] = [chain, start, end]
+            domain = PfamDomain(chain, start, end)
+            pdb_pfam[pdb][pfam] = domain
+            pfam_pdb[pfam][pdb] = domain
 
     return pdb_pfam, pfam_pdb
 
