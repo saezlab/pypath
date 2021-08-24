@@ -19,42 +19,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-#
-# This module makes possible
-# dynamic data integration, downloads
-# files from various resources, in standard
-# or non-standard text based and xml formats,
-# processes them, can parse html.
-#
-
-#TODO make a cleaner separation, remove/refactor repeating code
-
-from __future__ import print_function
-
 from future.utils import iteritems
 from past.builtins import xrange, range
-
-import pypath.share.session as session_mod
-
-_logger = session_mod.Logger(name = 'inputs')
-_log = _logger._log
-_console = _logger._console
-
-import urllib
-
-try:
-    import urllib2
-except ImportError:
-    # this works seemless in Py3:
-    import urllib.request
-    urllib2 = urllib.request
-
-try:
-    import urlparse
-except:
-    # this works seemless in Py3:
-    import urllib.parse
-    urlparse = urllib.parse
 
 # Py 2/3
 try:
@@ -79,42 +45,13 @@ except:
 
 import sys
 import os
-import io
 import re
-import time
 import itertools
-import collections
-from collections import Counter
-import functools
 import gzip
-import xlrd
 import bs4
 from lxml import etree
-import time
 import copy
 import struct
-import json
-import csv
-import pycurl
-import webbrowser
-
-try:
-    import requests
-except ImportError:
-    _log('Module `requests` not available.', -1)
-
-import codecs
-import base64
-
-try:
-    import bioservices
-except ImportError:
-    _log('Module `bioservices` not available.', -1)
-
-from xlrd import open_workbook
-from xlrd.biffh import XLRDError
-
-# from this module
 
 import pypath.utils.mapping as mapping
 import pypath.utils.reflists as reflists
@@ -126,20 +63,9 @@ import pypath.share.common as common
 import pypath.internals.intera as intera
 import pypath.utils.residues as residues
 import pypath.share.settings as settings
-import pypath.utils.taxonomy as taxonomy
-import pypath.utils.homology as homology_mod
 import pypath.inputs.pfam as pfam_input
 import pypath.inputs.common as inputs_common
 from pypath.resources import data_formats
-
-if 'long' not in __builtins__:
-    long = int
-
-if 'unicode' not in __builtins__:
-    unicode = str
-
-CURSOR_UP_ONE = '\x1b[1A'
-ERASE_LINE = '\x1b[2K'
 
 
 def get_3dcomplex():
@@ -1224,32 +1150,6 @@ def get_csa(uniprots = None):
     prg.terminate()
 
     return css
-
-
-def get_cpdb_ltp():
-    return get_cpdb(
-        ['HPRD', 'BioGRID', 'PhosphoPOINT', 'MINT', 'BIND', 'IntAct'])
-
-
-def get_cpdb(exclude = None):
-    exclude = set(exclude) if type(exclude) is list else exclude
-    result = []
-    url = urls.urls['cpdb']['url']
-    c = curl.Curl(url, silent = False)
-    data = c.result
-    data = [
-        x.split('\t') for x in data.split('\n')
-        if not x.startswith('#') and len(x) > 0
-    ]
-
-    for l in data:
-        participants = l[2].split(',')
-
-        if len(participants) == 2:
-            if not exclude or len(set(l[0].split(',')) - exclude) > 0:
-                result.append([participants[0], participants[1], l[0], l[1]])
-
-    return result
 
 
 def reactome_sbml():
