@@ -2429,3 +2429,21 @@ def negate(value, neg = True):
     """
 
     return not value if neg else bool(value)
+
+
+def prefix(string, sep):
+    """
+    Extracts a prefix from a string, splitting by a separator and taking
+    only the first part.
+    """
+
+    return first(string.split(sep, maxsplit = 1))
+
+
+def suffix(string, sep):
+    """
+    Extracts a suffix from a string, splitting by a separator and taking
+    only the last part.
+    """
+
+    return first(reversed(string.rsplit(sep, maxsplit = 1)))
