@@ -19,7 +19,11 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
 import re
+import json
+import collections
 import urllib
 
 try:
@@ -35,85 +39,113 @@ except:
 
 import bs4
 
-import pypath.resources.data_formats as data_formats
+import pypath.resources.urls as urls
+
+
+Segment = collections.namedtuple(
+    'Segment',
+    (
+        'uniprot',
+        'pdb_start',
+        'pdb_end',
+        'uniprot_start',
+        'uniprot_end',
+    ),
+)
+
+
+Residue = collections.namedtuple(
+    'Residue',
+    (
+        'uniprot',
+        'chain',
+        'resnum',
+        'offset',
+    ),
+)
 
 
 class ResidueMapper(object):
     """
-    This class stores and serves the PDB --> UniProt 
-    residue level mapping. Attempts to download the 
-    mapping, and stores it for further use. Converts 
+    This class stores and serves the PDB --> UniProt
+    residue level mapping. Attempts to download the
+    mapping, and stores it for further use. Converts
     PDB residue numbers to the corresponding UniProt ones.
     """
 
 
     def __init__(self):
-        
+
         self.clean()
 
 
     def load_mapping(self, pdb):
-        
+
         non_digit = re.compile(r'[^\d.-]+')
         pdb = pdb.lower()
-        url = data_formats.urls['pdb_align']['url'] + pdb
+        url = urls.urls['pdb_align']['url'] + pdb
         data = urllib2.urlopen(url)
-        mapper = {}
-        soup = bs4.BeautifulSoup(data.read())
-        
-        for block in soup.find_all('block'):
-            
-            seg = block.find_all('segment')
-            chain = seg[0]['intobjectid'].split('.')[1]
-            uniprot = seg[1]['intobjectid']
-            pdbstart = int(non_digit.sub('', seg[0]['start']))
-            pdbend = int(non_digit.sub('', seg[0]['end']))
-            uniprotstart = int(non_digit.sub('', seg[1]['start']))
-            uniprotend = int(non_digit.sub('', seg[1]['end']))
-            if chain not in mapper:
-                mapper[chain] = {}
-            mapper[chain][pdbend] = {
-                'uniprot': uniprot,
-                'pdbstart': pdbstart,
-                'uniprotstart': uniprotstart,
-                'uniprotend': uniprotend
-            }
-        
+        alignments = json.loads(data.read())
+        mapper = collections.defaultdict(dict)
+
+        for uniprot, alignment in iteritems(alignments[pdb]['UniProt']):
+
+            for segment in alignment['mappings']:
+
+                chain = segment['chain_id']
+                pdbstart = segment['start']['residue_number']
+                pdbend = segment['end']['residue_number']
+                uniprotstart = segment['unp_start']
+                uniprotend = segment['unp_end']
+
+                if chain not in mapper:
+
+                    mapper[chain] = {}
+
+                mapper[chain][pdbend] = Segment(
+                    uniprot = uniprot,
+                    pdb_start = pdbstart,
+                    pdb_end = pdbend,
+                    uniprot_start = uniprotstart,
+                    uniprot_end = uniprotend,
+                )
+
         self.mappers[pdb] = mapper
 
 
     def get_residue(self, pdb, resnum, chain = None):
-        
+
         pdb = pdb.lower()
-        
+
         if pdb not in self.mappers:
+
             self.load_mapping(pdb)
-            
+
         if pdb in self.mappers:
-            
-            for chain, data in self.mappers[pdb].iteritems():
-                
+
+            for chain, data in iteritems(self.mappers[pdb]):
+
                 pdbends = data.keys()
-                
+
                 if resnum <= max(pdbends):
-                    
+
                     pdbend = min(
                         [x for x in [e - resnum for e in pdbends]
                          if x >= 0]) + resnum
                     seg = data[pdbend]
-                    
-                    if seg['pdbstart'] <= resnum:
-                        
-                        offset = seg['uniprotstart'] - seg['pdbstart']
-                        residue = {
-                            'resnum': resnum + offset,
-                            'offset': offset,
-                            'uniprot': seg['uniprot'],
-                            'chain': chain
-                        }
-                        
+
+                    if seg.pdb_start <= resnum:
+
+                        offset = seg.uniprot_start - seg.pdb_start
+                        residue = Residue(
+                            resnum = resnum + offset,
+                            offset = offset,
+                            uniprot = seg.uniprot,
+                            chain = chain,
+                        )
+
                         return residue
-        
+
         return None
 
 
@@ -121,7 +153,7 @@ class ResidueMapper(object):
         """
         Removes cached mappings, freeing up memory.
         """
-        
+
         self.mappers = {}
 
 
