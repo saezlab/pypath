@@ -23,18 +23,31 @@
 from future.utils import iteritems
 from past.builtins import xrange, range
 
-import gzip
+import os
 import re
+import gzip
+import struct
+import collections
+
+try:
+    import urllib2
+except:
+    import urllib.request as urllib2
 
 import pypath.inputs.uniprot as uniprot_input
 import pypath.share.progress as progress
 import pypath.share.curl as curl
 import pypath.share.common as common
+import pypath.share.cache as cache
+import pypath.share.session as session
 import pypath.resources.urls as urls
 import pypath.utils.taxonomy as taxonomy
 
+_logger = session.Logger(name = 'uniprot_input')
+_log = _logger._log
 
-def get_pfam(uniprots = None, organism = 9606):
+
+def pfam_uniprot(uniprots = None, organism = 9606):
 
     if uniprots is None:
 
@@ -136,41 +149,60 @@ def get_pfam(uniprots = None, organism = 9606):
     return u_pfam, pfam_u
 
 
-def get_pfam_regions(
-        uniprots = [],
-        pfams = [],
-        keepfile = False,
-        dicts = 'both',
+def pfam_regions(
+        uniprots = None,
+        pfams = None,
+        organism = 9606,
+        keepfile = True,
+        value = 'both',
     ):
+    """
+    Args:
+        uniprots (set): UniProt IDs to include in the result. If neither
+            this or ``pfams`` provided, all SwissProts for the given
+            organism will be queried.
+        pfams (set): Pfam IDs to include in the result.
+        organism (int): NCBI Taxonomy ID (or any other name) of the organism.
+        keepfile (bool):
+            Keep the downloaded file in the cache directory.
+        value (str): The return value: either "uniprot", "pfam" or "both".
+            This is the direction of the mapping "uniprot" returns a dict
+            with UniProt IDs as keys, "pfam" the other way around, a dict
+            with Pfam IDs as keys, while "both" returns both dicts as a
+            tuple.
+    """
 
     url = urls.urls['pfam_up']['url']
-    outf = url.split('/')[-1]
+    outf = common.suffix(url, '/')
     urlmd5 = common.md5(url)
-    if not os.path.exists(settings.get('cachedir')):
-        os.makedirs(settings.get('cachedir'))
-    cachefile = os.path.join(settings.get('cachedir'), urlmd5 + '-' + outf)
+
+    cachefile = os.path.join(
+        cache.get_cachedir(),
+        '%s-%s' % (urlmd5, outf),
+    )
     u_pfam = {}
     pfam_u = {}
-    uniprots = set(uniprots)
-    pfams = set(pfams)
+    uniprots = common.to_set(uniprots)
+    pfams = common.to_set(pfams)
+
+    if not uniprots and not pfams:
+
+        organism = taxnomy.ensure_ncbi_tax_id(organism)
+        uniprots = uniprot_input.all_swissprots(organism = organism)
 
     if not os.path.exists(cachefile):
-        sys.stdout.write(
-            '\t:: Downloading data from %s' %
-            url.replace('http://', '').replace('ftp://', '').split('/')[0])
-        sys.stdout.flush()
-        if hasattr(urllib, 'urlretrieve'):
-            urllib.urlretrieve(url, cachefile)
-        else:
-            urllib.request.urlretrieve(url, cachefile)
-        sys.stdout.write('\n')
+
+        _log('Downloading `%s` to `%s`.' % (url, cachefile))
+        urllib2.urlretrieve(url, cachefile)
+        _log('Finished downloading `%s` to `%s`.' % (url, cachefile))
 
     with open(cachefile, 'rb') as f:
+
         f.seek(-4, 2)
         gzsize = struct.unpack('<I', f.read())[0]
         prg = progress.Progress(gzsize, 'Processing Pfam domains', 11)
 
-    with gzip.open(cachefile, 'r') as f: # FIXME: Something went wrong here
+    with gzip.open(cachefile, 'r') as f:
 
         for l in f:
 
@@ -179,7 +211,7 @@ def get_pfam_regions(
 
             if l[0] in uniprots or l[4] in pfams:
 
-                if dicts in ['uniprot', 'both']:
+                if value in {'uniprot', 'both'}:
 
                     if l[0] not in u_pfam:
                         u_pfam[l[0]] = {}
@@ -191,7 +223,7 @@ def get_pfam_regions(
                         'end': int(l[6])
                     })
 
-                if dicts in ['pfam', 'both']:
+                if value in {'pfam', 'both'}:
 
                     if l[4] not in pfam_u:
                         pfam_u[l[4]] = {}
@@ -204,49 +236,51 @@ def get_pfam_regions(
                     })
 
     prg.terminate()
+
     if not keepfile:
+
         os.remove(cachefile)
-    if dicts == 'uniprot':
+
+    if value == 'uniprot':
         return u_pfam
-    elif dicts == 'pfam':
+    elif value == 'pfam':
         return pfam_u
     else:
         return u_pfam, pfam_u
 
 
-def get_pfam_names():
+def pfam_names():
+    """
+    Mappings between Pfam accessions and human readable names.
+
+    Returns:
+        A pair of dictionaries, the first maps from names to accessions,
+        the second from accessions to names.
+    """
 
     c = curl.Curl(urls.urls['pfam_pdb']['url'], silent = False)
     data = c.result
-    if data is None:
-        return None, None
-    dname_pfam = {}
-    pfam_dname = {}
-    data = data.replace('\r', '').split('\n')
+    dname_pfam = collections.defaultdict(set)
+    pfam_dname = collections.defaultdict(set)
+    data = data.strip().split('\n')
     del data[0]
 
     for l in data:
 
         l = l.split('\t')
+
         if len(l) > 5:
-            pfam = l[4].split('.')[0]
+
+            pfam = common.prefix(l[4], '.')
             name = l[5]
-            if pfam not in pfam_dname:
-                pfam_dname[pfam] = []
-            if name not in dname_pfam:
-                dname_pfam[name] = []
-            pfam_dname[pfam].append(name)
-            dname_pfam[name].append(pfam)
 
-    for k, v in iteritems(pfam_dname):
-        pfam_dname[k] = list(set(v))
-    for k, v in iteritems(dname_pfam):
-        dname_pfam[k] = list(set(v))
+            pfam_dname[pfam].add(name)
+            dname_pfam[name].add(pfam)
 
-    return dname_pfam, pfam_dname
+    return dict(dname_pfam), dict(pfam_dname)
 
 
-def get_pfam_pdb():
+def pfam_pdb():
 
     c = curl.Curl(urls.urls['pfam_pdb']['url'], silent = False)
     data = c.result
@@ -281,7 +315,7 @@ def get_pfam_pdb():
     return pdb_pfam, pfam_pdb
 
 
-def pfam_uniprot(uniprots, infile = None):
+def _pfam_uniprot(uniprots, infile = None):
 
     result = {}
     url = urls.urls['pfam_up']['url']
@@ -307,4 +341,3 @@ def pfam_uniprot(uniprots, infile = None):
     prg.terminate()
 
     return result
-
