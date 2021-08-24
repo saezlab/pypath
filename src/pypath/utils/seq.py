@@ -216,9 +216,9 @@ class Pfam(Resource):
             all_up = uniprot_input.all_uniprots(organism = ncbi_tax_id)
             
             return (
-                pfam_input.get_pfam_regions(
+                pfam_input.pfam_regions(
                     uniprots = all_up,
-                    dicts = 'uniprot',
+                    value = 'uniprot',
                     keepfile = True,
                 )
             )

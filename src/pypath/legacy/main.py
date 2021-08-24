@@ -7902,7 +7902,7 @@ class PyPath(session_mod.Logger):
         """
 
         graph = graph if graph is not None else self.graph
-        u_pfam, pfam_u = pfam_input.get_pfam(graph.vs['name'])
+        u_pfam, pfam_u = pfam_input.pfam_uniprot(graph.vs['name'])
 
         if u_pfam is None:
             self._log('Failed to download Pfam data from UniProt')
@@ -9351,9 +9351,9 @@ class PyPath(session_mod.Logger):
 
         if self.u_pfam is None:
             
-            self.u_pfam = pfam_input.get_pfam_regions(
+            self.u_pfam = pfam_input.pfam_regions(
                 uniprots = self.graph.vs['name'],
-                dicts = 'uniprot',
+                value = 'uniprot',
                 keepfile = True,
             )
 
