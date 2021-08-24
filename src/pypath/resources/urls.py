@@ -65,16 +65,20 @@ urls = {
         'url': 'ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/'
             'Pfam-A.regions.tsv.gz',
     },
-    '3dcomplexes_contact': {
+    '3dcomplex_contact': {
         'label': 'This file contains the topology '
             'definition of the complexes',
-        'url': 'http://shmoo.weizmann.ac.il/elevy/3dcomplexV4/dataV4/'
+        'url_old': 'http://shmoo.weizmann.ac.il/elevy/3dcomplexV4/dataV4/'
+            'contactDefinition.txt',
+        'url': 'http://shmoo.weizmann.ac.il/elevy/3dcomplexV6/dataV6/'
             'contactDefinition.txt',
     },
-    '3dcomplexes_correspondancy': {
+    '3dcomplex_correspondancy': {
         'label': 'This is the dictionary of chain names',
-        'url': 'http://shmoo.weizmann.ac.il/elevy/3dcomplexV4/dataV4/'
+        'url_old': 'http://shmoo.weizmann.ac.il/elevy/3dcomplexV4/dataV4/'
             'pdb_chain_corresV2.txt',
+        'url': 'http://shmoo.weizmann.ac.il/elevy/3dcomplexV6/dataV6/'
+            'chainDefinition.txt',
     },
     'pdb_chains': {
         'label': 'Corresponding UniProt IDs and residue numbers '
