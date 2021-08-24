@@ -68,209 +68,6 @@ import pypath.inputs.common as inputs_common
 from pypath.resources import data_formats
 
 
-def get_3dcomplex():
-    """
-    Downloads and preprocesses data from the 3DComplex database.
-
-    Returns dict of dicts where top level keys are PDB IDs, second level
-    keys are pairs of tuples of UniProt IDs and values are list with the
-    number of amino acids in contact.
-    """
-
-    c = curl.Curl(urls.urls['3dcomplexes_contact']['url'], silent = False)
-    contact = c.result
-    c = curl.Curl(urls.urls['3dcomplexes_correspondancy']['url'], silent = False)
-    corresp = c.result
-    u_pdb, pdb_u = get_pdb_chains()
-
-    del u_pdb
-
-    if contact is None or corresp is None or pdb_u is None:
-        return None
-
-    contact = contact.split('\n')
-    corresp = corresp.split('\n')
-    del contact[0]
-    corr_dict = {}
-
-    for l in corresp:
-        l = l.replace('\r', '').split('\t')
-
-        if len(l) > 2:
-            pdb = l[0].split('.')[0]
-
-            if pdb not in corr_dict:
-                corr_dict[pdb] = {}
-
-            corr_dict[pdb][l[1]] = l[2]
-
-    compl_dict = {}
-
-    for l in contact:
-        l = l.replace('\r', '').split('\t')
-
-        if len(l) > 11 and int(l[11]) == 0 and int(l[10]) == 0:
-            compl = l[0]
-            pdb = compl.split('_')[0]
-
-            if pdb in corr_dict:
-                if l[1] in corr_dict[pdb] and l[2] in corr_dict[pdb]:
-
-                    ch1 = corr_dict[pdb][l[1]]
-                    ch2 = corr_dict[pdb][l[2]]
-
-                    if pdb in pdb_u and ch1 in pdb_u[pdb]:
-                        up1 = pdb_u[pdb][ch1]['uniprot']
-
-                        if pdb in pdb_u and ch2 in pdb_u[pdb]:
-                            up2 = pdb_u[pdb][ch2]['uniprot']
-
-                            if compl not in compl_dict:
-                                compl_dict[compl] = {}
-
-                            uniprots = [up1, up2]
-                            uniprots.sort()
-                            uniprots = tuple(uniprots)
-
-                            if uniprots not in compl_dict[compl]:
-                                compl_dict[compl][uniprots] = []
-
-                            compl_dict[compl][uniprots].append(float(l[3]))
-
-    return compl_dict
-
-
-def _3dcomplex_complexes():
-    pass
-
-
-def get_3dc_ddi():
-    c = curl.Curl(urls.urls['3dcomplexes_contact']['url'], silent = False)
-    contact = c.result
-    c = curl.Curl(urls.urls['3dcomplexes_correspondancy']['url'], silent = False)
-    corresp = c.result
-    u_pdb, pdb_u = get_pdb_chains()
-    del u_pdb
-
-    if contact is None or corresp is None or pdb_u is None:
-        return None
-
-    contact = contact.split('\n')
-    corresp = corresp.split('\n')
-    del contact[0]
-    corr_dict = {}
-    ddi = []
-    uniprots = []
-
-    for l in corresp:
-        l = l.replace('\r', '').split('\t')
-
-        if len(l) > 2:
-            pdb = l[0].split('.')[0]
-
-            if pdb not in corr_dict:
-                corr_dict[pdb] = {}
-
-            corr_dict[pdb][l[1]] = l[2]
-
-    prg = progress.Progress(len(contact), 'Collecting UniProts', 9)
-
-    for l in contact:
-        prg.step()
-        l = l.replace('\r', '').split('\t')
-
-        if len(l) > 11 and int(l[11]) == 0 and int(l[10]) == 0:
-            pdb = l[0].split('_')[0]
-
-            if pdb in corr_dict:
-                if l[1] in corr_dict[pdb] and l[2] in corr_dict[pdb]:
-                    ch1 = corr_dict[pdb][l[1]]
-                    ch2 = corr_dict[pdb][l[2]]
-
-                    if pdb in pdb_u and ch1 in pdb_u[pdb]:
-                        up1 = pdb_u[pdb][ch1]['uniprot']
-
-                    if pdb in pdb_u and ch2 in pdb_u[pdb]:
-                        up2 = pdb_u[pdb][ch2]['uniprot']
-
-                    uniprots += [up1, up2]
-
-    prg.terminate()
-    uniprots = list(set(uniprots))
-    u_pfam = pfam_input.get_pfam_regions(uniprots, dicts = 'uniprot')
-    prg = progress.Progress(len(contact), 'Processing contact information', 9)
-
-    for l in contact:
-        prg.step()
-        l = l.replace('\r', '').split('\t')
-
-        if len(l) > 11 and int(l[11]) == 0 and int(l[10]) == 0:
-            pdb = l[0].split('_')[0]
-            pfams1 = list(set([x.split('.')[0] for x in l[7].split(';')]))
-            pfams2 = list(set([x.split('.')[0] for x in l[9].split(';')]))
-
-            if pdb in corr_dict:
-                if l[1] in corr_dict[pdb] and l[2] in corr_dict[pdb]:
-                    ch1 = corr_dict[pdb][l[1]]
-                    ch2 = corr_dict[pdb][l[2]]
-
-                    if pdb in pdb_u and ch1 in pdb_u[pdb]:
-                        up1 = pdb_u[pdb][ch1]['uniprot']
-
-                        if pdb in pdb_u and ch2 in pdb_u[pdb]:
-                            up2 = pdb_u[pdb][ch2]['uniprot']
-
-                            for pfam1 in pfams1:
-                                for pfam2 in pfams2:
-                                    pfam1_details = [{
-                                        'start': None,
-                                        'end': None,
-                                        'isoform': 1
-                                    }]
-                                    pfam2_details = [{
-                                        'start': None,
-                                        'end': None,
-                                        'isoform': 1
-                                    }]
-
-                                    if up1 in u_pfam and pfam1 in u_pfam[up1]:
-                                        pfam1_details = u_pfam[up1][pfam1]
-
-                                    if up2 in u_pfam and pfam2 in u_pfam[up2]:
-                                        pfam2_details = u_pfam[up2][pfam2]
-
-                                    for pfam1_d in pfam1_details:
-                                        for pfam2_d in pfam2_details:
-                                            dom1 = intera.Domain(
-                                                protein = up1,
-                                                domain = pfam1,
-                                                start = pfam1_d['start'],
-                                                end = pfam1_d['end'],
-                                                isoform = pfam1_d['isoform'],
-                                                chains = {pdb: ch1},
-                                            )
-                                            dom2 = intera.Domain(
-                                                protein = up2,
-                                                domain = pfam2,
-                                                start = pfam2_d['start'],
-                                                end = pfam2_d['end'],
-                                                isoform = pfam2_d['isoform'],
-                                                chains = {pdb: ch2},
-                                            )
-                                            dd = intera.DomainDomain(
-                                                dom1,
-                                                dom2,
-                                                pdbs = pdb,
-                                                sources = '3DComplex',
-                                                contact_residues = float(l[3])
-                                            )
-                                            ddi.append(dd)
-
-    prg.terminate()
-
-    return ddi
-
-
 def pisa_bonds(lst, chains):
     non_digit = re.compile(r'[^\d.-]+')
     bonds = []
@@ -479,8 +276,8 @@ def get_3did_ddi(residues = False, ddi_flat = None, organism = 9606):
     else:
         tmpfile = ddi_flat
 
-    u_pfam, pfam_u = pfam_input.get_pfam(organism = organism)
-    u_pdb, pdb_u = get_pdb_chains()
+    u_pfam, pfam_u = pfam_input.pfam_uniprot(organism = organism)
+    u_pdb, pdb_u = pdb_input.pdb_chains()
 
     if pfam_u is None or pdb_u is None:
         return None
@@ -867,7 +664,7 @@ def process_3did_dmi():
     if dmi is None:
         return None
 
-    dname_pfam, pfam_dname = pfam_input.get_pfam_names()
+    dname_pfam, pfam_dname = pfam_input.pfam_names()
     dname_re = re.compile(r'(.*)(_[A-Z]{3}_)(.*)')
     dmi2 = {}
     prg = progress.Progress(len(dmi), 'Processing data', 11)
@@ -1019,7 +816,7 @@ def get_i3d():
     Instruct, or from the Pfam PDB-chain-UniProt mapping table.
     """
 
-    dname_pfam, pfam_dname = pfam_input.get_pfam_names()
+    dname_pfam, pfam_dname = pfam_input.pfam_names()
 
     if dname_pfam is None:
         sys.stdout.write('\n\t:: Could not get Pfam domain names\n\n')
