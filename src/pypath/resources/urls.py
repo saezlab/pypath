@@ -163,7 +163,7 @@ urls = {
         'label': 'PDB-UniProt residue level mapping',
         'url_old': 'http://pdb.org/pdb/rest/das/pdb_uniprot_mapping/'
             'alignment?query=',
-        'url': 'https://www.ebi.ac.uk/pdbe/api/mappings/',
+        'url': 'https://www.ebi.ac.uk/pdbe/api/mappings/uniprot/',
     },
     'pepcyber': {
         'label': 'MySQL injection to PEPCyber website :)',
