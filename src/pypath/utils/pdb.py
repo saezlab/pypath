@@ -40,6 +40,7 @@ except:
 import bs4
 
 import pypath.resources.urls as urls
+import pypath.share.common as common
 
 
 Segment = collections.namedtuple(
@@ -79,41 +80,66 @@ class ResidueMapper(object):
         self.clean()
 
 
-    def load_mapping(self, pdb):
+    def load_mapping(self, pdbs):
+        """
+        Loads PDB-UniProt sequence mapping for one or more PDB IDs.
+
+        Args:
+            pdb (str,list): One or more PDB IDs.
+        """
 
         non_digit = re.compile(r'[^\d.-]+')
-        pdb = pdb.lower()
-        url = urls.urls['pdb_align']['url'] + pdb
-        data = urllib2.urlopen(url)
-        alignments = json.loads(data.read())
-        mapper = collections.defaultdict(dict)
+        pdbs = common.to_set(pdbs)
+        pdbs = {p.lower() for p in pdbs}
 
-        for uniprot, alignment in iteritems(alignments[pdb]['UniProt']):
+        for pdb in pdbs:
 
-            for segment in alignment['mappings']:
+            url = urls.urls['pdb_align']['url'] + pdb
+            data = urllib2.urlopen(url)
+            alignments = json.loads(data.read())
+            mapper = collections.defaultdict(dict)
 
-                chain = segment['chain_id']
-                pdbstart = segment['start']['residue_number']
-                pdbend = segment['end']['residue_number']
-                uniprotstart = segment['unp_start']
-                uniprotend = segment['unp_end']
+            for uniprot, alignment in (
+                iteritems(alignments[pdb]['UniProt'])
+            ):
 
-                if chain not in mapper:
+                for segment in alignment['mappings']:
 
-                    mapper[chain] = {}
+                    chain = segment['chain_id']
+                    pdbstart = segment['start']['residue_number']
+                    pdbend = segment['end']['residue_number']
+                    uniprotstart = segment['unp_start']
+                    uniprotend = segment['unp_end']
 
-                mapper[chain][pdbend] = Segment(
-                    uniprot = uniprot,
-                    pdb_start = pdbstart,
-                    pdb_end = pdbend,
-                    uniprot_start = uniprotstart,
-                    uniprot_end = uniprotend,
-                )
+                    if chain not in mapper:
 
-        self.mappers[pdb] = mapper
+                        mapper[chain] = {}
+
+                    mapper[chain][pdbend] = Segment(
+                        uniprot = uniprot,
+                        pdb_start = pdbstart,
+                        pdb_end = pdbend,
+                        uniprot_start = uniprotstart,
+                        uniprot_end = uniprotend,
+                    )
+
+            self.mappers[pdb] = dict(mapper)
 
 
     def get_residue(self, pdb, resnum, chain = None):
+        """
+        For a residue in a PDB structure returns the UniProt ID and
+        the position of the residue in the UniProt sequence.
+
+        Args:
+            pdb (str): A PDB structure ID.
+            resnum (int): The position of the residue.
+            chain (str): The chain ID, optional.
+
+        Returns:
+            Tuple of residue number, offset, UniProt ID and chain ID.
+            Returns None if the residue can not be found.
+        """
 
         pdb = pdb.lower()
 
@@ -123,11 +149,16 @@ class ResidueMapper(object):
 
         if pdb in self.mappers:
 
-            for chain, data in iteritems(self.mappers[pdb]):
+            for _chain, data in iteritems(self.mappers[pdb]):
 
                 pdbends = data.keys()
 
-                if resnum <= max(pdbends):
+                if (
+                    resnum <= max(pdbends) and (
+                        not chain or
+                        chain == _chain
+                    )
+                ):
 
                     pdbend = min(
                         [x for x in [e - resnum for e in pdbends]
