@@ -131,7 +131,7 @@ class Residue(object):
 
     def __repr__(self):
 
-        return '<%s-%u:%s%u>' % (
+        return '<Residue %s-%u:%s%u>' % (
             self.protein.label,
             self.isoform,
             self.name,
@@ -141,7 +141,7 @@ class Residue(object):
 
     def serialize(self):
 
-        return '%s:%u' % (self.name, self.number)
+        return '%s%u' % (self.name, self.number)
 
 
     def in_isoform(self, isoform, seq=None):
@@ -1525,6 +1525,7 @@ class Complex(object):
 
 class Interface(object):
     
+
     def __init__(self,
                  id_a,
                  id_b,
@@ -1558,6 +1559,7 @@ class Interface(object):
         self.solv_en = solv_en
         self.css = css
 
+
     def add_residues(self, res_a, res_b, typ='undefined'):
         '''
         Adds one pair of residues of type `typ`,
@@ -1579,24 +1581,35 @@ class Interface(object):
             self.__dict__[typ][self.id_b].append(
                 Residue(res_b[0], res_b[1], res_b[2], self.id_type))
 
+
     def numof_residues(self):
         '''
         Returns the number of residue pairs by bound type
         '''
+
         nbonds = {}
+
         for t in self.types:
-            nbonds[t] = len(self.__dict__[t][id_a])
+
+            nbonds[t] = len(self.__dict__[t][self.id_a])
+
         return nbonds
+
 
     def bond_types(self):
         '''
         Returns the bond types present in this interface
         '''
         types = []
+
         for t in self.types:
-            if len(self.__dict__[t][id_a]) > 0:
+
+            if len(self.__dict__[t][self.id_a]) > 0:
+
                 types.append(t)
+
         return types
+
 
     def get_bonds(self, typ=None, mode=None):
         '''
@@ -1604,33 +1617,66 @@ class Interface(object):
         this interface. If no type given, bonds of all types
         returned.
         '''
+
         if typ is None:
+
             typ = self.types
+
         if type(typ) is str:
+
             typ = [typ]
+
         for t in typ:
+
             if t in self.__dict__:
-                for i in range(0, len(self.__dict__[t])):
+
+                for i in range(0, len(self.__dict__[t][self.id_a])):
+
                     if mode == 'dict':
+
                         yield {
                             self.id_a: self.__dict__[t][self.id_a][i],
-                            self.id_b: self.id_b,
-                            'res_b': self.__dict__[t][self.id_b][i],
-                            'type': t
+                            self.id_b: self.__dict__[t][self.id_b][i],
+                            'type': t,
                         }
+
                     else:
-                        yield (self.id_a,) + self.__dict__[t][self.id_a][i] + \
-                            (self.id_b,) + self.__dict__[t][self.id_b][i] + \
+
+                        yield (
+                            (self.id_a,) +
+                            (self.__dict__[t][self.id_a][i].serialize(),) +
+                            (self.id_b,) +
+                            (self.__dict__[t][self.id_b][i].serialize(),) +
                             (t,)
+                        )
+
 
     def serialize(self):
+
         res = []
         for t in self.types:
-            res.append('%s:%s+%s' % (t, ','.join(self.__dict__[t][self.id_a]),
-                                     ','.join(self.__dict__[t][self.id_b])))
-        return '%s-%u:%s-%u:%s:%s:%s' % (self.id_a, self.isoform_a, self.id_b,
-                                         self.isoform_b, self.source, self.pdb,
-                                         ':'.join(res))
+
+            if self.__dict__[t][self.id_a] and self.__dict__[t][self.id_b]:
+
+                res.append(
+                    '%s:%s+%s' % (
+                        t,
+                        ','.join(self.__dict__[t][self.id_a].serialize()),
+                        ','.join(self.__dict__[t][self.id_b].serialize()),
+                    )
+                )
+
+        return (
+            '%s-%u:%s-%u:%s:%s:%s' % (
+                self.id_a,
+                self.isoform_a,
+                self.id_b,
+                self.isoform_b,
+                self.source,
+                self.pdb,
+                ':'.join(res),
+            )
+        )
 
 
     def __str__(self):
@@ -1663,5 +1709,18 @@ class Interface(object):
                 'n/a' if self.solv_en is None else str(self.solv_en),
                 'n/a' if self.area is None else str(self.area),
                 'n/a' if self.css is None else str(self.css),
+            )
+        )
+
+
+    def __repr__(self):
+
+        nbonds = self.numof_residues()
+
+        return (
+            'Interface [%s-%s, %u bonds]' % (
+                self.id_a,
+                self.id_b,
+                sum(nbonds.values()),
             )
         )
