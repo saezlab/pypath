@@ -37,7 +37,6 @@ import numpy as np
 import pandas as pd
 
 import pypath.inputs as inputs
-import pypath.inputs.main as dataio
 import pypath.internals.intera as intera
 import pypath.internals.resource as resource
 import pypath.share.settings as settings
@@ -715,10 +714,6 @@ class ComplexAggregator(AbstractComplexResource):
                 for attr, val in iteritems(key.attrs):
 
                     cls = val.__class__.__name__
-
-                    if hasattr(dataio, cls):
-
-                        val.__class__ = getattr(dataio, cls)
 
                     elif hasattr(mod, cls):
 

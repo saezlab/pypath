@@ -32,7 +32,7 @@ import openpyxl
 import pypath.share.session as session_mod
 import pypath.share.common as common
 
-_logger = session_mod.Logger(name = 'dataio')
+_logger = session_mod.Logger(name = 'inputs_common')
 _log = _logger._log
 _console = _logger._console
 

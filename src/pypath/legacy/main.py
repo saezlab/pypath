@@ -109,7 +109,6 @@ import pypath.share.cache as cache_mod
 import pypath.resources.data_formats as data_formats
 import pypath.utils.mapping as mapping
 import pypath.resources.descriptions as descriptions
-import pypath.inputs.main as dataio
 import pypath.inputs.pubmed as pubmed_input
 import pypath.inputs.kegg as kegg_input
 import pypath.inputs.phosphosite as phosphosite_input
@@ -117,6 +116,31 @@ import pypath.inputs.phosphonetworks as phosphonetworks_input
 import pypath.inputs.mimp as mimp_input
 import pypath.inputs.laudanna as laudanna_input
 import pypath.inputs.string as string_input
+import pypath.inputs.go as go_input
+import pypath.inputs.pdb as pdb_input
+import pypath.inputs.corum as corum
+import pypath.inputs.havugimana as havugimana
+import pypath.inputs.compleat as compleat
+import pypath.inputs.complexportal as complexportal
+import pypath.inputs.proteinatlas as proteinatlas
+import pypath.inputs.surfaceome as surfaceome_input
+import pypath.inputs.matrisome as matrisome_input
+import pypath.inputs.phosphopoint as phosphopoint_input
+import pypath.inputs.graphviz as graphviz_input
+import pypath.inputs.disgenet as disgenet_input
+import pypath.inputs.membranome as membranome_input
+import pypath.inputs.wang as wang_input
+import pypath.inputs.acsn as acsn_input
+import pypath.inputs.exocarta as exocarta_input
+import pypath.inputs.guide2pharma as g2p_input
+import pypath.inputs.comppi as comppi_input
+import pypath.inputs.pepcyber as pepcyber_input
+import pypath.inputs.domino as domino_input
+import pypath.inputs.threedid as threedid
+import pypath.inputs.threedcomplex as threedcomplex
+import pypath.inputs.elm as elm_input
+import pypath.inputs.ielm as ielm_input
+import pypath.inputs.pisa as pisa
 import pypath.inputs as inputs
 import pypath.core.network as network
 import pypath.utils.homology as homology
@@ -2584,9 +2608,6 @@ class PyPath(session_mod.Logger):
 
                 input_func = inputs.get_method(param.input)
 
-                if input_func is None and hasattr(dataio, param.input):
-                    input_func = getattr(dataio, param.input)
-
                 # reading from remote or local file, or executing import
                 # function:
                 if (
@@ -2626,10 +2647,9 @@ class PyPath(session_mod.Logger):
                         "Retrieving data from%s ..." % param.input
                     )
 
-                # elif hasattr(dataio, param.input):
                 elif input_func is not None:
 
-                    self._log("Retrieving data by dataio.%s() ..." %
+                    self._log("Retrieving data by `%s` ..." %
                                     input_func.__name__)
 
                     _store_cache = curl.CACHE
@@ -2646,7 +2666,7 @@ class PyPath(session_mod.Logger):
 
                     except Exception as e:
                         self._log(
-                            'Error in `pypath.dataio.%s()`. '
+                            'Error in `%s`. '
                             'Skipping to next resource. '
                             'See below the traceback.' % input_func.__name__
                         )
@@ -2675,7 +2695,7 @@ class PyPath(session_mod.Logger):
                 if infile is None:
 
                     self._log(
-                        '`%s`: Could not find file or dataio function '
+                        '`%s`: Could not find file or input function '
                         'or failed preprocessing.' %
                         param.input,
                         -5,
@@ -3058,8 +3078,8 @@ class PyPath(session_mod.Logger):
         terms.
         """
 
-        terms   = dataio.go_terms_quickgo()
-        goannot = dataio.go_annotations_goa()
+        terms   = go_input.go_terms_quickgo()
+        goannot = go_input.go_annotations_goa()
 
         gosig = set([])
 
@@ -3228,7 +3248,7 @@ class PyPath(session_mod.Logger):
             Extra arguments passed to the file reading function. Such
             function name is outlined in the
             :py:attr:`python.data_formats.ReadList.input` attribute and
-            defined in :py:mod:`pypath.dataio`.
+            defined in :py:mod:`pypath.inputs`.
         """
 
         _input = None
@@ -3241,11 +3261,16 @@ class PyPath(session_mod.Logger):
             )
             return None
 
-        if hasattr(dataio, settings.input):
-            toCall = getattr(dataio, settings.input)
+        if (
+            isinstance(settings.input, common.basestring) and
+            inputs.get_method(settings.input)
+        ):
+
+            toCall = inputs.get_method(settings.input)
             _input = toCall(**kwargs)
 
         elif not os.path.isfile(settings.input):
+
             self._log('%s: No such file! :(\n' % settings.input, -5)
             return None
 
@@ -3263,7 +3288,7 @@ class PyPath(session_mod.Logger):
             #codecs.open(_input, encoding='utf-8', mode='r')
 
         if _input is None:
-            self._log('Could not find file or dataio function.', -5)
+            self._log('Could not find file or input function.', -5)
             return None
 
         self._log("%s opened..." % settings.input)
@@ -7871,7 +7896,7 @@ class PyPath(session_mod.Logger):
         """
 
         graph = graph if graph is not None else self.graph
-        u_pdb, pdb_u = dataio.get_pdb()
+        u_pdb, pdb_u = pdb_input.pdb_uniprot()
 
         if u_pdb is None:
             self._log('Failed to download UniProt-PDB dictionary')
@@ -7991,7 +8016,7 @@ class PyPath(session_mod.Logger):
         """
 
         graph = graph if graph is not None else self.graph
-        complexes, members = dataio.get_corum()
+        complexes, members = corum.corum_complexes()
 
         if complexes is None:
             self._log('Failed to download data from CORUM', -5)
@@ -8050,7 +8075,7 @@ class PyPath(session_mod.Logger):
         """
 
         graph = graph if graph is not None else self.graph
-        complexes = dataio.read_complexes_havugimana()
+        complexes = havugimana.havugimana_complexes()
 
         if complexes is None:
 
@@ -8099,7 +8124,7 @@ class PyPath(session_mod.Logger):
         """
 
         graph = graph if graph is not None else self.graph
-        complexes = dataio.get_compleat()
+        complexes = compleat.compleat_complexes()
 
         if complexes is None:
             self._log('Failed to load data from COMPLEAT', -5)
@@ -8152,10 +8177,10 @@ class PyPath(session_mod.Logger):
 
         graph = graph if graph is not None else self.graph
         # TODO: handling species
-        complexes = dataio.get_complexportal()
+        complexes = complexportal.complexportal_complexes()
 
         if complexes is None:
-            self._log('Failed to read data from Havugimana', -5)
+            self._log('Failed to read data from ComplexPortal', -5)
 
         else:
 
@@ -8208,10 +8233,10 @@ class PyPath(session_mod.Logger):
         """
 
         graph = graph if graph is not None else self.graph
-        c3d = dataio.get_3dcomplexes()
+        c3d = threedcomplex.threedcomplex_ddi()
 
         if c3d is None:
-            self._log('Failed to download data from 3DComplexes and PDB', -5)
+            self._log('Failed to download data from 3DComplex and PDB', -5)
 
         else:
 
@@ -8354,7 +8379,7 @@ class PyPath(session_mod.Logger):
                 pdblist += d['pdbs']
 
         pdblist = list(set(pdblist))
-        pisa, unmapped = dataio.get_pisa(pdblist)
+        pisa, unmapped = pisa.pisa_interfaces(pdblist)
 
         if 'interfaces' not in graph.es.attributes():
             graph.es['interfaces'] = [None]
@@ -8393,7 +8418,7 @@ class PyPath(session_mod.Logger):
         """
 
         result = []
-        comp, memb = dataio.get_corum()
+        comp, memb = corum.corum_complexes()
 
         for cname, cdata in comp.items():
 
@@ -9278,7 +9303,13 @@ class PyPath(session_mod.Logger):
         else:
             return None
 
-    def edges_3d(self, methods=['dataio.get_instruct', 'dataio.get_i3d']):
+    def edges_3d(
+        self,
+        methods = [
+            'inputs.instruct.get_instruct',
+            'inputs.i3d.get_i3d',
+        ]
+    ):
         """
         """
 
@@ -9376,8 +9407,7 @@ class PyPath(session_mod.Logger):
         """
 
         organism = organism if organism is not None else self.ncbi_tax_id
-        #all_unip = dataio.uniprot_input.all_uniprots(organism)
-        domi = dataio.get_domino_ptms()
+        domi = domino.domino_enzsub()
 
         if domi is None:
             self._log(
@@ -9417,7 +9447,7 @@ class PyPath(session_mod.Logger):
         """
         """
 
-        dmi = dataio.process_3did_dmi()
+        dmi = inputs.threedid.process_3did_dmi()
 
         if dmi is None:
             self._log(
@@ -9458,7 +9488,8 @@ class PyPath(session_mod.Logger):
 
         if data is None:
 
-            if ddi.__module__.split('.')[1] == 'dataio':
+            if ddi.__module__.split('.')[1] == 'inputs':
+
                 self._log('Function %s() failed' % ddi, -5)
 
             return None
@@ -9497,7 +9528,8 @@ class PyPath(session_mod.Logger):
 
         if data is None:
 
-            if dmi.__module__.split('.')[1] == 'dataio':
+            if dmi.__module__.split('.')[1] == 'inputs':
+
                 self._log('Function %s() failed' % dmi, -5)
 
             return None
@@ -9505,7 +9537,8 @@ class PyPath(session_mod.Logger):
         if 'ptm' not in self.graph.es.attributes():
             self.graph.es['ptm'] = [[] for _ in self.graph.es]
 
-    def run_batch(self, methods, toCall=None):
+    def run_batch(self, me
+                  thods, toCall=None):
         """
         """
 
@@ -9523,26 +9556,46 @@ class PyPath(session_mod.Logger):
                 else:
                     fun()
 
-    def load_ddis(self, methods=['dataio.get_3dc_ddi', 'dataio.get_domino_ddi',
-                                 'self.load_3did_ddi2']):
+
+    def load_ddis(
+        self,
+        methods = [
+            'inputs.threedcomplex.threedcomplex_ddi',
+            'inputs.domino.domino_ddi',
+            'self.load_3did_ddi2',
+        ]
+    ):
         """
         """
 
         self.run_batch(methods, toCall=self.load_ddi)
 
-    def load_dmis(self, methods=['self.pfam_regions', 'self.load_depod_dmi',
-                                 'self.load_dbptm', 'self.load_mimp_dmi',
-                                 'self.load_pnetworks_dmi',
-                                 'self.load_domino_dmi', 'self.load_pepcyber',
-                                 'self.load_psite_reg', 'self.load_psite_phos',
-                                 'self.load_ielm', 'self.load_phosphoelm',
-                                 'self.load_elm', 'self.load_3did_dmi']):
+
+    def load_dmis(
+        self,
+        methods = [
+            'self.pfam_regions',
+            'self.load_depod_dmi',
+            'self.load_dbptm',
+            'self.load_mimp_dmi',
+            'self.load_pnetworks_dmi',
+            'self.load_domino_dmi',
+            'self.load_pepcyber',
+            'self.load_psite_reg',
+            'self.load_psite_phos',
+            'self.load_ielm',
+            'self.load_phosphoelm',
+            'self.load_elm',
+            'self.load_3did_dmi',
+        ]
+    ):
         """
         """
 
         self.run_batch(methods)
         self.uniq_ptms()
         self.phosphorylation_directions()
+
 
     def load_interfaces(self):
         """
@@ -9551,12 +9604,13 @@ class PyPath(session_mod.Logger):
         self.load_3did_ddi2(ddi=False, interfaces=True)
         unm = self.load_pisa()
 
+
     def load_3did_ddi(self):
         """
         """
 
         g = self.graph
-        ddi, interfaces = dataio.get_3did_ddi(residues=True)
+        ddi, interfaces = threedid.threedid_ddi(residues=True)
 
         if ddi is None or interfaces is None:
             self._log(
@@ -9641,7 +9695,7 @@ class PyPath(session_mod.Logger):
         """
 
         self.update_vname()
-        ddi, intfs = dataio.get_3did()
+        ddi, intfs = inputs.threedid.get_3did()
 
         if ddi is None or interfaces is None:
             self._log(
@@ -9689,12 +9743,13 @@ class PyPath(session_mod.Logger):
             ppi.append((self.graph.vs[e.source]['name'],
                         self.graph.vs[e.target]['name']))
 
-        ielm = dataio.get_ielm(ppi)
-        elm = dataio.get_elm_classes()
+        ielm = ielm_input.get_ielm(ppi)
+        elm = elm_input.elm_classes()
         prg = Progress(len(ielm), 'Processing domain-motif interactions', 13)
         noelm = []
 
         for l in ielm:
+
             prg.step()
             nodes = self.get_node_pair(l[1], l[9])
 
@@ -9756,7 +9811,7 @@ class PyPath(session_mod.Logger):
         if 'ptm' not in self.graph.es.attributes():
             self.graph.es['ptm'] = [[] for _ in self.graph.es]
 
-        elm = dataio.get_elm_interactions()
+        elm = elm_input.elm_interactions()
         prg = Progress(len(elm), 'Processing domain-motif interactions', 11)
 
         self.sequences()
@@ -9852,7 +9907,7 @@ class PyPath(session_mod.Logger):
         functions = {'LMPID': 'lmpid_dmi'}
         motif_plus = {'LMPID': []}
         self.update_vname()
-        toCall = getattr(dataio, functions[source])
+        toCall = inputs.get_method(functions[source])
         data = toCall(**kwargs)
 
         if self.seq is None:
@@ -9944,7 +9999,7 @@ class PyPath(session_mod.Logger):
         if 'ptm' not in self.graph.es.attributes():
             self.graph.es['ptm'] = [[] for _ in self.graph.es]
 
-        pepc = dataio.get_pepcyber()
+        pepc = pepcyber.pepcyber_interactions()
         prg = Progress(len(pepc), 'Processing domain-motif interactions', 13)
 
         for l in pepc:
@@ -10007,7 +10062,7 @@ class PyPath(session_mod.Logger):
         if 'ptm' not in self.graph.es.attributes():
             self.graph.es['ptm'] = [[] for _ in self.graph.es]
 
-        preg = dataio.get_psite_reg()
+        preg = phosphosite.phosphosite_regsites()
         prg = Progress(len(preg), 'Processing regulatory effects', 11)
 
         for src, tgts in iteritems(preg):
@@ -10070,7 +10125,7 @@ class PyPath(session_mod.Logger):
         if 'comppi' not in graph.vs.attributes():
             graph.vs['comppi'] = [{} for _ in graph.vs]
 
-        comppi = dataio.get_comppi()
+        comppi = comppi_input.comppi_interaction_locations()
         prg = Progress(len(comppi), 'Processing localizations', 33)
 
         for c in comppi:
@@ -10188,7 +10243,7 @@ class PyPath(session_mod.Logger):
             A `dict` can be supplied for each resource, e.g.
             `{'Signor': {...}, 'PhosphoSite': {...}, ...}`.
             Those not used by `PtmProcessor` are forwarded to the
-            `pypath.dataio` methods.
+            `pypath.inputs` methods.
         :param database:
             A ``PtmAggregator`` object. If provided no new database will be
             created.
@@ -10360,7 +10415,7 @@ class PyPath(session_mod.Logger):
             return None
 
         self.update_vname()
-        toCall = getattr(dataio, functions[source])
+        toCall = inputs.get_method(functions[source])
         data = toCall(**kwargs)
 
         if self.seq is None:
@@ -10572,7 +10627,7 @@ class PyPath(session_mod.Logger):
 
         reres = re.compile(r'([A-Z][a-z]+)-([0-9]+)')
         non_digit = re.compile(r'[^\d.-]+')
-        data = dataio.get_depod()
+        data = depod_input.depod_enzyme_substrate()
         aadict = dict(
             zip([a.lower().capitalize() for a in common.aaletters.keys()],
                 common.aaletters.values()))
@@ -11689,7 +11744,7 @@ class PyPath(session_mod.Logger):
 
         if inference_from_go:
 
-            go_desc = dataio.go_descendants_quickgo(aspects = ('C', 'F'))
+            go_desc = go_input.go_descendants_quickgo(aspects = ('C', 'F'))
             self.init_network(sources)
 
             if 'go' not in self.graph.vs.attributes():
@@ -12222,7 +12277,7 @@ class PyPath(session_mod.Logger):
         """
 
         graph = graph or self.graph
-        hpa = dataio.get_proteinatlas(
+        hpa = proteinatlas.get_proteinatlas(
             normal = normal, pathology = pathology or cancer)
 
         graph.vs['hpa'] = [{} for _ in xrange(graph.vcount())]
@@ -12471,7 +12526,7 @@ class PyPath(session_mod.Logger):
 
         self.update_vname()
 
-        sf = dataio.get_surfaceome()
+        sf = surfaceome_input.get_surfaceome()
 
         for i, attr in enumerate(attrs):
 
@@ -12495,7 +12550,7 @@ class PyPath(session_mod.Logger):
 
         organism = organism or self.ncbi_tax_id
 
-        matrisome = dataio.get_matrisome(organism = organism)
+        matrisome = matrisome_input.get_matrisome(organism = organism)
 
         for i, attr in enumerate(attrs):
 
@@ -12517,7 +12572,7 @@ class PyPath(session_mod.Logger):
             None for _ in xrange(self.graph.vcount())
         ]
 
-        m = dataio.get_membranome()
+        m = membranome_input.get_membranome()
 
         for uniprot, mem, side in m:
 
@@ -12580,7 +12635,7 @@ class PyPath(session_mod.Logger):
 
         database = database.lower()
 
-        exo = dataio._get_exocarta_vesiclepedia(
+        exo = exocarta_input._get_exocarta_vesiclepedia(
             database = database,
             organism = self.ncbi_tax_id
         )
@@ -12742,6 +12797,7 @@ class PyPath(session_mod.Logger):
             if tf in self.nodDct:
                 self.graph.vs[self.nodDct[tf]]['tf'] = True
 
+
     def set_disease_genes(self, dataset='curated'):
         """
         Creates a vertex attribute named `dis` with boolean values *True*
@@ -12763,6 +12819,7 @@ class PyPath(session_mod.Logger):
             if tf in self.nodDct:
                 self.graph.vs[self.nodDct[tf]]['dis'] = True
 
+
     def get_pathways(self, source):
         """
         """
@@ -12771,11 +12828,16 @@ class PyPath(session_mod.Logger):
         proteins_pws = None
         interactions_pws = None
 
-        if hasattr(dataio, attrname):
-            fun = getattr(dataio, attrname)
+        if (
+            isinstance(attrname, common.basestring) and
+            inputs.get_method(attrname)
+        ):
+
+            fun = inputs.get_method(attrname)
             proteins_pws, interactions_pws = fun()
 
         return proteins_pws, interactions_pws
+
 
     def pathway_members(self, pathway, source):
         """
@@ -12948,7 +13010,7 @@ class PyPath(session_mod.Logger):
         """
 
         result = []
-        data = dataio.get_guide2pharma()
+        data = g2p_input.guide2pharma_download()
 
         for d in data:
             ulig = []
@@ -12996,7 +13058,7 @@ class PyPath(session_mod.Logger):
         """
 
         self.update_vname()
-        data = dataio.get_disgenet(dataset=dataset)
+        data = disgenet_input.disgenet_annotations(dataset=dataset)
         self.graph.vs['dis'] = [[] for _ in self.graph.vs]
 
         for d in data:
@@ -13606,7 +13668,7 @@ class PyPath(session_mod.Logger):
         """
         """
 
-        ppoint = dataio.phosphopoint_directions()
+        ppoint = phosphopoint_input.phosphopoint_directions()
         self.process_directions(ppoint, 'PhosphoPoint', dirs_only=True,
                                 id_type='genesymbol', graph=graph)
 
@@ -13657,7 +13719,7 @@ class PyPath(session_mod.Logger):
         """
         """
 
-        acsnd = dataio.get_acsn_effects()
+        acsnd = acsn_input.get_acsn_effects()
         self.process_directions(acsnd, 'ACSN', stimulation='+', inhibition='-',
                                 directed='*', id_type='genesymbol',
                                 graph=graph)
@@ -13666,7 +13728,7 @@ class PyPath(session_mod.Logger):
         """
         """
 
-        wangd = dataio.wang_interactions()
+        wangd = wang_input.wang_interactions()
         self.process_directions(wangd, 'Wang', stimulation='+', inhibition='-',
                                 directed='0', id_type='genesymbol',
                                 graph=graph)
@@ -14996,7 +15058,9 @@ class PyPath(session_mod.Logger):
 
         _attrs = {}
         _custom_attrs = kwargs
-        graph_attrs, vertex_attrs, edge_attrs = dataio.get_graphviz_attrs()
+        graph_attrs, vertex_attrs, edge_attrs = (
+            graphviz_input.get_graphviz_attrs()
+        )
         _defaults = {'edge_color': {'undirected': {'unknown': '#CCCCCC'},
                                     'directed': {'stimulation': '#00AA00',
                                                  'inhibition': '#CC0000',

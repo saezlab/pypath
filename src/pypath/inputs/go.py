@@ -185,7 +185,7 @@ def go_descendants_goose(aspects = ('C','F','P')):
     IMPORTANT:
     This is not the preferred method any more to get descendants.
     Recently the preferred method to access GO annotations is
-    ``pypath.dataio.go_descendants_quickgo()``.
+    ``pypath.inputs.go.go_descendants_quickgo``.
     The data in GO MySQL instances has not been updated since Dec 2016.
     Unfortunately the providers ceased to support MySQL, the most flexible
     and highest performance access to GO data. The replacement is Solr
@@ -521,7 +521,7 @@ def go_annotations_quickgo(
 
     IMPORTANT:
     Recently the preferred method to access GO annotations is
-    ``pypath.dataio.go_annotations_goa()``.
+    ``pypath.inputs.go.go_annotations_goa``.
     Contrary to its name QuickGO is super slow, otherwise it should yield
     up to date data, identical to the GOA file.
 
@@ -709,7 +709,7 @@ def go_annotations_goose(organism = 9606, aspects = ('C', 'F', 'P'),
     IMPORTANT:
     This is not the preferred method any more to get terms and annotations.
     Recently the preferred method to access GO annotations is
-    ``pypath.dataio.go_annotations_solr()``.
+    ``pypath.inputs.go.go_annotations_solr``.
     The data in GO MySQL instances has not been updated since Dec 2016.
     Unfortunately the providers ceased to support MySQL, the most flexible
     and highest performance access to GO data. The replacement is Solr

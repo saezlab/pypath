@@ -76,7 +76,7 @@ def load_lmpid(organism = 9606):
 def lmpid_interactions(organism = 9606):
     """
     Converts list of domain-motif interactions supplied by
-    `pypath.dataio.load_lmpid()` to list of interactions.
+    ``pypath.inputs.lmpid.load_lmpid`` to list of interactions.
     """
 
     data = load_lmpid(organism = organism)
@@ -87,8 +87,8 @@ def lmpid_interactions(organism = 9606):
 def lmpid_dmi(organism = 9606):
     """
     Converts list of domain-motif interactions supplied by
-    `pypath.dataio.load_lmpid()` to list of
-    `pypath.intera.DomainMotif() objects.
+    ``pypath.inputs.lmpid.load_lmpid`` to list of
+    ``pypath.intera.DomainMotif`` objects.
     """
 
     data = load_lmpid(organism = organism)

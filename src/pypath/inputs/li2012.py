@@ -77,7 +77,7 @@ def li2012_interactions():
 
 def li2012_enzyme_substrate():
     """
-    Converts table read by `pypath.dataio.get_li2012()` to
+    Converts table read by ``pypath.inputs.li2012.get_li2012`` to
     list of dicts of kinase-substrate interactions.
     """
 

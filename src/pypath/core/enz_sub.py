@@ -30,7 +30,6 @@ import pickle
 
 import pandas as pd
 
-import pypath.inputs.main as dataio
 import pypath.share.common as common
 import pypath.utils.mapping as mapping
 import pypath.utils.homology as homology
@@ -70,9 +69,10 @@ class EnzymeSubstrateProcessor(
         For organisms other than human obtains the organism specific
         interactions from databases.
 
-        :param str input_method: Either a method name in `dataio` or a database
-                                 name e.g. `PhosphoSite` or a callable which
-                                 returns data in list of dicts format.
+        :param str input_method:
+            Either a method name in the ``inputs`` module or a database
+            name e.g. `PhosphoSite` or a callable which returns data in
+            list of dicts format.
         :param int ncbi_tax_id: NCBI Taxonomy ID used at the database lookups.
         :param bool trace: Keep data about ambiguous ID mappings and PTM data
                            in mismatch with UniProt sequences.

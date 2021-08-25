@@ -36,9 +36,9 @@ import dill as pickle
 import numpy as np
 import pandas as pd
 
-import pypath.inputs.main as dataio
 import pypath.inputs.cellphonedb as cellphonedb
 import pypath.inputs.lrdb as lrdb
+import pypath.inputs.uniprot as uniprot_input
 import pypath.share.common as common
 import pypath.share.settings as settings
 import pypath.utils.mapping as mapping
@@ -2547,9 +2547,9 @@ class AnnotationBase(resource.AbstractResource):
         :arg int ncbi_tax_id:
             NCBI Taxonomy identifier.
         :arg callable,str input_method:
-            Either a callable or the name of a method in the ``dataio``
-            module. Should return a dict with UniProt IDs as keys or an
-            object suitable for ``process_method``.
+            Either a callable or the name of a method in any submodules of
+            the ``pypath.inputs``  module. Should return a dict with
+            UniProt IDs as keys or an object suitable for ``process_method``.
         :arg dict input_args:
             Arguments for the ``input_method``.
         """
@@ -2803,7 +2803,9 @@ class AnnotationBase(resource.AbstractResource):
         proteome.
         """
 
-        self.uniprots = set(dataio.all_uniprots(organism = self.ncbi_tax_id))
+        self.uniprots = set(
+            uniprot_input.all_uniprots(organism = self.ncbi_tax_id)
+        )
 
 
     @staticmethod
@@ -2824,7 +2826,7 @@ class AnnotationBase(resource.AbstractResource):
         proteins = (
             proteins or
             sorted(
-                dataio.all_uniprots(
+                uniprot_input.all_uniprots(
                     organism = ncbi_tax_id,
                     swissprot = swissprot_only,
                 )

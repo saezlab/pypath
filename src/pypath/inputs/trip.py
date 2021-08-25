@@ -168,7 +168,7 @@ def trip_find_uniprot(soup):
 
     @soup : bs4.BeautifulSoup
         The `BeautifulSoup` instance returned by
-        `pypath.dataio.trip_get_uniprot()`.
+        ``pypath.inputs.trip.trip_get_uniprot``.
     """
 
     for tr in soup.find_all('div', id = 'tab2')[0].find_all('tr'):
@@ -289,9 +289,9 @@ def trip_interactions(
     ):
     """
     Obtains processed TRIP interactions by
-    calling `pypath.dataio.trip_process()`
+    calling ``pypath.inputs.trip.trip_process``
     and returns list of interactions. All arguments are passed to
-    `trip_process()`, see their definition there.
+    ``trip_process``, see their definition there.
     """
 
     data = trip_process(exclude_methods, predictions, species, strict)

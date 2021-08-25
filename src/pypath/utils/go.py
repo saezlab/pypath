@@ -37,7 +37,7 @@ except:
     import pickle
 
 import pypath.share.cache as cache
-import pypath.inputs.main as dataio
+import pypath.inputs.go as go_input
 import pypath.share.progress as progress
 import pypath.share.common as common
 from pypath.share.common import *
@@ -119,7 +119,7 @@ class GeneOntology(session_mod.Logger):
     
     def _load_terms(self):
         
-        self._terms = self._terms_provided or dataio.go_terms_quickgo()
+        self._terms = self._terms_provided or go_input.go_terms_quickgo()
     
     
     def _load_tree(self):
@@ -129,13 +129,13 @@ class GeneOntology(session_mod.Logger):
         self.ancestors = (
             self._ancestors_provided or
             self._merge_aspects(
-                dataio.go_ancestors_quickgo()
+                go_input.go_ancestors_quickgo()
             )
         )
         self.descendants = (
             self._descendants_provided or
             self._merge_aspects(
-                dataio.go_descendants_quickgo()
+                go_input.go_descendants_quickgo()
             )
         )
     
@@ -549,7 +549,7 @@ class GOAnnotation(session_mod.Logger):
             'annotations for organism `%u`.' % organism
         )
         
-        annot = dataio.go_annotations_goa(organism = organism)
+        annot = go_input.go_annotations_goa(organism = organism)
         self.c = annot['C']
         self.f = annot['F']
         self.p = annot['P']
@@ -1311,7 +1311,7 @@ def annotate(graph, organism = 9606, aspects = ('C', 'F', 'P')):
         for _ in xrange(graph.vcount())
     ]
     
-    terms, annot = dataio.go_annotations_goa(organism = organism)
+    terms, annot = go_input.go_annotations_goa(organism = organism)
     
     prg = progress.Progress(graph.vcount(), 'Loading GO annotations', 9)
     

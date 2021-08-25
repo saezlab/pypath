@@ -117,13 +117,14 @@ reaction = {
         is_directed = (3, '1'),
         sign = None,
         resource = 4,
-        input = 'get_reactions',
+        input = 'reaction.get_reactions',
         references = (5, ';'),
         ncbi_tax_id = 9606,
         extra_edge_attrs = {"sif_rule": (2, ";")},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
-        must_have_references = False)
+        must_have_references = False,
+    )
 }
 
 pathwaycommons_all = input_formats.NetworkInput(
@@ -273,7 +274,7 @@ reaction_misc = {
         is_directed = (4, 'directed'),
         sign = False,
         ncbi_tax_id = 9606,
-        input = 'pid_interactions',
+        input = 'reaction.pid_interactions',
         references = (3, ';'),
         header = False,
         extra_edge_attrs = {},
@@ -310,7 +311,7 @@ reaction_misc = {
         sign = False,
         ncbi_tax_id = 9606,
         huge = True,
-        input = 'reactome_interactions',
+        input = 'reaction.reactome_interactions',
         input_args = {'ask': False},
         references = (3, ';'),
         header = False,
@@ -1152,7 +1153,8 @@ ptm = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'phelm': input_formats.NetworkInput(
         name = "phosphoELM",
         separator = None,
@@ -1173,7 +1175,8 @@ ptm = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'elm': input_formats.NetworkInput(
         name = "ELM",
         separator = None,
@@ -1226,7 +1229,8 @@ ptm = {
         header = False,
         extra_edge_attrs = {'domino_methods': (4, ';')},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'dbptm': input_formats.NetworkInput(
         name = "dbPTM",
         separator = None,
@@ -1245,7 +1249,7 @@ ptm = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
-        must_have_references = True
+        must_have_references = True,
     ),
     'hprd_p': input_formats.NetworkInput(
         name = "HPRD-phos",
@@ -1264,7 +1268,7 @@ ptm = {
         header = False,
         extra_edge_attrs = {'hprd_mechanism': 8},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}
+        extra_node_attrs_b = {},
     ),
     'kea': input_formats.NetworkInput(
         name = 'KEA',
@@ -1470,7 +1474,8 @@ interaction_misc = {
         ncbi_tax_id = 9606,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'biogrid': input_formats.NetworkInput(
         name = "BioGRID",
         separator = None,
@@ -1488,7 +1493,8 @@ interaction_misc = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'hi2': input_formats.NetworkInput(
         name = "HI-II",
         separator = None,
@@ -1506,7 +1512,8 @@ interaction_misc = {
         header = False,
         extra_edge_attrs = {'hi2_numof_screens': 4},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'lit13': input_formats.NetworkInput(
         name = "Lit-BM-13",
         separator = None,
@@ -1524,7 +1531,8 @@ interaction_misc = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'huri': input_formats.NetworkInput(
         name = "HuRI",
         separator = None,
@@ -1621,12 +1629,13 @@ interaction_misc = {
         is_directed = False,
         sign = False,
         ncbi_tax_id = 9606,
-        input = 'get_cpdb',
+        input = 'cpdb.cpdb_interactions',
         references = (3, ','),
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
 }
 
 interaction_misc['acsn'] = copy.deepcopy(reaction_pc['acsn'])
@@ -1672,7 +1681,9 @@ interaction_deprecated = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         must_have_references = False,
-        input_args = {'fname': '/home/denes/Documents/pw/data/hi3-2.3.tsv'}
+        # note: obtain the file yourself, and replace
+        # this location
+        input_args = {'fname': '/home/denes/Documents/pw/data/hi3-2.3.tsv'},
     ),
     'hi3': input_formats.NetworkInput(
         name = "HI-III",
@@ -1711,7 +1722,7 @@ interaction_deprecated = {
         ncbi_tax_id = 9606,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}
+        extra_node_attrs_b = {},
     ),
 }
 
@@ -1746,13 +1757,13 @@ interaction_htp = {
         entity_type_b = "protein",
         is_directed = False,
         sign = False,
-        input = 'intact_interactions',
+        input = 'intact.intact_interactions',
         references = 4,
         ncbi_tax_id = 9606,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
-        input_args = {'miscore': 0.0}
+        input_args = {'miscore': 0.0},
     ),
     'biogrid': input_formats.NetworkInput(
         name = "BioGRID",
@@ -1787,7 +1798,7 @@ interaction_htp = {
         entity_type_b = "protein",
         is_directed = False,
         sign = False,
-        input = 'get_dip',
+        input = 'dip.dip_interactions',
         references = (2, ";"),
         ncbi_tax_id = 9606,
         extra_edge_attrs = {
@@ -1834,7 +1845,7 @@ interaction_htp = {
         ncbi_tax_id = 9606,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}
+        extra_node_attrs_b = {},
     ),
     'matrixdb': input_formats.NetworkInput(
         name = "MatrixDB",
@@ -1851,7 +1862,7 @@ interaction_htp = {
         ncbi_tax_id = 9606,
         extra_edge_attrs = {"matrixdb_methods": (3, '|')},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}
+        extra_node_attrs_b = {},
     ),
     'mppi': input_formats.NetworkInput(
         name = "MPPI",
@@ -1869,7 +1880,7 @@ interaction_htp = {
         ncbi_tax_id = 9606,
         extra_edge_attrs = {"mppi_evidences": (1, ";")},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}
+        extra_node_attrs_b = {},
     ),
 }
 
