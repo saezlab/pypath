@@ -95,7 +95,7 @@ def generate_about_html(descriptions, format = 'b'):
         'The resources with green title are included by default in\n'
         'OmniPath. <span class="code">pypath</span> methods are listed\n'
         ' where available, to know more please look at\n<a '
-        'target="_blank" href="http://pypath.omnipathdb.org/">'
+        'target="_blank" href="https://pypath.omnipathdb.org/">'
         'pypath documentation.</a>\n'
         '<p class="small">\n'
         '<strong>How we collected the license information?</strong>\n'
@@ -266,7 +266,9 @@ def generate_about_html(descriptions, format = 'b'):
             doc += '\t\t\t<p><b>Data integration in '\
                 '<span class="code">pypath:</span></b> %s</p>' % \
                 v['data_integration']
-        if 'pypath' in v:
+        # turned off temporarily, until we update this information
+        #if 'pypath' in v:
+        if False:
             doc += '\t\t\t<h3>Methods in <span class="code">pypath'\
                 '</span></h3>\n'
             doc += '\t\t\t\t<div class="codebox box">\n'
