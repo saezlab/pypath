@@ -98,7 +98,11 @@ class HomologyManager(session_mod.Logger):
 
     def load(self, key):
 
-        cachefile = common.md5(json.dumps(key))
+        cachefile = '%s-homology-%u-%u.pickle' % (
+            common.md5(json.dumps(key)),
+            key[0],
+            key[1],
+        )
         cachefile = os.path.join(self.cachedir, cachefile)
 
         if os.path.exists(cachefile):
@@ -448,12 +452,14 @@ class ProteinHomology(Proteomes):
         if source is not None:
             self.homologene_uniprot_dict(source)
 
+
     def reload(self):
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+
 
     def set_default_source(self, source = None):
 
@@ -474,6 +480,9 @@ class ProteinHomology(Proteomes):
         """
         For one UniProt ID of the source organism returns all orthologues
         from the target organism.
+
+        Returns:
+            List of UniProt IDs of homologous proteins in the target taxon.
         """
 
         if isinstance(protein, common.list_like):
@@ -486,6 +495,7 @@ class ProteinHomology(Proteomes):
             ))
 
         if self.get_taxon(protein) == self.target:
+
             return [protein]
 
         source = self.get_source(source)
