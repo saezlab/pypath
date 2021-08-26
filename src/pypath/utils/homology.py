@@ -41,24 +41,25 @@ import pypath.internals.intera as intera
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.homologene as homologene_input
 import pypath.utils.seq as _se
-import pypath.share.session as session_mod
+import pypath.share.session as session
 import pypath.utils.taxonomy as taxonomy
 import pypath.share.cache as cache_mod
 
 _homology_cleanup_timeloop = timeloop.Timeloop()
 _homology_cleanup_timeloop.logger.setLevel(9999)
 
-_logger = session_mod.Logger(name = 'homology')
+_logger = session.Logger(name = 'homology')
 _log = _logger._log
 
 
-class HomologyManager(session_mod.Logger):
+class HomologyManager(session.Logger):
 
 
     def __init__(self, cleanup_period = 10, lifetime = 300):
 
-        session_mod.Logger.__init__(self, name = 'homology')
+        session.Logger.__init__(self, name = 'homology')
 
 
         @_homology_cleanup_timeloop.job(
@@ -172,150 +173,7 @@ class HomologyManager(session_mod.Logger):
             _homology_cleanup_timeloop.stop()
 
 
-def get_homologene():
-    """
-    Downloads the recent release of the NCBI HomoloGene database.
-    Returns file pointer.
-    """
-
-    url = urls.urls['homologene']['url']
-
-    c = curl.Curl(
-        url = url,
-        silent = False,
-        large = True,
-        timeout = 1800,
-        ignore_content_length = True,
-    )
-
-    return c.result
-
-
-def homologene_dict(source, target, id_type):
-    """
-    Returns orthology translation table as dict, obtained
-    from NCBI HomoloGene data.
-
-    :param int source: NCBI Taxonomy ID of the source species (keys).
-    :param int target: NCBI Taxonomy ID of the target species (values).
-    :param str id_type: ID type to be used in the dict. Possible values:
-        'RefSeq', 'Entrez', 'GI', 'GeneSymbol'.
-    """
-    ids = {
-        'refseq': 5,
-        'refseqp': 5,
-        'genesymbol': 3,
-        'gi': 4,
-        'entrez': 2
-    }
-
-    try:
-        id_col = ids[id_type.lower()]
-    except KeyError:
-        _log(
-            'Unknown ID type: `%s`. Please use RefSeq, '
-            'Entrez, GI or GeneSymbol.' % id_type
-        )
-        raise
-
-    hg = get_homologene()
-    hgroup = None
-    result = {}
-
-    for l in hg:
-
-        l = l.strip().split('\t')
-        this_hgroup = l[0].strip()
-
-        if this_hgroup != hgroup:
-            this_source = None
-            this_target = None
-            hgroup = this_hgroup
-
-        this_taxon = int(l[1].strip())
-        if this_taxon == source:
-            this_source = l[id_col]
-        elif this_taxon == target:
-            this_target = l[id_col]
-
-        if this_source is not None and this_target is not None \
-            and len(this_source) and len(this_target):
-            if this_source not in result:
-                result[this_source] = set([])
-            result[this_source].add(this_target)
-
-    return result
-
-
-def homologene_uniprot_dict(source, target, only_swissprot = True):
-    """
-    Returns orthology translation table as dict from UniProt to Uniprot,
-    obtained from NCBI HomoloGene data. Uses RefSeq and Entrez IDs for
-    translation.
-
-    :param int source: NCBI Taxonomy ID of the source species (keys).
-    :param int target: NCBI Taxonomy ID of the target species (values).
-    :param bool only_swissprot: Translate only SwissProt IDs.
-    """
-    result = {}
-
-    hge = homologene_dict(source, target, 'entrez')
-    hgr = homologene_dict(source, target, 'refseq')
-
-    all_source = set(uniprot_input.all_uniprots(
-                                                organism = source,
-                                                swissprot = 'YES'
-                                            ))
-
-    if not only_swissprot:
-        all_source_trembl = uniprot_input.all_uniprots(
-                                                       organism = source,
-                                                       swissprot = 'NO'
-                                                   )
-        all_source.update(set(all_source_trembl))
-
-    for u in all_source:
-
-        source_e = mapping.map_name(u, 'uniprot', 'entrez', source)
-        source_r = mapping.map_name(u, 'uniprot', 'refseqp', source)
-        target_u = set([])
-        target_r = set([])
-        target_e = set([])
-
-        for e in source_e:
-            if e in hge:
-                target_e.update(hge[e])
-
-        for r in source_r:
-            if r in hgr:
-                target_r.update(hgr[r])
-
-        for e in target_e:
-            target_u.update(
-                mapping.map_name(e, 'entrez', 'uniprot', target)
-            )
-
-        for r in target_r:
-            target_u.update(
-                mapping.map_name(e, 'refseqp', 'uniprot', target)
-            )
-
-
-        target_u = \
-            itertools.chain(
-                *map(
-                    lambda tu:
-                        mapping.map_name(tu, 'uniprot', 'uniprot', target),
-                    target_u
-                )
-            )
-
-        result[u] = sorted(list(target_u))
-
-    return result
-
-
-class SequenceContainer(session_mod.Logger):
+class SequenceContainer(session.Logger):
 
     def __init__(self, preload_seq = [], isoforms = True):
         """
@@ -323,7 +181,7 @@ class SequenceContainer(session_mod.Logger):
         organisms and select the appropriate one.
         """
 
-        session_mod.Logger.__init__(self, name = 'homology')
+        session.Logger.__init__(self, name = 'homology')
 
         self.seq_isoforms = isoforms
 
@@ -419,6 +277,7 @@ class Proteomes(object):
 
 class ProteinHomology(Proteomes):
 
+
     def __init__(
             self,
             target,
@@ -450,10 +309,12 @@ class ProteinHomology(Proteomes):
         self.load_proteome(self.target, self.only_swissprot)
 
         if source is not None:
+
             self.homologene_uniprot_dict(source)
 
 
     def reload(self):
+
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
@@ -524,46 +385,58 @@ class ProteinHomology(Proteomes):
 
         self.homo[source] = {}
 
-        hge = homologene_dict(source, self.target, 'entrez')
-        hgr = homologene_dict(source, self.target, 'refseq')
+        hge = homologene_input.homologene_dict(source, self.target, 'entrez')
+        hgr = homologene_input.homologene_dict(source, self.target, 'refseq')
 
         self.load_proteome(source, self.only_swissprot)
 
         for u in self._proteomes[(source, self.only_swissprot)]:
 
-            source_e = mapping.map_name(
-                u, 'uniprot', 'entrez', source)
-            source_r = mapping.map_name(
-                u, 'uniprot', 'refseqp', source)
-            target_u = set([])
-            target_r = set([])
-            target_e = set([])
+            source_e = mapping.map_name(u, 'uniprot', 'entrez', source)
+            source_r = mapping.map_name(u, 'uniprot', 'refseqp', source)
+            target_u = set()
+            target_r = set()
+            target_e = set()
 
             for e in source_e:
+
                 if e in hge:
+
                     target_e.update(hge[e])
 
             for r in source_r:
+
                 if r in hgr:
+
                     target_r.update(hgr[r])
 
             for e in target_e:
-                target_u.update(set(mapping.map_name(
-                    e, 'entrez', 'uniprot', self.target)))
+
+                target_u.update(
+                    set(
+                        mapping.map_name(e, 'entrez', 'uniprot', self.target)
+                    )
+                )
 
             for r in target_r:
-                target_u.update(set(mapping.map_name(
-                    e, 'refseqp', 'uniprot', self.target)))
 
-            target_u = \
+                target_u.update(
+                    set(
+                        mapping.map_name(e, 'refseqp', 'uniprot', self.target)
+                    )
+                )
+
+            target_u = (
                 itertools.chain(
                     *map(
                         lambda tu:
                             mapping.map_name(
-                                tu, 'uniprot', 'uniprot', self.target),
+                                tu, 'uniprot', 'uniprot', self.target
+                            ),
                         target_u
                     )
                 )
+            )
 
             self.homo[source][u] = sorted(list(target_u))
 
@@ -571,14 +444,19 @@ class ProteinHomology(Proteomes):
 class PtmHomology(ProteinHomology, SequenceContainer):
 
 
-    def __init__(self, target, source = None, only_swissprot = True,
-             strict = True):
+    def __init__(
+        self,
+        target,
+        source = None,
+        only_swissprot = True,
+        strict = True
+    ):
 
         ProteinHomology.__init__(
             self,
-            target,
-            source,
-            only_swissprot,
+            target = target,
+            source = source,
+            only_swissprot = only_swissprot,
         )
 
         SequenceContainer.__init__(self)
@@ -867,7 +745,9 @@ class PtmHomology(ProteinHomology, SequenceContainer):
                 uniprot = uniprot.split('-')[0]
                 aa = r[4][0]
                 num = int(nondigit.sub('', r[4]))
+
                 if r[6] not in taxonomy.taxa:
+
                     unknown_taxa.add(r[6])
                     continue
 
@@ -910,11 +790,22 @@ class PtmHomology(ProteinHomology, SequenceContainer):
 
 
 def init():
+    """
+    Creates an instance of the homology manager. Stores it in the module
+    namespace.
+    """
 
     globals()['manager'] = HomologyManager()
 
 
 def get_manager():
+    """
+    Returns the homology manager, an object which loads and unloads the
+    homology lookup tables as necessary, and provides the interface for
+    querying the homology data. Normally an instance of the manager
+    belongs to the module, and if it does not exist yet, will be created
+    automatically.
+    """
 
     if 'manager' not in globals():
 
@@ -924,6 +815,22 @@ def get_manager():
 
 
 def translate(source_id, target, source = 9606, only_swissprot = True):
+    """
+    Homology translation. For a UniProt ID, finds the corresponding
+    homologous (orthologous) genes in another organism.
+
+    Args:
+        source_id (str): A UniProt ID from the source organism.
+        target (int): NCBI Taxonomy ID of the target organism.
+        source (int): NCBI Taxonomy ID of the source organism.
+        only_swissprot (bool): Use only SwissProt IDs. For human and some
+            popular model organisms this is advisible, as almost all proteins
+            have reviewed record in UniProt.
+
+    Returns:
+        Set of UniProt IDs of orthologous gene products in the target
+        organism.
+    """
 
     manager = get_manager()
 
