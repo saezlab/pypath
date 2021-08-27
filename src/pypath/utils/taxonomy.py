@@ -31,6 +31,7 @@ import pypath.share.common as common
 import pypath.share.session as session
 import pypath.share.settings as settings
 import pypath.inputs.uniprot as uniprot_input
+import pypath.inputs.ensembl as ensembl_input
 
 _logger = session.Logger(name = 'taxonomy')
 _log = _logger._log
@@ -143,6 +144,15 @@ mirbase_taxids = {
 }
 
 
+ensembl_taxids = dict(
+    (
+        t.taxon_id,
+        t.ensembl_name
+    )
+    for t in ensembl_input.ensembl_organisms()
+)
+
+
 nonstandard_taxids = {
     'drosophila': 7227,
     'c.elegans': 6239,
@@ -153,32 +163,40 @@ nonstandard_taxids = {
 
 dbptm_to_ncbi_tax_id = common.swap_dict(dbptm_taxids)
 latin_name_to_ncbi_tax_id = common.swap_dict(phosphoelm_taxids)
+ensembl_name_to_ncbi_tax_id = common.swap_dict(ensembl_taxids)
 
 
 def ensure_common_name(taxon_id):
 
-    ncbi_tax_id = ensure_ncbi_tax_id(taxon_id)
-
-    ncbi_to_common = get_db('ncbi_to_common')
-
-    if ncbi_tax_id in ncbi_to_common:
-
-        return ncbi_to_common[ncbi_tax_id]
-
-    _log('Could not find common taxon name for `%s`.' % str(taxon_id))
+    return _ensure_name(taxon_id, 'common')
 
 
 def ensure_latin_name(taxon_id):
 
+    return _ensure_name(taxon_id, 'latin')
+
+
+def ensure_ensembl_name(taxon_id):
+
+    return _ensure_name(taxon_id, 'ensembl')
+
+
+def _ensure_name(taxon_id, name_type):
+
     ncbi_tax_id = ensure_ncbi_tax_id(taxon_id)
 
-    ncbi_to_common = get_db('ncbi_to_latin')
+    ncbi_to_name = get_db('ncbi_to_%s' % name_type)
 
-    if ncbi_tax_id in ncbi_to_common:
+    if ncbi_tax_id in ncbi_to_name:
 
-        return ncbi_to_common[ncbi_tax_id]
+        return ncbi_to_name[ncbi_tax_id]
 
-    _log('Could not find latin taxon name for `%s`.' % str(taxon_id))
+    _log(
+        'Could not find %s taxon name for `%s`.' % (
+            name_type,
+            str(taxon_id),
+        )
+    )
 
 
 def taxid_from_common_name(taxon_name):
@@ -231,6 +249,13 @@ def taxid_from_nonstandard(taxon_name):
         return nonstandard_taxids[taxon_name]
 
 
+def taxid_from_ensembl_name(taxon_name):
+
+    if taxon_name in ensembl_name_to_ncbi_tax_id:
+
+        return ensembl_name_to_ncbi_tax_id[taxon_name]
+
+
 def ensure_ncbi_tax_id(taxon_id):
     """
     For taxon names of various formats returns NCBI Taxonomy ID if possible.
@@ -267,7 +292,8 @@ def ensure_ncbi_tax_id(taxon_id):
                 taxid_from_dbptm_taxon_name(taxon_id) or
                 taxid_from_nonstandard(taxon_id) or
                 taxid_from_common_name(taxon_id) or
-                taxid_from_latin_name(taxon_id)
+                taxid_from_latin_name(taxon_id) or
+                taxid_from_ensembl_name(taxon_id)
             )
         
         if not ncbi_tax_id:
@@ -388,6 +414,10 @@ def init_db(key):
             for name in names
             if name in latin_to_ncbi
         )
+
+    elif _key == 'ensembl':
+
+        this_db = ensembl_name_to_ncbi_tax_id
 
     if swap:
 
