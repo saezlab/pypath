@@ -426,8 +426,10 @@ urls = {
     },
     'uniprot_sec': {
         'label': 'Secondary UniProt ACs',
-        'url': 'ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/'
-        'knowledgebase/complete/docs/sec_ac.txt'
+        'url_old': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'
+            'current_release/knowledgebase/complete/docs/sec_ac.txt',
+        'url': 'ftp://ftp.expasy.org/databases/uniprot/current_release/'
+            'knowledgebase/complete/docs/sec_ac.txt',
     },
     'uniprot_idmap_ftp': {
         'label': 'Human ID mapping from UniProt',
