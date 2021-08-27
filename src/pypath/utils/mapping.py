@@ -496,7 +496,7 @@ class MapReader(session_mod.Logger):
 
         if not self.uniprots:
 
-            self.set_uniprot_space(swissprot = False)
+            self.set_uniprot_space()
 
         # We need a list to query this service, and we have method only for
         # getting a proteome wide list of UniProt IDs. If the translated
@@ -1061,6 +1061,7 @@ class Mapper(session_mod.Logger):
         tbl = None
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
+
         def check_loaded():
 
             return self.which_table(
@@ -1070,6 +1071,7 @@ class Mapper(session_mod.Logger):
                 ncbi_tax_id = ncbi_tax_id,
             )
 
+
         tbl_key = self.get_table_key(
             id_type = id_type,
             target_id_type = target_id_type,
@@ -1078,8 +1080,8 @@ class Mapper(session_mod.Logger):
         tbl_key_noorganism = tbl_key[:-1] + (-1,)
 
         tbl_key_rev = self.get_table_key(
-            target_id_type = target_id_type,
-            id_type = id_type,
+            id_type = target_id_type,
+            target_id_type = id_type,
             ncbi_tax_id = ncbi_tax_id,
         )
         tbl_key_rev_noorganism = tbl_key_rev[:-1] + (-1,)
@@ -1108,7 +1110,7 @@ class Mapper(session_mod.Logger):
             id_types_rev = tuple(reversed(id_types))
             resource = None
 
-            for resource_attr in ['uniprot', 'basic', 'mirbase', 'ipi']:
+            for resource_attr in ('uniprot', 'basic', 'mirbase', 'ipi'):
 
                 resources = getattr(maps, resource_attr)
 
@@ -1125,6 +1127,15 @@ class Mapper(session_mod.Logger):
                     load_b_to_a = True
 
                 if resource:
+
+                    self._log(
+                        'Chosen built-in defined ID translation table: '
+                        'resource=%s, id_type_a=%s, id_type_b=%s' % (
+                            resource_attr,
+                            resource.id_type_a,
+                            resource.id_type_b,
+                        )
+                    )
 
                     self.load_mapping(
                         resource = resource,
@@ -1158,7 +1169,7 @@ class Mapper(session_mod.Logger):
                         input_formats.biomart_mapping,
                         'biomart',
                         input_formats.BiomartMapping,
-                    )
+                    ),
                 ):
 
                     if (
@@ -1206,6 +1217,15 @@ class Mapper(session_mod.Logger):
                             )
                             load_a_to_b = True
                             load_b_to_a = False
+
+                        self._log(
+                            'Chosen ID translation table from service: '
+                            'service=%s, id_type_a=%s, id_type_b=%s' % (
+                                service_id_type,
+                                _id_type,
+                                _target_id_type,
+                            )
+                        )
 
                         # for uniprot/uploadlists or PRO
                         # we create here the mapping params
@@ -1778,7 +1798,7 @@ class Mapper(session_mod.Logger):
         tbl = self.which_table(
             id_type,
             target_id_type,
-            ncbi_tax_id = ncbi_tax_id
+            ncbi_tax_id = ncbi_tax_id,
         )
 
         return tbl[name] if tbl else set()

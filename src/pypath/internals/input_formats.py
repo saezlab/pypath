@@ -177,7 +177,7 @@ class UniprotListMapping(MappingInput):
             uniprot_id_type_a = None,
             uniprot_id_type_b = None,
             ncbi_tax_id = 9606,
-            swissprot = True,
+            swissprot = None,
         ):
 
         MappingInput.__init__(
@@ -452,7 +452,7 @@ ac_query = {
     'refseqp': ['database', 'refseq'],
     'enst': ['database', 'ensembl'],
     'uniprot-entry': ['entry name', None],
-    'protein-name': ['protein names', None]
+    'protein-name': ['protein names', None],
 }
 
 ac_mapping = {
@@ -471,7 +471,7 @@ ac_mapping = {
     'ensg': 'ENSEMBLGENOME_ID',
     'ensgp': 'ENSEMBLGENOME_PRO_ID',
     'ensgt': 'ENSEMBLGENOME_TRS_ID',
-    'hgnc': 'HGNC_ID'
+    'hgnc': 'HGNC_ID',
 }
 
 
