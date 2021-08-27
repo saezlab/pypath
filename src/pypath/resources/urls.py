@@ -387,8 +387,11 @@ urls = {
     },
     'unip_iso': {
         'label': 'Isoform sequences from UniProt',
-        'url': 'ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/'
-        'knowledgebase/complete/uniprot_sprot_varsplic.fasta.gz'
+        'url_old': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'
+            'current_release/knowledgebase/complete/'
+            'uniprot_sprot_varsplic.fasta.gz',
+        'url': 'ftp://ftp.expasy.org/databases/uniprot/current_release/'
+            'knowledgebase/complete/uniprot_sprot_varsplic.fasta.gz',
     },
     'kinclass': {
         'label': 'Kinase families and groups',
