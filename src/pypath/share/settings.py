@@ -240,6 +240,12 @@ _defaults = {
     'user_agent': 'User-Agent: Mozilla/5.0 '
         '(X11; U; Linux i686; en-US; rv:54.0) Gecko/20110304 Firefox/54.0',
 
+    # Ensembl homology high confidence and types
+    'homology_ensembl_hc': True,
+    'homology_ensembl_types': 'one2one',
+    'homology_ensembl': True,
+    'homology_homologene': True,
+
 }
 
 in_datadir = {
