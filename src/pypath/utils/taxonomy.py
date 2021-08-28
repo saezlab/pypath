@@ -69,12 +69,21 @@ taxids = {
     1213717: 'torpedo',
     9669: 'ferret',
     8839: 'duck',
-    9593: 'gorilla',
+    9593: 'western gorilla',
     7460: 'honeybee',
     8407: 'european common frog',
     9544: 'rhesus macaque',
 }
 
+taxids.update(
+    [
+        (
+            t.taxon_id,
+            t.common_name.lower()
+        )
+        for t in ensembl_input.ensembl_organisms()
+    ]
+)
 
 taxa = common.swap_dict(taxids)
 
@@ -112,6 +121,18 @@ phosphoelm_taxids = {
     210: 'Helicobacter pylori',
     6239: 'Caenorhabditis elegans',
 }
+
+
+phosphoelm_taxids.update(
+    [
+        (
+            t.taxon_id,
+            t.scientific_name
+        )
+        for t in ensembl_input.ensembl_organisms()
+    ]
+)
+
 
 dbptm_taxids = {
     9606: 'HUMAN',
