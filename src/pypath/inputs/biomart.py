@@ -28,6 +28,7 @@ import pypath.share.session as session_mod
 import pypath.share.common as common
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
+import pypath.utils.taxonomy as taxonomy
 
 _logger = session_mod.Logger(name = 'biomart_input')
 
@@ -45,8 +46,20 @@ def biomart_query(
         dataset = 'hsapiens_gene_ensembl',
     ):
     """
+    Query the Ensembl Biomart web service.
     Use https://www.ensembl.org/biomart/martview/ to check for attribute
     and dataset names.
+
+    Args:
+        attrs (str,list): One or more Ensembl attribute names.
+        filters (str,list): One or more Ensembl filter names.
+        transcript (bool): Include Ensembl transcript IDs in the result.
+        gene (bool): Include Ensembl gene IDs in the result.
+        dataset (str): An Ensembl dataset name.
+
+    Yields:
+        Named tuples with the requested attributes for each record returned
+        by Ensembl Biomart.
     """
 
     _attrs = []
@@ -64,7 +77,7 @@ def biomart_query(
 
     record = collections.namedtuple(
         'EnsemblRecord',
-        _attrs
+        _attrs,
     )
 
     _logger._log(
@@ -128,3 +141,63 @@ def biomart_query(
             'Error: Interrupted transfer while downlading data '
             'from Ensembl Biomart (missing `success` tag).'
         )
+
+
+def biomart_homology(
+        source_organism = 9606,
+        target_organism = 10090,
+    ):
+    """
+    Retrieves homology data from Ensembl Biomart.
+
+    Returns:
+        List of named tuples filtered to genes of the source organism having
+        orthologues in the target organism, with homology related fields.
+    """
+
+    def ensure_organism(organism):
+
+        organism_ensembl = taxonomy.ensure_ensembl_name(organism)
+
+        if not organism_ensembl:
+
+            msg = 'Could not find Ensembl taxon ID for `%s`.' % str(organism)
+            _log(msg)
+            raise ValueError(msg)
+
+        return organism_ensembl
+
+
+    source_organism = ensure_organism(source_organism)
+    target_organism = ensure_organism(target_organism)
+
+    attrs = [
+        'ensembl_peptide_id'
+    ]
+
+    homolog_attrs = [
+        'homolog_ensembl_peptide',
+        'homolog_ensembl_gene',
+        'homolog_orthology_type',
+        'homolog_orthology_confidence',
+        'homolog_canonical_transcript_protein',
+    ]
+
+    homolog_attrs = [
+        '%s_%s' % (target_organism, attr)
+        for attr in homolog_attrs
+    ]
+
+    filters = [
+        'with_%s_homolog' % target_organism
+    ]
+
+    return list(
+        biomart_query(
+            attrs = attrs + homolog_attrs,
+            filters = filters,
+            transcript = True,
+            gene = True,
+            dataset = '%s_gene_ensembl' % source_organism,
+        )
+    )

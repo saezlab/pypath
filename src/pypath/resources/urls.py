@@ -1302,6 +1302,7 @@ urls = {
     'ensembl': {
         'label': 'Genome and transcript reference database',
         'biomart_url': 'http://www.ensembl.org/biomart/martservice?query=%s',
+        'species': 'https://www.ensembl.org/info/about/species.html',
     },
     'wojtowicz2020': {
         'label': 'Ligand-receptor interactions from a screen of human'
