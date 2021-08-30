@@ -20,6 +20,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
 import re
 import os
 import collections
@@ -36,6 +38,45 @@ _logger = session_mod.Logger(name = 'biomart_input')
 # for mouse homologues: Filter name = "with_mmusculus_homolog"
 _filter_xml_template = '<Filter name="%s" excluded="0"/>'
 _attr_xml_template = '<Attribute name="%s" />'
+
+
+microarrays = {
+    'AFFY HG U95E': 'affy_hg_u95e',
+    'AFFY HG G110': 'affy_hc_g110',
+    'AFFY HG Focus': 'affy_hg_focus',
+    'AFFY HG U133A 2': 'affy_hg_u133a_2',
+    'AFFY HG U133A': 'affy_hg_u133a',
+    'AFFY HG U133B': 'affy_hg_u133b',
+    'AFFY HG U133 Plus 2': 'affy_hg_u133_plus_2',
+    'AFFY HG U95A': 'affy_hg_u95a',
+    'AFFY HG U95Av2': 'affy_hg_u95av2',
+    'AFFY HG U95B': 'affy_hg_u95b',
+    'AFFY HG U95D': 'affy_hg_u95d',
+    'AFFY HG U95C': 'affy_hg_u95c',
+    'AFFY HTA 2 0': 'affy_hta_2_0',
+    'AFFY HG HuEx 1 0 st v2': 'affy_huex_1_0_st_v2',
+    'AFFY HG HuGeneFL': 'affy_hugenefl',
+    'AFFY HG HuGene 1 0 st v1': 'affy_hugene_1_0_st_v1',
+    'AFFY HG HuGene 2 0 st v1': 'affy_hugene_2_0_st_v1',
+    'AFFY HG PrimeView': 'affy_primeview',
+    'PHALANX OneArray': 'phalanx_onearray',
+    'ILLUMINA HumanWG 6 V3': 'illumina_humanwg_6_v3',
+    'ILLUMINA HumanWG 6 V2': 'illumina_humanwg_6_v2',
+    'ILLUMINA HumanWG 6 V1': 'illumina_humanwg_6_v1',
+    'ILLUMINA HumanRef 8 V3': 'illumina_humanref_8_v3',
+    'ILLUMINA HumanHT 12 V4': 'illumina_humanht_12_v4',
+    'ILLUMINA HumanHT 12 V3': 'illumina_humanht_12_v3',
+    'AGILENT WholeGenome 4x44k v2': 'agilent_wholegenome_4x44k_v2',
+    'CODELINK CODELINK': 'codelink_codelink',
+    'AGILENT WholeGenome 4x44k v1': 'agilent_wholegenome_4x44k_v1',
+    'AGILENT WholeGenome': 'agilent_wholegenome',
+    'AGILENT SurePrint G3 GE 8x60k v2': 'agilent_sureprint_g3_ge_8x60k_v2',
+    'AGILENT SurePrint G3 GE 8x60k': 'agilent_sureprint_g3_ge_8x60k',
+    'AGILENT GPL6848': 'agilent_gpl6848',
+    'AGILENT GPL26966': 'agilent_gpl26966',
+    'AGILENT CGH 44b': 'agilent_cgh_44b',
+    'AFFY HG U133 X3P': 'affy_u133_x3p',
+}
 
 
 def biomart_query(
@@ -201,3 +242,56 @@ def biomart_homology(
             dataset = '%s_gene_ensembl' % source_organism,
         )
     )
+
+
+def biomart_microarray(array_type):
+    """
+    Microarray probe identifier mappings.
+
+    Args:
+        array_type (str): The microarray model, as shown on the BioMart
+            webpage, or the corresponding code. For a full list of available
+            identifiers see the ``microarrays`` attribute of this module.
+
+    Returns:
+        A dictionary with Ensembl gene, transcript and peptide IDs as keys
+        and sets of microarray probe IDs as values.
+    """
+
+    _microarrays = dict(
+        (k.lower(), v)
+        for k, v in iteritems(microarrays)
+    )
+    all_array_types = set(microarrays.values())
+
+    _array_type = array_type.lower().replace('probe', '').strip()
+    _array_type = common.maybe_in_dict(_microarrays, _array_type)
+
+    if _array_type not in all_array_types:
+
+        msg = 'No such array type in Ensembl BioMart: `%s` (%s).' % (
+            array_type,
+            _array_type
+        )
+        _logger._log(msg)
+        raise ValueError(msg)
+
+    attrs = ['ensembl_peptide_id', _array_type]
+
+    result = collections.defaultdict(set)
+
+    for r in biomart_query(attrs = attrs, transcript = True, gene = True):
+
+        array_probe_id = getattr(r, _array_type)
+
+        if array_probe_id:
+
+            for gene_attr in ('gene', 'transcript', 'peptide'):
+
+                gene_id = getattr(r, 'ensembl_%s_id' % gene_attr)
+
+                if gene_id:
+
+                    result[gene_id].add(array_probe_id)
+
+    return result
