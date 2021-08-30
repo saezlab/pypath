@@ -1340,6 +1340,11 @@ urls = {
         'preys_url': 'https://humancellmap.org/resources/downloads/'
             'preys-latest.txt',
     },
+    'cellcall': {
+        'label': 'Database of ligand-receptor-TF pathways',
+        'url': 'https://raw.githubusercontent.com/ShellyCoder/cellcall/'
+            'master/inst/extdata/new_ligand_receptor_TFs%s.txt',
+    },
 }
 
 

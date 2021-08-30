@@ -2756,6 +2756,25 @@ ligand_receptor = {
         extra_node_attrs_b = {},
         data_model = 'ligand_receptor',
     ),
+    'cellcall': input_formats.NetworkInput(
+        name = 'CellCall',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        is_directed = False,
+        sign = False,
+        input = 'cellcall.cellcall_interactions',
+        input_args = {
+            'extended': False,
+        },
+        must_have_references = False,
+        header = False,
+        data_model = 'ligand_receptor',
+    ),
 }
 
 small_molecule_protein = {
