@@ -778,7 +778,7 @@ class MapReader(session_mod.Logger):
         Loads mapping table between microarray probe IDs and genes.
         """
 
-        probe_mapping = biomart_query.biomart_microarrays(
+        probe_mapping = biomart_input.biomart_microarrays(
             organism = self.param.ncbi_tax_id,
             vendor = self.param.array_id,
             gene = self.param.ensembl_id == 'ensg',
@@ -800,11 +800,11 @@ class MapReader(session_mod.Logger):
 
             probe_to_gene = collections.defaultdict(set)
 
-            for ensembl_id, probe_ids in iteritems(probe_mapping):
+            for ensembl_id, probes in iteritems(probe_mapping):
 
-                for probe_id in probe_ids:
+                for probe in probes:
 
-                    probe_to_gene[probe_id].add(ensembl_id)
+                    probe_to_gene[probe.probe].add(ensembl_id)
 
             setattr(
                 self,
@@ -1234,6 +1234,11 @@ class Mapper(session_mod.Logger):
                         'biomart',
                         input_formats.BiomartMapping,
                     ),
+                    (
+                        input_formats.array_mapping,
+                        'array',
+                        input_formats.ArrayMapping,
+                    ),
                 ):
 
                     if (
@@ -1259,6 +1264,17 @@ class Mapper(session_mod.Logger):
                                 (
                                     id_type in service_ids and
                                     target_id_type in service_ids
+                                )
+                            )
+                        ) or (
+                            service_id_type == 'array' and (
+                                (
+                                    id_type in service_ids and
+                                    target_id_type in {'ensg', 'enst', 'ensp'}
+                                ) or
+                                (
+                                    target_id_type in service_ids and
+                                    id_type in {'ensg', 'enst', 'ensp'}
                                 )
                             )
                         )
@@ -1291,7 +1307,7 @@ class Mapper(session_mod.Logger):
                             )
                         )
 
-                        # for uniprot/uploadlists or PRO
+                        # for uniprot/uploadlists or PRO or array
                         # we create here the mapping params
                         this_param = input_cls(
                             id_type_a = _id_type,

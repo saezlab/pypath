@@ -366,6 +366,7 @@ class ArrayMapping(MappingInput):
 
         id_type = id_type.lower()
         id_type = 'affy' if id_type == 'affymetrix' else id_type
+        id_type = 'ensg' if id_type == 'ensembl' else id_type
 
         if (
             id_type not in array_mapping and

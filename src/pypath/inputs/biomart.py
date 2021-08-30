@@ -296,6 +296,12 @@ def biomart_microarray(
         dataset = dataset,
     )
     result = collections.defaultdict(set)
+    _locals = locals()
+    ensembl_attrs = tuple(
+        attr
+        for attr in ('gene', 'transcript', 'peptide')
+        if _locals[attr]
+    )
 
     for r in biomart_result:
 
@@ -303,13 +309,13 @@ def biomart_microarray(
 
         if array_probe_id:
 
-            for gene_attr in ('gene', 'transcript', 'peptide'):
+            for ensembl_attr in ensembl_attrs:
 
-                gene_id = getattr(r, 'ensembl_%s_id' % gene_attr)
+                ensembl_id = getattr(r, 'ensembl_%s_id' % ensembl_attr)
 
-                if gene_id:
+                if ensembl_id:
 
-                    result[gene_id].add(array_probe_id)
+                    result[ensembl_id].add(array_probe_id)
 
     return dict(result)
 
