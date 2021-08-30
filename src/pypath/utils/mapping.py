@@ -773,6 +773,70 @@ class MapReader(session_mod.Logger):
         self.b_to_a = dict(b_to_a) if self.load_b_to_a else None
 
 
+    def read_mapping_array(self):
+        """
+        Loads mapping table between microarray probe IDs and genes.
+        """
+
+        probe_mapping = biomart_query.biomart_microarrays(
+            organism = self.param.ncbi_tax_id,
+            vendor = self.param.array_id,
+            gene = self.param.ensembl_id == 'ensg',
+            transcript = self.param.ensembl_id == 'enst',
+            peptide = self.param.ensembl_id == 'ensp',
+        )
+
+        a_to_b__probe_to_gene = self.param.id_type_a == self.param.array_id
+
+        if (
+            (
+                a_to_b__probe_to_gene and
+                self.load_a_to_b
+            ) or (
+                not a_to_b__probe_to_gene and
+                self.load_b_to_a
+            )
+        ):
+
+            probe_to_gene = collections.defaultdict(set)
+
+            for ensembl_id, probe_ids in iteritems(probe_mapping):
+
+                for probe_id in probe_ids:
+
+                    probe_to_gene[probe_id].add(ensembl_id)
+
+            setattr(
+                self,
+                'a_to_b' if a_to_b__probe_to_gene else 'b_to_a',
+                dict(probe_to_gene),
+            )
+
+        if (
+            (
+                a_to_b__probe_to_gene and
+                self.load_b_to_a
+            ) or (
+                not a_to_b__probe_to_gene and
+                self.load_a_to_b
+            )
+        ):
+
+            gene_to_probe = dict(
+                (
+                    ensembl_id,
+                    {p.probe for p in probe_ids}
+                )
+                for ensembl_id, probe_ids in iteritems(probe_mapping)
+            )
+
+            setattr(
+                self,
+                'b_to_a' if a_to_b__probe_to_gene else 'a_to_b',
+                gene_to_probe,
+            )
+
+
     @staticmethod
     def _process_protein_name(name):
 
