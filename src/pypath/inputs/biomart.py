@@ -24,6 +24,7 @@ from future.utils import iteritems
 
 import re
 import os
+import json
 import collections
 
 import pypath.share.session as session_mod
@@ -40,49 +41,11 @@ _filter_xml_template = '<Filter name="%s" excluded="0"/>'
 _attr_xml_template = '<Attribute name="%s" />'
 
 
-microarrays = {
-    'AFFY HG U95E': 'affy_hg_u95e',
-    'AFFY HG G110': 'affy_hc_g110',
-    'AFFY HG Focus': 'affy_hg_focus',
-    'AFFY HG U133A 2': 'affy_hg_u133a_2',
-    'AFFY HG U133A': 'affy_hg_u133a',
-    'AFFY HG U133B': 'affy_hg_u133b',
-    'AFFY HG U133 Plus 2': 'affy_hg_u133_plus_2',
-    'AFFY HG U95A': 'affy_hg_u95a',
-    'AFFY HG U95Av2': 'affy_hg_u95av2',
-    'AFFY HG U95B': 'affy_hg_u95b',
-    'AFFY HG U95D': 'affy_hg_u95d',
-    'AFFY HG U95C': 'affy_hg_u95c',
-    'AFFY HTA 2 0': 'affy_hta_2_0',
-    'AFFY HG HuEx 1 0 st v2': 'affy_huex_1_0_st_v2',
-    'AFFY HG HuGeneFL': 'affy_hugenefl',
-    'AFFY HG HuGene 1 0 st v1': 'affy_hugene_1_0_st_v1',
-    'AFFY HG HuGene 2 0 st v1': 'affy_hugene_2_0_st_v1',
-    'AFFY HG PrimeView': 'affy_primeview',
-    'PHALANX OneArray': 'phalanx_onearray',
-    'ILLUMINA HumanWG 6 V3': 'illumina_humanwg_6_v3',
-    'ILLUMINA HumanWG 6 V2': 'illumina_humanwg_6_v2',
-    'ILLUMINA HumanWG 6 V1': 'illumina_humanwg_6_v1',
-    'ILLUMINA HumanRef 8 V3': 'illumina_humanref_8_v3',
-    'ILLUMINA HumanHT 12 V4': 'illumina_humanht_12_v4',
-    'ILLUMINA HumanHT 12 V3': 'illumina_humanht_12_v3',
-    'AGILENT WholeGenome 4x44k v2': 'agilent_wholegenome_4x44k_v2',
-    'CODELINK CODELINK': 'codelink_codelink',
-    'AGILENT WholeGenome 4x44k v1': 'agilent_wholegenome_4x44k_v1',
-    'AGILENT WholeGenome': 'agilent_wholegenome',
-    'AGILENT SurePrint G3 GE 8x60k v2': 'agilent_sureprint_g3_ge_8x60k_v2',
-    'AGILENT SurePrint G3 GE 8x60k': 'agilent_sureprint_g3_ge_8x60k',
-    'AGILENT GPL6848': 'agilent_gpl6848',
-    'AGILENT GPL26966': 'agilent_gpl26966',
-    'AGILENT CGH 44b': 'agilent_cgh_44b',
-    'AFFY HG U133 X3P': 'affy_u133_x3p',
-}
-
-
 def biomart_query(
         attrs,
         filters = None,
         transcript = False,
+        peptide = False,
         gene = False,
         dataset = 'hsapiens_gene_ensembl',
     ):
@@ -95,6 +58,7 @@ def biomart_query(
         attrs (str,list): One or more Ensembl attribute names.
         filters (str,list): One or more Ensembl filter names.
         transcript (bool): Include Ensembl transcript IDs in the result.
+        peptide (bool): Include Ensembl peptide IDs in the result.
         gene (bool): Include Ensembl gene IDs in the result.
         dataset (str): An Ensembl dataset name.
 
@@ -112,6 +76,10 @@ def biomart_query(
     if transcript:
 
         _attrs.append('ensembl_transcript_id')
+
+    if peptide:
+
+        _attrs.append('ensembl_peptide_id')
 
     _attrs.extend(common.to_list(attrs))
     filters = common.to_list(filters)
@@ -212,10 +180,6 @@ def biomart_homology(
     source_organism = ensure_organism(source_organism)
     target_organism = ensure_organism(target_organism)
 
-    attrs = [
-        'ensembl_peptide_id'
-    ]
-
     homolog_attrs = [
         'homolog_ensembl_peptide',
         'homolog_ensembl_gene',
@@ -235,39 +199,84 @@ def biomart_homology(
 
     return list(
         biomart_query(
-            attrs = attrs + homolog_attrs,
+            attrs = homolog_attrs,
             filters = filters,
             transcript = True,
             gene = True,
+            peptide = True,
             dataset = '%s_gene_ensembl' % source_organism,
         )
     )
 
 
-def biomart_microarray(array_type):
+
+def biomart_microarray_types(organism = 9606):
+    """
+    Retrieves a list of available microarray types for an organism.
+
+    Args:
+        organism (int,str): Name or ID of an organism.
+    """
+
+    organism = taxonomy.ensure_ensembl_name(organism)
+
+    url = urls.urls['ensembl']['arraytypes'] % organism
+    c = curl.Curl(url)
+    result = json.loads(c.result)
+
+    _ = [
+        r.update(
+            label = '%s %s' % (
+                r['vendor'],
+                re.sub('[-_]', ' ', r['array']),
+            )
+        )
+        for r in result
+    ]
+
+    return result
+
+
+def biomart_microarray(
+        array_type,
+        gene = True,
+        transcript = False,
+        peptide = False,
+        organism = 9606
+    ):
     """
     Microarray probe identifier mappings.
 
     Args:
         array_type (str): The microarray model, as shown on the BioMart
             webpage, or the corresponding code. For a full list of available
-            identifiers see the ``microarrays`` attribute of this module.
+            identifiers see the ``biomart_microarray_types``.
+        gene (bool): Include the mapping to Ensembl gene IDs.
+        transcript (bool): Include the mapping to Ensembl transcript IDs.
+        peptide (bool): Include the mapping to Ensembl peptide IDs.
+        organism (int,str): Name or ID of an organism.
 
     Returns:
         A dictionary with Ensembl gene, transcript and peptide IDs as keys
         and sets of microarray probe IDs as values.
     """
 
-    _microarrays = dict(
-        (k.lower(), v)
-        for k, v in iteritems(microarrays)
+    organism = taxonomy.ensure_ensembl_name(organism)
+    array_types = biomart_microarray_types(organism = organism)
+    array_types = {
+        at['label'].lower().replace(' ', '_')
+        for at in array_types
+    }
+
+    _array_type = (
+        array_type.
+        lower().
+        replace('probe', '').
+        strip().
+        replace(' ', '_')
     )
-    all_array_types = set(microarrays.values())
 
-    _array_type = array_type.lower().replace('probe', '').strip()
-    _array_type = common.maybe_in_dict(_microarrays, _array_type)
-
-    if _array_type not in all_array_types:
+    if _array_type not in array_types:
 
         msg = 'No such array type in Ensembl BioMart: `%s` (%s).' % (
             array_type,
@@ -276,11 +285,19 @@ def biomart_microarray(array_type):
         _logger._log(msg)
         raise ValueError(msg)
 
-    attrs = ['ensembl_peptide_id', _array_type]
+    attrs = [_array_type]
+    dataset = '%s_gene_ensembl' % organism
 
+    biomart_result = biomart_query(
+        attrs = attrs,
+        transcript = transcript,
+        gene = gene,
+        peptide = peptide,
+        dataset = dataset,
+    )
     result = collections.defaultdict(set)
 
-    for r in biomart_query(attrs = attrs, transcript = True, gene = True):
+    for r in biomart_result:
 
         array_probe_id = getattr(r, _array_type)
 
@@ -294,4 +311,71 @@ def biomart_microarray(array_type):
 
                     result[gene_id].add(array_probe_id)
 
-    return result
+    return dict(result)
+
+
+def biomart_microarrays(
+        organism = 9606,
+        vendor = None,
+        gene = True,
+        transcript = False,
+        peptide = False
+    ):
+    """
+    Microarray probe identifier mappings for multiple microarrays.
+    Retrieves probe mappings for all array types for one organism,
+    optionally limited to one or more array vendors. Note: depending
+    on the number of array models, it can take minutes to download
+    the data.
+
+    Args:
+        organism (int,str): Name or ID of an organism.
+        vendor (str,set): One or more vendors. None means all vendors. For
+            human, possible values are AFFY, ILLUMINA, AGILENT, CODELINK
+            and PHALANX.
+        gene (bool): Include the mapping to Ensembl gene IDs.
+        transcript (bool): Include the mapping to Ensembl transcript IDs.
+        peptide (bool): Include the mapping to Ensembl peptide IDs.
+
+    Returns:
+        A dictionary with Ensembl gene, transcript and peptide IDs as keys
+        and sets of tuples with microarray types and probe IDs as values.
+    """
+
+    record = collections.namedtuple(
+        'Probe',
+        (
+            'array',
+            'probe',
+        )
+    )
+
+    array_types = biomart_microarray_types(organism = organism)
+    vendor = {v.upper() for v in common.to_set(vendor)}
+
+    result = collections.defaultdict(set)
+
+    for at in array_types:
+
+        if not vendor or at['vendor'] in vendor:
+
+            probe_map = biomart_microarray(
+                array_type = at['label'],
+                organism = organism,
+                gene = gene,
+                transcript = transcript,
+                peptide = peptide,
+            )
+
+            for gene_id, probe_ids in iteritems(probe_map):
+
+                for probe_id in probe_ids:
+
+                    result[gene_id].add(
+                        record(
+                            array = at['label'].lower().replace(' ', '_'),
+                            probe = probe_id,
+                        )
+                    )
+
+    return dict(result)
