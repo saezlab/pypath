@@ -20,16 +20,23 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-import codecs
-import sys
 import copy
 
 import pypath.share.settings as settings
+import pypath.share.session as session
+
+_logger = session.Logger(name = 'input_formats')
 
 __all__ = [
-    'FileMapping', 'PickleMapping', 'NetworkInput', 'ReadList',
-    'Reference', 'UniprotListMapping',
+    'FileMapping',
+    'PickleMapping',
+    'NetworkInput',
+    'ReadList',
+    'Reference',
+    'UniprotListMapping',
     'ProMapping',
+    'ArrayMapping',
+    'BiomartMapping',
 ]
 
 
@@ -308,6 +315,66 @@ class BiomartMapping(MappingInput):
         )
 
 
+class ArrayMapping(MappingInput):
+    """
+    Provides parameters for microarray probe mapping tables.
+
+    :arg str id_type_a:
+        Custom name for one of the ID types.
+    :arg str id_type_b:
+        Custom name for the other ID type.
+    :arg str pro_id_type_a:
+        This is the symbol PRO uses to label the IDs.
+        These are included in the module and set
+        automatically, the argument only gives a way to override this.
+    :arg str pro_id_type_b:
+        Same as above just for the other ID type.
+    """
+
+
+    def __init__(
+            self,
+            id_type_a,
+            id_type_b,
+            ncbi_tax_id = 9606,
+        ):
+
+        MappingInput.__init__(
+            self,
+            type_ = 'array',
+            id_type_a = self._get_id_type(id_type_a),
+            id_type_b = self._get_id_type(id_type_b),
+            ncbi_tax_id = ncbi_tax_id,
+        )
+
+        self.entity_type = 'protein'
+
+
+    @staticmethod
+    def _get_id_type(id_type):
+
+        id_type = id_type.lower()
+        id_type = 'affy' if id_type == 'affymetrix' else id_type
+
+        if (
+            id_type not in array_mapping and
+            id_type not in {'ensg', 'enst', 'ensp'}
+        ):
+
+            msg = (
+                'Unknown ID type for microarray probe mapping: `%s`. '
+                'Microarray ID types include `affy`, `illumina`, `agilent`, '
+                '`codelink` and `phalanx`, all these can be translated to '
+                'Ensembl gene, transcript or peptide IDs: `ensg`, `enst` '
+                'or `ensp`. If you translate to some other ID type, do it '
+                'in multiple steps.' % str(id_type)
+            )
+            _logger._log(msg)
+            raise ValueError(msg)
+
+        return id_type
+
+
 class PickleMapping(MappingInput):
 
 
@@ -523,4 +590,14 @@ pro_mapping = {
     'uniprot-var': 'UniProtKB_VAR',
     'wormbase': 'WormBase',
     'zfin': 'ZFIN',
+}
+
+
+array_mapping = {
+    'affy',
+    'affymetrix',
+    'illumina',
+    'agilent',
+    'codelink',
+    'phalanx',
 }
