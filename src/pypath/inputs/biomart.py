@@ -136,13 +136,13 @@ def biomart_query(
 
     for line in c.result:
 
-        line = line.strip('\n\r').split('\t')
+        _line = line.strip('\n\r').split('\t')
 
-        success = success or line[0] == '[success]'
+        success = success or _line[0] == '[success]'
 
-        if len(line) == len(record._fields):
+        if line.strip() and len(_line) == len(record._fields):
 
-            yield record(*line)
+            yield record(*_line)
 
     if not success:
 
