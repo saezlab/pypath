@@ -347,6 +347,17 @@ class ArrayMapping(MappingInput):
             ncbi_tax_id = ncbi_tax_id,
         )
 
+        self.ensembl_id = (
+            self.id_type_a
+                if self.id_type_a.startswith('ens') else
+            self.id_type_b
+        )
+        self.array_id = (
+            self.id_type_a
+                if self.id_type_a in array_mapping else
+            self.id_type_b
+        )
+
         self.entity_type = 'protein'
 
 
