@@ -566,10 +566,14 @@ biomart_mapping = {
     'interpro_description': 'interpro_description',
     'interpro': 'interpro',
     'interpro_short_description': 'interpro_short_description',
-    'enst': 'ensembl_transcript_id',
-    'ensg': 'ensembl_gene_id',
+    'enst_biomart': 'ensembl_transcript_id',
+    'ensg_biomart': 'ensembl_gene_id',
+    'ensp_biomart': 'ensembl_peptide_id',
     'ensembl_gene_id': 'ensembl_gene_id',
     'ensembl_transcript_id': 'ensembl_transcript_id',
+    'ensembl_peptide_id': 'ensembl_peptide_id',
+    'uniprot': 'uniprotswissprot',
+    'trembl': 'uniprotsptrembl',
 
 }
 
