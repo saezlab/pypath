@@ -2447,3 +2447,12 @@ def suffix(string, sep):
     """
 
     return first(reversed(string.rsplit(sep, maxsplit = 1)))
+
+
+def maybe_in_dict(dct, key):
+    """
+    Retrieves a key from a dict if the key is in the dict, otherwise
+    returns the key itself.
+    """
+
+    return dct[key] if key in dct else key
