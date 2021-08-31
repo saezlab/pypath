@@ -551,6 +551,7 @@ ac_mapping = {
     'ensgp': 'ENSEMBLGENOME_PRO_ID',
     'ensgt': 'ENSEMBLGENOME_TRS_ID',
     'hgnc': 'HGNC_ID',
+    'ensp_string': 'STRING_ID',
 }
 
 

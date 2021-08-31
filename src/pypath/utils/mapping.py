@@ -1170,6 +1170,15 @@ class Mapper(session_mod.Logger):
 
         elif load:
 
+            self._log(
+                'Requested to load ID translation table from '
+                '`%s` to `%s`, organism: %u.' % (
+                    id_type,
+                    target_id_type,
+                    ncbi_tax_id,
+                )
+            )
+
             id_types = (id_type, target_id_type)
             id_types_rev = tuple(reversed(id_types))
             resource = None
@@ -1541,6 +1550,22 @@ class Mapper(session_mod.Logger):
                 strict = strict,
             )
 
+        elif id_type == 'ensp':
+
+            mapped_names = self._map_ensp(
+                ensp = name,
+                target_id_type = target_id_type,
+                ncbi_tax_id = ncbi_tax_id,
+            )
+
+        elif target_id_type == 'ensp':
+
+            mapped_names = self._map_to_ensp(
+                name = name,
+                id_type = id_type,
+                ncbi_tax_id = ncbi_tax_id,
+            )
+
         else:
 
             # all the other ID types
@@ -1857,6 +1882,88 @@ class Mapper(session_mod.Logger):
                         ncbi_tax_id = ncbi_tax_id,
                     )
                 )
+
+        return mapped_names
+
+
+    def _map_ensp(
+            self,
+            ensp,
+            target_id_type,
+            ncbi_tax_id = None,
+        ):
+        """
+        Special ID translation from ENSP (Ensembl peptide IDs).
+        """
+
+        mapped_names = set()
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+
+        # try first UniProt uploadlists
+        # then Ensembl BioMart
+        for id_type in ('ensp', 'ensp_biomart'):
+
+            if not mapped_names:
+
+                mapped_names = self._map_name(
+                    name = ensp,
+                    id_type = id_type,
+                    target_id_type = target_id_type,
+                    ncbi_tax_id = ncbi_tax_id,
+                )
+
+        if not mapped_names:
+
+            tax_ensp = '%u.%s' % (ncbi_tax_id, ensp)
+
+            # this uses UniProt uploadlists with STRING_ID
+            mapped_names = self._map_name(
+                name = tax_ensp,
+                id_type = 'ensp_string',
+                target_id_type = target_id_type,
+                ncbi_tax_id = ncbi_tax_id,
+            )
+
+        return mapped_names
+
+
+    def _map_to_ensp(
+            self,
+            name,
+            id_type,
+            ncbi_tax_id = None,
+        ):
+        """
+        Special ID translation to ENSP (Ensembl peptide IDs).
+        """
+
+        mapped_names = set()
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+
+        # try first UniProt uploadlists
+        # then Ensembl BioMart
+        for target_id_type in ('ensp', 'ensp_biomart'):
+
+            if not mapped_names:
+
+                mapped_names = self._map_name(
+                    name = ensp,
+                    id_type = id_type,
+                    target_id_type = target_id_type,
+                    ncbi_tax_id = ncbi_tax_id,
+                )
+
+        if not mapped_names:
+
+            # this uses UniProt uploadlists with STRING_ID
+            mapped_names = self._map_name(
+                name = tax_ensp,
+                id_type = id_type,
+                target_id_type = 'string_ensp',
+                ncbi_tax_id = ncbi_tax_id,
+            )
+
+            mapped_names = {n.split('.')[-1] for n in mapped_names}
 
         return mapped_names
 
