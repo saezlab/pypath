@@ -1410,8 +1410,15 @@ class Mapper(session_mod.Logger):
             target_id_type = None,
             ncbi_tax_id = None,
             strict = False,
-            silent = True,
         ):
+        """
+        Translates the name and returns only one of the resulted IDs. It
+        means in case of ambiguous ID translation, a random one of them
+        will be picked and returned. Recommended to use only if the
+        translation between the given ID types is mostly unambigous and
+        the loss of information can be ignored. See more details at
+        `map_name`.
+        """
 
         names = self.map_name(
             name = name,
@@ -1419,7 +1426,6 @@ class Mapper(session_mod.Logger):
             target_id_type = target_id_type,
             ncbi_tax_id = ncbi_tax_id,
             strict = strict,
-            silent = silent,
         )
 
         return list(names)[0] if names else None
@@ -1431,7 +1437,6 @@ class Mapper(session_mod.Logger):
             target_id_type = None,
             ncbi_tax_id = None,
             strict = False,
-            silent = True,
             expand_complexes = True,
             uniprot_cleanup = True,
         ):
@@ -1472,6 +1477,18 @@ class Mapper(session_mod.Logger):
                 ``pypath.internals.input_formats``
             target_id_type (str): The name type to translate to, more or
                 less the same values are available as for ``id_type``.
+            ncbi_tax_id (int): NCBI Taxonomy ID of the organism.
+            strict (bool): In case a Gene Symbol can not be translated,
+                try to add number "1" to the end, or try to match only
+                its first five characters. This option is rarely used,
+                but it makes possible to translate some non-standard
+                gene names typically found in old, unmaintained resources.
+            expand_complexes (bool): When encountering complexes,
+                translated the IDs of its components and return a set
+                of IDs. The alternative behaviour is to return the
+                `Complex` objects.
+            uniprot_cleanup (bool): When the `target_id_type` is UniProt
+                ID, call the `uniprot_cleanup` function at the end.
         """
 
         if not name:
@@ -1491,7 +1508,6 @@ class Mapper(session_mod.Logger):
                         id_type = this_id_type,
                         target_id_type = target_id_type,
                         strict = strict,
-                        silent = silent,
                         ncbi_tax_id = ncbi_tax_id,
                     )
                     for this_id_type in id_type
@@ -1803,10 +1819,44 @@ class Mapper(session_mod.Logger):
             target_id_type = None,
             ncbi_tax_id = None,
             strict = False,
-            silent = True,
+            expand_complexes = True,
+            uniprot_cleanup = True,
         ):
         """
-        Same as ``map_name`` with multiple IDs.
+        Same as ``map_name`` but translates multiple IDs at once. These two
+        functions could be seamlessly implemented as one, still I created
+        separate functions to always make it explicit if a set of translated
+        IDs come from multiple original IDs.
+
+        Args:
+            name (str): The original name to be converted.
+            id_type (str): The type of the name. Available by default:
+                - genesymbol (gene name)
+                - entrez (Entrez Gene ID \[#\])
+                - refseqp (NCBI RefSeq Protein ID \[NP\_\*|XP\_\*\])
+                - ensp (Ensembl protein ID \[ENSP\*\])
+                - enst (Ensembl transcript ID \[ENST\*\])
+                - ensg (Ensembl genomic DNA ID \[ENSG\*\])
+                - hgnc (HGNC ID \[HGNC:#\])
+                - gi (GI number \[#\])
+                - embl (DDBJ/EMBL/GeneBank CDS accession)
+                - embl_id (DDBJ/EMBL/GeneBank accession)
+                And many more, see the code of
+                ``pypath.internals.input_formats``
+            target_id_type (str): The name type to translate to, more or
+                less the same values are available as for ``id_type``.
+            ncbi_tax_id (int): NCBI Taxonomy ID of the organism.
+            strict (bool): In case a Gene Symbol can not be translated,
+                try to add number "1" to the end, or try to match only
+                its first five characters. This option is rarely used,
+                but it makes possible to translate some non-standard
+                gene names typically found in old, unmaintained resources.
+            expand_complexes (bool): When encountering complexes,
+                translated the IDs of its components and return a set
+                of IDs. The alternative behaviour is to return the
+                `Complex` objects.
+            uniprot_cleanup (bool): When the `target_id_type` is UniProt
+                ID, call the `uniprot_cleanup` function at the end.
         """
 
         return set.union(
@@ -1817,7 +1867,6 @@ class Mapper(session_mod.Logger):
                     target_id_type = target_id_type,
                     ncbi_tax_id = ncbi_tax_id,
                     strict = strict,
-                    silent = silent,
                 )
                 for name in names
             )
@@ -1826,7 +1875,48 @@ class Mapper(session_mod.Logger):
 
     def chain_map(
             self,
+            name,
+            id_type,
+            by_id_type,
+            target_id_type,
+            ncbi_tax_id = None,
+            **kwargs
         ):
+        """
+        Translate IDs which can not be directly translated in two steps:
+        from `id_type` to `via_id_type` and from there to `target_id_type`.
+
+        Args:
+            name (str): The original name to be converted.
+            id_type (str): The type of the name.
+            by_id_type (str): The intermediate name type.
+            target_id_type (str): The name type to translate to, more or
+                less the same values are available as for ``id_type``.
+            ncbi_tax_id (int): The NCBI Taxonomy identifier of the organism.
+            kwargs: Passed to `map_name`.
+
+        Returns:
+            Set of IDs of type `target_id_type`.
+        """
+
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+
+        mapped_names = self.map_names(
+            names =
+                self.map_name(
+                    name = name,
+                    id_type = id_type,
+                    target_id_type = by_id_type,
+                    ncbi_tax_id = ncbi_tax_id,
+                    **kwargs
+                ),
+            id_type = by_id_type,
+            target_id_type = target_id_type,
+            ncbi_tax_id = ncbi_tax_id,
+            **kwargs
+        )
+
+        return mapped_names
 
 
     def _map_refseq(
@@ -2652,6 +2742,13 @@ class Mapper(session_mod.Logger):
 
 
 def init(**kwargs):
+    """
+    Create a new `Mapper` instance under the `mapper` attribute of this
+    module.
+
+    Returns:
+        None.
+    """
 
     if 'mapper' in globals():
 
@@ -2661,6 +2758,14 @@ def init(**kwargs):
 
 
 def get_mapper(**kwargs):
+    """
+    The module under its `mapper` attribute has an instance of the `Mapper`
+    object, which manages the ID translations. This function creates the
+    instance if does not exist and returns it.
+
+    Returns:
+        A Mapper object.
+    """
 
     if 'mapper' not in globals():
 
@@ -2675,9 +2780,59 @@ def map_name(
         target_id_type,
         ncbi_tax_id = None,
         strict = False,
-        silent = True,
         expand_complexes = True,
+        uniprot_cleanup = True,
     ):
+    """
+    Translates one instance of one ID type to a different one.
+    Returns set of the target ID type.
+
+    This function should be used to convert individual IDs.
+    It takes care about everything and ideally you don't need to
+    think on the details.
+
+    How does it work: looks up dictionaries between the original
+    and target ID type, if doesn't find, attempts to load from the
+    predefined inputs.
+    If the original name is genesymbol, first it looks up among the
+    preferred gene names from UniProt, if not found, it takes an
+    attempt with the alternative gene names. If the gene symbol
+    still couldn't be found, and strict = False, the last attempt
+    only the first 5 characters of the gene symbol matched. If the
+    target name type is uniprot, then it converts all the ACs to
+    primary. Then, for the Trembl IDs it looks up the preferred gene
+    names, and find Swissprot IDs with the same preferred gene name.
+
+    Args:
+        name (str): The original name to be converted.
+        id_type (str): The type of the name. Available by default:
+            - genesymbol (gene name)
+            - entrez (Entrez Gene ID \[#\])
+            - refseqp (NCBI RefSeq Protein ID \[NP\_\*|XP\_\*\])
+            - ensp (Ensembl protein ID \[ENSP\*\])
+            - enst (Ensembl transcript ID \[ENST\*\])
+            - ensg (Ensembl genomic DNA ID \[ENSG\*\])
+            - hgnc (HGNC ID \[HGNC:#\])
+            - gi (GI number \[#\])
+            - embl (DDBJ/EMBL/GeneBank CDS accession)
+            - embl_id (DDBJ/EMBL/GeneBank accession)
+            And many more, see the code of
+            ``pypath.internals.input_formats``
+        target_id_type (str): The name type to translate to, more or
+            less the same values are available as for ``id_type``.
+        ncbi_tax_id (int): NCBI Taxonomy ID of the organism.
+        strict (bool): In case a Gene Symbol can not be translated,
+            try to add number "1" to the end, or try to match only
+            its first five characters. This option is rarely used,
+            but it makes possible to translate some non-standard
+            gene names typically found in old, unmaintained resources.
+        expand_complexes (bool): When encountering complexes,
+            translated the IDs of its components and return a set
+            of IDs. The alternative behaviour is to return the
+            `Complex` objects.
+        uniprot_cleanup (bool): When the `target_id_type` is UniProt
+            ID, call the `uniprot_cleanup` function at the end.
+    """
 
     mapper = get_mapper()
 
@@ -2687,8 +2842,8 @@ def map_name(
         target_id_type = target_id_type,
         ncbi_tax_id = ncbi_tax_id,
         strict = strict,
-        silent = silent,
         expand_complexes = expand_complexes,
+        uniprot_cleanup = uniprot_cleanup,
     )
 
 
@@ -2698,8 +2853,17 @@ def map_name0(
         target_id_type,
         ncbi_tax_id = None,
         strict = False,
-        silent = True,
+        expand_complexes = True,
+        uniprot_cleanup = True,
     ):
+    """
+    Translates the name and returns only one of the resulted IDs. It
+    means in case of ambiguous ID translation, a random one of them
+    will be picked and returned. Recommended to use only if the
+    translation between the given ID types is mostly unambigous and
+    the loss of information can be ignored. See more details at
+    `map_name`.
+    """
 
     mapper = get_mapper()
 
@@ -2709,7 +2873,8 @@ def map_name0(
         target_id_type = target_id_type,
         ncbi_tax_id = ncbi_tax_id,
         strict = strict,
-        silent = silent,
+        expand_complexes = expand_complexes,
+        uniprot_cleanup = uniprot_cleanup,
     )
 
 
@@ -2719,8 +2884,45 @@ def map_names(
         target_id_type = None,
         ncbi_tax_id = None,
         strict = False,
-        silent = True,
+        expand_complexes = True,
+        uniprot_cleanup = True,
     ):
+    """
+    Same as ``map_name`` but translates multiple IDs at once. These two
+    functions could be seamlessly implemented as one, still I created
+    separate functions to always make it explicit if a set of translated
+    IDs come from multiple original IDs.
+
+    Args:
+        name (str): The original name to be converted.
+        id_type (str): The type of the name. Available by default:
+            - genesymbol (gene name)
+            - entrez (Entrez Gene ID \[#\])
+            - refseqp (NCBI RefSeq Protein ID \[NP\_\*|XP\_\*\])
+            - ensp (Ensembl protein ID \[ENSP\*\])
+            - enst (Ensembl transcript ID \[ENST\*\])
+            - ensg (Ensembl genomic DNA ID \[ENSG\*\])
+            - hgnc (HGNC ID \[HGNC:#\])
+            - gi (GI number \[#\])
+            - embl (DDBJ/EMBL/GeneBank CDS accession)
+            - embl_id (DDBJ/EMBL/GeneBank accession)
+            And many more, see the code of
+            ``pypath.internals.input_formats``
+        target_id_type (str): The name type to translate to, more or
+            less the same values are available as for ``id_type``.
+        ncbi_tax_id (int): NCBI Taxonomy ID of the organism.
+        strict (bool): In case a Gene Symbol can not be translated,
+            try to add number "1" to the end, or try to match only
+            its first five characters. This option is rarely used,
+            but it makes possible to translate some non-standard
+            gene names typically found in old, unmaintained resources.
+        expand_complexes (bool): When encountering complexes,
+            translated the IDs of its components and return a set
+            of IDs. The alternative behaviour is to return the
+            `Complex` objects.
+        uniprot_cleanup (bool): When the `target_id_type` is UniProt
+            ID, call the `Mapper.uniprot_cleanup` function at the end.
+    """
 
     mapper = get_mapper()
 
@@ -2730,7 +2932,8 @@ def map_names(
         target_id_type = target_id_type,
         ncbi_tax_id = ncbi_tax_id,
         strict = strict,
-        silent = silent,
+        expand_complexes = expand_complexes,
+        uniprot_cleanup = uniprot_cleanup,
     )
 
 
