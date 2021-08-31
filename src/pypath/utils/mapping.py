@@ -71,8 +71,9 @@ _logger = session_mod.get_log()
 __all__ = ['MapReader', 'MappingTable', 'Mapper']
 
 """
-Classes for reading and use serving ID mapping data
-from UniProt, file, mysql or pickle.
+Classes for reading and use serving ID mapping data from custom file,
+function, UniProt, UniProt uploadlists, Ensembl BioMart,
+PRO (Protein Ontology), miRBase or pickle file.
 """
 
 MappingTableKey = collections.namedtuple(
@@ -93,9 +94,6 @@ class MapReader(session_mod.Logger):
     data is downloaded from UniProt and read into dictionaries.
     It takes a couple of seconds. Data is saved to pickle
     dumps, this way later the tables load much faster.
-
-    :arg source_type str:
-        Type of the resource, either `file`, `uniprot` or `unprotlist`.
     """
 
     def __init__(
@@ -109,22 +107,27 @@ class MapReader(session_mod.Logger):
             lifetime = 300,
         ):
         """
-        entity_type : str
-            An optional, custom string showing the type of the entities,
-            e.g. `protein`. This is not mandatory for the identification
-            of mapping tables, hence the same name types can't be used
-            for different entities. E.g. if both proteins and miRNAs have
-            Entrez gene IDs then these should be different ID types (e.g.
-            `entrez_protein` and `entrez_mirna`) or both protein and miRNA
-            IDs can be loaded into one mapping table and simply called
-            `entrez`.
-        uniprots : set
-            UniProt IDs to query in case the source of the mapping table
-            is the UniProt web service.
-        lifetime : int
-            If this table has not been used for longer than this preiod it is
-            to be removed at next cleanup. Time in seconds. Passed to
-            ``MappingTable``.
+        Args:
+            param (MappingInput): A mapping table definition, any child of
+                the `internals.input_formats.MappingInput` class.
+            ncbi_tax_id (int): NCBI Taxonomy identifier of the organism.
+            entity_type (str): An optional, custom string showing the type of
+                the entities,  e.g. `protein`. This is not mandatory for the
+                identification of mapping tables, hence the same name types
+                can't be used for different entities. E.g. if both proteins
+                and miRNAs have Entrez gene IDs then these should be
+                different ID types (e.g. `entrez_protein` and `entrez_mirna`)
+                or both protein and miRNA IDs can be loaded into one mapping
+                table and simply called `entrez`.
+            load_a_to_b (bool): Load the mapping table for translation from
+                `id_type` to `target_id_type`.
+            load_b_to_a (bool): Load the mapping table for translation from
+                `target_id_type` to `id_type`.
+            uniprots (set): UniProt IDs to query in case the source of the
+                mapping table is the UniProt web service.
+            lifetime (int): If this table has not been used for longer than
+                this preiod it is to be removed at next cleanup. Time in
+                seconds. Passed to ``MappingTable``.
         """
 
         session_mod.Logger.__init__(self, name = 'mapping')
@@ -223,6 +226,18 @@ class MapReader(session_mod.Logger):
 
 
     def id_type_side(self, id_type):
+        """
+        Tells if an ID type is on the "a" or "b" (source or target) side
+        in the current mapping table definition.
+
+        Args:
+            id_type (str): An ID type label.
+
+        Returns:
+            Returns the string "a" if `id_type` is on the source side in
+            the mapping table definition, "b" if it is on the target side,
+            None if the `id_type` is not in the definition.
+        """
 
         return (
             'a'
@@ -422,6 +437,9 @@ class MapReader(session_mod.Logger):
 
 
     def read_mapping_file(self):
+        """
+        Reads a mapping table from a local file or a function.
+        """
 
         if not os.path.exists(self.param.input):
 
@@ -542,6 +560,11 @@ class MapReader(session_mod.Logger):
     def set_uniprot_space(self, swissprot = None):
         """
         Sets up a search space of UniProt IDs.
+
+        Args:
+            swissprot (bool): Use only SwissProt IDs, not TrEMBL. True
+                loads only SwissProt IDs, False only TrEMBL IDs, None
+                loads both.
         """
 
         swissprot = self.param.swissprot if swissprot is None else swissprot
@@ -561,6 +584,15 @@ class MapReader(session_mod.Logger):
         ):
         """
         Reads a mapping table from UniProt "upload lists" service.
+
+        Args:
+            uniprot_id_type_a (str): Source ID type label as used in UniProt.
+            uniprot_id_type_b (str): Target ID type label as used in UniProt.
+            upload_ac_list (list): The identifiers to use in the query to
+                the uploadlists service. By default the list of all UniProt
+                IDs for the organism is used.
+            chunk_size (int): Number of IDs in one query. Too large queries
+                might fail, by default we include 10,000 IDs in one query.
         """
 
         chunk_size = (
@@ -746,6 +778,9 @@ class MapReader(session_mod.Logger):
 
 
     def read_mapping_biomart(self):
+        """
+        Loads a mapping table using BioMart data.
+        """
 
         biomart_data = biomart_input.biomart_query(attrs = self.param.attrs)
 
@@ -872,6 +907,22 @@ class MappingTable(session_mod.Logger):
             ncbi_tax_id,
             lifetime = 300,
         ):
+        """
+        Wrapper around a dictionary of identifier mapping. The dictionary
+        is located in the `data` attribute, keys are the source identifiers,
+        values are sets of target identifiers. Most often the mapping is
+        unambigous, which means one target identifier for each source
+        identifier.
+
+        Args:
+            data (dict): The identifier translation dictionary.
+            id_type (str): The source ID type.
+            target_id_type (str): The target ID type.
+            ncbi_tax_id (int): NCBI Taxonomy identifier of the organism.
+            lifetime (int): Time in seconds to keep the table loaded in
+                the memory. If not used, the table will be unloaded after
+                this time. Each usage resets the expiry time.
+        """
 
         session_mod.Logger.__init__(self, name = 'mapping')
 
@@ -921,6 +972,10 @@ class MappingTable(session_mod.Logger):
 
 
     def get_key(self):
+        """
+        Creates a mapping table key, a tuple with all the defining properties
+        of the mapping table.
+        """
 
         return MappingTableKey(
             id_type = self.id_type,
@@ -1081,6 +1136,9 @@ class Mapper(session_mod.Logger):
 
 
     def reload(self):
+        """
+        Reload the class from the module level.
+        """
 
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
@@ -1370,6 +1428,16 @@ class Mapper(session_mod.Logger):
 
     @staticmethod
     def reverse_mapping(mapping_table):
+        """
+        Creates an opposite direction `MappingTable` by swapping the
+        dictionary inside an existing `MappingTable` object.
+
+        Args:
+            mapping_table (MappingTable): A `MappingTable` object.
+
+        Returns:
+            A new `MappingTable` object.
+        """
 
         rev_data = common.swap_dict(mapping_table.data)
 
@@ -1383,6 +1451,16 @@ class Mapper(session_mod.Logger):
 
 
     def reverse_key(self, key):
+        """
+        For a mapping table key returns a new key with the identifiers
+        reversed.
+
+        Args:
+            key (tuple): A mapping table key.
+
+        Returns:
+            A tuple representing a mapping table key, identifiers swapped.
+        """
 
         self.get_table_key(
             id_type = key.target_id_type,
