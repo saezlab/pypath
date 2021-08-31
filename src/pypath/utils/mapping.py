@@ -1411,8 +1411,6 @@ class Mapper(session_mod.Logger):
             ncbi_tax_id = None,
             strict = False,
             silent = True,
-            nameType = None,
-            targetNameType = None,
         ):
 
         names = self.map_name(
@@ -1422,8 +1420,6 @@ class Mapper(session_mod.Logger):
             ncbi_tax_id = ncbi_tax_id,
             strict = strict,
             silent = silent,
-            nameType = nameType,
-            targetNameType = targetNameType,
         )
 
         return list(names)[0] if names else None
@@ -1438,8 +1434,6 @@ class Mapper(session_mod.Logger):
             silent = True,
             expand_complexes = True,
             uniprot_cleanup = True,
-            nameType = None,
-            targetNameType = None,
         ):
         """
         Translates one instance of one ID type to a different one.
@@ -1461,41 +1455,28 @@ class Mapper(session_mod.Logger):
         primary. Then, for the Trembl IDs it looks up the preferred gene
         names, and find Swissprot IDs with the same preferred gene name.
 
-        name : str
-            The original name to be converted.
-        id_type : str
-            The type of the name.
-            Available by default:
-            - genesymbol (gene name)
-            - entrez (Entrez Gene ID \[#\])
-            - refseqp (NCBI RefSeq Protein ID \[NP\_\*|XP\_\*\])
-            - ensp (Ensembl protein ID \[ENSP\*\])
-            - enst (Ensembl transcript ID \[ENST\*\])
-            - ensg (Ensembl genomic DNA ID \[ENSG\*\])
-            - hgnc (HGNC ID \[HGNC:#\])
-            - gi (GI number \[#\])
-            - embl (DDBJ/EMBL/GeneBank CDS accession)
-            - embl_id (DDBJ/EMBL/GeneBank accession)
-            To use other IDs, you need to define the input method
-            and load the table before calling
-            :py:func:Mapper.map_name().
-        target_id_type : str
-            The name type to translate to, more or less the same values
-            are available as for ``id_type``.
-        nameType : str
-            Deprecated. Synonym for ``id_type`` for backwards
-            compatibility.
-        targetNameType : str
-            Deprecated. Synonym for ``target_id_type``
-            for backwards compatibility.
+        Args:
+            name (str): The original name to be converted.
+            id_type (str): The type of the name. Available by default:
+                - genesymbol (gene name)
+                - entrez (Entrez Gene ID \[#\])
+                - refseqp (NCBI RefSeq Protein ID \[NP\_\*|XP\_\*\])
+                - ensp (Ensembl protein ID \[ENSP\*\])
+                - enst (Ensembl transcript ID \[ENST\*\])
+                - ensg (Ensembl genomic DNA ID \[ENSG\*\])
+                - hgnc (HGNC ID \[HGNC:#\])
+                - gi (GI number \[#\])
+                - embl (DDBJ/EMBL/GeneBank CDS accession)
+                - embl_id (DDBJ/EMBL/GeneBank accession)
+                And many more, see the code of
+                ``pypath.internals.input_formats``
+            target_id_type (str): The name type to translate to, more or
+                less the same values are available as for ``id_type``.
         """
 
         if not name:
 
             return set()
-
-        id_type = id_type or nameType
-        target_id_type = target_id_type or targetNameType
 
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
@@ -1764,12 +1745,24 @@ class Mapper(session_mod.Logger):
 
 
     def uniprot_cleanup(self, uniprots, ncbi_tax_id = None):
+        """
+        We use this function as a standard callback when the target ID
+        type is UniProt. It checks if the format of the IDs are correct,
+        if they are part of the organism proteome, attempts to translate
+        secondary and deleted IDs to their primary, recent counterparts.
+
+        Args:
+            uniprots (str,set): One or more UniProt IDs.
+            ncbi_tax_id (int): The NCBI Taxonomy identifier of the organism.
+
+        Returns:
+            Set of checked and potentially translated UniProt iDs. Elements
+            which do not fit the criteria will be discarded.
+        """
 
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
-        if isinstance(uniprots, common.basestring):
-
-            uniprots = {uniprots}
+        uniprots = common.to_set(uniprots)
 
         # step 1: translate secondary IDs to primary
         uniprots = self.primary_uniprot(uniprots)
@@ -1811,8 +1804,6 @@ class Mapper(session_mod.Logger):
             ncbi_tax_id = None,
             strict = False,
             silent = True,
-            nameType = None,
-            targetNameType = None,
         ):
         """
         Same as ``map_name`` with multiple IDs.
@@ -1827,12 +1818,15 @@ class Mapper(session_mod.Logger):
                     ncbi_tax_id = ncbi_tax_id,
                     strict = strict,
                     silent = silent,
-                    nameType = nameType,
-                    targetNameType = targetNameType,
                 )
                 for name in names
             )
         ) if names else set()
+
+
+    def chain_map(
+            self,
+        ):
 
 
     def _map_refseq(
@@ -2683,8 +2677,6 @@ def map_name(
         strict = False,
         silent = True,
         expand_complexes = True,
-        nameType = None,
-        targetNameType = None,
     ):
 
     mapper = get_mapper()
@@ -2697,8 +2689,6 @@ def map_name(
         strict = strict,
         silent = silent,
         expand_complexes = expand_complexes,
-        nameType = nameType,
-        targetNameType = targetNameType,
     )
 
 
@@ -2709,8 +2699,6 @@ def map_name0(
         ncbi_tax_id = None,
         strict = False,
         silent = True,
-        nameType = None,
-        targetNameType = None,
     ):
 
     mapper = get_mapper()
@@ -2722,8 +2710,6 @@ def map_name0(
         ncbi_tax_id = ncbi_tax_id,
         strict = strict,
         silent = silent,
-        nameType = nameType,
-        targetNameType = targetNameType,
     )
 
 
@@ -2734,8 +2720,6 @@ def map_names(
         ncbi_tax_id = None,
         strict = False,
         silent = True,
-        nameType = None,
-        targetNameType = None,
     ):
 
     mapper = get_mapper()
@@ -2747,8 +2731,6 @@ def map_names(
         ncbi_tax_id = ncbi_tax_id,
         strict = strict,
         silent = silent,
-        nameType = nameType,
-        targetNameType = targetNameType,
     )
 
 
