@@ -1161,7 +1161,7 @@ class Mapper(session_mod.Logger):
         elif tbl_key_rev in self.tables:
 
             self.create_reverse(tbl_key_rev)
-            tbl = self.tables[tbl_key]
+            tbl = self.tables[tbl_key_rev]
 
         elif tbl_key_rev_noorganism in self.tables:
 
@@ -1375,6 +1375,9 @@ class Mapper(session_mod.Logger):
 
         return MappingTable(
             data = rev_data,
+            id_type = mapping_table.target_id_type,
+            target_id_type = mapping_table.id_type,
+            ncbi_tax_id = mapping_table.ncbi_tax_id,
             lifetime = mapping_table.lifetime,
         )
 
@@ -1394,7 +1397,7 @@ class Mapper(session_mod.Logger):
         (i.e. direction of the ID translation) swapped.
         """
 
-        table = self.mappings[key]
+        table = self.tables[key]
         rev_key = self.reverse_key(key)
 
         self.tables[rev_key] = self.reverse_mapping(table)
@@ -1947,7 +1950,7 @@ class Mapper(session_mod.Logger):
             if not mapped_names:
 
                 mapped_names = self._map_name(
-                    name = ensp,
+                    name = name,
                     id_type = id_type,
                     target_id_type = target_id_type,
                     ncbi_tax_id = ncbi_tax_id,
@@ -1957,9 +1960,9 @@ class Mapper(session_mod.Logger):
 
             # this uses UniProt uploadlists with STRING_ID
             mapped_names = self._map_name(
-                name = tax_ensp,
+                name = name,
                 id_type = id_type,
-                target_id_type = 'string_ensp',
+                target_id_type = 'ensp_string',
                 ncbi_tax_id = ncbi_tax_id,
             )
 
