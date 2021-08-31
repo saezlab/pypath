@@ -1347,6 +1347,10 @@ urls = {
         'url': 'https://raw.githubusercontent.com/ShellyCoder/cellcall/'
             'master/inst/extdata/new_ligand_receptor_TFs%s.txt',
     },
+    'cancerdrugs_db': {
+        'label': 'Cancer Drug Database of licensed drugs by the Anticancer Fund',
+        'url': 'https://acfdata.coworks.be/cancerdrugsdb.txt',
+    },
 }
 
 
