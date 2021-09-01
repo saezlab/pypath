@@ -71,8 +71,9 @@ _logger = session_mod.get_log()
 __all__ = ['MapReader', 'MappingTable', 'Mapper']
 
 """
-Classes for reading and use serving ID mapping data
-from UniProt, file, mysql or pickle.
+Classes for reading and use serving ID mapping data from custom file,
+function, UniProt, UniProt uploadlists, Ensembl BioMart,
+PRO (Protein Ontology), miRBase or pickle file.
 """
 
 MappingTableKey = collections.namedtuple(
@@ -93,9 +94,6 @@ class MapReader(session_mod.Logger):
     data is downloaded from UniProt and read into dictionaries.
     It takes a couple of seconds. Data is saved to pickle
     dumps, this way later the tables load much faster.
-
-    :arg source_type str:
-        Type of the resource, either `file`, `uniprot` or `unprotlist`.
     """
 
     def __init__(
@@ -109,22 +107,27 @@ class MapReader(session_mod.Logger):
             lifetime = 300,
         ):
         """
-        entity_type : str
-            An optional, custom string showing the type of the entities,
-            e.g. `protein`. This is not mandatory for the identification
-            of mapping tables, hence the same name types can't be used
-            for different entities. E.g. if both proteins and miRNAs have
-            Entrez gene IDs then these should be different ID types (e.g.
-            `entrez_protein` and `entrez_mirna`) or both protein and miRNA
-            IDs can be loaded into one mapping table and simply called
-            `entrez`.
-        uniprots : set
-            UniProt IDs to query in case the source of the mapping table
-            is the UniProt web service.
-        lifetime : int
-            If this table has not been used for longer than this preiod it is
-            to be removed at next cleanup. Time in seconds. Passed to
-            ``MappingTable``.
+        Args:
+            param (MappingInput): A mapping table definition, any child of
+                the `internals.input_formats.MappingInput` class.
+            ncbi_tax_id (int): NCBI Taxonomy identifier of the organism.
+            entity_type (str): An optional, custom string showing the type of
+                the entities,  e.g. `protein`. This is not mandatory for the
+                identification of mapping tables, hence the same name types
+                can't be used for different entities. E.g. if both proteins
+                and miRNAs have Entrez gene IDs then these should be
+                different ID types (e.g. `entrez_protein` and `entrez_mirna`)
+                or both protein and miRNA IDs can be loaded into one mapping
+                table and simply called `entrez`.
+            load_a_to_b (bool): Load the mapping table for translation from
+                `id_type` to `target_id_type`.
+            load_b_to_a (bool): Load the mapping table for translation from
+                `target_id_type` to `id_type`.
+            uniprots (set): UniProt IDs to query in case the source of the
+                mapping table is the UniProt web service.
+            lifetime (int): If this table has not been used for longer than
+                this preiod it is to be removed at next cleanup. Time in
+                seconds. Passed to ``MappingTable``.
         """
 
         session_mod.Logger.__init__(self, name = 'mapping')
@@ -223,6 +226,18 @@ class MapReader(session_mod.Logger):
 
 
     def id_type_side(self, id_type):
+        """
+        Tells if an ID type is on the "a" or "b" (source or target) side
+        in the current mapping table definition.
+
+        Args:
+            id_type (str): An ID type label.
+
+        Returns:
+            Returns the string "a" if `id_type` is on the source side in
+            the mapping table definition, "b" if it is on the target side,
+            None if the `id_type` is not in the definition.
+        """
 
         return (
             'a'
@@ -422,6 +437,9 @@ class MapReader(session_mod.Logger):
 
 
     def read_mapping_file(self):
+        """
+        Reads a mapping table from a local file or a function.
+        """
 
         if not os.path.exists(self.param.input):
 
@@ -542,6 +560,11 @@ class MapReader(session_mod.Logger):
     def set_uniprot_space(self, swissprot = None):
         """
         Sets up a search space of UniProt IDs.
+
+        Args:
+            swissprot (bool): Use only SwissProt IDs, not TrEMBL. True
+                loads only SwissProt IDs, False only TrEMBL IDs, None
+                loads both.
         """
 
         swissprot = self.param.swissprot if swissprot is None else swissprot
@@ -561,6 +584,15 @@ class MapReader(session_mod.Logger):
         ):
         """
         Reads a mapping table from UniProt "upload lists" service.
+
+        Args:
+            uniprot_id_type_a (str): Source ID type label as used in UniProt.
+            uniprot_id_type_b (str): Target ID type label as used in UniProt.
+            upload_ac_list (list): The identifiers to use in the query to
+                the uploadlists service. By default the list of all UniProt
+                IDs for the organism is used.
+            chunk_size (int): Number of IDs in one query. Too large queries
+                might fail, by default we include 10,000 IDs in one query.
         """
 
         chunk_size = (
@@ -746,6 +778,9 @@ class MapReader(session_mod.Logger):
 
 
     def read_mapping_biomart(self):
+        """
+        Loads a mapping table using BioMart data.
+        """
 
         biomart_data = biomart_input.biomart_query(attrs = self.param.attrs)
 
@@ -872,6 +907,22 @@ class MappingTable(session_mod.Logger):
             ncbi_tax_id,
             lifetime = 300,
         ):
+        """
+        Wrapper around a dictionary of identifier mapping. The dictionary
+        is located in the `data` attribute, keys are the source identifiers,
+        values are sets of target identifiers. Most often the mapping is
+        unambigous, which means one target identifier for each source
+        identifier.
+
+        Args:
+            data (dict): The identifier translation dictionary.
+            id_type (str): The source ID type.
+            target_id_type (str): The target ID type.
+            ncbi_tax_id (int): NCBI Taxonomy identifier of the organism.
+            lifetime (int): Time in seconds to keep the table loaded in
+                the memory. If not used, the table will be unloaded after
+                this time. Each usage resets the expiry time.
+        """
 
         session_mod.Logger.__init__(self, name = 'mapping')
 
@@ -921,6 +972,10 @@ class MappingTable(session_mod.Logger):
 
 
     def get_key(self):
+        """
+        Creates a mapping table key, a tuple with all the defining properties
+        of the mapping table.
+        """
 
         return MappingTableKey(
             id_type = self.id_type,
@@ -1081,6 +1136,9 @@ class Mapper(session_mod.Logger):
 
 
     def reload(self):
+        """
+        Reload the class from the module level.
+        """
 
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
@@ -1161,7 +1219,7 @@ class Mapper(session_mod.Logger):
         elif tbl_key_rev in self.tables:
 
             self.create_reverse(tbl_key_rev)
-            tbl = self.tables[tbl_key]
+            tbl = self.tables[tbl_key_rev]
 
         elif tbl_key_rev_noorganism in self.tables:
 
@@ -1169,6 +1227,15 @@ class Mapper(session_mod.Logger):
             tbl = self.tables[tbl_key_rev_noorganism]
 
         elif load:
+
+            self._log(
+                'Requested to load ID translation table from '
+                '`%s` to `%s`, organism: %u.' % (
+                    id_type,
+                    target_id_type,
+                    ncbi_tax_id,
+                )
+            )
 
             id_types = (id_type, target_id_type)
             id_types_rev = tuple(reversed(id_types))
@@ -1361,16 +1428,39 @@ class Mapper(session_mod.Logger):
 
     @staticmethod
     def reverse_mapping(mapping_table):
+        """
+        Creates an opposite direction `MappingTable` by swapping the
+        dictionary inside an existing `MappingTable` object.
+
+        Args:
+            mapping_table (MappingTable): A `MappingTable` object.
+
+        Returns:
+            A new `MappingTable` object.
+        """
 
         rev_data = common.swap_dict(mapping_table.data)
 
         return MappingTable(
             data = rev_data,
+            id_type = mapping_table.target_id_type,
+            target_id_type = mapping_table.id_type,
+            ncbi_tax_id = mapping_table.ncbi_tax_id,
             lifetime = mapping_table.lifetime,
         )
 
 
     def reverse_key(self, key):
+        """
+        For a mapping table key returns a new key with the identifiers
+        reversed.
+
+        Args:
+            key (tuple): A mapping table key.
+
+        Returns:
+            A tuple representing a mapping table key, identifiers swapped.
+        """
 
         self.get_table_key(
             id_type = key.target_id_type,
@@ -1385,7 +1475,7 @@ class Mapper(session_mod.Logger):
         (i.e. direction of the ID translation) swapped.
         """
 
-        table = self.mappings[key]
+        table = self.tables[key]
         rev_key = self.reverse_key(key)
 
         self.tables[rev_key] = self.reverse_mapping(table)
@@ -1398,10 +1488,15 @@ class Mapper(session_mod.Logger):
             target_id_type = None,
             ncbi_tax_id = None,
             strict = False,
-            silent = True,
-            nameType = None,
-            targetNameType = None,
         ):
+        """
+        Translates the name and returns only one of the resulted IDs. It
+        means in case of ambiguous ID translation, a random one of them
+        will be picked and returned. Recommended to use only if the
+        translation between the given ID types is mostly unambigous and
+        the loss of information can be ignored. See more details at
+        `map_name`.
+        """
 
         names = self.map_name(
             name = name,
@@ -1409,9 +1504,6 @@ class Mapper(session_mod.Logger):
             target_id_type = target_id_type,
             ncbi_tax_id = ncbi_tax_id,
             strict = strict,
-            silent = silent,
-            nameType = nameType,
-            targetNameType = targetNameType,
         )
 
         return list(names)[0] if names else None
@@ -1423,11 +1515,8 @@ class Mapper(session_mod.Logger):
             target_id_type = None,
             ncbi_tax_id = None,
             strict = False,
-            silent = True,
             expand_complexes = True,
             uniprot_cleanup = True,
-            nameType = None,
-            targetNameType = None,
         ):
         """
         Translates one instance of one ID type to a different one.
@@ -1449,41 +1538,40 @@ class Mapper(session_mod.Logger):
         primary. Then, for the Trembl IDs it looks up the preferred gene
         names, and find Swissprot IDs with the same preferred gene name.
 
-        name : str
-            The original name to be converted.
-        id_type : str
-            The type of the name.
-            Available by default:
-            - genesymbol (gene name)
-            - entrez (Entrez Gene ID \[#\])
-            - refseqp (NCBI RefSeq Protein ID \[NP\_\*|XP\_\*\])
-            - ensp (Ensembl protein ID \[ENSP\*\])
-            - enst (Ensembl transcript ID \[ENST\*\])
-            - ensg (Ensembl genomic DNA ID \[ENSG\*\])
-            - hgnc (HGNC ID \[HGNC:#\])
-            - gi (GI number \[#\])
-            - embl (DDBJ/EMBL/GeneBank CDS accession)
-            - embl_id (DDBJ/EMBL/GeneBank accession)
-            To use other IDs, you need to define the input method
-            and load the table before calling
-            :py:func:Mapper.map_name().
-        target_id_type : str
-            The name type to translate to, more or less the same values
-            are available as for ``id_type``.
-        nameType : str
-            Deprecated. Synonym for ``id_type`` for backwards
-            compatibility.
-        targetNameType : str
-            Deprecated. Synonym for ``target_id_type``
-            for backwards compatibility.
+        Args:
+            name (str): The original name to be converted.
+            id_type (str): The type of the name. Available by default:
+                - genesymbol (gene name)
+                - entrez (Entrez Gene ID \[#\])
+                - refseqp (NCBI RefSeq Protein ID \[NP\_\*|XP\_\*\])
+                - ensp (Ensembl protein ID \[ENSP\*\])
+                - enst (Ensembl transcript ID \[ENST\*\])
+                - ensg (Ensembl genomic DNA ID \[ENSG\*\])
+                - hgnc (HGNC ID \[HGNC:#\])
+                - gi (GI number \[#\])
+                - embl (DDBJ/EMBL/GeneBank CDS accession)
+                - embl_id (DDBJ/EMBL/GeneBank accession)
+                And many more, see the code of
+                ``pypath.internals.input_formats``
+            target_id_type (str): The name type to translate to, more or
+                less the same values are available as for ``id_type``.
+            ncbi_tax_id (int): NCBI Taxonomy ID of the organism.
+            strict (bool): In case a Gene Symbol can not be translated,
+                try to add number "1" to the end, or try to match only
+                its first five characters. This option is rarely used,
+                but it makes possible to translate some non-standard
+                gene names typically found in old, unmaintained resources.
+            expand_complexes (bool): When encountering complexes,
+                translated the IDs of its components and return a set
+                of IDs. The alternative behaviour is to return the
+                `Complex` objects.
+            uniprot_cleanup (bool): When the `target_id_type` is UniProt
+                ID, call the `uniprot_cleanup` function at the end.
         """
 
         if not name:
 
             return set()
-
-        id_type = id_type or nameType
-        target_id_type = target_id_type or targetNameType
 
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
@@ -1498,7 +1586,6 @@ class Mapper(session_mod.Logger):
                         id_type = this_id_type,
                         target_id_type = target_id_type,
                         strict = strict,
-                        silent = silent,
                         ncbi_tax_id = ncbi_tax_id,
                     )
                     for this_id_type in id_type
@@ -1539,6 +1626,22 @@ class Mapper(session_mod.Logger):
                 target_id_type = target_id_type,
                 ncbi_tax_id = ncbi_tax_id,
                 strict = strict,
+            )
+
+        elif id_type == 'ensp':
+
+            mapped_names = self._map_ensp(
+                ensp = name,
+                target_id_type = target_id_type,
+                ncbi_tax_id = ncbi_tax_id,
+            )
+
+        elif target_id_type == 'ensp':
+
+            mapped_names = self._map_to_ensp(
+                name = name,
+                id_type = id_type,
+                ncbi_tax_id = ncbi_tax_id,
             )
 
         else:
@@ -1736,12 +1839,24 @@ class Mapper(session_mod.Logger):
 
 
     def uniprot_cleanup(self, uniprots, ncbi_tax_id = None):
+        """
+        We use this function as a standard callback when the target ID
+        type is UniProt. It checks if the format of the IDs are correct,
+        if they are part of the organism proteome, attempts to translate
+        secondary and deleted IDs to their primary, recent counterparts.
+
+        Args:
+            uniprots (str,set): One or more UniProt IDs.
+            ncbi_tax_id (int): The NCBI Taxonomy identifier of the organism.
+
+        Returns:
+            Set of checked and potentially translated UniProt iDs. Elements
+            which do not fit the criteria will be discarded.
+        """
 
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
-        if isinstance(uniprots, common.basestring):
-
-            uniprots = {uniprots}
+        uniprots = common.to_set(uniprots)
 
         # step 1: translate secondary IDs to primary
         uniprots = self.primary_uniprot(uniprots)
@@ -1782,12 +1897,44 @@ class Mapper(session_mod.Logger):
             target_id_type = None,
             ncbi_tax_id = None,
             strict = False,
-            silent = True,
-            nameType = None,
-            targetNameType = None,
+            expand_complexes = True,
+            uniprot_cleanup = True,
         ):
         """
-        Same as ``map_name`` with multiple IDs.
+        Same as ``map_name`` but translates multiple IDs at once. These two
+        functions could be seamlessly implemented as one, still I created
+        separate functions to always make it explicit if a set of translated
+        IDs come from multiple original IDs.
+
+        Args:
+            name (str): The original name to be converted.
+            id_type (str): The type of the name. Available by default:
+                - genesymbol (gene name)
+                - entrez (Entrez Gene ID \[#\])
+                - refseqp (NCBI RefSeq Protein ID \[NP\_\*|XP\_\*\])
+                - ensp (Ensembl protein ID \[ENSP\*\])
+                - enst (Ensembl transcript ID \[ENST\*\])
+                - ensg (Ensembl genomic DNA ID \[ENSG\*\])
+                - hgnc (HGNC ID \[HGNC:#\])
+                - gi (GI number \[#\])
+                - embl (DDBJ/EMBL/GeneBank CDS accession)
+                - embl_id (DDBJ/EMBL/GeneBank accession)
+                And many more, see the code of
+                ``pypath.internals.input_formats``
+            target_id_type (str): The name type to translate to, more or
+                less the same values are available as for ``id_type``.
+            ncbi_tax_id (int): NCBI Taxonomy ID of the organism.
+            strict (bool): In case a Gene Symbol can not be translated,
+                try to add number "1" to the end, or try to match only
+                its first five characters. This option is rarely used,
+                but it makes possible to translate some non-standard
+                gene names typically found in old, unmaintained resources.
+            expand_complexes (bool): When encountering complexes,
+                translated the IDs of its components and return a set
+                of IDs. The alternative behaviour is to return the
+                `Complex` objects.
+            uniprot_cleanup (bool): When the `target_id_type` is UniProt
+                ID, call the `uniprot_cleanup` function at the end.
         """
 
         return set.union(
@@ -1798,13 +1945,56 @@ class Mapper(session_mod.Logger):
                     target_id_type = target_id_type,
                     ncbi_tax_id = ncbi_tax_id,
                     strict = strict,
-                    silent = silent,
-                    nameType = nameType,
-                    targetNameType = targetNameType,
                 )
                 for name in names
             )
         ) if names else set()
+
+
+    def chain_map(
+            self,
+            name,
+            id_type,
+            by_id_type,
+            target_id_type,
+            ncbi_tax_id = None,
+            **kwargs
+        ):
+        """
+        Translate IDs which can not be directly translated in two steps:
+        from `id_type` to `via_id_type` and from there to `target_id_type`.
+
+        Args:
+            name (str): The original name to be converted.
+            id_type (str): The type of the name.
+            by_id_type (str): The intermediate name type.
+            target_id_type (str): The name type to translate to, more or
+                less the same values are available as for ``id_type``.
+            ncbi_tax_id (int): The NCBI Taxonomy identifier of the organism.
+            kwargs: Passed to `map_name`.
+
+        Returns:
+            Set of IDs of type `target_id_type`.
+        """
+
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+
+        mapped_names = self.map_names(
+            names =
+                self.map_name(
+                    name = name,
+                    id_type = id_type,
+                    target_id_type = by_id_type,
+                    ncbi_tax_id = ncbi_tax_id,
+                    **kwargs
+                ),
+            id_type = by_id_type,
+            target_id_type = target_id_type,
+            ncbi_tax_id = ncbi_tax_id,
+            **kwargs
+        )
+
+        return mapped_names
 
 
     def _map_refseq(
@@ -1857,6 +2047,88 @@ class Mapper(session_mod.Logger):
                         ncbi_tax_id = ncbi_tax_id,
                     )
                 )
+
+        return mapped_names
+
+
+    def _map_ensp(
+            self,
+            ensp,
+            target_id_type,
+            ncbi_tax_id = None,
+        ):
+        """
+        Special ID translation from ENSP (Ensembl peptide IDs).
+        """
+
+        mapped_names = set()
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+
+        # try first UniProt uploadlists
+        # then Ensembl BioMart
+        for id_type in ('ensp', 'ensp_biomart'):
+
+            if not mapped_names:
+
+                mapped_names = self._map_name(
+                    name = ensp,
+                    id_type = id_type,
+                    target_id_type = target_id_type,
+                    ncbi_tax_id = ncbi_tax_id,
+                )
+
+        if not mapped_names:
+
+            tax_ensp = '%u.%s' % (ncbi_tax_id, ensp)
+
+            # this uses UniProt uploadlists with STRING_ID
+            mapped_names = self._map_name(
+                name = tax_ensp,
+                id_type = 'ensp_string',
+                target_id_type = target_id_type,
+                ncbi_tax_id = ncbi_tax_id,
+            )
+
+        return mapped_names
+
+
+    def _map_to_ensp(
+            self,
+            name,
+            id_type,
+            ncbi_tax_id = None,
+        ):
+        """
+        Special ID translation to ENSP (Ensembl peptide IDs).
+        """
+
+        mapped_names = set()
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+
+        # try first UniProt uploadlists
+        # then Ensembl BioMart
+        for target_id_type in ('ensp', 'ensp_biomart'):
+
+            if not mapped_names:
+
+                mapped_names = self._map_name(
+                    name = name,
+                    id_type = id_type,
+                    target_id_type = target_id_type,
+                    ncbi_tax_id = ncbi_tax_id,
+                )
+
+        if not mapped_names:
+
+            # this uses UniProt uploadlists with STRING_ID
+            mapped_names = self._map_name(
+                name = name,
+                id_type = id_type,
+                target_id_type = 'ensp_string',
+                ncbi_tax_id = ncbi_tax_id,
+            )
+
+            mapped_names = {n.split('.')[-1] for n in mapped_names}
 
         return mapped_names
 
@@ -2548,6 +2820,13 @@ class Mapper(session_mod.Logger):
 
 
 def init(**kwargs):
+    """
+    Create a new `Mapper` instance under the `mapper` attribute of this
+    module.
+
+    Returns:
+        None.
+    """
 
     if 'mapper' in globals():
 
@@ -2557,6 +2836,14 @@ def init(**kwargs):
 
 
 def get_mapper(**kwargs):
+    """
+    The module under its `mapper` attribute has an instance of the `Mapper`
+    object, which manages the ID translations. This function creates the
+    instance if does not exist and returns it.
+
+    Returns:
+        A Mapper object.
+    """
 
     if 'mapper' not in globals():
 
@@ -2571,11 +2858,59 @@ def map_name(
         target_id_type,
         ncbi_tax_id = None,
         strict = False,
-        silent = True,
         expand_complexes = True,
-        nameType = None,
-        targetNameType = None,
+        uniprot_cleanup = True,
     ):
+    """
+    Translates one instance of one ID type to a different one.
+    Returns set of the target ID type.
+
+    This function should be used to convert individual IDs.
+    It takes care about everything and ideally you don't need to
+    think on the details.
+
+    How does it work: looks up dictionaries between the original
+    and target ID type, if doesn't find, attempts to load from the
+    predefined inputs.
+    If the original name is genesymbol, first it looks up among the
+    preferred gene names from UniProt, if not found, it takes an
+    attempt with the alternative gene names. If the gene symbol
+    still couldn't be found, and strict = False, the last attempt
+    only the first 5 characters of the gene symbol matched. If the
+    target name type is uniprot, then it converts all the ACs to
+    primary. Then, for the Trembl IDs it looks up the preferred gene
+    names, and find Swissprot IDs with the same preferred gene name.
+
+    Args:
+        name (str): The original name to be converted.
+        id_type (str): The type of the name. Available by default:
+            - genesymbol (gene name)
+            - entrez (Entrez Gene ID \[#\])
+            - refseqp (NCBI RefSeq Protein ID \[NP\_\*|XP\_\*\])
+            - ensp (Ensembl protein ID \[ENSP\*\])
+            - enst (Ensembl transcript ID \[ENST\*\])
+            - ensg (Ensembl genomic DNA ID \[ENSG\*\])
+            - hgnc (HGNC ID \[HGNC:#\])
+            - gi (GI number \[#\])
+            - embl (DDBJ/EMBL/GeneBank CDS accession)
+            - embl_id (DDBJ/EMBL/GeneBank accession)
+            And many more, see the code of
+            ``pypath.internals.input_formats``
+        target_id_type (str): The name type to translate to, more or
+            less the same values are available as for ``id_type``.
+        ncbi_tax_id (int): NCBI Taxonomy ID of the organism.
+        strict (bool): In case a Gene Symbol can not be translated,
+            try to add number "1" to the end, or try to match only
+            its first five characters. This option is rarely used,
+            but it makes possible to translate some non-standard
+            gene names typically found in old, unmaintained resources.
+        expand_complexes (bool): When encountering complexes,
+            translated the IDs of its components and return a set
+            of IDs. The alternative behaviour is to return the
+            `Complex` objects.
+        uniprot_cleanup (bool): When the `target_id_type` is UniProt
+            ID, call the `uniprot_cleanup` function at the end.
+    """
 
     mapper = get_mapper()
 
@@ -2585,10 +2920,8 @@ def map_name(
         target_id_type = target_id_type,
         ncbi_tax_id = ncbi_tax_id,
         strict = strict,
-        silent = silent,
         expand_complexes = expand_complexes,
-        nameType = nameType,
-        targetNameType = targetNameType,
+        uniprot_cleanup = uniprot_cleanup,
     )
 
 
@@ -2598,10 +2931,17 @@ def map_name0(
         target_id_type,
         ncbi_tax_id = None,
         strict = False,
-        silent = True,
-        nameType = None,
-        targetNameType = None,
+        expand_complexes = True,
+        uniprot_cleanup = True,
     ):
+    """
+    Translates the name and returns only one of the resulted IDs. It
+    means in case of ambiguous ID translation, a random one of them
+    will be picked and returned. Recommended to use only if the
+    translation between the given ID types is mostly unambigous and
+    the loss of information can be ignored. See more details at
+    `map_name`.
+    """
 
     mapper = get_mapper()
 
@@ -2611,9 +2951,8 @@ def map_name0(
         target_id_type = target_id_type,
         ncbi_tax_id = ncbi_tax_id,
         strict = strict,
-        silent = silent,
-        nameType = nameType,
-        targetNameType = targetNameType,
+        expand_complexes = expand_complexes,
+        uniprot_cleanup = uniprot_cleanup,
     )
 
 
@@ -2623,10 +2962,45 @@ def map_names(
         target_id_type = None,
         ncbi_tax_id = None,
         strict = False,
-        silent = True,
-        nameType = None,
-        targetNameType = None,
+        expand_complexes = True,
+        uniprot_cleanup = True,
     ):
+    """
+    Same as ``map_name`` but translates multiple IDs at once. These two
+    functions could be seamlessly implemented as one, still I created
+    separate functions to always make it explicit if a set of translated
+    IDs come from multiple original IDs.
+
+    Args:
+        name (str): The original name to be converted.
+        id_type (str): The type of the name. Available by default:
+            - genesymbol (gene name)
+            - entrez (Entrez Gene ID \[#\])
+            - refseqp (NCBI RefSeq Protein ID \[NP\_\*|XP\_\*\])
+            - ensp (Ensembl protein ID \[ENSP\*\])
+            - enst (Ensembl transcript ID \[ENST\*\])
+            - ensg (Ensembl genomic DNA ID \[ENSG\*\])
+            - hgnc (HGNC ID \[HGNC:#\])
+            - gi (GI number \[#\])
+            - embl (DDBJ/EMBL/GeneBank CDS accession)
+            - embl_id (DDBJ/EMBL/GeneBank accession)
+            And many more, see the code of
+            ``pypath.internals.input_formats``
+        target_id_type (str): The name type to translate to, more or
+            less the same values are available as for ``id_type``.
+        ncbi_tax_id (int): NCBI Taxonomy ID of the organism.
+        strict (bool): In case a Gene Symbol can not be translated,
+            try to add number "1" to the end, or try to match only
+            its first five characters. This option is rarely used,
+            but it makes possible to translate some non-standard
+            gene names typically found in old, unmaintained resources.
+        expand_complexes (bool): When encountering complexes,
+            translated the IDs of its components and return a set
+            of IDs. The alternative behaviour is to return the
+            `Complex` objects.
+        uniprot_cleanup (bool): When the `target_id_type` is UniProt
+            ID, call the `Mapper.uniprot_cleanup` function at the end.
+    """
 
     mapper = get_mapper()
 
@@ -2636,9 +3010,8 @@ def map_names(
         target_id_type = target_id_type,
         ncbi_tax_id = ncbi_tax_id,
         strict = strict,
-        silent = silent,
-        nameType = nameType,
-        targetNameType = targetNameType,
+        expand_complexes = expand_complexes,
+        uniprot_cleanup = uniprot_cleanup,
     )
 
 

@@ -551,6 +551,7 @@ ac_mapping = {
     'ensgp': 'ENSEMBLGENOME_PRO_ID',
     'ensgt': 'ENSEMBLGENOME_TRS_ID',
     'hgnc': 'HGNC_ID',
+    'ensp_string': 'STRING_ID',
 }
 
 
@@ -586,15 +587,15 @@ pro_mapping = {
     'dto': 'DTO',
     'ecocyc': 'EcoCyc',
     'ecogene': 'EcoGene',
-    'ensembl': 'Ensembl',
-    'ensembl-bacteria': 'EnsemblBacteria',
+    'ensembl_pro': 'Ensembl',
+    'ensembl_bacteria': 'EnsemblBacteria',
     'flybase': 'FlyBase',
     'hgnc': 'HGNC',
-    'iuphar-fam': 'IUPHARfam',
+    'iuphar_fam': 'IUPHARfam',
     'iuphar': 'IUPHARobj',
     'mgi': 'MGI',
     'mro': 'MRO',
-    'ncbi-gene': 'NCBIGene',
+    'ncbi_gene': 'NCBIGene',
     'pbd': 'PDB',
     'pombase': 'PomBase',
     'interpro': 'PRO',
