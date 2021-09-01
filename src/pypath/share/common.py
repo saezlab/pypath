@@ -2456,3 +2456,24 @@ def maybe_in_dict(dct, key):
     """
 
     return dct[key] if key in dct else key
+
+
+def decode(string, *args, **kwargs):
+    """
+    Decodes a string if it is a byte string, otherwise returns it unchanged.
+
+    Args:
+        string (str,bytes): A string, either a byte string or a decoded
+            string.
+        args, kwargs: Passed to `bytes.decode`, it accepts two arguments:
+            `encoding` and `errors`.
+
+    Returns:
+        A decoded string.
+    """
+
+    if hasattr(string, 'decode'):
+
+        string = string.decode(*args, **kwargs)
+
+    return string
