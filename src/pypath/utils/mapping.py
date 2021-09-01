@@ -1644,6 +1644,31 @@ class Mapper(session_mod.Logger):
                 ncbi_tax_id = ncbi_tax_id,
             )
 
+        elif (
+            (
+                id_type in input_formats.array_mapping and
+                not target_id_type.startswith('ens')
+            ) or (
+                target_id_type in input_formats.array_mapping and
+                not id_type.startswith('ens')
+            )
+        ):
+
+            # microarray probe IDs we are able to directly translate
+            # only to and from Ensembl gene, transcript and protein IDs
+            # if the other ID is different (such as uniprot), we translate
+            # in two steps, via Ensembl peptide ID:
+            mapped_names = self.chain_map(
+                name = name,
+                id_type = id_type,
+                by_id_type = 'ensp',
+                target_id_type = target_id_type,
+                ncbi_tax_id = ncbi_tax_id,
+                strict = strict,
+                expand_complexes = expand_complexes,
+                uniprot_cleanup = uniprot_cleanup,
+            )
+
         else:
 
             # all the other ID types
