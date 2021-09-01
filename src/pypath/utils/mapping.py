@@ -11,6 +11,7 @@
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
 #                  Nicolàs Palacio
 #                  Olga Ivanova
+#                  Sebastian Lobentanzer
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -18,6 +19,31 @@
 #
 #  Website: http://pypath.omnipathdb.org/
 #
+
+"""
+Performs mapping between IDs of different consensus systems for
+proteins and genes, miRNAs, and chemical compounds.
+
+Todo:
+    * compound translation
+        - could be via pubchem batch download (huge file):
+        https://ftp.ncbi.nlm.nih.gov/pubchem/Compound/Extras/CID-Synonym-filtered.gz
+        "These are listings of all names associated with a CID. The
+        unfiltered list are names aggregated from all SIDs whose 
+        standardized form is that CID, sorted by weight with the "best"
+        names first. The filtered list has some names removed that are
+        considered inconsistent with the structure. Both are gzipped text
+        files with CID, tab, and name on each line. Note that the
+        names may be composed of more than one word, separated by spaces."
+
+        - we could pre-filter the batch download file for relevant entries,
+        discarding most synonyms, but that would be a non-direct approach
+
+        - via API: PubChem data may be downloaded programmatically using various 
+        programmatic access routes including E-Utilities, Power User Gateway (PUG), 
+        PUG-SOAP, PUG-REST, PUG-View, and PubChemRDF REST interface.  For more details, 
+        refer to PubChem programmatic access overview.
+"""
 
 from future.utils import iteritems
 from past.builtins import xrange, range, reduce

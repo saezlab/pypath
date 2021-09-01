@@ -137,7 +137,7 @@ def cellcall_interactions(extended = False, organism = 9606):
 
     if ncbi_tax_id not in {9606, 10090}:
 
-        msg = 'Unknown organism: `%s`.' % str(orgamism)
+        msg = 'Unknown organism: `%s`.' % str(organism)
         _log(msg)
         raise ValueError(msg)
 
