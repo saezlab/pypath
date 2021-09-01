@@ -2712,11 +2712,12 @@ class Mapper(session_mod.Logger):
     def load_uniprot_static(
             self,
             keys,
-            ncbi_tax_id=None,
+            ncbi_tax_id = None,
         ):
         """
         Loads mapping tables from the huge static mapping file from UniProt.
-        Takes long to download and process.
+        Takes long to download and process, also requires more memory. This
+        is the last thing we try if everything else failed.
         """
 
         cachedir = cache_mod.get_cachedir()
@@ -2765,7 +2766,7 @@ class Mapper(session_mod.Logger):
 
                 prg.step(len(line))
 
-                line = line.decode('ascii').strip().split('\t')
+                line = common.decode(line, 'ascii').strip().split('\t')
 
                 if len(line) > 2 and line[1] in self.names_uniprot_static:
 
