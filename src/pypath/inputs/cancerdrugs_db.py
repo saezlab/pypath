@@ -71,6 +71,11 @@ def cancerdrugs_db_interactions():
         Identifiers of type PubChem and UniProt.
     """
 
+    # note: drug-target interactions are from GDIdb. if they're in OnmiPath
+    # already, do we skip the interactions altogether, or is it better to 
+    # keep them here for consistency? the dataset is very small anyways.
+    # if we keep them, do we test for consistency between the interactions?
+
     CancerDrugsInteraction = collections.namedtuple(
         'CancerDrugsInteraction',
         ['source', 'target'],
