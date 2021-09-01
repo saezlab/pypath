@@ -129,8 +129,9 @@ foo = [
 ### Docstrings
 
 After the triple double quotes the docstring starts in a new line and also
-the closing quotes have their own line. Arguments are described as
-`:param type,type name:` and the description follows in a new line, indented.
+the closing quotes have their own line. For docstrings we follow the
+Napoleon (Google) standard:
+https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html
 
 ```python
 
@@ -138,16 +139,32 @@ def function(a):
     """
     Does something.
 
-    :param int,float a:
-        A number.
+    Args:
+        a (int): A number. I just make this sentence longer, hopefully
+            enough long to show how to make a line break: indent the rest
+            of the lines, so the argument name itself sticks out.
 
-    :returns:
-        A list of integers.
+    Returns:
+        (list): A list of integers. I just make this sentence longer,
+            hopefully enough long to show how to make a line break.
     """
 
     return [a, a + 1, a + 2]
 
 ```
+
+### Python 3 features
+
+Most parts of `pypath` can still be used in Python 2, and although we don't
+take extra efforts to maintain and increase this compatibility, we don't
+want to break it unnecessarily either. For this reason, we don't use Python
+3 only features such as the popular type hinting:
+https://realpython.com/lessons/type-hinting/
+
+Also, we use `future.utils.iteritems()` and `past.builtins.xrange()`
+instead of simply `.items()` and `range()`. And we use the `map`, `filter`,
+`reduce` (`past.builtins.reduce`) built-ins in a way that the code works
+both in Python 2 and 3.
 
 ### Spaces around operators
 
@@ -160,6 +177,7 @@ lists within a line.
 def function(a = 1):
 
     a = a * 4 + 3
+    a = (1, 2, 3)
 
 ```
 
