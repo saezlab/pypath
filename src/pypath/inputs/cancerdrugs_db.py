@@ -126,7 +126,7 @@ def cancerdrugs_db_annotations():
 
     CancerDrugsAnnotation = collections.namedtuple(
         'CancerDrugsAnnotation',
-        ['label', 'ATC'],
+        ['label', 'indications', 'last_updated'],
     )
 
     result = collections.defaultdict(set)
@@ -148,7 +148,8 @@ def cancerdrugs_db_annotations():
         for _chembl in mapping.map_name(chembl, 'chembl', 'chembl'):
             result[chembl].add(CancerDrugsAnnotation(
                     label = common.upper0(rec['Product'].strip()),
-                    ATC = rec['ATC'].strip(),
+                    indications = rec['Indications'].strip(),
+                    last_updated = rec['Last Update'].strip(),
             ))
 
     return result
