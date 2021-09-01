@@ -8,7 +8,7 @@ log/
 pip-wheel-metadata/*
 pypath_log/
 **/.ipynb_checkpoints/
-pypath
+/pypath
 src/test/pypath
 .DS_Store
 *~
