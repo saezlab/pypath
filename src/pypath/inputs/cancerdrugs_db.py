@@ -22,7 +22,7 @@
 Web scraper for the CancerDrugs_DB database.
 
 Todo:
-    * translate chembl
+    * translate chembl to CID (PubChem)
 """
 
 import csv
