@@ -1801,6 +1801,14 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'receptor',
+        scope = 'generic',
+        resource = 'CellCall',
+        args = {
+            'role': 'receptor',
+        },
+    ),
+    af.AnnotDef(
+        name = 'receptor',
         resource = 'iTALK',
         args = {
             'mainclass': 'receptor',
@@ -4092,6 +4100,14 @@ annot_combined_classes = (
             'subclass': 'Secreted Factors',
         },
         exclude = {'Q14512', 'P51610'},
+    ),
+    af.AnnotDef(
+        name = 'ligand',
+        scope = 'generic',
+        resource = 'CellCall',
+        args = {
+            'role': 'ligand',
+        },
     ),
     af.AnnotDef(
         name = 'cytokine',
