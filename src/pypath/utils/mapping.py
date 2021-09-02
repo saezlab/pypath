@@ -91,6 +91,7 @@ import pypath.utils.reflists as reflists
 import pypath.utils.taxonomy as taxonomy
 import pypath.share.settings as settings
 import pypath.share.session as session_mod
+import pypath.share.constants as constants
 _logger = session_mod.get_log()
 
 
@@ -1225,14 +1226,20 @@ class Mapper(session_mod.Logger):
             target_id_type = target_id_type,
             ncbi_tax_id = ncbi_tax_id,
         )
-        tbl_key_noorganism = tbl_key[:-1] + (-1,)
+        tbl_key_noorganism = (
+            tbl_key[:-1] +
+            (constants.NOT_ORGANISM_SPECIFIC,)
+        )
 
         tbl_key_rev = self.get_table_key(
             id_type = target_id_type,
             target_id_type = id_type,
             ncbi_tax_id = ncbi_tax_id,
         )
-        tbl_key_rev_noorganism = tbl_key_rev[:-1] + (-1,)
+        tbl_key_rev_noorganism = (
+            tbl_key_rev[:-1] +
+            (constants.NOT_ORGANISM_SPECIFIC,)
+        )
 
         if tbl_key in self.tables:
 

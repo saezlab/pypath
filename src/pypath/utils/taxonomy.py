@@ -30,6 +30,7 @@ import timeloop
 import pypath.share.common as common
 import pypath.share.session as session
 import pypath.share.settings as settings
+import pypath.share.constants as constants
 import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.ensembl as ensembl_input
 
@@ -40,6 +41,7 @@ db = {}
 _cleanup_period = settings.get('mapper_cleanup_interval')
 _lifetime = 300
 _last_used = {}
+NOT_ORGANISM_SPECIFIC = constants.NOT_ORGANISM_SPECIFIC
 
 # XXX: Shouldn't we keep all functions and variables separated
 #      (together among them)?
