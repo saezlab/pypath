@@ -56,15 +56,16 @@ def topdb_annotations(ncbi_tax_id = 9606):
     used_elements = []
 
     for ev, elem in parser:
+
         if ev == 'end' and elem.tag == 'TOPDB':
+
             used_elements.append(elem)
 
             organism = elem.find('Organism').text
+            organism = taxonomy.ensure_ncbi_tax_id(organism)
 
-            if (
-                organism not in taxonomy.latin_name_to_ncbi_tax_id or
-                taxonomy.latin_name_to_ncbi_tax_id[organism] != ncbi_tax_id
-            ):
+            if not organism:
+
                 continue
 
             tag_uniprots = elem.find('./CrossRef/UniProt')
