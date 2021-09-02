@@ -69,27 +69,27 @@ taxids = {
     1213717: 'torpedo',
     9669: 'ferret',
     8839: 'duck',
-    9593: 'western gorilla',
+    9593: 'gorilla',
     7460: 'honeybee',
     8407: 'european common frog',
     9544: 'rhesus macaque',
 }
 
-taxids.update(
-    [
-        (
-            t.taxon_id,
-            t.common_name.lower()
-        )
-        for t in ensembl_input.ensembl_organisms()
-    ]
+taxids2 = dict(
+    (
+        t.taxon_id,
+        t.common_name.lower()
+    )
+    for t in ensembl_input.ensembl_organisms()
 )
 
 taxa = common.swap_dict(taxids)
+taxa2 = common.swap_dict(taxids2)
 
 
 taxa_synonyms = {
     'bovine': 'cow',
+    'western gorilla': 'gorilla',
 }
 
 
@@ -224,25 +224,35 @@ def taxid_from_common_name(taxon_name):
     
     if common.is_str(taxon_name):
 
-        taxon_name = taxon_name.lower().strip()
+        taxon_name = taxon_name.strip()
+        taxon_name_l = taxon_name.lower()
+        taxon_name_c = taxon_name.capitalize()
     
-    if not taxon_name or taxon_name in {'none', 'unknown'}:
+    if not taxon_name_l or taxon_name in {'none', 'unknown'}:
         
         return None
     
-    if taxon_name in taxa_synonyms:
+    if taxon_name_l in taxa_synonyms:
         
-        taxon_name = taxa_synonyms[taxon_name]
+        return taxid_from_common_name(taxa_synonyms[taxon_name_l])
     
-    if taxon_name in taxa:
+    if taxon_name_l in taxa:
         
-        return taxa[taxon_name]
+        return taxa[taxon_name_l]
+
+    if taxon_name_l in taxa2:
+
+        return taxa2[taxon_name_l]
     
     common_to_ncbi = get_db('common')
     
     if taxon_name in common_to_ncbi:
         
         return common_to_ncbi[taxon_name]
+
+    if taxon_name_c in common_to_ncbi:
+
+        return common_to_ncbi[taxon_name_c]
 
 
 def taxid_from_latin_name(taxon_name):
