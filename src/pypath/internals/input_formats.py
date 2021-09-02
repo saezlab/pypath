@@ -24,6 +24,7 @@ import copy
 
 import pypath.share.settings as settings
 import pypath.share.session as session
+import pypath.share.constants as constants
 
 _logger = session.Logger(name = 'input_formats')
 
@@ -312,6 +313,25 @@ class BiomartMapping(MappingInput):
                     if id_type in biomart_mapping else
                 id_type
             )
+        )
+
+
+class UnichemMapping(MappingInput):
+
+
+    def __init__(
+            self,
+            id_type_a,
+            id_type_b,
+            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+        ):
+
+        MappingInput.__init__(
+            self,
+            type_ = 'unichem',
+            id_type_a = id_type_a,
+            id_type_b = id_type_b,
+            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
         )
 
 

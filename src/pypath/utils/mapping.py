@@ -86,6 +86,7 @@ import pypath.inputs as inputs
 import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.pro as pro_input
 import pypath.inputs.biomart as biomart_input
+import pypath.inputs.unichem as unichem_input
 import pypath.internals.input_formats as input_formats
 import pypath.utils.reflists as reflists
 import pypath.utils.taxonomy as taxonomy
@@ -899,6 +900,27 @@ class MapReader(session_mod.Logger):
             )
 
 
+    def read_mapping_unichem(self):
+        """
+        Loads an ID translation table from UniChem.
+        """
+
+        data = unichem_input.unichem_mapping(
+            id_type = self.param.id_type_a,
+            target_id_type = self.param.id_type_b,
+        )
+
+        if self.load_a_to_b:
+
+            self.a_to_b = data
+
+        if self.load_b_to_a:
+
+            self.b_to_a = common.swap_dict(data, force_sets = True)
+
+        self.ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC
+
+
     @staticmethod
     def _process_protein_name(name):
 
@@ -1023,12 +1045,13 @@ class MappingTable(session_mod.Logger):
 
     def __repr__(self):
 
-        return 'MappingTable from=`%s`, to=`%s`, taxon=`%u`' % self.key
+        return '<MappingTable from=%s, to=%s, taxon=%u>' % self.key
 
 
 class Mapper(session_mod.Logger):
 
     default_name_types = settings.get('default_name_types')
+    unichem_name_types = set(unichem_input.unichem_sources().values())
 
     def _get_label_type_to_id_type(default_name_types):
 
@@ -1226,9 +1249,9 @@ class Mapper(session_mod.Logger):
             target_id_type = target_id_type,
             ncbi_tax_id = ncbi_tax_id,
         )
-        tbl_key_noorganism = (
-            tbl_key[:-1] +
-            (constants.NOT_ORGANISM_SPECIFIC,)
+        tbl_key_noorganism = self.get_table_key(
+            *tbl_key[:-1],
+            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
         )
 
         tbl_key_rev = self.get_table_key(
@@ -1236,9 +1259,9 @@ class Mapper(session_mod.Logger):
             target_id_type = id_type,
             ncbi_tax_id = ncbi_tax_id,
         )
-        tbl_key_rev_noorganism = (
-            tbl_key_rev[:-1] +
-            (constants.NOT_ORGANISM_SPECIFIC,)
+        tbl_key_rev_noorganism = self.get_table_key(
+            *tbl_key_rev[:-1],
+            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
         )
 
         if tbl_key in self.tables:
@@ -1339,11 +1362,16 @@ class Mapper(session_mod.Logger):
                         'array',
                         input_formats.ArrayMapping,
                     ),
+                    (
+                        self.unichem_name_types,
+                        'unichem',
+                        input_formats.UnichemMapping,
+                    )
                 ):
 
                     if (
                         (
-                            service_id_type == 'uniprot' and (
+                            service_id_type in {'uniprot', 'unichem'} and (
                                 id_type in service_ids and
                                 target_id_type in service_ids and
                                 id_type != target_id_type
@@ -1406,6 +1434,12 @@ class Mapper(session_mod.Logger):
                                 _target_id_type,
                             )
                         )
+
+                        if service_id_type == 'unichem':
+
+                            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC
+                            tbl_key = tbl_key_noorganism
+                            tbl_key_rev = tbl_key_rev_noorganism
 
                         # for uniprot/uploadlists or PRO or array
                         # we create here the mapping params
