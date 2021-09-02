@@ -32,19 +32,31 @@ _logger = session.Logger(name = 'unichem_input')
 _log = _logger._log
 
 
-def unichem_sources():
+def unichem_info():
     """
-    List of ID types in UniChem.
+    List of ID types in UniChem. See more details at
+    https://www.ebi.ac.uk/unichem/ucquery/listSources.
 
     Returns:
-        (dict): A dict with ID type numeric IDs as keys and ID type labels
-            as values.
+        (list): A list of named tuples, each representing information about
+            one UniChem resource.
     """
+
+    UnichemSource = collections.namedtuple(
+        'UnichemSource',
+        (
+            'number',
+            'label',
+            'name',
+            'description',
+            'acquisition',
+        ),
+    )
 
     url = urls.urls['unichem']['sources']
     c = curl.Curl(url, large = False, silent = False)
     soup = bs4.BeautifulSoup(c.result, 'html.parser')
-    result = {}
+    result = []
 
     for table in soup.find_all('table'):
 
@@ -54,9 +66,36 @@ def unichem_sources():
 
                 fields = row.find_all('td')
 
-                result[fields[0].text] = fields[1].text.strip()
+                result.append(
+                    UnichemSource(
+                        *(
+                            field.text.strip()
+                            for field in fields
+                        )
+                    )
+                )
 
     return result
+
+
+def unichem_sources():
+    """
+    ID type numeric codes and labels in UniChem. For more information see
+    `unichem_info`.
+
+    Returns:
+        (dict): A dict with ID type numeric IDs as keys and ID type labels
+            as values.
+    """
+
+
+    return dict(
+        (
+            s.number,
+            s.label,
+        )
+        for s in unichem_info()
+    )
 
 
 def unichem_mapping(id_type, target_id_type):
