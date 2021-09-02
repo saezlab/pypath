@@ -1026,21 +1026,24 @@ def dict_sym_diff(d1, d2): # XXX: Not used
     return diff
 
 
-def swap_dict(d):
-    """Swaps a dictionary.
+def swap_dict(d, force_sets = False):
+    """
+    Swaps a dictionary.
 
     Interchanges the keys and values of a dictionary. If the values are
     lists (or any iterable type) and/or not unique, each unique element
     will be a key and values sets of the original keys of *d* (see
     example below).
 
-    :arg dict d:
-        Original dictionary to be swapped.
+    Args:
+        d (dict): Original dictionary to be swapped.
+        force_sets (bool): The values of the swapped dict should be sets
+            even if all of them have only one item.
 
-    :return:
-        (*dict*) -- The swapped dictionary.
+    Returns:
+        (dict): The swapped dictionary.
 
-    **Examples:**
+    Examples:
         >>> d = {'a': 1, 'b': 2}
         >>> swap_dict(d)
         {1: 'a', 2: 'b'}
