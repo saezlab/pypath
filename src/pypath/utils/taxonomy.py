@@ -222,7 +222,9 @@ def _ensure_name(taxon_id, name_type):
 
 def taxid_from_common_name(taxon_name):
     
-    taxon_name = taxon_name.lower().strip()
+    if common.is_str(taxon_name):
+
+        taxon_name = taxon_name.lower().strip()
     
     if not taxon_name or taxon_name in {'none', 'unknown'}:
         
@@ -294,7 +296,7 @@ def ensure_ncbi_tax_id(taxon_id):
             
             taxon_id = taxon_id.strip()
         
-        if '(' in taxon_id:
+        if common.is_str(taxon_id) and '(' in taxon_id:
             
             part0, part1 = taxon_id.split('(', maxsplit = 1)
             
