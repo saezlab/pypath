@@ -27,6 +27,7 @@ import collections
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.internals.intera as intera
+import pypath.utils.reflists as reflists
 
 
 def pdb_uniprot():

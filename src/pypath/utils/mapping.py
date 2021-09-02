@@ -1514,6 +1514,8 @@ class Mapper(session_mod.Logger):
             target_id_type = None,
             ncbi_tax_id = None,
             strict = False,
+            expand_complexes = None,
+            uniprot_cleanup = None,
         ):
         """
         Translates the name and returns only one of the resulted IDs. It
@@ -1530,9 +1532,12 @@ class Mapper(session_mod.Logger):
             target_id_type = target_id_type,
             ncbi_tax_id = ncbi_tax_id,
             strict = strict,
+            expand_complexes = expand_complexes,
+            uniprot_cleanup = uniprot_cleanup,
         )
 
         return list(names)[0] if names else None
+
 
     def map_name(
             self,
