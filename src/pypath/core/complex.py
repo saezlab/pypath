@@ -715,7 +715,7 @@ class ComplexAggregator(AbstractComplexResource):
 
                     cls = val.__class__.__name__
 
-                    elif hasattr(mod, cls):
+                    if hasattr(mod, cls):
 
                         val.__class__ = getattr(mod, cls)
 
