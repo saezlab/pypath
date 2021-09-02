@@ -1147,6 +1147,8 @@ urls = {
         'label': 'Cancer Single Cell State Atlas',
         'url': 'http://biocc.hrbmu.edu.cn/CancerSEA/goDownload',
         'data_url': 'http://biocc.hrbmu.edu.cn/CancerSEA/%s',
+        'rescued': 'https://rescued.omnipathdb.org/CancerSEA.html',
+        'rescued_data': 'https://rescued.omnipathdb.org/cancersea/%s',
     },
     'signalink': {
         'label': 'Literature curated activity flow signaling network',

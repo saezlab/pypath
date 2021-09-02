@@ -19,6 +19,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import os
 import collections
 
 import bs4
@@ -26,6 +27,7 @@ import bs4
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
+
 
 def cancersea_annotations():
     """
@@ -42,7 +44,7 @@ def cancersea_annotations():
 
     annotations = collections.defaultdict(set)
 
-    url = urls.urls['cancersea']['url']
+    url = urls.urls['cancersea']['rescued']
     c = curl.Curl(url, silent = False, large = False)
     soup = bs4.BeautifulSoup(c.result, 'html.parser')
 
@@ -50,7 +52,8 @@ def cancersea_annotations():
 
         state = row.find_all('td')[0].text
         url_end = row.find_all('td')[-1].find('a').attrs['href']
-        data_url = urls.urls['cancersea']['data_url'] % url_end
+        url_end = url_end.rsplit('/', maxsplit = 1)[-1]
+        data_url = urls.urls['cancersea']['rescued_data'] % url_end
         c = curl.Curl(data_url, silent = False, large = True)
 
         _ = next(c.result)
@@ -62,6 +65,7 @@ def cancersea_annotations():
             uniprots = mapping.map_name(line[1], 'genesymbol', 'uniprot')
 
             for uniprot in uniprots:
+
                 annotations[uniprot].add(
                     CancerseaAnnotation(state = state)
                 )
