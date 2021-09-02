@@ -120,6 +120,7 @@ protein_sources_default = {
     'Talklr',
     'Humancellmap',
     'Cellcall',
+    'Biogps',
 }
 
 #TODO this should be part of json files
@@ -5011,6 +5012,36 @@ class Cellcall(AnnotationBase):
             input_method = 'cellcall.cellcall_annotations',
             ncbi_tax_id = 9606,
             complexes = False,
+        )
+
+
+    def _process_method(self, *args, **kwargs):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class Biogps(AnnotationBase):
+
+    _eq_fields = ('dataset', 'sample', 'probe')
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+
+        ncbi_tax_id = ncbi_tax_id or 9606
+
+        AnnotationBase.__init__(
+            self,
+            name = 'BioGPS',
+            input_method = 'biogps.biogps_annotations',
+            input_args = {
+                'organism': ncbi_tax_id,
+            },
+            ncbi_tax_id = ncbi_tax_id,
+            complexes = False,
+            infer_complexes = False,
         )
 
 
