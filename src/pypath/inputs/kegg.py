@@ -243,7 +243,7 @@ def kegg_medicus(max_entity_variations = 10):
 
     reentity = re.compile(r'[,\+\(\)]|\w+')
     renminus2 = re.compile(r'\(n(?:-2)?\)')
-    renetref = re.compile(r'\[N\d{5}\]')
+    renetref = re.compile(r'\[(N|nt)\d{5}\]')
 
 
     KeggMedicusRawInteraction = collections.namedtuple(
