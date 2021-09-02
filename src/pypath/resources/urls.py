@@ -1351,6 +1351,24 @@ urls = {
         'label': 'Cancer Drug Database of licensed drugs by the Anticancer Fund',
         'url': 'https://acfdata.coworks.be/cancerdrugsdb.txt',
     },
+    'biogps': {
+        'label': 'A collection of human and mouse tissue and cell line '
+            'gene expression profiles',
+        'url': 'http://plugins.biogps.org/download/%s',
+        'datasets': {
+            'human_gene_atlas_ave': 'gnf1h-gcrma.zip',
+            'human_gene_atlas': 'gnf1h-gcrma-unaveraged.zip',
+            'human_nci60': 'NCI60_U133A_20070815.raw.csv.zip',
+            'mouse_gene_atlas_1': 'GNF1M_geneatlas_20120817.zip',
+            'mouse_gene_atlas_2_ave':
+                'geneatlas_MOE430_20090327.raw.avg.csv.zip',
+            'mouse_gene_atlas_2': 'geneatlas_MOE430_20090327.raw.csv.zip',
+            'rat_gene_atlas': 'Ratlas-gcRMA.zip',
+            'human_primary_tumors':
+                'primary_tumor_classification_data.txt.zip',
+            'mouse_adipose_eqtl': 'adipose_MOE430_20071005.raw.csv.gz',
+        },
+    },
 }
 
 
