@@ -103,7 +103,6 @@ def celltalkdb_download(filename = 'lr_pair', organism = 9606):
             post = inputs,
             silent = False,
             large = True,
-            debug = True,
             req_headers = [
                 'Cookie: %s' % cookie,
                 'Referer: http://tcm.zju.edu.cn/celltalkdb/download.php',
