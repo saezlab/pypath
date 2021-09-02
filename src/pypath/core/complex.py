@@ -109,6 +109,14 @@ class AbstractComplexResource(resource.AbstractResource):
         resource.AbstractResource.load(self)
         self.update_index()
 
+        self._log(
+            'Loaded resource `%s`: %u proteins, %u complexes.' % (
+                self.name,
+                len(self.proteins),
+                len(self.complexes),
+            )
+        )
+
 
     def _process_method(self):
 

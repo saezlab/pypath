@@ -2619,6 +2619,14 @@ class AnnotationBase(resource.AbstractResource):
 
             self.add_complexes_by_inference()
 
+        self._log(
+            'Loaded annotations from `%s`: %u molecules, %u annotations.' % (
+                self.name,
+                self.numof_entities(),
+                self.numof_records(),
+            )
+        )
+
 
     def _update_primary_field(self):
 
