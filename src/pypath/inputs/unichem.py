@@ -19,6 +19,9 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import os
+import sys
+import textwrap
 import collections
 
 import bs4
@@ -145,3 +148,36 @@ def unichem_mapping(id_type, target_id_type):
         result[src_id].add(tgt_id)
 
     return dict(result)
+
+
+def info(source):
+    """
+    Print information about one source.
+
+    Args:
+        source (int,str): The numeric or string ID of one source.
+    """
+
+    source = str(source)
+
+    for s in unichem_info():
+
+        if source in s[:3]:
+
+            info = [
+                '%s [number=%s, label=%s]' % (
+                    s.name, s.number, s.label,
+                ),
+                '',
+                'Description:',
+            ]
+
+            info.extend(textwrap.wrap(s.description))
+            info.extend(['', 'Data acquisition:'])
+            info.extend(textwrap.wrap(s.acquisition))
+            info.append('')
+
+            sys.stdout.write(os.linesep.join(info))
+            sys.stdout.flush()
+
+            break

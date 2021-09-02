@@ -23,12 +23,16 @@ from future.utils import iteritems
 from past.builtins import xrange, range
 
 import json
+import os
 import sys
+import textwrap
+
 import bs4
 
 import pypath.share.progress as progress
 import pypath.share.curl as curl
 import pypath.share.common as common
+import pypath.inputs.unichem as unichem_input
 
 
 class Unichem(object):
@@ -45,50 +49,7 @@ class Unichem(object):
         sys.stdout.flush()
 
         # from unichem id to db name
-        self.uc_dict = {
-            '1': 'chembl',
-            '2': 'drugbank',
-            '3': 'pdb',
-            '4': 'iuphar',
-            '5': 'pubchem_dotf',
-            '6': 'kegg_ligand',
-            '7': 'chebi',
-            '8': 'nih_ncc',
-            '9': 'zinc',
-            '10': 'emolecules',
-            '11': 'ibm',
-            '12': 'atlas',
-            '14': 'fdasrs',
-            '15': 'surechembl',
-            '17': 'pharmgkb',
-            '18': 'hmdb',
-            '20': 'selleck',
-            '21': 'pubchem_tpharma',
-            '22': 'pubchem',
-            '23': 'mcule',
-            '24': 'nmrshiftdb2',
-            '25': 'lincs',
-            '26': 'actor',
-            '27': 'recon',
-            '28': 'molport',
-            '29': 'nikkaji',
-            '31': 'bindingdb',
-            '32': 'comptox',
-            '33': 'lipidmaps',
-            '34': 'drugcentral',
-            '35': 'carotenoiddb',
-            '36': 'metabolights',
-            '37': 'brenda',
-            '38': 'rhea',
-            '39': 'chemicalbook',
-            '40': 'dailymed_old',
-            '41': 'swisslipids',
-            '45': 'dailymed',
-            '46': 'clinicaltrials',
-            '47': 'rxnorm',
-            '48': 'MedChemExpress',
-        }
-
+        self.uc_dict = unichem_input.unichem_sources()
         # from db name to unichem id
         self.name_dict = common.swap_dict(self.uc_dict)
         self.url_stem = 'https://www.ebi.ac.uk/unichem/rest/src_compound_id'
@@ -149,10 +110,12 @@ class Unichem(object):
         Every call overwrites previous result!
 
         For an up to date list of identifier types see
-        https://www.ebi.ac.uk/unichem/ucquery/listSources.
+        https://www.ebi.ac.uk/unichem/ucquery/listSources or
+        call `Unichem.info(<source>)`:
+        >>> Unichem.info('chembl')
         '''
 
-        sys.stdout.write('\n')
+        sys.stdout.write(os.linesep)
 
         id_types = sorted(
             self.uc_dict.items(),
@@ -176,12 +139,24 @@ class Unichem(object):
                     id_types[i + nrows][0].rjust(2),
                     ' ' * 3,
                     id_types[i + nrows][1].ljust(20),
-                    '\n'
+                    os.linesep,
                 ))
             )
 
-        sys.stdout.write(msg + '\n')
+        sys.stdout.write(msg + os.linesep)
         sys.stdout.flush()
+
+
+    @staticmethod
+    def info(source):
+        """
+        Print information about one source.
+
+        Args:
+            source (int,str): The numeric or string ID of one source.
+        """
+
+        unichem_input.info(source)
 
 
     def translate(self, source, target, lst):
