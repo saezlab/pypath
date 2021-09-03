@@ -19,6 +19,18 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+"""
+Here we take a snapshot from the current tip of the master branch of pypath,
+collect all functions from the pypath.inputs module and run them with an
+empty cache directory. Basic metrics about the returned values and errors
+are presented. This simple and automatized procedure is able to reveal the
+most common errors: if a server is down, if the URL, format or access
+restrictions changed, or pypath got broken in the recent developments.
+Note: this report is only about pypath, not about the data in the OmniPath
+web service; before we build the OmniPath database, we aim to fix the errors
+which could have an impact on its content.
+"""
+
 import os
 import sys
 import time
@@ -76,15 +88,40 @@ HTML_TEMPLATE = (
                     font-size: xx-small;
                 }
                 tr td:nth-of-type(8) {
-                    color: red;
+                    color: deeppink;
                 }
             </style>
             </head>
             <body>
             <h1>Pypath inputs status report</h1>
+
+            <p id="desc"></p>
             <p id="date"></p>
             <table>
-                <tbody valign="top">
+                <tr>
+                    <th>Modules tested:</th>
+                    <td id="n_modules"></td>
+                </tr>
+                <tr>
+                    <th>Functions tested:</th>
+                    <td id="n_functions"></td>
+                </tr>
+                <tr>
+                    <th>Functions run without error:</th>
+                    <td id="n_success"></td>
+                </tr>
+                <tr>
+                    <th>Functions skipped due to lack of arguments:</th>
+                    <td id="n_noargs"></td>
+                </tr>
+                <tr>
+                    <th>Functions run with error:</th>
+                    <td id="n_errors"></td>
+                </tr>
+            </table>
+            <br>
+            <table>
+                <tbody id="report" valign="top">
                     <tr>
                         <th>Function</th>
                         <th>Started</th>
@@ -189,6 +226,11 @@ class StatusReport(object):
         self.result = []
         self.set_timestamp()
         self.set_dirs()
+        self.n_modules = -1
+        self.n_functions = 0
+        self.n_errors = 0
+        self.n_noargs = 0
+        self.n_success = 0
         _log('Started generating pypath inputs status report.')
 
 
@@ -254,6 +296,8 @@ class StatusReport(object):
 
         for mod in self.modules:
 
+            self.n_modules += 1
+
             for fun_name, fun in inspect.getmembers(mod, inspect.isfunction):
 
                 if fun.__module__ == mod.__name__:
@@ -306,6 +350,8 @@ class StatusReport(object):
         according to the settings. Then imports the required pypath modules.
         """
 
+        self.pypath_from = 'from system directory'
+
         if self.from_git:
 
             os.system('git clone --depth 1 %s pypath_git' % PYPATH_GIT_URL)
@@ -315,6 +361,8 @@ class StatusReport(object):
                 'pypath',
                 target_is_directory = True,
             )
+
+            self.pypath_from = 'git'
 
         else:
 
@@ -330,6 +378,10 @@ class StatusReport(object):
                     'pypath',
                     target_is_directory = True,
                 )
+
+            if os.path.exists('pypath'):
+
+                self.pypath_from = 'local directory'
 
         sys.path.insert(0, os.getcwd())
 
@@ -374,6 +426,7 @@ class StatusReport(object):
 
         fun_name = self.function_name(fun)
         result = {'function': fun_name}
+        self.n_functions += 1
 
         try:
 
@@ -407,11 +460,14 @@ class StatusReport(object):
                     ),
                 )
 
+                self.n_success += 1
+
             else:
 
                 msg = 'Not calling `%s`, not enough arguments.' % fun_name
                 _log(msg)
                 result['error'] = msg
+                self.n_noargs += 1
 
         except Exception as e:
 
@@ -425,6 +481,7 @@ class StatusReport(object):
             result['error'] = traceback.format_exception(*exc)
             _log('Error in function `%s`:' % fun_name)
             _logger._log_traceback()
+            self.n_errors += 1
 
         self.result.append(result)
 
@@ -451,22 +508,30 @@ class StatusReport(object):
         soup = bs4.BeautifulSoup(HTML_TEMPLATE, 'html.parser')
         soup.find(id = 'date').append(
             bs4.BeautifulSoup(
-                'Compiled between <em>%s</em> and <em>%s</em>; '
-                'pypath version: %s%s' % (
+                'Compiled between <em>%s</em> and <em>%s;</em> '
+                'pypath version: %s (from %s%s' % (
                     time.strftime(REPORT_TIME_F, self.start_time),
                     time.strftime(REPORT_TIME_F, self.end_time),
                     sys.modules['pypath']._version.__version__,
-                    ' (<a href="%s/tree/%s">%s</a>)' % (
+                    self.pypath_from,
+                    '; <a href="%s/tree/%s">%s</a>)' % (
                         PYPATH_GIT_URL,
                         last_commit,
                         last_commit,
                     )
                         if last_commit else
-                    '',
+                    ')',
                 ),
                 'html.parser',
             )
         )
+        soup.find(id = 'desc').string = __doc__
+
+        for attr in ('modules', 'functions', 'success', 'noargs', 'errors'):
+
+            soup.find(id = 'n_%s' % attr).string = (
+                str(getattr(self, 'n_%s' % attr))
+            )
 
         path = os.path.join(self.reportdir, 'report.html')
 
@@ -497,7 +562,7 @@ class StatusReport(object):
 
                 row.append(cell)
 
-            soup.find('tbody').append(row)
+            soup.find(id = 'report').append(row)
 
         with open(path, 'w') as fp:
 
@@ -544,6 +609,11 @@ class StatusReport(object):
             _logger._logger.fname,
             os.path.join(self.reportdir, 'pypath.log')
         )
+
+
+    def __del__(self):
+
+        self.finish()
 
 
 if __name__ == '__main__':
