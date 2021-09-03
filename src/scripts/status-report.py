@@ -75,6 +75,9 @@ HTML_TEMPLATE = (
                 tr td:nth-of-type(6), tr td:nth-of-type(8) {
                     font-size: xx-small;
                 }
+                tr td:nth-of-type(8) {
+                    color: red;
+                }
             </style>
             </head>
             <body>
@@ -412,6 +415,12 @@ class StatusReport(object):
 
         except Exception as e:
 
+            t1 = time.localtime()
+            result['end_time'] = time.strftime(REPORT_TIME_F, t1)
+            result['elapsed'] = (
+                datetime.datetime(*t1[:6]) -
+                datetime.datetime(*t0[:6])
+            ).total_seconds()
             exc = sys.exc_info()
             result['error'] = traceback.format_exception(*exc)
             _log('Error in function `%s`:' % fun_name)
@@ -429,7 +438,7 @@ class StatusReport(object):
 
         with open(path, 'w') as fp:
 
-            json.dump(self.result, fp)
+            json.dump(self.result, fp, indent = 2)
 
 
     def compile_html(self):
