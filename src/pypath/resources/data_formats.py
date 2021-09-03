@@ -2783,7 +2783,7 @@ small_molecule_protein = {
         separator = None,
         id_col_a = 0,
         id_col_b = 1,
-        id_type_a = "pubchem-cid",
+        id_type_a = "pubchem",
         id_type_b = "uniprot",
         # only direct interactions
         positive_filters = [(10, True), (6, 'chemical')],

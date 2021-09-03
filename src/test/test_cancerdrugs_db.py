@@ -23,7 +23,7 @@ import pypath.inputs.cancerdrugs_db as cancerdrugs_db
 def test_cancerdrugs_db():
     # test annotations
     a = cancerdrugs_db.cancerdrugs_db_annotations()
-    b = a.get('CHEMBL3301610')
+    b = a.get('46220502')
     c = next(b.__iter__()).label
 
     assert 100 < len(a) < 1000
