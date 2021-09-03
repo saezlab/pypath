@@ -624,8 +624,12 @@ def gen_session_id(length=5):
 
 
 # XXX: Are you sure this is the way to compute Simpson's index?
+# Yes this is the formula:
+# https://proceedings.neurips.cc/paper/2006/file/
+# a36e841c5230a79c2102036d2e259848-Paper.pdf
 def simpson_index(a, b):
-    """Computes Simpson's index.
+    """
+    Computes Simpson's similarity index.
 
     Given two sets *a* and *b*, returns the Simpson index.
 
