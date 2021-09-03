@@ -20,9 +20,6 @@
 
 """
 Web scraper for the CancerDrugs_DB database.
-
-Todo:
-    * translate chembl to CID (PubChem)
 """
 
 import csv
@@ -82,6 +79,9 @@ def cancerdrugs_db_interactions():
     )
 
     result = []
+    unmapped_id = []
+    no_tars = []
+    unmapped_tars = []
 
     data = cancerdrugs_db_download()
 
@@ -93,26 +93,48 @@ def cancerdrugs_db_interactions():
         extr = re.search('">(.*?)</a>', chembl)
 
         if extr == None:
+            unmapped_id.append(rec['Product'])
             continue
         # do we need to assert "CHEMBL" + integer structure of ID?
 
         chembl = extr.group(1)
+        pubchem = mapping.map_name(chembl, 'chembl', 'pubchem')
         
         # targets are a number of gene symbols
         # -> translate to uniprot here?
         tars = rec['Targets']
 
-        if tars == None:
+        if tars == '':
+            no_tars.append(rec['Product'])
             continue
 
         for tar in tars.split('; '):
+            tar = mapping.map_name(tar, 'genesymbol', 'uniprot')
+            if tar == None:
+                unmapped_tars.append(tar)
+                continue
             
             result.append(
                 CancerDrugsInteraction(
-                    source = chembl,
-                    target = mapping.map_name(tar, 'genesymbol', 'uniprot'),
+                    source = pubchem,
+                    target = tar,
                 )
             )
+    
+    _log(
+        'Could not find CHEMBL IDs for %u '
+        'CancerDrugs_DB Products.' % len(unmapped_id)
+    )
+    
+    _log(
+        '%u CancerDrugs_DB Products had no targets.'
+        % len(no_tars)
+    )
+    
+    _log(
+        'Could not find UniProt IDs for %u '
+        'CancerDrugs_DB Product targets.' % len(unmapped_tars)
+    )
 
     return result
 
@@ -135,6 +157,7 @@ def cancerdrugs_db_annotations():
     )
 
     result = collections.defaultdict(set)
+    unmapped_id = []
 
     data = cancerdrugs_db_download()
 
@@ -145,16 +168,23 @@ def cancerdrugs_db_annotations():
         extr = re.search('">(.*?)</a>', chembl)
 
         if extr == None:
+            unmapped_id.append(rec['Product'])
             continue
         # do we need to assert "CHEMBL" + integer structure of ID?
 
         chembl = extr.group(1)
+        pubchem = mapping.map_name(chembl, 'chembl', 'pubchem')
 
-        for _chembl in mapping.map_name(chembl, 'chembl', 'chembl'):
-            result[chembl].add(CancerDrugsAnnotation(
+        for pubchem in pubchem:
+            result[pubchem].add(CancerDrugsAnnotation(
                     label = common.upper0(rec['Product'].strip()),
                     indications = rec['Indications'].strip(),
                     last_updated = rec['Last Update'].strip(),
             ))
+
+    _log(
+        'Could not find CHEMBL IDs for %u '
+        'CancerDrugs_DB Products.' % len(unmapped_id)
+    )
 
     return result
