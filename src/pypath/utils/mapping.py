@@ -1913,7 +1913,7 @@ class Mapper(session_mod.Logger):
                     ncbi_tax_id = ncbi_tax_id,
                 )
 
-                if not mapped_names:
+                if not mapped_names and target_id_type == 'uniprot':
 
                     mapped_names = self._map_name(
                         name = name,
