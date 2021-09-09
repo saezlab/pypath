@@ -1377,6 +1377,11 @@ urls = {
         'mapping': 'https://ftp.ebi.ac.uk/pub/databases/chembl/UniChem/data/'
             'wholeSourceMapping/src_id%s/src%ssrc%s.txt.gz',
     },
+    'redhuman': {
+        'label': 'A modern and reduced complexity human metabolic network',
+        'url': 'https://github.com/saezlab/ocean/raw/master/data/'
+            'recon2_redhuman.RData',
+    },
 }
 
 
