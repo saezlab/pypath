@@ -42,6 +42,7 @@ import shutil
 import traceback
 import json
 import argparse
+import weakref
 
 import bs4
 
@@ -90,13 +91,16 @@ HTML_TEMPLATE = (
                 tr td:nth-of-type(8) {
                     color: deeppink;
                 }
+                a {
+                    display: inline-block;
+                }
             </style>
             </head>
             <body>
             <h1>Pypath inputs status report</h1>
 
             <p id="desc"></p>
-            <p id="date"></p>
+            <p id="comp"></p>
             <table>
                 <tr>
                     <th>Modules tested:</th>
@@ -134,6 +138,13 @@ HTML_TEMPLATE = (
                     </tr>
                 </tbody>
             </table>
+            <p><em>
+                <a href="https://omnipathdb.org/">The OmniPath Team</a>&nbsp;
+                &#x2022;
+                <a href="https://saezlab.org/">Saez Lab</a>&nbsp;
+                &#x2022;
+                <span id="date"></span>
+            </em></p>
             </body>
         </html>
     '''
@@ -183,6 +194,12 @@ class StatusReport(object):
                 if from_git is not None else
             not self.clargs.nogit
         )
+        self.reset_counters()
+        self._finalizer = weakref.finalize(
+            self,
+            lambda obj: obj.finish(),
+            self,
+        )
 
 
     def main(self):
@@ -223,14 +240,10 @@ class StatusReport(object):
 
     def start(self):
 
+        self.reset_counters()
         self.result = []
         self.set_timestamp()
         self.set_dirs()
-        self.n_modules = -1
-        self.n_functions = 0
-        self.n_errors = 0
-        self.n_noargs = 0
-        self.n_success = 0
         _log('Started generating pypath inputs status report.')
 
 
@@ -240,7 +253,18 @@ class StatusReport(object):
         self.save_results()
         self.compile_html()
         self.copy_log()
+        self.finished = True
         _log('Finished generating pypath inputs status report.')
+
+
+    def reset_counters(self):
+
+        self.finished = False
+        self.n_modules = -1
+        self.n_functions = 0
+        self.n_errors = 0
+        self.n_noargs = 0
+        self.n_success = 0
 
 
     def test_inputs(self):
@@ -506,7 +530,7 @@ class StatusReport(object):
         last_commit = self.pypath_git_hash()
 
         soup = bs4.BeautifulSoup(HTML_TEMPLATE, 'html.parser')
-        soup.find(id = 'date').append(
+        soup.find(id = 'comp').append(
             bs4.BeautifulSoup(
                 'Compiled between <em>%s</em> and <em>%s;</em> '
                 'pypath version: %s (from %s%s' % (
@@ -532,6 +556,8 @@ class StatusReport(object):
             soup.find(id = 'n_%s' % attr).string = (
                 str(getattr(self, 'n_%s' % attr))
             )
+
+        soup.find(id = 'date').string = time.strftime('%Y-%m-%d')
 
         path = os.path.join(self.reportdir, 'report.html')
 
@@ -609,11 +635,6 @@ class StatusReport(object):
             _logger._logger.fname,
             os.path.join(self.reportdir, 'pypath.log')
         )
-
-
-    def __del__(self):
-
-        self.finish()
 
 
 if __name__ == '__main__':
