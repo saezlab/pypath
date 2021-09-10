@@ -89,7 +89,7 @@ HTML_TEMPLATE = (
                 tr td:nth-of-type(6), tr td:nth-of-type(8) {
                     font-size: xx-small;
                 }
-                tr td:nth-of-type(8) {
+                tr td:nth-of-type(8), td.zero {
                     color: deeppink;
                 }
                 a {
@@ -612,6 +612,10 @@ class StatusReport(object):
                     else:
 
                         cell.string = self.to_str(r[field], maxlen = 10000)
+
+                        if field == 'size' and cell.string == '0':
+
+                            cell['class'] = cell.get('class', []) + ['zero']
 
                 row.append(cell)
 
