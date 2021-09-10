@@ -109,7 +109,7 @@ def pepcyber_interactions(dataframe = False, cache = True):
 
         url = urls.urls['pepcyber']['rescued']
         # this is huge, takes a few minutes!
-        c = curl.Curl(url, silent = False, timeout = 600)
+        c = curl.Curl(url, silent = False, timeout = 600, encoding = 'utf-8')
         data = c.result
         soup = bs4.BeautifulSoup(data, 'html.parser')
         rows = soup.find_all('tr')

@@ -19,8 +19,11 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import os
+
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+import pypath.inputs.pfam as pfam_input
 
 
 def get_3did_ddi(residues = False, ddi_flat = None, organism = 9606):

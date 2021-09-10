@@ -272,7 +272,7 @@ def threedcomplex_nresidues():
         lambda: collections.defaultdict(list)
     )
 
-    for contact in contacts:
+    for contact in threedcomplex_contacts():
 
         uniprot_key = tuple(sorted((contact.uniprot_1, contact.uniprot_2)))
         nresidues[contact.pdb][uniprot_key] = contact.n_residues

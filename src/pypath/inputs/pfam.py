@@ -187,7 +187,7 @@ def pfam_regions(
 
     if not uniprots and not pfams:
 
-        organism = taxnomy.ensure_ncbi_tax_id(organism)
+        organism = taxonomy.ensure_ncbi_tax_id(organism)
         uniprots = uniprot_input.all_swissprots(organism = organism)
 
     if not os.path.exists(cachefile):

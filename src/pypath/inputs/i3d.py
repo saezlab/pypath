@@ -21,6 +21,7 @@
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+import pypath.inputs.pfam as pfam_input
 
 
 def get_i3d():

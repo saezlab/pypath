@@ -45,11 +45,12 @@ def get_switches_elm():
     """
 
     residue = re.compile(r'(^[A-Z])([0-9]+)')
-    url = data.formats.urls['switches.elm']['url']
+    url = urls.urls['switches.elm']['url']
     c = curl.Curl(url, silent = False)
     data = c.result
 
     if data is None:
+
         return None
 
     buff = StringIO()

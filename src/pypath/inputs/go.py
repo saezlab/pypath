@@ -27,10 +27,13 @@ import re
 import json
 import collections
 
+from lxml import etree
+
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.share.progress as progress
 import pypath.share.session as session
+import pypath.share.common as common
 import pypath.utils.taxonomy as taxonomy
 
 _logger = session.Logger(name = 'uniprot_input')

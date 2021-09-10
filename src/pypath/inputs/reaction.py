@@ -45,19 +45,19 @@ import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.share.progress as progress
 import pypath.share.common as common
-import pypath.share.cache as cache
+import pypath.share.cache as cache_mod
 from pypath.resources import data_formats
 
 
 def reactome_sbml():
     """
     Downloads Reactome human reactions in SBML format.
-    Returns gzip.GzipFile object.
+    Returns an open file object.
     """
 
     url = urls.urls['reactome']['sbml']
     c = curl.Curl(url, silent = False, large = True)
-    sbml = c.result
+    sbml = c.fileobj
 
     return sbml
 
@@ -70,7 +70,7 @@ def reactome_biopax(organism = 9606, cache = True):
 
     organisms = {9606: 'Homo_sapiens'}
     unzipped = os.path.join(
-        cache.get_cachedir(),
+        cache_mod.get_cachedir(),
         'reactome_biopax_%s.owl' % organisms[organism]
     )
 
@@ -128,6 +128,7 @@ def acsn_biopax():
 
 
 def reactome_bs():
+
     sbml = reactome_sbml()
     soup = bs4.BeautifulSoup(sbml.read(), 'html.parser')
 
@@ -162,7 +163,7 @@ def reactions_biopax(biopax_file,
     """
 
     cachefile = os.path.join(
-        cache.get_cachedir(), '%s.processed.pickle' %
+        cache_mod.get_cachedir(), '%s.processed.pickle' %
             os.path.split(biopax_file.name)[1]
         )
 
@@ -723,7 +724,7 @@ def reactome_interactions(cacheFile = None, ask = True, **kwargs):
     """
 
     cacheFile = os.path.join(
-        cache.get_cachedir(),
+        cache_mod.get_cachedir(),
         'reactome.interactions.pickle'
     ) if cacheFile is None else cacheFile
 
@@ -1007,8 +1008,8 @@ def _reactome_reactions_et():
     species = {}
     compartments = {}
     reactions = {}
-    sbmlfile = reactome_sbml()
-    ctx = etree.iterparse(sbmlfile, events = ('end', ))
+    sbml = reactome_sbml()
+    ctx = etree.iterparse(sbml, events = ('end', ))
 
     for ev, elem in ctx:
         if elem.tag == compStr:
@@ -1139,7 +1140,7 @@ def get_reactions(types = None, sources = None):
     if type(sources) is list:
         sources = set(sources)
     cachefile = os.path.join(
-        cache.get_cachedir(),
+        cache_mod.get_cachedir(),
         'reaction_interactions_by_source.pickle'
     )
 

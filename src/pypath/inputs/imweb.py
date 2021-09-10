@@ -25,6 +25,7 @@ import time
 import json
 
 import pycurl
+import requests
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl

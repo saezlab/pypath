@@ -40,6 +40,7 @@ import pypath.share.settings as settings
 import pypath.share.session as session_mod
 import pypath.resources.urls as urls
 import pypath.internals.intera as intera
+import pypath.utils.mapping as mapping
 
 _logger = session_mod.Logger(name = 'hpmr_input')
 _log = _logger._log

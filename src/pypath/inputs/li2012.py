@@ -27,6 +27,7 @@ import pypath.share.common as common
 import pypath.inputs.common as inputs_common
 import pypath.utils.mapping as mapping
 import pypath.internals.intera as intera
+import pypath.inputs.uniprot as uniprot_input
 
 
 def get_li2012():

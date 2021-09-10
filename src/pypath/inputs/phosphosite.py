@@ -36,6 +36,7 @@ import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.common as inputs_common
 import pypath.utils.homology as homology
 import pypath.utils.mapping as mapping
+import pypath.share.common as common
 
 
 def phosphosite_enzyme_substrate(
