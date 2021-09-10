@@ -19,6 +19,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
 import bs4
 
 import pypath.resources.urls as urls
