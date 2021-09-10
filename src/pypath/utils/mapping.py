@@ -2862,10 +2862,12 @@ class Mapper(session_mod.Logger):
 
         if key in self.tables:
 
-            self._log(
-                'Removing mapping table `%s` '
-                'to `%s` for organism `%u`.' % key
-            )
+            if len(key) == 3:
+
+                self._log(
+                    'Removing mapping table `%s` '
+                    'to `%s` for organism `%u`.' % key
+                )
 
             del self.tables[key]
 
