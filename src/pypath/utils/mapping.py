@@ -2862,7 +2862,7 @@ class Mapper(session_mod.Logger):
 
         if key in self.tables:
 
-            if len(key) == 3:
+            if key and len(key) == 3:
 
                 self._log(
                     'Removing mapping table `%s` '
