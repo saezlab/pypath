@@ -19,6 +19,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import re
+
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 

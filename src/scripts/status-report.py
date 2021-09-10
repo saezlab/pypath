@@ -43,6 +43,7 @@ import traceback
 import json
 import argparse
 import weakref
+import types
 
 import bs4
 
@@ -488,6 +489,11 @@ class StatusReport(object):
                 t0 = time.localtime()
                 result['start_time'] = time.strftime(REPORT_TIME_F, t0)
                 value = fun(*_args, **_kwargs)
+
+                if isinstance(value, types.GeneratorType):
+
+                    value = list(value)
+
                 t1 = time.localtime()
                 result['end_time'] = time.strftime(REPORT_TIME_F, t1)
                 result['elapsed'] = (
