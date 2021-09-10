@@ -50,7 +50,7 @@ import bs4
 # because the source we load the module from depends on the parameters,
 # we might even fetch it from git before importing.
 
-EXCLUDE = {'common'}
+EXCLUDE = {'common', 'go_annotations_quickgo'}
 
 ARGS = {}
 
@@ -293,7 +293,11 @@ class StatusReport(object):
 
         for mod in pkgutil.iter_modules(inputs.__path__):
 
-            if mod.name not in EXCLUDE:
+            if mod.name in EXCLUDE:
+
+                _log('Ignoring module `pypath.inputs.%s`.' % mod.name)
+
+            else:
 
                 yield 'pypath.inputs.%s' % mod.name
 
@@ -324,9 +328,16 @@ class StatusReport(object):
 
             for fun_name, fun in inspect.getmembers(mod, inspect.isfunction):
 
+                mod_fun_name = self.function_name(fun)
+
                 if fun.__module__ == mod.__name__:
 
-                    _log('Selected function: `%s`.' % self.function_name(fun))
+                    if fun_name in EXCLUDE or mod_fun_name in EXCLUDE:
+
+                        _log('Ignoring function `%s`.' % mod_fun_name)
+                        continue
+
+                    _log('Selected function: `%s`.' % mod_fun_name)
 
                     yield fun
 

@@ -560,6 +560,7 @@ def go_annotations_quickgo(
     page = 1
 
     while True:
+
         this_url = url % (
             aspects_part, # aspect
             relations_part, # goUsageRelationships
