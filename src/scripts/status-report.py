@@ -311,9 +311,19 @@ class StatusReport(object):
         for mod_name in self.module_names:
 
             _log('Importing module `%s`.' % mod_name)
-            mod = importlib.import_module(mod_name)
 
-            yield mod
+            try:
+
+                mod = importlib.import_module(mod_name)
+
+                yield mod
+
+            except Exception as e:
+
+                exc = sys.exc_info()
+                _log('Failed to import module `%s`:' % mod_name)
+                _logger._log_traceback()
+                self.n_errors += 1
 
 
     @property
