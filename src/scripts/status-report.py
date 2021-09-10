@@ -51,7 +51,15 @@ import bs4
 # because the source we load the module from depends on the parameters,
 # we might even fetch it from git before importing.
 
-EXCLUDE = {'common', 'go_annotations_quickgo'}
+EXCLUDE = {
+    'common',
+    'go_annotations_quickgo',
+    'threedcomplex_complexes',
+    '_uniprot_deleted',
+    'uniprot_deleted',
+    'swissprot_deleted',
+    'trembl_deleted',
+}
 
 ARGS = {}
 
