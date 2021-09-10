@@ -114,22 +114,6 @@ def phosphoelm_interactions(organism = 'Homo sapiens'):
     return result
 
 
-def phosphoelm_psites():
-
-    result = []
-    data = phosphoelm_enzyme_substrate()
-    kinases = phosphoelm_kinases()
-
-    for l in data:
-
-        l.append('1' if '-' not in l[0] else l[0].split('-')[1])
-        l[0] = l[0].split('-')[0]
-        l.append('' if l[4] not in kinases else kinases[l[4]])
-        result.append(l)
-
-    return result
-
-
 def phosphoelm_kinases():
 
     result = {}
