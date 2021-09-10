@@ -104,16 +104,24 @@ HTML_TEMPLATE = (
             <p id="comp"></p>
             <table>
                 <tr>
-                    <th>Modules tested:</th>
+                    <th>Modules collected:</th>
                     <td id="n_modules"></td>
                 </tr>
                 <tr>
-                    <th>Functions tested:</th>
+                    <th>Modules failed to import:</th>
+                    <td id="n_import_errors"></td>
+                </tr>
+                <tr>
+                    <th>Functions collected:</th>
                     <td id="n_functions"></td>
                 </tr>
                 <tr>
                     <th>Functions run without error:</th>
                     <td id="n_success"></td>
+                </tr>
+                <tr>
+                    <th>Functions returned empty value:</th>
+                    <td id="n_empty"></td>
                 </tr>
                 <tr>
                     <th>Functions skipped due to lack of arguments:</th>
@@ -160,6 +168,16 @@ FIELDS = (
     'value_repr',
     'value_size',
     'error',
+)
+
+COUNTERS = (
+    'modules',
+    'import_errors',
+    'functions',
+    'success',
+    'empty',
+    'noargs',
+    'errors',
 )
 
 REPORT_TIME_F = '%Y-%m-%d %H:%M:%S'
@@ -260,12 +278,12 @@ class StatusReport(object):
 
     def reset_counters(self):
 
+        for cntr in COUNTERS:
+
+            setattr(self, 'n_%s' % cntr, 0)
+
         self.finished = False
         self.n_modules = -1
-        self.n_functions = 0
-        self.n_errors = 0
-        self.n_noargs = 0
-        self.n_success = 0
 
 
     def test_inputs(self):
@@ -324,7 +342,7 @@ class StatusReport(object):
                 exc = sys.exc_info()
                 _log('Failed to import module `%s`:' % mod_name)
                 _logger._log_traceback()
-                self.n_errors += 1
+                self.n_import_errors += 1
 
 
     @property
@@ -513,6 +531,10 @@ class StatusReport(object):
 
                 self.n_success += 1
 
+                if not result['value_size']:
+
+                    self.n_empty += 1
+
             else:
 
                 msg = 'Not calling `%s`, not enough arguments.' % fun_name
@@ -578,7 +600,7 @@ class StatusReport(object):
         )
         soup.find(id = 'desc').string = __doc__
 
-        for attr in ('modules', 'functions', 'success', 'noargs', 'errors'):
+        for attr in COUNTERS:
 
             soup.find(id = 'n_%s' % attr).string = (
                 str(getattr(self, 'n_%s' % attr))
