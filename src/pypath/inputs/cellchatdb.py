@@ -65,7 +65,7 @@ def cellchatdb_download(organism = 9606, dataset = 'CellChatDB'):
 
     if dataset == 'CellChatDB':
 
-        df_names = _rdata_list_get_names(rdata_parsed.object.value[0])
+        df_names = rdata._rdata_list_get_names(rdata_parsed.object.value[0])
 
         rownames = [
             rdata._rdata_data_frame_get_rownames(df_obj)
