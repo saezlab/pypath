@@ -514,11 +514,16 @@ class StatusReport(object):
                 t0 = time.time()
                 result['start_time'] = self.strftime(t0)
 
+                _log('Calling function `%s`.' % fun_name)
                 value = fun(*_args, **_kwargs)
+                _log('Function `%s` returned.' % fun_name)
 
                 if isinstance(value, types.GeneratorType):
 
+                    _log('Converting generator to list.')
                     value = list(value)
+
+                _log('Collecting information about `%s`.' % fun_name)
 
                 t1 = time.time()
                 result['end_time'] = self.strftime(t1)
@@ -540,6 +545,8 @@ class StatusReport(object):
 
                     self.n_empty += 1
 
+                _log('Collected information about `%s`.' % fun_name)
+
             else:
 
                 msg = 'Not calling `%s`, not enough arguments.' % fun_name
@@ -549,17 +556,21 @@ class StatusReport(object):
 
         except Exception as e:
 
+            _log('Error in function `%s`:' % fun_name)
+            _log('Collecting information about `%s`.' % fun_name)
             t1 = time.time()
             result['end_time'] = self.strftime(t1)
             result['elapsed'] = t1 - t0
             exc = sys.exc_info()
             result['error'] = traceback.format_exception(*exc)
-            _log('Error in function `%s`:' % fun_name)
+
             _logger._log_traceback()
             self.n_errors += 1
+            _log('Collected information about `%s`.' % fun_name)
 
         self.result.append(result)
 
+        _log('Finished testing `%s`.' % fun_name)
 
 
     @staticmethod
