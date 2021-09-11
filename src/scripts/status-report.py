@@ -34,7 +34,6 @@ which could have an impact on its content.
 import os
 import sys
 import time
-import datetime
 import pkgutil
 import importlib
 import inspect
@@ -512,20 +511,18 @@ class StatusReport(object):
                 len(_args) + len(_kwargs)
             ):
 
-                t0 = time.localtime()
-                result['start_time'] = time.strftime(REPORT_TIME_F, t0)
+                t0 = time.time()
+                result['start_time'] = self.strftime(t0)
+
                 value = fun(*_args, **_kwargs)
 
                 if isinstance(value, types.GeneratorType):
 
                     value = list(value)
 
-                t1 = time.localtime()
-                result['end_time'] = time.strftime(REPORT_TIME_F, t1)
-                result['elapsed'] = (
-                    datetime.datetime(*t1[:6]) -
-                    datetime.datetime(*t0[:6])
-                ).total_seconds()
+                t1 = time.time()
+                result['end_time'] = self.strftime(t1)
+                result['elapsed'] = t1 - t0
 
                 result.update(
                     value_type = type(value).__name__,
@@ -552,12 +549,9 @@ class StatusReport(object):
 
         except Exception as e:
 
-            t1 = time.localtime()
-            result['end_time'] = time.strftime(REPORT_TIME_F, t1)
-            result['elapsed'] = (
-                datetime.datetime(*t1[:6]) -
-                datetime.datetime(*t0[:6])
-            ).total_seconds()
+            t1 = time.time()
+            result['end_time'] = self.strftime(t1)
+            result['elapsed'] = t1 - t0
             exc = sys.exc_info()
             result['error'] = traceback.format_exception(*exc)
             _log('Error in function `%s`:' % fun_name)
@@ -565,6 +559,16 @@ class StatusReport(object):
             self.n_errors += 1
 
         self.result.append(result)
+
+
+
+    @staticmethod
+    def strftime(t):
+        """
+        Converts time to string
+        """
+
+        return time.strftime(REPORT_TIME_F, t)
 
 
     def save_results(self):
