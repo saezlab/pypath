@@ -58,6 +58,7 @@ EXCLUDE = {
     'uniprot_deleted',
     'swissprot_deleted',
     'trembl_deleted',
+    'oreganno_raw',
 }
 
 ARGS = {}
