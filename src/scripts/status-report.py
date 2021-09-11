@@ -341,6 +341,7 @@ class StatusReport(object):
             try:
 
                 mod = importlib.import_module(mod_name)
+                _log('Imported module `%s`.' % mod_name)
 
                 yield mod
 
@@ -360,10 +361,12 @@ class StatusReport(object):
 
         for mod in self.modules:
 
+            _log('Collecting functions from module `%s`.' % mod.__name__)
             self.n_modules += 1
 
             for fun_name, fun in inspect.getmembers(mod, inspect.isfunction):
 
+                _log('Next function `%s`.' % fun_name)
                 mod_fun_name = self.function_name(fun)
 
                 if fun.__module__ == mod.__name__:
@@ -376,6 +379,13 @@ class StatusReport(object):
                     _log('Selected function: `%s`.' % mod_fun_name)
 
                     yield fun
+
+                else:
+
+                    _log(
+                        'Ignoring function `%s`: it is from '
+                        'another module' % mod_fun_name
+                    )
 
 
     def set_timestamp(self, end = False):
@@ -579,7 +589,7 @@ class StatusReport(object):
         Converts time to string
         """
 
-        return time.strftime(REPORT_TIME_F, t)
+        return time.strftime(REPORT_TIME_F, time.localtime(t))
 
 
     def save_results(self):
@@ -675,8 +685,10 @@ class StatusReport(object):
     def to_str(cls, value, maxlen = 76):
 
         return (
+            '{:,.2f}'.format(value)
+                if isinstance(value, float) else
             '{:,}'.format(value)
-                if isinstance(value, (int, float)) else
+                if isinstance(value, int) else
             cls.truncate(str(value), maxlen = maxlen)
         )
 
