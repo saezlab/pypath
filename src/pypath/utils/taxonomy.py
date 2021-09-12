@@ -24,6 +24,7 @@ from future.utils import iteritems
 
 import time
 import datetime
+import itertools
 
 import timeloop
 
@@ -85,8 +86,8 @@ taxids2 = dict(
     for t in ensembl_input.ensembl_organisms()
 )
 
-taxa = common.swap_dict(taxids)
-taxa2 = common.swap_dict(taxids2)
+taxa = common.swap_dict_simple(taxids)
+taxa2 = common.swap_dict_simple(taxids2)
 
 
 taxa_synonyms = {
@@ -184,12 +185,17 @@ nonstandard_taxids = {
 }
 
 
-dbptm_to_ncbi_tax_id = common.swap_dict(dbptm_taxids)
-latin_name_to_ncbi_tax_id = common.swap_dict(phosphoelm_taxids)
-ensembl_name_to_ncbi_tax_id = common.swap_dict(ensembl_taxids)
+dbptm_to_ncbi_tax_id = common.swap_dict_simple(dbptm_taxids)
+latin_name_to_ncbi_tax_id = common.swap_dict_simple(phosphoelm_taxids)
+ensembl_name_to_ncbi_tax_id = common.swap_dict_simple(ensembl_taxids)
 
 
 def ensure_common_name(taxon_id):
+
+    # priority for these common names
+    if taxon_id in taxids:
+
+        return taxids[taxon_id].capitalize()
 
     return _ensure_name(taxon_id, 'common')
 
@@ -426,13 +432,27 @@ def init_db(key):
 
     elif _key == 'common':
 
-        this_db = dict(
-            (
-                taxon.english,
-                taxon.ncbi_id,
+        this_db = (
+            dict(
+                (
+                    k.capitalize(), v
+                )
+                for k, v in itertools.chain(
+                    iteritems(taxa),
+                    iteritems(taxa2)
+                )
             )
-            for taxon in ncbi_data.values()
-            if taxon.english
+        )
+
+        this_db.update(
+            dict(
+                (
+                    taxon.english,
+                    taxon.ncbi_id,
+                )
+                for taxon in ncbi_data.values()
+                if taxon.english
+            )
         )
 
     elif _key == 'swissprot':
@@ -456,7 +476,7 @@ def init_db(key):
 
     if swap:
 
-        this_db = common.swap_dict(this_db)
+        this_db = common.swap_dict_simple(this_db)
 
     if this_db:
 
