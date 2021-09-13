@@ -121,6 +121,7 @@ protein_sources_default = {
     'Humancellmap',
     'Cellcall',
     'Biogps',
+    'Cellinker',
 }
 
 #TODO this should be part of json files
@@ -131,6 +132,7 @@ complex_sources_default = {
     'HpmrComplex',
     'IcellnetComplex',
     'CellchatdbComplex',
+    'CellinkerComplex',
 }
 
 #TODO this should be part of json files
@@ -5023,6 +5025,32 @@ class Cellcall(AnnotationBase):
         delattr(self, 'data')
 
 
+class Cellinker(AnnotationBase):
+
+    _eq_fields = ('role', 'location', 'type')
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+
+        kwargs['organism'] = ncbi_tax_id
+
+        AnnotationBase.__init__(
+            self,
+            name = 'Cellinker',
+            input_method = 'cellinker.cellinker_annotations',
+            ncbi_tax_id = ncbi_tax_id,
+            complexes = False,
+        )
+
+
+    def _process_method(self, *args, **kwargs):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
 class Biogps(AnnotationBase):
 
     _eq_fields = ('dataset', 'sample', 'probe')
@@ -5224,6 +5252,32 @@ class CellPhoneDBComplex(CellPhoneDB):
             entity_type = 'complex',
             **kwargs
         )
+
+
+class CellinkerComplex(AnnotationBase):
+
+    _eq_fields = ('role', 'location', 'type')
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+
+        kwargs['organism'] = ncbi_tax_id
+
+        AnnotationBase.__init__(
+            self,
+            name = 'Cellinker',
+            input_method = 'cellinker.cellinker_complex_annotations',
+            ncbi_tax_id = ncbi_tax_id,
+            entity_type = 'complex',
+        )
+
+
+    def _process_method(self, *args, **kwargs):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
 
 
 class HpmrComplex(AnnotationBase):
