@@ -1034,6 +1034,7 @@ class MappingTable(session_mod.Logger):
 class Mapper(session_mod.Logger):
 
     default_name_types = settings.get('default_name_types')
+    default_label_types = settings.get('default_label_types')
     unichem_name_types = set(unichem_input.unichem_sources().values())
 
     def _get_label_type_to_id_type(default_name_types):
@@ -2242,7 +2243,13 @@ class Mapper(session_mod.Logger):
     #
 
 
-    def label(self, name, id_type = None, ncbi_tax_id = None):
+    def label(
+            self,
+            name,
+            entity_type = None,
+            id_type = None,
+            ncbi_tax_id = None,
+        ):
         """
         For any kind of entity, either protein, miRNA or protein complex,
         returns the preferred human readable label. For proteins this means
@@ -2255,8 +2262,9 @@ class Mapper(session_mod.Logger):
             return [
                 self.label(
                     _name,
+                    entity_type = entity_type,
                     id_type = id_type,
-                    ncbi_tax_id = ncbi_tax_id
+                    ncbi_tax_id = ncbi_tax_id,
                 )
                 for _name in name
             ]
@@ -2268,6 +2276,15 @@ class Mapper(session_mod.Logger):
         elif isinstance(name, common.basestring):
 
             ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+
+            entity_type = (
+            entity_type or
+                (
+                    'small_molecule'
+                        if ncbi_tax_id == constants.NOT_ORGANISM_SPECIFIC else
+                    'protein'
+                )
+            )
 
             if name.startswith('MIMAT'):
 
@@ -2284,6 +2301,18 @@ class Mapper(session_mod.Logger):
                     name,
                     id_type or 'mir-pre',
                     'mir-name',
+                    ncbi_tax_id = ncbi_tax_id,
+                ) or name
+
+            elif entity_type in self.default_label_types:
+
+                id_type = id_type or self.default_name_types[entity_type]
+                target_id_type = self.default_label_types[entity_type]
+
+                return self.map_name0(
+                    name,
+                    id_type = id_type,
+                    target_id_type = target_id_type,
                     ncbi_tax_id = ncbi_tax_id,
                 ) or name
 
@@ -3100,7 +3129,7 @@ def map_names(
     )
 
 
-def label(name, id_type = None, ncbi_tax_id = 9606):
+def label(name, id_type = None, entity_type = None, ncbi_tax_id = 9606):
     """
     For any kind of entity, either protein, miRNA or protein complex,
     returns the preferred human readable label. For proteins this means
@@ -3113,6 +3142,7 @@ def label(name, id_type = None, ncbi_tax_id = 9606):
     return mapper.label(
         name = name,
         id_type = id_type,
+        entity_type = entity_type,
         ncbi_tax_id = ncbi_tax_id,
     )
 
