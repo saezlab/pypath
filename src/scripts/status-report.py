@@ -192,6 +192,8 @@ REPORT_TIME_F = '%Y-%m-%d %H:%M:%S'
 
 PYPATH_GIT_URL = 'https://github.com/saezlab/pypath'
 
+CAPTURE_GENERATORS = 300
+
 
 class StatusReport(object):
     """
@@ -522,6 +524,8 @@ class StatusReport(object):
                 len(_args) + len(_kwargs)
             ):
 
+                size = None
+
                 t0 = time.time()
                 result['start_time'] = self.strftime(t0)
 
@@ -531,8 +535,20 @@ class StatusReport(object):
 
                 if isinstance(value, types.GeneratorType):
 
-                    _log('Converting generator to list.')
-                    value = list(value)
+                    _log(
+                        'The function returned a generator, '
+                        'we fully consume it but capture only '
+                        'the first %u items.' % CAPTURE_GENERATORS
+                    )
+                    value_gen, value = value, []
+
+                    for i, rec in enumerate(value_gen):
+
+                        if i < CAPTURE_GENERATORS:
+
+                            value.append(rec)
+
+                    size = i + 1
 
                 _log('Collecting information about `%s`.' % fun_name)
 
@@ -544,6 +560,8 @@ class StatusReport(object):
                     value_type = type(value).__name__,
                     value_repr = self.to_str(value.__repr__(), 300),
                     value_size = (
+                        size
+                            if size is not None else
                         len(value)
                             if hasattr(value, '__len__') else
                         None
