@@ -94,13 +94,16 @@ _defaults = {
     'default_name_types': {
         'protein': 'uniprot',
         'mirna': 'mirbase',
-        'drug': 'chembl',
+        'drug': 'pubchem',
         'lncrna': 'lncrna-genesymbol',
+        'small_molecule': 'pubchem',
     },
     'default_label_types': {
         'protein': 'genesymbol',
         'mirna': 'mir-mat-name',
         'lncrna': 'lncrna-genesymbol',
+        'small_molecule': 'rxnorm',
+        'drug': 'rxnrom',
     },
     'uniprot_uploadlists_chunk_size': 10000,
     'trip_preprocessed': 'trip_preprocessed.pickle',
