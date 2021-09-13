@@ -1382,6 +1382,13 @@ urls = {
         'url': 'https://github.com/saezlab/ocean/raw/master/data/'
             'recon2_redhuman.RData',
     },
+    'cellinker': {
+        'label': 'Human and mouse ligand-receptor interactions',
+        'lr': 'http://www.rna-society.org/cellinker/download/%s.txt',
+        'complex': 'http://www.rna-society.org/cellinker/'
+            'download/%s-complex.csv',
+        'smol': 'http://www.rna-society.org/cellinker/download/%s-sMOL.txt',
+    },
 }
 
 
