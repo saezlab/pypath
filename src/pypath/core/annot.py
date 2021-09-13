@@ -527,6 +527,18 @@ class CustomAnnotation(session_mod.Logger):
                         )
                     )
 
+                # Automatically include direct complex annotations
+                cplex_resource = '%s_complex' % classdef.resource
+
+                if cplex_resource in self.annotdb.annot:
+
+                    cplex_classdef = copy.copy(classdef)
+                    cplex_classdef.resource = cplex_resource
+
+                    members.update(
+                        self.process_annot(cplex_classdef)
+                    )
+
             elif (
                 classdef.resource.startswith('~') or
                 classdef.resource.startswith('#')
