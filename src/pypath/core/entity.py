@@ -431,6 +431,7 @@ class Entity(session_mod.Logger):
             name = self.identifier,
             id_type = self.id_type,
             ncbi_tax_id = self.taxon,
+            entity_type = self.entity_type,
         ) or self.identifier
 
 
