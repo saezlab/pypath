@@ -531,6 +531,7 @@ class Network(session_mod.Logger):
             only_directions = False,
             pickle_file = None,
             allow_loops = None,
+            first_n = None,
         ):
         """
         Loads data from a network resource or a collection of resources.
@@ -564,6 +565,7 @@ class Network(session_mod.Logger):
             'top_call': False,
             'only_directions': only_directions,
             'allow_loops': allow_loops,
+            'first_n': first_n,
         }
 
         exclude = common.to_set(exclude)
@@ -634,6 +636,7 @@ class Network(session_mod.Logger):
             keep_raw = False,
             only_directions = False,
             allow_loops = None,
+            first_n = None,
             **kwargs
         ):
         """
@@ -666,6 +669,8 @@ class Network(session_mod.Logger):
         :arg bool only_directions:
             If ``True``, no new interactions will be created but direction
             and effect sign evidences will be added to existing interactions.
+        :arg int first_n:
+            Load only the first n interactions.
         """
 
         self._log('Loading network data from resource `%s`.' % resource.name)
@@ -675,6 +680,7 @@ class Network(session_mod.Logger):
             reread = reread,
             redownload = redownload,
             keep_raw = keep_raw,
+            first_n = first_n,
         )
 
         allow_loops = self._allow_loops(
@@ -708,6 +714,7 @@ class Network(session_mod.Logger):
             redownload = False,
             keep_raw = False,
             cache_files = None,
+            first_n = None,
         ):
         """
         Reads interaction data file containing node and edge attributes
@@ -740,6 +747,8 @@ class Network(session_mod.Logger):
         :arg bool redownload:
             Optional, ``False`` by default. Specifies whether to
             re-download the data and ignore the cache.
+        :arg int first_n:
+            Load only the first n interactions.
         """
 
         self._log('Reading network data from `%s`.' % resource.name)
@@ -1093,9 +1102,14 @@ class Network(session_mod.Logger):
                     )
 
                 refs = []
+
                 if ref_col is not None:
 
-                    if isinstance(line[ref_col], (list, set, tuple)):
+                    if line[ref_col] is None:
+
+                        refs = ()
+
+                    elif isinstance(line[ref_col], (list, set, tuple)):
 
                         refs = line[ref_col]
 
@@ -1180,6 +1194,11 @@ class Network(session_mod.Logger):
                     line[networkinput.resource[0]].split(
                         networkinput.resource[1]
                     )
+                        if (
+                            isinstance(networkinput.resource, tuple) and
+                            hasattr(line[networkinput.resource[0]], 'split')
+                        ) else
+                    []
                         if isinstance(networkinput.resource, tuple) else
                     networkinput.resource
                 )
@@ -1276,6 +1295,10 @@ class Network(session_mod.Logger):
                     )
 
                 edge_list.append(new_edge)
+
+                if first_n and len(edge_list) >= first_n:
+
+                    break
 
             if hasattr(infile, 'close'):
 
