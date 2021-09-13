@@ -44,6 +44,7 @@ import pypath.core.common as core_common
 import pypath.share.common as common
 import pypath.share.settings as settings
 import pypath.share.cache as cache_mod
+import pypath.share.constants as constants
 import pypath.utils.mapping as mapping
 import pypath.inputs.pubmed as pubmed_input
 import pypath.share.curl as curl
@@ -1131,8 +1132,23 @@ class Network(session_mod.Logger):
 
                 # to give an easy way for input definition:
                 if isinstance(networkinput.ncbi_tax_id, int):
-                    taxon_a = networkinput.ncbi_tax_id
-                    taxon_b = networkinput.ncbi_tax_id
+
+                    taxon_a = (
+                        constants.NOT_ORGANISM_SPECIFIC
+                            if networkinput.entity_type_a in {
+                                'small_molecule',
+                                'drug'
+                            } else
+                        networkinput.ncbi_tax_id
+                    )
+                    taxon_b = (
+                        constants.NOT_ORGANISM_SPECIFIC
+                            if networkinput.entity_type_b in {
+                                'small_molecule',
+                                'drug'
+                            } else
+                        networkinput.ncbi_tax_id
+                    )
 
                 # to enable more sophisticated inputs:
                 elif isinstance(networkinput.ncbi_tax_id, dict):
@@ -1151,12 +1167,22 @@ class Network(session_mod.Logger):
 
                     taxdA = (
                         networkinput.ncbi_tax_id['A']
-                        if 'A' in networkinput.ncbi_tax_id else
+                            if 'A' in networkinput.ncbi_tax_id else
+                        constants.NOT_ORGANISM_SPECIFIC
+                            if networkinput.entity_type_a in {
+                                'small_molecule',
+                                'drug'
+                            } else
                         networkinput.ncbi_tax_id
                     )
                     taxdB = (
                         networkinput.ncbi_tax_id['B']
-                        if 'B' in networkinput.ncbi_tax_id else
+                            if 'B' in networkinput.ncbi_tax_id else
+                        constants.NOT_ORGANISM_SPECIFIC
+                            if networkinput.entity_type_b in {
+                                'small_molecule',
+                                'drug'
+                            } else
                         networkinput.ncbi_tax_id
                     )
 
@@ -2012,15 +2038,23 @@ class Network(session_mod.Logger):
 
         for node in self.nodes.values():
 
-            if organisms and node.taxon not in organisms:
+            if (
+                organisms and
+                node.taxon != constants.NOT_ORGANISM_SPECIFIC and
+                node.taxon not in organisms
+            ):
 
                 to_remove.add(node)
 
             if (
                 (
                     remove_mismatches and
-                    not node.entity_type == 'complex' and
-                    not node.entity_type == 'lncrna' and
+                    not node.entity_type in {
+                        'complex',
+                        'lncrna',
+                        'drug',
+                        'small_molecule'
+                    } and
                     not reflists.check(
                         name = node.identifier,
                         id_type = node.id_type,
