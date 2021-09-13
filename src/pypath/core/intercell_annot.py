@@ -976,6 +976,16 @@ annot_combined_classes = (
             },
         },
     ),
+    af.AnnotDef(
+        name = 'plasma_membrane',
+        parent = 'plasma_membrane',
+        scope = 'generic',
+        resource = 'Cellinker',
+        aspect = 'locational',
+        args = {
+            'location': 'Membrane'
+        },
+    ),
 
     # plasma membrane regions
     # from UniProt_location
@@ -1317,6 +1327,16 @@ annot_combined_classes = (
             'subclass': 'Secreted Factors',
         },
         exclude = {'P51610'}
+    ),
+    af.AnnotDef(
+        name = 'secreted',
+        parent = 'secreted',
+        scope = 'generic',
+        aspect = 'locational',
+        resource = 'Cellinker',
+        args = {
+            'location': 'Secreted',
+        },
     ),
     # specific subclasses from HGNC
     af.AnnotDef(
@@ -1789,6 +1809,18 @@ annot_combined_classes = (
         args = {
             'role': 'receptor',
             'putative': False,
+        },
+    ),
+    af.AnnotDef(
+        name = 'receptor',
+        scope = 'generic',
+        resource = 'Cellinker',
+        args = {
+            'role': 'receptor',
+            'type': {
+                'Cytokine-cytokine receptor interaction',
+                'Secreted protein to receptor interaction',
+            },
         },
     ),
     af.AnnotDef(
@@ -3697,6 +3729,14 @@ annot_combined_classes = (
         },
         scope = 'generic',
     ),
+    af.AnnotDef(
+        name = 'ecm',
+        resource = 'Cellinker',
+        args = {
+            'location': 'ECM',
+        },
+        scope = 'generic',
+    ),
     # ecm: UniProt specific categories
     af.AnnotDef(
         name = 'lectin',
@@ -4081,6 +4121,18 @@ annot_combined_classes = (
         args = {
             'role': 'ligand',
             'putative': False,
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand',
+        scope = 'generic',
+        resource = 'Cellinker',
+        args = {
+            'role': 'ligand',
+            'type': {
+                'Cytokine-cytokine receptor interaction',
+                'Secreted protein to receptor interaction',
+            },
         },
     ),
     af.AnnotDef(
@@ -5258,6 +5310,19 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'cell_adhesion',
         scope = 'generic',
+        resource = 'Cellinker',
+        args = {
+            'type': 'Cell adhesion',
+        },
+        exclude = {
+            'Q02297', 'Q14952', 'P29965', 'Q14943', 'Q5JRA6', 'P35221',
+            'P35222', 'Q9UI47', 'Q9UQB3', 'Q9UBT7', 'Q14953', 'Q5T4B2',
+            'Q8N743', 'Q13895', 'Q7L5Y9', 'Q99689', 'Q8NHK3',
+        },
+    ),
+    af.AnnotDef(
+        name = 'cell_adhesion',
+        scope = 'generic',
         resource = 'Zhong2015',
         args = {
             'type': {
@@ -5536,6 +5601,17 @@ annot_combined_classes = (
         ),
         transmitter = False,
         receiver = True,
+    ),
+    af.AnnotDef(
+        name = 'matrix_adhesion',
+        scope = 'generic',
+        resource = 'Cellinker',
+        args = {
+            'role': 'receptor',
+            'type': {
+                'ECM-receptor interaction',
+            },
+        },
     ),
     af.AnnotDef(
         name = 'integrin',
