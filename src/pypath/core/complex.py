@@ -59,6 +59,7 @@ complex_resources = (
     'Icellnet',
     'Kegg',
     'Cellchatdb',
+    'Cellinker',
 )
 
 
@@ -544,6 +545,25 @@ class Cellchatdb(AbstractComplexResource):
             self,
             name = 'CellChatDB',
             input_method = 'cellchatdb.cellchatdb_complexes',
+            input_args = input_args or {},
+        )
+
+
+class Cellinker(AbstractComplexResource):
+
+
+    def __init__(self, input_args = None, **kwargs):
+
+        input_args = input_args or {}
+
+        if 'organism' not in input_args:
+
+            input_args['organism'] = settings.get('default_organism')
+
+        AbstractComplexResource.__init__(
+            self,
+            name = 'Cellinker',
+            input_method = 'cellinker.cellinker_complexes',
             input_args = input_args or {},
         )
 
