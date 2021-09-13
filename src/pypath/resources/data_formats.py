@@ -771,6 +771,22 @@ pathway = {
         resource = 3,
         header = False,
     ),
+    'cellinker': input_formats.NetworkInput(
+        name = "Cellinker",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "uniprot",
+        id_type_b = "uniprot",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        ncbi_tax_id = 9606,
+        is_directed = True,
+        input = 'cellinker.cellinker_lr_interactions',
+        references = (5, ';'),
+        resource = (4, ';'),
+        header = False,
+    ),
 }
 
 # synonym
@@ -2842,6 +2858,22 @@ small_molecule_protein = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
     ),
+    'cellinker': input_formats.NetworkInput(
+        name = "Cellinker",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "pubchem",
+        id_type_b = "uniprot",
+        entity_type_a = "small_molecule",
+        entity_type_b = "protein",
+        ncbi_tax_id = 9606,
+        is_directed = True,
+        input = 'cellinker.cellinker_smol_interactions',
+        references = (5, ';'),
+        resource = (4, ';'),
+        header = False,
+    ),
 }
 
 ligand_receptor['guide2pharma'] = copy.deepcopy(pathway['guide2pharma'])
@@ -2861,6 +2893,9 @@ ligand_receptor['connectomedb'].data_model = 'ligand_receptor'
 ligand_receptor['talklr'] = copy.deepcopy(pathway['talklr'])
 ligand_receptor['talklr'].must_have_references = False
 ligand_receptor['talklr'].data_model = 'ligand_receptor'
+ligand_receptor['cellinker'] = copy.deepcopy(pathway['cellinker'])
+ligand_receptor['cellinker'].must_have_references = False
+ligand_receptor['cellinker'].data_model = 'ligand_receptor'
 
 pathway['hpmr'] = copy.deepcopy(ligand_receptor['hpmr'])
 pathway['hpmr'].data_model = 'activity_flow'
