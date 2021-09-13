@@ -1067,10 +1067,7 @@ def swap_dict(d, force_sets = False):
 
         for val in vals:
 
-            if val not in _d:
-                _d[val] = set([])
-
-            _d[val].add(key)
+            _d.setdefault(val, set()).add(key)
 
     if all(len(v) <= 1 for v in _d.values()):
 
