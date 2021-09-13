@@ -5265,7 +5265,7 @@ class CellinkerComplex(AnnotationBase):
 
         AnnotationBase.__init__(
             self,
-            name = 'Cellinker',
+            name = 'Cellinker_complex',
             input_method = 'cellinker.cellinker_complex_annotations',
             ncbi_tax_id = ncbi_tax_id,
             entity_type = 'complex',
