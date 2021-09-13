@@ -1512,10 +1512,12 @@ class Mapper(session_mod.Logger):
             A tuple representing a mapping table key, identifiers swapped.
         """
 
-        self.get_table_key(
-            id_type = key.target_id_type,
-            target_id_type = key.id_type,
-            ncbi_tax_id = key.ncbi_tax_id,
+        return (
+            self.get_table_key(
+                id_type = key.target_id_type,
+                target_id_type = key.id_type,
+                ncbi_tax_id = key.ncbi_tax_id,
+            )
         )
 
 
