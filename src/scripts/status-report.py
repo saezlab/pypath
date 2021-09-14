@@ -88,19 +88,30 @@ HTML_TEMPLATE = (
                 th, td {
                     padding: 8px;
                 }
-                tr td:nth-of-type(1),
-                tr td:nth-of-type(5),
-                tr td:nth-of-type(6) {
+                tr td:nth-of-type(2),
+                tr td:nth-of-type(6),
+                tr td:nth-of-type(7) {
                     font-family: monospace;
                 }
-                tr td:nth-of-type(6), tr td:nth-of-type(8) {
+                tr td:nth-of-type(7), tr td:nth-of-type(9) {
                     font-size: xx-small;
                 }
-                tr td:nth-of-type(8), td.zero {
+                tr td:nth-of-type(9), td.zero {
                     color: deeppink;
                 }
                 a {
                     display: inline-block;
+                }
+                .pilcrow {
+                    font-size: x-large;
+                }
+                a.pilcrow:link, a.pilcrow:active, a.pilcrow:visited {
+                    color: #aaaaaa;
+                    text-decoration: none;
+                }
+                a.pilcrow:hover {
+                    color: deeppink;
+                    text-decoration: none;
                 }
             </style>
             </head>
@@ -143,6 +154,7 @@ HTML_TEMPLATE = (
             <table>
                 <tbody id="report" valign="top">
                     <tr>
+                        <th></th>
                         <th>Function</th>
                         <th>Started</th>
                         <th>Finished</th>
@@ -669,6 +681,21 @@ class StatusReport(object):
                 row.get('class', []) +
                 ['error' if error else 'success']
             )
+
+            # anchor for each function
+            label = '-'.join(r['function'].split('.')[-2:])
+            cell = soup.new_tag('td')
+            a = soup.new_tag(
+                'a',
+                attrs = {
+                    'id': label,
+                    'class': 'pilcrow',
+                    'href': '#%s' % label,
+                },
+            )
+            a.string = '\xB6'
+            cell.append(a)
+            row.append(cell)
 
             for field in FIELDS:
 
