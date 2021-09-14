@@ -1169,10 +1169,27 @@ class Curl(FileOpener):
 
         self.curl.setopt(self.curl.URL, url)
 
+
     def set_target(self):
 
-        self.target = open(self.cache_file_name, 'wb')
+        target_path = (
+            # by default we write into the cache,
+            # and later copy to `outfile` on demand;
+            # see the `copy_file` method
+            self.cache_file_name
+                if self.write_cache else
+            # otherwise we do not write to the cache
+            # but only to the outfile if it is set
+            self.outfile
+                if self.outfile is not None else
+            # if both are disabled, we discard the downloaded data
+            os.devnull
+        )
+
+        self.target = open(target_path, 'wb')
+
         self.curl.setopt(self.curl.WRITEFUNCTION, self.target.write)
+
 
     def set_req_headers(self):
 
@@ -1238,7 +1255,9 @@ class Curl(FileOpener):
                 self.target.flush()
 
                 if (
-                    os.stat(self.cache_file_name).st_size == 0 and
+                    self.target.name != os.devnull and
+                    os.path.exists(self.target.name) and
+                    os.stat(self.target.name).st_size == 0 and
                     self.empty_attempt_again
                 ):
 
@@ -1283,9 +1302,12 @@ class Curl(FileOpener):
             self._log('Download error: HTTP %u' % self.status)
 
         if (
-            os.stat(self.cache_file_name).st_size == 0 and
+            self.target.name != os.devnull and
+            os.path.exists(self.target.name) and
+            os.stat(self.target.name).st_size == 0 and
             self.status != 302
         ):
+
             self.status = 500
             self.download_failed = True
             self._log('Download error: empty file retrieved.')
@@ -1591,7 +1613,9 @@ class Curl(FileOpener):
         self.transcode()
 
         if self.outfile is not None and self.outfile != self.cache_file_name:
+
             if self.write_cache:
+
                 self._log(
                     'Copying file `%s` to `%s`.' % (
                         self.cache_file_name,
@@ -1599,6 +1623,7 @@ class Curl(FileOpener):
                     )
                 )
                 shutil.copy(self.cache_file_name, self.outfile)
+
             else:
                 self._log(
                     'Moving file `%s` to `%s`.' % (
@@ -1607,7 +1632,9 @@ class Curl(FileOpener):
                     )
                 )
                 os.rename(self.cache_file_name, self.outfile)
+
         else:
+
             self.outfile = self.cache_file_name
 
 
