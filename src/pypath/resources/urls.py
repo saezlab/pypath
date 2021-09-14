@@ -777,8 +777,11 @@ urls = {
     },
     'ca1': {
         'label': 'Supplementary Online Materials for Ma\'ayan 2005',
-        'url': 'http://science.sciencemag.org/highwire/filestream/586741/'
-        'field_highwire_adjunct_files/1/Maayan_SOM_External_Files.zip'
+        'url_old': 'http://science.sciencemag.org/highwire/filestream/586741/'
+            'field_highwire_adjunct_files/1/Maayan_SOM_External_Files.zip',
+        'url': 'https://www.science.org/action/downloadSupplement?'
+            'doi=10.1126%2Fscience.1108876&'
+            'file=maayan_som_external_files.zip',
     },
     'ccmap': {
         'label': 'Cancer Cell Map from PathwayCommons 2011 snapshot',

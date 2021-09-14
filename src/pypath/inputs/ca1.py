@@ -23,6 +23,7 @@ import collections
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+import pypath.inputs.science as science_input
 
 
 def ca1_interactions():
@@ -51,11 +52,17 @@ def ca1_interactions():
     )
 
     url = urls.urls['ca1']['url']
-    c = curl.Curl(url, silent = False, files_needed = ['S1.txt'])
-    data = c.result
+    path = science_input.science_download(url = url)
+    zipfile = curl.FileOpener(
+        path,
+        compr = 'zip',
+        files_needed = ['S1.txt'],
+        large = False,
+    )
+    data = zipfile.result
     result = []
 
-    for l in data['S1.txt'].split('\n')[1:]:
+    for l in data['S1.txt'].decode('ascii').split('\n')[1:]:
 
         l = l.strip().split()
 
