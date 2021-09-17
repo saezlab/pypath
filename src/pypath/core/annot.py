@@ -4215,6 +4215,7 @@ class Disgenet(AnnotationBase):
 
     _eq_fields = (
         'disease',
+        'type',
     )
 
 
