@@ -20,10 +20,10 @@
 #
 
 import os
+import sys
 import types
 import itertools
-from collections import abc
-
+import collections
 import sqlite3
 
 import pypath.share.common as common
@@ -57,19 +57,25 @@ QUERIES = {
         ''',
     'lookup_many':
         '''
+        SELECT %s, %s
+        FROM %s
+        WHERE %s IN (%s);
+        ''',
+    'contains_many':
+        '''
         SELECT %s
         FROM %s
-        WHERE %s IN (?);
+        WHERE %s IN (%s);
         ''',
     'insert_one':
         '''
         INSERT OR IGNORE INTO %s (a, b)
-        VALUES ("%s", "%s");
+        VALUES (?, ?);
         ''',
     'insert_many':
         '''
         INSERT OR IGNORE INTO %s (a, b)
-        VALUES (?, ?);
+        VALUES %s;
         ''',
     'delete':
         '''
@@ -77,27 +83,27 @@ QUERIES = {
         ''',
     'peek':
         '''
-        SELECT * FROM %s LIMIT %s;
+        SELECT * FROM %s LIMIT ?;
         ''',
     'remove_one':
         '''
         DELETE FROM %s
-        WHERE %s = "%s";
+        WHERE %s = ?;
         ''',
     'remove_one_both':
         '''
         DELETE FROM %s
-        WHERE a = "%s" OR b = "%s";
+        WHERE a = ? OR b = ?;
         ''',
     'remove_many':
         '''
         DELETE FROM %s
-        WHERE %s IN ("%s");
+        WHERE %s IN (%s);
         ''',
     'remove_many_both':
         '''
         DELETE FROM %s
-        WHERE a IN ("%s") OR b IN ("%s");
+        WHERE a IN (%s) OR b IN (%s);
         ''',
     'count':
         '''
@@ -109,7 +115,7 @@ QUERIES = {
         ''',
 }
 
-BULK_INSERT_LENGTH = 100000
+BULK_INSERT_LENGTH = 490
 FETCHMANY_BATCH_SIZE = 10000
 COLUMNS = {'a': 0, 'b': 1}
 UNION_SIZE_LIMIT = 10000000
@@ -143,13 +149,20 @@ class LookupTable(object):
         self.ensure_table()
 
 
-    def _query(self, key, values, *args):
+    def _query(self, key, *args, values = None):
+
+        values = (
+            list(values)
+                if isinstance(values, (set, types.GeneratorType)) else
+            values
+        )
+        values = (values,) if values else ()
 
         args = tuple(self._process_query_param(arg) for arg in args)
 
         query = QUERIES.get(key, key) % args
 
-        return self._execute(query, param)
+        return self._execute(query, *values)
 
 
     @staticmethod
@@ -164,18 +177,15 @@ class LookupTable(object):
         )
 
 
-    def _execute(self, query, param = None):
+    def _execute(self, query, *args):
 
         execute = (
             self.cur.executemany
-                if isinstance(
-                    param,
-                    (list, set, types.GeneratorType, abc.ItemsView)
-                ) else
+                if args and isinstance(args[0], list) else
             self.cur.execute
         )
 
-        return execute(query, param)
+        return execute(query, *args)
 
 
     def table_exists(self):
@@ -216,7 +226,7 @@ class LookupTable(object):
 
     def lookup_pair(self, a, b):
 
-        result = self._query('lookup_pair', (a, b), self._table)
+        result = self._query('lookup_pair', self._table, values = (a, b))
 
         return bool(result.fetchone())
 
@@ -246,12 +256,13 @@ class LookupTable(object):
     def lookup_one(self, value, col):
 
         col_other = 'b' if col == 'a' else 'a'
+
         result = self._query(
             'lookup_one',
-            (value,),
             col_other,
             self._table,
             col,
+            values = (value,),
         )
 
         return {r[0] for r in result.fetchall()}
@@ -270,22 +281,38 @@ class LookupTable(object):
     def lookup_many(self, values, col):
 
         col_other = 'b' if col == 'a' else 'a'
+        values = self._ensure_tuple(values)
+        question_marks = self._question_marks(values)
 
         result = self._query(
-            'lookup_one',
+            'lookup_many',
+            col,
             col_other,
             self._table,
             col,
-            '", "'.join(values),
+            question_marks,
+            values = values,
         )
 
-        result = collections.defaultdict(set)
+        output = collections.defaultdict(set)
 
         for a, b in result.fetchall():
 
-            result[a].add(b)
+            output[a].add(b)
 
-        return dict(result)
+        return dict(output)
+
+
+    @staticmethod
+    def _ensure_tuple(value):
+
+        return (
+            value
+                if isinstance(value, tuple) else
+            tuple(value)
+                if isinstance(value, common.list_like) else
+            (value,)
+        )
 
 
     def lookup_many_a(self, values):
@@ -300,7 +327,7 @@ class LookupTable(object):
 
     def insert_one(self, a, b):
 
-        self._query('insert_one', self._table, a, b)
+        self._query('insert_one', self._table, values = (a, b))
 
 
     def insert_many(self, values_ = None, **kwargs):
@@ -311,52 +338,95 @@ class LookupTable(object):
             values_
                 if isinstance(
                     values_,
-                    common.list_like + (types.GeneratorType,)
+                    common.list_like + (
+                        types.GeneratorType,
+                        collections.abc.ItemsView,
+                    )
                 ) else
             ()
         )
+        values_ = (
+            self._ensure_tuple(i)
+            for i in itertools.chain(
+                values_,
+                kwargs.items()
+            )
+        )
 
-        values = itertools.chain(values_, kwargs.items())
+        if not self.con.in_transaction:
 
-        self.close()
+            self._query('BEGIN;')
 
-        with sqlite3.connect(self._path) as con:
-
-            cur = con.cursor()
+        try:
 
             while True:
 
-                #values_str = (
-                    #'"), ("'.join(
-                        #'%s", "%s' % tuple(v)
-                        #for v in itertools.islice(values, BULK_INSERT_LENGTH)
-                    #)
-                #)
+                values = list(itertools.islice(values_, BULK_INSERT_LENGTH))
 
-                #if not values_str:
+                if not values:
 
-                    #break
+                    break
 
-                cur.executemany(
-                    QUERIES['insert_many'] % self._table,
-                    values,
+                question_marks = self._question_marks(values)
+
+                self.cur.execute(
+                    QUERIES['insert_many'] % (
+                        self._table,
+                        question_marks,
+                    ),
+                    tuple(itertools.chain(*values)),
                 )
 
-        self.open()
+            self._query('COMMIT;')
+
+        except:
+
+            self._query('ROLLBACK;')
+            raise
+
 
     # synonym
     update = insert_many
 
 
+    @classmethod
+    def _question_marks(cls, values):
+
+        if isinstance(values, tuple):
+
+            return ','.join('?' * len(values))
+
+        elif isinstance(values, list):
+
+            qm_item = cls._question_marks(values[0])
+            return '(%s)' % (
+                '), ('.join(
+                    qm_item for _ in range(len(values))
+                )
+            )
+
+        else:
+
+            raise ValueError
+
+
     def wipe(self):
 
-        self.delete_table()
+        self._delete_table()
         self.ensure_table()
 
 
-    def delete_table(self):
+    def reset(self):
 
-        self.query('delete', self._table)
+        self.close()
+        self.open()
+
+
+    def _delete_table(self):
+
+        if self.table_exists():
+
+            self._query('delete', self._table)
 
 
     def delete_database(self):
@@ -365,18 +435,43 @@ class LookupTable(object):
         os.remove(self._path)
 
 
-    def peek(self, limit = 10):
+    def peek(self, limit = 10, **kwargs):
 
-        result = self._query(QUERIES['peek'], self._table, limit).fetchall()
+        if not self.table_exists():
 
-        common.print_table(
-            dict(
-                zip(
-                    ('a', 'b'),
-                    zip(*result)
-                )
+            sys.stdout.write('The table does not exist.\n')
+            sys.stdout.flush()
+            return
+
+        result = self._query(
+            QUERIES['peek'],
+            self._table,
+            values = (limit,),
+        ).fetchall()
+
+        if not result:
+
+            sys.stdout.write('The table is empty.\n')
+            sys.stdout.flush()
+
+        else:
+
+            common.print_table(
+                dict(
+                    zip(
+                        ('a', 'b'),
+                        zip(*result)
+                    )
+                ),
+                **kwargs
             )
-        )
+
+            total = len(self)
+
+            if total > limit:
+
+                sys.stdout.write('And %u more records.\n' % (total - limit))
+                sys.stdout.flush()
 
 
     def column_index(self, col):
@@ -386,7 +481,7 @@ class LookupTable(object):
 
     def remove_one(self, value, col = 'a'):
 
-        self._query('remove_one', self._table, 'a', value)
+        self._query('remove_one', self._table, 'a', values = (value,))
 
 
     def remove_one_a(self, value):
@@ -401,16 +496,23 @@ class LookupTable(object):
 
     def remove_one_both(self, value):
 
-        self._query('remove_one_both', self._table, value, value)
+        self._query('remove_one_both', self._table, values = (value, value))
 
 
     def remove_many(self, values, col = 'a'):
 
-        values = '", "'.join(values)
+        values = self._ensure_tuple(values)
+        question_marks = self._question_marks(values)
 
         if values:
 
-            self._query('remove_many', self._table, col, values)
+            self._query(
+                'remove_many',
+                self._table,
+                col,
+                question_marks,
+                values = values,
+            )
 
 
     def remove_many_a(self, values):
@@ -425,11 +527,19 @@ class LookupTable(object):
 
     def remove_many_both(self, values):
 
-        values = '", "'.join(values)
+        values = self._ensure_tuple(values)
+        question_marks = self._question_marks(values)
+        values = values * 2
 
         if values:
 
-            self._query('remove_many_both', self._table, values, values)
+            self._query(
+                'remove_many_both',
+                self._table,
+                question_marks,
+                question_marks,
+                values = values,
+            )
 
 
     def __getitem__(self, key):
@@ -500,13 +610,19 @@ class LookupTable(object):
 
             return set()
 
-        i = self.column_index(col)
-        values_str = '", "'.join(values)
+        values = self._ensure_tuple(values)
+        question_marks = self._question_marks(values)
 
-        result = self._query('lookup_many', col, self._table, col, values_str)
-        contents = {r[i] for r in result.fetchall()}
+        result = self._query(
+            'contains_many',
+            col,
+            self._table,
+            col,
+            question_marks,
+            values = values,
+        )
 
-        return contents & common.to_set(values)
+        return {r[0] for r in result.fetchall()}
 
 
     def contains_many_a(self, values):
@@ -554,7 +670,8 @@ class LookupTable(object):
             raise RuntimeError(
                 'Union and symmetric difference operations are not allowed '
                 'on lookup tables longer than %u to avoid running out of '
-                'memory. To bypass this limitation, increase the value of ' '`%s.UNION_SIZE_LIMIT`.' % (
+                'memory. To bypass this limitation, increase the value of '
+                '`%s.UNION_SIZE_LIMIT`.' % (
                     UNION_SIZE_LIMIT,
                     self.__module__,
                 )
