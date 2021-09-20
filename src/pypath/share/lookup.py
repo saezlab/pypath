@@ -39,9 +39,16 @@ QUERIES = {
         '''
         CREATE TABLE %s (
             a VARCHAR NOT NULL,
-            b VARCHAR NOT NULL,
-            PRIMARY KEY (a, b)
+            b VARCHAR NOT NULL
         );
+        ''',
+    'create_index_one':
+        '''
+        CREATE INDEX %s ON %s (%s);
+        ''',
+    'create_index_both':
+        '''
+        CREATE INDEX ab ON %s (a, b);
         ''',
     'lookup_pair':
         '''
@@ -113,13 +120,42 @@ QUERIES = {
         '''
         SELECT * FROM %s;
         ''',
+    'set_pragma':
+        '''
+        PRAGMA %s = %s;
+        ''',
+    'get_pragma':
+        '''
+        PRAGMA %s;
+        ''',
 }
 
-BULK_INSERT_LENGTH = 490
+BULK_INSERT_LENGTH = 499
 FETCHMANY_BATCH_SIZE = 10000
 COLUMNS = {'a': 0, 'b': 1}
 UNION_SIZE_LIMIT = 10000000
+POPULATE_BATCH_SIZE = 2000000
 
+PRAGMA = {
+    'default': {
+        'mmap_size': '26214400',
+        'temp_store': '2',
+        'synchronous': '0',
+        'locking_mode': 'normal',
+        'cache_size': '-8000',
+        'page_size': '512',
+        'journal_mode': 'delete',
+    },
+    'insert_many': {
+        'mmap_size': '524288000',
+        'temp_store': '2',
+        'synchronous': '0',
+        'locking_mode': 'exclusive',
+        'cache_size': '-200000',
+        'page_size': '512',
+        'journal_mode': 'off',
+    },
+}
 
 class LookupTable(object):
 
@@ -146,6 +182,7 @@ class LookupTable(object):
 
         self.con = sqlite3.connect(self._path)
         self.cur = self.con.cursor()
+        self.set_pragma()
         self.ensure_table()
 
 
@@ -330,7 +367,15 @@ class LookupTable(object):
         self._query('insert_one', self._table, values = (a, b))
 
 
-    def insert_many(self, values_ = None, **kwargs):
+    def insert_many(
+            self,
+            values_ = None,
+            tuples_ = False,
+            set_pragma_ = True,
+            **kwargs,
+        ):
+
+        self.n_inserted = 0
 
         values_ = (
             values_.items()
@@ -345,17 +390,24 @@ class LookupTable(object):
                 ) else
             ()
         )
-        values_ = (
-            self._ensure_tuple(i)
-            for i in itertools.chain(
-                values_,
-                kwargs.items()
+
+        if not tuples_ or kwargs:
+
+            values_ = (
+                self._ensure_tuple(i)
+                for i in itertools.chain(
+                    values_,
+                    kwargs.items()
+                )
             )
-        )
+
+        if set_pragma_:
+
+            self.set_pragma('insert_many')
 
         if not self.con.in_transaction:
 
-            self._query('BEGIN;')
+            self.cur.execute('BEGIN;')
 
         try:
 
@@ -367,6 +419,8 @@ class LookupTable(object):
 
                     break
 
+                self.n_inserted += len(values)
+
                 question_marks = self._question_marks(values)
 
                 self.cur.execute(
@@ -377,13 +431,19 @@ class LookupTable(object):
                     tuple(itertools.chain(*values)),
                 )
 
-            self._query('COMMIT;')
+            self.cur.execute('COMMIT;')
 
         except:
 
-            self._query('ROLLBACK;')
+            if self.con.in_transaction:
+
+                self.cur.execute('ROLLBACK;')
+
             raise
 
+        if set_pragma_:
+
+            self.set_pragma()
 
     # synonym
     update = insert_many
@@ -394,20 +454,43 @@ class LookupTable(object):
 
         if isinstance(values, tuple):
 
-            return ','.join('?' * len(values))
+            return ('?,' * len(values))[:-1]
 
         elif isinstance(values, list):
 
-            qm_item = cls._question_marks(values[0])
-            return '(%s)' % (
-                '), ('.join(
-                    qm_item for _ in range(len(values))
-                )
-            )
+            qm_item = '(%s),' % cls._question_marks(values[0])
+
+            return (qm_item * len(values))[:-1]
 
         else:
 
             raise ValueError
+
+
+    def populate(self, fileobj, process = None):
+
+        process = process or (lambda x: tuple(x.split())[:2])
+
+        self.pragma_insert_many()
+
+        while True:
+
+            write_cache = (
+                process(r)
+                for r in fileobj.readlines(POPULATE_BATCH_SIZE)
+            )
+
+            self.update(
+                write_cache,
+                tuples_ = True,
+                set_pragma_ = False,
+            )
+
+            if self.n_inserted == 0:
+
+                break
+
+        self._create_indices()
 
 
     def wipe(self):
@@ -586,6 +669,13 @@ class LookupTable(object):
         return self
 
 
+    def __iadd__(self, value):
+
+        self.update(values_ = value)
+
+        return self
+
+
     def __delitem__(self, value):
 
         self.remove_one_a(value)
@@ -715,3 +805,58 @@ class LookupTable(object):
             for it in batch:
 
                 yield it
+
+
+    def set_pragma(self, pragma = 'default', **kwargs):
+
+        pragma = (
+            pragma
+                if isinstance(pragma, dict) else
+            PRAGMA[pragma]
+                if common.is_str(pragma) and pragma in PRAGMA else
+            {}
+        )
+
+        pragma.update(kwargs)
+
+        for k, v in pragma.items():
+
+            self._query('set_pragma', k, v)
+
+
+    def show_pragma(self, **kwargs):
+
+        keys = sorted(PRAGMA['default'].keys())
+
+        data = {
+            'key': keys,
+            'current': [
+                self._query('get_pragma', key).fetchall()[0][0]
+                for key in keys
+            ]
+        }
+
+        for k, v in PRAGMA.items():
+
+            data[k] = [v[key] for key in keys]
+
+        common.print_table(data, **kwargs)
+
+
+    def pragma_insert_many(self):
+
+        self.set_pragma('insert_many')
+
+
+    def pragma_default(self):
+
+        self.set_pragma()
+
+
+    def _create_indices(self):
+
+        self.pragma_insert_many()
+        self._query('set_pragma', 'temp_store', '1')
+        self._query('create_index_one', 'a', self._table, 'a')
+        self._query('create_index_one', 'b', self._table, 'b')
+        self.pragma_default()
