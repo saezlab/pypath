@@ -26,6 +26,8 @@ import itertools
 import collections
 import sqlite3
 
+import tqdm
+
 import pypath.share.common as common
 
 QUERIES = {
@@ -157,7 +159,7 @@ PRAGMA = {
     },
 }
 
-class LookupTable(object):
+class ManyToMany(object):
 
 
     def __init__(self, path):
@@ -372,6 +374,7 @@ class LookupTable(object):
             values_ = None,
             tuples_ = False,
             set_pragma_ = True,
+            index_ = True,
             **kwargs,
         ):
 
@@ -445,6 +448,10 @@ class LookupTable(object):
 
             self.set_pragma()
 
+        if index_:
+
+            self._create_indices()
+
     # synonym
     update = insert_many
 
@@ -473,6 +480,8 @@ class LookupTable(object):
 
         self.pragma_insert_many()
 
+        pbar = tqdm.tqdm(total = 3e8)
+
         while True:
 
             write_cache = (
@@ -484,7 +493,10 @@ class LookupTable(object):
                 write_cache,
                 tuples_ = True,
                 set_pragma_ = False,
+                index_ = False,
             )
+
+            pbar.update(self.n_inserted)
 
             if self.n_inserted == 0:
 
