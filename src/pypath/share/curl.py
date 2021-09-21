@@ -664,8 +664,9 @@ class FileOpener(session_mod.Logger):
         self.fileobj.seek(0)
         self.gzfile = gzip.GzipFile(fileobj = self.fileobj)
 
-        # try:
         if self.large:
+
+            io.DEFAULT_BUFFER_SIZE = 4096
             self._gzfile_mode_r = io.TextIOWrapper(
                 self.gzfile,
                 encoding = self.encoding,
@@ -679,7 +680,9 @@ class FileOpener(session_mod.Logger):
                 'Result is an iterator over the '
                 'lines of `%s`.' % self.fileobj.name
             )
+
         else:
+
             self.result = self.gzfile.read()
             self.gzfile.close()
             self._log(
