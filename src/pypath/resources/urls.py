@@ -1219,8 +1219,10 @@ urls = {
     'icellnet': {
         'label': 'A literature curated collection of '
             'ligand-receptor interactions.',
-        'url': 'https://www.biorxiv.org/content/biorxiv/early/2020/03/05/'
+        'url_old': 'https://www.biorxiv.org/content/biorxiv/early/2020/03/05/'
             '2020.03.05.976878/DC2/embed/media-2.xlsx?download=true',
+        'url': 'https://raw.githubusercontent.com/soumelis-lab/ICELLNET/'
+            'master/data/ICELLNETdb.csv',
     },
     'phobius': {
         'label': (
