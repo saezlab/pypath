@@ -243,6 +243,12 @@ def _cellphonedb_get_entity(name, complexes):
 
 
 def cellphonedb_interactions():
+    """
+    Interactions between ligands and receptors from CellPhoneDB.
+
+    Yields:
+        Named tuples representing interactions.
+    """
 
     def get_type(entity):
 
