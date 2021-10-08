@@ -56,7 +56,10 @@ from math import atan2, cos, pi, sin, tan
 from warnings import warn
 
 from igraph._igraph import convex_hull, VertexSeq
-from igraph.compat import property
+try:
+    from igraph.compat import property
+except ModuleNotFoundError:
+    pass
 from igraph.configuration import Configuration
 from igraph.drawing.baseclasses import AbstractDrawer, AbstractCairoDrawer, \
     AbstractXMLRPCDrawer
