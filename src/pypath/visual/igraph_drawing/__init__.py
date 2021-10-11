@@ -82,7 +82,7 @@ except ImportError:
     # No cairo support is installed. Create a fake module
     # pylint: disable-msg=C0103
     from igraph.drawing.utils import FakeModule
-    cairo = FakeModule()
+    cairo = FakeModule("igraph module could not be imported")
 
 #####################################################################
 
