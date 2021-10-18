@@ -1,9 +1,10 @@
+*********
 Reference
----------
+*********
 
 annot_formats
 =============
-.. automodule:: pypath.internal.annot_formats
+.. automodule:: pypath.internals.annot_formats
    :members:
 
 annot
@@ -222,7 +223,7 @@ unichem
 
 uniprot
 =======
-.. automodule:: pypath.input.uniprot
+.. automodule:: pypath.inputs.uniprot
    :members:
 
 urls
