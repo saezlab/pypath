@@ -32,6 +32,7 @@ import pyreadr
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.share.session as session
+import pypath.utils.taxonomy as taxonomy
 
 
 _logger = session.Logger(name = 'dorothea_input')
@@ -55,6 +56,7 @@ DorotheaInteraction = collections.namedtuple(
         'all_sources',
         'pubmed',
         'kegg_pathways',
+        'ncbi_tax_id',
     ]
 )
 
@@ -269,9 +271,33 @@ def dorothea_old_csv(
         )
 
 
-def dorothea_rda_raw():
+def _dorothea_rda_raw(organism = 9606):
+    """
 
-    url = urls.urls['dorothea_git']['rda']
+
+    :param int,str organism:
+        Name or NCBI Taxonomy ID of the organism. Human and mouse are
+        supported. If `None`, both will be included.
+    """
+
+    _organism = taxonomy.ensure_ncbi_tax_id(organism)
+
+    if _organism not in {9606, 10090, None}:
+
+        msg = (
+            'DoRothEA: invalid organism: `%s`. Only human and mouse '
+            'are supported.' % str(organism)
+        )
+        _logger._log(msg)
+        raise ValueError(msg)
+
+    fname = (
+        'entire_database'
+            if _organism is None else
+        'dorothea_%s' % ('hs' if _organism == 9606 else 'mm')
+    )
+
+    url = urls.urls['dorothea_git']['rda'] % fname
 
     c = curl.Curl(url, silent = False, large = True)
     rdata_path = c.fileobj.name
@@ -280,7 +306,7 @@ def dorothea_rda_raw():
     rdata = None
 
     try:
-        rdata = pyreadr.read_r(rdata_path)['entire_database']
+        rdata = pyreadr.read_r(rdata_path)[fname]
     except pyreadr.custom_errors.LibrdataError as e:
         _logger._log(
             'Could not parse DoRothEA data from Rdata file: '
@@ -292,13 +318,71 @@ def dorothea_rda_raw():
     return rdata
 
 
+def dorothea_rda_raw(organism = 9606):
+    """
+    DoRothEA data as it is provided in the R package.
+
+    Args:
+        organism (int,str): Name or NCBI Taxonomy ID of the organism. Human
+            and mouse are supported. If `None`, both will be included.
+
+    Returns:
+        (pandas.DataFrame): A data frame of TF-target interactions from
+            DoRothEA.
+    """
+
+    dorothea_full = _dorothea_rda_raw(organism = None)
+
+    _organism = taxonomy.ensure_ncbi_tax_id(organism)
+
+    genesym_to_organism = {
+        9606: set(),
+        10090: set(),
+    }
+
+    for this_organism in genesym_to_organism.keys():
+
+        if _organism in (None, this_organism):
+
+            dorothea_org = _dorothea_rda_raw(organism = this_organism)
+            genesym_to_organism[this_organism] = {
+                (r.tf, r.target)
+                for r in dorothea_org.itertuples()
+            }
+
+    dorothea_full['ncbi_tax_id'] = [
+        (
+            9606
+                if pair in genesym_to_organism[9606] else
+            10090
+                if pair in genesym_to_organism[10090] else
+            -1
+        )
+        for pair in
+        (
+            (r.tf, r.target)
+            for r in dorothea_full.itertuples()
+        )
+    ]
+
+    if _organism:
+
+        dorothea_full = dorothea_full.query('ncbi_tax_id == %u' % _organism)
+
+    return dorothea_full
+
+
 def dorothea_interactions(
+        organism = 9606,
         levels = {'A', 'B'},
-        only_curated = False
+        only_curated = False,
     ):
     """
     Retrieves TF-target interactions from TF regulons.
 
+    :param int,str organism:
+        Name or NCBI Taxonomy ID of the organism. Human and mouse are
+        supported. If `None`, both will be included.
     :param set levels:
         Confidence levels to be used.
     :param bool only_curated:
@@ -323,7 +407,7 @@ def dorothea_interactions(
         'inferred', # coexp
     )
 
-    df = dorothea_rda_raw()
+    df = dorothea_rda_raw(organism = organism)
     df = df[df.confidence.isin(levels)]
 
     if only_curated:
@@ -374,11 +458,12 @@ def dorothea_interactions(
                                 rec.which_curated
                             ),
                         ),
-                        # PubMed and KEGG pw
+                        # PubMed, KEGG pw and organism
                         (
                             rec.pubmed_id if rec.pubmed_id.isdigit() else '',
                             '',
-                        )
+                            rec.ncbi_tax_id,
+                        ),
                     )
                 ))
             )
