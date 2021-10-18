@@ -56,7 +56,6 @@ DorotheaInteraction = collections.namedtuple(
         'all_sources',
         'pubmed',
         'kegg_pathways',
-        'ncbi_tax_id',
     ]
 )
 
@@ -271,18 +270,19 @@ def dorothea_old_csv(
         )
 
 
-def _dorothea_rda_raw(organism = 9606):
+def dorothea_rda_raw(organism = 9606):
     """
 
 
     :param int,str organism:
         Name or NCBI Taxonomy ID of the organism. Human and mouse are
-        supported. If `None`, both will be included.
+        supported. If `None`, the human interactions will be returned
+        with additional details included.
     """
 
     _organism = taxonomy.ensure_ncbi_tax_id(organism)
 
-    if _organism not in {9606, 10090, None}:
+    if _organism not in (9606, 10090, None):
 
         msg = (
             'DoRothEA: invalid organism: `%s`. Only human and mouse '
@@ -318,56 +318,32 @@ def _dorothea_rda_raw(organism = 9606):
     return rdata
 
 
-def dorothea_rda_raw(organism = 9606):
+def dorothea_full_raw(organism = 9606):
     """
     DoRothEA data as it is provided in the R package.
 
     Args:
-        organism (int,str): Name or NCBI Taxonomy ID of the organism. Human
-            and mouse are supported. If `None`, both will be included.
+        organism (int,str): Name or NCBI Taxonomy ID of the organism. The
+            complete DoRothEA database (with all the details about the
+            original sources) is available only for human.
 
     Returns:
         (pandas.DataFrame): A data frame of TF-target interactions from
             DoRothEA.
     """
 
-    dorothea_full = _dorothea_rda_raw(organism = None)
-
     _organism = taxonomy.ensure_ncbi_tax_id(organism)
 
-    genesym_to_organism = {
-        9606: set(),
-        10090: set(),
-    }
+    if _organism != 9606 and organism:
 
-    for this_organism in genesym_to_organism.keys():
-
-        if _organism in (None, this_organism):
-
-            dorothea_org = _dorothea_rda_raw(organism = this_organism)
-            genesym_to_organism[this_organism] = {
-                (r.tf, r.target)
-                for r in dorothea_org.itertuples()
-            }
-
-    dorothea_full['ncbi_tax_id'] = [
-        (
-            9606
-                if pair in genesym_to_organism[9606] else
-            10090
-                if pair in genesym_to_organism[10090] else
-            -1
+        msg = (
+            'DoRothEA: invalid organism: `%s`. The full database is '
+            'available only for human.' % str(organism)
         )
-        for pair in
-        (
-            (r.tf, r.target)
-            for r in dorothea_full.itertuples()
-        )
-    ]
+        _logger._log(msg)
+        raise ValueError(msg)
 
-    if _organism:
-
-        dorothea_full = dorothea_full.query('ncbi_tax_id == %u' % _organism)
+    dorothea_full = dorothea_rda_raw(organism = None)
 
     return dorothea_full
 
@@ -381,8 +357,7 @@ def dorothea_interactions(
     Retrieves TF-target interactions from TF regulons.
 
     :param int,str organism:
-        Name or NCBI Taxonomy ID of the organism. Human and mouse are
-        supported. If `None`, both will be included.
+        Name or NCBI Taxonomy ID of the organism. Only human is available.
     :param set levels:
         Confidence levels to be used.
     :param bool only_curated:
@@ -407,7 +382,7 @@ def dorothea_interactions(
         'inferred', # coexp
     )
 
-    df = dorothea_rda_raw(organism = organism)
+    df = dorothea_full_raw(organism = organism)
     df = df[df.confidence.isin(levels)]
 
     if only_curated:
@@ -458,11 +433,10 @@ def dorothea_interactions(
                                 rec.which_curated
                             ),
                         ),
-                        # PubMed, KEGG pw and organism
+                        # PubMed and KEGG pw
                         (
                             rec.pubmed_id if rec.pubmed_id.isdigit() else '',
                             '',
-                            rec.ncbi_tax_id,
                         ),
                     )
                 ))
