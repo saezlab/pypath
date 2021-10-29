@@ -28,6 +28,25 @@ import pypath.share.session as _session
 
 
 class BiocypherAdapter(_session.Logger):
+    """
+    The connection can be defined in three ways:
+        * Providing a ready ``neo4j.Driver`` instance
+        * By URI and authentication data
+        * By a YML config file
+
+    Args:
+        driver (neo4j.Driver): A ``neo4j.Driver`` instance, created by,
+            for example, ``neo4j.GraphDatabase.driver``.
+        db_name (str): Name of the database (Neo4j graph) to use.
+        db_uri (str): Protocol, host and port to access the Neo4j server.
+        db_auth (tuple): Neo4j server authentication data: tuple of user
+            name and password.
+        config_file (str): Path to a YML config file which provides the URI,
+            user name and password.
+        network (pypath.core.network.Network): A network database object.
+        wipe (bool): Wipe the database after connection, ensuring the data
+            is loaded into an empty database.
+    """
 
 
     def __init__(
@@ -37,6 +56,7 @@ class BiocypherAdapter(_session.Logger):
         db_auth = None,
         config_file = 'db_config.yml',
         network = None,
+        wipe = False,
     ):
 
         _session.Logger.__init__(self, name = 'bcy_adapter')
@@ -46,6 +66,7 @@ class BiocypherAdapter(_session.Logger):
             db_uri = db_uri,
             db_auth = db_auth,
             config_file = config_file,
+            wipe = wipe,
         )
 
         if network:
