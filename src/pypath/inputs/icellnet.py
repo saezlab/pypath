@@ -19,16 +19,19 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
 import re
 import collections
 import itertools
+import csv
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
-import pypath.inputs.common as inputs_common
 import pypath.utils.mapping as mapping
 import pypath.internals.intera as intera
 import pypath.core.entity as entity
+import pypath.inputs.pubmed as pubmed_input
 
 
 IcellnetRecord = collections.namedtuple(
@@ -48,46 +51,53 @@ IcellnetRecord = collections.namedtuple(
 def icellnet_interactions():
 
     url = urls.urls['icellnet']['url']
-
     c = curl.Curl(url, silent = False, large = True)
 
-    xls = c.fileobj
-    xlsfile = xls.name
-    xls.close()
-    tbl = inputs_common.read_xls(xlsfile)
+    bom = c.fileobj.read(1) # this file starts with an UTF8 BOM
 
-    for line in tbl[1:]:
+    if bom != '\ufeff':
+
+        c.fileobj.seek(0)
+
+    tbl = list(csv.DictReader(c.result, delimiter = ';'))
+
+    for line in tbl:
+
+        print(line)
 
         references = _icellnet_get_references(line)
         resources = _icellnet_get_resources(line)
 
         if resources:
+
             references.extend([r for r in resources if r.isdigit()])
             resources = [r for r in resources if not r.isdigit()]
 
-        ligand_components = _icellnet_get_components(line, (0, 1))
-        receptor_components = _icellnet_get_components(line, (2, 3, 4))
+        ligand_components = _icellnet_get_components(line, 'Ligand')
+        receptor_components = _icellnet_get_components(line, 'Receptor')
 
         ligand = _icellnet_get_entity(ligand_components, references)
         receptor = _icellnet_get_entity(receptor_components, references)
 
-        yield IcellnetRecord(
-            ligand = ligand,
-            receptor = receptor,
-            family = line[6].strip() or None,
-            subfamily = line[7].strip() or None,
-            classification = (
-                [
-                    cls.strip().replace('.', '').capitalize()
-                    for cls in
-                    line[8].split('/')
-                ]
-                    if line[8].strip() else
-                None
-            ),
-            resources = resources,
-            references = references,
-        )
+        if ligand and receptor:
+
+            yield IcellnetRecord(
+                ligand = ligand,
+                receptor = receptor,
+                family = line['Family'].strip() or None,
+                subfamily = line['Subfamily'].strip() or None,
+                classification = (
+                    [
+                        cls.strip().replace('.', '').capitalize()
+                        for cls in
+                        line['Classifications'].split('/')
+                    ]
+                        if line['Classifications'].strip() else
+                    None
+                ),
+                resources = resources,
+                references = references,
+            )
 
 
 def icellnet_complexes():
@@ -179,14 +189,20 @@ def icellnet_annotations(complexes = None):
     return annotations
 
 
-def _icellnet_get_components(line, idx):
+def _icellnet_get_components(line, prefix):
+
+    genesymbols = [
+        genesymbol.strip()
+        for label, genesymbol in iteritems(line)
+        if label.startswith(prefix) and genesymbol.strip()
+    ]
 
     return [
         uniprot
         for uniprot in
         (
-            mapping.map_name0(line[i], 'genesymbol', 'uniprot')
-            for i in idx
+            mapping.map_name0(genesymbol, 'genesymbol', 'uniprot')
+            for genesymbol in genesymbols
         )
         if uniprot
     ]
@@ -212,12 +228,19 @@ def _icellnet_get_references(line):
     return [
         str(int(float(ref)))
         for ref in
-        (_ref.strip() for _ref in line[10].split(';'))
-        if ref
+        pubmed_input.only_pmids(
+            ref
+            for ref in
+            (_ref.strip() for _ref in re.split(r'[,;]', line['PubMed ID']))
+            if ref
+        )
     ]
 
 
 def _icellnet_get_resources(line):
+
+    # the recent update of ICELLNET does not list the resources any more :(
+    return None
 
     rerami = re.compile(r'(Ramilowski)\d{4}')
     resource_synonyms = {
@@ -232,7 +255,7 @@ def _icellnet_get_resources(line):
         'Kegg': 'KEGG',
     }
 
-    resources = line[9].replace(
+    resources = line['Source for interaction'].replace(
         'Dinarello et al.2013 (Immunity)',
         'Dinarello2013'
     )

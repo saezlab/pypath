@@ -664,8 +664,9 @@ class FileOpener(session_mod.Logger):
         self.fileobj.seek(0)
         self.gzfile = gzip.GzipFile(fileobj = self.fileobj)
 
-        # try:
         if self.large:
+
+            io.DEFAULT_BUFFER_SIZE = 4096
             self._gzfile_mode_r = io.TextIOWrapper(
                 self.gzfile,
                 encoding = self.encoding,
@@ -679,7 +680,9 @@ class FileOpener(session_mod.Logger):
                 'Result is an iterator over the '
                 'lines of `%s`.' % self.fileobj.name
             )
+
         else:
+
             self.result = self.gzfile.read()
             self.gzfile.close()
             self._log(
@@ -828,6 +831,7 @@ class Curl(FileOpener):
             cache_dir = None,
             bypass_url_encoding = False,
             empty_attempt_again = True,
+            keep_failed = False,
         ):
 
         if not hasattr(self, '_logger'):
@@ -848,6 +852,7 @@ class Curl(FileOpener):
         self.force_quote = force_quote
         self.bypass_url_encoding = bypass_url_encoding
         self.empty_attempt_again = empty_attempt_again
+        self.keep_failed = keep_failed
 
         self._log(
             'Creating Curl object to retrieve '
@@ -1311,11 +1316,27 @@ class Curl(FileOpener):
             self.status = 500
             self.download_failed = True
             self._log('Download error: empty file retrieved.')
-            self._log(
-                'Removing empty file from cache: `%s`' %
-                self.cache_file_name
-            )
-            os.remove(self.cache_file_name)
+
+        if (
+            (
+                self.status >= 400 or
+                self.download_failed
+            ) and
+            not self.keep_failed
+        ):
+
+            self._log('Download failed, removing the resulted file.')
+            self.remove_target()
+
+
+    def remove_target(self):
+
+            self._log('Removing file: `%s`' % self.target.name)
+            self.target.close()
+
+            if os.path.exists(self.target.name):
+
+                os.remove(self.target.name)
 
 
     def progress_setup(self):

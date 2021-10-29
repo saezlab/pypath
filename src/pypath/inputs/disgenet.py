@@ -42,6 +42,7 @@ def disgenet_annotations(dataset = 'curated'):
         'DisGeNetAnnotation',
         [
             'disease',
+            'type',
             'score',
             'dsi',
             'dpi',
@@ -79,6 +80,7 @@ def disgenet_annotations(dataset = 'curated'):
             data[uniprot].add(
                 DisGeNetAnnotation(
                     disease = rec['diseaseName'],
+                    type = rec['diseaseType'],
                     score = float(rec['score']),
                     dsi = float(rec['DSI']) if rec['DSI'] else None,
                     dpi = float(rec['DPI']) if rec['DPI'] else None,

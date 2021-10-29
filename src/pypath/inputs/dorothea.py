@@ -32,6 +32,7 @@ import pyreadr
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.share.session as session
+import pypath.utils.taxonomy as taxonomy
 
 
 _logger = session.Logger(name = 'dorothea_input')
@@ -269,9 +270,34 @@ def dorothea_old_csv(
         )
 
 
-def dorothea_rda_raw():
+def dorothea_rda_raw(organism = 9606):
+    """
 
-    url = urls.urls['dorothea_git']['rda']
+
+    :param int,str organism:
+        Name or NCBI Taxonomy ID of the organism. Human and mouse are
+        supported. If `None`, the human interactions will be returned
+        with additional details included.
+    """
+
+    _organism = taxonomy.ensure_ncbi_tax_id(organism)
+
+    if _organism not in (9606, 10090, None):
+
+        msg = (
+            'DoRothEA: invalid organism: `%s`. Only human and mouse '
+            'are supported.' % str(organism)
+        )
+        _logger._log(msg)
+        raise ValueError(msg)
+
+    fname = (
+        'entire_database'
+            if _organism is None else
+        'dorothea_%s' % ('hs' if _organism == 9606 else 'mm')
+    )
+
+    url = urls.urls['dorothea_git']['rda'] % fname
 
     c = curl.Curl(url, silent = False, large = True)
     rdata_path = c.fileobj.name
@@ -280,7 +306,7 @@ def dorothea_rda_raw():
     rdata = None
 
     try:
-        rdata = pyreadr.read_r(rdata_path)['entire_database']
+        rdata = pyreadr.read_r(rdata_path)[fname]
     except pyreadr.custom_errors.LibrdataError as e:
         _logger._log(
             'Could not parse DoRothEA data from Rdata file: '
@@ -292,13 +318,46 @@ def dorothea_rda_raw():
     return rdata
 
 
+def dorothea_full_raw(organism = 9606):
+    """
+    DoRothEA data as it is provided in the R package.
+
+    Args:
+        organism (int,str): Name or NCBI Taxonomy ID of the organism. The
+            complete DoRothEA database (with all the details about the
+            original sources) is available only for human.
+
+    Returns:
+        (pandas.DataFrame): A data frame of TF-target interactions from
+            DoRothEA.
+    """
+
+    _organism = taxonomy.ensure_ncbi_tax_id(organism)
+
+    if _organism != 9606 and organism:
+
+        msg = (
+            'DoRothEA: invalid organism: `%s`. The full database is '
+            'available only for human.' % str(organism)
+        )
+        _logger._log(msg)
+        raise ValueError(msg)
+
+    dorothea_full = dorothea_rda_raw(organism = None)
+
+    return dorothea_full
+
+
 def dorothea_interactions(
+        organism = 9606,
         levels = {'A', 'B'},
-        only_curated = False
+        only_curated = False,
     ):
     """
     Retrieves TF-target interactions from TF regulons.
 
+    :param int,str organism:
+        Name or NCBI Taxonomy ID of the organism. Only human is available.
     :param set levels:
         Confidence levels to be used.
     :param bool only_curated:
@@ -323,7 +382,7 @@ def dorothea_interactions(
         'inferred', # coexp
     )
 
-    df = dorothea_rda_raw()
+    df = dorothea_full_raw(organism = organism)
     df = df[df.confidence.isin(levels)]
 
     if only_curated:
@@ -378,7 +437,7 @@ def dorothea_interactions(
                         (
                             rec.pubmed_id if rec.pubmed_id.isdigit() else '',
                             '',
-                        )
+                        ),
                     )
                 ))
             )

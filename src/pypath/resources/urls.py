@@ -999,8 +999,7 @@ urls = {
         'label': 'DoRothEA TF-taget database from its git repo',
         'url': 'https://github.com/saezlab/DoRothEA/raw/master/data/'
             'TFregulons/consensus/table/database_normal_20180915.csv.zip',
-        'rda': 'https://github.com/saezlab/dorothea/raw/master/data/'
-            'entire_database.rda',
+        'rda': 'https://github.com/saezlab/dorothea/raw/master/data/%s.rda',
     },
     'hpmri': {
         'label': 'Human Plasma Membrane Receptome "browse" view',
@@ -1219,8 +1218,10 @@ urls = {
     'icellnet': {
         'label': 'A literature curated collection of '
             'ligand-receptor interactions.',
-        'url': 'https://www.biorxiv.org/content/biorxiv/early/2020/03/05/'
+        'url_old': 'https://www.biorxiv.org/content/biorxiv/early/2020/03/05/'
             '2020.03.05.976878/DC2/embed/media-2.xlsx?download=true',
+        'url': 'https://raw.githubusercontent.com/soumelis-lab/ICELLNET/'
+            'master/data/ICELLNETdb.csv',
     },
     'phobius': {
         'label': (
@@ -1391,6 +1392,11 @@ urls = {
         'complex': 'http://www.rna-society.org/cellinker/'
             'download/%s-complex.csv',
         'smol': 'http://www.rna-society.org/cellinker/download/%s-sMOL.txt',
+    },
+    'pubchem': {
+        'label': 'NCBI database of bioactive compounds, substances and '
+            'assays',
+        'ftp': 'https://ftp.ncbi.nlm.nih.gov/pubchem/%s/Extras/%s-%s.gz',
     },
 }
 

@@ -229,14 +229,18 @@ def _ensure_name(taxon_id, name_type):
 
 
 def taxid_from_common_name(taxon_name):
-    
+
     if common.is_str(taxon_name):
 
         taxon_name = taxon_name.strip()
         taxon_name_l = taxon_name.lower()
         taxon_name_c = taxon_name.capitalize()
     
-    if not taxon_name_l or taxon_name in {'none', 'unknown'}:
+    if (
+        taxon_name is None or
+        not taxon_name_l or
+        taxon_name in {'none', 'unknown'}
+    ):
         
         return None
     

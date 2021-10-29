@@ -2,20 +2,20 @@
 Installation
 ************
 
-
 Linux
-=====
+-----
 
 In almost any up-to-date Linux distribution the dependencies of **pypath** are
-built-in, or provided by the distributors. You only need to install a couple
-of things in your package manager (cairo, py(2)cairo, igraph,
-python(2)-igraph, graphviz, pygraphviz), and after install **pypath** by *pip*
-(see below). If any module still missing, you can install them the usual way
-by *pip* or your package manager.
+built-in, or provided by the distributors. You can simply install **pypath**
+by **pip** (see below).
+If any non mandatory dependency is still missing, you can install them the
+usual way by *pip* or your package manager.
 
 igraph C library, cairo and pycairo
 -----------------------------------
 
+For the legacy network class or the ``igraph`` conversion from the current
+network class *python-igraph* must be installed.
 *python(2)-igraph* is a Python interface to use the igraph C library. The
 C library must be installed. The same goes for *cairo*, *py(2)cairo* and
 *graphviz*.
@@ -45,26 +45,29 @@ Clone the git repo, and run setup.py:
 
     python setup.py sdist
 
-
 Mac OS X
-========
+--------
 
-On OS X installation is not straightforward primarily because cairo needs to
-be compiled from source. We provide 2 scripts here: the
-**mac-install-brew.sh** installs everything with HomeBrew, and
+Recently the installation on Mac should not be more complicated than on Linux:
+you can simply install by **pip** (see above).
+
+When ``igraph`` was a mandatory dependency and it didn't provide wheels
+the OS X installation was not straightforward primarily because cairo needs to
+be compiled from source. If you want igraph and cairo we provide two scripts
+`here <src/scripts>`_: the **mac-install-brew.sh** installs everything with HomeBrew and
 **mac-install-conda.sh** installs from Anaconda distribution. With these
-scripts installation of igraph, cairo and graphviz goes smoothly most of the
-time, and options are available for omitting the 2 latter. To know more see
+scripts, installation of igraph, cairo and graphviz goes smoothly most of the
+time and options are available to omit the last two. To know more, see
 the description in the script header. There is a third script
 **mac-install-source.sh** which compiles everything from source and presumes
 only Python 2.7 and Xcode installed. We do not recommend this as it is time
 consuming and troubleshooting requires expertise.
 
 Troubleshooting
----------------
+^^^^^^^^^^^^^^^
 
 * ``no module named ...`` when you try to load a module in Python. Did
-  theinstallation of the module run without error? Try to run again the specific
+  the installation of the module run without error? Try to run again the specific
   part from the mac install shell script to see if any error comes up. Is the
   path where the module has been installed in your ``$PYTHONPATH``? Try ``echo
   $PYTHONPATH`` to see the current paths. Add your local install directories if
@@ -101,9 +104,8 @@ Troubleshooting
   directory. **mac-install-conda.sh** does exactly this. If you still
   experience issues, please contact us.
 
-
 Microsoft Windows
-=================
+-----------------
 
 Not many people have used *pypath* on Microsoft computers so far. Please share
 your experiences and contact us if you encounter any issue. We appreciate
@@ -111,7 +113,7 @@ your feedback, and it would be nice to have better support for other computer
 systems.
 
 With Anaconda
--------------
+^^^^^^^^^^^^^
 
 The same workflow like you see in ``mac-install-conda.sh`` should work for
 Anaconda on Windows. The only problem you certainly will encounter is that not
@@ -130,27 +132,32 @@ also for Python 3.5. And for win-64 platform, there is the channel of
 modify the channel if necessary, until all packages install successfully.
 
 With other Python distributions
--------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Here the basic principles are the same as everywhere: first try to install all
 external dependencies, after *pip* install should work. On Windows certain
 packages can not be installed by compiled from source by *pip*, instead the
 easiest to install them precompiled. These are in our case *fisher, lxml,
 numpy (mkl version), pycairo, igraph, pygraphviz, scipy and statsmodels*. The
-precompiled packages are available here:
-http://www.lfd.uci.edu/~gohlke/pythonlibs/. We tested the setup with Python
-3.4.3 and Python 2.7.11. The former should just work fine, while with the
-latter we have issues to be resolved.
+precompiled packages are available `here <http://www.lfd.uci.edu/~gohlke/pythonlibs/>`_.
+We tested the setup with Python 3.4.3 and Python 2.7.11. The former should just
+work fine, while with the latter we have issues to be resolved.
 
 Known issues
-------------
+^^^^^^^^^^^^
 
 * *"No module fabric available."* -- or *pysftp* missing: this is not
-important, only certain data download methods rely on these modules, but
-likely you won't call those at all.
+  important, only certain data download methods rely on these modules, but
+  likely you won't call those at all.
 * Progress indicator floods terminal: sorry about that, will be fixed soon.
 * Encoding related exceptions in Python2: these might occur at some points in
-the module, please send the traceback if you encounter one, and we will fix
-as soon as possible.
+  the module, please send the traceback if you encounter one, and we will fix
+  as soon as possible.
+* For Mac OS X (v >= 10.11 El Capitan) import of pypath fails with error:
+  "libcurl link-time ssl backend (openssl) is different from compile-time ssl
+  backend (none/other)". To fix it, you may need to reinstall pycurl library
+  using special flags. More information and steps can be found
+  `here <https://cscheng.info/2018/01/26/installing-pycurl-on-macos-high-sierra.html>`_.
 
 *Special thanks to Jorge Ferreira for testing pypath on Windows!*
+

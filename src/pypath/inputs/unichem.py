@@ -117,6 +117,28 @@ def unichem_mapping(id_type, target_id_type):
             `id_type`, values are sets of IDs of `target_id_type`.
     """
 
+    return (
+        _unichem_mapping(id_type, target_id_type) or
+        common.swap_dict(_unichem_mapping(target_id_type, id_type))
+    )
+
+
+def _unichem_mapping(id_type, target_id_type):
+    """
+    Identifier translation data from UniChem.
+
+    Args:
+        id_type (int,str): An ID type in UniChem: either the integer ID or
+            the string label of a resource. For a full list see
+            `unichem_sources`.
+        target_id_type (int,str): An ID type in UniChem, same way as
+            `id_type`.
+
+    Returns:
+        (dict): A dictionary with ID translation data, keys are IDs of
+            `id_type`, values are sets of IDs of `target_id_type`.
+    """
+
     src_to_label = unichem_sources()
     label_to_src = common.swap_dict(src_to_label)
 
@@ -139,6 +161,11 @@ def unichem_mapping(id_type, target_id_type):
 
     url = urls.urls['unichem']['mapping'] % (id_type, id_type, target_id_type)
     c = curl.Curl(url, large = True, silent = False)
+
+    if c.status == 404:
+
+        return {}
+
     result = collections.defaultdict(set)
     _ = next(c.result)
 

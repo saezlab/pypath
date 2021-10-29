@@ -9537,8 +9537,7 @@ class PyPath(session_mod.Logger):
         if 'ptm' not in self.graph.es.attributes():
             self.graph.es['ptm'] = [[] for _ in self.graph.es]
 
-    def run_batch(self, me
-                  thods, toCall=None):
+    def run_batch(self, methods, toCall=None):
         """
         """
 

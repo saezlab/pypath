@@ -2099,9 +2099,9 @@ def print_table(
         table_format(
             tbl,
             width = width,
-            maxlen = wifth,
+            maxlen = maxlen,
             tablefmt = tablefmt,
-            wrape = wrap,
+            wrap = wrap,
             lineno = lineno,
             **kwargs
         )
