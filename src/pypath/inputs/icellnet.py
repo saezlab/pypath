@@ -63,8 +63,6 @@ def icellnet_interactions():
 
     for line in tbl:
 
-        print(line)
-
         references = _icellnet_get_references(line)
         resources = _icellnet_get_resources(line)
 
