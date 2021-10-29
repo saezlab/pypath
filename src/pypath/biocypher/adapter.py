@@ -20,7 +20,7 @@ import os
 import yaml
 import importlib as imp
 
-import neo4j
+import biocypher
 
 import pypath.core.network as pypath_network
 import pypath.resources.network as pypath_netres
@@ -32,6 +32,7 @@ class BiocypherAdapter(_session.Logger):
 
     def __init__(
         self,
+        driver = None,
         db_uri = 'neo4j://localhost:7687',
         db_auth = None,
         config_file = 'db_config.yml',
@@ -40,13 +41,12 @@ class BiocypherAdapter(_session.Logger):
 
         _session.Logger.__init__(self, name = 'bcy_adapter')
 
-        self._db_config = {
-            'uri': db_uri,
-            'auth': db_auth,
-        }
-        self._config_file = config_file
-
-        self.db_connect()
+        self.bcy = biocypher.Driver(
+            driver = driver,
+            db_uri = db_uri,
+            db_auth = db_auth,
+            config_file = config_file,
+        )
 
         if network:
 
@@ -65,54 +65,18 @@ class BiocypherAdapter(_session.Logger):
         setattr(self, '__class__', new)
 
 
-    def db_connect(self):
-
-        if not all(self._db_config.values()):
-
-            self.read_config()
-
-        # check for database running?
-        self.driver = neo4j.GraphDatabase.driver(**self._db_config)
-
-        self._log('Opened database connection.')
-
-
-    def read_config(self, section = 'default'):
-
-        if self._config_file and os.path.exists(self._config_file):
-
-            self._log('Reading config from `%s`.' % self._config_file)
-
-            with open(self._config_file, 'r') as fp:
-
-                conf = yaml.safe_load(fp.read())
-
-            self._db_config.update(conf[section])
-            self._db_config['auth'] = tuple(self._db_config['auth'])
-
-
     def set_network(self, network):
 
         self._log('Added new network.')
         self.network = network
 
 
-    def db_close(self):
-
-        self.driver.close()
-
-
-    def __del__(self):
-
-        self.db_close()
-
-
-    def load_network(self):
+    def build_network(self):
         """
-        Loads a network database with two datasets: 'pathway' and
+        Builds a network database with two datasets: 'pathway' and
         'mirna_target'. Intended to be an example. The dataset is preloaded
         to avoid waiting time when applying multiple database tests.
-        The resulted network database is stored under the ``network``
+        The resulted network database is stored under the :py:attr:`network`
         attribute.
         """
 
@@ -121,3 +85,23 @@ class BiocypherAdapter(_session.Logger):
         n.load(pypath_netres.mirna_target)
 
         self.set_network(n)
+
+
+    def load_network(self, network = None):
+        """
+        Loads a network into the biocypher (Neo4j) backend.
+
+        Args:
+            network (pypath.core.network.Network): A network database object.
+                If `None`, the value of :py:attr:`network` will be used.
+        """
+
+        network = network or self.network
+
+        if not network:
+
+            self._log('No network provided.')
+            return
+
+        self.bcy.add_nodes(network.nodes.values())
+        self.bcy.add_edges(network.generate_df_records())
