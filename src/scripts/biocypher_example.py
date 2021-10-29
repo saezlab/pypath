@@ -73,3 +73,8 @@ def main():
 
     # create edges
     db.add_edges_to_graph(net.generate_df_records())
+
+
+if __name__ == '__main__':
+
+    main()
