@@ -126,3 +126,19 @@ class BiocypherAdapter(_session.Logger):
 
         self.bcy.add_nodes(network.nodes.values())
         self.bcy.add_edges(network.generate_df_records())
+
+
+    def load(self, obj):
+        """
+        Loads any compatible object into the biocypher (Neo4j) database.
+
+        Args:
+            obj: An object from this module compatible with the current
+                adapter. Currently the following database objects are
+                supported:
+                    * :py:class:`pypath.core.network.Network`
+        """
+
+        if hasattr(obj, 'nodes') and hasattr(obj, 'interactions'):
+
+            self.load_network(network = obj)
