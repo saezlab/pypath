@@ -35,44 +35,19 @@ Todo:
 
 """
 
-# Imports
-# =======
 import pypath.biocypher.adapter as adapter
-
-# BioCypher import
-# The BioCypher prototype needs to be installed locally, please follow the 
-# instructions at https://github.com/saezlab/BioCypher
-import biocypher.driver as bcy_driver
 
 
 def main():
-    # Setup
-    # =====
 
-    # instantiate adapter class
-    # loads pypath;
-    py_tb = adapter.ToBioCypher()
-
-    # hand over driver to biocypher
-    db = bcy_driver.DatabaseToNeo4j(py_tb.driver)
-
+    # Instantialising the adapter class.
     # We are creating a new database, so we wipe and initialise the local Neo4j
     # instance. Skip this if you want to update an existing BioCypher graph.
-    db.init_db()
-
-
-    # Data input
-    # ==========
-
-    # loading pypath network object, to avoid waiting for multiple tests (?)
-    # may take a while if it is the first time due to downloads
-    net = py_tb.load_pypath()
-
-    # create nodes
-    db.add_nodes_to_graph(net.nodes.values())
-
-    # create edges
-    db.add_edges_to_graph(net.generate_df_records())
+    bcy_adapter = adapter.BiocypherAdapter(wipe = True)
+    # Building a pypath network database:
+    bcy_adapter.build_network()
+    # Loading it into Neo4j:
+    bcy_adapter.load_network()
 
 
 if __name__ == '__main__':
