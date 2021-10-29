@@ -1336,7 +1336,16 @@ class Curl(FileOpener):
 
             if os.path.exists(self.target.name):
 
-                os.remove(self.target.name)
+                try:
+
+                    os.remove(self.target.name)
+
+                except PermissionError:
+
+                    self._log(
+                        'Could not remove `%s`, permission denied.' %
+                        self.target.name
+                    )
 
 
     def progress_setup(self):
