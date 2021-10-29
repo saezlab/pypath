@@ -8,7 +8,7 @@ the "create_and_update_db.py" script in this directory.
 
 Copyright 2021, Heidelberg University Clinic
 
-File author(s): Denés Turei
+File author(s): Dénes Türei
                 Sebastian Lobentanzer
                 ...
 
@@ -26,9 +26,10 @@ import pypath.core.network as pypath_network
 import pypath.resources.network as pypath_netres
 import pypath.share.session as _session
 
-class ToBioCypher(_session.Logger):
 
-    
+class BiocypherAdapter(_session.Logger):
+
+
     def __init__(
         self,
         db_uri = 'neo4j://localhost:7687',
@@ -37,7 +38,7 @@ class ToBioCypher(_session.Logger):
         network = None,
     ):
 
-        _session.Logger.__init__(self, name = 'pp_tbc')
+        _session.Logger.__init__(self, name = 'bcy_adapter')
 
         self._db_config = {
             'uri': db_uri,
@@ -106,13 +107,17 @@ class ToBioCypher(_session.Logger):
         self.db_close()
 
 
-    def load_pypath(self):
+    def load_network(self):
         """
-        We are loading the pypath network module with the two datasets 
-        'pathway' and 'mirna_target' as an example. The dataset is preloaded
+        Loads a network database with two datasets: 'pathway' and
+        'mirna_target'. Intended to be an example. The dataset is preloaded
         to avoid waiting time when applying multiple database tests.
+        The resulted network database is stored under the ``network``
+        attribute.
         """
+
         n = pypath_network.Network()
         n.load(pypath_netres.pathway)
         n.load(pypath_netres.mirna_target)
-        return n
+
+        self.set_network(n)
