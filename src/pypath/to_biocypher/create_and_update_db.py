@@ -39,7 +39,6 @@ Todo:
 # =======
 
 # Adapter import
-# loads pypath; may take a while if it is the first time due to downloads
 from pypath.to_biocypher.pypath_biocypher_adapter import ToBioCypher
 
 # BioCypher import
@@ -48,28 +47,31 @@ from pypath.to_biocypher.pypath_biocypher_adapter import ToBioCypher
 from biocypher.driver import DatabaseToNeo4j
 
 
-# Setup
-# =====
+def main():
+    # Setup
+    # =====
 
-# instantiate adapter class
-py_tb = ToBioCypher()
+    # instantiate adapter class
+    # loads pypath;
+    py_tb = ToBioCypher()
 
-# hand over driver to biocypher
-db = DatabaseToNeo4j(py_tb.driver)
+    # hand over driver to biocypher
+    db = DatabaseToNeo4j(py_tb.driver)
 
-# We are creating a new database, so we wipe and initialise the local Neo4j 
-# instance. Skip this if you want to update an existing BioCypher graph.
-db.init_db()
+    # We are creating a new database, so we wipe and initialise the local Neo4j
+    # instance. Skip this if you want to update an existing BioCypher graph.
+    db.init_db()
 
 
-# Data input
-# ==========
+    # Data input
+    # ==========
 
-# preload pypath object, to avoid waiting for multiple tests
-net = py_tb.load_pypath()
+    # loading pypath network object, to avoid waiting for multiple tests (?)
+    # may take a while if it is the first time due to downloads
+    net = py_tb.load_pypath()
 
-# create nodes
-db.add_nodes_to_graph(net.nodes.values())
+    # create nodes
+    db.add_nodes_to_graph(net.nodes.values())
 
-# create edges
-db.add_edges_to_graph(net.generate_df_records())
+    # create edges
+    db.add_edges_to_graph(net.generate_df_records())
