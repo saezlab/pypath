@@ -43,7 +43,7 @@ def main():
     # Instantialising the adapter class.
     # We are creating a new database, so we wipe and initialise the local Neo4j
     # instance. Skip this if you want to update an existing BioCypher graph.
-    bcy_adapter = adapter.BiocypherAdapter(wipe = True)
+    bcy_adapter = adapter.BiocypherAdapter(wipe = True, db_name = 'neo4j')
     # Building a pypath network database:
     bcy_adapter.build_network()
     # Loading it into Neo4j:
