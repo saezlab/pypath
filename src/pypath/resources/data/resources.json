@@ -4100,7 +4100,7 @@
     "urls": {
       "webpages": ["https://www.intogen.org/search"]
     },
-    "license": "CC BY-NC 4.0"
+    "license": "CC0 1.0"
   },
   "COSMIC": {
     "synonyms": ["CancerGeneCensus"],
