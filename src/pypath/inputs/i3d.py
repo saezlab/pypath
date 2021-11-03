@@ -19,9 +19,13 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import re
+import sys
+
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.inputs.pfam as pfam_input
+import pypath.share.progress as progress
 
 
 def get_i3d():
