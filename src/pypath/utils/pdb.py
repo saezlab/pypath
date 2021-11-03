@@ -201,9 +201,9 @@ def residue_pdb(pdb, chain, residue):
     data = urllib2.urlopen(url + "?%s" % params)
     result = {}
 
-    return data
-
     for l in data:
+
+        l = l.decode('utf-8')
 
         if not l.startswith('//'):
 
