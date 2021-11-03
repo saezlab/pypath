@@ -1147,8 +1147,10 @@ urls = {
     'intogen': {
         'label': 'IntOGen is a database of cancer related '\
             'genes and mutations',
-        'drivers_url': 'https://www.intogen.org/repository/downloads/'\
-            'intogen_cancer_drivers-2014.12.zip',
+        'db2014_2': 'https://www.intogen.org/download?'\
+            'file=intogen_cancer_drivers-2014.12.zip',
+        'db2020': 'https://www.intogen.org/download?file='\
+            'IntOGen-Drivers-20200201.zip',
     },
     'cancersea': {
         'label': 'Cancer Single Cell State Atlas',
