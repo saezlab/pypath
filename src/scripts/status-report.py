@@ -51,14 +51,15 @@ import bs4
 # we might even fetch it from git before importing.
 
 EXCLUDE = {
+    'biomart_microarrays', # takes too long
     'common',
+    'get_csa', # takes too long
     'go_annotations_quickgo',
     'threedcomplex_complexes',
     '_uniprot_deleted',
     'uniprot_deleted',
     'swissprot_deleted',
     'trembl_deleted',
-    'get_csa',
 }
 
 ARGS = {}
