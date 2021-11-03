@@ -25,6 +25,7 @@ import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.utils.mapping as mapping
 import pypath.inputs.common as inputs_common
+import pypath.inputs.science as science_input
 
 
 def phosphatome_annotations():
@@ -46,8 +47,16 @@ def phosphatome_annotations():
     )
 
     url = urls.urls['phosphatome']['url']
-    c = curl.Curl(url, large = True, silent = False, default_mode = 'rb')
+    path = science_input.science_download(url = url)
+    c = curl.FileOpener(
+        path,
+        compr = 'zip',
+        files_needed = ['aag1796_Tables S1 to S23.xlsx'],
+        large = True,
+        default_mode = 'rb',
+    )
     tbl = inputs_common.read_xls(c.result['aag1796_Tables S1 to S23.xlsx'])
+    result = []
 
     result = collections.defaultdict(set)
 

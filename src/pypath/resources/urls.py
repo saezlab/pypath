@@ -686,8 +686,8 @@ urls = {
     'phosphatome': {
         'label': 'List of human and other phosphatases',
         'webpage': 'http://phosphatome.net/3.0',
-        'url': 'https://stke.sciencemag.org/highwire/filestream/210607/'\
-            'field_highwire_adjunct_files/2/aag1796_Tables_S1_to_S23.zip',
+        'url': 'https://www.science.org/doi/suppl/10.1126/'\
+            'scisignal.aag1796/suppl_file/aag1796_tables_s1_to_s23.zip',
     },
     'dgidb': {
         'label': 'Druggable genes compiled from multiple resources',
