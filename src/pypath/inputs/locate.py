@@ -50,7 +50,7 @@ def locate_localizations(
     )
 
     organism_str = taxonomy.taxids[organism]
-    url = urls.urls['locate']['url'] % organism_str
+    url = urls.urls['locate']['url_rescued'] % organism_str
     fname = url.split('/')[-1][:-4]
 
     c = curl.Curl(

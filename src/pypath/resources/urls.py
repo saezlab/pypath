@@ -1083,6 +1083,8 @@ urls = {
         'label': 'Locate protein localization database',
         'url': 'http://locate.imb.uq.edu.au/info_files/'\
             'LOCATE_%s_v6_20081121.xml.zip',
+        'url_rescued': 'https://rescued.omnipathdb.org/'\
+            'LOCATE_%s_v6_20081121.xml.zip',
     },
     'humap': {
         'label': 'Map of human protein complexes from '\
