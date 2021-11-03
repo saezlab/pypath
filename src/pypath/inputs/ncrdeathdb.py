@@ -70,7 +70,7 @@ def ncrdeathdb_interactions():
             result.append(
                 NcrdeathdbInteraction(
                     ncrna = rna_id,
-                    protein = protein_id,
+                    target_gene = protein_id,
                     ncrna_type = typ,
                     pathway = rec['Pathway'].strip(),
                     effect = rec['Action_Mode'].strip() or None,
