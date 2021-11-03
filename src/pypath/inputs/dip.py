@@ -36,8 +36,10 @@ def dip_interactions(
     strDirect = 'direct interaction'
     strPhysInt = 'physical interaction'
     strSmallS = 'small scale'
-    url = urls.urls['dip']['url'] % ('CR' if core_only else '') \
-        if url is None else url
+    url = (
+        url or
+        (urls.urls['dip']['url_rescued'] % ('CR' if core_only else ''))
+    )
     c = curl.Curl(url, silent = False, large = True)
     f = c.result
     i = []

@@ -77,6 +77,7 @@ def dbptm_enzyme_substrate_old(organism = 9606):
     Downloads enzyme-substrate interactions from dbPTM.
     Returns list of dicts.
     """
+
     if organism is None:
         _organism = None
     elif organism in taxonomy.dbptm_taxids:

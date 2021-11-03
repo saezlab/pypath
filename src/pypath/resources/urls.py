@@ -832,9 +832,13 @@ urls = {
     'dip': {
         'label': 'DIP PSI-MI tab',
         'login': 'http://dip.doe-mbi.ucla.edu/dip/Login.cgi',
-        'url': 'http://dip.mbi.ucla.edu/dip/file?'
-        'ds=current&fn=Hsapi20170205%s&ff=txt',
-        'ik': 'http://dip.doe-mbi.ucla.edu/dip/DIPview.cgi?IK=%u'
+        'url_old': 'http://dip.mbi.ucla.edu/dip/file?'
+            'ds=current&fn=Hsapi20170205%s&ff=txt',
+        'ik': 'http://dip.doe-mbi.ucla.edu/dip/DIPview.cgi?IK=%u',
+        'url': 'https://dip.doe-mbi.ucla.edu/dip/File.cgi?FN=2017/tab25/'
+            'Hsapi20170205.txt.gz',
+        'url_rescued': 'https://rescued.omnipathdb.org/dip/'
+            'Hsapi20170205%s.txt.gz',
     },
     'vaquerizas2009': {
         'label': 'A census of human transcription factors: function, '
