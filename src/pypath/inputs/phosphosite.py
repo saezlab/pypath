@@ -19,6 +19,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from past.builtins import xrange, range
+
 import os
 import sys
 import pickle
@@ -288,7 +290,8 @@ def phosphosite_ptms(organism = 'human'):
     data = c.result
 
     for _ in xrange(4):
-        null = c.result.readline()
+
+        _ = next(c.result)
 
     for r in data:
 
@@ -300,29 +303,48 @@ def phosphosite_ptms(organism = 'human'):
             isoform = 1 if '-' not in uniprot else int(uniprot.split('-')[1])
             uniprot = uniprot.split('-')[0]
             typ = r[3].lower()
+
             if len(typ) == 0:
+
                 typ = r[4].split('-')[1] if '-' in r[4] else None
+
             aa = r[4][0]
             num = int(nondigit.sub('', r[4]))
             motif = remot.match(r[9])
+
             if motif:
+
                 start = num - 7 + len(motif.groups()[0])
                 end = num + 7 - len(motif.groups()[2])
                 instance = r[9].replace('_', '').upper()
+
             else:
+
                 start = None
                 end = None
                 instance = None
 
-            res = intera.Residue(num, aa, uniprot, isoform = isoform)
+            res = intera.Residue(
+                num,
+                aa,
+                uniprot,
+                isoform = isoform,
+            )
             mot = intera.Motif(
-                uniprot, start, end, instance = instance, isoform = isoform)
-            ptm = intera.Ptm(uniprot,
-                             typ = typ,
-                             motif = mot,
-                             residue = res,
-                             source = 'PhosphoSite',
-                             isoform = isoform)
+                uniprot,
+                start,
+                end,
+                instance = instance,
+                isoform = isoform,
+            )
+            ptm = intera.Ptm(
+                uniprot,
+                typ = typ,
+                motif = mot,
+                residue = res,
+                evidences = 'PhosphoSite',
+                isoform = isoform,
+            )
             result.append(ptm)
 
     return result

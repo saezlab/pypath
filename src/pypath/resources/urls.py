@@ -188,49 +188,72 @@ urls = {
     },
     'psite_reg': {
         'label': 'PhosphoSite annotated regulatory sites',
-        'url': 'http://www.phosphosite.org/downloads/Regulatory_sites.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/Regulatory_sites.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Regulatory_sites.gz',
     },
     'psite_bp': {
         'label': 'PhosphoSite kinase substrates in BioPAX format',
-        'url': 'http://www.phosphosite.org/downloads/Kinase_substrates.owl.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Kinase_substrates.owl.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Kinase_substrates.owl.gz',
     },
     'psite_ac': {
         'label': 'PhosphoSite acetylation sites',
-        'url':
-        'http://www.phosphosite.org/downloads/Acetylation_site_dataset.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Acetylation_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Acetylation_site_dataset.gz',
     },
     'psite_kin': {
         'label': 'PhosphoSite kinase-substrate interactions',
-        'url':
-        'http://www.phosphosite.org/downloads/Kinase_Substrate_Dataset.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Kinase_Substrate_Dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Kinase_Substrate_Dataset.gz',
     },
     'psite_me': {
         'label': 'PhosphoSite methylation sites',
-        'url':
-        'http://www.phosphosite.org/downloads/Methylation_site_dataset.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Methylation_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'
+            'Methylation_site_dataset.gz',
     },
     'psite_ga': {
         'label': 'PhosphoSite O-GalNAc sites',
-        'url': 'http://www.phosphosite.org/downloads/O-GalNAc_site_dataset.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'O-GalNAc_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'
+            'O-GalNAc_site_dataset.gz',
     },
     'psite_gl': {
         'label': 'PhosphoSite O-GlcNAc sites',
-        'url': 'http://www.phosphosite.org/downloads/O-GlcNAc_site_dataset.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'O-GlcNAc_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'O-GlcNAc_site_dataset.gz',
     },
     'psite_p': {
         'label': 'PhosphoSite phosphorylation sites',
-        'url':
-        'http://www.phosphosite.org/downloads/Phosphorylation_site_dataset.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Phosphorylation_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Phosphorylation_site_dataset.gz',
     },
     'psite_sm': {
         'label': 'Sumoylation sites',
-        'url':
-        'http://www.phosphosite.org/downloads/Sumoylation_site_dataset.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Sumoylation_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Sumoylation_site_dataset.gz',
     },
     'psite_ub': {
         'label': 'Ubiquitination sites',
-        'url':
-        'http://www.phosphosite.org/downloads/Ubiquitination_site_dataset.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Ubiquitination_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/'\
+            'Ubiquitination_site_dataset.gz',
     },
     'proteomic_ielm': {
         'label': 'Proteomic iELM',
