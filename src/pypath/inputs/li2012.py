@@ -127,7 +127,6 @@ def li2012_dmi():
     """
 
     result = []
-    nondigit = re.compile(r'[^\d]+')
     se = seq.swissprot_seq(isoforms = True)
     data = get_li2012()
 
