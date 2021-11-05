@@ -859,11 +859,11 @@ def phosphosite_interactions_new(cache = True):
         os.path.exists(noref_cache)
     ):
 
-        with pen(curated_cache, 'rb') as fp:
+        with open(curated_cache, 'rb') as fp:
 
             data_curated = pickle.load(fp)
 
-        with pen(noref_cache, 'rb') as fp:
+        with open(noref_cache, 'rb') as fp:
 
             data_noref = pickle.load(fp)
 
