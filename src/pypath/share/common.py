@@ -1176,35 +1176,47 @@ def join_dicts(d1, d2, _from='keys', to='values'): # TODO
     return result
 
 
-psite_mod_types = [('p', 'phosphorylation'),
-                   ('ac', 'acetylation'),
-                   ('ga', 'galactosylation'),
-                   ('gl', 'glycosylation'),
-                   ('sm', 'sumoylation'),
-                   ('ub', 'ubiquitination'),
-                   ('me', 'methylation')]
+psite_mod_types = [
+    ('p', 'phosphorylation'),
+    ('ac', 'acetylation'),
+    ('ga', 'galactosylation'),
+    ('gl', 'glycosylation'),
+    ('sm', 'sumoylation'),
+    ('ub', 'ubiquitination'),
+    ('me', 'methylation'),
+]
 
-psite_mod_types2 = [('p', 'phosphorylation'),
-                    ('ac', 'acetylation'),
-                    ('ga', 'galactosylation'),
-                    ('gl', 'glycosylation'),
-                    ('ub', 'ubiquitination'),
-                    ('me', 'methylation'),
-                    ('sm', 'sumoylation'),
-                    ('sc', 'succinylation'),
-                    ('m1', 'mono-methylation'),
-                    ('m2', 'di-methylation'),
-                    ('m3', 'tri-methylation'),
-                    ('ad', 'adenylation'),
-                    ('pa', 'palmitoylation'),
-                    ('ne', 'neddylation'),
-                    ('sn', 'nitrosylation'),
-                    ('ca', 'caspase-cleavage')]
+psite_mod_types2 = [
+    ('p', 'phosphorylation'),
+    ('ac', 'acetylation'),
+    ('ga', 'galactosylation'),
+    ('gl', 'glycosylation'),
+    ('ub', 'ubiquitination'),
+    ('me', 'methylation'),
+    ('sm', 'sumoylation'),
+    ('sc', 'succinylation'),
+    ('m1', 'mono-methylation'),
+    ('m2', 'di-methylation'),
+    ('m3', 'tri-methylation'),
+    ('ad', 'adenylation'),
+    ('pa', 'palmitoylation'),
+    ('ne', 'neddylation'),
+    ('sn', 'nitrosylation'),
+    ('ca', 'caspase-cleavage'),
+    ('ng', 'n-glycosylation'),
+]
 
 
 pmod_bel = (
     ('Ac', ('acetylation',)),
-    ('ADPRib', ('ADP-ribosylation', 'ADP-rybosylation', 'adenosine diphosphoribosyl',)),
+    (
+        'ADPRib',
+        (
+            'ADP-ribosylation',
+            'ADP-rybosylation',
+            'adenosine diphosphoribosyl',
+        ),
+    ),
     ('Farn', ('farnesylation',)),
     ('Gerger', ('geranylgeranylation',)),
     ('Glyco', ('glycosylation',)),

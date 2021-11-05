@@ -252,7 +252,7 @@ urls = {
         'label': 'Ubiquitination sites',
         'url_old': 'http://www.phosphosite.org/downloads/'\
             'Ubiquitination_site_dataset.gz',
-        'url': 'https://rescued.omnipathdb.org/'\
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
             'Ubiquitination_site_dataset.gz',
     },
     'proteomic_ielm': {

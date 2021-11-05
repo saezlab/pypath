@@ -20,9 +20,9 @@
 #
 
 from past.builtins import xrange, range
+from future.utils import iteritems
 
 import os
-import sys
 import pickle
 import re
 import itertools
@@ -36,9 +36,12 @@ import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.common as inputs_common
-import pypath.utils.homology as homology
+import pypath.inputs.homologene as homologene
 import pypath.utils.mapping as mapping
 import pypath.share.common as common
+import pypath.share.session as session
+
+_logger = session.Logger(name = 'phosphosite_input')
 
 
 def phosphosite_enzyme_substrate(
@@ -94,7 +97,7 @@ def phosphosite_enzyme_substrate(
 
                     if korg not in orto:
 
-                        orto[korg] = homology.homologene_dict(
+                        orto[korg] = homologene.homologene_dict(
                             ktaxid,
                             taxid,
                             'refseqp',
@@ -270,8 +273,11 @@ def phosphosite_ptm_orthology():
                     result[site1][site2[4]].add(site2)
 
     if len(unknown_taxa):
-        sys.stdout.write('\t:: Unknown taxa encountered:\n\t   %s\n' %
-                         ', '.join(sorted(unknown_taxa)))
+
+        _logger._log(
+            'Unknown organisms encountered: %s' %
+            ', '.join(sorted(unknown_taxa))
+        )
 
     return result
 
@@ -509,7 +515,7 @@ def phosphosite_regsites_one_organism(organism = 9606):
                 lambda other:
                     (
                         other,
-                        homology.homologene_uniprot_dict(
+                        homologene.homologene_uniprot_dict(
                             source = other,
                             target = organism,
                         )
@@ -519,9 +525,12 @@ def phosphosite_regsites_one_organism(organism = 9606):
         )
     )
 
-    ptm_homology = ptm_orthology()
+    ptm_homology = phosphosite_ptm_orthology()
 
-    proteome = uniprot_input.all_uniprots(organism = organism, swissprot = 'YES')
+    proteome = uniprot_input.all_uniprots(
+        organism = organism,
+        swissprot = 'YES',
+    )
 
     for substrate, regs in iteritems(regsites):
 
@@ -544,6 +553,14 @@ def phosphosite_regsites_one_organism(organism = 9606):
                 reg_organism = taxonomy.taxa[reg['organism']]
 
                 if reg_organism not in organisms:
+                    continue
+
+                if reg['modt'] not in mod_types:
+
+                    _logger._log(
+                        'Unknown PhosphoSite modification '
+                        'type code: %s' % reg['modt']
+                    )
                     continue
 
                 mod_type = mod_types[reg['modt']]
