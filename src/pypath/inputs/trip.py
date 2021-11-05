@@ -27,7 +27,7 @@ import pickle
 
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
-import pypath.share.settings as settings
+import pypath.share.cache as cache
 import pypath.share.session as session
 import pypath.share.common as common
 
@@ -47,7 +47,7 @@ def take_a_trip(cachefile = None):
         the path queried from the ``settings`` module.
     """
 
-    cachefile = cachefile or settings.get('trip_preprocessed')
+    cachefile = cachefile or cache.cache_item('trip_preprocessed')
 
     if os.path.exists(cachefile):
         _log(

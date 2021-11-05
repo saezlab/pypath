@@ -334,10 +334,6 @@ def reset_all():
                 )
             )
 
-    for k in in_cachedir:
-
-        setattr(settings, k, os.path.join(settings.cachedir, _defaults[k]))
-
     for k in in_secrets_dir:
 
         setattr(settings, k, os.path.join(settings.secrets_dir, _defaults[k]))

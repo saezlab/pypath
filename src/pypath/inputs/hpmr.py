@@ -36,6 +36,7 @@ import bs4
 import pypath.share.curl as curl
 import pypath.share.common as common
 import pypath.share.progress as progress
+import pypath.share.cache as cache
 import pypath.share.settings as settings
 import pypath.share.session as session_mod
 import pypath.resources.urls as urls
@@ -70,7 +71,7 @@ def get_hpmr(use_cache = None):
             return components
 
 
-    cachefile = settings.get('hpmr_preprocessed')
+    cachefile = cache.cache_item('hpmr_preprocessed')
     use_cache = (
         use_cache
             if isinstance(use_cache, bool) else

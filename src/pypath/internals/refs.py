@@ -33,14 +33,14 @@ import pypath.share.curl as curl
 import pypath.share.common as common
 import pypath.resources.urls as urls
 from pypath.inputs import pubmed as pubmed_input
-import pypath.share.settings as settings
+import pypath.share.cache as cache
 import pypath.inputs.pubmed as pubmed
 
 
 class Reference(object):
-    
+
     __slots__ = ['pmid']
-    
+
     def __init__(self, pmid):
         self.pmid = str(pmid).strip()
 
@@ -58,9 +58,9 @@ class Reference(object):
 
     def info(self):
         return pubmed_input.get_pubmeds([self.pmid])
-    
+
     def __repr__(self):
-        
+
         return '<Reference: %s>' % self.pmid
 
 
@@ -79,11 +79,11 @@ def get_pubmed_data(
         The number of interactions for one reference
         above the study considered to be high-throughput.
     """
-    
-    
+
+
     if cachefile is None:
-        
-        cachefile = settings.get('pubmed_cache')
+
+        cachefile = cache.cache_item('pubmed_cache')
 
     if htp_threshold is not None:
         pp.htp_stats()
@@ -122,11 +122,11 @@ def get_pubmed_data(
 
     points = []
     earliest = []
-    
+
     for e in pp.graph.es:
-        
+
         for s, rs in iteritems(e['refs_by_source']):
-            
+
             pms = [
                 r.pmid for r in rs
                 if (htp_threshold is None or r.pmid not in pp.htp[
@@ -147,5 +147,5 @@ def get_pubmed_data(
     earliest = pd.DataFrame.from_records(earliest)
     points.columns = ['database', 'pmid', 'year', 'journal', 'eid']
     earliest.columns = ['database', 'none', 'year', 'none', 'eid']
-    
+
     return points, earliest
