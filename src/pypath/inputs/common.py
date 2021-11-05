@@ -207,9 +207,9 @@ def read_table(
     cols : dict
         Dictionary of columns to read. Keys identifying fields are returned
         in the result. Values are column numbers.
-    sepLevel1 : str
+    sep : str
         Field separator of the file.
-    sepLevel2 : dict
+    sep2 : dict
         Subfield separators and prefixes.
         E.g. {2: ',', 3: '|'}
     hdr : int
@@ -260,13 +260,21 @@ def read_table(
 
                 field = l[col].strip()
 
-                if sep2 is not None:
+                _sep2 = (
+                    sep2[col]
+                        if isinstance(sep2, dict) and col in sep2 else
+                    sep2
+                        if isinstance(sep2, common.basestring) else
+                    None
+                )
 
-                    field = [
+                if _sep2:
+
+                    field = tuple(
                         sf.strip()
-                        for sf in field.split(sep2)
-                        if len(sf) > 0
-                    ]
+                        for sf in field.split(_sep2)
+                        if sf
+                    )
 
                 dic[name] = field
 
