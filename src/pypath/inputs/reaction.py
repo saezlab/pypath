@@ -46,6 +46,7 @@ import pypath.resources.urls as urls
 import pypath.share.progress as progress
 import pypath.share.common as common
 import pypath.share.cache as cache_mod
+import pypath.inputs.acsn as acsn_input
 from pypath.resources import data_formats
 
 
@@ -1113,7 +1114,7 @@ def get_acsn_effects():
         'CATALYSIS', 'PHYSICAL_STIMULATION', 'UNKNOWN_INHIBITION', 'TRANSPORT'
     ])
 
-    data = acsn_interactions()
+    data = acsn_input.acsn_interactions()
 
     effects = []
 
