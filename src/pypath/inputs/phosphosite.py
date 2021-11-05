@@ -224,7 +224,7 @@ def phosphosite_ptm_orthology():
 
         for r in data:
 
-            r = r.decode('utf-8').split('\t')
+            r = common.decode(r, 'utf-8').split('\t')
 
             if len(r) < 10:
 
