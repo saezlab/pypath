@@ -546,7 +546,7 @@ class StatusReport(object):
                 value = fun(*_args, **_kwargs)
                 _log('Function `%s` returned.' % fun_name)
 
-                if isinstance(value, types.GeneratorType):
+                if isinstance(value, (types.GeneratorType, filter, map)):
 
                     _log(
                         'The function returned a generator, '
