@@ -50,6 +50,18 @@ def read_xls(
     """
 
     table = []
+    opened_here = False
+
+    if isinstance(xls_file, common.basestring):
+
+        if os.path.exists(xls_file):
+
+            xls_file = open(xls_file, 'rb')
+            opened_here = True
+
+        else:
+
+            raise FileNotFoundError(xls_file)
 
     if not use_openpyxl:
 
@@ -61,10 +73,6 @@ def read_xls(
                     file_contents = xls_file.read(),
                     on_demand = True,
                 )
-
-            else:
-
-                book = xlrd.open_workbook(xls_file, on_demand = True)
 
             try:
                 if isinstance(sheet, int):
@@ -90,13 +98,6 @@ def read_xls(
             use_openpyxl = True
 
     if use_openpyxl:
-
-        if (
-            isinstance(xls_file, common.basestring) and
-            not os.path.exists(xls_file)
-        ):
-
-            raise FileNotFoundError(xls_file)
 
         try:
 
@@ -137,6 +138,10 @@ def read_xls(
     if 'book' in locals() and hasattr(book, 'release_resources'):
 
         book.release_resources()
+
+    if opened_here:
+
+        xls_file.close()
 
     return table
 
