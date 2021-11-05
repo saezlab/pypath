@@ -28,6 +28,7 @@ import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 import pypath.inputs.common as inputs_common
+import pypath.inputs.science as science
 
 
 def get_proteinatlas(normal = True, pathology = True, cancer = True):
@@ -192,6 +193,7 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
 
 
 def proteinatlas_subcellular_annotations():
+
     ProteinatlasSubcellularAnnotation = collections.namedtuple(
         'ProteinatlasSubcellularAnnotation',
         [
@@ -244,14 +246,8 @@ def proteinatlas_secretome_annotations():
 
 
     url = urls.urls['proteinatlas']['secretome']
-
-    c = curl.Curl(
-        url,
-        large = True,
-        silent = False,
-    )
-
-    reader = inputs_common.read_xls(c.fileobj.name)[1:]
+    path = science.science_download(url)
+    reader = inputs_common.read_xls(path)[1:]
     result = collections.defaultdict(set)
 
     for rec in reader:

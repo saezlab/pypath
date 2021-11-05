@@ -590,8 +590,11 @@ urls = {
         'pathology': 'http://www.proteinatlas.org/download/pathology.tsv.zip',
         'subcell': 'https://www.proteinatlas.org/download/'\
             'subcellular_location.tsv.zip',
-        'secretome': 'https://stke.sciencemag.org/highwire/filestream/'\
+        'secretome_old': 'https://stke.sciencemag.org/highwire/filestream/'\
             '216463/field_highwire_adjunct_files/1/aaz0274_Data_file_S2.xlsx',
+        'secretome': 'https://www.science.org/action/downloadSupplement?'\
+            'doi=10.1126%2Fscisignal.aaz0274&'\
+            'file=aaz0274_data_file_s2.xlsx',
         'ig_genes': 'https://stke.sciencemag.org/highwire/filestream/'\
             '216463/field_highwire_adjunct_files/0/aaz0274_Data_file_S1.xlsx',
 
