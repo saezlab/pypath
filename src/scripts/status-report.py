@@ -51,10 +51,13 @@ import bs4
 # we might even fetch it from git before importing.
 
 EXCLUDE = {
+    'biogps_annotations', # calls biomart_microarrays
     'biomart_microarrays', # takes too long
     'common',
+    'get_3did_dmi', # takes too long
     'get_csa', # takes too long
     'go_annotations_quickgo',
+    'process_3did_dmi', # calls get_3did_dmi
     'threedcomplex_complexes',
     '_uniprot_deleted',
     'uniprot_deleted',
