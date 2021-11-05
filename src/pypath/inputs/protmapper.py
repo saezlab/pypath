@@ -26,6 +26,7 @@ import collections
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.share.common as common
+import pypath.share.settings as settings
 
 
 def get_protmapper():
@@ -39,7 +40,14 @@ def get_protmapper():
 
     url = urls.urls['protmapper']['url']
     files = urls.urls['protmapper']['files']
-    c = curl.Curl(url, large = True, silent = False, files_needed = files)
+    c = curl.Curl(
+        url,
+        large = True,
+        silent = False,
+        files_needed = files,
+        req_headers = [settings.get('user_agent')],
+        alpn = False,
+    )
 
     evidences = collections.defaultdict(list)
 
