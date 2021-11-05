@@ -78,6 +78,12 @@ def get_switches_elm():
         'effectors': 22,
         'references': 26,
     }
+    subf = {
+        4: 'UNIPROT:',
+        8: 'UNIPROT:',
+        25: ';',
+        26: ';',
+    }
     table = inputs_common.read_table(
         cols = cols,
         fileObject = buff,
@@ -100,7 +106,11 @@ def get_switches_elm():
         l['modsites'] = [
             (m.group(2), m.group(1))
             for m in
-            [residue.match(s.strip()) for s in l['modsites'].split(';')]
+            (
+                residue.match(s.strip())
+                for s in l['modsites'].split(';')
+                if s
+            )
         ]
         l['intramol'] = True if l['intramol'].strip() == 'TRUE' else False
         l['bs_a_start'] = [x.split(';') for x in l['bs_a_start'].strip()]
@@ -108,12 +118,12 @@ def get_switches_elm():
         l['bs_a_end'] = [x.split(';') for x in l['bs_a_end'].strip()]
         l['bs_b_end'] = [x.split(';') for x in l['bs_b_end'].strip()]
         l['bindingsite_a'] = [
-            x.split(';')
-            for x in l['bindingsite_a'].strip()
+            x.strip()
+            for x in l['bindingsite_a'].split(';')
         ]
         l['bindingsite_b'] = [
-            x.split(';')
-            for x in l['bindingsite_b'].strip()
+            x.strip()
+            for x in l['bindingsite_b'].split(';')
         ]
         l['modifiers'] = [
             x.split(':') for x in l['modifiers'].strip().split(';')
@@ -122,7 +132,7 @@ def get_switches_elm():
         bs_b_ids = {}
         mod_ids = {}
 
-        for bs in l['bindingsite_a'].split(';'):
+        for bs in l['bindingsite_a']:
 
             if ':' in bs:
 
@@ -133,7 +143,7 @@ def get_switches_elm():
 
                 bs_a_ids[bs[0].lower()].append(bs[1])
 
-        for bs in l['bindingsite_b'].split(';'):
+        for bs in l['bindingsite_b']:
 
             if ':' in bs:
 
@@ -145,7 +155,7 @@ def get_switches_elm():
 
                 bs_b_ids[bs[0].lower()].append(bs[1])
 
-        for mod in l['modifiers'].split(';'):
+        for mod in l['modifiers']:
 
             if ':' in mod:
 
