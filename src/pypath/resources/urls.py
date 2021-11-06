@@ -1357,7 +1357,7 @@ urls = {
             'IgSF cell surface interactome.',
         'article': 'https://www.cell.com/cell/fulltext/S0092-8674(20)30933-8',
         'url': 'https://www.cell.com/cms/10.1016/j.cell.2020.07.025/'
-            'attachment/9b456de0-24a4-4728-b071-b631fb7b96d6/mmc4.xlsx',
+            'attachment/656c4057-8b3b-4aa2-99ce-73278e21d93d/mmc4.xlsx',
     },
     'celltalkdb': {
         'label': 'Manually curated ligand-receptor interactions',
