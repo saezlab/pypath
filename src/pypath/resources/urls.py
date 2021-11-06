@@ -682,7 +682,9 @@ urls = {
     'trip': {
         'label': 'The TRP channel database',
         'base': 'http://www.trpchannel.org/',
+        'base_rescued': 'https://rescued.omnipathdb.org/trip/main.html',
         'show': 'http://www.trpchannel.org/proteins/show?id=%s',
+        'show_rescued': 'https://rescued.omnipathdb.org/trip/show-%s.html',
         'intr': 'http://www.trpchannel.org/interactions/show?trp=%s&'
         'interactor=%s',
         'url': 'http://www.trpchannel.org/20141116.csv',

@@ -50,6 +50,7 @@ def take_a_trip(cachefile = None):
     cachefile = cachefile or cache.cache_item('trip_preprocessed')
 
     if os.path.exists(cachefile):
+
         _log(
             'Loading preprocessed TRIP database '
             'content from `%s`' % cachefile
@@ -71,17 +72,23 @@ def take_a_trip(cachefile = None):
     }
 
     interactors = {}
-    base_url = urls.urls['trip']['base']
-    show_url = urls.urls['trip']['show']
+    base_url = urls.urls['trip']['base_rescued']
+    show_url = urls.urls['trip']['show_rescued']
     c = curl.Curl(base_url)
     mainhtml = c.result
     mainsoup = bs4.BeautifulSoup(mainhtml, 'html.parser')
     trppages = common.flat_list(
-        [[a.attrs['href'] for a in ul.find_all('a')]
-         for ul in mainsoup.find(
-             'div', id = 'trp_selector').find('ul').find_all('ul')])
+        [
+            [a.attrs['href'] for a in ul.find_all('a')]
+            for ul in mainsoup.
+                find('div', id = 'trp_selector').
+                find('ul').
+                find_all('ul')
+        ]
+    )
 
     for trpp in trppages:
+
         trp = trpp.split('/')[-1]
         trpurl = show_url % trp
         c = curl.Curl(trpurl, silent = False)
@@ -90,9 +97,11 @@ def take_a_trip(cachefile = None):
         trp_uniprot = trip_find_uniprot(trpsoup)
 
         if trp_uniprot is None or len(trp_uniprot) < 6:
+
             _log('Could not find UniProt for %s' % trp)
 
         for tab in trpsoup.find_all('th', colspan = ['11', '13']):
+
             ttl = titles[tab.text.strip()]
             tab = tab.find_parent('table')
             trip_process_table(tab, result[ttl], intrs, trp_uniprot)
@@ -120,12 +129,15 @@ def trip_process_table(tab, result, intrs, trp_uniprot):
     """
 
     for row in tab.find_all('tr'):
+
         cells = row.find_all(['td', 'th'])
 
         if 'th' not in [c.name for c in cells]:
+
             intr = cells[2].text.strip()
 
             if intr not in intrs:
+
                 intr_uniprot = trip_get_uniprot(intr)
                 intrs[intr] = intr_uniprot
 
@@ -133,6 +145,7 @@ def trip_process_table(tab, result, intrs, trp_uniprot):
                     _log('Could not find UniProt for %s' % intr)
 
             else:
+
                 intr_uniprot = intrs[intr]
 
             if (trp_uniprot, intr_uniprot) not in result:
@@ -153,12 +166,14 @@ def trip_get_uniprot(syn):
         The synonym as shown on TRIP webpage.
     """
 
-    url = urls.urls['trip']['show'] % syn
+    url = urls.urls['trip']['show_rescued'] % syn
     c = curl.Curl(url)
-    html = c.result
-    soup = bs4.BeautifulSoup(html, 'html.parser')
 
-    return trip_find_uniprot(soup)
+    if c.result:
+
+        soup = bs4.BeautifulSoup(c.result, 'html.parser')
+
+        return trip_find_uniprot(soup)
 
 
 def trip_find_uniprot(soup):
@@ -172,7 +187,12 @@ def trip_find_uniprot(soup):
     """
 
     for tr in soup.find_all('div', id = 'tab2')[0].find_all('tr'):
-        if tr.find('td') is not None and tr.find('td').text.strip() == 'Human':
+
+        if (
+            tr.find('td') is not None and
+            tr.find('td').text.strip() == 'Human'
+        ):
+
             uniprot = tr.find_all('td')[2].text.strip()
 
             return uniprot
