@@ -551,6 +551,8 @@ class ProteinHomology(Proteomes):
             Set of UniProt IDs of homologous proteins in the target taxon.
         """
 
+        protein = common.to_list(protein)
+
         source = self.get_source(source)
 
         homologene = self.homologene if homologene is None else homologene
@@ -571,7 +573,6 @@ class ProteinHomology(Proteomes):
         }
 
         for p in protein:
-
 
             result.update(
                 {
