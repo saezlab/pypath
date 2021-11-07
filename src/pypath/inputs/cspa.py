@@ -111,12 +111,12 @@ def cspa_cell_types(organism = 9606):
                     None
                 )
 
-    return result
+    return dict(result)
 
 
 def cspa_cell_type_annotations(organism = 9606):
-    
-    
+
+
     CspaCellType = collections.namedtuple(
         'CspaCellType',
         [
@@ -124,24 +124,24 @@ def cspa_cell_type_annotations(organism = 9606):
             'value',
         ],
     )
-    
-    
+
+
     cell_type_data = cspa_cell_types(organism = organism)
-    
-    
+
+
     result = collections.defaultdict(set)
-    
+
     for cell_type, data in iteritems(cell_type_data):
-        
+
         for uniprot, value in iteritems(data):
-            
+
             if value:
-                
+
                 result[uniprot].add(
                     CspaCellType(
                         cell_type = cell_type,
                         value = value,
                     )
                 )
-    
+
     return dict(result)
