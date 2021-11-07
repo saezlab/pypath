@@ -43,6 +43,7 @@ import json
 import argparse
 import weakref
 import types
+import csv
 
 import bs4
 
@@ -549,7 +550,15 @@ class StatusReport(object):
                 value = fun(*_args, **_kwargs)
                 _log('Function `%s` returned.' % fun_name)
 
-                if isinstance(value, (types.GeneratorType, filter, map)):
+                if isinstance(
+                    value,
+                    (
+                        types.GeneratorType,
+                        filter,
+                        map,
+                        csv.DictReader,
+                    )
+                ):
 
                     _log(
                         'The function returned a generator, '
