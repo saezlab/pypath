@@ -1040,7 +1040,9 @@ urls = {
     'hpmri': {
         'label': 'Human Plasma Membrane Receptome "browse" view',
         'browse': 'http://www.receptome.org/Families/FamNav/'\
-            'famnav.asp?undefined'
+            'famnav.asp?undefined',
+        'browse_rescued': 'https://rescued.omnipathdb.org/hpmr/famnav.html',
+        'genes_rescued': 'https://rescued.omnipathdb.org/hpmr/genes.tar.gz',
     },
     'cellphonedb': {
         'label': 'Intercellular communication database from Teichmann lab',

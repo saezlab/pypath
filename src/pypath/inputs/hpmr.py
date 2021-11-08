@@ -25,6 +25,7 @@ import os
 import re
 import collections
 import itertools
+import shutil
 
 try:
     import cPickle as pickle
@@ -79,6 +80,7 @@ def get_hpmr(use_cache = None):
     )
 
     if os.path.exists(cachefile) and use_cache:
+
         _log('Reading HPMR data from cache file `%s`.' % cachefile)
 
         return pickle.load(open(cachefile, 'rb'))
@@ -97,7 +99,7 @@ def get_hpmr(use_cache = None):
     families = {}
     recpages = []
 
-    c = curl.Curl(urls.urls['hpmri']['browse'])
+    c = curl.Curl(urls.urls['hpmri']['browse_rescued'])
     soup = bs4.BeautifulSoup(c.result, 'html.parser')
 
     this_family = ('0', None)
@@ -105,27 +107,34 @@ def get_hpmr(use_cache = None):
     this_subsubfamily = ('0', None)
 
     for a in soup.find_all('a'):
+
         a_title = a.attrs['title'] if 'title' in a.attrs else None
 
         if a_title not in a_titles:
+
             continue
 
         if a_title == a_family_title:
+
             family_id = refamid.match(a.attrs['href']).groups()[0]
 
             if family_id.startswith(this_subfamily[0]):
+
                 this_subsubfamily = (family_id, a.text)
 
             elif family_id.startswith(this_family[0]):
+
                 this_subfamily = (family_id, a.text)
                 this_subsubfamily = ('0', None)
 
             else:
+
                 this_family = (family_id, a.text)
                 this_subfamily = ('0', None)
                 this_subsubfamily = ('0', None)
 
         elif a_title == a_receptor_title:
+
             recpages.append((
                 a.attrs['href'],
                 this_family[1],
@@ -137,20 +146,42 @@ def get_hpmr(use_cache = None):
 
     i_complex = 0
 
+    regene = re.compile(r'Param=([^&]+)&ProtId=(\d+)&ProtType=(\w+)')
+
+    genes_curl = curl.Curl(
+        urls.urls['hpmri']['genes_rescued'],
+        silent = False,
+        large = True,
+    )
+
     for url, family, subfamily, subsubfamily in recpages:
-        prg.step()
 
-        c = curl.Curl(url)
+        protein, prot_id, prot_type = regene.search(url).groups()
+        fname = 'gene_%s-%s-%s.html' % (protein, prot_id, prot_type)
+        prg.step(status = 'Processing `%s`' % fname)
 
-        if c.result is None:
-            #print('No receptor page: %s' % url)
+        _log(
+            'Accessing `%s` from `%s` (%s).' % (
+                fname,
+                genes_curl.cache_file_name,
+                genes_curl.url,
+            )
+        )
+
+        if fname not in genes_curl.result:
+
+            _log('File `%s` not found in the archive.' % fname)
             continue
 
-        soup = bs4.BeautifulSoup(c.result, 'html.parser')
+        soup = bs4.BeautifulSoup(
+            genes_curl.result[fname].read(),
+            'html.parser',
+        )
         ints = soup.find('div', {'id': 'GeneInts'})
 
         if not ints:
-            #print('No interactions: %s' % url)
+
+            _log('No interactions: `%s`' % url)
             continue
 
         recname = rerecname.search(
@@ -159,12 +190,14 @@ def get_hpmr(use_cache = None):
         recname = recname.groups()[0] if recname else 'Unknown'
 
         if recname == 'Unknown':
-            # print('Could not find receptor name: %s' % url)
+
+            _log('Could not find receptor name: `%s`' % url)
             continue
 
         recname_u = mapping.map_name0(recname, 'genesymbol', 'uniprot')
 
         if not recname_u:
+
             continue
 
         families[recname_u] = (
@@ -174,18 +207,22 @@ def get_hpmr(use_cache = None):
         )
 
         for td in ints.find_all('td'):
+
             interactors = []
 
             for span in td.find_all('span', {'class': 'IntRow'}):
+
                 ints = reint.search(span.text)
 
                 if ints:
+
                     interactors.append(ints.groups())
 
             references = []
 
             for ref in td.find_all(
-                'a', {'title': 'click to open reference in new window'}):
+                'a', {'title': 'click to open reference in new window'}
+            ):
 
                 references.append(
                     rerefid.search(ref.attrs['href']).groups()[0].strip()
@@ -194,11 +231,13 @@ def get_hpmr(use_cache = None):
             interactors_u = []
 
             for role, genesymbol in interactors:
+
                 uniprot = (
                     mapping.map_name0(genesymbol, 'genesymbol', 'uniprot')
                 )
 
                 if uniprot:
+
                     interactors_u.append((role, uniprot))
 
             interactions.extend([
@@ -212,6 +251,7 @@ def get_hpmr(use_cache = None):
                 recname = recname_u,
                 references = references,
             )
+
             lig_complex = get_complex(
                 interactors_u,
                 'Ligand',
@@ -222,6 +262,7 @@ def get_hpmr(use_cache = None):
                 isinstance(rec_complex, list) or
                 isinstance(lig_complex, list)
             ):
+
                 complex_interactions.append((lig_complex, rec_complex))
 
     prg.terminate()
@@ -232,6 +273,7 @@ def get_hpmr(use_cache = None):
         'complex_interactions': complex_interactions,
     }
 
+    _log('Saving HPMR data to cache file `%s`.' % cachefile)
     pickle.dump(result, open(cachefile, 'wb'))
 
     return result
@@ -246,7 +288,9 @@ def hpmr_complexes(use_cache = None):
     i_complex = 0
 
     for components in itertools.chain(*hpmr_data['complex_interactions']):
+
         if isinstance(components, list):
+
             cplex = intera.Complex(
                 components = components,
                 sources = 'HPMR',
@@ -277,6 +321,7 @@ def hpmr_annotations(use_cache = None):
     hpmr_data = get_hpmr(use_cache = use_cache)
 
     for i in hpmr_data['interactions']:
+
         # first partner is always a receptor
         # (because ligand pages simply don't work on HPMR webpage)
         args1 = ('Receptor',) + (
@@ -284,6 +329,7 @@ def hpmr_annotations(use_cache = None):
                 if i[0] in hpmr_data['families'] else
             (None, None, None)
         )
+
         # the second is either a ligand or another receptor
         args2 = (i[1],) + (
             hpmr_data['families'][i[2]]
@@ -295,6 +341,7 @@ def hpmr_annotations(use_cache = None):
         annot[i[2]].add(HPMRAnnotation(*args2))
 
     for uniprot, classes in iteritems(hpmr_data['families']):
+
         args = ('Receptor',) + classes
 
         annot[uniprot].add(HPMRAnnotation(*args))
