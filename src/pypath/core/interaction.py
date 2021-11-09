@@ -41,6 +41,7 @@ import pypath.share.session as session_mod
 import pypath.share.common as common
 import pypath.utils.mapping as mapping
 import pypath.core.entity as entity
+import pypath.core.attrs as attrs_mod
 import pypath.utils.homology as homology
 
 _logger = session_mod.Logger(name = 'interaction')
@@ -74,7 +75,7 @@ InteractionDataFrameRecord = collections.namedtuple(
 InteractionDataFrameRecord.__new__.__defaults__ = (None,) * 8
 
 
-class Interaction(object):
+class Interaction(attrs_mod.AttributeHandler):
     """
     Represents a unique pair of molecular entities interacting with each
     other. One :py:class:`Interaction` object might represent multiple
@@ -112,7 +113,6 @@ class Interaction(object):
         'direction',
         'positive',
         'negative',
-        'attrs',
     ]
 
     _get_methods = {
@@ -509,22 +509,9 @@ class Interaction(object):
             return self
 
         self._merge_evidences(self, other)
-        self.update_attrs(**other.attrs)
+        attr_mod.AttributeHandler.__iadd__(self, other)
 
         return self
-
-
-    def update_attrs(self, **kwargs):
-
-        for key, val in iteritems(kwargs):
-
-            if key in self.attrs:
-
-                self.attrs[key] = common.combine_attrs((self.attrs[key], val))
-
-            else:
-
-                self.attrs[key] = val
 
 
     def __add__(self, other):

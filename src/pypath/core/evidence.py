@@ -37,12 +37,13 @@ import pypath.internals.refs as refs
 import pypath.share.common as common
 import pypath.share.session as session_mod
 import pypath.core.entity as entity
+import pypath.core.attrs as attrs_mod
 
 _logger = session_mod.Logger(name = 'evidence')
 _log = _logger._log
 
 
-class Evidence(object):
+class Evidence(attrs_mod.AttributeHandler):
     """
     Represents an evidence supporting a relationship such as molecular
     interaction, molecular complex, enzyme-PTM interaction, annotation, etc.
@@ -63,10 +64,11 @@ class Evidence(object):
     ]
 
 
-    def __init__(self, resource, references = None):
+    def __init__(self, resource, references = None, attrs = None):
 
         self.resource = resource
         self.references = self._process_references(references)
+        self.attrs = attrs or {}
 
 
     def reload(self):
