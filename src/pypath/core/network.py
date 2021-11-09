@@ -1250,11 +1250,29 @@ class Network(session_mod.Logger):
                 id_a = id_a.strip() if hasattr(id_a, 'strip') else id_a
                 id_b = id_b.strip() if hasattr(id_b, 'strip') else id_b
 
+                # getting additional edge and node attributes
+                attrs_edge = self._process_attrs(
+                    line,
+                    networkinput.extra_edge_attrs,
+                    lnum,
+                )
+                attrs_node_a = self._process_attrs(
+                    line,
+                    networkinput.extra_node_attrs_a,
+                    lnum,
+                )
+                attrs_node_b = self._process_attrs(
+                    line,
+                    networkinput.extra_node_attrs_b,
+                    lnum,
+                )
+
                 evidences = evidence.Evidences(
                     evidences = (
                         evidence.Evidence(
                             resource = _res,
                             references = refs,
+                            attrs = attrs_edge,
                         )
                         for _res in
                         _resources_secondary + (_resource,)
@@ -1279,23 +1297,6 @@ class Network(session_mod.Logger):
                     'interaction_type': networkinput.interaction_type,
                     'evidences': evidences,
                 }
-
-                # getting additional edge and node attributes
-                attrs_edge = self._process_attrs(
-                    line,
-                    networkinput.extra_edge_attrs,
-                    lnum,
-                )
-                attrs_node_a = self._process_attrs(
-                    line,
-                    networkinput.extra_node_attrs_a,
-                    lnum,
-                )
-                attrs_node_b = self._process_attrs(
-                    line,
-                    networkinput.extra_node_attrs_b,
-                    lnum,
-                )
 
                 if networkinput.mark_source:
 
