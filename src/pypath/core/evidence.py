@@ -802,8 +802,30 @@ class Evidences(object):
         return self.evidences.items()
 
 
+    @property
+    def simple_dict(self):
+        """
+        Returns:
+            (dict): Keys are resource labels, values are
+                :py:class:`pypath.core.evidence.Evidence` objects.
+        """
+
+        return dict(
+            (res.label, ev)
+            for res, ev in iteritems(self)
+        )
+
+
     def serialize_attrs(self):
+        """
+        Serialize the extra attributes of the evidences as a JSON string.
+
+        Returns:
+            (str): A JSON serialized string with the evidences from each
+                resource.
+        """
 
         attrs_mod.AttributeHandler._serialize(
-            self
+            self.simple_dict,
+            default = lambda obj: obj.serialize(),
         )
