@@ -48,13 +48,32 @@ _logger = session_mod.Logger(name = 'hpmr_input')
 _log = _logger._log
 
 
+HpmrInteraction = collections.namedtuple(
+    'HpmrInteraction',
+    (
+        'receptor',
+        'partner_role',
+        'partner',
+        'references',
+        'unambiguous',
+    ),
+)
+
+
 def get_hpmr(use_cache = None):
     """
     Downloads ligand-receptor and receptor-receptor interactions from the
     Human Plasma Membrane Receptome database.
+
+    Args:
+        use_cache (bool): Use the intermediate cache (pickle file of
+            processed data).
+
+    Returns:
+        (dict): Two elements: "interactions" and "families".
     """
 
-    def get_complex(interactors, typ, recname = None, references = None):
+    def get_partner(interactors, typ, recname = None, references = None):
         """
         typ : str
             `Receptor` or `Ligand`.
@@ -63,13 +82,20 @@ def get_hpmr(use_cache = None):
         components = [i[1] for i in interactors if i[0] == typ]
 
         if typ == 'Receptor' and recname:
+
             components.append(recname)
 
         if len(components) == 1:
+
             return components[0]
 
         elif len(components) > 1:
-            return components
+
+            return intera.Complex(
+                components = components,
+                sources = 'HPMR',
+                references = references,
+            )
 
 
     cachefile = cache.cache_item('hpmr_preprocessed')
@@ -95,8 +121,8 @@ def get_hpmr(use_cache = None):
     a_titles = {a_family_title, a_receptor_title}
 
     interactions = []
-    complex_interactions = []
     families = {}
+    complexes = set()
     recpages = []
 
     c = curl.Curl(urls.urls['hpmri']['browse_rescued'])
@@ -240,37 +266,69 @@ def get_hpmr(use_cache = None):
 
                     interactors_u.append((role, uniprot))
 
-            interactions.extend([
-                [recname_u, i[0], i[1], ';'.join(references)]
-                for i in interactors_u
-            ])
+            raw.append(interactors_u)
 
-            rec_complex = get_complex(
-                interactors_u,
-                'Receptor',
-                recname = recname_u,
-                references = references,
+            partner_role = (
+                'receptor'
+                    if all(i[0] == 'Receptor' for i in interactors_u) else
+                'ligand'
             )
 
-            lig_complex = get_complex(
-                interactors_u,
-                'Ligand',
-                references = references,
+            receptors = (
+                recname_u
+                    if partner_role == 'receptor' else
+                get_partner(
+                    interactors_u,
+                    'Receptor',
+                    recname = recname_u,
+                    references = references,
+                )
             )
 
-            if (
-                isinstance(rec_complex, list) or
-                isinstance(lig_complex, list)
-            ):
+            partners = (
+                {u[1] for u in interactors_u} - {recname_u}
+                    if partner_role == 'receptor' else
+                get_partner(
+                    interactors_u,
+                    'Ligand',
+                    references = references,
+                )
+            )
 
-                complex_interactions.append((lig_complex, rec_complex))
+            receptors = common.to_list(receptors)
+            partners = common.to_list(partners)
+
+            unambiguous = (
+                partner_role == 'ligand' or
+                (
+                    len(receptors) == 1 and
+                    len(partners) == 1
+                )
+            )
+
+            for receptor, partner in itertools.product(receptors, partners):
+
+                interactions.append(
+                    HpmrInteraction(
+                        receptor = receptor,
+                        partner = partner,
+                        partner_role = partner_role,
+                        references = ';'.join(references),
+                        unambiguous = unambiguous,
+                    )
+                )
+
+            for entity in itertools.chain(receptors, partners):
+
+                if hasattr(entity, 'components'):
+
+                    complexes.add(entity)
 
     prg.terminate()
 
     result = {
         'interactions': interactions,
         'families': families,
-        'complex_interactions': complex_interactions,
     }
 
     _log('Saving HPMR data to cache file `%s`.' % cachefile)
@@ -280,24 +338,21 @@ def get_hpmr(use_cache = None):
 
 
 def hpmr_complexes(use_cache = None):
+    """
+    HPMR does not contain unambiguous protein complex data, and considering
+    the resource is unmaintained, probably it never will. Hence this function
+    always returns an empty dict.
+    """
 
     hpmr_data = get_hpmr(use_cache = use_cache)
 
-    complexes = {}
-
-    i_complex = 0
-
-    for components in itertools.chain(*hpmr_data['complex_interactions']):
-
-        if isinstance(components, list):
-
-            cplex = intera.Complex(
-                components = components,
-                sources = 'HPMR',
-                ids = 'HPMR-COMPLEX-%u' % i_complex,
-            )
-
-            complexes[cplex.__str__()] = cplex
+    complexes = dict(
+        (
+            cplex.__str__(),
+            cplex,
+        )
+        for cplex in hpmr_data['complexes']
+    )
 
     return complexes
 
