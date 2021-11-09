@@ -23,6 +23,8 @@
 
 from future.utils import iteritems
 
+import json
+
 import pypath.share.common as common
 
 
@@ -84,4 +86,41 @@ class AttributeHandler(object):
         return self
 
 
+    def __iter__(self):
 
+        return iteritems(self.attrs)
+
+
+    def serialize(self, **kwargs):
+        """
+        Generates a JSON string with the full contents of the attributes,
+        without any whitespace or line break.
+
+        Returns:
+            (str): The attributes JSON serialized.
+        """
+
+        return self._serialize(self.attrs, **kwargs)
+
+
+    @staticmethod
+    def _serialize(attrs, **kwargs):
+
+        param = {
+            'indent': None,
+            'separators' (',', ':'),
+        }
+
+        param.update(kwargs)
+
+        return json.dumps(attrs, **param)
+
+
+    def __str__(self):
+
+        return self.serialize()
+
+
+    def __len__(self):
+
+        return len(self.attrs)
