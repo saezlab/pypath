@@ -52,7 +52,6 @@ complex_resources = (
     'Compleat',
     'ComplexPortal',
     'Pdb',
-    'Hpmr',
     'GuideToPharmacology',
     'Humap',
     'Humap2',
