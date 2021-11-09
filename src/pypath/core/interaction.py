@@ -270,7 +270,7 @@ class Interaction(attrs_mod.AttributeHandler):
             self.b_a: pypath_evidence.Evidences(),
         }
 
-        self.attrs = attrs or {}
+        attrs_mod.AttributeHandler.__init__(self, attrs)
 
 
     def reload(self):

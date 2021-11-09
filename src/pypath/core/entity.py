@@ -46,7 +46,7 @@ EntityKey = collections.namedtuple(
 )
 
 
-class Entity(session_mod.Logger):
+class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
     """
     Represents a molecular entity such as protein, miRNA, lncRNA or small
     molecule.
@@ -72,7 +72,6 @@ class Entity(session_mod.Logger):
         'entity_type',
         'id_type',
         'taxon',
-        'attrs',
         'label',
         'key',
     ]
@@ -122,7 +121,7 @@ class Entity(session_mod.Logger):
         self._bootstrap(identifier, id_type, entity_type, taxon)
         self.key = self._key
 
-        self.attrs = attrs or {}
+        attrs_mod.AttributeHandler.__init__(self, attrs)
 
         self.set_label()
 
@@ -444,22 +443,9 @@ class Entity(session_mod.Logger):
 
         if self == other:
 
-            self.update_attrs(**other.attrs)
+            attrs_mod.AttributeHandler.__iadd__(self, other)
 
         return self
-
-
-    def update_attrs(self, **kwargs):
-
-        for key, val in iteritems(kwargs):
-
-            if key in self.attrs:
-
-                self.attrs[key] = common.combine_attrs((self.attrs[key], val))
-
-            else:
-
-                self.attrs[key] = val
 
 
     @classmethod

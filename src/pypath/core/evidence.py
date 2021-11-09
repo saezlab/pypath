@@ -68,7 +68,7 @@ class Evidence(attrs_mod.AttributeHandler):
 
         self.resource = resource
         self.references = self._process_references(references)
-        self.attrs = attrs or {}
+        attrs_mod.AttributeHandler.__init__(self, attrs)
 
 
     def reload(self):
