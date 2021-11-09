@@ -768,3 +768,42 @@ class Evidences(object):
                 )
             )
         )
+
+
+    def __getitem__(self, key):
+        """
+        Key is a :py:class:`pypath.internals.resource.NetworkResourceKey` or
+        an equivalent tuple.
+        """
+
+        return self.evindences[key]
+
+
+    def keys(self):
+        """
+        Returns:
+            (dict_keys): The keys of this dictionary are
+                :py:class:`pypath.internals.resource.NetworkResourceKey`
+                objects.
+        """
+
+        return self.evidences.keys()
+
+
+    def items(self):
+        """
+        Returns:
+            (dict_items): The evidences as a mapping, with
+                :py:class:`pypath.internals.resource.NetworkResourceKey`
+                objects as keys and :py:class:`pypath.core.evidence.Evidence`
+                objects as values.
+        """
+
+        return self.evidences.items()
+
+
+    def serialize_attrs(self):
+
+        attrs_mod.AttributeHandler._serialize(
+            self
+        )
