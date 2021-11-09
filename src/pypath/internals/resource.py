@@ -206,16 +206,35 @@ class ResourceAttributes(object):
         return self.name
 
 
-NetworkResourceKey = collections.namedtuple(
-    'NetworkResourceKey',
-    [
-        'name',
-        'data_type',
-        'interaction_type',
-        'data_model',
-        'via',
-    ]
-)
+class NetworkResourceKey(
+        collections.namedtuple(
+            'NetworkResourceKeyBase',
+            [
+                'name',
+                'data_type',
+                'interaction_type',
+                'data_model',
+                'via',
+            ]
+        )
+    ):
+
+
+    def __new__(cls, *args, **kwargs):
+
+        return super(NetworkResourceKey, cls).__new__(*args, **kwargs)
+
+
+    @property
+    def label(self):
+        """
+        Returns:
+            (str): A label containing the resource name, and if it's a
+                secondary resource, the name of the primary resource
+                separated by an underscore.
+        """
+
+        return '%s_%s' % (self.name, self.via) if self.via else self.name
 
 
 class NetworkResource(ResourceAttributes):
