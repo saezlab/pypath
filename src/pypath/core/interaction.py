@@ -272,8 +272,6 @@ class Interaction(attrs_mod.AttributeHandler):
 
         attrs_mod.AttributeHandler.__init__(self, attrs)
 
-        print('Interaction: ', self.attrs)
-
 
     def reload(self):
         """

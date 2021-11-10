@@ -60,20 +60,14 @@ class AttributeHandler(object):
 
             attrs = attrs.attrs
 
-        attrs = self._add_kwargs(attrs, **kwargs)
-
-        attrs.update(kwargs)
-
-        print(attrs)
-
-        self._update_attrs(attrs)
+        self._update_attrs(attrs, **kwargs)
 
 
     def _update_attrs(self, attrs = None, **kwargs):
 
         attrs = self._add_kwargs(attrs, **kwargs)
 
-        for key, val in iteritems(kwargs):
+        for key, val in iteritems(attrs):
 
             if key in self.attrs:
 
