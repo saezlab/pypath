@@ -99,13 +99,18 @@ class BiocypherAdapter(_session.Logger):
         Builds a network database with two datasets: 'pathway' and
         'mirna_target'. Intended to be an example. The dataset is preloaded
         to avoid waiting time when applying multiple database tests.
-        The resulted network database is stored under the :py:attr:`network`
+        The resulting network database is stored under the :py:attr:`network`
         attribute.
         """
 
         n = pypath_network.Network()
+
+        # load single pypath network components
+        # TODO which are the ones representing the "entire" pypath?
         n.load(pypath_netres.pathway)
         n.load(pypath_netres.mirna_target)
+        n.load(pypath_netres.interaction)
+        n.load(pypath_netres.ligand_receptor)
 
         self.set_network(n)
 

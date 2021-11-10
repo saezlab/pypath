@@ -36,20 +36,39 @@ Todo:
 """
 
 import pypath.biocypher.adapter as adapter
+    
+bcy_adapter = adapter.BiocypherAdapter(wipe = True, db_name = 'neo4j')
+bcy_adapter.build_network()
+
+bcy_adapter = adapter.BiocypherAdapter(wipe = False, db_name = 'neo4j')
 
 
-def main():
+# def main():
 
-    # Instantialising the adapter class.
-    # We are creating a new database, so we wipe and initialise the local Neo4j
-    # instance. Skip this if you want to update an existing BioCypher graph.
-    bcy_adapter = adapter.BiocypherAdapter(wipe = True, db_name = 'neo4j')
-    # Building a pypath network database:
-    bcy_adapter.build_network()
-    # Loading it into Neo4j:
-    bcy_adapter.load_network()
+#     # Instantialising the adapter class.
+#     # We are creating a new database, so we wipe and initialise the local Neo4j
+#     # instance. Set `wipe = False` if you want to update an existing BioCypher 
+#     # graph.
+#     bcy_adapter = adapter.BiocypherAdapter(wipe = True, db_name = 'neo4j')
+
+#     # create another adapter without wipe to test meta node functionality
+#     bcy_adapter = adapter.BiocypherAdapter(wipe = False, db_name = 'neo4j')
 
 
-if __name__ == '__main__':
+#     # Building a pypath network database:
+#     bcy_adapter.build_network()
 
-    main()
+
+#     # Loading it into Neo4j:
+#     # bcy_adapter.load_network()
+
+#     # Does the following:
+#     bcy_adapter.bcy.add_nodes(bcy_adapter.network.nodes.values())
+#     # bcy_adapter.bcy.add_edges(bcy_adapter.network.generate_df_records())
+
+
+
+
+# if __name__ == '__main__':
+
+#     main()

@@ -10,6 +10,8 @@ pypath_log/
 **/.ipynb_checkpoints/
 /pypath
 src/test/pypath
+src/scripts/pypath
 .DS_Store
 *~
-.vscode/launch.json
+.vscode/
+desc.rst
