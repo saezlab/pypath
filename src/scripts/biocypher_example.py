@@ -37,11 +37,11 @@ Todo:
 
 import pypath.biocypher.adapter as adapter
     
-bcy_adapter = adapter.BiocypherAdapter(wipe = True, db_name = 'neo4j')
+bcy_adapter = adapter.BiocypherAdapter(wipe = True)
 bcy_adapter.build_python_object()
 bcy_adapter.translate_python_object_to_neo4j()
 
-bcy_adapter = adapter.BiocypherAdapter(wipe = False, db_name = 'neo4j')
+bcy_adapter = adapter.BiocypherAdapter(wipe = False)
 
 
 # def main():

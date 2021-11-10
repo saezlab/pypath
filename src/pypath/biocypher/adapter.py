@@ -55,7 +55,7 @@ class BiocypherAdapter(_session.Logger):
         db_name = None,
         db_uri = 'neo4j://localhost:7687',
         db_auth = None,
-        config_file = 'db_config.yml',
+        config_file = 'config/db_config.yaml',
         network = None,
         wipe = False,
     ):
