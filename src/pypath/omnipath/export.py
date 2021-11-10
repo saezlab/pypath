@@ -69,14 +69,20 @@ class Export(session.Logger):
         'Category': 'category',
     }
 
-    default_header_bydirs = ['source', 'target', 'source_genesymbol',
-                             'target_genesymbol', 'is_directed',
-                             'is_stimulation', 'is_inhibition',
-                             'consensus_direction',
-                             'consensus_stimulation',
-                             'consensus_inhibition',
-                             'sources',
-                             'references', 'dip_url']
+    default_header_bydirs = [
+        'source',
+        'target',
+        'source_genesymbol',
+        'target_genesymbol',
+        'is_directed',
+        'is_stimulation',
+        'is_inhibition',
+        'consensus_direction',
+        'consensus_stimulation',
+        'consensus_inhibition',
+        'sources',
+        'references',
+    ]
 
     default_dtypes_bydirs = {
         'source': 'category',
@@ -334,7 +340,6 @@ class Export(session.Logger):
                 ),
                 resources,
                 references,
-                self._dip_urls(ia),
             ]
 
             this_row = self.add_extra_fields(ia, this_row, nodes)
@@ -574,8 +579,6 @@ class Export(session.Logger):
                     )
                 ])
 
-                this_edge.append(self._dip_urls(e))
-
                 this_edge = self.add_extra_fields(e, this_edge, uniprots)
 
                 lines.append(this_edge)
@@ -595,7 +598,6 @@ class Export(session.Logger):
                 0,
                 ';'.join(sorted(e['sources'])),
                 ';'.join([r.pmid for r in e['references']]),
-                self._dip_urls(e)
             ]
 
             this_edge = (
@@ -762,30 +764,6 @@ class Export(session.Logger):
         )
 
         self.df.to_csv(outfile, sep = '\t', index = False)
-
-    def _dip_urls(self, e):
-
-        attrs = e.attrs if hasattr(e, 'attrs') else e.attributes
-
-        result = []
-
-        if 'dip_id' in attrs:
-
-            dip_ids = sorted(common.to_set(attrs['dip_id']))
-
-            for dip_id in dip_ids:
-
-                try:
-                    result.append(
-                        urls.urls['dip']['ik'] % (
-                            int(dip_id.split('-')[1][:-1])
-                        )
-                    )
-                except:
-
-                    self._log('Could not find DIP ID: %s' % dip_id)
-
-        return ';'.join(result)
 
 
     def webservice_interactions_df(self):

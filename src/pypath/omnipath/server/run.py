@@ -1069,7 +1069,6 @@ class TableServer(BaseServer):
             'consensus_inhibition': 'int8',
             'sources': 'category',
             'references': 'category',
-            'dip_url': 'category',
             'dorothea_curated': 'category',
             'dorothea_chipseq': 'category',
             'dorothea_tfbs': 'category',
@@ -1786,7 +1785,6 @@ class TableServer(BaseServer):
             'consensus_direction',
             'consensus_stimulation',
             'consensus_inhibition',
-            'dip_url',
         ]
 
         if b'source_target' in req.args:
