@@ -75,6 +75,7 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
         'taxon',
         'label',
         'key',
+        'attrs',
     ]
 
 

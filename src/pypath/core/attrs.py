@@ -147,12 +147,9 @@ class AttributeHandler(object):
         if top_key_prefix:
 
             attrs = dict(
-                itertools.chain(
-                    *(
-                        cls._add_prefix(val, top_key, sep = prefix_sep)
-                        for top_key, val in iteritems(attrs)
-                    )
-                )
+                item
+                for top_key, val in iteritems(attrs)
+                for item in cls._add_prefix(val, top_key, sep = prefix_sep)
             )
 
         return json.dumps(attrs, **param)
@@ -163,13 +160,12 @@ class AttributeHandler(object):
 
         d = d if isinstance(d, dict) else d.attrs
 
-        return dict(
-            (
+        for key, val in iteritems(d):
+
+            yield (
                 '%s%s%s' % (prefix, sep, key),
                 val
             )
-            for key, val in iteritems(d)
-        )
 
 
     def __str__(self):

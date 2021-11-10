@@ -113,6 +113,7 @@ class Interaction(attrs_mod.AttributeHandler):
         'direction',
         'positive',
         'negative',
+        'attrs',
     ]
 
     _get_methods = {
@@ -382,6 +383,11 @@ class Interaction(attrs_mod.AttributeHandler):
 
 
     def direction_key(self, direction):
+        """
+        The direction keys are tuples of `Entity` objects; this method
+        creates these tuples from a tuple of strings. The two strings
+        can be labels or identifiers.
+        """
 
         if direction == 'undirected':
 
@@ -3165,9 +3171,11 @@ class Interaction(attrs_mod.AttributeHandler):
                         )
 
 
-    def serialize_attrs(self, direction):
+    def serialize_attrs(self, direction = None):
 
-        pass
+        evs = self.evidences if not direction else self.direction[direction]
+
+        return evs.serialize_attrs()
 
 
 Interaction._generate_entity_methods()

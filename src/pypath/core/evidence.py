@@ -783,7 +783,7 @@ class Evidences(object):
         an equivalent tuple.
         """
 
-        return self.evindences[key]
+        return self.evidences[key]
 
 
     def keys(self):
