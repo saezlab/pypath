@@ -272,6 +272,8 @@ class Interaction(attrs_mod.AttributeHandler):
 
         attrs_mod.AttributeHandler.__init__(self, attrs)
 
+        print('Interaction: ', self.attrs)
+
 
     def reload(self):
         """
@@ -418,6 +420,7 @@ class Interaction(attrs_mod.AttributeHandler):
             direction = 'undirected',
             effect = 0,
             references = None,
+            attrs = None,
         ):
         """
         Adds directionality information with the corresponding data
@@ -438,6 +441,8 @@ class Interaction(attrs_mod.AttributeHandler):
         :arg set,NoneType references:
             A set of references, used only if the resource have been provided
             as ``NetworkResource`` object.
+        :arg dict attrs:
+            Custom (resource specific) attributes.
         """
 
         direction = self.direction_key(direction)
@@ -464,6 +469,10 @@ class Interaction(attrs_mod.AttributeHandler):
                 references = references,
             )
         )
+
+        if hasattr(evidence, 'update_attrs'):
+
+            evidence.update_attrs(attrs)
 
         self.evidences += evidence
         self.direction[direction] += evidence
@@ -509,7 +518,7 @@ class Interaction(attrs_mod.AttributeHandler):
             return self
 
         self._merge_evidences(self, other)
-        attr_mod.AttributeHandler.__iadd__(self, other)
+        attrs_mod.AttributeHandler.__iadd__(self, other)
 
         return self
 
@@ -527,6 +536,7 @@ class Interaction(attrs_mod.AttributeHandler):
 
         new = Interaction(*self.key)
         new += self
+        new.update_attrs(self)
 
         return new
 
@@ -1100,6 +1110,7 @@ class Interaction(attrs_mod.AttributeHandler):
             resource_name = None,
             interaction_type = 'PPI',
             data_model = None,
+            attrs = None,
             **kwargs
         ):
         """
@@ -1119,6 +1130,8 @@ class Interaction(attrs_mod.AttributeHandler):
         :arg set resource:
             Contains the name(s) of the source(s) from which the
             information was obtained.
+        :arg attrs dict:
+            Custom (resource specific) edge attributes.
         :arg **kwargs:
             Passed to ``pypath.resource.NetworkResource`` if ``resource``
             is not already a ``NetworkResource`` or ``Evidence``
@@ -1146,6 +1159,8 @@ class Interaction(attrs_mod.AttributeHandler):
                 if resource_name is not None else
             None
         )
+
+        evidence.update_attrs(attrs)
 
         direction = self.direction_key(direction)
 
@@ -3150,6 +3165,11 @@ class Interaction(attrs_mod.AttributeHandler):
                             sources = sources,
                             references = refs,
                         )
+
+
+    def serialize_attrs(self, direction):
+
+        pass
 
 
 Interaction._generate_entity_methods()

@@ -61,6 +61,7 @@ class Evidence(attrs_mod.AttributeHandler):
     __slots__ = [
         'resource',
         'references',
+        'attrs',
     ]
 
 
@@ -125,6 +126,7 @@ class Evidence(attrs_mod.AttributeHandler):
         if self == other:
 
             self.references.update(other.references)
+            attrs_mod.AttributeHandler.__iadd__(other)
 
         else:
 
@@ -138,11 +140,14 @@ class Evidence(attrs_mod.AttributeHandler):
 
     def __add__(self, other):
 
-        return Evidence(
+        new = self.__class__(
             resource = self.resource,
             references = self.references | other.references,
         )
+        new.update_attrs(self.attrs.copy())
+        new.update_attrs(other.attrs.copy())
 
+        return new
 
     @property
     def key(self):
@@ -177,9 +182,10 @@ class Evidence(attrs_mod.AttributeHandler):
 
     def __copy__(self):
 
-        return Evidence(
+        return self.__class__(
             resource = self.resource,
             references = copy.copy(self.references),
+            attrs = self.attrs.copy(),
         )
 
 
@@ -825,7 +831,7 @@ class Evidences(object):
                 resource.
         """
 
-        attrs_mod.AttributeHandler._serialize(
+        return attrs_mod.AttributeHandler._serialize(
             self.simple_dict,
             top_key_prefix = top_key_prefix,
             default = lambda obj: obj.serialize(),

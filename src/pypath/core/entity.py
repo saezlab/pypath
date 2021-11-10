@@ -33,6 +33,7 @@ import pypath.share.common as common
 import pypath.share.session as session_mod
 import pypath.utils.mapping as mapping
 import pypath.share.settings as settings
+import pypath.core.attrs as attrs_mod
 
 
 EntityKey = collections.namedtuple(

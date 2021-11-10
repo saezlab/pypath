@@ -40,12 +40,12 @@ class AttributeHandler(object):
     ]
 
 
-    def __init__(self, attrs):
+    def __init__(self, attrs = None, **kwargs):
 
-        self.attrs = attrs or {}
+        self.attrs = self._add_kwargs(attrs, **kwargs)
 
 
-    def update_attrs(attrs = None, **kwargs):
+    def update_attrs(self, attrs = None, **kwargs):
         """
         Updates the attributes stored here. The attributes with identical
         keys are merged using the :py:func:`pypath.share.common.combine_attrs`
@@ -60,14 +60,18 @@ class AttributeHandler(object):
 
             attrs = attrs.attrs
 
-        attrs = attrs or {}
+        attrs = self._add_kwargs(attrs, **kwargs)
 
         attrs.update(kwargs)
+
+        print(attrs)
 
         self._update_attrs(attrs)
 
 
-    def _update_attrs(attrs):
+    def _update_attrs(self, attrs = None, **kwargs):
+
+        attrs = self._add_kwargs(attrs, **kwargs)
 
         for key, val in iteritems(kwargs):
 
@@ -80,11 +84,33 @@ class AttributeHandler(object):
                 self.attrs[key] = val
 
 
+    @staticmethod
+    def _add_kwargs(attrs = None, **kwargs):
+
+        attrs = attrs or {}
+        attrs.update(kwargs)
+
+        return attrs
+
+
     def __iadd__(self, other):
 
         self.update_attrs(other)
 
         return self
+
+
+    def __add__(self, other):
+
+        new = self.__copy__()
+        new.update_attrs(other.attrs)
+
+        return new
+
+
+    def __copy__(self):
+
+        return self.__class__(self.attrs.copy())
 
 
     def __iter__(self):
@@ -119,7 +145,7 @@ class AttributeHandler(object):
 
         param = {
             'indent': None,
-            'separators' (',', ':'),
+            'separators': (',', ':'),
         }
 
         param.update(kwargs)
@@ -140,6 +166,8 @@ class AttributeHandler(object):
 
     @staticmethod
     def _add_prefix(d, prefix, sep = '_'):
+
+        d = d if isinstance(d, dict) else d.attrs
 
         return dict(
             (

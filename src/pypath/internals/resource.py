@@ -222,7 +222,7 @@ class NetworkResourceKey(
 
     def __new__(cls, *args, **kwargs):
 
-        return super(NetworkResourceKey, cls).__new__(*args, **kwargs)
+        return super(NetworkResourceKey, cls).__new__(cls, *args, **kwargs)
 
 
     @property

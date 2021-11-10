@@ -1279,7 +1279,6 @@ class Network(session_mod.Logger):
                     )
                 )
 
-
                 new_edge = {
                     'id_a': id_a,
                     'id_b': id_b,
@@ -1697,15 +1696,19 @@ class Network(session_mod.Logger):
         return edge_stack
 
 
-    def _process_attrs(self, line, spec, lnum): # TODO
+    def _process_attrs(self, line, spec, lnum):
         """
+        Extracts the extra (custom, resource specific) attributes from a
+        line of the input based on the given specification (defined in the
+        network input definition).
         """
 
         attrs = {}
 
         for col in spec.keys():
-            # extra_edge_attrs and extraNodeAttrs are dicts
-            # of additional parameters assigned to edges and nodes respectively;
+            # extra_edge_attrs and extra_node_attrs are dicts
+            # of additional parameters assigned to edges and nodes
+            # respectively;
             # key is the name of the parameter, value is the col number,
             # or a tuple of col number and the separator,
             # if the column contains additional subfields e.g. (5, ";")
@@ -1958,6 +1961,7 @@ class Network(session_mod.Logger):
         interaction = interaction_mod.Interaction(
             a = entity_a,
             b = entity_b,
+            attrs = extra_attrs,
         )
 
         if not allow_loops and interaction.is_loop():
