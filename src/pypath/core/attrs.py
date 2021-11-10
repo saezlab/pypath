@@ -144,6 +144,18 @@ class AttributeHandler(object):
 
         param.update(kwargs)
 
+        default = param.pop('default', lambda x: x)
+
+        param['default'] = (
+            lambda x:
+                # sets are not serializable by the json module
+                # hence we always convert them to lists
+                list(x)
+                    if isinstance(x, set) else
+                # additional defaults included here
+                default
+        )
+
         if top_key_prefix:
 
             attrs = dict(
