@@ -48,9 +48,9 @@ ROOT = common.ROOT
 
 # this is all what is needed to load the resources
 # included in the pypath package
-'''
+"""
 Old input definitions, should not be used.
-'''
+"""
 obsolate = {
     'signalink2': input_formats.NetworkInput(
         name = 'SignaLink2',
@@ -102,13 +102,13 @@ obsolate = {
         extra_node_attrs_b = {},
     ),
 }
-'''
+"""
 Reaction databases.
 These are not included in OmniPath, because only a minor
 part of their content can be used when processing along
 strict conditions to have only binary interactions with
 references.
-'''
+"""
 
 reaction = {
     'Reaction resources': input_formats.NetworkInput(
@@ -413,11 +413,11 @@ reaction_pc = {
 }
 
 
-'''
+"""
 Pathway databases included in OmniPath.
 These are manually curated, directed, and in most
 of the cases signed interactions, with literature references.
-'''
+"""
 pathway = {
     'trip': input_formats.NetworkInput(
         name = 'TRIP',
@@ -606,7 +606,7 @@ pathway = {
         references = (3, ';'),
         ncbi_tax_id = 9606,
         extra_edge_attrs = {
-            'methods': (2, ';'),
+            'method': (2, ';'),
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
@@ -826,9 +826,9 @@ pathway = {
 # synonym
 activity_flow = pathway
 
-'''
+"""
 Pathway (activity flow) resources without literature references.
-'''
+"""
 pathway_noref = {
     'kegg': input_formats.NetworkInput(
         name = 'KEGG',
@@ -950,12 +950,12 @@ pathway_bad = {
     ),
 }
 
-'''
+"""
 Interaction databases included in OmniPath.
 These are subsets of the named databases, having
 only low throughput, manually curated, undirected
 interactions with literature references.
-'''
+"""
 interaction = {
     'biogrid': input_formats.NetworkInput(
         name = 'BioGRID',
@@ -1152,10 +1152,10 @@ interaction = {
         extra_node_attrs_b = {},
     ),
 }
-'''
+"""
 PTM databases included in OmniPath.
 These supply large sets of directed interactions.
-'''
+"""
 ptm = {
     'psite': input_formats.NetworkInput(
         name = 'PhosphoSite',
@@ -1381,10 +1381,10 @@ ptm = {
 # synonym
 enzyme_substrate = ptm
 
-'''
+"""
 Other PTM datasets which are not used because the lack of
 references.
-'''
+"""
 ptm_misc = {
     'psite_noref': input_formats.NetworkInput(
         name = 'PhosphoSite_noref',
@@ -1520,12 +1520,12 @@ extra_directions = copy.deepcopy(ptm_misc)
 extra_directions.update(copy.deepcopy(pathway_noref))
 extra_directions['acsn'] = copy.deepcopy(reaction_pc['acsn'])
 
-'''
+"""
 Interaction databases not included in OmniPath.
 These were omitted because lack of references,
 or because we could not separate the low throughput,
 manually curated interactions.
-'''
+"""
 interaction_misc = {
     'hippie': input_formats.NetworkInput(
         name = 'HIPPIE',
@@ -1815,7 +1815,7 @@ interaction_htp = {
         references = (7, ','),
         header = False,
         extra_edge_attrs = {
-            'methods': (6, ';'),
+            'method': (6, ';'),
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
@@ -1875,7 +1875,7 @@ interaction_htp = {
         references = (2, ';'),
         ncbi_tax_id = 9606,
         extra_edge_attrs = {
-            'methods': (4, ';'),
+            'method': (4, ';'),
             'type': (3, ';'),
             'id': 5,
         },
@@ -1961,9 +1961,9 @@ interaction_htp = {
     ),
 }
 
-'''
+"""
 Transcriptional regulatory interactions.
-'''
+"""
 transcription_onebyone = {
     'abs': input_formats.NetworkInput(
         name = 'ABS',
@@ -2188,7 +2188,7 @@ transcription_onebyone = {
     ),
 }
 
-'''
+"""
 New default transcription dataset is only TFregulons
 as it is already an integrated resource and
 has sufficient coverage.
@@ -2208,7 +2208,7 @@ pypath.data_formats.transcription['tfregulons'].input_args['levels'] = {
 pa = pypath.PyPath()
 pa.init_network(pypath.data_formats.transcription)
 
-'''
+"""
 transcription_dorothea_old = {
     'dorothea': input_formats.NetworkInput(
         name = 'DoRothEA',
@@ -2282,10 +2282,10 @@ transcription = {}
 transcription.update(copy.deepcopy(transcription_onebyone))
 transcription.update(copy.deepcopy(transcription_dorothea))
 
-'''
+"""
 Old transctiptional regulation input formats.
 Should not be used.
-'''
+"""
 transcription_deprecated = {
     'oreganno_old': input_formats.NetworkInput(
         name = 'ORegAnno',
@@ -2309,9 +2309,9 @@ transcription_deprecated = {
     )
 }
 
-'''
+"""
 miRNA-target resources
-'''
+"""
 mirna_target = {
     'mir2dis': input_formats.NetworkInput(
         name = 'miR2Disease',
@@ -2998,9 +2998,9 @@ pathway['baccin2019'] = copy.deepcopy(ligand_receptor['baccin2019'])
 pathway['baccin2019'].data_model = 'activity_flow'
 pathway['baccin2019'].must_have_references = True
 
-'''
+"""
 The default set of resources in OmniPath.
-'''
+"""
 omnipath = {}
 omnipath.update(pathway)
 omnipath.update(ptm)
@@ -3010,11 +3010,11 @@ del omnipath['netpath']
 #del omnipath['innatedb']
 del omnipath['alz']
 omnipath['hprd'] = interaction_htp['hprd']
-'''
+"""
 Manually curated negative interactions, i.e. pairs of
 proteins proved in experiments to not interact with
 each other.
-'''
+"""
 negative = {
     'negatome': input_formats.NetworkInput(
         name = 'Negatome',
