@@ -894,7 +894,7 @@ class Export(session.Logger):
                         0
                     )
                 ),
-                'extra_attrs': lambda e, d: [e.serialize_attrs(d)],
+                'extra_attrs': lambda e, d: e.serialize_attrs(d),
             }
         )
 
