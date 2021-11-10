@@ -3107,7 +3107,8 @@ gdsc_lst = input_formats.ReadList(
     id_type = 'genesymbol',
     entity_type = 'protein',
     input = os.path.join(ROOT, 'data', 'gdsc.sif'),
-    extra_attrs = {'drugs': 2})
+    extra_attrs = {'drugs': 2},
+)
 
 gdsc_lst = input_formats.ReadList(
     name = 'atg',
@@ -3116,7 +3117,8 @@ gdsc_lst = input_formats.ReadList(
     id_type = 'genesymbol',
     entity_type = 'protein',
     input = os.path.join(ROOT, 'data', 'autophagy.list'),
-    extra_attrs = {'drugs': 2})
+    extra_attrs = {'drugs': 2},
+)
 
 cgc = input_formats.ReadList(
     name = 'cgc',
@@ -3124,7 +3126,8 @@ cgc = input_formats.ReadList(
     id_type = 'entrez',
     entity_type = 'protein',
     input = 'get_cgc',
-    extra_attrs = {})
+    extra_attrs = {},
+)
 
 intogen_cancer = input_formats.ReadList(
     name = 'IntOGen',
@@ -3133,7 +3136,8 @@ intogen_cancer = input_formats.ReadList(
     id_type = 'genesymbol',
     entity_type = 'protein',
     input = None,
-    extra_attrs = {})
+    extra_attrs = {},
+)
 
 reactome_modifications = {
     'phosphorylated': ('phosphorylation', 'X'),
