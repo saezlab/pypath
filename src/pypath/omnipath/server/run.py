@@ -678,6 +678,7 @@ class TableServer(BaseServer):
                 'organism',
                 'curation_effort',
                 'datasets',
+                'extra_attrs',
             },
             'tfregulons_levels':  {'A', 'B', 'C', 'D', 'E'},
             'tfregulons_methods': {
@@ -1080,6 +1081,7 @@ class TableServer(BaseServer):
             'entity_type_source': 'category',
             'entity_type_target': 'category',
             'curation_effort': 'int16',
+            'extra_attrs': 'category',
         },
         annotations = {
             'uniprot': 'category',

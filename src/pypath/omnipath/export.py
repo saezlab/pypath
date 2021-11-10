@@ -47,12 +47,22 @@ simple_types = {bool, int, float, type(None)}
 
 class Export(session.Logger):
 
-    default_header_uniquepairs = ['UniProt_A', 'GeneSymbol_A', 'UniProt_B',
-                                  'GeneSymbol_B', 'Databases', 'PubMed_IDs',
-                                  'Undirected', 'Direction_A-B',
-                                  'Direction_B-A', 'Stimulatory_A-B',
-                                  'Inhibitory_A-B', 'Stimulatory_B-A',
-                                  'Inhibitory_B-A', 'Category']
+    default_header_uniquepairs = [
+        'UniProt_A',
+        'GeneSymbol_A',
+        'UniProt_B',
+        'GeneSymbol_B',
+        'Databases',
+        'PubMed_IDs',
+        'Undirected',
+        'Direction_A-B',
+        'Direction_B-A',
+        'Stimulatory_A-B',
+        'Inhibitory_A-B',
+        'Stimulatory_B-A',
+        'Inhibitory_B-A',
+        'Category',
+    ]
 
     default_dtypes_uniquepairs = {
         'UniProt_A': 'category',
@@ -98,6 +108,7 @@ class Export(session.Logger):
         'sources': 'category',
         'references': 'category',
         'curation_effort': 'int16',
+        'extra_attrs': 'category',
         'entity_type_source': 'category',
         'entity_type_target': 'category',
     }
@@ -598,6 +609,7 @@ class Export(session.Logger):
                 0,
                 ';'.join(sorted(e['sources'])),
                 ';'.join([r.pmid for r in e['references']]),
+                self._dip_urls(e),
             ]
 
             this_edge = (
@@ -882,6 +894,7 @@ class Export(session.Logger):
                         0
                     )
                 ),
+                'extra_attrs': lambda e, d: [e.serialize_attrs(d)],
             }
         )
 
@@ -1025,3 +1038,28 @@ class Export(session.Logger):
             )
 
         return new
+
+
+    def _dip_urls(self, e):
+
+        attrs = e.attrs if hasattr(e, 'attrs') else e.attributes
+
+        result = []
+
+        if 'dip_id' in attrs:
+
+            dip_ids = sorted(common.to_set(attrs['dip_id']))
+
+            for dip_id in dip_ids:
+
+                try:
+                    result.append(
+                        urls.urls['dip']['ik'] % (
+                            int(dip_id.split('-')[1][:-1])
+                        )
+                    )
+                except:
+
+                    self._log('Could not find DIP ID: %s' % dip_id)
+
+        return ';'.join(result)
