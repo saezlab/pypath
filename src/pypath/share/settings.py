@@ -232,11 +232,14 @@ _defaults = {
     # at downloading UniProt datasheets the default very long timeouts,
     # that we use in the curl module, especially because many of our downloads
     # are huge, are too long and better to start the next attempt sooner if
-    # the first fails to respond
+    # the first fails to respond. Similarly for trying to download datasets
+    # via curl.py.
     'uniprot_datasheet_connect_timeout': 10,
     'uniprot_datasheet_timeout': 20,
     'genecards_datasheet_connect_timeout': 10,
     'genecards_datasheet_timeout': 20,
+    'curl_connect_timeout': 10,
+    'curl_timeout': 20,
 
     # certain servers (e.g. Cloudflare) banned curl as an user agent;
     # we use the header below to override the default value in those cases:
