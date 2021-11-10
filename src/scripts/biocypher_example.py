@@ -38,14 +38,15 @@ Todo:
 import pypath.biocypher.adapter as adapter
     
 bcy_adapter = adapter.BiocypherAdapter(wipe = True, db_name = 'neo4j')
-bcy_adapter.build_network()
+bcy_adapter.build_python_object()
+bcy_adapter.translate_python_object_to_neo4j()
 
 bcy_adapter = adapter.BiocypherAdapter(wipe = False, db_name = 'neo4j')
 
 
 # def main():
 
-#     # Instantialising the adapter class.
+#     # Instantiating the adapter class.
 #     # We are creating a new database, so we wipe and initialise the local Neo4j
 #     # instance. Set `wipe = False` if you want to update an existing BioCypher 
 #     # graph.
@@ -56,15 +57,11 @@ bcy_adapter = adapter.BiocypherAdapter(wipe = False, db_name = 'neo4j')
 
 
 #     # Building a pypath network database:
-#     bcy_adapter.build_network()
+#     bcy_adapter.build_python_object()
 
 
 #     # Loading it into Neo4j:
-#     # bcy_adapter.load_network()
-
-#     # Does the following:
-#     bcy_adapter.bcy.add_nodes(bcy_adapter.network.nodes.values())
-#     # bcy_adapter.bcy.add_edges(bcy_adapter.network.generate_df_records())
+#     # bcy_adapter.translate_python_object_to_neo4j()
 
 
 

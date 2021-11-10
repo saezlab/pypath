@@ -94,7 +94,7 @@ class BiocypherAdapter(_session.Logger):
         self.network = network
 
 
-    def build_network(self):
+    def build_python_object(self):
         """
         Builds a network database with two datasets: 'pathway' and
         'mirna_target'. Intended to be an example. The dataset is preloaded
@@ -107,17 +107,26 @@ class BiocypherAdapter(_session.Logger):
 
         # load single pypath network components
         # TODO which are the ones representing the "entire" pypath?
-        n.load(pypath_netres.pathway)
-        n.load(pypath_netres.mirna_target)
-        n.load(pypath_netres.interaction)
-        n.load(pypath_netres.ligand_receptor)
+        exclude = {'TRIP', 'CellChatDB', 'ncRDeathDB', 'DIP', 'Wojtowicz2020'}
+        
+        n.load(pypath_netres.pathway, exclude=exclude)
+        # i want to exclude the ones that make trouble. why is the name not
+        # the same as the designation in the output? where can one get all 
+        # the names in a convenient manner? eg, the name of 'trip' is 'TRIP',
+        # but I needed to go through several modules of code to find out.
+
+        # another question: how do I know which netres objects are relevant?
+
+        #n.load(pypath_netres.mirna_target, exclude=exclude)
+        #n.load(pypath_netres.interaction, exclude=exclude)
+        #n.load(pypath_netres.ligand_receptor, exclude=exclude)
 
         self.set_network(n)
 
 
-    def load_network(self, network = None):
+    def translate_python_object_to_neo4j(self, network = None):
         """
-        Loads a network into the biocypher (Neo4j) backend.
+        Loads a pypath network into the biocypher (Neo4j) backend.
 
         Args:
             network (pypath.core.network.Network): A network database object.
@@ -131,8 +140,27 @@ class BiocypherAdapter(_session.Logger):
             self._log('No network provided.')
             return
 
-        self.bcy.add_nodes(network.nodes.values())
+        # create id-type tuples for nodes
+        # to enable translation between pypath and biocypher notation
+        # TODO: other node properties (as dict?)
+        nodes = network.nodes.values()
+        id_type_tuples = []
+        for n in nodes:
+            id = self._process_id(n.identifier)
+            type = n.entity_type
+            id_type_tuples.append((id, type))
+        self.bcy.add_nodes(id_type_tuples)
+
+        # TODO: same with edges
         self.bcy.add_edges(network.generate_df_records())
+
+
+    def _process_id(self, identifier):
+        """
+        Replace critical symbols in pypath ids so that neo4j doesn't throw
+        a type error.
+        """
+        return str(identifier).replace('COMPLEX:', 'COMPLEX_')
 
 
     def load(self, obj):
@@ -148,4 +176,4 @@ class BiocypherAdapter(_session.Logger):
 
         if hasattr(obj, 'nodes') and hasattr(obj, 'interactions'):
 
-            self.load_network(network = obj)
+            self.translate_python_object_to_neo4j(network = obj)
