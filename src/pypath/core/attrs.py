@@ -24,6 +24,7 @@
 from future.utils import iteritems
 
 import json
+import itertools
 
 import pypath.share.common as common
 
@@ -103,8 +104,18 @@ class AttributeHandler(object):
         return self._serialize(self.attrs, **kwargs)
 
 
-    @staticmethod
-    def _serialize(attrs, **kwargs):
+    @classmethod
+    def _serialize(
+            cls,
+            attrs,
+            top_key_prefix = False,
+            prefix_sep = '_',
+            **kwargs
+        ):
+
+        if not attrs:
+
+            return ''
 
         param = {
             'indent': None,
@@ -113,7 +124,30 @@ class AttributeHandler(object):
 
         param.update(kwargs)
 
+        if top_key_prefix:
+
+            attrs = dict(
+                itertools.chain(
+                    *(
+                        cls._add_prefix(val, top_key, sep = prefix_sep)
+                        for top_key, val in iteritems(attrs)
+                    )
+                )
+            )
+
         return json.dumps(attrs, **param)
+
+
+    @staticmethod
+    def _add_prefix(d, prefix, sep = '_'):
+
+        return dict(
+            (
+                '%s%s%s' % (prefix, sep, key),
+                val
+            )
+            for key, val in iteritems(d)
+        )
 
 
     def __str__(self):

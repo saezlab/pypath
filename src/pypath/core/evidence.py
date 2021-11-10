@@ -816,7 +816,7 @@ class Evidences(object):
         )
 
 
-    def serialize_attrs(self):
+    def serialize_attrs(self, top_key_prefix = True):
         """
         Serialize the extra attributes of the evidences as a JSON string.
 
@@ -827,5 +827,6 @@ class Evidences(object):
 
         attrs_mod.AttributeHandler._serialize(
             self.simple_dict,
+            top_key_prefix = top_key_prefix,
             default = lambda obj: obj.serialize(),
         )
