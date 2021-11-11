@@ -770,7 +770,9 @@ pathway = {
         input_args = {'cofactors': False},
         references = 6,
         header = False,
-        extra_edge_attrs = {},
+        extra_edge_attrs = {
+            'category': 7,
+        },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
     ),
