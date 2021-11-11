@@ -1440,6 +1440,14 @@ urls = {
             'assays',
         'ftp': 'https://ftp.ncbi.nlm.nih.gov/pubchem/%s/Extras/%s-%s.gz',
     },
+    'scconnect': {
+        'label': 'Database of ligand-receptor interactions',
+        'annot': 'https://raw.githubusercontent.com/JonETJakobsson/'
+            'scConnect/master/scConnect/data/Gene_annotation/2020-5/'
+            '%s/%ss.csv',
+        'intera': 'https://github.com/JonETJakobsson/scConnect/raw/master/'
+            'scConnect/data/GTP_tables_clean/2020-5/interactions.csv',
+    }
 }
 
 
