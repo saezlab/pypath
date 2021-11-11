@@ -24,6 +24,7 @@ building the tables for the webservice.
 
 from future.utils import iteritems
 
+import os
 import importlib as imp
 import copy
 
@@ -48,8 +49,9 @@ class WebserviceTables(session_mod.Logger):
     def __init__(
             self,
             only_human = False,
+            build_dir = '.',
             outfile_interactions = 'omnipath_webservice_interactions.tsv',
-            outfile_ptms = 'omnipath_webservice_enz_sub.tsv',
+            outfile_enz_sub = 'omnipath_webservice_enz_sub.tsv',
             outfile_complexes = 'omnipath_webservice_complexes.tsv',
             outfile_annotations = 'omnipath_webservice_annotations.tsv',
             outfile_intercell = 'omnipath_webservice_intercell.tsv',
@@ -60,11 +62,30 @@ class WebserviceTables(session_mod.Logger):
         self._log('WebserviceTables initialized.')
 
         self.only_human = only_human
-        self.outfile_interactions = outfile_interactions
-        self.outfile_ptms = outfile_ptms
-        self.outfile_complexes = outfile_complexes
-        self.outfile_annotations = outfile_annotations
-        self.outfile_intercell = outfile_intercell
+
+        databases = (
+            'interactions',
+            'complexes',
+            'enz_sub',
+            'annotations',
+            'intercell',
+        )
+
+        for db in databases:
+
+            attr = 'outfile_%s' % db
+
+            setattr(
+                self,
+                attr,
+                os.path.join(
+                    build_dir,
+                    locals()[attr]
+                )
+            )
+
+        os.makedirs(build_dir, exist_ok = True)
+
         self.network_datasets = (
             network_datasets or
             (
@@ -274,13 +295,13 @@ class WebserviceTables(session_mod.Logger):
 
         self.df_enz_sub = pd.concat(dataframes)
         self.df_enz_sub.to_csv(
-            self.outfile_ptms,
+            self.outfile_enz_sub,
             sep = '\t',
             index = False
         )
 
         self._log('Data frame `ptms` has been exported to `%s`.' % (
-            self.outfile_ptms,
+            self.outfile_enz_sub,
         ))
 
 
