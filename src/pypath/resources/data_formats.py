@@ -3014,6 +3014,7 @@ small_molecule_protein = {
 
 ligand_receptor['guide2pharma'] = copy.deepcopy(pathway['guide2pharma'])
 ligand_receptor['guide2pharma'].data_model = 'ligand_receptor'
+ligand_receptor['guide2pharma'].must_have_references = False
 ligand_receptor['icellnet'] = copy.deepcopy(pathway['icellnet'])
 ligand_receptor['icellnet'].must_have_references = False
 ligand_receptor['icellnet'].data_model = 'ligand_receptor'
