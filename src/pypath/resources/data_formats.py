@@ -3032,6 +3032,9 @@ ligand_receptor['talklr'].data_model = 'ligand_receptor'
 ligand_receptor['cellinker'] = copy.deepcopy(pathway['cellinker'])
 ligand_receptor['cellinker'].must_have_references = False
 ligand_receptor['cellinker'].data_model = 'ligand_receptor'
+ligand_receptor['scconnect'] = copy.deepcopy(pathway['scconnect'])
+ligand_receptor['scconnect'].must_have_references = False
+ligand_receptor['scconnect'].data_model = 'ligand_receptor'
 
 pathway['hpmr'] = copy.deepcopy(ligand_receptor['hpmr'])
 pathway['hpmr'].data_model = 'activity_flow'
