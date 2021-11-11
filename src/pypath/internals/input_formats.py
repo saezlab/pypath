@@ -467,6 +467,7 @@ class NetworkInput:
             expand_complexes = None,
             data_model = None,
             allow_loops = False,
+            only_default_organism = False,
         ):
         """
         :param str mark_source:
@@ -510,6 +511,7 @@ class NetworkInput:
         self.expand_complexes = expand_complexes
         self.data_model = data_model
         self.allow_loops = allow_loops
+        self.only_default_organism = only_default_organism
 
 
     def _field(self, value, cls):
