@@ -1187,14 +1187,27 @@ class Network(session_mod.Logger):
                         networkinput.ncbi_tax_id
                     )
 
-                    if (('include' in taxdA and
-                        taxon_a not in taxdA['include']) or
-                        ('include' in taxdB and
-                        taxon_b not in taxdB['include']) or
-                        ('exclude' in taxdA and
-                        taxon_a in taxdA['exclude']) or
-                        ('exclude' in taxdB and
-                        taxon_b in taxdB['exclude'])):
+                    if (
+                        (
+                            'include' in taxdA and
+                            taxon_a not in taxdA['include']
+                        ) or (
+                            'include' in taxdB and
+                            taxon_b not in taxdB['include']
+                        ) or (
+                            'exclude' in taxdA and
+                            taxon_a in taxdA['exclude']
+                        ) or (
+                            'exclude' in taxdB and
+                            taxon_b in taxdB['exclude']
+                        ) or (
+                            networkinput.only_default_organism and
+                            (
+                                taxon_a != self.ncbi_tax_id or
+                                taxon_b != self.ncbi_tax_id
+                            )
+                        )
+                    ):
 
                         taxon_filtered += 1
                         continue
