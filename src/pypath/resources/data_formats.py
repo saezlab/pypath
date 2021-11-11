@@ -2749,7 +2749,9 @@ ligand_receptor = {
         references = (3, ';'),
         must_have_references = False,
         header = False,
-        extra_edge_attrs = {},
+        extra_edge_attrs = {
+            'partner_role': 1,
+        },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         data_model = 'ligand_receptor',
