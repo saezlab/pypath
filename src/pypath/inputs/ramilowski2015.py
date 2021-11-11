@@ -33,7 +33,7 @@ def ramilowski_interactions(putative = False):
     """
     Downloads and processes ligand-receptor interactions from
     Supplementary Table 2 of Ramilowski 2015.
-    
+
     Returns list of lists with ligand and receptor gene symbols, reference
     and resources as elements.
     """
@@ -43,13 +43,25 @@ def ramilowski_interactions(putative = False):
     del(c)
     raw = inputs_common.read_xls(xlsname, 'All.Pairs')[1:]
 
+    Ramilowski2015Interaction = collections.namedtuple(
+        'Ramilowski2015Interaction',
+        (
+            'ligand',
+            'receptor',
+            'references',
+            'resources',
+        ),
+    )
+
     return [
-        [
-            r[1],
-            r[3],
-            r[13].replace(' ', ''), # references
-            ';'.join(filter(len, itertools.chain(r[5:11], [r[15]])))
-        ]
+        Ramilowski2015Interaction(
+            ligand = r[1],
+            receptor = r[3],
+            references = r[13].replace(' ', ''), # references
+            resources = ';'.join(
+                filter(len, itertools.chain(r[5:11], [r[15]]))
+            ),
+        )
         for r in raw
         if not r[15].startswith('EXCLUDED') and (
             putative or r[15] != 'putative'
