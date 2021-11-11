@@ -821,6 +821,58 @@ pathway = {
         resource = (4, ';'),
         header = False,
     ),
+    'scconnect': input_formats.NetworkInput(
+        name = 'scConnect',
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = 'uniprot',
+        id_type_b = 'uniprot',
+        entity_type_a = 'protein',
+        entity_type_b = 'protein',
+        positive_filters = [
+            (4, {'protein', 'complex'}),
+            (5, {'protein', 'complex'}),
+        ],
+        ncbi_tax_id = {
+            'A': {'col': 2},
+            'B': {'col': 3},
+        },
+        only_default_organism = True,
+        is_directed = True,
+        sign = (
+            6,
+            [
+                'Activation',
+                'Activator',
+                'Agonist',
+                'Biased agonist',
+                'Full agonist',
+                'Irreversible agonist',
+                'Partial agonist',
+                'Positive',
+                'Potentiation',
+                'Slows inactivation',
+            ],
+            [
+                'Antagonist',
+                'Antibody',
+                'Channel blocker',
+                'Competitive',
+                'Feedback inhibition',
+                'Inhibition',
+                'Inhibitor',
+                'Irreversible agonist'
+                'Irreversible inhibition',
+                'Negative',
+                'Pore blocker',
+                'Voltage-dependent inhibition',
+            ],
+        ),
+        input = 'scconnect.scconnect_interactions',
+        references = (7, '|'),
+        header = False,
+    ),
 }
 
 # synonym
