@@ -131,7 +131,7 @@ def scconnect_annotations(organism = 9606):
 
                         result[ups[0]].add(annot)
 
-    return result
+    return dict(result)
 
 
 def scconnect_complexes(organism = 9606):

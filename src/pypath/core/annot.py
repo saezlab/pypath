@@ -122,6 +122,7 @@ protein_sources_default = {
     'Cellcall',
     'Biogps',
     'Cellinker',
+    'Scconnect',
 }
 
 #TODO this should be part of json files
@@ -133,6 +134,7 @@ complex_sources_default = {
     'IcellnetComplex',
     'CellchatdbComplex',
     'CellinkerComplex',
+    'ScconnectComplex',
 }
 
 #TODO this should be part of json files
@@ -5064,6 +5066,35 @@ class Cellinker(AnnotationBase):
         delattr(self, 'data')
 
 
+class Scconnect(AnnotationBase):
+
+    _eq_fields = ('role',)
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+
+        kwargs['organism'] = ncbi_tax_id
+
+        AnnotationBase.__init__(
+            self,
+            name = 'scConnect',
+            input_method = 'scconnect.scconnect_annotations',
+            ncbi_tax_id = ncbi_tax_id,
+            complexes = False,
+        )
+
+
+    def _process_method(self, *args, **kwargs):
+
+        self.annot = dict(
+            (k, v)
+            for k, v in iteritems(self.data)
+            if not entity.Entity._is_complex(k)
+        )
+
+        delattr(self, 'data')
+
+
 class Biogps(AnnotationBase):
 
     _eq_fields = ('dataset', 'sample', 'probe')
@@ -5289,6 +5320,35 @@ class CellinkerComplex(AnnotationBase):
 
         #  already the appropriate format, no processing needed
         self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class ScconnectComplex(AnnotationBase):
+
+    _eq_fields = ('role',)
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+
+        kwargs['organism'] = ncbi_tax_id
+
+        AnnotationBase.__init__(
+            self,
+            name = 'scConnect',
+            input_method = 'scconnect.scconnect_annotations',
+            ncbi_tax_id = ncbi_tax_id,
+            entity_type = 'complex',
+        )
+
+
+    def _process_method(self, *args, **kwargs):
+
+        self.annot = dict(
+            (k, v)
+            for k, v in iteritems(self.data)
+            if entity.Entity._is_complex(k)
+        )
 
         delattr(self, 'data')
 
