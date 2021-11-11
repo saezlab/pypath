@@ -266,8 +266,6 @@ def get_hpmr(use_cache = None):
 
                     interactors_u.append((role, uniprot))
 
-            raw.append(interactors_u)
-
             partner_role = (
                 'receptor'
                     if all(i[0] == 'Receptor' for i in interactors_u) else
