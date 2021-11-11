@@ -825,6 +825,9 @@ pathway = {
         references = (5, ';'),
         resource = (4, ';'),
         header = False,
+        extra_edge_attrs = {
+            'type': 6,
+        },
     ),
     'scconnect': input_formats.NetworkInput(
         name = 'scConnect',
