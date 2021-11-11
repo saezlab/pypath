@@ -806,6 +806,9 @@ pathway = {
         references = 2,
         resource = 3,
         header = False,
+        extra_edge_attrs = {
+            'putative': 4,
+        },
     ),
     'cellinker': input_formats.NetworkInput(
         name = 'Cellinker',
