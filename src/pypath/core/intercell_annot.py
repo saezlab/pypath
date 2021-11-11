@@ -1826,6 +1826,14 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'receptor',
         scope = 'generic',
+        resource = 'scConnect',
+        args = {
+            'role': 'receptor',
+        },
+    ),
+    af.AnnotDef(
+        name = 'receptor',
+        scope = 'generic',
         resource = 'connectomeDB2020',
         args = {
             'role': 'receptor',
@@ -4133,6 +4141,14 @@ annot_combined_classes = (
                 'Cytokine-cytokine receptor interaction',
                 'Secreted protein to receptor interaction',
             },
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand',
+        scope = 'generic',
+        resource = 'scConnect',
+        args = {
+            'role': 'ligand',
         },
     ),
     af.AnnotDef(
