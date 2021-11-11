@@ -22,6 +22,7 @@
 import os
 import re
 import itertools
+import collections
 
 import pypath.share.curl as curl
 import pypath.share.session as session
@@ -36,6 +37,14 @@ def kirouac2010_interactions():
     """
     Returns tuples of ligand-receptor genesymbol pairs.
     """
+
+    Kiruac2010Interaction = collections.namedtuple(
+        'Kiruac2010Interaction',
+        (
+            'ligand',
+            'receptor',
+        ),
+    )
 
     rename = re.compile(r'[A-Z]{2}[A-Z0-9][-A-Z0-9]*')
     rerange = re.compile(r'([0-9])-([0-9])')
@@ -140,6 +149,9 @@ def kirouac2010_interactions():
         namesA = get_names(r[0])
         namesB = get_names(r[1])
 
-        result.extend(list(itertools.product(namesA, namesB)))
+        result.extend([
+            Kiruac2010Interaction(*lig_rec)
+            for lig_rec in itertools.product(namesA, namesB)
+        ])
 
     return result
