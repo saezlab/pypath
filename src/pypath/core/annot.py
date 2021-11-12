@@ -5363,7 +5363,7 @@ class HpmrComplex(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'HPMR_complex',
-            input_method = 'hpmr_complexes',
+            input_method = 'hpmr.hpmr_complexes',
             ncbi_tax_id = 9606,
             entity_type = 'complex',
             **kwargs
@@ -5389,7 +5389,7 @@ class Corum(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = name,
-            input_method = 'corum_complexes',
+            input_method = 'corum.corum_complexes',
             entity_type = 'complex',
             **kwargs
         )
