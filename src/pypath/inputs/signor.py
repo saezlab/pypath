@@ -139,7 +139,7 @@ def signor_interactions(
         silent = False,
         large = True,
         follow = True,
-        timeout = 30,
+        timeout = 180,
         binary_data = binary_data,
         return_headers = True,
     )
