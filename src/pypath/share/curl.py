@@ -1258,6 +1258,12 @@ class Curl(FileOpener):
                         % attempt
                     )
 
+                if attempt > 0:
+
+                    # apparently we have to set it again
+                    # before each perform
+                    self.set_binary_data()
+
                 self.curl.perform()
 
                 self.target.flush()
