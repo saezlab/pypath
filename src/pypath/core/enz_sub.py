@@ -88,6 +88,10 @@ class EnzymeSubstrateProcessor(
 
         """
 
+        if not hasattr(self, '_logger'):
+
+            session_mod.Logger.__init__(self, name = 'enz_sub')
+
         self.mammal_taxa = {9606, 10090, 10116}
         self.nomatch = []
         self.kin_ambig = {}
@@ -117,7 +121,7 @@ class EnzymeSubstrateProcessor(
         homology.Proteomes.__init__(self)
 
         self.set_inputargs(**kwargs)
-        self.load()
+        self.load_enz_sub()
 
 
     def setup(self):
@@ -153,7 +157,7 @@ class EnzymeSubstrateProcessor(
         )
 
 
-    def load(self):
+    def load_enz_sub(self):
 
         self._setup()
         self.load_data()
@@ -215,7 +219,26 @@ class EnzymeSubstrateProcessor(
         Loads the data by the defined input method.
         """
 
+        input_method_name = '%s.%s' % (
+            self.input_method.__module__,
+            self.input_method.__name__,
+        )
+
+        self._log(
+            'Calling `%s` with arguments %s.' % (
+                input_method_name,
+                str(self.inputargs)
+            )
+        )
+
         self.data = self.input_method(**self.inputargs)
+
+        self._log(
+            'Loaded data by `%s`, resulted %u records.' % (
+                input_method_name,
+                len(self.data),
+            )
+        )
 
 
     def _phosphosite_setup(self):
@@ -572,9 +595,9 @@ class EnzymeSubstrateHomologyProcessor(
 
         """
 
-        if not hasattr(self, '_log'):
+        if not hasattr(self, '_logger'):
 
-            session_mod.Logger.__init__(name = 'enz_sub_homology')
+            session_mod.Logger.__init__(self, name = 'enz_sub_homology')
 
         self.target_taxon = ncbi_tax_id
         self.map_by_homology_from = (
