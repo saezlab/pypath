@@ -61,7 +61,6 @@ class Evidence(attrs_mod.AttributeHandler):
     __slots__ = [
         'resource',
         'references',
-        'attrs',
     ]
 
 

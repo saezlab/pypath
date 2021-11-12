@@ -113,7 +113,6 @@ class Interaction(attrs_mod.AttributeHandler):
         'direction',
         'positive',
         'negative',
-        'attrs',
     ]
 
     _get_methods = {
@@ -1948,9 +1947,7 @@ class Interaction(attrs_mod.AttributeHandler):
             for label in ('a', 'b')
         )
 
-        all_new_attrs['attrs'] = (
-            new_attrs['attrs'] if 'attrs' in new_attrs else self.attrs
-        )
+        all_new_attrs['attrs'] = new_attrs.get('attrs', self.attrs)
 
         new = Interaction(
             a = new_a,
