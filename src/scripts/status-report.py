@@ -227,6 +227,8 @@ class StatusReport(object):
             self,
             maindir = None,
             cachedir = None,
+            pickle_dir = None,
+            build_dir = None,
             first = None,
             from_git = None,
         ):
@@ -234,6 +236,8 @@ class StatusReport(object):
         self.parse_args()
         self.maindir = maindir or self.clargs.dir
         self.cachedir = cachedir or self.clargs.cachedir
+        self.pickle_dir = pickle_dir or self.clargs.pickle_dir
+        self.build_dir = build_dir or self.clargs.build_dir
         self.first = first or self.clargs.first
         self.from_git = (
             from_git
@@ -253,6 +257,7 @@ class StatusReport(object):
         self.start()
         self.test_inputs()
         self.finish()
+        self.build()
 
 
     def parse_args(self):
@@ -269,6 +274,16 @@ class StatusReport(object):
         self.clargs.add_argument(
             '-c', '--cachedir',
             help = 'Cache directory path',
+            type = str,
+        )
+        self.clargs.add_argument(
+            '-p', '--pickle_dir',
+            help = 'Database pickle dumps directory path',
+            type = str,
+        )
+        self.clargs.add_argument(
+            '-b', '--build_dir',
+            help = 'Database build directory path',
             type = str,
         )
         self.clargs.add_argument(
@@ -432,16 +447,24 @@ class StatusReport(object):
         )
         self.maindir = os.path.abspath(self.maindir)
         self.cachedir = self.cachedir or os.path.join(self.maindir, 'cache')
+        self.pickle_dir = (
+            self.pickle_dir or
+            os.path.join(self.maindir, 'pickles')
+        )
+        self.build_dir = self.build_dir or os.path.join(self.maindir, 'build')
         self.reportdir = os.path.join(self.maindir, 'report')
 
         os.makedirs(self.reportdir, exist_ok = True)
         os.makedirs(self.cachedir, exist_ok = True)
+        os.makedirs(self.pickle_dir, exist_ok = True)
+        os.makedirs(self.build_dir, exist_ok = True)
 
         os.chdir(self.maindir)
 
         self.init_pypath()
 
         settings.setup(cachedir = self.cachedir)
+        settings.setup(pickle_dir = self.pickle_dir)
 
 
     def init_pypath(self):
@@ -489,16 +512,20 @@ class StatusReport(object):
         import pypath.inputs as inputs
         import pypath.share.session as session
         import pypath.share.settings as settings
+        import pypath.omnipath.server.build as build
 
         globals()['inputs'] = inputs
         globals()['session'] = session
         globals()['settings'] = settings
+        globals()['build'] = build
 
         _logger = session.Logger(name = 'status_report')
         globals()['_logger'] = _logger
         globals()['_log'] = _logger._log
         _log('Working directory: `%s`.' % self.maindir)
         _log('Cache directory: `%s`.' % self.cachedir)
+        _log('Pickle directory: `%s`.' % self.pickle_dir)
+        _log('Build directory: `%s`.' % self.build_dir)
         _log('Reporting directory: `%s`.' % self.reportdir)
         _log('Pypath from git: `%s`.' % self.from_git)
         _log('Pypath local path: `%s`.' % os.path.dirname(inputs.__path__[0]))
@@ -782,6 +809,38 @@ class StatusReport(object):
             _logger._logger.fname,
             os.path.join(self.reportdir, 'pypath.log')
         )
+
+
+    def build(self):
+        """
+        Builds the OmniPath databases.
+        """
+
+        self.builder = build.WebserviceTables(
+            build_dir = self.build_dir,
+        )
+
+        databases = (
+            'interactions',
+            'complexes',
+            'enz_sub',
+            'annotations',
+            'intercell',
+        )
+
+        for db in databases:
+
+            try:
+
+                _log('Starting to build database `%s`.' % db)
+                getattr(self.builder, db)()
+                _log('Finished building database `%s`.' % db)
+
+            except Exception as e:
+
+                exc = sys.exc_info()
+                _log('Failed to build database `%s`:' % db)
+                _logger._log_traceback()
 
 
 if __name__ == '__main__':
