@@ -151,8 +151,17 @@ class BiocypherAdapter(_session.Logger):
         id_type_tuples = gen_nodes(network.nodes.values())
         self.bcy.add_nodes(id_type_tuples)
 
-        # TODO: same with edges
-        #self.bcy.add_edges(network.generate_df_records())
+        # create id-type tuples for edges
+        # to enable translation between pypath and biocypher notation
+        # TODO: other edge properties (as dict?)
+        def gen_edges(edges):
+            for e in edges:
+                src = self._process_id(e.id_a)
+                tar = self._process_id(e.id_b)
+                type = e.type
+                yield (src, tar, type)
+        src_tar_type_tuples = gen_edges(network.generate_df_records())
+        self.bcy.add_edges(src_tar_type_tuples)
 
 
     def _process_id(self, identifier):
