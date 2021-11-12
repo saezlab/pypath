@@ -311,7 +311,9 @@ class SequenceContainer(session.Logger):
         organisms and select the appropriate one.
         """
 
-        session.Logger.__init__(self, name = 'homology')
+        if not hasattr(self, '_logger'):
+
+            session.Logger.__init__(self, name = 'homology')
 
         self.seq_isoforms = isoforms
 
@@ -500,6 +502,13 @@ class ProteinHomology(Proteomes):
             self.load_ensembl(source)
 
 
+    def ensure_source_taxon(self, source):
+
+        if source not in self.orthologs:
+
+            self.load(source = source)
+
+
     def set_default_source(self, source = None):
 
         self.source = self.get_source(source)
@@ -580,6 +589,8 @@ class ProteinHomology(Proteomes):
             p for p in protein
             if self.get_taxon(p) == self.target
         }
+
+        self.ensure_source_taxon(source)
 
         for p in protein:
 
@@ -759,6 +770,10 @@ class PtmHomology(ProteinHomology, SequenceContainer):
         only_swissprot = True,
         strict = True
     ):
+
+        if not hasattr(self, '_logger'):
+
+            session.Logger.__init__(self, name = 'homology')
 
         ProteinHomology.__init__(
             self,
