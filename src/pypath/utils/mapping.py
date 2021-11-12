@@ -1277,6 +1277,10 @@ class Mapper(session_mod.Logger):
                 )
             )
 
+            if id_type == 'complex' or target_id_type == 'complex':
+
+                raise ValueError('Can not translate protein complexes.')
+
             id_types = (id_type, target_id_type)
             id_types_rev = tuple(reversed(id_types))
             resource = None
