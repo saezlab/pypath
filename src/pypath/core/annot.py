@@ -532,7 +532,7 @@ class CustomAnnotation(session_mod.Logger):
                 # Automatically include direct complex annotations
                 cplex_resource = '%s_complex' % classdef.resource
 
-                if cplex_resource in self.annotdb.annot:
+                if cplex_resource in self.annotdb.annots:
 
                     cplex_classdef = copy.copy(classdef)
                     cplex_classdef.resource = cplex_resource
@@ -5335,7 +5335,7 @@ class ScconnectComplex(AnnotationBase):
 
         AnnotationBase.__init__(
             self,
-            name = 'scConnect',
+            name = 'scConnect_complex',
             input_method = 'scconnect.scconnect_annotations',
             ncbi_tax_id = ncbi_tax_id,
             entity_type = 'complex',
