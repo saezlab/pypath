@@ -35,3 +35,6 @@ requires = [
     "wheel",
     "numpy"
 ]
+
+[tool.black]
+exclude = '*'
