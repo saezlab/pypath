@@ -30,7 +30,7 @@ import pypath.share.settings as settings
 import pypath.share.session as session
 import pypath.utils.mapping as mapping
 
-_logger = session.Logger(name = 'inputs.msigdb')
+_logger = session.Logger(name = 'msigdb_input')
 _log = _logger._log
 
 
@@ -97,7 +97,7 @@ def msigdb_download(
             urls.urls['msigdb']['login1'],
             cache = False,
             write_cache = False,
-            follow = False,
+            process = False,
             large = False,
             silent = True,
         )
@@ -131,7 +131,7 @@ def msigdb_download(
                 'j_username': registered_email,
                 'j_password': 'password',
             },
-            follow = False,
+            process = False,
             empty_attempt_again = False,
         )
 

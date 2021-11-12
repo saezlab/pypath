@@ -648,6 +648,20 @@ urls = {
     },
     'msigdb': {
         'label': 'Molecular Signatures Database',
+        'login1': 'https://www.gsea-msigdb.org/gsea/login.jsp',
+        'login2': 'https://www.gsea-msigdb.org/gsea/j_spring_security_check',
+        'url': 'https://www.gsea-msigdb.org/gsea/msigdb/'
+            'download_file.jsp?filePath=/msigdb/release/7.4/%s.v7.4.%s.gmt',
+        'coll': 'https://www.gsea-msigdb.org/gsea/msigdb/collections.jsp',
+        'url_stem': 'https://www.gsea-msigdb.org/gsea/%s',
+        'one_set': 'hhttps://www.gsea-msigdb.org/gsea/msigdb/'
+            'download_geneset.jsp?geneSetName=%s&fileType=txt',
+        'url_all': 'https://www.gsea-msigdb.org/gsea/msigdb/'\
+            'download_file.jsp?filePath=/msigdb/release/7.4/'\
+            'msigdb_v7.4_files_to_download_locally.zip',
+    },
+    'msigdb_old': {
+        'label': 'Molecular Signatures Database',
         'login1': 'http://software.broadinstitute.org/gsea/login.jsp',
         'login2':
         'http://software.broadinstitute.org/gsea/j_spring_security_check',
