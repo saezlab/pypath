@@ -86,7 +86,7 @@ def acsn_interactions(keep_in_complex_interactions = True):
                                 partner_a = a,
                                 partner_b = b,
                                 mechanism = l[1],
-                                references = l[3]
+                                references = l[3].replace('N/A', ''),
                             )
                         )
 
