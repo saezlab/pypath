@@ -534,8 +534,9 @@ class CustomAnnotation(session_mod.Logger):
 
                 if cplex_resource in self.annotdb.annots:
 
-                    cplex_classdef = copy.copy(classdef)
-                    cplex_classdef.resource = cplex_resource
+                    classdef_args = classdef._asdict()
+                    classdef_args['resource'] = cplex_resource
+                    cplex_classdef = annot_formats.AnnotDef(**classdef_args)
 
                     members.update(
                         self.process_annot(cplex_classdef)
