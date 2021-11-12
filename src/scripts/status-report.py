@@ -302,7 +302,7 @@ class StatusReport(object):
     def start(self):
 
         self.reset_counters()
-        self.result = []
+        self.reset_result()
         self.set_timestamp()
         self.set_dirs()
         _log('Started generating pypath inputs status report.')
@@ -314,6 +314,7 @@ class StatusReport(object):
         self.save_results()
         self.compile_html()
         self.copy_log()
+        self.reset_result()
         self.finished = True
         _log('Finished generating pypath inputs status report.')
 
@@ -326,6 +327,11 @@ class StatusReport(object):
 
         self.finished = False
         self.n_modules = -1
+
+
+    def reset_result(self):
+
+        self.result = []
 
 
     def test_inputs(self):
@@ -513,6 +519,7 @@ class StatusReport(object):
         import pypath.share.session as session
         import pypath.share.settings as settings
         import pypath.omnipath.server.build as build
+        import pypath.omnipath as omnipath
 
         globals()['inputs'] = inputs
         globals()['session'] = session
@@ -835,6 +842,10 @@ class StatusReport(object):
                 _log('Starting to build database `%s`.' % db)
                 getattr(self.builder, db)()
                 _log('Finished building database `%s`.' % db)
+                _ = [
+                    omnipath.db.remove_db(db, ncbi_tax_id = ncbi_tax_id)
+                    for ncbi_tax_id in (9606, 10090, 10116)
+                ]
 
             except Exception as e:
 
