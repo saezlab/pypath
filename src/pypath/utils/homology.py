@@ -561,7 +561,11 @@ class ProteinHomology(Proteomes):
             Set of UniProt IDs of homologous proteins in the target taxon.
         """
 
-        protein = common.to_list(protein)
+        protein = (
+            (protein,)
+                if hasattr(protein, 'components') else
+            common.to_list(protein)
+        )
 
         source = self.get_source(source)
 
