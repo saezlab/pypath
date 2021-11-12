@@ -454,6 +454,7 @@ class ProteinHomology(Proteomes):
         self.only_swissprot = only_swissprot
         self.target = taxonomy.ensure_ncbi_tax_id(target)
         self.source = source
+        self._default_source = 9606
         self.set_default_source(source)
         for param in ('homologene', 'ensembl', 'ensembl_hc', 'ensembl_types'):
 
@@ -506,7 +507,7 @@ class ProteinHomology(Proteomes):
 
     def get_source(self, source = None):
 
-        source = source or self.source
+        source = source or self.source or self._default_source
         _source = taxonomy.ensure_ncbi_tax_id(source)
 
         if _source is None:
@@ -554,6 +555,14 @@ class ProteinHomology(Proteomes):
         protein = common.to_list(protein)
 
         source = self.get_source(source)
+
+        if source is None:
+
+            msg = (
+                'Can not translate without knowing the organism of the input.'
+            )
+            _log(msg)
+            raise ValueError(msg)
 
         homologene = self.homologene if homologene is None else homologene
         ensembl = self.ensembl if ensembl is None else ensembl
