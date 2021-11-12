@@ -36,12 +36,33 @@ Todo:
 """
 
 import pypath.biocypher.adapter as adapter
-    
+
+
 bcy_adapter = adapter.BiocypherAdapter(wipe = True)
 bcy_adapter.build_python_object()
 bcy_adapter.translate_python_object_to_neo4j()
 
 bcy_adapter = adapter.BiocypherAdapter(wipe = False)
+
+# profiling
+import cProfile, pstats, io
+import pypath.biocypher.adapter as adapter
+profile = cProfile.Profile()
+profile.enable()
+bcy_adapter = adapter.BiocypherAdapter(wipe = True)
+bcy_adapter.build_python_object()
+bcy_adapter.translate_python_object_to_neo4j()
+profile.disable()
+
+s = io.StringIO()
+sortby = pstats.SortKey.CUMULATIVE
+ps = pstats.Stats(profile, stream=s).sort_stats(sortby)
+ps.print_stats()
+# print(s.getvalue())
+filename = "create_network.prof"
+ps.dump_stats(filename)
+    
+
 
 
 # def main():
