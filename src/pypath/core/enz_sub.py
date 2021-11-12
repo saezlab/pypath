@@ -849,6 +849,11 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                         ev.references
                     )
 
+        self._log(
+            'Starting to build enzyme-substrate '
+            'database for organism `%u`.' % self.ncbi_tax_id
+        )
+
         self.enz_sub = {}
         self.references = collections.defaultdict(
             lambda: collections.defaultdict(set)
@@ -904,12 +909,14 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
 
             if self.map_by_homology_from:
 
+                source_taxons_str = ', '.join(
+                    '%u' % tax for tax in self.map_by_homology_from
+                )
+
                 self._log(
                     'Mapping `%s` by homology from taxons %s to %u.' % (
                         input_method,
-                        ', '.join(
-                            '%u' % tax for tax in self.map_by_homology_from
-                        ),
+                        source_taxons_str,
                         self.ncbi_tax_id,
                     )
                 )
@@ -925,8 +932,25 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
 
                 extend_lists(proc.__iter__())
 
+                self._log(
+                    'Finished translating `%s` by homology '
+                    'from %s to %u.' % (
+                        input_method,
+                        source_taxons_str,
+                        self.ncbi_tax_id,
+                    )
+                )
+
         self.references = dict(self.references)
         self.update_ptm_lookup_dict()
+
+        self._log(
+            'Finished building enzyme-substrate database '
+            'for organism `%u`, resulted %u relationships.' % (
+                self.ncbi_tax_id,
+                len(self),
+            )
+        )
 
 
     def update_ptm_lookup_dict(self):
