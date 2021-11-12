@@ -57,14 +57,13 @@ go_combined_classes = {
         """,
     'extracellular':
         """
-        extracellular region OR
-        extracellular region part
+        extracellular region
         """,
     'intracellular':
         """
         intracellular organelle OR
         intracellular organelle lumen OR
-        intracellular
+        intracellular anatomical structure
         """,
     'cell_surface':
         """
@@ -111,7 +110,7 @@ go_combined_classes = {
         """,
     'receptor regulation':
         """
-        (receptor regulator activity OR
+        (signaling receptor regulator activity OR
         regulation of receptor recycling OR
         receptor clustering OR
         receptor diffusion trapping OR
@@ -123,7 +122,7 @@ go_combined_classes = {
         """,
     'receptor inhibition':
         """
-        receptor inhibitor activity AND
+        signaling receptor inhibitor activity AND
         (extracellular region OR
         cell surface OR
         external side of plasma membrane OR
@@ -273,8 +272,7 @@ go_combined_classes = {
         signal release OR
         hormone secretion OR
         hormone metabolic process OR
-        cytokine production OR
-        cytokine secretion
+        cytokine production
         """,
     'secretion':
         """
@@ -307,7 +305,6 @@ go_single_terms = {
 
         # extracellular
         'extracellular region',
-        'extracellular region part',
 
         # extracellular_matrix
         'extracellular matrix',
@@ -401,16 +398,15 @@ go_single_terms = {
         'regulation of peptidase activity',
         'peptidase activator activity',
         # receptors
-        'receptor regulator activity',
         'signaling receptor activator activity',
-        'receptor inhibitor activity',
+        'signaling receptor inhibitor activity',
         'receptor ligand activity',
         'neurotransmitter receptor regulator activity',
         'signaling receptor activity',
         'negative regulation of signaling receptor activity',
         'positive regulation of signaling receptor activity',
         'signaling receptor activator activity',
-        'receptor inhibitor activity',
+        'signaling receptor inhibitor activity',
         'regulation of signaling receptor activity',
         'receptor complex',
         (
