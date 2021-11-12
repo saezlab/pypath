@@ -963,7 +963,7 @@ class DomainMotif(object):
                 self.domain.__str__(),
                 self.ptm.__str__(),
                 ', '.join(self.evidences.get_resource_names()),
-                ', '.join(self.evidences.get_references()),
+                ', '.join(str(r) for r in self.evidences.get_references()),
             )
         )
 
