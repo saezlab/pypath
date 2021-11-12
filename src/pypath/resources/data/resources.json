@@ -3987,7 +3987,7 @@
         "id_type_enzyme": "genesymbol",
         "id_type_substrate": [
           ["genesymbol", "substrate"],
-          ["refseq", "substrate_refseq"]
+          ["refseqn", "substrate_refseq"]
         ],
         "input_method": "mimp.mimp_enzyme_substrate",
         "organisms": [
