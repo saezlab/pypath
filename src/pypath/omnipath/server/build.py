@@ -275,14 +275,23 @@ class WebserviceTables(session_mod.Logger):
 
         dataframes = []
 
+        self._log('Building `enz_sub` data frame for organism `9606`.')
         enz_sub_a = omnipath.db.get_db('enz_sub')
         enz_sub_a.make_df(tax_id = True)
         dataframes.append(enz_sub_a.df)
+        self._log(
+            'Finished building `enz_sub` data frame for organism `9606`.'
+        )
         omnipath.db.remove_db('enz_sub', ncbi_tax_id = 9606)
 
         if not self.only_human:
 
             for rodent in (10090, 10116):
+
+                self._log(
+                    'Building `enz_sub` data frame for '
+                    'organism `%s`.' % rodent
+                )
 
                 enz_sub_a = omnipath.db.get_db(
                     'enz_sub',
@@ -290,6 +299,12 @@ class WebserviceTables(session_mod.Logger):
                 )
                 enz_sub_a.make_df(tax_id = True)
                 dataframes.append(enz_sub_a.df)
+
+                self._log(
+                    'Finished building `enz_sub` data frame for '
+                    'organism `%s`.' % rodent
+                )
+
                 omnipath.db.remove_db('enz_sub', ncbi_tax_id = rodent)
                 del enz_sub_a
 
@@ -300,7 +315,7 @@ class WebserviceTables(session_mod.Logger):
             index = False
         )
 
-        self._log('Data frame `ptms` has been exported to `%s`.' % (
+        self._log('Data frame `enz_sub` has been exported to `%s`.' % (
             self.outfile_enz_sub,
         ))
 
