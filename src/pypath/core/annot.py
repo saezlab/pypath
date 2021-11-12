@@ -120,7 +120,7 @@ protein_sources_default = {
     'Talklr',
     'Humancellmap',
     'Cellcall',
-    'Biogps',
+    #'Biogps',
     'Cellinker',
     'Scconnect',
 }
@@ -5112,7 +5112,7 @@ class Biogps(AnnotationBase):
                 'organism': ncbi_tax_id,
             },
             ncbi_tax_id = ncbi_tax_id,
-            complexes = False,
+            complexes = (),
             infer_complexes = False,
         )
 
