@@ -4524,5 +4524,18 @@
     "emails": [
       "malin.lagerstrom@neuro.uu.se", "Malin C Lagerström"
     ]
+  },
+  "CellCall": {
+    "full_name": "CellCall",
+    "license": "Artistic-2.0",
+    "urls": {
+      "webpages": ["https://github.com/ShellyCoder/cellcall"],
+      "articles": [
+        "https://academic.oup.com/nar/article/49/15/8520/6332819"
+      ]
+    },
+    "emails": [
+      "biocoder1024@hotmail.com", "Tianyuan Liu"
+    ]
   }
 }
