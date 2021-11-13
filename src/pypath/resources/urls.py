@@ -1449,6 +1449,12 @@ urls = {
             'download/%s-complex.csv',
         'smol': 'http://www.rna-society.org/cellinker/download/%s-sMOL.txt',
     },
+    'cellinker_rescued': {
+        'label': 'Human and mouse ligand-receptor interactions',
+        'lr': 'https://rescued.omnipathdb.org/cellinker/%s.txt',
+        'complex': 'https://rescued.omnipathdb.org/cellinker/%s-complex.csv',
+        'smol': 'https://rescued.omnipathdb.org/cellinker/%s-sMOL.txt',
+    },
     'pubchem': {
         'label': 'NCBI database of bioactive compounds, substances and '
             'assays',
