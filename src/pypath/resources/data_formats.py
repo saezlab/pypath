@@ -1345,7 +1345,7 @@ ptm = {
                 }
             }
         },
-        input = 'domino_interactions',
+        input = 'domino.domino_interactions',
         references = (5, ';'),
         header = False,
         extra_edge_attrs = {
@@ -2672,7 +2672,7 @@ lncrna_target = {
             'col': 6,
             'include': {9606},
         },
-        input = 'ncrdeathdb_interactions',
+        input = 'ncrdeathdb.ncrdeathdb_interactions',
         interaction_type = 'lncrna_post_transcriptional',
         references = 5,
         header = False,
