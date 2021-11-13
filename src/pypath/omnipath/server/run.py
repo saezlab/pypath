@@ -1041,7 +1041,7 @@ class TableServer(BaseServer):
         'tfregulons_chipseq', 'tfregulons_tfbs', 'tfregulons_coexp',
         'type', 'ncbi_tax_id', 'databases', 'organism',
         'curation_effort', 'resources', 'entity_type',
-        'datasets',
+        'datasets', 'extra_attrs',
     }
     enzsub_fields = {
         'references', 'sources', 'databases',
