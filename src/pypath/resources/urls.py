@@ -969,6 +969,8 @@ urls = {
             ' literature curated regulatory interactions',
         'url': 'http://www.rna-society.org/ncrdeathdb/data/'\
             'allNcRNACelldeathData.txt',
+        'url_rescued': 'https://rescued.omnipathdb.org/'
+            'ncRDeathDB_allNcRNACelldeathData.txt',
     },
     'mirecords': {
         'label': 'miRecords experimentally validated'\

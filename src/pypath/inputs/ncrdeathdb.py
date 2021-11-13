@@ -41,7 +41,7 @@ def ncrdeathdb_interactions():
         ),
     )
 
-    url = urls.urls['ncrdeathdb']['url']
+    url = urls.urls['ncrdeathdb']['url_rescued']
     c = curl.Curl(
         url,
         large = True,
