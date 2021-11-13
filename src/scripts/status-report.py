@@ -231,6 +231,7 @@ class StatusReport(object):
             build_dir = None,
             first = None,
             from_git = None,
+            nobuild = None,
         ):
 
         self.parse_args()
@@ -239,6 +240,7 @@ class StatusReport(object):
         self.pickle_dir = pickle_dir or self.clargs.pickle_dir
         self.build_dir = build_dir or self.clargs.build_dir
         self.first = first or self.clargs.first
+        self.nobuild = nobuild or self.clargs.nobuild
         self.from_git = (
             from_git
                 if from_git is not None else
@@ -250,6 +252,7 @@ class StatusReport(object):
             lambda obj: obj.finish(),
             self,
         )
+        self.finished = False
 
 
     def main(self):
@@ -287,6 +290,11 @@ class StatusReport(object):
             type = str,
         )
         self.clargs.add_argument(
+            '-o', '--nobuild',
+            help = 'Disable database build',
+            action = 'store_true',
+        )
+        self.clargs.add_argument(
             '-d', '--dir',
             help = 'Main directory path',
             type = str,
@@ -302,24 +310,28 @@ class StatusReport(object):
     def start(self):
 
         self.reset_counters()
-        self.reset_result()
         self.set_timestamp()
         self.set_dirs()
+        self.reset_result()
         _log('Started generating pypath inputs status report.')
 
 
     def finish(self):
 
-        self.set_timestamp(end = True)
-        self.save_results()
-        self.compile_html()
-        self.copy_log()
-        self.reset_result()
-        self.finished = True
-        _log('Finished generating pypath inputs status report.')
+        if not self.finished:
+
+            self.set_timestamp(end = True)
+            self.save_results()
+            self.compile_html()
+            self.copy_log()
+            self.reset_result()
+            self.finished = True
+            _log('Finished generating pypath inputs status report.')
 
 
     def reset_counters(self):
+
+
 
         for cntr in COUNTERS:
 
@@ -332,6 +344,8 @@ class StatusReport(object):
     def reset_result(self):
 
         self.result = []
+
+        _log('Resetting results.')
 
 
     def test_inputs(self):
@@ -525,6 +539,7 @@ class StatusReport(object):
         globals()['session'] = session
         globals()['settings'] = settings
         globals()['build'] = build
+        globals()['omnipath'] = omnipath
 
         _logger = session.Logger(name = 'status_report')
         globals()['_logger'] = _logger
@@ -659,6 +674,7 @@ class StatusReport(object):
         self.result.append(result)
 
         _log('Finished testing `%s`.' % fun_name)
+        _log('Result length: %u' % len(self.result))
 
 
     @staticmethod
@@ -675,17 +691,25 @@ class StatusReport(object):
         Saves the results as JSON.
         """
 
+        _log(
+            'Exporting results to JSON, result items: %u.' % len(self.result)
+        )
+
         path = os.path.join(self.reportdir, 'result.json')
 
         with open(path, 'w') as fp:
 
             json.dump(self.result, fp, indent = 2)
 
+        _log('JSON has been exported to `%s`.' % path)
+
 
     def compile_html(self):
         """
         Compiles a HTML report, saves it to the reporting directory.
         """
+
+        _log('Compiling HTML report, result items: %u.' % len(self.result))
 
         last_commit = self.pypath_git_hash()
 
@@ -773,6 +797,8 @@ class StatusReport(object):
 
             fp.write(soup.prettify())
 
+        _log('HTML report has been exported to `%s`.' % path)
+
 
     @classmethod
     def to_str(cls, value, maxlen = 76):
@@ -812,9 +838,13 @@ class StatusReport(object):
         Copies the logfile to the reporting directory.
         """
 
+        path = os.path.join(self.reportdir, 'pypath.log')
+        _log('Copying log file to `%s`.' % path)
+        time.sleep(5)
+
         shutil.copy2(
             _logger._logger.fname,
-            os.path.join(self.reportdir, 'pypath.log')
+            path,
         )
 
 
@@ -822,6 +852,11 @@ class StatusReport(object):
         """
         Builds the OmniPath databases.
         """
+
+        if self.nobuild:
+
+            _log('Database build disabled.')
+            return
 
         self.builder = build.WebserviceTables(
             build_dir = self.build_dir,
