@@ -1487,6 +1487,13 @@ class TableServer(BaseServer):
                 if 'license' not in self._resources_dict[db]:
 
                     license = res_ctrl.license(db)
+
+                    if license is None:
+
+                        msg = 'No license for resource `%s`.' % str(db)
+                        self._log(msg)
+                        raise RuntimeError(msg)
+
                     license_data = license.features
                     license_data['name'] = license.name
                     license_data['full_name'] = license.full_name
