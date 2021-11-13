@@ -4537,5 +4537,18 @@
     "emails": [
       "biocoder1024@hotmail.com", "Tianyuan Liu"
     ]
+  },
+  "Cellinker": {
+    "full_name": "Cellinker",
+    "license": "CC BY-NC 4.0",
+    "urls": {
+      "webpages": ["https://www.rna-society.org/cellinker"],
+      "articles": [
+        "https://academic.oup.com/bioinformatics/article-abstract/37/14/2025/6104823"
+      ]
+    },
+    "emails": [
+      "wubingyi@aliyun.com", "Bingyi Wu"
+    ]
   }
 }
