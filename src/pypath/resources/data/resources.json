@@ -4511,5 +4511,18 @@
     "emails": [
       "contact@cell-map.org", "Human Cell Map"
     ]
-  }
+  },
+  "scConnect": {
+    "full_name": "scConnect",
+    "license": "MIT",
+    "urls": {
+      "webpages": ["https://github.com/JonETJakobsson/scConnect"],
+      "articles": [
+        "https://academic.oup.com/bioinformatics/article/37/20/3501/6273571"
+      ]
+    },
+    "emails": [
+      "malin.lagerstrom@neuro.uu.se", "Malin C Lagerström"
+    ]
+  },
 }
