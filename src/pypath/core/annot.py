@@ -130,7 +130,6 @@ complex_sources_default = {
     'CellPhoneDBComplex',
     'CorumFuncat',
     'CorumGO',
-    'HpmrComplex',
     'IcellnetComplex',
     'CellchatdbComplex',
     'CellinkerComplex',
