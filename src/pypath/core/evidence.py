@@ -417,7 +417,10 @@ class Evidences(object):
 
         other = (
             other
-                if hasattr(other, '__iter__') else
+                if (
+                    hasattr(other, '__iter__') and
+                    not isinstance(other, Evidence)
+                ) else
             (other,)
                 if isinstance(other, self.__class__) else
             ()
