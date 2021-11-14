@@ -237,6 +237,17 @@ class NetworkResourceKey(
         return '%s_%s' % (self.name, self.via) if self.via else self.name
 
 
+    @property
+    def last(self):
+        """
+        Returns:
+            (str): The name of the resource where the data directly came from
+                ignoring the primary resource.
+        """
+
+        return self.via or self.name
+
+
 class NetworkResource(ResourceAttributes):
 
 

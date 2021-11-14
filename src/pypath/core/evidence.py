@@ -820,7 +820,7 @@ class Evidences(object):
         """
 
         return dict(
-            (res.label, ev)
+            (res.last, ev)
             for res, ev in iteritems(self)
         )
 
