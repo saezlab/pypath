@@ -38,58 +38,45 @@ Todo:
 
 import pypath.biocypher.adapter as adapter
 
+def main():
 
-bcy_adapter = adapter.BiocypherAdapter(wipe = True)
-bcy_adapter.build_python_object()
-bcy_adapter.translate_python_object_to_neo4j()
-# quite slow this one, even only with "network".
-# interactions as nodes is taxing
-
-bcy_adapter = adapter.BiocypherAdapter(wipe = False)
-
-# profiling
-import cProfile, pstats, io
-import pypath.biocypher.adapter as adapter
-profile = cProfile.Profile()
-profile.enable()
-bcy_adapter = adapter.BiocypherAdapter(wipe = True)
-bcy_adapter.build_python_object()
-bcy_adapter.translate_python_object_to_neo4j()
-profile.disable()
-
-s = io.StringIO()
-sortby = pstats.SortKey.CUMULATIVE
-ps = pstats.Stats(profile, stream=s).sort_stats(sortby)
-ps.print_stats()
-# print(s.getvalue())
-filename = "create_network.prof"
-ps.dump_stats(filename)
-    
+    profile = False
+    if profile:
+        import cProfile, pstats, io
+        profile = cProfile.Profile()
+        profile.enable()
 
 
-
-# def main():
-
-#     # Instantiating the adapter class.
-#     # We are creating a new database, so we wipe and initialise the local Neo4j
-#     # instance. Set `wipe = False` if you want to update an existing BioCypher 
-#     # graph.
-#     bcy_adapter = adapter.BiocypherAdapter(wipe = True, db_name = 'neo4j')
-
-#     # create another adapter without wipe to test meta node functionality
-#     bcy_adapter = adapter.BiocypherAdapter(wipe = False, db_name = 'neo4j')
+    # Instantiating the adapter class.
+    # We are creating a new database, so we wipe and initialise the 
+    # local Neo4j instance. Set `wipe = False` if you want to update an 
+    # existing BioCypher graph.
+    bcy_adapter = adapter.BiocypherAdapter(wipe = True)
 
 
-#     # Building a pypath network database:
-#     bcy_adapter.build_python_object()
+    # Build a pypath network database:
+    bcy_adapter.build_python_object()
+
+    # Load the python database object into the connected Neo4j DB:
+    bcy_adapter.translate_python_object_to_neo4j()
+    # quite slow this one, even only with "network".
+    # interactions as nodes is taxing
+
+    # create another adapter without wipe to test meta node 
+    # functionality
+    bcy_adapter = adapter.BiocypherAdapter(wipe = False)
+
+    if profile:
+        profile.disable()
+        s = io.StringIO()
+        sortby = pstats.SortKey.CUMULATIVE
+        ps = pstats.Stats(profile, stream=s).sort_stats(sortby)
+        ps.print_stats()
+        # print(s.getvalue())
+        filename = "create_network.prof"
+        ps.dump_stats(filename)
 
 
-#     # Loading it into Neo4j:
-#     # bcy_adapter.translate_python_object_to_neo4j()
+if __name__ == '__main__':
 
-
-
-
-# if __name__ == '__main__':
-
-#     main()
+    main()
