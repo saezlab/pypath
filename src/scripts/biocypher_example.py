@@ -3,11 +3,12 @@
 
 """
 This is a script to exemplarise the usage of an adapter 
-(pypath_biocypher_adapter) to create a BioCypher-compatible graph database 
-from pypath objects. The mode of interaction with the graph in this case is
-the passing of the locally instantiated Neo4j driver to the biocypher module, 
-which resembles just one of multiple possible modes of interaction. Merging
-nodes and edges with an UNWIND APOC call is safe, but relatively slow.
+(pypath_biocypher_adapter) to create a BioCypher-compatible graph 
+database from pypath objects. The mode of interaction with the graph in 
+this case is the passing of the locally instantiated Neo4j driver to the 
+biocypher module, which resembles just one of multiple possible modes of 
+interaction. Merging nodes and edges with an UNWIND APOC call is safe, 
+but relatively slow.
 
 Copyright 2021, Heidelberg University Clinic
 
@@ -17,14 +18,14 @@ File author(s): Sebastian Lobentanzer
 Distributed under GPLv3 license, see LICENSE.txt.
 
 In the graph, we have the following components:
-- nodes: an id (our primary identifier), a label (:Protein, :Complex ...), a
-    dict of properties
-    - NOTE: we also have a property called "label", which is the human-readable
-        id of the node
+- nodes: an id (our primary identifier), a label (:Protein, :Complex 
+    ...), a dict of properties
+    - NOTE: we also have a property called "label", which is the 
+        human-readable id of the node
 - edges: source and target id (from primary identifiers), a label
     (:POST_TRANSLATIONAL ...), a dict of properties
-- node labels are nouns written in CamelBack, edge labels are verbs written in
-    UPPERCASE, properties are lowercase_with_underscore
+- node labels are nouns written in CamelBack, edge labels are verbs 
+    written in UPPERCASE, properties are lowercase_with_underscore
     
 Todo: 
     * duplicate relationships handling
@@ -41,6 +42,8 @@ import pypath.biocypher.adapter as adapter
 bcy_adapter = adapter.BiocypherAdapter(wipe = True)
 bcy_adapter.build_python_object()
 bcy_adapter.translate_python_object_to_neo4j()
+# quite slow this one, even only with "network".
+# interactions as nodes is taxing
 
 bcy_adapter = adapter.BiocypherAdapter(wipe = False)
 
