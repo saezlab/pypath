@@ -8,7 +8,7 @@ the "create_and_update_db.py" script in this directory.
 
 Copyright 2021, Heidelberg University Clinic
 
-File author(s): Dénes Türei
+Authors: Dénes Türei
                 Sebastian Lobentanzer
                 ...
 
