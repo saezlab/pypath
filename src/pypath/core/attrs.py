@@ -190,3 +190,13 @@ class AttributeHandler(object):
     def __len__(self):
 
         return len(self.attrs)
+
+
+    def __contains__(self, other):
+
+        return other in self.attrs
+
+
+    def __getitem__(self, other):
+
+        return self.attrs[other] if other in self.attrs else None
