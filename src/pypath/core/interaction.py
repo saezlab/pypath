@@ -3180,9 +3180,9 @@ class Interaction(attrs_mod.AttributeHandler):
 
     def _get_attr(self, resource, key, direction):
 
-        if resource in self.evidences[direction]:
+        if resource in self.direction[direction]:
 
-            return self.evidences[direction][resource][key]
+            return self.direction[direction][resource][key]
 
 
     def get_attr(self, resource, key, direction = None):
@@ -3232,10 +3232,15 @@ class Interaction(attrs_mod.AttributeHandler):
 
         directions = (direction,) if direction else (self.a_b, self.b_a)
 
-        return sorted({
-            self._get_attr('DoRothEA', 'level', direction)
-            for direction in directions
-        })
+        return sorted(
+            level
+            for level in
+            {
+                self._get_attr('DoRothEA', 'level', direction)
+                for direction in directions
+            }
+            if level
+        )
 
 
 Interaction._generate_entity_methods()
