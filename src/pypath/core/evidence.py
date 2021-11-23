@@ -200,7 +200,10 @@ class Evidence(attrs_mod.AttributeHandler):
             limited only to primary databases).
         """
 
-        return self._contains(self, other)
+        return (
+            self._contains(self, other) or
+            attrs_mod.AttributeHandler.__contains__(self, other)
+        )
 
 
     def contains_database(self, database):
@@ -787,7 +790,7 @@ class Evidences(object):
         an equivalent tuple.
         """
 
-        return self.evidences[key]
+        return self.evidences[key] or self.simple_dict[key]
 
 
     def keys(self):
