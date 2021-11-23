@@ -192,7 +192,7 @@ class Export(session.Logger):
             the direction while sign covered in further columns.
         :param dict extra_node_attrs:
             Additional node attributes to be included in the exported table.
-            Keys are column ames used in the header while values are names
+            Keys are column names used in the header while values are names
             of vertex attributes. Values also might be methods which then
             will be called then on each vertex. These should return strings
             or their result will be converted to string.
@@ -201,7 +201,7 @@ class Export(session.Logger):
             interaction partners.
         :param dict extra_edge_attrs:
             Additional edge attributes to be included in the exported table.
-            Keys are column ames used in the header while values are names
+            Keys are column names used in the header while values are names
             of edge attributes or callables accepting an edge as single
             argument.
         :param str outfile:
@@ -239,12 +239,14 @@ class Export(session.Logger):
 
         if unique_pairs:
 
-            self._log(
+            msg = (
                 'Data frame with unique pairs from `core.network.Network` '
                 'is not implemented yet, only possible to create it from '
-                '`legacy.main.PyPath` object.')
+                '`legacy.main.PyPath` object.'
+            )
 
-            raise NotImplementedError
+            self._log(msg)
+            raise NotImplementedError(msg)
 
         self.extra_node_attrs = extra_node_attrs or self.extra_node_attrs
         self.extra_edge_attrs = extra_edge_attrs or self.extra_edge_attrs
@@ -647,7 +649,7 @@ class Export(session.Logger):
 
             line.append(
                 self.generic_attr_processor(v, e, dr)
-                if hasattr(v, '__call__') else
+                    if hasattr(v, '__call__') else
                 self.default_edge_attr_processor(
                     e[v]
                         if (
@@ -881,11 +883,21 @@ class Export(session.Logger):
                     'mirna_transcriptional' in
                     e.get_interaction_types(direction = d)
                 ),
-                'dorothea_curated': 'dorothea_curated',
-                'dorothea_chipseq': 'dorothea_chipseq',
-                'dorothea_tfbs':    'dorothea_tfbs',
-                'dorothea_coexp':   'dorothea_coexp',
-                'dorothea_level':   'dorothea_level',
+                'dorothea_curated': lambda e, d: (
+                    e._get_attr('DoRothEA', 'curated', d)
+                ),
+                'dorothea_chipseq': lambda e, d: (
+                    e._get_attr('DoRothEA', 'chipseq', d)
+                ),
+                'dorothea_tfbs': lambda e, d: (
+                    e._get_attr('DoRothEA', 'tfbs', d)
+                ),
+                'dorothea_coexp': lambda e, d: (
+                    e._get_attr('DoRothEA', 'coexp', d)
+                ),
+                'dorothea_level': lamda e, d: (
+                    ';'.join(e.dorothea_levels(d))
+                ),
                 'type': lambda e, d: (
                     list(e.get_interaction_types(direction = d))[0]
                 ),
