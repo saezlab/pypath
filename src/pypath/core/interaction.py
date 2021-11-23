@@ -598,7 +598,8 @@ class Interaction(attrs_mod.AttributeHandler):
         return (
             other == self.a or
             other == self.b or
-            self.evidences.__contains__(other)
+            self.evidences.__contains__(other) or
+            attrs_mod.AttributeHandler.__contains__(self, other)
         )
 
 
@@ -3175,6 +3176,66 @@ class Interaction(attrs_mod.AttributeHandler):
         evs = self.evidences if not direction else self.direction[direction]
 
         return evs.serialize_attrs()
+
+
+    def _get_attr(self, resource, key, direction):
+
+        if resource in self.evidences[direction]:
+
+            return self.evidences[direction][resource][key]
+
+
+    def get_attr(self, resource, key, direction = None):
+        """
+        Extracts the values of one specific attribute.
+
+        Args:
+            resource (str): Name of the resource.
+            key (str): Name of the attribute.
+            direction (tuple,str): Direction(s) to consider, either a tuple
+                of entities or entity names, or the string `undirected`.
+
+        Return:
+            Depends on the arguments. The value of the attribute if direction
+            is defined. Otherwise a dict with the value of the attribute for
+            each direction. The value of the attribute is `None` if the
+            resource or the attribute does not belong to this interaction.
+        """
+
+        if direction:
+
+            return self._get_attr(resource, key, direction)
+
+        else:
+
+            return dict(
+                (
+                    d,
+                    self._get_attr(resource, key, d)
+                )
+                for d in self.direction.keys()
+            )
+
+
+    def dorothea_levels(self, direction = None):
+        """
+        Retrieves the DoRothEA confidence levels.
+
+        Args:
+            direction (tuple,str): Direction(s) to consider, either a tuple
+                of entities or entity names, or the string `undirected`.
+
+        Return:
+            List of unique single letter strings representing the five
+            confidence levels (A-E).
+        """
+
+        directions = (direction,) if direction else (self.a_b, self.b_a)
+
+        return sorted({
+            self._get_attr('DoRothEA', 'level', direction)
+            for direction in directions
+        })
 
 
 Interaction._generate_entity_methods()
