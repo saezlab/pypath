@@ -8,9 +8,11 @@
 #  2014-2021
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -212,6 +214,22 @@ PYPATH_GIT_URL = 'https://github.com/saezlab/pypath'
 CAPTURE_GENERATORS = 300
 
 
+def _log(*args, **kwargs):
+    """
+    Deliver a log message if the logger is available,
+    otherwise write it to stdout.
+    """
+
+    if '__log' in globals():
+
+        __log(*args, **kwargs)
+
+    elif args:
+
+        sys.stdout.write(str(args[0]))
+        sys.stdout.flush()
+
+
 class StatusReport(object):
     """
     Calls all functions defined in the submodules of the `pypath.inputs`
@@ -326,6 +344,7 @@ class StatusReport(object):
             self.copy_log()
             self.reset_result()
             self.finished = True
+
             _log('Finished generating pypath inputs status report.')
 
 
@@ -543,7 +562,7 @@ class StatusReport(object):
 
         _logger = session.Logger(name = 'status_report')
         globals()['_logger'] = _logger
-        globals()['_log'] = _logger._log
+        globals()['__log'] = _logger._log
         _log('Working directory: `%s`.' % self.maindir)
         _log('Cache directory: `%s`.' % self.cachedir)
         _log('Pickle directory: `%s`.' % self.pickle_dir)
