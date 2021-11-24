@@ -895,7 +895,7 @@ class Export(session.Logger):
                 'dorothea_coexp': lambda e, d: (
                     e._get_attr('DoRothEA', 'coexp', d)
                 ),
-                'dorothea_level': lamda e, d: (
+                'dorothea_level': lambda e, d: (
                     ';'.join(e.dorothea_levels(d))
                 ),
                 'type': lambda e, d: (
