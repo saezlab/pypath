@@ -186,7 +186,7 @@ def icellnet_annotations(complexes = None):
                     )
                 )
 
-    return annotations
+    return dict(annotations)
 
 
 def _icellnet_get_components(line, prefix):

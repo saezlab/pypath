@@ -197,7 +197,7 @@ def kegg_pathway_annotations():
         for uniprot in uniprots:
             result[uniprot].add(record)
 
-    return result
+    return dict(result)
 
 
 def kegg_pathway_annotations_pathwaycommons():
@@ -220,7 +220,7 @@ def kegg_pathway_annotations_pathwaycommons():
 
             result[uniprot].add(annot)
 
-    return result
+    return dict(result)
 
 
 def kegg_medicus(max_entity_variations = 10):

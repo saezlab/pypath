@@ -67,4 +67,4 @@ def hgnc_genegroups():
                         HGNCGeneGroupAnnotation(mainclass = group)
                     )
 
-    return result
+    return dict(result)

@@ -214,7 +214,7 @@ def signalink_annotations(organism = 9606):
                             record(value)
                         )
 
-    return result
+    return dict(result)
 
 
 def signalink_pathway_annotations(organism = 9606):

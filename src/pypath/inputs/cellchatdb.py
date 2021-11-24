@@ -338,7 +338,7 @@ def cellchatdb_annotations(organism = 9606):
                 )
             )
 
-    return annotations
+    return dict(annotations)
 
 
 def _cellchatdb_organism(organism = 9606):

@@ -95,4 +95,4 @@ def disgenet_annotations(dataset = 'curated'):
                 )
             )
 
-    return data
+    return dict(data)

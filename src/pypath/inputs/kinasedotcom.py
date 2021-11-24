@@ -74,4 +74,4 @@ def kinasedotcom_annotations():
 
                 add_record(uniprot, rec, offset = 12)
 
-    return result
+    return dict(result)

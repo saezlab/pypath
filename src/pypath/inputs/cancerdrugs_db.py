@@ -187,4 +187,4 @@ def cancerdrugs_db_annotations():
         'CancerDrugs_DB Products.' % len(unmapped_id)
     )
 
-    return result
+    return dict(result)

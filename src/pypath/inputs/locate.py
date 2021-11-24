@@ -239,4 +239,4 @@ def locate_localizations(
     c.fileobj.close()
     del c
 
-    return result
+    return dict(result)

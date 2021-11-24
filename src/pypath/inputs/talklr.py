@@ -125,4 +125,4 @@ def talklr_annotations(putative = True):
                         )
                     )
 
-    return result
+    return dict(result)

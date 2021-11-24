@@ -144,4 +144,4 @@ def topdb_annotations(ncbi_tax_id = 9606):
     c.fileobj.close()
     del c
 
-    return result
+    return dict(result)

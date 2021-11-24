@@ -65,4 +65,4 @@ def zhong2015_annotations():
                 Zhong2015Annotation(type = types[rec[2]])
             )
 
-    return result
+    return dict(result)

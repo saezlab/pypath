@@ -191,7 +191,7 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
                         )
                     )
 
-    return result
+    return dict(result)
 
 
 def proteinatlas_subcellular_annotations():

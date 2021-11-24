@@ -224,4 +224,4 @@ def netpath_pathway_annotations():
                         )
                     )
 
-    return result
+    return dict(result)

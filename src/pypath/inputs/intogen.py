@@ -100,4 +100,4 @@ def intogen_annotations():
                 )
             )
 
-    return result
+    return dict(result)

@@ -119,4 +119,4 @@ def opm_annotations(organism = 9606):
             )
         )
 
-    return result
+    return dict(result)

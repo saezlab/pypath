@@ -170,4 +170,4 @@ def ramilowski_locations(long_notes = False):
                         )
                     )
 
-    return result
+    return dict(result)

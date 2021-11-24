@@ -63,7 +63,7 @@ def dgidb_annotations():
                 )
             )
 
-    return result
+    return dict(result)
 
 
 def get_dgidb_old():

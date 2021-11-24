@@ -331,7 +331,7 @@ def signor_pathway_annotations():
 
             result[uniprot].add(record)
 
-    return result
+    return dict(result)
 
 
 def signor_protein_families(organism = 9606):

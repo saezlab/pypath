@@ -92,4 +92,4 @@ def adhesome_annotations():
                     intrinsic = rec['FA'].strip() == 'Intrinsic Proteins',
                 ))
 
-    return result
+    return dict(result)

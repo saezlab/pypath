@@ -81,4 +81,4 @@ def phosphatome_annotations():
                 )
             )
 
-    return result
+    return dict(result)

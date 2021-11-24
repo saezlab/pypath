@@ -200,4 +200,4 @@ def celltalkdb_annotations(organism = 9606):
                     )
                 )
 
-    return annot
+    return dict(annot)
