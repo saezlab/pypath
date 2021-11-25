@@ -113,7 +113,7 @@ def cspa_cell_types(organism = 9606):
                     None
                 )
 
-    return dict(result)
+    return dict((k, dict(v)) for k, v in iteritems(result))
 
 
 def cspa_cell_type_annotations(organism = 9606):

@@ -112,7 +112,7 @@ def cpad_annotations(include_unknown_type = False):
 
                 result[regulator_name_0].add(record)
 
-    return result
+    return dict(result)
 
 
 def cpad_pathway_cancer():
@@ -138,6 +138,7 @@ def cpad_pathway_cancer():
     by_pathway = collections.defaultdict(set)
 
     for rec in cpad:
+
         record = CpadPathwayCancer(
             pathway = rec['Pathway'],
             cancer = rec['Cancer'],
@@ -149,4 +150,5 @@ def cpad_pathway_cancer():
         by_cancer[rec['Cancer']].add(record)
         by_pathway[rec['Pathway']].add(record)
 
-    return by_cancer, by_pathway
+    return dict(by_cancer), dict(by_pathway)
+

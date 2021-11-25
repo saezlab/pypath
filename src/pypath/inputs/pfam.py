@@ -325,7 +325,7 @@ def pfam_pdb():
             pdb_pfam[pdb][pfam] = domain
             pfam_pdb[pfam][pdb] = domain
 
-    return pdb_pfam, pfam_pdb
+    return dict(pdb_pfam), dict(pfam_pdb)
 
 
 def _pfam_uniprot(uniprots, infile = None):

@@ -214,7 +214,7 @@ def signalink_annotations(organism = 9606):
                             record(value)
                         )
 
-    return dict(result)
+    return dict((k, dict(v)) for k, v in iteritems(result))
 
 
 def signalink_pathway_annotations(organism = 9606):

@@ -86,7 +86,7 @@ def get_proteinatlas(normal = True, pathology = True, cancer = True):
 
                 result['pathology'][tissue][u] = values
 
-    return result
+    return dict((k, dict(v)) for k, v in iteritems(result))
 
 
 def proteinatlas_annotations(normal = True, pathology = True, cancer = True):

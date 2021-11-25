@@ -86,7 +86,7 @@ def go_annotations_goa(organism = 'human'):
         line = line.strip().split('\t')
         annot[line[8]][line[1]].add(line[4])
 
-    return annot
+    return dict((k, dict(v)) for k, v in iteritems(annot))
 
 
 # synonym for the default method
@@ -174,11 +174,16 @@ def go_descendants_to_ancestors(desc):
     ancestors = {}
 
     for asp, dct in iteritems(desc):
+
         ancestors[asp] = collections.defaultdict(set)
 
         for anc_term, des in iteritems(dct):
+
             for des_term, rel in des:
+
                 ancestors[asp][des_term].add((anc_term, rel))
+
+        ancestors[asp] = dict(ancestors[asp])
 
     return ancestors
 
