@@ -2494,7 +2494,8 @@ mirna_target = {
         entity_type_b = 'protein',
         is_directed = True,
         sign = False,
-        ncbi_tax_id = {'A': {
+        ncbi_tax_id = {
+            'A': {
                 'col': 2,
                 'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
                 'include': {9606},
@@ -2505,13 +2506,13 @@ mirna_target = {
                 'include': {9606},
             },
         },
-        positive_filters = [(7, 'Functional MTI')],
+        positive_filters = [(8, 'Functional MTI')],
         input = 'mirtarbase.mirtarbase_interactions',
         interaction_type = 'post_transcriptional',
-        references = 8,
+        references = 9,
         header = False,
         extra_edge_attrs = {
-            'evidence': (6, '//'),
+            'method': (7, '//'),
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
