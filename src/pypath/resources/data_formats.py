@@ -2497,12 +2497,12 @@ mirna_target = {
         ncbi_tax_id = {
             'A': {
                 'col': 2,
-                'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
+                'dict': taxonomy.latin_name_to_ncbi_tax_id,
                 'include': {9606},
             },
             'B': {
                 'col': 5,
-                'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
+                'dict': taxonomy.latin_name_to_ncbi_tax_id,
                 'include': {9606},
             },
         },

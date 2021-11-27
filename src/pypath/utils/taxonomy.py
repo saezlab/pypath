@@ -120,7 +120,7 @@ phosphoelm_taxids = {
     5207: 'Cryptococcus neoformans',
     470: 'Acinetobacter baumannii',
     1280: 'Staphylococcus aureus',
-    4939: 'Saccharomyces cerevisiae',
+    4932: 'Saccharomyces cerevisiae',
     34: 'Myxococcus xanthus',
     1392: 'Bacillus anthracis',
     210: 'Helicobacter pylori',
