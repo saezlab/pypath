@@ -2463,23 +2463,22 @@ mirna_target = {
         entity_type_b = 'protein',
         is_directed = True,
         sign = False,
-        ncbi_tax_id = {'A': {
+        ncbi_tax_id = {
+            'A': {
                 'col': 3,
-                'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
+                'dict': taxonomy.latin_name_to_ncbi_tax_id,
                 'include': {9606},
             },
             'B': {
                 'col': 4,
-                'dict': common.swap_dict(taxonomy.phosphoelm_taxids),
+                'dict': taxonomy.latin_name_to_ncbi_tax_id,
                 'include': {9606},
             }},
         input = 'mirecords.mirecords_interactions',
         interaction_type = 'post_transcriptional',
         references = 5,
         header = False,
-        extra_edge_attrs = {
-            'function': 4,
-        },
+        extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
     ),
