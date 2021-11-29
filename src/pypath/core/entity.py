@@ -35,6 +35,7 @@ import pypath.share.common as common
 import pypath.share.session as session_mod
 import pypath.utils.mapping as mapping
 import pypath.share.settings as settings
+import pypath.share.constants as constants
 import pypath.core.attrs as attrs_mod
 
 
@@ -151,7 +152,11 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
                 taxon
             )
 
-        taxon = taxon or settings.get('default_organism')
+        if entity_type in {'drug', 'small_molecule', 'metabolite'}:
+
+            taxon = constants.NOT_ORGANISM_SPECIFIC
+
+        taxon = settings.get('default_organism') if taxon is None else taxon
 
         if not entity_type:
 
