@@ -2985,6 +2985,7 @@ small_molecule_protein = {
         },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'activity_flow',
     ),
     # cancerdrugs_db format not yet done
     'cancerdrugs_db': input_formats.NetworkInput(
@@ -3005,6 +3006,7 @@ small_molecule_protein = {
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
+        data_model = 'drug_target',
     ),
     'cellinker': input_formats.NetworkInput(
         name = 'Cellinker',
@@ -3021,6 +3023,7 @@ small_molecule_protein = {
         references = (5, ';'),
         resource = (4, ';'),
         header = False,
+        data_model = 'ligand_receptor',
     ),
 }
 
