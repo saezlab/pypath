@@ -24,6 +24,7 @@ Web scraper for the CancerDrugs_DB database.
 
 import csv
 import collections
+import itertools
 import re
 
 import pypath.share.curl as curl
@@ -32,12 +33,13 @@ import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 import pypath.share.session as session
 
-_logger = session.Logger(name = 'cellcall_input')
+_logger = session.Logger(name = 'cancerdrugsdb_input')
 _log = _logger._log
 
-def cancerdrugs_db_download():
+
+def cancerdrugsdb_download():
     """
-    Downloads a curated set of interactions of cancer drugs licensed 
+    Downloads a curated set of interactions of cancer drugs licensed
     in most parts of the world with gene targets (where available).
     From https://www.anticancerfund.org/en/cancerdrugs-db.
     This function downloads a single dataset.
@@ -56,9 +58,10 @@ def cancerdrugs_db_download():
     return list(csv.DictReader(c.result, delimiter = '\t'))
 
 
-def cancerdrugs_db_interactions():
+def cancerdrugsdb_interactions():
     """
-    Returns drug-gene interactions from CancerDrugs_DB.
+    Returns drug-gene interactions from Cancer Drugs Database
+    (https://www.anticancerfund.org/en/cancerdrugs-db).
 
     Args:
         None.
@@ -69,77 +72,110 @@ def cancerdrugs_db_interactions():
     """
 
     # note: drug-target interactions are from GDIdb. if they're in OnmiPath
-    # already, do we skip the interactions altogether, or is it better to 
+    # already, do we skip the interactions altogether, or is it better to
     # keep them here for consistency? the dataset is very small anyways.
     # if we keep them, do we test for consistency between the interactions?
 
+    reid = re.compile(r'>(\w+)<')
+
+    def strip_id(field):
+
+        match = reid.search(field)
+
+        return match.group(1) if match else None
+
+
+    def yes_no(field):
+
+        return field == 'Y'
+
+
     CancerDrugsInteraction = collections.namedtuple(
-        'CancerDrugsInteraction',
-        ['source', 'target'],
+        'CancerdrugsdbInteraction',
+        (
+            'drug_pubchem',
+            'drug_chembl',
+            'drug_drugbank',
+            'drug_label',
+            'target_uniprot',
+            'ema_approved',
+            'fda_approved',
+            'european_national_approved',
+            'who_approved',
+            'generic',
+            'approval_year',
+            'indications',
+        ),
     )
 
     result = []
-    unmapped_id = []
-    no_tars = []
-    unmapped_tars = []
+    unmapped_drug = []
+    no_targets = []
 
     data = cancerdrugs_db_download()
 
     for rec in data:
-        
-        chembl = rec['ChEMBL']
 
-        # remove HTML link
-        extr = re.search('">(.*?)</a>', chembl)
+        chembl = strip_id(rec['ChEMBL'])
+        drugbank = strip_id(rec['DrugBank ID'])
 
-        if extr == None:
-            unmapped_id.append(rec['Product'])
-            continue
-        # do we need to assert "CHEMBL" + integer structure of ID?
+        if chembl is None:
 
-        chembl = extr.group(1)
-        pubchem = mapping.map_name(chembl, 'chembl', 'pubchem')
-        
-        # targets are a number of gene symbols
-        # -> translate to uniprot here?
-        tars = rec['Targets']
-
-        if tars == '':
-            no_tars.append(rec['Product'])
+            unmapped_drug.append(rec['Product'])
             continue
 
-        for tar in tars.split('; '):
-            tar = mapping.map_name(tar, 'genesymbol', 'uniprot')
-            if tar == None:
-                unmapped_tars.append(tar)
-                continue
-            
+        pubchems = mapping.map_name(chembl, 'chembl', 'pubchem')
+
+        targets = rec['Targets']
+
+        if not targets:
+
+            no_targets.append(rec['Product'])
+            continue
+
+        target_uniprots = mapping.map_names(
+            (tar.strip() for tar in targets.split(';')),
+            'genesymbol',
+            'uniprot',
+        )
+
+        for pubchem, uniprot in itertools.product(pubchems, target_uniprots):
+
             result.append(
                 CancerDrugsInteraction(
-                    source = pubchem,
-                    target = tar,
+                    drug_pubchem = pubchem,
+                    drug_chembl = chembl,
+                    drug_drugbank = drugbank,
+                    drug_label = rec['Product'],
+                    target_uniprot = uniprot,
+                    ema_approved = yes_no(rec['EMA']),
+                    fda_approved = yes_no(rec['FDA']),
+                    european_national_approved = yes_no(rec['EN']),
+                    who_approved = yes_no(rec['WHO']),
+                    generic = yes_no(rec['Generic']),
+                    approval_year = int(rec['Year']) if rec['Year'] else None,
+                    indications = tuple(
+                        i.strip()
+                        for i in rec['Indications'].split(';')
+                    ),
                 )
             )
-    
+
+
     _log(
         'Could not find CHEMBL IDs for %u '
-        'CancerDrugs_DB Products.' % len(unmapped_id)
+        'CancerDrugs_DB Products.' % len(unmapped_drug)
     )
-    
+
     _log(
         '%u CancerDrugs_DB Products had no targets.'
-        % len(no_tars)
-    )
-    
-    _log(
-        'Could not find UniProt IDs for %u '
-        'CancerDrugs_DB Product targets.' % len(unmapped_tars)
+        % len(no_targets)
     )
 
     return result
 
 
-def cancerdrugs_db_annotations():
+def cancerdrugsdb_annotations():
     """
     Returns drug annotations from CancerDrugs_DB.
 
@@ -147,44 +183,36 @@ def cancerdrugs_db_annotations():
         None.
 
     Returns:
-        Dict of annotations, keys are PubChem IDs, values are sets of
-        annotations.
+        (dict): Keys are PubChem IDs, values are sets of annotations.
     """
 
-    CancerDrugsAnnotation = collections.namedtuple(
-        'CancerDrugsAnnotation',
-        ['label', 'indications', 'last_updated'],
+    record = collections.namedtuple(
+        'CancerdrugsdbAnnotation',
+        (
+            'drug_label',
+            'ema_approved',
+            'fda_approved',
+            'european_national_approved',
+            'who_approved',
+            'generic',
+            'approval_year',
+            'indications',
+        ),
     )
 
     result = collections.defaultdict(set)
-    unmapped_id = []
-
-    data = cancerdrugs_db_download()
+    data = cancerdrugs_db_interactions()
 
     for rec in data:
-        chembl = rec['ChEMBL']
 
-        # remove HTML link
-        extr = re.search('">(.*?)</a>', chembl)
-
-        if extr == None:
-            unmapped_id.append(rec['Product'])
-            continue
-        # do we need to assert "CHEMBL" + integer structure of ID?
-
-        chembl = extr.group(1)
-        pubchem = mapping.map_name(chembl, 'chembl', 'pubchem')
-
-        for pubchem in pubchem:
-            result[pubchem].add(CancerDrugsAnnotation(
-                    label = common.upper0(rec['Product'].strip()),
-                    indications = rec['Indications'].strip(),
-                    last_updated = rec['Last Update'].strip(),
-            ))
-
-    _log(
-        'Could not find CHEMBL IDs for %u '
-        'CancerDrugs_DB Products.' % len(unmapped_id)
-    )
+        result[rec.drug_pubchem].add(
+            record(
+                **dict(
+                    i
+                    for i in rec._asdict().items()
+                    if i[0] in record._fields
+                )
+            )
+        )
 
     return dict(result)
