@@ -2988,21 +2988,17 @@ small_molecule_protein = {
         data_model = 'activity_flow',
     ),
     # cancerdrugs_db format not yet done
-    'cancerdrugs_db': input_formats.NetworkInput(
-        name = 'CancerDrugs_DB',
+    'cancerdrugsdb': input_formats.NetworkInput(
+        name = 'CancerDrugsDB',
         separator = None,
         id_col_a = 0,
-        id_col_b = 1,
-        id_type_a = 'chembl',
+        id_col_b = 4,
+        id_type_a = 'pubchem',
         id_type_b = 'uniprot',
-        # no filters so far
-        # positive_filters = [(10, True), (6, 'chemical')],
-        # negative_filters = [(7, 'transcriptional regulation')],
         entity_type_a = 'drug',
         entity_type_b = 'protein',
-        input = 'cancerdrugs_db.cancerdrugs_db_interactions',
-        references = (9, ';'),
-        header = True,
+        input = 'cancerdrugsdb.cancerdrugsdb_interactions',
+        header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
