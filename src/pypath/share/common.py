@@ -559,6 +559,15 @@ def first(it, default = None):
     return default
 
 
+def sfirst(it, default = None):
+    """
+    Returns ``it`` if it's a string, its first element if it's an iterable,
+    or the value of ``default`` if the iterable is empty.
+    """
+
+    return it if isinstance(it, simple_types) else first(it, default)
+
+
 def swap_suffix(name, sep = '_', suffixes = None):
     """
     Changes the suffix of a string.
