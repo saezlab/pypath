@@ -121,20 +121,30 @@ def signor_interactions(
             complexes_by_id[cplex_id].add(cplex)
 
     if isinstance(organism, int):
+
         if organism in taxonomy.taxids:
+
             _organism = taxonomy.taxids[organism]
+
         else:
+
             sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
             return []
+
     else:
+
         _organism = organism
 
     if _organism not in {'human', 'rat', 'mouse'}:
+
         return []
 
     url = urls.urls['signor']['all_url_new']
-    binary_data = [(b'organism', _organism.encode('utf-8')),
-                   (b'format', b'csv'), (b'submit', b'Download')]
+    binary_data = [
+        (b'organism', _organism.encode('utf-8')),
+        (b'format', b'csv'),
+        (b'submit', b'Download'),
+    ]
 
     c = curl.Curl(
         url,
@@ -147,14 +157,14 @@ def signor_interactions(
     )
 
     reader = csv.DictReader(c.result, delimiter = '\t')
+
+    if raw_records:
+
+        return list(reader)
+
     result = []
 
     for line in reader:
-
-        if raw_records:
-
-            result.append(line)
-            continue
 
         sources, source_isoform = process_name(line['IDA'])
         targets, target_isoform = process_name(line['IDB'])
