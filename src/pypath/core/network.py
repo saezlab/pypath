@@ -1470,7 +1470,7 @@ class Network(session_mod.Logger):
                 if all filters passed, the record can be further processed.
         """
 
-        negate = lambda x: not x if neg else lambda x: x
+        negate = lambda x: not x if negate else lambda x: x
 
         filters = filters or ()
 
@@ -1627,7 +1627,7 @@ class Network(session_mod.Logger):
 
             idx, dct = fmt, {}
 
-        elif isin(fmt, tuple):
+        elif isinstance(fmt, tuple):
 
             idx, dct = fmt
 
@@ -1685,6 +1685,7 @@ class Network(session_mod.Logger):
         if single_list:
 
             for item in lst:
+
                 list_mapped += self._map_item(
                     item,
                     expand_complexes = expand_complexes,
@@ -1693,6 +1694,7 @@ class Network(session_mod.Logger):
         else:
 
             for edge in lst:
+
                 list_mapped += self._map_edge(
                     edge,
                     expand_complexes = expand_complexes,
@@ -1754,10 +1756,14 @@ class Network(session_mod.Logger):
 
         edge_stack = []
 
+        defnt = self.default_name_types
+        def_name_type_a = defnt.get(edge['entity_type_a'], edge['id_type_a'])
+        def_name_type_b = defnt.get(edge['entity_type_b'], edge['id_type_b'])
+
         default_id_a = mapping.map_name(
             edge['id_a'],
             edge['id_type_a'],
-            self.default_name_types[edge['entity_type_a']],
+            def_name_type_a,
             ncbi_tax_id = edge['taxon_a'],
             expand_complexes = expand_complexes,
         )
@@ -1765,7 +1771,7 @@ class Network(session_mod.Logger):
         default_id_b = mapping.map_name(
             edge['id_b'],
             edge['id_type_b'],
-            self.default_name_types[edge['entity_type_b']],
+            def_name_type_b,
             ncbi_tax_id = edge['taxon_b'],
             expand_complexes = expand_complexes,
         )
@@ -1779,14 +1785,11 @@ class Network(session_mod.Logger):
 
             this_edge = copy_mod.copy(edge)
             this_edge['default_name_a'] = id_a
-            this_edge['default_name_type_a'] = (
-                self.default_name_types[edge['entity_type_a']]
-            )
+            this_edge['default_name_type_a'] = def_name_type_a
 
             this_edge['default_name_b'] = id_b
-            this_edge['default_name_type_b'] = (
-                self.default_name_types[edge['entity_type_b']]
-            )
+            this_edge['default_name_type_b'] = def_name_type_b
+
             edge_stack.append(this_edge)
 
         return edge_stack
