@@ -34,6 +34,7 @@ import copy
 import pypath.internals.input_formats as input_formats
 import pypath.resources.urls as urls
 import pypath.share.common as common
+import pypath.share.constants as constants
 import pypath.utils.taxonomy as taxonomy
 
 
@@ -2997,6 +2998,10 @@ small_molecule_protein = {
         id_type_b = 'uniprot',
         entity_type_a = 'drug',
         entity_type_b = 'protein',
+        ncbi_tax_id = {
+            'A': constants.NOT_ORGANISM_SPECIFIC,
+            'B': 9606,
+        },
         input = 'cancerdrugsdb.cancerdrugsdb_interactions',
         header = False,
         extra_edge_attrs = {},
