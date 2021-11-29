@@ -897,9 +897,9 @@ class Network(session_mod.Logger):
                     curl_use_cache = not redownload
                     c = curl.Curl(
                         networkinput.input,
-                        silent=False,
-                        large=True,
-                        cache=curl_use_cache
+                        silent = False,
+                        large = True,
+                        cache = curl_use_cache
                     )
                     infile = c.fileobj.read()
 
@@ -908,13 +908,14 @@ class Network(session_mod.Logger):
                         try:
                             infile = infile.decode('utf-8')
 
-                        except:
+                        except UnicodeDecodeError as e:
 
                             try:
                                 infile = infile.decode('iso-8859-1')
 
-                            except:
-                                pass
+                            except UnicodeDecodeError:
+
+                                raise e
 
                     infile = [
                         x for x in infile.replace('\r', '').split('\n')
@@ -1258,10 +1259,8 @@ class Network(session_mod.Logger):
                 resource.add(networkinput.name)
 
                 ## 9) interacting partners
-                id_a = line[networkinput.id_col_a]
-                id_b = line[networkinput.id_col_b]
-                id_a = id_a.strip() if hasattr(id_a, 'strip') else id_a
-                id_b = id_b.strip() if hasattr(id_b, 'strip') else id_b
+                id_a = self._process_partner(networkinput.id_col_a, line)
+                id_b = self._process_partner(networkinput.id_col_b, line)
 
                 ## 10) further attributes
                 # getting additional edge and node attributes
@@ -1636,6 +1635,23 @@ class Network(session_mod.Logger):
         val = dct.get(val, val)
 
         return val
+
+
+    @staticmethod
+    def _process_partner(fmt, line):
+
+        if isinstance(fmt, int):
+
+            partner = line[fmt]
+
+        elif isinstance(fmt, tuple):
+
+            idx, proc = fmt
+            obj = line if idx is None else line[idx]
+
+            partner = proc(obj)
+
+        return partner.strip() if hasattr(partner, 'strip') else partner
 
 
     def _map_list(
