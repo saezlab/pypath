@@ -2476,6 +2476,19 @@ def suffix(string, sep):
     return first(reversed(string.rsplit(sep, maxsplit = 1)))
 
 
+def remove_prefix(string, sep):
+    """
+    Removes a prefix if `string` is a string and contains the separator
+    `sep`; otherwise returns the original object.
+    """
+
+    return (
+        first(reversed(string.split(sep, maxsplit = 1)))
+            if is_str(string) else
+        string
+    )
+
+
 def maybe_in_dict(dct, key):
     """
     Retrieves a key from a dict if the key is in the dict, otherwise
