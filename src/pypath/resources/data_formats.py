@@ -2944,16 +2944,28 @@ small_molecule_protein = {
     'signor': input_formats.NetworkInput(
         name = 'SIGNOR',
         separator = None,
-        id_col_a = 0,
-        id_col_b = 1,
-        id_type_a = 'pubchem',
-        id_type_b = 'uniprot',
-        # only direct interactions
-        positive_filters = [(10, True), (4, 'chemical')],
-        # exclude TF-target interactions
-        negative_filters = [(7, 'transcriptional regulation')],
-        entity_type_a = 'small_molecule',
-        entity_type_b = 'protein',
+        id_col_a = (0, lambda x: common.remove_prefix(x, ':')),
+        id_col_b = (1, lambda x: common.remove_prefix(x, ':')),
+        id_type_a = lambda line: (
+            'pubchem'
+                if common.is_str(line[0]) and line[0][:3] == 'CID' else
+            'chebi'
+                if common.is_str(line[0]) and line[0][:5] == 'CHEBI' else
+            'uniprot'
+        ),
+        id_type_b = lambda line: (
+            'pubchem'
+                if common.is_str(line[1]) and line[1][:3] == 'CID' else
+            'chebi'
+                if common.is_str(line[1]) and line[1][:5] == 'CHEBI' else
+            'uniprot'
+        ),
+        positive_filters = [
+            (10, True), # only direct interactions
+            lambda line: line[4] == 'chemical' or line[5] == 'chemical',
+        ],
+        entity_type_a = (4, {'chemical': 'small_molecule'}),
+        entity_type_b = (5, {'chemical': 'small_molecule'}),
         is_directed = (
             6,
             [
