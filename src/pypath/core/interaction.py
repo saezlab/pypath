@@ -211,7 +211,7 @@ class Interaction(attrs_mod.AttributeHandler):
         ('complex', 'complexes'),
         'mirna',
         'lncrna',
-        'small_molecule',
+        (('small_molecule', 'drug', 'metabolite'),),
         None,
     }
 
@@ -2239,17 +2239,18 @@ class Interaction(attrs_mod.AttributeHandler):
 
                 continue
 
-            entity_type = etype[0] if isinstance(etype, tuple) else etype
+            entity_type = common.sfirst(etype)
+            entity_type_label = common.sfirst(entity_type)
             return_type = vtype
 
             etype_part = (
                 ''
-                    if not entity_type else
-                entity_type
+                    if not entity_type_label else
+                entity_type_label
                     if vtype else
                 etype[1]
-                    if isinstance(etype, tuple) else
-                '%ss' % entity_type
+                    if isinstance(etype, tuple) and len(etype) > 1 else
+                '%ss' % entity_type_label
             )
             vtype_part = '%s' % vtype if vtype else ''
 
