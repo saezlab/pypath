@@ -1189,35 +1189,22 @@ class Network(session_mod.Logger):
                         networkinput.ncbi_tax_id
                     )
 
-                    if (
-                        (
-                            'include' in taxdA and
-                            taxon_a not in taxdA['include']
-                        ) or (
-                            'include' in taxdB and
-                            taxon_b not in taxdB['include']
-                        ) or (
-                            'exclude' in taxdA and
-                            taxon_a in taxdA['exclude']
-                        ) or (
-                            'exclude' in taxdB and
-                            taxon_b in taxdB['exclude']
-                        ) or (
-                            networkinput.only_default_organism and
-                            (
-                                taxon_a != self.ncbi_tax_id or
-                                taxon_b != self.ncbi_tax_id
-                            )
-                        )
+                    only_default = networkinput.only_default_organism
+
+                    if not (
+                        self._match_taxon(taxdA, taxon_a, only_default) and
+                        self._match_taxon(taxdB, taxon_b, only_default)
                     ):
 
                         taxon_filtered += 1
                         continue
 
                 else:
+
                     taxon_a = taxon_b = self.ncbi_tax_id
 
                 if taxon_a is None or taxon_b is None:
+
                     taxon_filtered += 1
                     continue
 
@@ -1758,7 +1745,11 @@ class Network(session_mod.Logger):
         """
         """
 
-        if 'A' in tax_dict and 'B' in tax_dict:
+        if isinstance(tax_dict, int):
+
+            return tax_dict
+
+        elif 'A' in tax_dict and 'B' in tax_dict:
 
             return (
                 self._process_taxon(tax_dict['A'], fields),
@@ -1775,6 +1766,25 @@ class Network(session_mod.Logger):
 
             else:
                 return None
+
+
+    def _match_taxon(self, tax_dict, taxon, only_default_organism = False):
+
+        return (
+            (
+                isinstance(tax_dict, dict) and
+                'include' in tax_dict and
+                taxon not in tax_dict['include']
+            ) or (
+                isinstance(tax_dict, dict) and
+                'exclude' in tax_dict and
+                taxon in tax_dict['exclude']
+            ) or (
+                not only_default_organism or
+                taxon == self.ncbi_tax_id or
+                taxon == constants.NOT_ORGANISM_SPECIFIC
+            )
+        )
 
 
     def _add_edge_list(
