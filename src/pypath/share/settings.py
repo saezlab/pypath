@@ -107,6 +107,13 @@ _defaults = {
         'small_molecule': 'rxnorm',
         'drug': 'rxnrom',
     },
+    'small_molecule_entity_types': {
+        'small_molecule',
+        'drug',
+        'metabolite',
+        'lipid',
+        'compound',
+    },
     'uniprot_uploadlists_chunk_size': 10000,
     'trip_preprocessed': 'trip_preprocessed.pickle',
     'deathdomain': 'deathdomain.tsv',
