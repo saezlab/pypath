@@ -2949,7 +2949,7 @@ small_molecule_protein = {
         id_type_a = 'pubchem',
         id_type_b = 'uniprot',
         # only direct interactions
-        positive_filters = [(10, True), (6, 'chemical')],
+        positive_filters = [(10, True), (4, 'chemical')],
         # exclude TF-target interactions
         negative_filters = [(7, 'transcriptional regulation')],
         entity_type_a = 'small_molecule',
