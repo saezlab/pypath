@@ -1432,8 +1432,9 @@ class Network(session_mod.Logger):
         return infile, edge_list_mapped
 
 
+    @classmethod
     def _filters(
-            self,
+            cls,
             line,
             positive_filters = None,
             negative_filters = None,
@@ -1444,47 +1445,72 @@ class Network(session_mod.Logger):
         discarded, if ``False`` the interaction will be further processed
         and if all other criteria fit then will be added to the network
         after identifier translation.
+
+        Return:
+            (bool): True if the line should be filtered (removed), False
+                if all filters passed, the record can be further processed.
         """
 
-        negative_filters = negative_filters or ()
+        return (
+            cls._process_filters(line, positive_filters, True) or
+            cls._process_filters(line, negative_filters, False)
+        )
 
-        for filtr in negative_filters:
 
-            if len(filtr) > 2:
+    @classmethod
+    def _process_filters(cls, line, filters = None, negate = False):
+        """
+        Args:
+            negate (bool): Whether to negate the filter matches. Sorry for
+                the confusion, but it should be True for positive filters
+                and False for negatives.
 
-                sep = filtr[2]
-                thisVal = set(line[filtr[0]].split(sep))
 
-            else:
+        Return:
+            (bool): True if the line should be filtered (removed), False
+                if all filters passed, the record can be further processed.
+        """
 
-                thisVal = set([line[filtr[0]]])
+        negate = lambda x: not x if neg else lambda x: x
 
-            filtrVal = common.to_set(filtr[1])
+        filters = filters or ()
 
-            if thisVal & filtrVal:
+        for filtr in filters:
 
-                return True
-
-        positive_filters = positive_filters or ()
-
-        for filtr in positive_filters:
-
-            if len(filtr) > 2:
-
-                sep = filtr[2]
-                thisVal = set(line[filtr[0]].split(sep))
-
-            else:
-
-                thisVal = {line[filtr[0]]}
-
-            filtrVal = common.to_set(filtr[1])
-
-            if not thisVal & filtrVal:
+            if negate(cls._process_filter(line, filtr)):
 
                 return True
 
         return False
+
+
+    @classmethod
+    def _process_filter(cls, line, filtr):
+        """
+        Return:
+            (bool): True if the filter matches.
+        """
+
+        if callable(filtr):
+
+            if filtr(line):
+
+                return True
+
+        else:
+
+            if len(filtr) > 2:
+
+                sep = filtr[2]
+                thisVal = set(line[filtr[0]].split(sep))
+
+            else:
+
+                thisVal = common.to_set(line[filtr[0]])
+
+            filtrVal = common.to_set(filtr[1])
+
+            return bool(thisVal & filtrVal)
 
 
     def _process_sign(self, sign_data, sign_def):
