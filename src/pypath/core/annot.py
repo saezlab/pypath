@@ -43,6 +43,7 @@ import pypath.inputs.lrdb as lrdb
 import pypath.inputs.uniprot as uniprot_input
 import pypath.share.common as common
 import pypath.share.settings as settings
+import pypath.share.constants as constants
 import pypath.utils.mapping as mapping
 import pypath.utils.reflists as reflists
 import pypath.utils.uniprot as utils_uniprot
@@ -125,6 +126,7 @@ protein_sources_default = {
     #'Biogps',
     'Cellinker',
     'Scconnect',
+    'Cancerdrugsdb',
 }
 
 #TODO this should be part of json files
@@ -2659,6 +2661,10 @@ class AnnotationBase(resource.AbstractResource):
 
     def _ensure_swissprot(self):
 
+        if self.ncbi_tax_id == constants.NOT_ORGANISM_SPECIFIC:
+
+            return
+
         new = collections.defaultdict(set)
 
         for uniprot, annots in iteritems(self.annot):
@@ -2902,7 +2908,13 @@ class AnnotationBase(resource.AbstractResource):
 
         if not self.reference_set:
 
-            proteins, complexes, reference_set = self._get_reference_set()
+            if self.ncbi_tax_id == constants.NOT_ORGANISM_SPECIFIC:
+
+                proteins, complexes, reference_set = (set(),) * 3
+
+            else:
+
+                proteins, complexes, reference_set = self._get_reference_set()
 
             self.proteins = proteins
             self.complexes = complexes
@@ -5873,6 +5885,33 @@ class Gpcrdb(AnnotationBase):
             name = 'GPCRdb',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'gpcrdb.gpcrdb_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class Cancerdrugsdb(AnnotationBase):
+
+
+    def __init__(self, **kwargs):
+        """
+        Approved cancer drugs from the Cancer Drugs Database
+        (https://www.anticancerfund.org/en/cancerdrugs-db).
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'CancerDrugsDB',
+            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+            input_method = 'cancerdrugsdb.cancerdrugsdb_annotations',
+            entity_type = 'drug',
             **kwargs
         )
 
