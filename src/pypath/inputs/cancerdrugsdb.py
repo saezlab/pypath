@@ -112,7 +112,7 @@ def cancerdrugsdb_interactions():
     unmapped_drug = []
     no_targets = []
 
-    data = cancerdrugs_db_download()
+    data = cancerdrugsdb_download()
 
     for rec in data:
 
@@ -201,7 +201,7 @@ def cancerdrugsdb_annotations():
     )
 
     result = collections.defaultdict(set)
-    data = cancerdrugs_db_interactions()
+    data = cancerdrugsdb_interactions()
 
     for rec in data:
 
