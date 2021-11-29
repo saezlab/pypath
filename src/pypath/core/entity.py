@@ -82,6 +82,7 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
 
 
     _default_id_types = settings.get('default_name_types')
+    _smol_types = settings.get('small_molecule_entity_types')
 
     _id_type_to_entity_type = {
         'uniprot': 'protein',
@@ -152,7 +153,7 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
                 taxon
             )
 
-        if entity_type in {'drug', 'small_molecule', 'metabolite'}:
+        if entity_type in self._smol_types:
 
             taxon = constants.NOT_ORGANISM_SPECIFIC
 
@@ -250,9 +251,22 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
     def _is_protein(key):
 
         return (
-            isinstance(key, common.basestring) and
+            isinstance(key, common.basestring) and (
+                not key.isdigit() or
+                settings.get('default_name_types')['protein'] == 'entrez'
+            ) and
             not key.startswith('MIMAT') and
             not key.startswith('COMPLEX')
+        )
+
+
+    @staticmethod
+    def _is_small_molecule(key):
+
+        return(
+            isinstance(key, common.basestring) and
+            key.isdigit() and
+            settings.get('default_name_types')['protein'] != 'entrez'
         )
 
 
@@ -286,9 +300,25 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
         )
 
 
+    def is_small_molecule(self):
+
+        return (
+            self.entity_type in self._smol_types or (
+                self.identifier.isdigit() and (
+                    self._default_id_types['protein'] != 'entrez' or
+                    self.id_type == 'pubchem'
+                )
+            )
+        )
+
+
     def is_protein(self):
 
-        return self._is_protein(self.identifier)
+        return (
+            self.entity_type not in self._smol_types and
+            self.id_type != 'pubchem' and
+            self._is_protein(self.identifier)
+        )
 
 
     def is_mirna(self):
