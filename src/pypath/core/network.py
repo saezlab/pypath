@@ -757,6 +757,8 @@ class Network(session_mod.Logger):
 
         self._log('Reading network data from `%s`.' % resource.name)
 
+        SMOL_TYPES = settings.get('small_molecule_entity_types')
+
         # workaround in order to make it work with both NetworkInput
         # and NetworkResource type param
         _resource = (
@@ -1174,7 +1176,8 @@ class Network(session_mod.Logger):
                         constants.NOT_ORGANISM_SPECIFIC
                             if networkinput.entity_type_a in {
                                 'small_molecule',
-                                'drug'
+                                'drug',
+                                'metabolite',
                             } else
                         networkinput.ncbi_tax_id
                     )
@@ -1182,10 +1185,7 @@ class Network(session_mod.Logger):
                         networkinput.ncbi_tax_id['B']
                             if 'B' in networkinput.ncbi_tax_id else
                         constants.NOT_ORGANISM_SPECIFIC
-                            if networkinput.entity_type_b in {
-                                'small_molecule',
-                                'drug'
-                            } else
+                            if networkinput.entity_type_b in SMOL_TYPES else
                         networkinput.ncbi_tax_id
                     )
 
