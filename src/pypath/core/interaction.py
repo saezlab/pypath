@@ -211,6 +211,7 @@ class Interaction(attrs_mod.AttributeHandler):
         ('complex', 'complexes'),
         'mirna',
         'lncrna',
+        # ugly :(
         (('small_molecule', 'drug', 'metabolite'),),
         None,
     }

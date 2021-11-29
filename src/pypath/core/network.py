@@ -1083,7 +1083,7 @@ class Network(session_mod.Logger):
                         for x in line
                     ]
 
-                # applying filters:
+                ## 1) filters
                 if self._filters(
                     line,
                     networkinput.positive_filters,
@@ -1093,6 +1093,7 @@ class Network(session_mod.Logger):
                     input_filtered += 1
                     continue
 
+                ## 2) direction
                 # reading names and attributes:
                 if is_directed and not isinstance(is_directed, tuple):
 
@@ -1107,6 +1108,7 @@ class Network(session_mod.Logger):
                         dir_sep,
                     )
 
+                ## 3) references
                 refs = []
 
                 if ref_col is not None:
@@ -1132,26 +1134,36 @@ class Network(session_mod.Logger):
                 refs = pubmed_input.only_pmids([str(r).strip() for r in refs])
 
                 if len(refs) == 0 and must_have_references:
+
                     ref_filtered += 1
                     continue
 
+                ## 4) entity types
+                entity_type_a = self._process_field(
+                    networkinput.entity_type_a,
+                    line,
+                )
+                entity_type_b = self._process_field(
+                    networkinput.entity_type_b,
+                    line,
+                )
+
+                ## 5) ID types
+                id_type_a = self._process_field(networkinput.id_type_a, line)
+                id_type_b = self._process_field(networkinput.id_type_b, line)
+
+                ## 6) organisms
                 # to give an easy way for input definition:
                 if isinstance(networkinput.ncbi_tax_id, int):
 
                     taxon_a = (
                         constants.NOT_ORGANISM_SPECIFIC
-                            if networkinput.entity_type_a in {
-                                'small_molecule',
-                                'drug'
-                            } else
+                            if entity_type_a in SMOL_TYPES else
                         networkinput.ncbi_tax_id
                     )
                     taxon_b = (
                         constants.NOT_ORGANISM_SPECIFIC
-                            if networkinput.entity_type_b in {
-                                'small_molecule',
-                                'drug'
-                            } else
+                            if entity_type_b in SMOL_TYPES else
                         networkinput.ncbi_tax_id
                     )
 
@@ -1170,30 +1182,26 @@ class Network(session_mod.Logger):
                     else:
                         taxon_a = taxon_b = taxx
 
-                    taxdA = (
+                    taxd_a = (
                         networkinput.ncbi_tax_id['A']
                             if 'A' in networkinput.ncbi_tax_id else
                         constants.NOT_ORGANISM_SPECIFIC
-                            if networkinput.entity_type_a in {
-                                'small_molecule',
-                                'drug',
-                                'metabolite',
-                            } else
+                            if entity_type_a in SMOL_TYPES else
                         networkinput.ncbi_tax_id
                     )
-                    taxdB = (
+                    taxd_b = (
                         networkinput.ncbi_tax_id['B']
                             if 'B' in networkinput.ncbi_tax_id else
                         constants.NOT_ORGANISM_SPECIFIC
-                            if networkinput.entity_type_b in SMOL_TYPES else
+                            if entity_type_b in SMOL_TYPES else
                         networkinput.ncbi_tax_id
                     )
 
                     only_default = networkinput.only_default_organism
 
                     if not (
-                        self._match_taxon(taxdA, taxon_a, only_default) and
-                        self._match_taxon(taxdB, taxon_b, only_default)
+                        self._match_taxon(taxd_a, taxon_a, only_default) and
+                        self._match_taxon(taxd_b, taxon_b, only_default)
                     ):
 
                         taxon_filtered += 1
@@ -1208,6 +1216,7 @@ class Network(session_mod.Logger):
                     taxon_filtered += 1
                     continue
 
+                ## 7) effect (sign)
                 positive = False
                 negative = False
 
@@ -1217,6 +1226,7 @@ class Network(session_mod.Logger):
                         self._process_sign(line[sign[0]], sign)
                     )
 
+                ## 8) resources (source databases)
                 resource = (
                     line[networkinput.resource]
                         if isinstance(networkinput.resource, int) else
@@ -1247,11 +1257,13 @@ class Network(session_mod.Logger):
 
                 resource.add(networkinput.name)
 
+                ## 9) interacting partners
                 id_a = line[networkinput.id_col_a]
                 id_b = line[networkinput.id_col_b]
                 id_a = id_a.strip() if hasattr(id_a, 'strip') else id_a
                 id_b = id_b.strip() if hasattr(id_b, 'strip') else id_b
 
+                ## 10) further attributes
                 # getting additional edge and node attributes
                 attrs_edge = self._process_attrs(
                     line,
@@ -1269,6 +1281,7 @@ class Network(session_mod.Logger):
                     lnum,
                 )
 
+                ## 11) creating the Evidence object
                 evidences = evidence.Evidences(
                     evidences = (
                         evidence.Evidence(
@@ -1281,13 +1294,24 @@ class Network(session_mod.Logger):
                     )
                 )
 
+                ## 12) node attributes that
+                ##     depend on the interaction direction
+                if networkinput.mark_source:
+
+                    attrs_node_a[networkinput.mark_source] = this_edge_dir
+
+                if networkinput.mark_target:
+
+                    attrs_node_b[networkinput.mark_target] = this_edge_dir
+
+                ## 13) all interaction data goes into a dict
                 new_edge = {
                     'id_a': id_a,
                     'id_b': id_b,
-                    'id_type_a': networkinput.id_type_a,
-                    'id_type_b': networkinput.id_type_b,
-                    'entity_type_a': networkinput.entity_type_a,
-                    'entity_type_b': networkinput.entity_type_b,
+                    'id_type_a': id_type_a,
+                    'id_type_b': id_type_b,
+                    'entity_type_a': entity_type_a,
+                    'entity_type_b': entity_type_b,
                     'source': resource,
                     'is_directed': this_edge_dir,
                     'references': refs,
@@ -1297,23 +1321,10 @@ class Network(session_mod.Logger):
                     'taxon_b': taxon_b,
                     'interaction_type': networkinput.interaction_type,
                     'evidences': evidences,
-                }
-
-                if networkinput.mark_source:
-
-                    attrs_node_a[networkinput.mark_source] = this_edge_dir
-
-                if networkinput.mark_target:
-
-                    attrs_node_b[networkinput.mark_target] = this_edge_dir
-
-                # merging dictionaries
-                node_attrs = {
                     'attrs_node_a': attrs_node_a,
                     'attrs_node_b': attrs_node_b,
                     'attrs_edge': attrs_edge,
                 }
-                new_edge.update(node_attrs)
 
                 if read_error:
 
@@ -1333,7 +1344,7 @@ class Network(session_mod.Logger):
 
                 infile.close()
 
-            # ID translation of edges
+            ## 14) ID translation of edges
             edge_list_mapped = self._map_list(
                 edge_list,
                 expand_complexes = expand_complexes,
@@ -1440,15 +1451,18 @@ class Network(session_mod.Logger):
         for filtr in negative_filters:
 
             if len(filtr) > 2:
+
                 sep = filtr[2]
                 thisVal = set(line[filtr[0]].split(sep))
 
             else:
+
                 thisVal = set([line[filtr[0]]])
 
             filtrVal = common.to_set(filtr[1])
 
             if thisVal & filtrVal:
+
                 return True
 
         positive_filters = positive_filters or ()
@@ -1456,15 +1470,18 @@ class Network(session_mod.Logger):
         for filtr in positive_filters:
 
             if len(filtr) > 2:
+
                 sep = filtr[2]
                 thisVal = set(line[filtr[0]].split(sep))
 
             else:
+
                 thisVal = {line[filtr[0]]}
 
             filtrVal = common.to_set(filtr[1])
 
             if not thisVal & filtrVal:
+
                 return True
 
         return False
@@ -1558,6 +1575,41 @@ class Network(session_mod.Logger):
             value = common.to_set(value)
 
             return bool(value & dir_val)
+
+
+    def _process_field(self, fmt, line):
+        """
+        Extract a value from a line describing an interaction.
+
+        Args:
+            fmt (str, tuple, callable): The value, or a definition how to
+                process it.
+            line (list): The raw interaction record.
+
+        Return:
+            (str): The extracted value.
+        """
+
+        if common.is_str(fmt):
+
+            return fmt
+
+        elif callable(fmt):
+
+            return fmt(line)
+
+        if isinstance(fmt, int):
+
+            idx, dct = fmt, {}
+
+        elif isin(fmt, tuple):
+
+            idx, dct = fmt
+
+        val = line[idx]
+        val = dct.get(val, val)
+
+        return val
 
 
     def _map_list(
