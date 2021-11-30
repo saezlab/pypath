@@ -1868,6 +1868,20 @@ class Mapper(session_mod.Logger):
                 ncbi_tax_id = ncbi_tax_id,
             )
 
+        if (
+            not mapped_names and
+            ':' in name
+        ):
+
+            # trying to remove the prefix which sometimes
+            # shows the ID type, e.g. CHEBI:4956 should become 4956
+            mapped_names = self._map_name(
+                name = common.remove_prefix(name, ':'),
+                id_type = id_type,
+                target_id_type = target_id_type,
+                ncbi_tax_id = ncbi_tax_id,
+            )
+
         # if a gene symbol could not be translated by the default
         # conversion table, containing only the primary gene symbols
         # in next step we try the secondary (synonym) gene symbols
