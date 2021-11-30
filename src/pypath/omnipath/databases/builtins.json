@@ -45,6 +45,10 @@
         "dbclass": "network",
         "resources": "tf_mirna"
     },
+    "small_molecule": {
+        "dbclass": "network",
+        "resources": "small_molecule_protein"
+    },
     "enz_sub": {
         "dbclass": "enz_sub"
     },
