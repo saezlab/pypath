@@ -1451,8 +1451,8 @@ class Network(session_mod.Logger):
         """
 
         return (
-            cls._process_filters(line, positive_filters, True) or
-            cls._process_filters(line, negative_filters, False)
+            cls._process_filters(line, negative_filters, False) or
+            cls._process_filters(line, positive_filters, True)
         )
 
 
@@ -1470,13 +1470,13 @@ class Network(session_mod.Logger):
                 if all filters passed, the record can be further processed.
         """
 
-        negate = lambda x: not x if negate else lambda x: x
+        _negate = (lambda x: not x) if negate else (lambda x: x)
 
         filters = filters or ()
 
         for filtr in filters:
 
-            if negate(cls._process_filter(line, filtr)):
+            if _negate(cls._process_filter(line, filtr)):
 
                 return True
 
