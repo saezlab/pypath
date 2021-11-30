@@ -42,6 +42,14 @@ import pypath.share.session as session_mod
 import pypath.omnipath as omnipath
 
 
+NO_HOMOLOGY_TRANSLATION = {
+    'mirna_mrna',
+    'lncrna_mrna',
+    'tf_mirna',
+    'small_molecule',
+}
+
+
 class WebserviceTables(session_mod.Logger):
     """
     Creates the data frames which the web service uses to serve the data from.
@@ -96,6 +104,7 @@ class WebserviceTables(session_mod.Logger):
                 'mirna_mrna',
                 'tf_mirna',
                 'lncrna_mrna',
+                'small_molecule',
             )
         )
 
@@ -133,7 +142,7 @@ class WebserviceTables(session_mod.Logger):
             exp.webservice_interactions_df()
             dataframes.append(exp.df)
 
-            if dataset not in {'mirna_mrna', 'lncrna_mrna', 'tf_mirna'}:
+            if dataset not in NO_HOMOLOGY_TRANSLATION:
 
                 for rodent in (10090, 10116):
 
