@@ -250,6 +250,7 @@ class StatusReport(object):
             first = None,
             from_git = None,
             nobuild = None,
+            prev_run = None,
         ):
 
         self.parse_args()
@@ -259,6 +260,7 @@ class StatusReport(object):
         self.build_dir = build_dir or self.clargs.build_dir
         self.first = first or self.clargs.first
         self.nobuild = nobuild or self.clargs.nobuild
+        self.prev_run = prev_run or self.clargs.prev_run
         self.from_git = (
             from_git
                 if from_git is not None else
@@ -322,6 +324,11 @@ class StatusReport(object):
             help = 'Do not fetch the latest pypath from git, use the one '
                 'in the current directory or installed in system paths',
             action = 'store_true',
+        )
+        self.clargs.add_argument(
+            '-r', '--prev_run',
+            help = 'Compare to a previous run (path to directory)',
+            type = str,
         )
         self.clargs = self.clargs.parse_args()
 
