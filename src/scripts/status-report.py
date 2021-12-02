@@ -213,6 +213,8 @@ PYPATH_GIT_URL = 'https://github.com/saezlab/pypath'
 
 CAPTURE_GENERATORS = 300
 
+MAINDIR_PREFIX = 'pypath_inputs_status'
+
 
 def _log(*args, **kwargs):
     """
@@ -327,7 +329,10 @@ class StatusReport(object):
         )
         self.clargs.add_argument(
             '-r', '--prev_run',
-            help = 'Compare to a previous run (path to directory)',
+            help = 'Compare to a previous run (path to directory). If not '
+                'provided, the script will try to find the directory by '
+                'itself. To disable comparison to a previous run, provide '
+                '"none" to this argument.',
             type = str,
         )
         self.clargs = self.clargs.parse_args()
@@ -336,7 +341,7 @@ class StatusReport(object):
 
         self.reset_counters()
         self.set_timestamp()
-        self.set_dirs()
+        self.set_dirs() # calls init_pypath
         self.reset_result()
         _log('Started generating pypath inputs status report.')
 
@@ -356,8 +361,6 @@ class StatusReport(object):
 
 
     def reset_counters(self):
-
-
 
         for cntr in COUNTERS:
 
@@ -486,9 +489,9 @@ class StatusReport(object):
 
         self.maindir = (
             self.maindir or
-            'pypath_inputs_status__%s' % time.strftime(
-                '%Y%m%d-%H%M%S',
-                self.start_time,
+            '%s__%s' % (
+                MAINDIR_PREFIX,
+                time.strftime('%Y%m%d-%H%M%S', self.start_time),
             )
         )
         self.maindir = os.path.abspath(self.maindir)
@@ -511,6 +514,96 @@ class StatusReport(object):
 
         settings.setup(cachedir = self.cachedir)
         settings.setup(pickle_dir = self.pickle_dir)
+
+
+    def set_prev_dir(self):
+        """
+        Sets up the path to a directory with a previous run of this script.
+        Having a previous run makes it possible to find the newly failing
+        items and the ones which were failing and just started to work again.
+        """
+
+        if self.prev_dir == 'none':
+
+            self.prev_dir = None
+            _log('Comparing to previous run is disabled.')
+            return
+
+        if isinstance(self.prev_dir, str):
+
+            if (
+                not os.path.exists(self.prev_dir) or
+                not self.is_status_report_dir(self.prev_dir)
+            ):
+
+                _log(
+                    'Previous run directory does not '
+                    'exist or does not contain output: `%s`.' % self.prev_dir
+                )
+                self.prev_dir = None
+
+        if self.prev_dir is None:
+
+            self._find_prev_dir()
+
+        if (
+            isinstance(self.prev_dir, str) and
+            os.path.exists(self.prev_dir) and
+            self.is_status_report_dir(self.prev_dir)
+        ):
+
+            _log(
+                'Will compare to previous run '
+                'in directory `%s`.' % self.prev_dir
+            )
+
+        else:
+
+            _log(
+                'Could not find directory with previous run, '
+                'have nothing to compare against the current run.'
+            )
+
+
+    def _find_prev_dir(self):
+        """
+        This is how we try to find automatically the directory with the
+        previous run.
+        """
+
+        redir = re.compile(r'%s__(\d{8}-\d{6})' % MAINDIR_PREFIX)
+
+        parent, _ = os.path.split(self.maindir)
+        latest = ''
+
+        for d in next(os.walk(parent))[1]:
+
+            m = redir.match(d)
+
+            if m:
+
+                timestamp = m.group(1)
+                this_path = os.path.join(parent, d)
+
+                if (
+                    timestamp > latest and
+                    self.is_status_report_dir(this_path)
+                ):
+
+                    latest = timestamp
+                    self.prev_dir = this_path
+
+
+    @staticmethod
+    def is_status_report_dir(path):
+        """
+        Tells if a directory seems to contain a previous run of this script.
+        It checks for the most important output file, `report/result.json`.
+        """
+
+        result_json = os.path.join(path, 'result', 'result.json')
+
+        return os.path.exists(result_json)
 
 
     def init_pypath(self):
