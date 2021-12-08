@@ -215,6 +215,8 @@ CAPTURE_GENERATORS = 300
 
 MAINDIR_PREFIX = 'pypath_inputs_status'
 
+RESULT_JSON_PATH = ('report', 'result.json')
+
 
 def _log(*args, **kwargs):
     """
@@ -262,7 +264,7 @@ class StatusReport(object):
         self.build_dir = build_dir or self.clargs.build_dir
         self.first = first or self.clargs.first
         self.nobuild = nobuild or self.clargs.nobuild
-        self.prev_run = prev_run or self.clargs.prev_run
+        self.prev_dir = prev_run or self.clargs.prev_run
         self.from_git = (
             from_git
                 if from_git is not None else
@@ -343,6 +345,7 @@ class StatusReport(object):
         self.set_timestamp()
         self.set_dirs() # calls init_pypath
         self.reset_result()
+        self.read_prev_result()
         _log('Started generating pypath inputs status report.')
 
 
@@ -601,9 +604,32 @@ class StatusReport(object):
         It checks for the most important output file, `report/result.json`.
         """
 
-        result_json = os.path.join(path, 'result', 'result.json')
+        path = '' if path is None else path
+        result_json = os.path.join(path, *RESULT_JSON_PATH)
 
         return os.path.exists(result_json)
+
+
+    def read_prev_result(self):
+        """
+        Reads the results of a previous run and stores it under the
+        `prev_result` attribute.
+        """
+
+        if self.is_status_report_dir(self.prev_dir):
+
+            json_path = os.path.join(self.prev_dir, *RESULT_JSON_PATH)
+
+            _log('Reading results of previous run from `%s`.' % json_path)
+
+            with open(json_path, 'r') as fp:
+
+                self.prev_result = json.load(fp)
+
+            self.prev_result = dict(
+                (i['function'], i)
+                for i in self.prev_result
+            )
 
 
     def init_pypath(self):
@@ -692,6 +718,9 @@ class StatusReport(object):
 
 
     def test_input(self, fun):
+        """
+        Calls one function and captures its result or the errors raised.
+        """
 
         fun_name = self.function_name(fun)
         result = {'function': fun_name}
@@ -790,10 +819,63 @@ class StatusReport(object):
             self.n_errors += 1
             _log('Collected information about `%s`.' % fun_name)
 
+        self.compare_to_prev(result)
         self.result.append(result)
 
         _log('Finished testing `%s`.' % fun_name)
         _log('Result length: %u' % len(self.result))
+
+
+    def compare_to_prev(self, result):
+        """
+        Compares the current outcome of a procedure to the one captured at
+        a previous run. The differences found will be stored in the result
+        dict passed, under the key `diff`.
+        """
+
+        diff = {}
+        result['last_succeeded'] = result['start_time']
+
+        if result['function'] in self.prev_result:
+
+            prev = self.prev_result[result['function']]
+
+            if 'error' in prev and 'error' not in result:
+
+                diff['fixed'] = True
+
+            if (
+                'value_size' in prev and
+                'value_size' in result and
+                prev['value_size'] != result['value_size']
+            ):
+
+                diff['size'] = result['value_size'] - prev['value_size']
+
+            if (
+                'value_type' in prev and
+                'value_type' in result and
+                prev['value_type'] != result['value_type']
+            ):
+
+                diff['type'] = {
+                    'previous': prev['value_type'],
+                    'current': result['value_type'],
+                }
+
+            if 'error' in result and 'error' not in prev:
+
+                diff['broke'] = True
+
+            if 'error' in result and 'last_succeeded' in prev:
+
+                result['last_succeeded'] = prev['last_succeeded']
+
+        else:
+
+            diff['first'] = True
+
+        result['diff'] = diff
 
 
     @staticmethod
