@@ -4228,7 +4228,8 @@
   },
   "iTALK": {
     "urls": {
-      "webpages": ["https://github.com/Coolgenome/iTALK"]
+      "webpages": ["https://github.com/Coolgenome/iTALK"],
+      "articles": ["https://www.biorxiv.org/content/10.1101/507871v1"]
     },
     "license": "CC BY-NC-SA 3.0",
     "emails": ["ywang65@mdanderson.org", "Yuanxin Wang"]
