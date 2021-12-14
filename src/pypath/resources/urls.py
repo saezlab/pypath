@@ -1471,7 +1471,12 @@ urls = {
             '%s/%ss.csv',
         'intera': 'https://github.com/JonETJakobsson/scConnect/raw/master/'
             'scConnect/data/GTP_tables_clean/2020-5/interactions.csv',
-    }
+    },
+    'progeny': {
+        'label': 'Pathway responsive genes with weights',
+        'url': 'https://github.com/saezlab/progeny/raw/master/'
+            'data/model_%s_full.rda',
+    },
 }
 
 

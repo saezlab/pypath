@@ -128,7 +128,8 @@ HTML_TEMPLATE = (
 
             <p id="desc"></p>
             <p id="comp"></p>
-            <table>
+            <!-- Input testing summary table -->
+            <table id="report-summary">
                 <tr>
                     <th>Modules collected:</th>
                     <td id="n_modules"></td>
@@ -159,6 +160,7 @@ HTML_TEMPLATE = (
                 </tr>
             </table>
             <br>
+            <!-- Input functions table -->
             <table>
                 <tbody id="report" valign="top">
                     <tr>
@@ -171,9 +173,12 @@ HTML_TEMPLATE = (
                         <th>Result repr</th>
                         <th>Result size</th>
                         <th>Error</th>
+                        <th>Change since last time</th>
+                        <th>Last succeeded</th>
                     </tr>
                 </tbody>
             </table>
+            <!-- Footer -->
             <p><em>
                 <a href="https://omnipathdb.org/">The OmniPath Team</a>&nbsp;
                 &#x2022;
