@@ -85,7 +85,8 @@ def progeny_annotations(organism = 9606):
             and mouse are supported.
 
     Returns:
-        (dict): Dict of sets, keys are
+        (dict): Dict of sets, keys are UniProt IDs, values are pathway
+            association records, each with a weight and p-value.
     """
 
     record = collections.namedtuple(

@@ -127,6 +127,7 @@ protein_sources_default = {
     'Cellinker',
     'Scconnect',
     'Cancerdrugsdb',
+    'Progeny',
 }
 
 #TODO this should be part of json files
@@ -5885,6 +5886,39 @@ class Gpcrdb(AnnotationBase):
             name = 'GPCRdb',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'gpcrdb.gpcrdb_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class Progeny(AnnotationBase):
+
+    _eq_fields = ('pathway',)
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Pathway responsive genes: signatures based on transcriptomics data
+        from PROGENy (https://github.com/saezlab/progeny).
+        """
+
+        if 'organism' not in kwargs:
+
+            kwargs['organism'] = ncbi_tax_id
+
+        AnnotationBase.__init__(
+            self,
+            name = 'PROGENy',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'progeny.progeny_annotations',
+            infer_complexes = False,
             **kwargs
         )
 
