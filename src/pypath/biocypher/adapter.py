@@ -116,6 +116,7 @@ class BiocypherAdapter(_session.Logger):
         # but I needed to go through several modules of code to find out.
 
         # another question: how do I know which netres objects are relevant?
+        # -> omnipath/builtins.json & classes.json
 
         #n.load(pypath_netres.mirna_target, exclude=exclude)
         #n.load(pypath_netres.interaction, exclude=exclude)
