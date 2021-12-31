@@ -52,6 +52,7 @@ class UniprotProtein(object):
     _redbsep = re.compile(r'\s?;\s?')
     _retaxid = re.compile(r'=(\d+)[^\d]')
     _rexref = re.compile(r'[\.,]?\s?\{[^\}]+\}')
+    _reec = re.compile(r'EC=(\d+(?:\.[-\d]+)+)')
 
     def __init__(self, uniprot_id):
 
@@ -110,6 +111,12 @@ class UniprotProtein(object):
     def full_name(self):
 
         return self._rerecname.search(next(self.itertag('DE'))).groups()[0]
+
+
+    @property
+    def ec(self):
+
+        return set(self._reec.findall(''.join(self.itertag('DE'))))
 
 
     @property
