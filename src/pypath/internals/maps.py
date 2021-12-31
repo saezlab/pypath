@@ -157,7 +157,11 @@ uniprot = {
         input_formats.UniprotMapping(
             id_type_a = 'protein-name',
             swissprot = None,
-        )
+        ),
+    ('ec', 'uniprot'):
+        input_formats.UniprotMapping(
+            id_type_a = 'ec',
+        ),
 }
 
 

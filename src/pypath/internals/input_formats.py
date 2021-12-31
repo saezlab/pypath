@@ -556,6 +556,7 @@ ac_query = {
     'enst': ['database', 'ensembl'],
     'uniprot-entry': ['entry name', None],
     'protein-name': ['protein names', None],
+    'ec': ['ec', None],
 }
 
 ac_mapping = {
