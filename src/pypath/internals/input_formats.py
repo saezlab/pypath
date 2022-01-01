@@ -43,8 +43,105 @@ __all__ = [
 ]
 
 
+AC_QUERY = {
+    'genesymbol': ('genes', 'PREFERRED'),
+    'genesymbol-syn': ('genes', 'ALTERNATIVE'),
+    'hgnc': ('database', 'HGNC'),
+    'embl': ('database', 'embl'),
+    'entrez': ('database', 'geneid'),
+    'refseqp': ('database', 'refseq'),
+    'enst': ('database', 'ensembl'),
+    'uniprot-entry': ('entry name', None),
+    'protein-name': ('protein names', None),
+    'ec': ('ec', None),
+}
+
+AC_MAPPING = {
+    'uniprot': 'ACC',
+    'uniprot_id': 'ID',
+    'embl': 'EMBL',
+    'embl_id': 'EMBL_ID',
+    'pir': 'PIR',
+    'entrez': 'P_ENTREZGENEID',
+    'gi': 'P_GI',
+    'refseqp': 'P_REFSEQ_AC',
+    'refseqn': 'REFSEQ_NT_ID',
+    'ensembl': 'ENSEMBL_ID',
+    'ensp': 'ENSEMBL_PRO_ID',
+    'enst': 'ENSEMBL_TRS_ID',
+    'ensg': 'ENSEMBLGENOME_ID',
+    'ensgp': 'ENSEMBLGENOME_PRO_ID',
+    'ensgt': 'ENSEMBLGENOME_TRS_ID',
+    'hgnc': 'HGNC_ID',
+    'ensp_string': 'STRING_ID',
+}
+
+BIOMART_MAPPING = {
+    'hgnc_symbol': 'hgnc_symbol',
+    'rnacentral': 'rnacentral',
+    'hgnc_trans_name': 'hgnc_trans_name',
+    'wikigene_name': 'wikigene_name',
+    'gene_name': 'external_gene_name',
+    'transcript_name': 'external_transcript_name',
+    'gene_description': 'description',
+    'gene_synonym': 'external_synonym',
+    'interpro_description': 'interpro_description',
+    'interpro': 'interpro',
+    'interpro_short_description': 'interpro_short_description',
+    'enst_biomart': 'ensembl_transcript_id',
+    'ensg_biomart': 'ensembl_gene_id',
+    'ensp_biomart': 'ensembl_peptide_id',
+    'ensembl_gene_id': 'ensembl_gene_id',
+    'ensembl_transcript_id': 'ensembl_transcript_id',
+    'ensembl_peptide_id': 'ensembl_peptide_id',
+    'uniprot': 'uniprotswissprot',
+    'trembl': 'uniprotsptrembl',
+
+}
+
+PRO_MAPPING = {
+    'alzforum': 'Alzforum_mut',
+    'araport': 'Araport',
+    'cgnc': 'CGNC',
+    'dictybase': 'dictyBase',
+    'dto': 'DTO',
+    'ecocyc': 'EcoCyc',
+    'ecogene': 'EcoGene',
+    'ensembl_pro': 'Ensembl',
+    'ensembl_bacteria': 'EnsemblBacteria',
+    'flybase': 'FlyBase',
+    'hgnc': 'HGNC',
+    'iuphar_fam': 'IUPHARfam',
+    'iuphar': 'IUPHARobj',
+    'mgi': 'MGI',
+    'mro': 'MRO',
+    'ncbi_gene': 'NCBIGene',
+    'pbd': 'PDB',
+    'pombase': 'PomBase',
+    'interpro': 'PRO',
+    'reactome': 'Reactome',
+    'rgd': 'RGD',
+    'sgd': 'SGD',
+    'tdr': 'TDR',
+    'uniprot': 'UniProtKB',
+    'uniprot-var': 'UniProtKB_VAR',
+    'wormbase': 'WormBase',
+    'zfin': 'ZFIN',
+}
+
+ARRAY_MAPPING = {
+    'affy',
+    'affymetrix',
+    'illumina',
+    'agilent',
+    'codelink',
+    'phalanx',
+}
+
+
 class MappingInput(object):
 
+    _resource_id_types = {}
 
     def __init__(
             self,
@@ -52,12 +149,42 @@ class MappingInput(object):
             id_type_a,
             id_type_b,
             ncbi_tax_id = None,
+            resource_id_type_a = None,
+            resource_id_type_b = None,
         ):
 
         self.type = type_
         self.id_type_a = id_type_a
         self.id_type_b = id_type_b
+        self.resource_id_type_a = resource_id_type_a
+        self.resource_id_type_b = resource_id_type_b
         self.ncbi_tax_id = ncbi_tax_id or settings.get('default_organism')
+
+
+    def _resource_id_type(self, side):
+
+        return self.resource_id_type(
+            getattr(self, 'id_type_%s' % side),
+            override = getattr(self, 'resource_id_type_%s' % side),
+        )
+
+
+    @property
+    def _resource_id_type_a(self):
+
+        return self._resource_id_type(side = 'a')
+
+
+    @property
+    def _resource_id_type_b(self):
+
+        return self._resource_id_type(side = 'b')
+
+
+    @classmethod
+    def resource_id_type(cls, id_type, override = None):
+
+        return override or cls._resource_id_types.get(id_type, None)
 
 
 class FileMapping(MappingInput):
@@ -106,6 +233,8 @@ class FileMapping(MappingInput):
 
 class UniprotMapping(MappingInput):
 
+    _resource_id_type_b = 'id'
+
     def __init__(
             self,
             id_type_a,
@@ -147,10 +276,6 @@ class UniprotMapping(MappingInput):
         self.ncbi_tax_id = int(ncbi_tax_id)
         self.typ = 'protein'
         self.swissprot = swissprot
-        self.field = None if id_type_a not in ac_query \
-            else ac_query[self.id_type_a][0]
-        self.subfield = None if id_type_a not in ac_query \
-            else ac_query[self.id_type_a][1]
 
 
     def set_organism(self, ncbi_tax_id):
@@ -158,6 +283,36 @@ class UniprotMapping(MappingInput):
         other_organism = copy.deepcopy(self)
         other_organism.ncbi_tax_id = ncbi_tax_id
         return other_organism
+
+
+    @property
+    def field(self):
+
+        return AC_QUERY.get(self.id_type_a, (None,))[0]
+
+
+    @property
+    def subfield(self):
+
+        return AC_QUERY.get(self.id_type_a, (None, None))[1]
+
+
+    @staticmethod
+    def resource_id_type(id_type, override = None):
+        """
+        For an ID type label used in pypath, returns the one used in the
+        UniProt web service. If the label is not available in the built in
+        list None is returned.
+
+        Returns:
+            (str): The ID type label used by UniProt; None if the input
+                label is not known.
+        """
+
+        id_type = AC_QUERY.get(id_type, (None, None))
+        id_type = '%s(%s)' % id_type if id_type[1] else id_type[0]
+
+        return id_type
 
 
 class UniprotListMapping(MappingInput):
@@ -178,8 +333,9 @@ class UniprotListMapping(MappingInput):
     :arg bool swissprot:
         DOwnload data only for SwissProt IDs.
     """
-    
-    
+
+    _resource_id_types = AC_MAPPING
+
     def __init__(
             self,
             id_type_a,
@@ -196,17 +352,15 @@ class UniprotListMapping(MappingInput):
             id_type_a = id_type_a,
             id_type_b = id_type_b,
             ncbi_tax_id = ncbi_tax_id,
+            resource_id_type_a = uniprot_id_type_a,
+            resource_id_type_b = uniprot_id_type_b,
         )
 
         self.swissprot = swissprot
-        self.ac_mapping = ac_mapping
+        self.ac_mapping = AC_MAPPING
 
-        self.uniprot_id_type_a = (
-            uniprot_id_type_a or self.ac_mapping[self.id_type_a]
-        )
-        self.uniprot_id_type_b = (
-            uniprot_id_type_b or self.ac_mapping[self.id_type_b]
-        )
+        self.uniprot_id_type_a = self._resource_id_type_a
+        self.uniprot_id_type_b = self._resource_id_type_b
 
         self.entity_type = 'protein'
 
@@ -234,8 +388,9 @@ class ProMapping(MappingInput):
     :arg str pro_id_type_b:
         Same as above just for the other ID type.
     """
-    
-    
+
+    _resource_id_types = PRO_MAPPING
+
     def __init__(
             self,
             id_type_a,
@@ -244,32 +399,35 @@ class ProMapping(MappingInput):
             pro_id_type_b = None,
             ncbi_tax_id = -1,
         ):
-        
+
         to_pro = id_type_a != 'pro'
         id_type = id_type_a if to_pro else id_type_b
         pro_id_type = (
             pro_id_type_a if to_pro else pro_id_type_b
         )
-        
+
         MappingInput.__init__(
             self,
             type_ = 'pro',
             id_type_a = 'pro',
             id_type_b = id_type,
             ncbi_tax_id = -1,
+            resource_id_type_a = pro_id_type_a,
+            resource_id_type_b = pro_id_type_b,
         )
         self.to_pro = to_pro
         self.id_type = id_type
-        
-        self.pro_mapping = pro_mapping
-        
+
+        self.pro_mapping = PRO_MAPPING
+
         self.pro_id_type = pro_id_type or self.pro_mapping[self.id_type_b]
-        
+
         self.entity_type = 'protein'
 
 
 class BiomartMapping(MappingInput):
 
+    _resource_id_types = BIOMART_MAPPING
 
     def __init__(
             self,
@@ -281,45 +439,27 @@ class BiomartMapping(MappingInput):
             ncbi_tax_id = 9606,
         ):
 
-        self.biomart_id_type_a = self._get_biomart_id_type(
-            id_type_a,
-            biomart_id_type_a,
-        )
-        self.biomart_id_type_b = self._get_biomart_id_type(
-            id_type_b,
-            biomart_id_type_b,
-        )
-        self.attrs = (
-            self.biomart_id_type_a,
-            self.biomart_id_type_b,
-        )
-
-        self.biomart_mapping = biomart_mapping
-
         MappingInput.__init__(
             self,
             type_ = 'biomart',
             id_type_a = id_type_a,
             id_type_b = id_type_b,
             ncbi_tax_id = 9606,
+            resource_id_type_a = biomart_id_type_a,
+            resource_id_type_b = biomart_id_type_b,
         )
 
-
-    @staticmethod
-    def _get_biomart_id_type(id_type, biomart_id_type):
-
-        return (
-            biomart_id_type or
-            (
-                biomart_mapping[id_type]
-                    if id_type in biomart_mapping else
-                id_type
-            )
+        self.biomart_id_type_a = self._resource_id_type_a
+        self.biomart_id_type_b = self._resource_id_type_b
+        self.attrs = (
+            self.biomart_id_type_a,
+            self.biomart_id_type_b,
         )
+
+        self.biomart_mapping = BIOMART_MAPPING
 
 
 class UnichemMapping(MappingInput):
-
 
     def __init__(
             self,
@@ -353,6 +493,7 @@ class ArrayMapping(MappingInput):
         Same as above just for the other ID type.
     """
 
+    _resource_id_types = ARRAY_MAPPING
 
     def __init__(
             self,
@@ -367,31 +508,33 @@ class ArrayMapping(MappingInput):
             id_type_a = self._get_id_type(id_type_a),
             id_type_b = self._get_id_type(id_type_b),
             ncbi_tax_id = ncbi_tax_id,
+            resource_id_type_a = self._process_id_type(id_type_a),
+            resource_id_type_b = self._process_id_type(id_type_b),
         )
 
         self.ensembl_id = (
-            self.id_type_a
+            self.resource_id_type_a
                 if self.id_type_a.startswith('ens') else
-            self.id_type_b
+            self.resource_id_type_b
         )
         self.array_id = (
-            self.id_type_a
-                if self.id_type_a in array_mapping else
-            self.id_type_b
+            self.resource_id_type_a
+                if self.id_type_a in self._resource_id_types else
+            self.resource_id_type_b
         )
 
         self.entity_type = 'protein'
 
 
     @staticmethod
-    def _get_id_type(id_type):
+    def _process_id_type(id_type):
 
         id_type = id_type.lower()
         id_type = 'affy' if id_type == 'affymetrix' else id_type
         id_type = 'ensg' if id_type == 'ensembl' else id_type
 
         if (
-            id_type not in array_mapping and
+            id_type not in self._resource_id_types and
             id_type not in {'ensg', 'enst', 'ensp'}
         ):
 
@@ -544,102 +687,3 @@ class ReadList:
         self.name = name
         self.separator = separator
         self.header = header
-
-
-ac_query = {
-    'genesymbol': ['genes', 'PREFERRED'],
-    'genesymbol-syn': ['genes', 'ALTERNATIVE'],
-    'hgnc': ['database', 'HGNC'],
-    'embl': ['database', 'embl'],
-    'entrez': ['database', 'geneid'],
-    'refseqp': ['database', 'refseq'],
-    'enst': ['database', 'ensembl'],
-    'uniprot-entry': ['entry name', None],
-    'protein-name': ['protein names', None],
-    'ec': ['ec', None],
-}
-
-ac_mapping = {
-    'uniprot': 'ACC',
-    'uniprot_id': 'ID',
-    'embl': 'EMBL',
-    'embl_id': 'EMBL_ID',
-    'pir': 'PIR',
-    'entrez': 'P_ENTREZGENEID',
-    'gi': 'P_GI',
-    'refseqp': 'P_REFSEQ_AC',
-    'refseqn': 'REFSEQ_NT_ID',
-    'ensembl': 'ENSEMBL_ID',
-    'ensp': 'ENSEMBL_PRO_ID',
-    'enst': 'ENSEMBL_TRS_ID',
-    'ensg': 'ENSEMBLGENOME_ID',
-    'ensgp': 'ENSEMBLGENOME_PRO_ID',
-    'ensgt': 'ENSEMBLGENOME_TRS_ID',
-    'hgnc': 'HGNC_ID',
-    'ensp_string': 'STRING_ID',
-}
-
-
-biomart_mapping = {
-    'hgnc_symbol': 'hgnc_symbol',
-    'rnacentral': 'rnacentral',
-    'hgnc_trans_name': 'hgnc_trans_name',
-    'wikigene_name': 'wikigene_name',
-    'gene_name': 'external_gene_name',
-    'transcript_name': 'external_transcript_name',
-    'gene_description': 'description',
-    'gene_synonym': 'external_synonym',
-    'interpro_description': 'interpro_description',
-    'interpro': 'interpro',
-    'interpro_short_description': 'interpro_short_description',
-    'enst_biomart': 'ensembl_transcript_id',
-    'ensg_biomart': 'ensembl_gene_id',
-    'ensp_biomart': 'ensembl_peptide_id',
-    'ensembl_gene_id': 'ensembl_gene_id',
-    'ensembl_transcript_id': 'ensembl_transcript_id',
-    'ensembl_peptide_id': 'ensembl_peptide_id',
-    'uniprot': 'uniprotswissprot',
-    'trembl': 'uniprotsptrembl',
-
-}
-
-
-pro_mapping = {
-    'alzforum': 'Alzforum_mut',
-    'araport': 'Araport',
-    'cgnc': 'CGNC',
-    'dictybase': 'dictyBase',
-    'dto': 'DTO',
-    'ecocyc': 'EcoCyc',
-    'ecogene': 'EcoGene',
-    'ensembl_pro': 'Ensembl',
-    'ensembl_bacteria': 'EnsemblBacteria',
-    'flybase': 'FlyBase',
-    'hgnc': 'HGNC',
-    'iuphar_fam': 'IUPHARfam',
-    'iuphar': 'IUPHARobj',
-    'mgi': 'MGI',
-    'mro': 'MRO',
-    'ncbi_gene': 'NCBIGene',
-    'pbd': 'PDB',
-    'pombase': 'PomBase',
-    'interpro': 'PRO',
-    'reactome': 'Reactome',
-    'rgd': 'RGD',
-    'sgd': 'SGD',
-    'tdr': 'TDR',
-    'uniprot': 'UniProtKB',
-    'uniprot-var': 'UniProtKB_VAR',
-    'wormbase': 'WormBase',
-    'zfin': 'ZFIN',
-}
-
-
-array_mapping = {
-    'affy',
-    'affymetrix',
-    'illumina',
-    'agilent',
-    'codelink',
-    'phalanx',
-}
