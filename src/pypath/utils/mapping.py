@@ -83,6 +83,47 @@ _logger = session_mod.get_log()
 
 __all__ = ['MapReader', 'MappingTable', 'Mapper']
 
+_logger = session_mod.Logger(name = 'mapping')
+_log = _logger._log
+
+try:
+    UNICHEM_NAME_TYPES = set(unichem_input.unichem_sources().values())
+except Exception as e:
+    exc = sys.exc_info()
+    _log('Failed to retrieve UniChem ID types:')
+    _logger._log_traceback()
+    UNICHEM_NAME_TYPES = ()
+
+RESOURCES_EXPLICIT = ('uniprot', 'basic', 'mirbase', 'ipi')
+
+RESOURCES_IMPLICIT = (
+    (
+        input_formats.AC_MAPPING,
+        'uniprot',
+        input_formats.UniprotListMapping,
+    ),
+    (
+        input_formats.PRO_MAPPING,
+        'pro',
+        input_formats.ProMapping,
+    ),
+    (
+        input_formats.BIOMART_MAPPING,
+        'biomart',
+        input_formats.BiomartMapping,
+    ),
+    (
+        input_formats.ARRAY_MAPPING,
+        'array',
+        input_formats.ArrayMapping,
+    ),
+    (
+        UNICHEM_NAME_TYPES,
+        'unichem',
+        input_formats.UnichemMapping,
+    ),
+)
+
 """
 Classes for reading and use serving ID mapping data from custom file,
 function, UniProt, UniProt uploadlists, Ensembl BioMart,
@@ -708,12 +749,7 @@ class MapReader(session_mod.Logger):
         post = {
             'query': query,
             'format': 'tab',
-            'columns': 'id,%s%s' % (
-                self.param.field,
-                ''
-                    if self.param.subfield is None else
-                '(%s)' % self.param.subfield
-            ),
+            'columns': 'id,%s' % self.param._resource_id_type_a,
         }
 
         url = '%s?%s' % (url, urllib.urlencode(post))
@@ -1037,7 +1073,6 @@ class Mapper(session_mod.Logger):
 
     default_name_types = settings.get('default_name_types')
     default_label_types = settings.get('default_label_types')
-    unichem_name_types = set(unichem_input.unichem_sources().values())
 
     def _get_label_type_to_id_type(default_name_types):
 
@@ -1287,7 +1322,7 @@ class Mapper(session_mod.Logger):
             id_types_rev = tuple(reversed(id_types))
             resource = None
 
-            for resource_attr in ('uniprot', 'basic', 'mirbase', 'ipi'):
+            for resource_attr in RESOURCES_EXPLICIT:
 
                 resources = getattr(maps, resource_attr)
 
@@ -1331,32 +1366,8 @@ class Mapper(session_mod.Logger):
 
             if tbl is None:
 
-                for service_ids, service_id_type, input_cls in (
-                    (
-                        input_formats.ac_mapping,
-                        'uniprot',
-                        input_formats.UniprotListMapping,
-                    ),
-                    (
-                        input_formats.pro_mapping,
-                        'pro',
-                        input_formats.ProMapping,
-                    ),
-                    (
-                        input_formats.biomart_mapping,
-                        'biomart',
-                        input_formats.BiomartMapping,
-                    ),
-                    (
-                        input_formats.array_mapping,
-                        'array',
-                        input_formats.ArrayMapping,
-                    ),
-                    (
-                        self.unichem_name_types,
-                        'unichem',
-                        input_formats.UnichemMapping,
-                    )
+                for (service_ids, service_id_type, input_cls) in (
+                    RESOURCES_IMPLICIT
                 ):
 
                     if (
@@ -1710,10 +1721,10 @@ class Mapper(session_mod.Logger):
 
         elif (
             (
-                id_type in input_formats.array_mapping and
+                id_type in input_formats.ARRAY_MAPPING and
                 not target_id_type.startswith('ens')
             ) or (
-                target_id_type in input_formats.array_mapping and
+                target_id_type in input_formats.ARRAY_MAPPING and
                 not id_type.startswith('ens')
             )
         ):
@@ -2638,12 +2649,120 @@ class Mapper(session_mod.Logger):
     # Mapping table management methods
     #
 
+    @staticmethod
+    def mapping_tables():
+        """
+        List of mapping tables available to load.
+
+        Returns:
+            (list): A list of tuples, each representing an ID translation
+                table, with the ID types, the data source and the loader
+                class.
+        """
+
+        MappingTableDefinition = collections.namedtuple(
+            'MappingTableDefinition',
+            (
+                'id_type_a',
+                'id_type_b',
+                'resource',
+                'input_class',
+                'resource_id_type_a',
+                'resource_id_type_b',
+            ),
+        )
+
+        MappingTableDefinition.__new__.__defaults__ = (None, None)
+
+        result = []
+
+        for resource_attr in RESOURCES_EXPLICIT:
+
+            resources = getattr(maps, resource_attr)
+
+            for (id_type_a, id_type_b), inputdef in iteritems(resources):
+
+                result.append(
+                    MappingTableDefinition(
+                        id_type_a = id_type_a,
+                        id_type_b = id_type_b,
+                        resource = resource_attr,
+                        input_class = inputdef.__class__.__name__,
+                        resource_id_type_a = inputdef._resource_id_type_a,
+                        resource_id_type_b = inputdef._resource_id_type_b,
+                    )
+                )
+
+        for service_ids, service_id_type, input_cls in RESOURCES_IMPLICIT:
+
+            service_ids = (
+                iteritems(service_ids)
+                    if isinstance(service_ids, dict) else
+                zip(*(service_ids,) * 2)
+            )
+
+            for id_type, resource_id_type in service_ids:
+
+                id_type_b = 'pro' if service_id_type == 'pro' else None
+
+                result.append(
+                    MappingTableDefinition(
+                        id_type_a = id_type,
+                        id_type_b = id_type_b,
+                        resource = service_id_type,
+                        input_class = input_cls.__name__,
+                        resource_id_type_a = resource_id_type,
+                        resource_id_type_b = None,
+                    )
+                )
+
+        return result
+
+
+    def id_types(self):
+        """
+        A list of all identifier types that can be handled by any of the
+        resources.
+
+        Returns:
+            (list): A list of tuples with the identifier type labels used
+                in pypath and in the original resource. If the latter is
+                None, typically the ID type has no name in the original
+                resource.
+        """
+
+        IdType = collections.namedtuple(
+            'IdType',
+            (
+                'pypath',
+                'original',
+            ),
+        )
+
+        return {
+            IdType(
+                pypath = getattr(mapdef, 'id_type_%s' % side),
+                original = getattr(mapdef, 'resource_id_type_%s' % side),
+            )
+            for mapdef in self.mapping_tables()
+            for side in ('a', 'b')
+            if getattr(mapdef, 'id_type_%s' % side)
+        }
+
+
     def has_mapping_table(
             self,
             id_type,
             target_id_type,
             ncbi_tax_id = None,
         ):
+        """
+        Tells if a mapping table is loaded. If it's loaded, it resets the
+        expiry timer so the table remains loaded.
+
+        Returns:
+            (bool): True if the mapping table is loaded.
+        """
 
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
