@@ -2719,7 +2719,8 @@ class Mapper(session_mod.Logger):
         return result
 
 
-    def id_types(self):
+    @classmethod
+    def id_types(cls):
         """
         A list of all identifier types that can be handled by any of the
         resources.
@@ -2744,7 +2745,7 @@ class Mapper(session_mod.Logger):
                 pypath = getattr(mapdef, 'id_type_%s' % side),
                 original = getattr(mapdef, 'resource_id_type_%s' % side),
             )
-            for mapdef in self.mapping_tables()
+            for mapdef in cls.mapping_tables()
             for side in ('a', 'b')
             if getattr(mapdef, 'id_type_%s' % side)
         }
