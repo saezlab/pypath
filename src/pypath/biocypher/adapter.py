@@ -55,7 +55,7 @@ class BiocypherAdapter(_session.Logger):
         db_name = None,
         db_uri = 'neo4j://localhost:7687',
         db_auth = None,
-        config_file = 'config/db_config.yaml',
+        config_file = '/config/module_config.yaml',
         network = None,
         wipe = False,
     ):
@@ -118,9 +118,9 @@ class BiocypherAdapter(_session.Logger):
         # another question: how do I know which netres objects are relevant?
         # -> omnipath/builtins.json & classes.json
 
-        #n.load(pypath_netres.mirna_target, exclude=exclude)
-        #n.load(pypath_netres.interaction, exclude=exclude)
-        #n.load(pypath_netres.ligand_receptor, exclude=exclude)
+        # n.load(pypath_netres.mirna_target, exclude=exclude)
+        # n.load(pypath_netres.interaction, exclude=exclude)
+        # n.load(pypath_netres.ligand_receptor, exclude=exclude)
 
         self.set_network(n)
 
@@ -130,8 +130,9 @@ class BiocypherAdapter(_session.Logger):
         Loads a pypath network into the biocypher (Neo4j) backend.
 
         Args:
-            network (pypath.core.network.Network): A network database object.
-                If `None`, the value of :py:attr:`network` will be used.
+            - network (pypath.core.network.Network): A network database 
+              object. If `None`, the value of :py:attr:`network` will be 
+              used.
         """
 
         network = network or self.network
@@ -148,7 +149,8 @@ class BiocypherAdapter(_session.Logger):
             for n in nodes:
                 id = self._process_id(n.identifier)
                 type = n.entity_type
-                yield (id, type)
+                props = {"taxon": n.taxon}
+                yield (id, type, props)
         id_type_tuples = gen_nodes(network.nodes.values())
         self.bcy.add_nodes(id_type_tuples)
 
@@ -163,6 +165,37 @@ class BiocypherAdapter(_session.Logger):
                 yield (src, tar, type)
         src_tar_type_tuples = gen_edges(network.generate_df_records())
         self.bcy.add_edges(src_tar_type_tuples)
+
+
+    def write_to_csv_for_admin_import(self, network = None):
+        """
+        Loads a pypath network into the biocypher (Neo4j) backend using
+        the fast Admin Import function, which requires text files that 
+        need to be properly formatted since it turns off safety measures
+        at import.
+
+        Args:
+            - network (pypath.core.network.Network): A network database 
+              object. If `None`, the value of :py:attr:`network` will be 
+              used.
+        """
+
+        network = network or self.network
+
+        if not network:
+            self._log("No network provided.")
+            return
+
+        def gen_nodes(nodes):
+            for n in nodes:
+                id = self._process_id(n.identifier)
+                type = n.entity_type
+                props = {"taxon": n.taxon, "label": n.label}
+                yield (id, type, props)
+        id_type_tuples = gen_nodes(network.nodes.values())
+
+        self.bcy.write_nodes(id_type_tuples)
+        # self.bcy.write_edges(network.generate_df_records())
 
 
     def _process_id(self, identifier):

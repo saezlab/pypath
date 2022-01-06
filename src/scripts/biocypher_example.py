@@ -51,16 +51,23 @@ def main():
     # We are creating a new database, so we wipe and initialise the 
     # local Neo4j instance. Set `wipe = False` if you want to update an 
     # existing BioCypher graph.
-    bcy_adapter = adapter.BiocypherAdapter(wipe = True)
+    bcy_adapter = adapter.BiocypherAdapter(wipe = False)
 
 
     # Build a pypath network database:
     bcy_adapter.build_python_object()
 
-    # Load the python database object into the connected Neo4j DB:
-    bcy_adapter.translate_python_object_to_neo4j()
-    # quite slow this one, even only with "network".
-    # interactions as nodes is taxing
+    write_online = False
+    write_csv = True
+
+    if write_online:
+        # Load the python database object into the connected Neo4j DB:
+        bcy_adapter.translate_python_object_to_neo4j()
+        # quite slow this one, even only with "network".
+        # interactions as nodes is taxing
+
+    if write_csv:
+        bcy_adapter.write_to_csv_for_admin_import()
 
     # create another adapter without wipe to test meta node 
     # functionality
