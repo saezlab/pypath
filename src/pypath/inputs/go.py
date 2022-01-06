@@ -60,7 +60,10 @@ def go_annotations_uniprot(organism = 9606, swissprot = 'yes'):
                  if len(x) > 1])
 
 
-def go_annotations_goa(organism = 'human'):
+def go_annotations_goa(
+    organism = 'human',
+    evidence_codes=False):
+    
     """
     Downloads GO annotation from UniProt GOA.
     """
@@ -84,7 +87,10 @@ def go_annotations_goa(organism = 'human'):
             continue
 
         line = line.strip().split('\t')
-        annot[line[8]][line[1]].add(line[4])
+        if evidence_codes:
+            annot[line[8]][line[1]].add((line[4], line[6]))
+        else:
+            annot[line[8]][line[1]].add(line[4])
 
     return dict((k, dict(v)) for k, v in iteritems(annot))
 
