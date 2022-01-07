@@ -397,7 +397,7 @@ class ProMapping(MappingInput):
             id_type_b = None,
             pro_id_type_a = None,
             pro_id_type_b = None,
-            ncbi_tax_id = -1,
+            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
         ):
 
         to_pro = id_type_a != 'pro'
