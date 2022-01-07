@@ -847,7 +847,7 @@ class StatusReport(object):
         """
 
         diff = {}
-        result['last_succeeded'] = result['start_time']
+        result['last_succeeded'] = result.get('start_time', 'never')
 
         if result['function'] in self.prev_result:
 
