@@ -34,6 +34,7 @@ which could have an impact on its content.
 """
 
 import os
+import re
 import sys
 import time
 import pkgutil
@@ -200,6 +201,8 @@ FIELDS = (
     'value_repr',
     'value_size',
     'error',
+    'diff',
+    'last_succeeded',
 )
 
 COUNTERS = (
