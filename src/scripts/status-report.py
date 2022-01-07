@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  Authors: Dénes Türei (turei.denes@gmail.com)
@@ -282,6 +282,7 @@ class StatusReport(object):
             self,
         )
         self.finished = False
+        self.prev_result = {}
 
 
     def main(self):
@@ -523,6 +524,8 @@ class StatusReport(object):
         settings.setup(cachedir = self.cachedir)
         settings.setup(pickle_dir = self.pickle_dir)
 
+        self.set_prev_dir()
+
 
     def set_prev_dir(self):
         """
@@ -620,6 +623,8 @@ class StatusReport(object):
         Reads the results of a previous run and stores it under the
         `prev_result` attribute.
         """
+
+        self.prev_result = {}
 
         if self.is_status_report_dir(self.prev_dir):
 
