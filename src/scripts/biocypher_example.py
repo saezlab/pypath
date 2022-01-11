@@ -40,7 +40,9 @@ import pypath.biocypher.adapter as adapter
 
 def main():
 
-    profile = True
+    profile = False
+    write_online = False # whether to write to graph via the driver
+    write_csv = True # whether to write CSVs for admin import function
 
 
     # Instantiating the adapter class.
@@ -53,14 +55,12 @@ def main():
     # Build a pypath network database:
     bcy_adapter.build_python_object()
 
-    write_online = False # whether to write to graph via the driver
-    write_csv = True # whether to write CSVs for admin import function
 
     if profile:
         import cProfile, pstats, io
         profile = cProfile.Profile()
         profile.enable()
-        
+
     if write_online:
         # Load the python database object into the connected Neo4j DB:
         bcy_adapter.translate_python_object_to_neo4j()
@@ -68,7 +68,7 @@ def main():
         # interactions as nodes is taxing
 
     if write_csv:
-        bcy_adapter.write_to_csv_for_admin_import()
+        bcy_adapter.write_to_csv_for_admin_import(db_name="import")
 
     # create another adapter without wipe to test meta node 
     # functionality

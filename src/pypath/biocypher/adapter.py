@@ -167,7 +167,7 @@ class BiocypherAdapter(_session.Logger):
         self.bcy.add_edges(src_tar_type_tuples)
 
 
-    def write_to_csv_for_admin_import(self, network = None):
+    def write_to_csv_for_admin_import(self, network = None, db_name=None):
         """
         Loads a pypath network into the biocypher (Neo4j) backend using
         the fast Admin Import function, which requires text files that 
@@ -195,7 +195,7 @@ class BiocypherAdapter(_session.Logger):
                 yield (id, type, props)
         id_type_tuples = gen_nodes(network.nodes.values())
 
-        self.bcy.write_nodes(id_type_tuples)
+        self.bcy.write_nodes(id_type_tuples, db_name=db_name)
 
         # write edges
         def gen_edges(edges):
@@ -207,7 +207,9 @@ class BiocypherAdapter(_session.Logger):
                 yield (src, tar, type, props)
         src_tar_type_tuples = gen_edges(network.generate_df_records())
 
-        self.bcy.write_edges(src_tar_type_tuples)
+        self.bcy.write_edges(src_tar_type_tuples, db_name=db_name)
+
+        self.bcy.write_import_call()
 
 
     def _process_id(self, identifier):
