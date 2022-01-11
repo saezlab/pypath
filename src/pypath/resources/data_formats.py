@@ -2330,6 +2330,9 @@ transcription_dorothea = {
             'coexp':   7,
             'level':   3,
         },
+        input_args = {
+            'levels': {'A', 'B', 'C', 'D'},
+        },
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         must_have_references = False,

@@ -30,7 +30,10 @@
     "tf_target": {
         "dbclass": "network",
         "def": {
-            "init": "transcription"
+            "init": "transcription",
+            "args": {
+                "dorothea_levels": ["A", "B", "C", "D"]
+            }
         }
     },
     "mirna_mrna": {
