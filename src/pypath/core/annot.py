@@ -5940,6 +5940,8 @@ class Cancerdrugsdb(AnnotationBase):
         (https://www.anticancerfund.org/en/cancerdrugs-db).
         """
 
+        kwargs.pop('ncbi_tax_id', None)
+
         AnnotationBase.__init__(
             self,
             name = 'CancerDrugsDB',
