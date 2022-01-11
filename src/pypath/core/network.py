@@ -922,7 +922,7 @@ class Network(session_mod.Logger):
                         if len(x) > 0
                     ]
                     self._log(
-                        "Retrieving data from%s ..." % networkinput.input
+                        "Retrieving data from `%s` ..." % networkinput.input
                     )
 
                 elif input_func is not None:
@@ -1033,12 +1033,13 @@ class Network(session_mod.Logger):
             self._log(
                 'Resource `%s` %s have literature references '
                 'for all interactions. Interactions without references '
-                'will be dropped. You can alter this condition globally by '
+                'will be %s. You can alter this condition globally by '
                 '`pypath.settings.keep_noref` or for individual resources '
                 'by the `must_have_references` attribute of their '
                 '`NetworkInput` object.' % (
                     networkinput.name,
-                    'must' if must_have_references else 'does not need to'
+                    'must' if must_have_references else 'does not need to',
+                    'dropped' if must_have_references else 'included',
                 ),
                 1,
             )
@@ -1177,10 +1178,11 @@ class Network(session_mod.Logger):
                     )
 
                     if isinstance(taxx, tuple):
-                        taxon_a = taxx[0]
-                        taxon_b = taxx[1]
+
+                        taxon_a, taxon_b = taxx
 
                     else:
+
                         taxon_a = taxon_b = taxx
 
                     taxd_a = (
@@ -1208,6 +1210,7 @@ class Network(session_mod.Logger):
                         taxon_filtered += 1
                         continue
 
+                # assuming by default the default organism
                 else:
 
                     taxon_a = taxon_b = self.ncbi_tax_id
@@ -1867,19 +1870,26 @@ class Network(session_mod.Logger):
 
     def _match_taxon(self, tax_dict, taxon, only_default_organism = False):
 
+        has_dict = isinstance(tax_dict, dict)
+        has_include = has_dict and 'include' in tax_dict
+        has_exclude = has_dict and 'exclude' in tax_dict
+
         return (
             (
-                isinstance(tax_dict, dict) and
-                'include' in tax_dict and
-                taxon not in tax_dict['include']
-            ) or (
-                isinstance(tax_dict, dict) and
-                'exclude' in tax_dict and
-                taxon in tax_dict['exclude']
-            ) or (
-                not only_default_organism or
-                taxon == self.ncbi_tax_id or
                 taxon == constants.NOT_ORGANISM_SPECIFIC
+            ) or (
+                has_include and
+                taxon in tax_dict['include']
+            ) or (
+                has_exclude and
+                taxon not in tax_dict['exclude']
+            ) or (
+                not has_include and
+                not has_exclude and
+                (
+                    not only_default_organism or
+                    taxon == self.ncbi_tax_id
+                )
             )
         )
 
