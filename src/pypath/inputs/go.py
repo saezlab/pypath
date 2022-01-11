@@ -249,6 +249,7 @@ def go_descendants_quickgo(
 
 
     def download_in_chunks(terms, chunk_size, target = None):
+
         target = target or collections.defaultdict(set)
 
         paginator = common.paginate(terms, chunk_size)
