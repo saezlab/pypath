@@ -1618,7 +1618,7 @@ class Network(session_mod.Logger):
             (str): The extracted value.
         """
 
-        if common.is_str(fmt):
+        if common.is_str(fmt) or isinstance(fmt, list):
 
             return fmt
 
