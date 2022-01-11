@@ -33,6 +33,7 @@ import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.share.common as common
 import pypath.share.session as session
+import pypath.core.entity as entity
 
 _logger = session.Logger(name = 'scconnect_input')
 _log = _logger._log
