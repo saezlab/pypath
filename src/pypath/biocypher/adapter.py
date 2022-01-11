@@ -118,7 +118,7 @@ class BiocypherAdapter(_session.Logger):
         # another question: how do I know which netres objects are relevant?
         # -> omnipath/builtins.json & classes.json
 
-        # n.load(pypath_netres.mirna_target, exclude=exclude)
+        n.load(pypath_netres.mirna_target, exclude=exclude)
         # n.load(pypath_netres.interaction, exclude=exclude)
         # n.load(pypath_netres.ligand_receptor, exclude=exclude)
 
@@ -186,6 +186,7 @@ class BiocypherAdapter(_session.Logger):
             self._log("No network provided.")
             return
 
+        # write nodes
         def gen_nodes(nodes):
             for n in nodes:
                 id = self._process_id(n.identifier)
@@ -195,7 +196,18 @@ class BiocypherAdapter(_session.Logger):
         id_type_tuples = gen_nodes(network.nodes.values())
 
         self.bcy.write_nodes(id_type_tuples)
-        # self.bcy.write_edges(network.generate_df_records())
+
+        # write edges
+        def gen_edges(edges):
+            for e in edges:
+                src = self._process_id(e.id_a)
+                tar = self._process_id(e.id_b)
+                type = e.type
+                props = {"effect": e.effect, "directed": e.directed}
+                yield (src, tar, type, props)
+        src_tar_type_tuples = gen_edges(network.generate_df_records())
+
+        self.bcy.write_edges(src_tar_type_tuples)
 
 
     def _process_id(self, identifier):

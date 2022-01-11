@@ -40,26 +40,27 @@ import pypath.biocypher.adapter as adapter
 
 def main():
 
-    profile = False
-    if profile:
-        import cProfile, pstats, io
-        profile = cProfile.Profile()
-        profile.enable()
+    profile = True
 
 
     # Instantiating the adapter class.
     # We are creating a new database, so we wipe and initialise the 
     # local Neo4j instance. Set `wipe = False` if you want to update an 
     # existing BioCypher graph.
-    bcy_adapter = adapter.BiocypherAdapter(wipe = False)
+    bcy_adapter = adapter.BiocypherAdapter(wipe = True)
 
 
     # Build a pypath network database:
     bcy_adapter.build_python_object()
 
-    write_online = False
-    write_csv = True
+    write_online = False # whether to write to graph via the driver
+    write_csv = True # whether to write CSVs for admin import function
 
+    if profile:
+        import cProfile, pstats, io
+        profile = cProfile.Profile()
+        profile.enable()
+        
     if write_online:
         # Load the python database object into the connected Neo4j DB:
         bcy_adapter.translate_python_object_to_neo4j()
@@ -71,7 +72,7 @@ def main():
 
     # create another adapter without wipe to test meta node 
     # functionality
-    bcy_adapter = adapter.BiocypherAdapter(wipe = False)
+    # bcy_adapter = adapter.BiocypherAdapter(wipe = False)
 
     if profile:
         profile.disable()
