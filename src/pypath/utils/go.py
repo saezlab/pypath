@@ -575,8 +575,6 @@ class GOAnnotation(session_mod.Logger):
         self.f = annot['F']
         self.p = annot['P']
 
-        return
-
         self._ancestors_annotate()
         self._merge_annotations()
 
