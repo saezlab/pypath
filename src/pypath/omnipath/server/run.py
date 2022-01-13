@@ -645,6 +645,7 @@ class TableServer(BaseServer):
                 'ligrecextra',
                 'pathwayextra',
                 'mirnatarget',
+                'small_molecule',
             },
             'types': {
                 'post_translational',
@@ -652,6 +653,7 @@ class TableServer(BaseServer):
                 'post_transcriptional',
                 'mirna_transcriptional',
                 'lncrna_post_transcriptional',
+                'small_molecule_protein',
             },
             'sources':  None,
             'resources': None,
@@ -1030,6 +1032,7 @@ class TableServer(BaseServer):
         'mirnatarget',
         'tf_mirna',
         'lncrna_mrna',
+        'small_molecule',
     }
     dorothea_methods = {'curated', 'coexp', 'chipseq', 'tfbs'}
     dataset2type = {
@@ -1043,6 +1046,7 @@ class TableServer(BaseServer):
         'mirnatarget': 'post_transcriptional',
         'tf_mirna': 'mirna_transcriptional',
         'lncrna_mrna': 'lncrna_post_transcriptional',
+        'small_molecule': 'small_molecule_protein',
     }
     interaction_fields = {
         'references', 'sources', 'dorothea_level',
