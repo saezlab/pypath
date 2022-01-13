@@ -251,13 +251,14 @@ class Export(session.Logger):
         self.extra_node_attrs = extra_node_attrs or self.extra_node_attrs
         self.extra_edge_attrs = extra_edge_attrs or self.extra_edge_attrs
 
+        header = self.get_header(unique_pairs = unique_pairs)
+
         dtypes = (
             self.default_dtypes_uniquepairs
                 if unique_pairs else
             self.default_dtypes_bydirs
         )
-
-        header = self.get_header(unique_pairs = unique_pairs)
+        dtypes = dict(i for i in dtypes.items() if i[0] in header)
 
         result = []
 
