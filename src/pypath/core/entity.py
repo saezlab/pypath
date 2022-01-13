@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #  Exports tables for webservice.
 #
-#  Copyright (c) 2014-2021 - EMBL
+#  Copyright (c) 2014-2022 - EMBL
 #
 #  Authors: Dénes Türei (turei.denes@gmail.com)
 #           Nicolàs Palacio

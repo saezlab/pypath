@@ -7,7 +7,7 @@
 #  Contains descriptions for all resources: e.g. their URLs
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  Authors: Dénes Türei (turei.denes@gmail.com)

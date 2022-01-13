@@ -4,7 +4,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2021 - EMBL
+#  Copyright (c) 2014-2022 - EMBL
 #
 #  Authors: Dénes Türei (turei.denes@gmail.com)
 #           Nicolàs Palacio
