@@ -278,8 +278,10 @@ class DatabaseManager(session_mod.Logger):
                 )
             )
 
-        except:
+        except Exception as e:
 
+            exc = sys.exc_info()
+            self._log_traceback()
             os.remove(pickle_path)
 
             self._log(
