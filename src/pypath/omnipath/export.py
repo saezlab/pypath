@@ -752,9 +752,15 @@ class Export(session.Logger):
 
             return proc(obj, dr)
 
-        except TypeError:
+        except TypeError as e:
 
-            return proc(obj)
+            try:
+
+                return proc(obj)
+
+            except TypeError:
+
+                raise e
 
 
     def write_tab(self, outfile = None, **kwargs):

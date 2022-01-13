@@ -3235,14 +3235,29 @@ class Interaction(attrs_mod.AttributeHandler):
         directions = (direction,) if direction else (self.a_b, self.b_a)
 
         return sorted(
-            level
-            for level in
             {
-                self._get_attr('DoRothEA', 'level', direction)
+                level
                 for direction in directions
+                for level in (
+                    self._get_attr('DoRothEA', 'level', direction) or
+                    ()
+                )
             }
-            if level
         )
+
+
+    def dorothea_level(self, direction):
+        """
+        DoRothEA confidence level for one direction as a single letter. Some
+        interactions might have multiple levels due to the ambiguous nature
+        of translating gene symbols to UniProt IDs. Here we take the highest
+        level and drop the rest. For interactions without DoRothEA levels
+        None is returned.
+        """
+
+        levels = self.dorothea_levels(direction = direction)
+
+        return common.first(levels)
 
 
 Interaction._generate_entity_methods()
