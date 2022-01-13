@@ -1,20 +1,33 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#
+#  This file is part of the `pypath` python module
+#  Provides classes for each database for annotations of proteins and complexes.
+#  Also provides meta-annotations for the databases.
+#
+#  Copyright
+#  2014-2022
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
+
 """
-This is a module to exemplarise an adapter class used in creating a 
+This is a module to exemplarise an adapter class used in creating a
 BioCypher-compatible graph database from pypath objects. It is called from
 the "create_and_update_db.py" script in this directory.
-
-Copyright 2021, Heidelberg University Clinic
-
-Authors: Dénes Türei
-                Sebastian Lobentanzer
-                ...
-
-Distributed under GPLv3 license, see LICENSE.txt.
 """
-
 
 import os
 import yaml
