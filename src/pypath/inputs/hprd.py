@@ -32,7 +32,7 @@ def get_hprd(in_vivo = True):
     Downloads and preprocesses HPRD data.
     """
 
-    url = urls.urls['hprd_all']['url']
+    url = urls.urls['hprd_all']['url_rescued']
     files = [urls.urls['hprd_all']['ptm_file']]
     c = curl.Curl(url, silent = False, files_needed = files)
     data = c.result
@@ -58,7 +58,7 @@ def hprd_interactions(in_vivo = True):
 
 def hprd_interactions_htp():
 
-    url = urls.urls['hprd_all']['url']
+    url = urls.urls['hprd_all']['url_rescued']
     fname = urls.urls['hprd_all']['int_file']
     c = curl.Curl(url, silent = False, large = True, files_needed = [fname])
 

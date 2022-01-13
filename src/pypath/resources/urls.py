@@ -275,6 +275,8 @@ urls = {
     'hprd_all': {
         'label': 'HPRD all data in flat files',
         'url': 'http://www.hprd.org/RELEASE9/HPRD_FLAT_FILES_041310.tar.gz',
+        'url_rescued': 'https://rescued.omnipathdb.org/'
+            'HPRD_FLAT_FILES_041310.tar.gz',
         'ptm_file': 'FLAT_FILES_072010/POST_TRANSLATIONAL_MODIFICATIONS.txt',
         'int_file': 'FLAT_FILES_072010/BINARY_PROTEIN_PROTEIN_INTERACTIONS.txt'
     },
