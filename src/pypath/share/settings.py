@@ -188,6 +188,7 @@ _defaults = {
     'tf_mirna_mod': 'network',
     'mirna_mrna_mod': 'network',
     'lncrna_mrna_mod': 'network',
+    'small_molecule_mod': 'network',
 
     'omnipath_args': {
         'use_omnipath': True,
@@ -221,6 +222,7 @@ _defaults = {
     'tf_mirna_pickle': 'tfmirna.pickle',
     'mirna_mrna_pickle': 'mirna_mrna.pickle',
     'lncrna_mrna_pickle': 'lncrna_mrna.pickle',
+    'small_molecule_pickle': 'small_molecule.pickle',
 
     'pickle_dir': None,
 
