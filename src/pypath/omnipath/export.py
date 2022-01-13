@@ -890,6 +890,10 @@ class Export(session.Logger):
                     'mirna_transcriptional' in
                     e.get_interaction_types(direction = d)
                 ),
+                'small_molecule': lambda e, d: (
+                    'small_molecule_protein' in
+                    e.get_interaction_types(direction = d)
+                ),
                 'dorothea_curated': lambda e, d: (
                     e._get_attr('DoRothEA', 'curated', d)
                 ),
