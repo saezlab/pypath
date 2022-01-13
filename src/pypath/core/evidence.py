@@ -790,7 +790,7 @@ class Evidences(object):
         an equivalent tuple.
         """
 
-        return self.evidences[key] or self.simple_dict[key]
+        return self.evidences.get(key, None) or self.simple_dict[key]
 
 
     def keys(self):
