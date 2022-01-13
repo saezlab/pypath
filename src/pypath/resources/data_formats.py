@@ -3002,6 +3002,7 @@ small_molecule_protein = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         data_model = 'activity_flow',
+        interaction_type = 'small_molecule_protein',
     ),
     # cancerdrugs_db format not yet done
     'cancerdrugsdb': input_formats.NetworkInput(
@@ -3023,6 +3024,7 @@ small_molecule_protein = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         data_model = 'drug_target',
+        interaction_type = 'small_molecule_protein',
     ),
     'cellinker': input_formats.NetworkInput(
         name = 'Cellinker',
@@ -3040,6 +3042,7 @@ small_molecule_protein = {
         resource = (4, ';'),
         header = False,
         data_model = 'ligand_receptor',
+        interaction_type = 'small_molecule_protein',
     ),
 }
 
