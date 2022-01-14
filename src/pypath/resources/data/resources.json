@@ -4551,5 +4551,20 @@
     "emails": [
       "wubingyi@aliyun.com", "Bingyi Wu"
     ]
+  },
+  "PROGENy": {
+    "full_name": "PROGENy",
+    "license": "Apache 2.0",
+    "urls": {
+      "webpages": ["https://github.com/saezlab/PROGENy"]
+    }
+  },
+  "CancerDrugsDB": {
+    "full_name": "Cancer Drugs Database",
+    "license": "Unspecified NC-SA",
+    "urls": {
+      "webpages": ["https://www.anticancerfund.org/en/cancerdrugs-db"],
+      "articles": ["https://www.frontiersin.org/articles/10.3389/fphar.2021.627574/full"]
+    }
   }
 }
