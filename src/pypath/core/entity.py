@@ -296,6 +296,8 @@ class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
                 if cls._is_complex(key) else
             'mirna'
                 if cls._is_mirna(key) else
+            'small_molecule'
+                if cls._is_small_molecule(key) else
             'protein'
         )
 

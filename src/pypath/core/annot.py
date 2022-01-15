@@ -5947,7 +5947,7 @@ class Cancerdrugsdb(AnnotationBase):
             name = 'CancerDrugsDB',
             ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
             input_method = 'cancerdrugsdb.cancerdrugsdb_annotations',
-            entity_type = 'drug',
+            entity_type = 'small_molecule',
             **kwargs
         )
 
