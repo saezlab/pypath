@@ -146,6 +146,13 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
             if hasattr(toCall, '__call__'):
 
+                self._log(
+                    'Query type: `%s`; Arguments: [%s].' % (
+                        request.postpath[0],
+                        common.dict_str(request.args),
+                    )
+                )
+
                 try:
 
                     response = toCall(request)
@@ -1874,6 +1881,8 @@ class TableServer(BaseServer):
             hdr.insert(3, 'target_genesymbol')
         else:
             genesymbols = False
+
+        self._log('Processed arguments: [%s].' % common.dict_str(args))
 
         # starting from the entire dataset
         tbl = self.data['interactions']
