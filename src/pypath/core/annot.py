@@ -3373,6 +3373,8 @@ class AnnotationBase(resource.AbstractResource):
 
                 continue
 
+            entity_type = self.get_entity_type(element)
+
             genesymbol_str = (
                 'COMPLEX:%s' % element.genesymbol_str
                     if hasattr(element, 'genesymbol_str') else
@@ -3381,7 +3383,11 @@ class AnnotationBase(resource.AbstractResource):
                 )
                     if element.startswith('COMPLEX:') else
                 (
-                    mapping.map_name0(element, 'uniprot', 'genesymbol') or
+                    mapping.label(
+                        element,
+                        entity_type = entity_type,
+                        ncbi_tax_id = self.ncbi_tax_id,
+                    ) or
                     ''
                 )
             )
@@ -3391,7 +3397,7 @@ class AnnotationBase(resource.AbstractResource):
                 records.append([
                     element.__str__(),
                     genesymbol_str,
-                    self.get_entity_type(element),
+                    entity_type,
                     self.name,
                     'in %s' % self.name,
                     'yes',
@@ -3415,7 +3421,7 @@ class AnnotationBase(resource.AbstractResource):
                     records.append([
                         element.__str__(),
                         genesymbol_str,
-                        self.get_entity_type(element),
+                        entity_type,
                         self.name,
                         label,
                         str(value),
