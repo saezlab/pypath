@@ -105,7 +105,7 @@ _defaults = {
         'mirna': 'mir-mat-name',
         'lncrna': 'lncrna-genesymbol',
         'small_molecule': 'rxnorm',
-        'drug': 'rxnrom',
+        'drug': 'rxnorm',
     },
     'small_molecule_entity_types': {
         'small_molecule',
