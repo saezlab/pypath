@@ -32,7 +32,7 @@ import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 import pypath.share.session as session
 
-_logger = session.Logger(name = 'cellcall_input')
+_logger = session.Logger(name = 'cancerdrugs_db_input')
 _log = _logger._log
 
 def cancerdrugs_db_download():
