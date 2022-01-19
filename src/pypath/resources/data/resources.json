@@ -4566,5 +4566,19 @@
       "webpages": ["https://www.anticancerfund.org/en/cancerdrugs-db"],
       "articles": ["https://www.frontiersin.org/articles/10.3389/fphar.2021.627574/full"]
     }
+  },
+  "CellTypist": {
+    "full_name": "CellTypist",
+    "license": "CC BY 3.0",
+    "urls": {
+      "webpages": [
+        "https://www.celltypist.org/encyclopedia",
+        "https://github.com/Teichlab/celltypist_wiki"
+      ],
+      "articles": [
+        "https://www.biorxiv.org/content/10.1101/2021.04.28.441762v2"
+      ]
+    },
+    "emails": ["celltypist@sanger.ac.uk", "CellTypist Team"]
   }
 }
