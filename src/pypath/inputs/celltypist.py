@@ -48,6 +48,7 @@ def celltypist_annotations():
             'cell_type',
             'cell_subtype',
             'cell_ontology',
+            'marker_type',
             'tissues',
             'datasets',
         )
@@ -68,7 +69,7 @@ def celltypist_annotations():
 
     for r in tbl:
 
-        for col, category in marker_columns:
+        for col, marker_type in marker_columns:
 
             genesymbols = recomma.split(r[col].strip())
             uniprots = mapping.map_names(genesymbols, 'genesymbol', 'uniprot')
@@ -77,6 +78,7 @@ def celltypist_annotations():
                 cell_type = r[0],
                 cell_subtype = r[1],
                 cell_ontology = r[3],
+                marker_type = marker_type,
                 tissues = multi_value_field(r[4]),
                 datasets = multi_value_field(r[5]),
             )
