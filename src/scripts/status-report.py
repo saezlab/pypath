@@ -97,6 +97,9 @@ HTML_TEMPLATE = (
                 th, td {
                     padding: 8px;
                 }
+                td {
+                    font-size: small;
+                }
                 tr td:nth-of-type(2),
                 tr td:nth-of-type(6),
                 tr td:nth-of-type(7) {
