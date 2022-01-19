@@ -1479,6 +1479,12 @@ urls = {
         'url': 'https://github.com/saezlab/progeny/raw/master/'
             'data/model_%s_full.rda',
     },
+    'celltypist': {
+        'label': 'Immune cell type marker genes',
+        'url': 'https://raw.githubusercontent.com/Teichlab/celltypist_wiki/'
+            'main/atlases/Pan_Immune_CellTypist/encyclopedia/'
+            'encyclopedia_table.xlsx',
+    },
 }
 
 
