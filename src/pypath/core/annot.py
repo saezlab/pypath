@@ -128,6 +128,7 @@ protein_sources_default = {
     'Scconnect',
     'Cancerdrugsdb',
     'Progeny',
+    'Celltypist',
 }
 
 #TODO this should be part of json files
@@ -5924,6 +5925,35 @@ class Progeny(AnnotationBase):
             name = 'PROGENy',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'progeny.progeny_annotations',
+            infer_complexes = False,
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class Celltypist(AnnotationBase):
+
+    _eq_fields = ('cell_type', 'cell_subtype')
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Pathway responsive genes: signatures based on transcriptomics data
+        from PROGENy (https://github.com/saezlab/progeny).
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'CellTypist',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'celltypist.celltypist_annotations',
             infer_complexes = False,
             **kwargs
         )
