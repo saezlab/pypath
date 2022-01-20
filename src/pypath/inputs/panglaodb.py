@@ -67,6 +67,7 @@ def panglaodb_annotations():
             'human_specificity',
             'mouse_specificity',
             'ubiquitiousness',
+            'ncbi_tax_id',
         )
     )
 
@@ -76,11 +77,54 @@ def panglaodb_annotations():
 
     for r in raw:
 
+        human = 'Hs' in r['species'],
+        mouse = 'Mm' in r['species'],
+
+        entity_type = 'protein'
         uniprots = mapping.map_name(
             r['official gene symbol'],
             'genesymbol',
             'uniprot',
         )
+        this_ncbi_tax_id = 9606
+
+        if not uniprots and human:
+
+            uniprots = mapping.map_name(
+                r['official gene symbol'],
+                'genesymbol',
+                'trembl',
+            )
+
+        if not uniprots and mouse:
+
+            mouse_gs = '-'.join(
+                x.capitalize()
+                for x in r['official gene symbol'].split('-')
+            )
+
+            uniprots = mapping.map_name(
+                mouse_gs,
+                'genesymbol',
+                'uniprot',
+                ncbi_tax_id = 10090,
+            )
+
+            if not uniprots:
+
+                uniprots = mapping.map_name(
+                    mouse_gs,
+                    'genesymbol',
+                    'trembl',
+                    ncbi_tax_id = 10090,
+                )
+
+            this_ncbi_tax_id = 10090
+
+        if not uniprots and r['gene type'] == 'non-coding RNA':
+
+            uniprots = (r['official gene symbol'],)
+            entity_type = 'lncrna'
 
         for u in uniprots:
 
@@ -90,14 +134,15 @@ def panglaodb_annotations():
                     cell_type = r['cell type'],
                     organ = r['organ'],
                     germ_layer = r['germ layer'],
-                    entity_type = 'protein', # TODO: handle other entity types
-                    human = 'Hs' in r['species'],
-                    mouse = 'Mm' in r['species'],
+                    entity_type = entity_type, # TODO: handle all entity types
+                    human = human,
+                    mouse = mouse,
                     human_sensitivity = to_float(r['sensitivity_human']),
                     mouse_sensitivity = to_float(r['sensitivity_mouse']),
                     human_specificity = to_float(r['specificity_human']),
                     mouse_specificity = to_float(r['specificity_mouse']),
                     ubiquitiousness = to_float(r['ubiquitousness index']),
+                    ncbi_tax_id = this_ncbi_tax_id,
                 )
             )
 
