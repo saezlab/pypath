@@ -4568,7 +4568,6 @@
     }
   },
   "CellTypist": {
-    "full_name": "CellTypist",
     "license": "CC BY 3.0",
     "urls": {
       "webpages": [
@@ -4580,5 +4579,13 @@
       ]
     },
     "emails": ["celltypist@sanger.ac.uk", "CellTypist Team"]
+  },
+  "PanglaoDB": {
+    "license": "Informal",
+    "urls": {
+      "webpages": ["https://panglaodb.se/"],
+      "articles": ["https://doi.org/10.1093/database/baz046"]
+    },
+    "emails": ["contact@panglaodb.se", "PanglaoDB Team"]
   }
 }
