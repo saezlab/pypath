@@ -12,4 +12,4 @@ pypath_log/
 src/test/pypath
 .DS_Store
 *~
-.vscode/launch.json
+.vscode/
