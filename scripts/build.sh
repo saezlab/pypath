@@ -18,10 +18,10 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-rm src/*.pyc
-rm src/pypath/*.pyc
-rm -r src/pypath.egg-info
+rm *.pyc
+rm pypath/*.pyc
+rm -r pypath.egg-info
 
-sed -i 's/\([0-9]*\.[0-9]*\.\)\([0-9]*\)/echo \1$\(\(\2+1\)\)/ge' src/pypath/__version__
+sed -i 's/\([0-9]*\.[0-9]*\.\)\([0-9]*\)/echo \1$\(\(\2+1\)\)/ge' pypath/__version__
 
 python setup.py sdist bdist_wheel

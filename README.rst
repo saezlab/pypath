@@ -351,7 +351,7 @@ you can simply install by **pip** (see above).
 When ``igraph`` was a mandatory dependency and it didn't provide wheels
 the OS X installation was not straightforward primarily because cairo needs to
 be compiled from source. If you want igraph and cairo we provide two scripts
-in ``src/scripts``: the **mac-install-brew.sh** installs everything with HomeBrew and
+in ``scripts``: the **mac-install-brew.sh** installs everything with HomeBrew and
 **mac-install-conda.sh** installs from Anaconda distribution. With these
 scripts, installation of igraph, cairo and graphviz goes smoothly most of the
 time and options are available to omit the last two. To know more, see

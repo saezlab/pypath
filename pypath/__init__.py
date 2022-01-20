@@ -61,7 +61,7 @@ class pypath(object):
         '\tyou use in your analysis, and please give appropriate\n'
         '\tcredits for the original sources when you publish your\n'
         '\tresults. To find out more about data sources please\n'
-        '\tlook at `src/pypath/resources/data/resources.json` or\n'
+        '\tlook at `pypath/resources/data/resources.json` or\n'
         '\thttps://omnipathdb.org/info and \n'
         '\t`pypath.resources.urls.urls`.\n\n'
     )
