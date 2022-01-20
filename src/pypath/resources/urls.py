@@ -1485,6 +1485,11 @@ urls = {
             'main/atlases/Pan_Immune_CellTypist/encyclopedia/'
             'encyclopedia_table.xlsx',
     },
+    'panglaodb': {
+        'label': 'Cell type marker genes',
+        'url': 'https://panglaodb.se/markers/'
+            'PanglaoDB_markers_27_Mar_2020.tsv.gz',
+    },
 }
 
 
