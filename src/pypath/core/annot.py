@@ -2559,6 +2559,7 @@ class AnnotationBase(resource.AbstractResource):
             infer_complexes = None,
             dump = None,
             primary_field = None,
+            check_ids = True,
             **kwargs
         ):
         """
@@ -2608,6 +2609,7 @@ class AnnotationBase(resource.AbstractResource):
         self.complexes = complexes
         self.reference_set = reference_set
         self.swissprot_only = swissprot_only
+        self.check_ids = check_ids
         self.load()
 
 
@@ -2663,7 +2665,10 @@ class AnnotationBase(resource.AbstractResource):
 
     def _ensure_swissprot(self):
 
-        if self.ncbi_tax_id == constants.NOT_ORGANISM_SPECIFIC:
+        if (
+            self.ncbi_tax_id == constants.NOT_ORGANISM_SPECIFIC or
+            not self.check_ids
+        ):
 
             return
 
@@ -5945,8 +5950,7 @@ class Celltypist(AnnotationBase):
 
     def __init__(self, ncbi_tax_id = 9606, **kwargs):
         """
-        Pathway responsive genes: signatures based on transcriptomics data
-        from PROGENy (https://github.com/saezlab/progeny).
+        Cell type markers from the CellTypist database.
         """
 
         AnnotationBase.__init__(
@@ -5955,6 +5959,35 @@ class Celltypist(AnnotationBase):
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'celltypist.celltypist_annotations',
             infer_complexes = False,
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class Panglaodb(AnnotationBase):
+
+    _eq_fields = ('cell_type', 'organ')
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Cell type markers from PanglaoDB
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'PanglaoDB',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'panglaodb.panglaodb_annotations',
+            infer_complexes = False,
+            check_ids = False,
             **kwargs
         )
 
