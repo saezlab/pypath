@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -47,16 +49,18 @@ def intogen_annotations():
     )
 
 
-    url = urls.urls['intogen']['drivers_url']
+    url = urls.urls['intogen']['db2014_2']
 
     c = curl.Curl(
         url,
         large = True,
         silent = False,
         files_needed = ['Drivers_type_role.tsv'],
+        compr = 'zip',
     )
 
     for _ in xrange(7):
+
         __ = c.result['Drivers_type_role.tsv'].readline()
 
     data = csv.DictReader(
@@ -96,4 +100,4 @@ def intogen_annotations():
                 )
             )
 
-    return result
+    return dict(result)

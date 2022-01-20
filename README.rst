@@ -2,7 +2,18 @@
 *pypath:* A Python module for molecular signaling prior knowledge processing
 ============================================================================
 
-    **Important:** New module structure and new network API
+OmniPath
+========
+
+Are you interested in OmniPath data? Check out our R package OmnipathR_,
+the most popular and most versatile access point to OmniPath, a database
+built from more than 110 original resources. If you use Python and don't
+need to build the database yourself, try our `Python client`_.
+
+.. _OmnipathR: https://github.com/saezlab/OmnipathR
+.. _`Python client`: https://github.com/saezlab/omnipath
+
+    **Important:** New module structure and new network API (January 2020)
 
     Around the end of December we added a new network API to ``pypath`` which
     is not based on ``igraph`` any more and provides a modular and versatile
@@ -24,9 +35,14 @@
 :issues: https://github.com/saezlab/pypath/issues
 :contact: omnipathdb@gmail.com
 :developers: ``pypath`` is developed in the Saez Lab (https://saezlab.org) by
-  Olga Ivanova, Nicolàs Palacio and Dénes Türei; the R package and the
+  Ahmet Rifaioglu, Sebastian Lobentanzer and Dénes Türei. Olga Ivanova and
+  Nicolàs Palacio also contributed in the past. The R package and the
   Cytoscape app are developed and maintained by Francesco Ceccarelli, Attila
-  Gábor, Alberto Valdeolivas, Dénes Türei and Nicolàs Palacio.
+  Gábor, Alberto Valdeolivas, Dénes Türei and Nicolàs Palacio. The `Python
+  client`_ for the OmniPath web service has been developed and is maintained
+  by Michael Klein in the group of Fabian Theis.
+
+.. _`Python client`_: https://github.com/saezlab/omnipath
 
 **pypath** is a Python module for processing molecular biology data resources,
 combining them into databases and providing a versatile interface in Python
@@ -316,6 +332,7 @@ network class *python-igraph* must be installed.
 *python(2)-igraph* is a Python interface to use the igraph C library. The
 C library must be installed. The same goes for *cairo*, *py(2)cairo* and
 *graphviz*.
+
 
 Directly from git
 -----------------

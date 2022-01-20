@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -41,6 +43,7 @@ import bs4
 
 import pypath.resources.urls as urls
 import pypath.share.common as common
+import pypath.share.session as session
 
 
 Segment = collections.namedtuple(
@@ -66,7 +69,7 @@ Residue = collections.namedtuple(
 )
 
 
-class ResidueMapper(object):
+class ResidueMapper(session.Logger):
     """
     This class stores and serves the PDB --> UniProt
     residue level mapping. Attempts to download the
@@ -76,6 +79,8 @@ class ResidueMapper(object):
 
 
     def __init__(self):
+
+        session.Logger.__init__(self, 'pdb_utils')
 
         self.clean()
 
@@ -95,33 +100,55 @@ class ResidueMapper(object):
         for pdb in pdbs:
 
             url = urls.urls['pdb_align']['url'] + pdb
-            data = urllib2.urlopen(url)
-            alignments = json.loads(data.read())
+
+            for attempt in range(3):
+
+                try:
+
+                    data = urllib2.urlopen(url)
+                    break
+
+                except:
+
+                    self._log(
+                        'Downloading PDB alignment for %s: '
+                        '%u attempt failed.' % (pdb, attempt + 1)
+                    )
+
+                finally:
+
+                    self._log('Failed to obtain alignment for PDB %s.' % pdb)
+                    data = None
+
             mapper = collections.defaultdict(dict)
 
-            for uniprot, alignment in (
-                iteritems(alignments[pdb]['UniProt'])
-            ):
+            if data:
 
-                for segment in alignment['mappings']:
+                alignments = json.loads(data.read())
 
-                    chain = segment['chain_id']
-                    pdbstart = segment['start']['residue_number']
-                    pdbend = segment['end']['residue_number']
-                    uniprotstart = segment['unp_start']
-                    uniprotend = segment['unp_end']
+                for uniprot, alignment in (
+                    iteritems(alignments[pdb]['UniProt'])
+                ):
 
-                    if chain not in mapper:
+                    for segment in alignment['mappings']:
 
-                        mapper[chain] = {}
+                        chain = segment['chain_id']
+                        pdbstart = segment['start']['residue_number']
+                        pdbend = segment['end']['residue_number']
+                        uniprotstart = segment['unp_start']
+                        uniprotend = segment['unp_end']
 
-                    mapper[chain][pdbend] = Segment(
-                        uniprot = uniprot,
-                        pdb_start = pdbstart,
-                        pdb_end = pdbend,
-                        uniprot_start = uniprotstart,
-                        uniprot_end = uniprotend,
-                    )
+                        if chain not in mapper:
+
+                            mapper[chain] = {}
+
+                        mapper[chain][pdbend] = Segment(
+                            uniprot = uniprot,
+                            pdb_start = pdbstart,
+                            pdb_end = pdbend,
+                            uniprot_start = uniprotstart,
+                            uniprot_end = uniprotend,
+                        )
 
             self.mappers[pdb] = dict(mapper)
 
@@ -201,9 +228,9 @@ def residue_pdb(pdb, chain, residue):
     data = urllib2.urlopen(url + "?%s" % params)
     result = {}
 
-    return data
-
     for l in data:
+
+        l = l.decode('utf-8')
 
         if not l.startswith('//'):
 

@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -109,7 +111,12 @@ def pepcyber_interactions(dataframe = False, cache = True):
 
         url = urls.urls['pepcyber']['rescued']
         # this is huge, takes a few minutes!
-        c = curl.Curl(url, silent = False, timeout = 600, encoding = 'utf-8')
+        c = curl.Curl(
+            url,
+            silent = False,
+            timeout = 600,
+            encoding = 'iso-8859-1',
+        )
         data = c.result
         soup = bs4.BeautifulSoup(data, 'html.parser')
         rows = soup.find_all('tr')
@@ -225,26 +232,26 @@ def pepcyber_details(num):
 
             prev = td.text.strip()
 
-    if soup.find(text = 'Records:'):
+        if soup.find(text = 'Records:'):
 
-        refs = (
-            soup.find(text = 'Records:').
-            parent.
-            parent.
-            parent.
-            next_sibling.
-            find('table').
-            find_all('tr')
-        )[1:]
+            refs = (
+                soup.find(text = 'Records:').
+                parent.
+                parent.
+                parent.
+                next_sibling.
+                find('table').
+                find_all('tr')
+            )[1:]
 
-        result['_refs'] = [
-            PepcyberReference(
-                *(
-                    td.a.a.text if td.find('a') else td.text
-                    for td in tr.find_all('td')
+            result['_refs'] = [
+                PepcyberReference(
+                    *(
+                        td.a.a.text if td.find('a') else td.text
+                        for td in tr.find_all('td')
+                    )
                 )
-            )
-            for tr in refs
-        ]
+                for tr in refs
+            ]
 
     return result

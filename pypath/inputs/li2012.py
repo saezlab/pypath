@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -19,7 +21,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-import re
+from future.utils import iteritems
 
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
@@ -27,7 +29,7 @@ import pypath.share.common as common
 import pypath.inputs.common as inputs_common
 import pypath.utils.mapping as mapping
 import pypath.internals.intera as intera
-import pypath.inputs.uniprot as uniprot_input
+import pypath.utils.seq as seq
 
 
 def get_li2012():
@@ -83,14 +85,13 @@ def li2012_enzyme_substrate():
     """
 
     result = []
-    non_digit = re.compile(r'[^\d]+')
     data = get_li2012()
 
     for l in data:
 
         subs_protein = l[1].split('/')[0]
         tk_protein = l[2].split()[0]
-        subs_resnum = int(non_digit.sub('', l[1].split('/')[1]))
+        subs_resnum = int(common.non_digit.sub('', l[1].split('/')[1]))
         result.append(
             (
                 subs_protein, # substrate
@@ -127,9 +128,8 @@ def li2012_dmi():
     Translates GeneSymbols to UniProt IDs.
     """
 
-    result = {}
-    nondigit = re.compile(r'[^\d]+')
-    se = uniprot_input.swissprot_seq(isoforms = True)
+    result = []
+    se = seq.swissprot_seq(isoforms = True)
     data = get_li2012()
 
     for l in data:
@@ -145,21 +145,35 @@ def li2012_dmi():
         tk_uniprots = mapping.map_name(tk_protein, 'genesymbol', 'uniprot')
         reader_uniprots = mapping.map_name(reader_protein, 'genesymbol',
                                           'uniprot')
-        subs_resnum = int(non_digit.sub('', l[1].split('/')[1]))
+        subs_resnum = int(common.non_digit.sub('', l[1].split('/')[1]))
 
         for su in subs_uniprots:
+
             if su in se:
+
                 subs_iso = None
+
                 for iso, s in iteritems(se[su].isof):
+
                     if se[su].get(subs_resnum, isoform = iso) == 'Y':
+
                         subs_iso = iso
                         break
+
                 if subs_iso:
+
                     start = min(1, subs_resnum - 7)
                     end = max(subs_resnum + 7, len(se[su].isof[subs_iso]))
+
                     for ku in tk_uniprots:
+
                         res = intera.Residue(
-                            subs_resnum, 'Y', su, isoform = subs_iso)
+                            subs_resnum,
+                            'Y',
+                            su,
+                            isoform = subs_iso,
+                        )
+
                         mot = intera.Motif(
                             su,
                             start,
@@ -169,18 +183,26 @@ def li2012_dmi():
                                 start,
                                 end,
                                 isoform = subs_iso
-                            )
+                            ),
                         )
+
                         ptm = intera.Ptm(
                             su,
                             motif = mot,
                             residue = res,
                             isoform = subs_iso,
-                            source = 'Li2012'
+                            typ = 'phosphorylation',
+                            evidences = 'Li2012'
                         )
+
                         dom = intera.Domain(ku)
+
                         dommot = intera.DomainMotif(
-                            domain = dom, ptm = ptm, sources = ['Li2012'])
-                        result = {}
+                            domain = dom,
+                            ptm = ptm,
+                            evidences = 'Li2012',
+                        )
+
+                        result.append(dommot)
 
     return result

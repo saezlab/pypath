@@ -6,12 +6,14 @@
 #  Helps to translate from the mouse data to human data
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -338,7 +340,9 @@ def dorothea_full_raw(organism = 9606):
 
         msg = (
             'DoRothEA: invalid organism: `%s`. The full database is '
-            'available only for human.' % str(organism)
+            'available only for human. To have them for other organisms, '
+            'you can load DoRothEA in a Network object and use the homology '
+            'translation function.' % str(organism)
         )
         _logger._log(msg)
         raise ValueError(msg)
@@ -350,8 +354,9 @@ def dorothea_full_raw(organism = 9606):
 
 def dorothea_interactions(
         organism = 9606,
-        levels = {'A', 'B'},
+        levels = {'A', 'B', 'C', 'D'},
         only_curated = False,
+        confidence_pairwise = True,
     ):
     """
     Retrieves TF-target interactions from TF regulons.
@@ -361,7 +366,7 @@ def dorothea_interactions(
     :param set levels:
         Confidence levels to be used.
     :param bool only_curated:
-            Retrieve only literature curated interactions.
+        Retrieve only literature curated interactions.
 
     Details
     -------

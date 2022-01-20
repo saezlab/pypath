@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -111,12 +113,12 @@ def cspa_cell_types(organism = 9606):
                     None
                 )
 
-    return result
+    return dict((k, dict(v)) for k, v in iteritems(result))
 
 
 def cspa_cell_type_annotations(organism = 9606):
-    
-    
+
+
     CspaCellType = collections.namedtuple(
         'CspaCellType',
         [
@@ -124,24 +126,24 @@ def cspa_cell_type_annotations(organism = 9606):
             'value',
         ],
     )
-    
-    
+
+
     cell_type_data = cspa_cell_types(organism = organism)
-    
-    
+
+
     result = collections.defaultdict(set)
-    
+
     for cell_type, data in iteritems(cell_type_data):
-        
+
         for uniprot, value in iteritems(data):
-            
+
             if value:
-                
+
                 result[uniprot].add(
                     CspaCellType(
                         cell_type = cell_type,
                         value = value,
                     )
                 )
-    
+
     return dict(result)

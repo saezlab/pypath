@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -119,40 +121,50 @@ def signor_interactions(
             complexes_by_id[cplex_id].add(cplex)
 
     if isinstance(organism, int):
+
         if organism in taxonomy.taxids:
+
             _organism = taxonomy.taxids[organism]
+
         else:
+
             sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
             return []
+
     else:
+
         _organism = organism
 
     if _organism not in {'human', 'rat', 'mouse'}:
+
         return []
 
     url = urls.urls['signor']['all_url_new']
-    binary_data = [(b'organism', _organism.encode('utf-8')),
-                   (b'format', b'csv'), (b'submit', b'Download')]
+    binary_data = [
+        (b'organism', _organism.encode('utf-8')),
+        (b'format', b'csv'),
+        (b'submit', b'Download'),
+    ]
 
     c = curl.Curl(
         url,
         silent = False,
         large = True,
         follow = True,
-        timeout = 30,
+        timeout = 180,
         binary_data = binary_data,
         return_headers = True,
     )
 
     reader = csv.DictReader(c.result, delimiter = '\t')
+
+    if raw_records:
+
+        return list(reader)
+
     result = []
 
     for line in reader:
-
-        if raw_records:
-
-            result.append(line)
-            continue
 
         sources, source_isoform = process_name(line['IDA'])
         targets, target_isoform = process_name(line['IDB'])
@@ -329,7 +341,7 @@ def signor_pathway_annotations():
 
             result[uniprot].add(record)
 
-    return result
+    return dict(result)
 
 
 def signor_protein_families(organism = 9606):

@@ -6,12 +6,14 @@
 #  Contains helper functions shared by different modules.
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -555,6 +557,15 @@ def first(it, default = None):
         return i
 
     return default
+
+
+def sfirst(it, default = None):
+    """
+    Returns ``it`` if it's a string, its first element if it's an iterable,
+    or the value of ``default`` if the iterable is empty.
+    """
+
+    return it if isinstance(it, simple_types) else first(it, default)
 
 
 def swap_suffix(name, sep = '_', suffixes = None):
@@ -1176,35 +1187,47 @@ def join_dicts(d1, d2, _from='keys', to='values'): # TODO
     return result
 
 
-psite_mod_types = [('p', 'phosphorylation'),
-                   ('ac', 'acetylation'),
-                   ('ga', 'galactosylation'),
-                   ('gl', 'glycosylation'),
-                   ('sm', 'sumoylation'),
-                   ('ub', 'ubiquitination'),
-                   ('me', 'methylation')]
+psite_mod_types = [
+    ('p', 'phosphorylation'),
+    ('ac', 'acetylation'),
+    ('ga', 'galactosylation'),
+    ('gl', 'glycosylation'),
+    ('sm', 'sumoylation'),
+    ('ub', 'ubiquitination'),
+    ('me', 'methylation'),
+]
 
-psite_mod_types2 = [('p', 'phosphorylation'),
-                    ('ac', 'acetylation'),
-                    ('ga', 'galactosylation'),
-                    ('gl', 'glycosylation'),
-                    ('ub', 'ubiquitination'),
-                    ('me', 'methylation'),
-                    ('sm', 'sumoylation'),
-                    ('sc', 'succinylation'),
-                    ('m1', 'mono-methylation'),
-                    ('m2', 'di-methylation'),
-                    ('m3', 'tri-methylation'),
-                    ('ad', 'adenylation'),
-                    ('pa', 'palmitoylation'),
-                    ('ne', 'neddylation'),
-                    ('sn', 'nitrosylation'),
-                    ('ca', 'caspase-cleavage')]
+psite_mod_types2 = [
+    ('p', 'phosphorylation'),
+    ('ac', 'acetylation'),
+    ('ga', 'galactosylation'),
+    ('gl', 'glycosylation'),
+    ('ub', 'ubiquitination'),
+    ('me', 'methylation'),
+    ('sm', 'sumoylation'),
+    ('sc', 'succinylation'),
+    ('m1', 'mono-methylation'),
+    ('m2', 'di-methylation'),
+    ('m3', 'tri-methylation'),
+    ('ad', 'adenylation'),
+    ('pa', 'palmitoylation'),
+    ('ne', 'neddylation'),
+    ('sn', 'nitrosylation'),
+    ('ca', 'caspase-cleavage'),
+    ('ng', 'n-glycosylation'),
+]
 
 
 pmod_bel = (
     ('Ac', ('acetylation',)),
-    ('ADPRib', ('ADP-ribosylation', 'ADP-rybosylation', 'adenosine diphosphoribosyl',)),
+    (
+        'ADPRib',
+        (
+            'ADP-ribosylation',
+            'ADP-rybosylation',
+            'adenosine diphosphoribosyl',
+        ),
+    ),
     ('Farn', ('farnesylation',)),
     ('Gerger', ('geranylgeranylation',)),
     ('Glyco', ('glycosylation',)),
@@ -2451,6 +2474,19 @@ def suffix(string, sep):
     """
 
     return first(reversed(string.rsplit(sep, maxsplit = 1)))
+
+
+def remove_prefix(string, sep):
+    """
+    Removes a prefix if `string` is a string and contains the separator
+    `sep`; otherwise returns the original object.
+    """
+
+    return (
+        first(reversed(string.split(sep, maxsplit = 1)))
+            if is_str(string) else
+        string
+    )
 
 
 def maybe_in_dict(dct, key):

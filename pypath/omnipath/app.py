@@ -7,12 +7,14 @@
 #  OmniPath databases.
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -40,6 +42,7 @@ from pypath.core import network
 from pypath.share import session as session_mod
 
 import pypath.share.settings as settings
+import pypath.share.common as common
 
 
 class DatabaseManager(session_mod.Logger):
@@ -237,6 +240,8 @@ class DatabaseManager(session_mod.Logger):
 
         args = self.get_build_args(dataset)
 
+        self._log('Build param: [%s].' % common.dict_str(args))
+
         mod = self.ensure_module(dataset)
 
         if dataset == 'enz_sub':
@@ -273,8 +278,10 @@ class DatabaseManager(session_mod.Logger):
                 )
             )
 
-        except:
+        except Exception as e:
 
+            exc = sys.exc_info()
+            self._log_traceback()
             os.remove(pickle_path)
 
             self._log(
@@ -375,6 +382,10 @@ class DatabaseManager(session_mod.Logger):
         )
 
 
+    # TODO
+    # the get_args_* methods below will be replaced by the
+    # pypath.omnipath.databases module
+
     def get_args_curated(self):
         """
         Returns the arguments for building the curated PPI network dataset.
@@ -425,6 +436,15 @@ class DatabaseManager(session_mod.Logger):
         """
 
         return {'resources': netres.lncrna_target}
+
+
+    def get_args_small_molecule(self):
+        """
+        Returns the arguments for building the small molecule-protein
+        network dataset.
+        """
+
+        return {'resources': netres.small_molecule_protein}
 
 
     def compile_tables(self):

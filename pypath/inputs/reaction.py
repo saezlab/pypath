@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -46,6 +48,7 @@ import pypath.resources.urls as urls
 import pypath.share.progress as progress
 import pypath.share.common as common
 import pypath.share.cache as cache_mod
+import pypath.inputs.acsn as acsn_input
 from pypath.resources import data_formats
 
 
@@ -1113,7 +1116,7 @@ def get_acsn_effects():
         'CATALYSIS', 'PHYSICAL_STIMULATION', 'UNKNOWN_INHIBITION', 'TRANSPORT'
     ])
 
-    data = acsn_interactions()
+    data = acsn_input.acsn_interactions()
 
     effects = []
 

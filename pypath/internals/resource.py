@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -206,16 +208,46 @@ class ResourceAttributes(object):
         return self.name
 
 
-NetworkResourceKey = collections.namedtuple(
-    'NetworkResourceKey',
-    [
-        'name',
-        'data_type',
-        'interaction_type',
-        'data_model',
-        'via',
-    ]
-)
+class NetworkResourceKey(
+        collections.namedtuple(
+            'NetworkResourceKeyBase',
+            [
+                'name',
+                'data_type',
+                'interaction_type',
+                'data_model',
+                'via',
+            ]
+        )
+    ):
+
+
+    def __new__(cls, *args, **kwargs):
+
+        return super(NetworkResourceKey, cls).__new__(cls, *args, **kwargs)
+
+
+    @property
+    def label(self):
+        """
+        Returns:
+            (str): A label containing the resource name, and if it's a
+                secondary resource, the name of the primary resource
+                separated by an underscore.
+        """
+
+        return '%s_%s' % (self.name, self.via) if self.via else self.name
+
+
+    @property
+    def last(self):
+        """
+        Returns:
+            (str): The name of the resource where the data directly came from
+                ignoring the primary resource.
+        """
+
+        return self.via or self.name
 
 
 class NetworkResource(ResourceAttributes):

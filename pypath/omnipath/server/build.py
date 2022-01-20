@@ -4,11 +4,13 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2021 - EMBL
+#  Copyright (c) 2014-2022 - EMBL
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GNU GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -24,6 +26,7 @@ building the tables for the webservice.
 
 from future.utils import iteritems
 
+import os
 import importlib as imp
 import copy
 
@@ -39,6 +42,14 @@ import pypath.share.session as session_mod
 import pypath.omnipath as omnipath
 
 
+NO_HOMOLOGY_TRANSLATION = {
+    'mirna_mrna',
+    'lncrna_mrna',
+    'tf_mirna',
+    'small_molecule',
+}
+
+
 class WebserviceTables(session_mod.Logger):
     """
     Creates the data frames which the web service uses to serve the data from.
@@ -48,8 +59,9 @@ class WebserviceTables(session_mod.Logger):
     def __init__(
             self,
             only_human = False,
+            build_dir = '.',
             outfile_interactions = 'omnipath_webservice_interactions.tsv',
-            outfile_ptms = 'omnipath_webservice_enz_sub.tsv',
+            outfile_enz_sub = 'omnipath_webservice_enz_sub.tsv',
             outfile_complexes = 'omnipath_webservice_complexes.tsv',
             outfile_annotations = 'omnipath_webservice_annotations.tsv',
             outfile_intercell = 'omnipath_webservice_intercell.tsv',
@@ -60,11 +72,30 @@ class WebserviceTables(session_mod.Logger):
         self._log('WebserviceTables initialized.')
 
         self.only_human = only_human
-        self.outfile_interactions = outfile_interactions
-        self.outfile_ptms = outfile_ptms
-        self.outfile_complexes = outfile_complexes
-        self.outfile_annotations = outfile_annotations
-        self.outfile_intercell = outfile_intercell
+
+        databases = (
+            'interactions',
+            'complexes',
+            'enz_sub',
+            'annotations',
+            'intercell',
+        )
+
+        for db in databases:
+
+            attr = 'outfile_%s' % db
+
+            setattr(
+                self,
+                attr,
+                os.path.join(
+                    build_dir,
+                    locals()[attr]
+                )
+            )
+
+        os.makedirs(build_dir, exist_ok = True)
+
         self.network_datasets = (
             network_datasets or
             (
@@ -73,6 +104,7 @@ class WebserviceTables(session_mod.Logger):
                 'mirna_mrna',
                 'tf_mirna',
                 'lncrna_mrna',
+                'small_molecule',
             )
         )
 
@@ -110,7 +142,7 @@ class WebserviceTables(session_mod.Logger):
             exp.webservice_interactions_df()
             dataframes.append(exp.df)
 
-            if dataset not in {'mirna_mrna', 'lncrna_mrna', 'tf_mirna'}:
+            if dataset not in NO_HOMOLOGY_TRANSLATION:
 
                 for rodent in (10090, 10116):
 
@@ -254,14 +286,23 @@ class WebserviceTables(session_mod.Logger):
 
         dataframes = []
 
+        self._log('Building `enz_sub` data frame for organism `9606`.')
         enz_sub_a = omnipath.db.get_db('enz_sub')
         enz_sub_a.make_df(tax_id = True)
         dataframes.append(enz_sub_a.df)
+        self._log(
+            'Finished building `enz_sub` data frame for organism `9606`.'
+        )
         omnipath.db.remove_db('enz_sub', ncbi_tax_id = 9606)
 
         if not self.only_human:
 
             for rodent in (10090, 10116):
+
+                self._log(
+                    'Building `enz_sub` data frame for '
+                    'organism `%s`.' % rodent
+                )
 
                 enz_sub_a = omnipath.db.get_db(
                     'enz_sub',
@@ -269,18 +310,24 @@ class WebserviceTables(session_mod.Logger):
                 )
                 enz_sub_a.make_df(tax_id = True)
                 dataframes.append(enz_sub_a.df)
+
+                self._log(
+                    'Finished building `enz_sub` data frame for '
+                    'organism `%s`.' % rodent
+                )
+
                 omnipath.db.remove_db('enz_sub', ncbi_tax_id = rodent)
                 del enz_sub_a
 
         self.df_enz_sub = pd.concat(dataframes)
         self.df_enz_sub.to_csv(
-            self.outfile_ptms,
+            self.outfile_enz_sub,
             sep = '\t',
             index = False
         )
 
-        self._log('Data frame `ptms` has been exported to `%s`.' % (
-            self.outfile_ptms,
+        self._log('Data frame `enz_sub` has been exported to `%s`.' % (
+            self.outfile_enz_sub,
         ))
 
 

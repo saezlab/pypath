@@ -5,11 +5,13 @@
 #  This file is part of the `pypath` python module
 #  Exports tables for webservice.
 #
-#  Copyright (c) 2014-2021 - EMBL
+#  Copyright (c) 2014-2022 - EMBL
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -33,6 +35,8 @@ import pypath.share.common as common
 import pypath.share.session as session_mod
 import pypath.utils.mapping as mapping
 import pypath.share.settings as settings
+import pypath.share.constants as constants
+import pypath.core.attrs as attrs_mod
 
 
 EntityKey = collections.namedtuple(
@@ -46,7 +50,7 @@ EntityKey = collections.namedtuple(
 )
 
 
-class Entity(session_mod.Logger):
+class Entity(session_mod.Logger, attrs_mod.AttributeHandler):
     """
     Represents a molecular entity such as protein, miRNA, lncRNA or small
     molecule.
@@ -72,13 +76,13 @@ class Entity(session_mod.Logger):
         'entity_type',
         'id_type',
         'taxon',
-        'attrs',
         'label',
         'key',
     ]
 
 
     _default_id_types = settings.get('default_name_types')
+    _smol_types = settings.get('small_molecule_entity_types')
 
     _id_type_to_entity_type = {
         'uniprot': 'protein',
@@ -122,7 +126,7 @@ class Entity(session_mod.Logger):
         self._bootstrap(identifier, id_type, entity_type, taxon)
         self.key = self._key
 
-        self.attrs = attrs or {}
+        attrs_mod.AttributeHandler.__init__(self, attrs)
 
         self.set_label()
 
@@ -149,7 +153,11 @@ class Entity(session_mod.Logger):
                 taxon
             )
 
-        taxon = taxon or settings.get('default_organism')
+        if entity_type in self._smol_types:
+
+            taxon = constants.NOT_ORGANISM_SPECIFIC
+
+        taxon = settings.get('default_organism') if taxon is None else taxon
 
         if not entity_type:
 
@@ -243,9 +251,22 @@ class Entity(session_mod.Logger):
     def _is_protein(key):
 
         return (
-            isinstance(key, common.basestring) and
+            isinstance(key, common.basestring) and (
+                not key.isdigit() or
+                settings.get('default_name_types')['protein'] == 'entrez'
+            ) and
             not key.startswith('MIMAT') and
             not key.startswith('COMPLEX')
+        )
+
+
+    @staticmethod
+    def _is_small_molecule(key):
+
+        return(
+            isinstance(key, common.basestring) and
+            key.isdigit() and
+            settings.get('default_name_types')['protein'] != 'entrez'
         )
 
 
@@ -275,13 +296,31 @@ class Entity(session_mod.Logger):
                 if cls._is_complex(key) else
             'mirna'
                 if cls._is_mirna(key) else
+            'small_molecule'
+                if cls._is_small_molecule(key) else
             'protein'
+        )
+
+
+    def is_small_molecule(self):
+
+        return (
+            self.entity_type in self._smol_types or (
+                self.identifier.isdigit() and (
+                    self._default_id_types['protein'] != 'entrez' or
+                    self.id_type == 'pubchem'
+                )
+            )
         )
 
 
     def is_protein(self):
 
-        return self._is_protein(self.identifier)
+        return (
+            self.entity_type not in self._smol_types and
+            self.id_type != 'pubchem' and
+            self._is_protein(self.identifier)
+        )
 
 
     def is_mirna(self):
@@ -444,22 +483,9 @@ class Entity(session_mod.Logger):
 
         if self == other:
 
-            self.update_attrs(**other.attrs)
+            attrs_mod.AttributeHandler.__iadd__(self, other)
 
         return self
-
-
-    def update_attrs(self, **kwargs):
-
-        for key, val in iteritems(kwargs):
-
-            if key in self.attrs:
-
-                self.attrs[key] = common.combine_attrs((self.attrs[key], val))
-
-            else:
-
-                self.attrs[key] = val
 
 
     @classmethod

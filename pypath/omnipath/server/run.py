@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -143,6 +145,13 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
                 toCall = getattr(self, request.postpath[0])
 
             if hasattr(toCall, '__call__'):
+
+                self._log(
+                    'Query type: `%s`; Arguments: [%s].' % (
+                        request.postpath[0],
+                        common.dict_str(request.args),
+                    )
+                )
 
                 try:
 
@@ -643,6 +652,7 @@ class TableServer(BaseServer):
                 'ligrecextra',
                 'pathwayextra',
                 'mirnatarget',
+                'small_molecule',
             },
             'types': {
                 'post_translational',
@@ -650,6 +660,7 @@ class TableServer(BaseServer):
                 'post_transcriptional',
                 'mirna_transcriptional',
                 'lncrna_post_transcriptional',
+                'small_molecule_protein',
             },
             'sources':  None,
             'resources': None,
@@ -678,6 +689,7 @@ class TableServer(BaseServer):
                 'organism',
                 'curation_effort',
                 'datasets',
+                'extra_attrs',
             },
             'tfregulons_levels':  {'A', 'B', 'C', 'D', 'E'},
             'tfregulons_methods': {
@@ -713,6 +725,9 @@ class TableServer(BaseServer):
                 'mirna',
                 'lncrna',
                 'small_molecule',
+                'drug',
+                'metabolite',
+                'lipid',
             },
         },
         'enzsub': {
@@ -797,6 +812,9 @@ class TableServer(BaseServer):
                 'mirna',
                 'lncrna',
                 'small_molecule',
+                'drug',
+                'metabolite',
+                'lipid',
             },
         },
         'annotations_summary': {
@@ -857,6 +875,9 @@ class TableServer(BaseServer):
                 'mirna',
                 'lncrna',
                 'small_molecule',
+                'drug',
+                'metabolite',
+                'lipid',
             },
             'transmitter': {'1', '0', 'no', 'yes'},
             'receiver': {'1', '0', 'no', 'yes'},
@@ -1018,6 +1039,7 @@ class TableServer(BaseServer):
         'mirnatarget',
         'tf_mirna',
         'lncrna_mrna',
+        'small_molecule',
     }
     dorothea_methods = {'curated', 'coexp', 'chipseq', 'tfbs'}
     dataset2type = {
@@ -1031,6 +1053,7 @@ class TableServer(BaseServer):
         'mirnatarget': 'post_transcriptional',
         'tf_mirna': 'mirna_transcriptional',
         'lncrna_mrna': 'lncrna_post_transcriptional',
+        'small_molecule': 'small_molecule_protein',
     }
     interaction_fields = {
         'references', 'sources', 'dorothea_level',
@@ -1040,7 +1063,7 @@ class TableServer(BaseServer):
         'tfregulons_chipseq', 'tfregulons_tfbs', 'tfregulons_coexp',
         'type', 'ncbi_tax_id', 'databases', 'organism',
         'curation_effort', 'resources', 'entity_type',
-        'datasets',
+        'datasets', 'extra_attrs',
     }
     enzsub_fields = {
         'references', 'sources', 'databases',
@@ -1069,7 +1092,6 @@ class TableServer(BaseServer):
             'consensus_inhibition': 'int8',
             'sources': 'category',
             'references': 'category',
-            'dip_url': 'category',
             'dorothea_curated': 'category',
             'dorothea_chipseq': 'category',
             'dorothea_tfbs': 'category',
@@ -1081,6 +1103,7 @@ class TableServer(BaseServer):
             'entity_type_source': 'category',
             'entity_type_target': 'category',
             'curation_effort': 'int16',
+            'extra_attrs': 'category',
         },
         annotations = {
             'uniprot': 'category',
@@ -1486,6 +1509,13 @@ class TableServer(BaseServer):
                 if 'license' not in self._resources_dict[db]:
 
                     license = res_ctrl.license(db)
+
+                    if license is None:
+
+                        msg = 'No license for resource `%s`.' % str(db)
+                        self._log(msg)
+                        raise RuntimeError(msg)
+
                     license_data = license.features
                     license_data['name'] = license.name
                     license_data['full_name'] = license.full_name
@@ -1786,7 +1816,6 @@ class TableServer(BaseServer):
             'consensus_direction',
             'consensus_stimulation',
             'consensus_inhibition',
-            'dip_url',
         ]
 
         if b'source_target' in req.args:
@@ -1852,6 +1881,8 @@ class TableServer(BaseServer):
             hdr.insert(3, 'target_genesymbol')
         else:
             genesymbols = False
+
+        self._log('Processed arguments: [%s].' % common.dict_str(args))
 
         # starting from the entire dataset
         tbl = self.data['interactions']

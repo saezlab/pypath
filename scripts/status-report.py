@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -32,6 +34,7 @@ which could have an impact on its content.
 """
 
 import os
+import re
 import sys
 import time
 import pkgutil
@@ -43,6 +46,7 @@ import json
 import argparse
 import weakref
 import types
+import csv
 
 import bs4
 
@@ -51,8 +55,13 @@ import bs4
 # we might even fetch it from git before importing.
 
 EXCLUDE = {
+    'biogps_annotations', # calls biomart_microarrays
+    'biomart_microarrays', # takes too long
     'common',
+    'get_3did_dmi', # takes too long
+    'get_csa', # takes too long
     'go_annotations_quickgo',
+    'process_3did_dmi', # calls get_3did_dmi
     'threedcomplex_complexes',
     '_uniprot_deleted',
     'uniprot_deleted',
@@ -88,6 +97,9 @@ HTML_TEMPLATE = (
                 th, td {
                     padding: 8px;
                 }
+                td {
+                    font-size: small;
+                }
                 tr td:nth-of-type(2),
                 tr td:nth-of-type(6),
                 tr td:nth-of-type(7) {
@@ -120,7 +132,8 @@ HTML_TEMPLATE = (
 
             <p id="desc"></p>
             <p id="comp"></p>
-            <table>
+            <!-- Input testing summary table -->
+            <table id="report-summary">
                 <tr>
                     <th>Modules collected:</th>
                     <td id="n_modules"></td>
@@ -151,6 +164,7 @@ HTML_TEMPLATE = (
                 </tr>
             </table>
             <br>
+            <!-- Input functions table -->
             <table>
                 <tbody id="report" valign="top">
                     <tr>
@@ -163,9 +177,12 @@ HTML_TEMPLATE = (
                         <th>Result repr</th>
                         <th>Result size</th>
                         <th>Error</th>
+                        <th>Change since last time</th>
+                        <th>Last succeeded</th>
                     </tr>
                 </tbody>
             </table>
+            <!-- Footer -->
             <p><em>
                 <a href="https://omnipathdb.org/">The OmniPath Team</a>&nbsp;
                 &#x2022;
@@ -187,6 +204,8 @@ FIELDS = (
     'value_repr',
     'value_size',
     'error',
+    'diff',
+    'last_succeeded',
 )
 
 COUNTERS = (
@@ -205,6 +224,26 @@ PYPATH_GIT_URL = 'https://github.com/saezlab/pypath'
 
 CAPTURE_GENERATORS = 300
 
+MAINDIR_PREFIX = 'pypath_inputs_status'
+
+RESULT_JSON_PATH = ('report', 'result.json')
+
+
+def _log(*args, **kwargs):
+    """
+    Deliver a log message if the logger is available,
+    otherwise write it to stdout.
+    """
+
+    if '__log' in globals():
+
+        __log(*args, **kwargs)
+
+    elif args:
+
+        sys.stdout.write(str(args[0]))
+        sys.stdout.flush()
+
 
 class StatusReport(object):
     """
@@ -221,14 +260,22 @@ class StatusReport(object):
             self,
             maindir = None,
             cachedir = None,
+            pickle_dir = None,
+            build_dir = None,
             first = None,
             from_git = None,
+            nobuild = None,
+            prev_run = None,
         ):
 
         self.parse_args()
         self.maindir = maindir or self.clargs.dir
         self.cachedir = cachedir or self.clargs.cachedir
+        self.pickle_dir = pickle_dir or self.clargs.pickle_dir
+        self.build_dir = build_dir or self.clargs.build_dir
         self.first = first or self.clargs.first
+        self.nobuild = nobuild or self.clargs.nobuild
+        self.prev_dir = prev_run or self.clargs.prev_run
         self.from_git = (
             from_git
                 if from_git is not None else
@@ -240,6 +287,8 @@ class StatusReport(object):
             lambda obj: obj.finish(),
             self,
         )
+        self.finished = False
+        self.prev_result = {}
 
 
     def main(self):
@@ -247,6 +296,7 @@ class StatusReport(object):
         self.start()
         self.test_inputs()
         self.finish()
+        self.build()
 
 
     def parse_args(self):
@@ -266,6 +316,21 @@ class StatusReport(object):
             type = str,
         )
         self.clargs.add_argument(
+            '-p', '--pickle_dir',
+            help = 'Database pickle dumps directory path',
+            type = str,
+        )
+        self.clargs.add_argument(
+            '-b', '--build_dir',
+            help = 'Database build directory path',
+            type = str,
+        )
+        self.clargs.add_argument(
+            '-o', '--nobuild',
+            help = 'Disable database build',
+            action = 'store_true',
+        )
+        self.clargs.add_argument(
             '-d', '--dir',
             help = 'Main directory path',
             type = str,
@@ -276,25 +341,38 @@ class StatusReport(object):
                 'in the current directory or installed in system paths',
             action = 'store_true',
         )
+        self.clargs.add_argument(
+            '-r', '--prev_run',
+            help = 'Compare to a previous run (path to directory). If not '
+                'provided, the script will try to find the directory by '
+                'itself. To disable comparison to a previous run, provide '
+                '"none" to this argument.',
+            type = str,
+        )
         self.clargs = self.clargs.parse_args()
 
     def start(self):
 
         self.reset_counters()
-        self.result = []
         self.set_timestamp()
-        self.set_dirs()
+        self.set_dirs() # calls init_pypath
+        self.reset_result()
+        self.read_prev_result()
         _log('Started generating pypath inputs status report.')
 
 
     def finish(self):
 
-        self.set_timestamp(end = True)
-        self.save_results()
-        self.compile_html()
-        self.copy_log()
-        self.finished = True
-        _log('Finished generating pypath inputs status report.')
+        if not self.finished:
+
+            self.set_timestamp(end = True)
+            self.save_results()
+            self.compile_html()
+            self.copy_log()
+            self.reset_result()
+            self.finished = True
+
+            _log('Finished generating pypath inputs status report.')
 
 
     def reset_counters(self):
@@ -305,6 +383,13 @@ class StatusReport(object):
 
         self.finished = False
         self.n_modules = -1
+
+
+    def reset_result(self):
+
+        self.result = []
+
+        _log('Resetting results.')
 
 
     def test_inputs(self):
@@ -419,23 +504,148 @@ class StatusReport(object):
 
         self.maindir = (
             self.maindir or
-            'pypath_inputs_status__%s' % time.strftime(
-                '%Y%m%d-%H%M%S',
-                self.start_time,
+            '%s__%s' % (
+                MAINDIR_PREFIX,
+                time.strftime('%Y%m%d-%H%M%S', self.start_time),
             )
         )
         self.maindir = os.path.abspath(self.maindir)
         self.cachedir = self.cachedir or os.path.join(self.maindir, 'cache')
+        self.pickle_dir = (
+            self.pickle_dir or
+            os.path.join(self.maindir, 'pickles')
+        )
+        self.build_dir = self.build_dir or os.path.join(self.maindir, 'build')
         self.reportdir = os.path.join(self.maindir, 'report')
 
         os.makedirs(self.reportdir, exist_ok = True)
         os.makedirs(self.cachedir, exist_ok = True)
+        os.makedirs(self.pickle_dir, exist_ok = True)
+        os.makedirs(self.build_dir, exist_ok = True)
 
         os.chdir(self.maindir)
 
         self.init_pypath()
 
         settings.setup(cachedir = self.cachedir)
+        settings.setup(pickle_dir = self.pickle_dir)
+
+        self.set_prev_dir()
+
+
+    def set_prev_dir(self):
+        """
+        Sets up the path to a directory with a previous run of this script.
+        Having a previous run makes it possible to find the newly failing
+        items and the ones which were failing and just started to work again.
+        """
+
+        if self.prev_dir == 'none':
+
+            self.prev_dir = None
+            _log('Comparing to previous run is disabled.')
+            return
+
+        if isinstance(self.prev_dir, str):
+
+            if (
+                not os.path.exists(self.prev_dir) or
+                not self.is_status_report_dir(self.prev_dir)
+            ):
+
+                _log(
+                    'Previous run directory does not '
+                    'exist or does not contain output: `%s`.' % self.prev_dir
+                )
+                self.prev_dir = None
+
+        if self.prev_dir is None:
+
+            self._find_prev_dir()
+
+        if (
+            isinstance(self.prev_dir, str) and
+            os.path.exists(self.prev_dir) and
+            self.is_status_report_dir(self.prev_dir)
+        ):
+
+            _log(
+                'Will compare to previous run '
+                'in directory `%s`.' % self.prev_dir
+            )
+
+        else:
+
+            _log(
+                'Could not find directory with previous run, '
+                'have nothing to compare against the current run.'
+            )
+
+
+    def _find_prev_dir(self):
+        """
+        This is how we try to find automatically the directory with the
+        previous run.
+        """
+
+        redir = re.compile(r'%s__(\d{8}-\d{6})' % MAINDIR_PREFIX)
+
+        parent, _ = os.path.split(self.maindir)
+        latest = ''
+
+        for d in next(os.walk(parent))[1]:
+
+            m = redir.match(d)
+
+            if m:
+
+                timestamp = m.group(1)
+                this_path = os.path.join(parent, d)
+
+                if (
+                    timestamp > latest and
+                    self.is_status_report_dir(this_path)
+                ):
+
+                    latest = timestamp
+                    self.prev_dir = this_path
+
+
+    @staticmethod
+    def is_status_report_dir(path):
+        """
+        Tells if a directory seems to contain a previous run of this script.
+        It checks for the most important output file, `report/result.json`.
+        """
+
+        path = '' if path is None else path
+        result_json = os.path.join(path, *RESULT_JSON_PATH)
+
+        return os.path.exists(result_json)
+
+
+    def read_prev_result(self):
+        """
+        Reads the results of a previous run and stores it under the
+        `prev_result` attribute.
+        """
+
+        self.prev_result = {}
+
+        if self.is_status_report_dir(self.prev_dir):
+
+            json_path = os.path.join(self.prev_dir, *RESULT_JSON_PATH)
+
+            _log('Reading results of previous run from `%s`.' % json_path)
+
+            with open(json_path, 'r') as fp:
+
+                self.prev_result = json.load(fp)
+
+            self.prev_result = dict(
+                (i['function'], i)
+                for i in self.prev_result
+            )
 
 
     def init_pypath(self):
@@ -483,16 +693,22 @@ class StatusReport(object):
         import pypath.inputs as inputs
         import pypath.share.session as session
         import pypath.share.settings as settings
+        import pypath.omnipath.server.build as build
+        import pypath.omnipath as omnipath
 
         globals()['inputs'] = inputs
         globals()['session'] = session
         globals()['settings'] = settings
+        globals()['build'] = build
+        globals()['omnipath'] = omnipath
 
         _logger = session.Logger(name = 'status_report')
         globals()['_logger'] = _logger
-        globals()['_log'] = _logger._log
+        globals()['__log'] = _logger._log
         _log('Working directory: `%s`.' % self.maindir)
         _log('Cache directory: `%s`.' % self.cachedir)
+        _log('Pickle directory: `%s`.' % self.pickle_dir)
+        _log('Build directory: `%s`.' % self.build_dir)
         _log('Reporting directory: `%s`.' % self.reportdir)
         _log('Pypath from git: `%s`.' % self.from_git)
         _log('Pypath local path: `%s`.' % os.path.dirname(inputs.__path__[0]))
@@ -518,6 +734,9 @@ class StatusReport(object):
 
 
     def test_input(self, fun):
+        """
+        Calls one function and captures its result or the errors raised.
+        """
 
         fun_name = self.function_name(fun)
         result = {'function': fun_name}
@@ -544,7 +763,15 @@ class StatusReport(object):
                 value = fun(*_args, **_kwargs)
                 _log('Function `%s` returned.' % fun_name)
 
-                if isinstance(value, types.GeneratorType):
+                if isinstance(
+                    value,
+                    (
+                        types.GeneratorType,
+                        filter,
+                        map,
+                        csv.DictReader,
+                    )
+                ):
 
                     _log(
                         'The function returned a generator, '
@@ -608,9 +835,63 @@ class StatusReport(object):
             self.n_errors += 1
             _log('Collected information about `%s`.' % fun_name)
 
+        self.compare_to_prev(result)
         self.result.append(result)
 
         _log('Finished testing `%s`.' % fun_name)
+        _log('Result length: %u' % len(self.result))
+
+
+    def compare_to_prev(self, result):
+        """
+        Compares the current outcome of a procedure to the one captured at
+        a previous run. The differences found will be stored in the result
+        dict passed, under the key `diff`.
+        """
+
+        diff = {}
+        result['last_succeeded'] = result.get('start_time', 'never')
+
+        if result['function'] in self.prev_result:
+
+            prev = self.prev_result[result['function']]
+
+            if 'error' in prev and 'error' not in result:
+
+                diff['fixed'] = True
+
+            if (
+                'value_size' in prev and
+                'value_size' in result and
+                prev['value_size'] != result['value_size']
+            ):
+
+                diff['size'] = result['value_size'] - prev['value_size']
+
+            if (
+                'value_type' in prev and
+                'value_type' in result and
+                prev['value_type'] != result['value_type']
+            ):
+
+                diff['type'] = {
+                    'previous': prev['value_type'],
+                    'current': result['value_type'],
+                }
+
+            if 'error' in result and 'error' not in prev:
+
+                diff['broke'] = True
+
+            if 'error' in result and 'last_succeeded' in prev:
+
+                result['last_succeeded'] = prev['last_succeeded']
+
+        else:
+
+            diff['first'] = True
+
+        result['diff'] = diff
 
 
     @staticmethod
@@ -627,17 +908,25 @@ class StatusReport(object):
         Saves the results as JSON.
         """
 
+        _log(
+            'Exporting results to JSON, result items: %u.' % len(self.result)
+        )
+
         path = os.path.join(self.reportdir, 'result.json')
 
         with open(path, 'w') as fp:
 
             json.dump(self.result, fp, indent = 2)
 
+        _log('JSON has been exported to `%s`.' % path)
+
 
     def compile_html(self):
         """
         Compiles a HTML report, saves it to the reporting directory.
         """
+
+        _log('Compiling HTML report, result items: %u.' % len(self.result))
 
         last_commit = self.pypath_git_hash()
 
@@ -725,6 +1014,8 @@ class StatusReport(object):
 
             fp.write(soup.prettify())
 
+        _log('HTML report has been exported to `%s`.' % path)
+
 
     @classmethod
     def to_str(cls, value, maxlen = 76):
@@ -764,10 +1055,55 @@ class StatusReport(object):
         Copies the logfile to the reporting directory.
         """
 
+        path = os.path.join(self.reportdir, 'pypath.log')
+        _log('Copying log file to `%s`.' % path)
+        time.sleep(5)
+
         shutil.copy2(
             _logger._logger.fname,
-            os.path.join(self.reportdir, 'pypath.log')
+            path,
         )
+
+
+    def build(self):
+        """
+        Builds the OmniPath databases.
+        """
+
+        if self.nobuild:
+
+            _log('Database build disabled.')
+            return
+
+        self.builder = build.WebserviceTables(
+            build_dir = self.build_dir,
+        )
+
+        databases = (
+            'interactions',
+            'complexes',
+            'enz_sub',
+            'annotations',
+            'intercell',
+        )
+
+        for db in databases:
+
+            try:
+
+                _log('Starting to build database `%s`.' % db)
+                getattr(self.builder, db)()
+                _log('Finished building database `%s`.' % db)
+                _ = [
+                    omnipath.db.remove_db(db, ncbi_tax_id = ncbi_tax_id)
+                    for ncbi_tax_id in (9606, 10090, 10116)
+                ]
+
+            except Exception as e:
+
+                exc = sys.exc_info()
+                _log('Failed to build database `%s`:' % db)
+                _logger._log_traceback()
 
 
 if __name__ == '__main__':

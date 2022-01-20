@@ -6,12 +6,14 @@
 #  Annotation information for intercell.py
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -57,14 +59,13 @@ go_combined_classes = {
         """,
     'extracellular':
         """
-        extracellular region OR
-        extracellular region part
+        extracellular region
         """,
     'intracellular':
         """
         intracellular organelle OR
         intracellular organelle lumen OR
-        intracellular
+        intracellular anatomical structure
         """,
     'cell_surface':
         """
@@ -111,7 +112,7 @@ go_combined_classes = {
         """,
     'receptor regulation':
         """
-        (receptor regulator activity OR
+        (signaling receptor regulator activity OR
         regulation of receptor recycling OR
         receptor clustering OR
         receptor diffusion trapping OR
@@ -123,7 +124,7 @@ go_combined_classes = {
         """,
     'receptor inhibition':
         """
-        receptor inhibitor activity AND
+        signaling receptor inhibitor activity AND
         (extracellular region OR
         cell surface OR
         external side of plasma membrane OR
@@ -273,8 +274,7 @@ go_combined_classes = {
         signal release OR
         hormone secretion OR
         hormone metabolic process OR
-        cytokine production OR
-        cytokine secretion
+        cytokine production
         """,
     'secretion':
         """
@@ -307,7 +307,6 @@ go_single_terms = {
 
         # extracellular
         'extracellular region',
-        'extracellular region part',
 
         # extracellular_matrix
         'extracellular matrix',
@@ -401,16 +400,15 @@ go_single_terms = {
         'regulation of peptidase activity',
         'peptidase activator activity',
         # receptors
-        'receptor regulator activity',
         'signaling receptor activator activity',
-        'receptor inhibitor activity',
+        'signaling receptor inhibitor activity',
         'receptor ligand activity',
         'neurotransmitter receptor regulator activity',
         'signaling receptor activity',
         'negative regulation of signaling receptor activity',
         'positive regulation of signaling receptor activity',
         'signaling receptor activator activity',
-        'receptor inhibitor activity',
+        'signaling receptor inhibitor activity',
         'regulation of signaling receptor activity',
         'receptor complex',
         (
@@ -1821,6 +1819,14 @@ annot_combined_classes = (
                 'Cytokine-cytokine receptor interaction',
                 'Secreted protein to receptor interaction',
             },
+        },
+    ),
+    af.AnnotDef(
+        name = 'receptor',
+        scope = 'generic',
+        resource = 'scConnect',
+        args = {
+            'role': 'receptor',
         },
     ),
     af.AnnotDef(
@@ -4133,6 +4139,14 @@ annot_combined_classes = (
                 'Cytokine-cytokine receptor interaction',
                 'Secreted protein to receptor interaction',
             },
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand',
+        scope = 'generic',
+        resource = 'scConnect',
+        args = {
+            'role': 'ligand',
         },
     ),
     af.AnnotDef(

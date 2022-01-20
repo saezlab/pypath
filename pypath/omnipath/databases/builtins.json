@@ -30,7 +30,10 @@
     "tf_target": {
         "dbclass": "network",
         "def": {
-            "init": "transcription"
+            "init": "transcription",
+            "args": {
+                "dorothea_levels": ["A", "B", "C", "D"]
+            }
         }
     },
     "mirna_mrna": {
@@ -44,6 +47,10 @@
     "tf_mirna": {
         "dbclass": "network",
         "resources": "tf_mirna"
+    },
+    "small_molecule": {
+        "dbclass": "network",
+        "resources": "small_molecule_protein"
     },
     "enz_sub": {
         "dbclass": "enz_sub"

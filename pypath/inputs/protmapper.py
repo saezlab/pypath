@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -26,6 +28,7 @@ import collections
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.share.common as common
+import pypath.share.settings as settings
 
 
 def get_protmapper():
@@ -39,7 +42,14 @@ def get_protmapper():
 
     url = urls.urls['protmapper']['url']
     files = urls.urls['protmapper']['files']
-    c = curl.Curl(url, large = True, silent = False, files_needed = files)
+    c = curl.Curl(
+        url,
+        large = True,
+        silent = False,
+        files_needed = files,
+        req_headers = [settings.get('user_agent')],
+        alpn = False,
+    )
 
     evidences = collections.defaultdict(list)
 

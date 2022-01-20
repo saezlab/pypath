@@ -5,11 +5,13 @@
 #  This file is part of the `pypath` python module
 #  Exports tables for webservice.
 #
-#  Copyright (c) 2014-2021 - EMBL
+#  Copyright (c) 2014-2022 - EMBL
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -47,12 +49,22 @@ simple_types = {bool, int, float, type(None)}
 
 class Export(session.Logger):
 
-    default_header_uniquepairs = ['UniProt_A', 'GeneSymbol_A', 'UniProt_B',
-                                  'GeneSymbol_B', 'Databases', 'PubMed_IDs',
-                                  'Undirected', 'Direction_A-B',
-                                  'Direction_B-A', 'Stimulatory_A-B',
-                                  'Inhibitory_A-B', 'Stimulatory_B-A',
-                                  'Inhibitory_B-A', 'Category']
+    default_header_uniquepairs = [
+        'UniProt_A',
+        'GeneSymbol_A',
+        'UniProt_B',
+        'GeneSymbol_B',
+        'Databases',
+        'PubMed_IDs',
+        'Undirected',
+        'Direction_A-B',
+        'Direction_B-A',
+        'Stimulatory_A-B',
+        'Inhibitory_A-B',
+        'Stimulatory_B-A',
+        'Inhibitory_B-A',
+        'Category',
+    ]
 
     default_dtypes_uniquepairs = {
         'UniProt_A': 'category',
@@ -69,14 +81,20 @@ class Export(session.Logger):
         'Category': 'category',
     }
 
-    default_header_bydirs = ['source', 'target', 'source_genesymbol',
-                             'target_genesymbol', 'is_directed',
-                             'is_stimulation', 'is_inhibition',
-                             'consensus_direction',
-                             'consensus_stimulation',
-                             'consensus_inhibition',
-                             'sources',
-                             'references', 'dip_url']
+    default_header_bydirs = [
+        'source',
+        'target',
+        'source_genesymbol',
+        'target_genesymbol',
+        'is_directed',
+        'is_stimulation',
+        'is_inhibition',
+        'consensus_direction',
+        'consensus_stimulation',
+        'consensus_inhibition',
+        'sources',
+        'references',
+    ]
 
     default_dtypes_bydirs = {
         'source': 'category',
@@ -92,6 +110,7 @@ class Export(session.Logger):
         'sources': 'category',
         'references': 'category',
         'curation_effort': 'int16',
+        'extra_attrs': 'category',
         'entity_type_source': 'category',
         'entity_type_target': 'category',
     }
@@ -173,7 +192,7 @@ class Export(session.Logger):
             the direction while sign covered in further columns.
         :param dict extra_node_attrs:
             Additional node attributes to be included in the exported table.
-            Keys are column ames used in the header while values are names
+            Keys are column names used in the header while values are names
             of vertex attributes. Values also might be methods which then
             will be called then on each vertex. These should return strings
             or their result will be converted to string.
@@ -182,7 +201,7 @@ class Export(session.Logger):
             interaction partners.
         :param dict extra_edge_attrs:
             Additional edge attributes to be included in the exported table.
-            Keys are column ames used in the header while values are names
+            Keys are column names used in the header while values are names
             of edge attributes or callables accepting an edge as single
             argument.
         :param str outfile:
@@ -220,23 +239,26 @@ class Export(session.Logger):
 
         if unique_pairs:
 
-            self._log(
+            msg = (
                 'Data frame with unique pairs from `core.network.Network` '
                 'is not implemented yet, only possible to create it from '
-                '`legacy.main.PyPath` object.')
+                '`legacy.main.PyPath` object.'
+            )
 
-            raise NotImplementedError
+            self._log(msg)
+            raise NotImplementedError(msg)
 
         self.extra_node_attrs = extra_node_attrs or self.extra_node_attrs
         self.extra_edge_attrs = extra_edge_attrs or self.extra_edge_attrs
+
+        header = self.get_header(unique_pairs = unique_pairs)
 
         dtypes = (
             self.default_dtypes_uniquepairs
                 if unique_pairs else
             self.default_dtypes_bydirs
         )
-
-        header = self.get_header(unique_pairs = unique_pairs)
+        dtypes = dict(i for i in dtypes.items() if i[0] in header)
 
         result = []
 
@@ -334,7 +356,6 @@ class Export(session.Logger):
                 ),
                 resources,
                 references,
-                self._dip_urls(ia),
             ]
 
             this_row = self.add_extra_fields(ia, this_row, nodes)
@@ -574,8 +595,6 @@ class Export(session.Logger):
                     )
                 ])
 
-                this_edge.append(self._dip_urls(e))
-
                 this_edge = self.add_extra_fields(e, this_edge, uniprots)
 
                 lines.append(this_edge)
@@ -595,7 +614,7 @@ class Export(session.Logger):
                 0,
                 ';'.join(sorted(e['sources'])),
                 ';'.join([r.pmid for r in e['references']]),
-                self._dip_urls(e)
+                self._dip_urls(e),
             ]
 
             this_edge = (
@@ -631,7 +650,7 @@ class Export(session.Logger):
 
             line.append(
                 self.generic_attr_processor(v, e, dr)
-                if hasattr(v, '__call__') else
+                    if hasattr(v, '__call__') else
                 self.default_edge_attr_processor(
                     e[v]
                         if (
@@ -733,9 +752,15 @@ class Export(session.Logger):
 
             return proc(obj, dr)
 
-        except TypeError:
+        except TypeError as e:
 
-            return proc(obj)
+            try:
+
+                return proc(obj)
+
+            except TypeError:
+
+                raise e
 
 
     def write_tab(self, outfile = None, **kwargs):
@@ -762,30 +787,6 @@ class Export(session.Logger):
         )
 
         self.df.to_csv(outfile, sep = '\t', index = False)
-
-    def _dip_urls(self, e):
-
-        attrs = e.attrs if hasattr(e, 'attrs') else e.attributes
-
-        result = []
-
-        if 'dip_id' in attrs:
-
-            dip_ids = sorted(common.to_set(attrs['dip_id']))
-
-            for dip_id in dip_ids:
-
-                try:
-                    result.append(
-                        urls.urls['dip']['ik'] % (
-                            int(dip_id.split('-')[1][:-1])
-                        )
-                    )
-                except:
-
-                    self._log('Could not find DIP ID: %s' % dip_id)
-
-        return ';'.join(result)
 
 
     def webservice_interactions_df(self):
@@ -889,11 +890,25 @@ class Export(session.Logger):
                     'mirna_transcriptional' in
                     e.get_interaction_types(direction = d)
                 ),
-                'dorothea_curated': 'dorothea_curated',
-                'dorothea_chipseq': 'dorothea_chipseq',
-                'dorothea_tfbs':    'dorothea_tfbs',
-                'dorothea_coexp':   'dorothea_coexp',
-                'dorothea_level':   'dorothea_level',
+                'small_molecule': lambda e, d: (
+                    'small_molecule_protein' in
+                    e.get_interaction_types(direction = d)
+                ),
+                'dorothea_curated': lambda e, d: (
+                    e._get_attr('DoRothEA', 'curated', d)
+                ),
+                'dorothea_chipseq': lambda e, d: (
+                    e._get_attr('DoRothEA', 'chipseq', d)
+                ),
+                'dorothea_tfbs': lambda e, d: (
+                    e._get_attr('DoRothEA', 'tfbs', d)
+                ),
+                'dorothea_coexp': lambda e, d: (
+                    e._get_attr('DoRothEA', 'coexp', d)
+                ),
+                'dorothea_level': lambda e, d: (
+                    ';'.join(e.dorothea_levels(d))
+                ),
                 'type': lambda e, d: (
                     list(e.get_interaction_types(direction = d))[0]
                 ),
@@ -904,6 +919,7 @@ class Export(session.Logger):
                         0
                     )
                 ),
+                'extra_attrs': lambda e, d: e.serialize_attrs(d),
             }
         )
 
@@ -1047,3 +1063,28 @@ class Export(session.Logger):
             )
 
         return new
+
+
+    def _dip_urls(self, e):
+
+        attrs = e.attrs if hasattr(e, 'attrs') else e.attributes
+
+        result = []
+
+        if 'dip_id' in attrs:
+
+            dip_ids = sorted(common.to_set(attrs['dip_id']))
+
+            for dip_id in dip_ids:
+
+                try:
+                    result.append(
+                        urls.urls['dip']['ik'] % (
+                            int(dip_id.split('-')[1][:-1])
+                        )
+                    )
+                except:
+
+                    self._log('Could not find DIP ID: %s' % dip_id)
+
+        return ';'.join(result)

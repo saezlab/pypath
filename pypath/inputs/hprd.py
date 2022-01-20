@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -30,7 +32,7 @@ def get_hprd(in_vivo = True):
     Downloads and preprocesses HPRD data.
     """
 
-    url = urls.urls['hprd_all']['url']
+    url = urls.urls['hprd_all']['url_rescued']
     files = [urls.urls['hprd_all']['ptm_file']]
     c = curl.Curl(url, silent = False, files_needed = files)
     data = c.result
@@ -56,7 +58,7 @@ def hprd_interactions(in_vivo = True):
 
 def hprd_interactions_htp():
 
-    url = urls.urls['hprd_all']['url']
+    url = urls.urls['hprd_all']['url_rescued']
     fname = urls.urls['hprd_all']['int_file']
     c = curl.Curl(url, silent = False, large = True, files_needed = [fname])
 

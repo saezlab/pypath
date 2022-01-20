@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -50,6 +52,7 @@ class UniprotProtein(object):
     _redbsep = re.compile(r'\s?;\s?')
     _retaxid = re.compile(r'=(\d+)[^\d]')
     _rexref = re.compile(r'[\.,]?\s?\{[^\}]+\}')
+    _reec = re.compile(r'EC=(\d+(?:\.[-\d]+)+)')
 
     def __init__(self, uniprot_id):
 
@@ -108,6 +111,12 @@ class UniprotProtein(object):
     def full_name(self):
 
         return self._rerecname.search(next(self.itertag('DE'))).groups()[0]
+
+
+    @property
+    def ec(self):
+
+        return set(self._reec.findall(''.join(self.itertag('DE'))))
 
 
     @property

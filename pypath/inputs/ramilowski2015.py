@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -33,7 +35,7 @@ def ramilowski_interactions(putative = False):
     """
     Downloads and processes ligand-receptor interactions from
     Supplementary Table 2 of Ramilowski 2015.
-    
+
     Returns list of lists with ligand and receptor gene symbols, reference
     and resources as elements.
     """
@@ -43,13 +45,25 @@ def ramilowski_interactions(putative = False):
     del(c)
     raw = inputs_common.read_xls(xlsname, 'All.Pairs')[1:]
 
+    Ramilowski2015Interaction = collections.namedtuple(
+        'Ramilowski2015Interaction',
+        (
+            'ligand',
+            'receptor',
+            'references',
+            'resources',
+        ),
+    )
+
     return [
-        [
-            r[1],
-            r[3],
-            r[13].replace(' ', ''), # references
-            ';'.join(filter(len, itertools.chain(r[5:11], [r[15]])))
-        ]
+        Ramilowski2015Interaction(
+            ligand = r[1],
+            receptor = r[3],
+            references = r[13].replace(' ', ''), # references
+            resources = ';'.join(
+                filter(len, itertools.chain(r[5:11], [r[15]]))
+            ),
+        )
         for r in raw
         if not r[15].startswith('EXCLUDED') and (
             putative or r[15] != 'putative'
@@ -156,4 +170,4 @@ def ramilowski_locations(long_notes = False):
                         )
                     )
 
-    return result
+    return dict(result)

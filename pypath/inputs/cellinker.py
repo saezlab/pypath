@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -93,7 +95,7 @@ def cellinker_complexes_raw(organism = 9606):
         _log(msg)
         raise ValueError(msg)
 
-    url = urls.urls['cellinker']['complex'] % organism_common
+    url = urls.urls['cellinker_rescued']['complex'] % organism_common
     c = curl.Curl(url, large = True, silent = False)
 
     result = []
@@ -280,7 +282,7 @@ def _cellinker_interactions_raw(dataset = 'lr', organism = 9606):
 
     if org_name_type == 'common': _organism = _organism.lower()
 
-    url = urls.urls['cellinker'][dataset] % _organism
+    url = urls.urls['cellinker_rescued'][dataset] % _organism
     c = curl.Curl(url, large = True, silent = False)
 
     result = list(csv.DictReader(c.result, delimiter = '\t'))

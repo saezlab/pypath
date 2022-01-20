@@ -7,12 +7,14 @@
 #  Also provides meta-annotations for the databases.
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -41,6 +43,7 @@ import pypath.inputs.lrdb as lrdb
 import pypath.inputs.uniprot as uniprot_input
 import pypath.share.common as common
 import pypath.share.settings as settings
+import pypath.share.constants as constants
 import pypath.utils.mapping as mapping
 import pypath.utils.reflists as reflists
 import pypath.utils.uniprot as utils_uniprot
@@ -120,8 +123,12 @@ protein_sources_default = {
     'Talklr',
     'Humancellmap',
     'Cellcall',
-    'Biogps',
+    #'Biogps',
     'Cellinker',
+    'Scconnect',
+    'Cancerdrugsdb',
+    'Progeny',
+    'Celltypist',
 }
 
 #TODO this should be part of json files
@@ -129,10 +136,10 @@ complex_sources_default = {
     'CellPhoneDBComplex',
     'CorumFuncat',
     'CorumGO',
-    'HpmrComplex',
     'IcellnetComplex',
     'CellchatdbComplex',
     'CellinkerComplex',
+    'ScconnectComplex',
 }
 
 #TODO this should be part of json files
@@ -530,10 +537,11 @@ class CustomAnnotation(session_mod.Logger):
                 # Automatically include direct complex annotations
                 cplex_resource = '%s_complex' % classdef.resource
 
-                if cplex_resource in self.annotdb.annot:
+                if cplex_resource in self.annotdb.annots:
 
-                    cplex_classdef = copy.copy(classdef)
-                    cplex_classdef.resource = cplex_resource
+                    classdef_args = classdef._asdict()
+                    classdef_args['resource'] = cplex_resource
+                    cplex_classdef = annot_formats.AnnotDef(**classdef_args)
 
                     members.update(
                         self.process_annot(cplex_classdef)
@@ -2655,6 +2663,10 @@ class AnnotationBase(resource.AbstractResource):
 
     def _ensure_swissprot(self):
 
+        if self.ncbi_tax_id == constants.NOT_ORGANISM_SPECIFIC:
+
+            return
+
         new = collections.defaultdict(set)
 
         for uniprot, annots in iteritems(self.annot):
@@ -2898,7 +2910,13 @@ class AnnotationBase(resource.AbstractResource):
 
         if not self.reference_set:
 
-            proteins, complexes, reference_set = self._get_reference_set()
+            if self.ncbi_tax_id == constants.NOT_ORGANISM_SPECIFIC:
+
+                proteins, complexes, reference_set = (set(),) * 3
+
+            else:
+
+                proteins, complexes, reference_set = self._get_reference_set()
 
             self.proteins = proteins
             self.complexes = complexes
@@ -3356,6 +3374,8 @@ class AnnotationBase(resource.AbstractResource):
 
                 continue
 
+            entity_type = self.get_entity_type(element)
+
             genesymbol_str = (
                 'COMPLEX:%s' % element.genesymbol_str
                     if hasattr(element, 'genesymbol_str') else
@@ -3364,7 +3384,11 @@ class AnnotationBase(resource.AbstractResource):
                 )
                     if element.startswith('COMPLEX:') else
                 (
-                    mapping.map_name0(element, 'uniprot', 'genesymbol') or
+                    mapping.label(
+                        element,
+                        entity_type = entity_type,
+                        ncbi_tax_id = self.ncbi_tax_id,
+                    ) or
                     ''
                 )
             )
@@ -3374,7 +3398,7 @@ class AnnotationBase(resource.AbstractResource):
                 records.append([
                     element.__str__(),
                     genesymbol_str,
-                    self.get_entity_type(element),
+                    entity_type,
                     self.name,
                     'in %s' % self.name,
                     'yes',
@@ -3398,7 +3422,7 @@ class AnnotationBase(resource.AbstractResource):
                     records.append([
                         element.__str__(),
                         genesymbol_str,
-                        self.get_entity_type(element),
+                        entity_type,
                         self.name,
                         label,
                         str(value),
@@ -5064,6 +5088,35 @@ class Cellinker(AnnotationBase):
         delattr(self, 'data')
 
 
+class Scconnect(AnnotationBase):
+
+    _eq_fields = ('role',)
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+
+        kwargs['organism'] = ncbi_tax_id
+
+        AnnotationBase.__init__(
+            self,
+            name = 'scConnect',
+            input_method = 'scconnect.scconnect_annotations',
+            ncbi_tax_id = ncbi_tax_id,
+            complexes = False,
+        )
+
+
+    def _process_method(self, *args, **kwargs):
+
+        self.annot = dict(
+            (k, v)
+            for k, v in iteritems(self.data)
+            if not entity.Entity._is_complex(k)
+        )
+
+        delattr(self, 'data')
+
+
 class Biogps(AnnotationBase):
 
     _eq_fields = ('dataset', 'sample', 'probe')
@@ -5081,7 +5134,7 @@ class Biogps(AnnotationBase):
                 'organism': ncbi_tax_id,
             },
             ncbi_tax_id = ncbi_tax_id,
-            complexes = False,
+            complexes = (),
             infer_complexes = False,
         )
 
@@ -5293,6 +5346,35 @@ class CellinkerComplex(AnnotationBase):
         delattr(self, 'data')
 
 
+class ScconnectComplex(AnnotationBase):
+
+    _eq_fields = ('role',)
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+
+        kwargs['organism'] = ncbi_tax_id
+
+        AnnotationBase.__init__(
+            self,
+            name = 'scConnect_complex',
+            input_method = 'scconnect.scconnect_annotations',
+            ncbi_tax_id = ncbi_tax_id,
+            entity_type = 'complex',
+        )
+
+
+    def _process_method(self, *args, **kwargs):
+
+        self.annot = dict(
+            (k, v)
+            for k, v in iteritems(self.data)
+            if entity.Entity._is_complex(k)
+        )
+
+        delattr(self, 'data')
+
+
 class HpmrComplex(AnnotationBase):
 
 
@@ -5303,7 +5385,7 @@ class HpmrComplex(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'HPMR_complex',
-            input_method = 'hpmr_complexes',
+            input_method = 'hpmr.hpmr_complexes',
             ncbi_tax_id = 9606,
             entity_type = 'complex',
             **kwargs
@@ -5329,7 +5411,7 @@ class Corum(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = name,
-            input_method = 'corum_complexes',
+            input_method = 'corum.corum_complexes',
             entity_type = 'complex',
             **kwargs
         )
@@ -5811,6 +5893,97 @@ class Gpcrdb(AnnotationBase):
             name = 'GPCRdb',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'gpcrdb.gpcrdb_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class Progeny(AnnotationBase):
+
+    _eq_fields = ('pathway',)
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Pathway responsive genes: signatures based on transcriptomics data
+        from PROGENy (https://github.com/saezlab/progeny).
+        """
+
+        if 'organism' not in kwargs:
+
+            kwargs['organism'] = ncbi_tax_id
+
+        AnnotationBase.__init__(
+            self,
+            name = 'PROGENy',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'progeny.progeny_annotations',
+            infer_complexes = False,
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class Celltypist(AnnotationBase):
+
+    _eq_fields = ('cell_type', 'cell_subtype')
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Pathway responsive genes: signatures based on transcriptomics data
+        from PROGENy (https://github.com/saezlab/progeny).
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'CellTypist',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'celltypist.celltypist_annotations',
+            infer_complexes = False,
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class Cancerdrugsdb(AnnotationBase):
+
+
+    def __init__(self, **kwargs):
+        """
+        Approved cancer drugs from the Cancer Drugs Database
+        (https://www.anticancerfund.org/en/cancerdrugs-db).
+        """
+
+        kwargs.pop('ncbi_tax_id', None)
+
+        AnnotationBase.__init__(
+            self,
+            name = 'CancerDrugsDB',
+            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+            input_method = 'cancerdrugsdb.cancerdrugsdb_annotations',
+            entity_type = 'small_molecule',
             **kwargs
         )
 

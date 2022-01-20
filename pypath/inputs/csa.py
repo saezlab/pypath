@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -19,8 +21,18 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+try:
+    from cStringIO import StringIO
+except ModuleNotFoundError:
+    from io import StringIO
+
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+import pypath.share.progress as progress
+import pypath.inputs.pdb as pdb_input
+import pypath.inputs.common as inputs_common
+import pypath.utils.pdb as pdb_utils
+import pypath.internals.intera as intera
 
 
 def get_csa(uniprots = None):
@@ -35,9 +47,10 @@ def get_csa(uniprots = None):
     data = c.result
 
     if data is None:
+
         return None
 
-    u_pdb, pdb_u = get_pdb_chains()
+    u_pdb, pdb_u = pdb_input.pdb_chains()
     buff = StringIO()
     buff.write(data)
     cols = {
@@ -59,19 +72,28 @@ def get_csa(uniprots = None):
     prg = progress.Progress(len(table), 'Processing catalytic sites', 11)
 
     for l in table:
+
         if l['pdb'] in pdb_u:
+
             if l['chain'] in pdb_u[l['pdb']]:
+
                 uniprot = pdb_u[l['pdb']][l['chain']]['uniprot']
 
                 if uniprots is None or uniprot in uniprots:
+
                     offset = pdb_u[l['pdb']][l['chain']]['offset']
 
                     if offset is not None:
+
                         l['resnum'] = int(l['resnum']) + offset
 
                     else:
-                        this_res = residue_pdb(l['pdb'], l['chain'],
-                                               l['resnum'])
+
+                        this_res = pdb_utils.residue_pdb(
+                            l['pdb'],
+                            l['chain'],
+                            l['resnum'],
+                        )
 
                         if len(this_res) > 0:
                             l['resnum'] = int(this_res['UPCOUNT'])
@@ -80,17 +102,26 @@ def get_csa(uniprots = None):
                             l['resnum'] = None
 
                     if l['resnum'] is not None:
+
                         if uniprot not in css:
+
                             css[uniprot] = {}
 
                         if l['pdb'] not in css[uniprot]:
+
                             css[uniprot][l['pdb']] = {}
 
                         if l['id'] not in css[uniprot][l['pdb']]:
+
                             css[uniprot][l['pdb']][l['id']] = []
 
                         css[uniprot][l['pdb']][l['id']].append(
-                            intera.Residue(l['resname'], l['resnum'], uniprot))
+                            intera.Residue(
+                                name = l['resname'],
+                                number = l['resnum'],
+                                protein = uniprot,
+                            )
+                        )
 
         prg.step()
 

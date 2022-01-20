@@ -6,12 +6,14 @@
 #  Helps to translate from the mouse data to human data
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -311,7 +313,9 @@ class SequenceContainer(session.Logger):
         organisms and select the appropriate one.
         """
 
-        session.Logger.__init__(self, name = 'homology')
+        if not hasattr(self, '_logger'):
+
+            session.Logger.__init__(self, name = 'homology')
 
         self.seq_isoforms = isoforms
 
@@ -454,6 +458,7 @@ class ProteinHomology(Proteomes):
         self.only_swissprot = only_swissprot
         self.target = taxonomy.ensure_ncbi_tax_id(target)
         self.source = source
+        self._default_source = 9606
         self.set_default_source(source)
         for param in ('homologene', 'ensembl', 'ensembl_hc', 'ensembl_types'):
 
@@ -499,6 +504,13 @@ class ProteinHomology(Proteomes):
             self.load_ensembl(source)
 
 
+    def ensure_source_taxon(self, source):
+
+        if source not in self.orthologs:
+
+            self.load(source = source)
+
+
     def set_default_source(self, source = None):
 
         self.source = self.get_source(source)
@@ -506,7 +518,7 @@ class ProteinHomology(Proteomes):
 
     def get_source(self, source = None):
 
-        source = source or self.source
+        source = source or self.source or self._default_source
         _source = taxonomy.ensure_ncbi_tax_id(source)
 
         if _source is None:
@@ -551,7 +563,21 @@ class ProteinHomology(Proteomes):
             Set of UniProt IDs of homologous proteins in the target taxon.
         """
 
+        protein = (
+            (protein,)
+                if hasattr(protein, 'components') else
+            common.to_list(protein)
+        )
+
         source = self.get_source(source)
+
+        if source is None:
+
+            msg = (
+                'Can not translate without knowing the organism of the input.'
+            )
+            _log(msg)
+            raise ValueError(msg)
 
         homologene = self.homologene if homologene is None else homologene
         ensembl = self.ensembl if ensembl is None else ensembl
@@ -570,8 +596,9 @@ class ProteinHomology(Proteomes):
             if self.get_taxon(p) == self.target
         }
 
-        for p in protein:
+        self.ensure_source_taxon(source)
 
+        for p in protein:
 
             result.update(
                 {
@@ -749,6 +776,10 @@ class PtmHomology(ProteinHomology, SequenceContainer):
         only_swissprot = True,
         strict = True
     ):
+
+        if not hasattr(self, '_logger'):
+
+            session.Logger.__init__(self, name = 'homology')
 
         ProteinHomology.__init__(
             self,

@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -32,16 +34,16 @@ import pypath.utils.reflists as reflists
 
 
 def tcdb_families():
-    
+
     retag = re.compile(r'<.*>')
     rethe = re.compile(r'^[tT]he (.*) (?:Super)?[Ff]amily')
-    
+
     url = urls.urls['tcdb']['url_families']
-    
+
     c = curl.Curl(url, large = False, silent = False)
-    
+
     lines = bs4.BeautifulSoup(c.result, features = 'lxml').find('p').text
-    
+
     return dict(
         (
             tcid,
@@ -56,33 +58,33 @@ def tcdb_families():
 
 
 def tcdb_classes():
-    
+
     refam = re.compile(r'(\d\.[A-Z]\.\d+)')
     retab = re.compile(r'\t+')
-    
+
     url = urls.urls['tcdb']['url_acc2tc']
-    
+
     c = curl.Curl(url, large = True, silent = False)
-    
+
     result = {}
-    
+
     for line in c.result:
-        
+
         if not line:
-            
+
             continue
-        
+
         ac, tc = retab.split(line.rstrip())
         family = refam.search(tc).groups()[0]
-        
+
         result[ac] = (tc, family)
-    
+
     return result
 
 
 def tcdb_annotations(organism = 9606):
-    
-    
+
+
     TcdbAnnotation = collections.namedtuple(
         'TcdbAnnotation',
         [
@@ -90,30 +92,30 @@ def tcdb_annotations(organism = 9606):
             'tcid',
         ]
     )
-    
-    
+
+
     families = tcdb_families()
     classes = tcdb_classes()
     result = collections.defaultdict(set)
-    
+
     for ac, (tc, family) in iteritems(classes):
-        
+
         uniprots = mapping.map_name(
             ac,
             'uniprot',
             'uniprot',
             ncbi_tax_id = organism,
         )
-        
+
         for uniprot in uniprots:
-            
+
             if reflists.check(uniprot, 'uniprot', ncbi_tax_id = organism):
-                
+
                 result[uniprot].add(
                     TcdbAnnotation(
                         family = families[family],
                         tcid = tc,
                     )
                 )
-    
-    return result
+
+    return dict(result)

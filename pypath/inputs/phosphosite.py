@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -19,8 +21,10 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from past.builtins import xrange, range
+from future.utils import iteritems
+
 import os
-import sys
 import pickle
 import re
 import itertools
@@ -34,9 +38,12 @@ import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.inputs.uniprot as uniprot_input
 import pypath.inputs.common as inputs_common
-import pypath.utils.homology as homology
+import pypath.inputs.homologene as homologene
 import pypath.utils.mapping as mapping
 import pypath.share.common as common
+import pypath.share.session as session
+
+_logger = session.Logger(name = 'phosphosite_input')
 
 
 def phosphosite_enzyme_substrate(
@@ -92,7 +99,7 @@ def phosphosite_enzyme_substrate(
 
                     if korg not in orto:
 
-                        orto[korg] = homology.homologene_dict(
+                        orto[korg] = homologene.homologene_dict(
                             ktaxid,
                             taxid,
                             'refseqp',
@@ -222,7 +229,7 @@ def phosphosite_ptm_orthology():
 
         for r in data:
 
-            r = r.decode('utf-8').split('\t')
+            r = common.decode(r, 'utf-8').split('\t')
 
             if len(r) < 10:
 
@@ -268,8 +275,11 @@ def phosphosite_ptm_orthology():
                     result[site1][site2[4]].add(site2)
 
     if len(unknown_taxa):
-        sys.stdout.write('\t:: Unknown taxa encountered:\n\t   %s\n' %
-                         ', '.join(sorted(unknown_taxa)))
+
+        _logger._log(
+            'Unknown organisms encountered: %s' %
+            ', '.join(sorted(unknown_taxa))
+        )
 
     return result
 
@@ -288,7 +298,8 @@ def phosphosite_ptms(organism = 'human'):
     data = c.result
 
     for _ in xrange(4):
-        null = c.result.readline()
+
+        _ = next(c.result)
 
     for r in data:
 
@@ -300,29 +311,48 @@ def phosphosite_ptms(organism = 'human'):
             isoform = 1 if '-' not in uniprot else int(uniprot.split('-')[1])
             uniprot = uniprot.split('-')[0]
             typ = r[3].lower()
+
             if len(typ) == 0:
+
                 typ = r[4].split('-')[1] if '-' in r[4] else None
+
             aa = r[4][0]
             num = int(nondigit.sub('', r[4]))
             motif = remot.match(r[9])
+
             if motif:
+
                 start = num - 7 + len(motif.groups()[0])
                 end = num + 7 - len(motif.groups()[2])
                 instance = r[9].replace('_', '').upper()
+
             else:
+
                 start = None
                 end = None
                 instance = None
 
-            res = intera.Residue(num, aa, uniprot, isoform = isoform)
+            res = intera.Residue(
+                num,
+                aa,
+                uniprot,
+                isoform = isoform,
+            )
             mot = intera.Motif(
-                uniprot, start, end, instance = instance, isoform = isoform)
-            ptm = intera.Ptm(uniprot,
-                             typ = typ,
-                             motif = mot,
-                             residue = res,
-                             source = 'PhosphoSite',
-                             isoform = isoform)
+                uniprot,
+                start,
+                end,
+                instance = instance,
+                isoform = isoform,
+            )
+            ptm = intera.Ptm(
+                uniprot,
+                typ = typ,
+                motif = mot,
+                residue = res,
+                evidences = 'PhosphoSite',
+                isoform = isoform,
+            )
             result.append(ptm)
 
     return result
@@ -487,7 +517,7 @@ def phosphosite_regsites_one_organism(organism = 9606):
                 lambda other:
                     (
                         other,
-                        homology.homologene_uniprot_dict(
+                        homologene.homologene_uniprot_dict(
                             source = other,
                             target = organism,
                         )
@@ -497,9 +527,12 @@ def phosphosite_regsites_one_organism(organism = 9606):
         )
     )
 
-    ptm_homology = ptm_orthology()
+    ptm_homology = phosphosite_ptm_orthology()
 
-    proteome = uniprot_input.all_uniprots(organism = organism, swissprot = 'YES')
+    proteome = uniprot_input.all_uniprots(
+        organism = organism,
+        swissprot = 'YES',
+    )
 
     for substrate, regs in iteritems(regsites):
 
@@ -522,6 +555,14 @@ def phosphosite_regsites_one_organism(organism = 9606):
                 reg_organism = taxonomy.taxa[reg['organism']]
 
                 if reg_organism not in organisms:
+                    continue
+
+                if reg['modt'] not in mod_types:
+
+                    _logger._log(
+                        'Unknown PhosphoSite modification '
+                        'type code: %s' % reg['modt']
+                    )
                     continue
 
                 mod_type = mod_types[reg['modt']]
@@ -837,11 +878,11 @@ def phosphosite_interactions_new(cache = True):
         os.path.exists(noref_cache)
     ):
 
-        with pen(curated_cache, 'rb') as fp:
+        with open(curated_cache, 'rb') as fp:
 
             data_curated = pickle.load(fp)
 
-        with pen(noref_cache, 'rb') as fp:
+        with open(noref_cache, 'rb') as fp:
 
             data_noref = pickle.load(fp)
 

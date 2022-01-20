@@ -69,12 +69,15 @@ def read_requirements():
 setup(
     name = 'pypath-omnipath',
     version = __version__,
-    maintainer = 'Dénes Türei, Nicolàs Palacio, Olga Ivanova',
+    maintainer = 'Dénes Türei, Sebastian Lobentanzer, Ahmet Rifaioglu',
     maintainer_email = 'turei.denes@gmail.com',
-    author = 'Dénes Türei, Nicolàs Palacio, Olga Ivanova',
+    author = (
+        'Dénes Türei, Nicolàs Palacio, Olga Ivanova, '
+        'Sebastian Lobentanzer, Ahmet Rifaioglu'
+    ),
     author_email = 'turei.denes@gmail.com',
     long_description = readme + '\n' + history,
-    description_content_type = 'text/x-rst; charset=UTF-8',
+    long_description_content_type = 'text/x-rst; charset=UTF-8',
     keywords = sorted({
         'protein', 'mRNA', 'miRNA', 'DNA', 'signaling',
         'SignaLink', 'SIGNOR', 'InnateDB', 'IntAct', 'Reactome',
@@ -96,9 +99,14 @@ setup(
         'gene', 'gene symbol', 'mouse', 'rat', 'HomoloGene',
         'integrin', 'adhesion', 'receptor', 'ligand', 'transporter',
         'ion channel', 'disease', 'activity flow', 'transcription', 'PPI',
-        'subcellular localization', 'pathway', 'signaling pathway'
+        'subcellular localization', 'pathway', 'signaling pathway',
+        'cell-cell communication', 'scRNA-Seq', 'Boolean modeling',
+        'causal reasoning', 'systems biomedicine', 'molecular biology',
+        'prior knowledge', 'literature knowledge', 'systems biology',
+        'SBGN', 'Cellinker', 'scConnect', 'CellChatDB', 'CellTalkDB',
+        'talklr',
     }),
-    #description = 'Molecular signaling prior knowledge in Python',
+    description = 'Molecular signaling prior knowledge in Python',
     license = 'GPLv3',
     platforms = ['Linux', 'Unix', 'MacOSX', 'Windows'],
     url = 'https://omnipathdb.org/',

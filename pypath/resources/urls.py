@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -188,49 +190,72 @@ urls = {
     },
     'psite_reg': {
         'label': 'PhosphoSite annotated regulatory sites',
-        'url': 'http://www.phosphosite.org/downloads/Regulatory_sites.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/Regulatory_sites.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Regulatory_sites.gz',
     },
     'psite_bp': {
         'label': 'PhosphoSite kinase substrates in BioPAX format',
-        'url': 'http://www.phosphosite.org/downloads/Kinase_substrates.owl.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Kinase_substrates.owl.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Kinase_substrates.owl.gz',
     },
     'psite_ac': {
         'label': 'PhosphoSite acetylation sites',
-        'url':
-        'http://www.phosphosite.org/downloads/Acetylation_site_dataset.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Acetylation_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Acetylation_site_dataset.gz',
     },
     'psite_kin': {
         'label': 'PhosphoSite kinase-substrate interactions',
-        'url':
-        'http://www.phosphosite.org/downloads/Kinase_Substrate_Dataset.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Kinase_Substrate_Dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Kinase_Substrate_Dataset.gz',
     },
     'psite_me': {
         'label': 'PhosphoSite methylation sites',
-        'url':
-        'http://www.phosphosite.org/downloads/Methylation_site_dataset.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Methylation_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'
+            'Methylation_site_dataset.gz',
     },
     'psite_ga': {
         'label': 'PhosphoSite O-GalNAc sites',
-        'url': 'http://www.phosphosite.org/downloads/O-GalNAc_site_dataset.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'O-GalNAc_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'
+            'O-GalNAc_site_dataset.gz',
     },
     'psite_gl': {
         'label': 'PhosphoSite O-GlcNAc sites',
-        'url': 'http://www.phosphosite.org/downloads/O-GlcNAc_site_dataset.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'O-GlcNAc_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'O-GlcNAc_site_dataset.gz',
     },
     'psite_p': {
         'label': 'PhosphoSite phosphorylation sites',
-        'url':
-        'http://www.phosphosite.org/downloads/Phosphorylation_site_dataset.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Phosphorylation_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Phosphorylation_site_dataset.gz',
     },
     'psite_sm': {
         'label': 'Sumoylation sites',
-        'url':
-        'http://www.phosphosite.org/downloads/Sumoylation_site_dataset.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Sumoylation_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Sumoylation_site_dataset.gz',
     },
     'psite_ub': {
         'label': 'Ubiquitination sites',
-        'url':
-        'http://www.phosphosite.org/downloads/Ubiquitination_site_dataset.gz'
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Ubiquitination_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Ubiquitination_site_dataset.gz',
     },
     'proteomic_ielm': {
         'label': 'Proteomic iELM',
@@ -250,6 +275,8 @@ urls = {
     'hprd_all': {
         'label': 'HPRD all data in flat files',
         'url': 'http://www.hprd.org/RELEASE9/HPRD_FLAT_FILES_041310.tar.gz',
+        'url_rescued': 'https://rescued.omnipathdb.org/'
+            'HPRD_FLAT_FILES_041310.tar.gz',
         'ptm_file': 'FLAT_FILES_072010/POST_TRANSLATIONAL_MODIFICATIONS.txt',
         'int_file': 'FLAT_FILES_072010/BINARY_PROTEIN_PROTEIN_INTERACTIONS.txt'
     },
@@ -567,8 +594,11 @@ urls = {
         'pathology': 'http://www.proteinatlas.org/download/pathology.tsv.zip',
         'subcell': 'https://www.proteinatlas.org/download/'\
             'subcellular_location.tsv.zip',
-        'secretome': 'https://stke.sciencemag.org/highwire/filestream/'\
+        'secretome_old': 'https://stke.sciencemag.org/highwire/filestream/'\
             '216463/field_highwire_adjunct_files/1/aaz0274_Data_file_S2.xlsx',
+        'secretome': 'https://www.science.org/action/downloadSupplement?'\
+            'doi=10.1126%2Fscisignal.aaz0274&'\
+            'file=aaz0274_data_file_s2.xlsx',
         'ig_genes': 'https://stke.sciencemag.org/highwire/filestream/'\
             '216463/field_highwire_adjunct_files/0/aaz0274_Data_file_S1.xlsx',
 
@@ -622,6 +652,20 @@ urls = {
     },
     'msigdb': {
         'label': 'Molecular Signatures Database',
+        'login1': 'https://www.gsea-msigdb.org/gsea/login.jsp',
+        'login2': 'https://www.gsea-msigdb.org/gsea/j_spring_security_check',
+        'url': 'https://www.gsea-msigdb.org/gsea/msigdb/'
+            'download_file.jsp?filePath=/msigdb/release/7.4/%s.v7.4.%s.gmt',
+        'coll': 'https://www.gsea-msigdb.org/gsea/msigdb/collections.jsp',
+        'url_stem': 'https://www.gsea-msigdb.org/gsea/%s',
+        'one_set': 'hhttps://www.gsea-msigdb.org/gsea/msigdb/'
+            'download_geneset.jsp?geneSetName=%s&fileType=txt',
+        'url_all': 'https://www.gsea-msigdb.org/gsea/msigdb/'\
+            'download_file.jsp?filePath=/msigdb/release/7.4/'\
+            'msigdb_v7.4_files_to_download_locally.zip',
+    },
+    'msigdb_old': {
+        'label': 'Molecular Signatures Database',
         'login1': 'http://software.broadinstitute.org/gsea/login.jsp',
         'login2':
         'http://software.broadinstitute.org/gsea/j_spring_security_check',
@@ -656,7 +700,9 @@ urls = {
     'trip': {
         'label': 'The TRP channel database',
         'base': 'http://www.trpchannel.org/',
+        'base_rescued': 'https://rescued.omnipathdb.org/trip/main.html',
         'show': 'http://www.trpchannel.org/proteins/show?id=%s',
+        'show_rescued': 'https://rescued.omnipathdb.org/trip/show-%s.html',
         'intr': 'http://www.trpchannel.org/interactions/show?trp=%s&'
         'interactor=%s',
         'url': 'http://www.trpchannel.org/20141116.csv',
@@ -686,8 +732,11 @@ urls = {
     'phosphatome': {
         'label': 'List of human and other phosphatases',
         'webpage': 'http://phosphatome.net/3.0',
-        'url': 'https://stke.sciencemag.org/highwire/filestream/210607/'\
-            'field_highwire_adjunct_files/2/aag1796_Tables_S1_to_S23.zip',
+        'url_from_page': 'https://www.science.org/doi/suppl/10.1126/'\
+            'scisignal.aag1796/suppl_file/aag1796_tables_s1_to_s23.zip',
+        'url': 'https://www.science.org/action/downloadSupplement?'
+            'doi=10.1126%2Fscisignal.aag1796&'
+            'file=aag1796_tables_s1_to_s23.zip',
     },
     'dgidb': {
         'label': 'Druggable genes compiled from multiple resources',
@@ -832,9 +881,13 @@ urls = {
     'dip': {
         'label': 'DIP PSI-MI tab',
         'login': 'http://dip.doe-mbi.ucla.edu/dip/Login.cgi',
-        'url': 'http://dip.mbi.ucla.edu/dip/file?'
-        'ds=current&fn=Hsapi20170205%s&ff=txt',
-        'ik': 'http://dip.doe-mbi.ucla.edu/dip/DIPview.cgi?IK=%u'
+        'url_old': 'http://dip.mbi.ucla.edu/dip/file?'
+            'ds=current&fn=Hsapi20170205%s&ff=txt',
+        'ik': 'http://dip.doe-mbi.ucla.edu/dip/DIPview.cgi?IK=%u',
+        'url': 'https://dip.doe-mbi.ucla.edu/dip/File.cgi?FN=2017/tab25/'
+            'Hsapi20170205.txt.gz',
+        'url_rescued': 'https://rescued.omnipathdb.org/dip/'
+            'Hsapi20170205%s.txt.gz',
     },
     'vaquerizas2009': {
         'label': 'A census of human transcription factors: function, '
@@ -898,7 +951,8 @@ urls = {
     },
     'mirbase' : {
         'label': 'miRBase: miRNA main reference database',
-        'aliases': 'ftp://mirbase.org/pub/mirbase/CURRENT/aliases.txt.gz'
+        'aliases_old': 'ftp://mirbase.org/pub/mirbase/CURRENT/aliases.txt.gz',
+        'aliases': 'https://mirbase.org/ftp/CURRENT/aliases.txt.gz',
     },
     'mir2dis': {
         'label': 'miR2Disease experimentally validated'\
@@ -919,6 +973,8 @@ urls = {
             ' literature curated regulatory interactions',
         'url': 'http://www.rna-society.org/ncrdeathdb/data/'\
             'allNcRNACelldeathData.txt',
+        'url_rescued': 'https://rescued.omnipathdb.org/'
+            'ncRDeathDB_allNcRNACelldeathData.txt',
     },
     'mirecords': {
         'label': 'miRecords experimentally validated'\
@@ -1004,7 +1060,9 @@ urls = {
     'hpmri': {
         'label': 'Human Plasma Membrane Receptome "browse" view',
         'browse': 'http://www.receptome.org/Families/FamNav/'\
-            'famnav.asp?undefined'
+            'famnav.asp?undefined',
+        'browse_rescued': 'https://rescued.omnipathdb.org/hpmr/famnav.html',
+        'genes_rescued': 'https://rescued.omnipathdb.org/hpmr/genes.tar.gz',
     },
     'cellphonedb': {
         'label': 'Intercellular communication database from Teichmann lab',
@@ -1078,6 +1136,8 @@ urls = {
         'label': 'Locate protein localization database',
         'url': 'http://locate.imb.uq.edu.au/info_files/'\
             'LOCATE_%s_v6_20081121.xml.zip',
+        'url_rescued': 'https://rescued.omnipathdb.org/'\
+            'LOCATE_%s_v6_20081121.xml.zip',
     },
     'humap': {
         'label': 'Map of human protein complexes from '\
@@ -1142,8 +1202,10 @@ urls = {
     'intogen': {
         'label': 'IntOGen is a database of cancer related '\
             'genes and mutations',
-        'drivers_url': 'https://www.intogen.org/repository/downloads/'\
-            'intogen_cancer_drivers-2014.12.zip',
+        'db2014_2': 'https://www.intogen.org/download?'\
+            'file=intogen_cancer_drivers-2014.12.zip',
+        'db2020': 'https://www.intogen.org/download?file='\
+            'IntOGen-Drivers-20200201.zip',
     },
     'cancersea': {
         'label': 'Cancer Single Cell State Atlas',
@@ -1317,7 +1379,7 @@ urls = {
             'IgSF cell surface interactome.',
         'article': 'https://www.cell.com/cell/fulltext/S0092-8674(20)30933-8',
         'url': 'https://www.cell.com/cms/10.1016/j.cell.2020.07.025/'
-            'attachment/9b456de0-24a4-4728-b071-b631fb7b96d6/mmc4.xlsx',
+            'attachment/656c4057-8b3b-4aa2-99ce-73278e21d93d/mmc4.xlsx',
     },
     'celltalkdb': {
         'label': 'Manually curated ligand-receptor interactions',
@@ -1393,10 +1455,35 @@ urls = {
             'download/%s-complex.csv',
         'smol': 'http://www.rna-society.org/cellinker/download/%s-sMOL.txt',
     },
+    'cellinker_rescued': {
+        'label': 'Human and mouse ligand-receptor interactions',
+        'lr': 'https://rescued.omnipathdb.org/cellinker/%s.txt',
+        'complex': 'https://rescued.omnipathdb.org/cellinker/%s-complex.csv',
+        'smol': 'https://rescued.omnipathdb.org/cellinker/%s-sMOL.txt',
+    },
     'pubchem': {
         'label': 'NCBI database of bioactive compounds, substances and '
             'assays',
         'ftp': 'https://ftp.ncbi.nlm.nih.gov/pubchem/%s/Extras/%s-%s.gz',
+    },
+    'scconnect': {
+        'label': 'Database of ligand-receptor interactions',
+        'annot': 'https://raw.githubusercontent.com/JonETJakobsson/'
+            'scConnect/master/scConnect/data/Gene_annotation/2020-5/'
+            '%s/%ss.csv',
+        'intera': 'https://github.com/JonETJakobsson/scConnect/raw/master/'
+            'scConnect/data/GTP_tables_clean/2020-5/interactions.csv',
+    },
+    'progeny': {
+        'label': 'Pathway responsive genes with weights',
+        'url': 'https://github.com/saezlab/progeny/raw/master/'
+            'data/model_%s_full.rda',
+    },
+    'celltypist': {
+        'label': 'Immune cell type marker genes',
+        'url': 'https://raw.githubusercontent.com/Teichlab/celltypist_wiki/'
+            'main/atlases/Pan_Immune_CellTypist/encyclopedia/'
+            'encyclopedia_table.xlsx',
     },
 }
 

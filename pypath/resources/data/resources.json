@@ -3987,7 +3987,7 @@
         "id_type_enzyme": "genesymbol",
         "id_type_substrate": [
           ["genesymbol", "substrate"],
-          ["refseq", "substrate_refseq"]
+          ["refseqn", "substrate_refseq"]
         ],
         "input_method": "mimp.mimp_enzyme_substrate",
         "organisms": [
@@ -4100,7 +4100,7 @@
     "urls": {
       "webpages": ["https://www.intogen.org/search"]
     },
-    "license": "CC BY-NC 4.0"
+    "license": "CC0 1.0"
   },
   "COSMIC": {
     "synonyms": ["CancerGeneCensus"],
@@ -4228,7 +4228,8 @@
   },
   "iTALK": {
     "urls": {
-      "webpages": ["https://github.com/Coolgenome/iTALK"]
+      "webpages": ["https://github.com/Coolgenome/iTALK"],
+      "articles": ["https://www.biorxiv.org/content/10.1101/507871v1"]
     },
     "license": "CC BY-NC-SA 3.0",
     "emails": ["ywang65@mdanderson.org", "Yuanxin Wang"]
@@ -4511,5 +4512,73 @@
     "emails": [
       "contact@cell-map.org", "Human Cell Map"
     ]
+  },
+  "scConnect": {
+    "full_name": "scConnect",
+    "license": "MIT",
+    "urls": {
+      "webpages": ["https://github.com/JonETJakobsson/scConnect"],
+      "articles": [
+        "https://academic.oup.com/bioinformatics/article/37/20/3501/6273571"
+      ]
+    },
+    "emails": [
+      "malin.lagerstrom@neuro.uu.se", "Malin C Lagerström"
+    ]
+  },
+  "CellCall": {
+    "full_name": "CellCall",
+    "license": "Artistic-2.0",
+    "urls": {
+      "webpages": ["https://github.com/ShellyCoder/cellcall"],
+      "articles": [
+        "https://academic.oup.com/nar/article/49/15/8520/6332819"
+      ]
+    },
+    "emails": [
+      "biocoder1024@hotmail.com", "Tianyuan Liu"
+    ]
+  },
+  "Cellinker": {
+    "full_name": "Cellinker",
+    "license": "CC BY-NC 4.0",
+    "urls": {
+      "webpages": ["https://www.rna-society.org/cellinker"],
+      "articles": [
+        "https://academic.oup.com/bioinformatics/article-abstract/37/14/2025/6104823"
+      ]
+    },
+    "emails": [
+      "wubingyi@aliyun.com", "Bingyi Wu"
+    ]
+  },
+  "PROGENy": {
+    "full_name": "PROGENy",
+    "license": "Apache 2.0",
+    "urls": {
+      "webpages": ["https://github.com/saezlab/PROGENy"]
+    }
+  },
+  "CancerDrugsDB": {
+    "full_name": "Cancer Drugs Database",
+    "license": "Unspecified NC-SA",
+    "urls": {
+      "webpages": ["https://www.anticancerfund.org/en/cancerdrugs-db"],
+      "articles": ["https://www.frontiersin.org/articles/10.3389/fphar.2021.627574/full"]
+    }
+  },
+  "CellTypist": {
+    "full_name": "CellTypist",
+    "license": "CC BY 3.0",
+    "urls": {
+      "webpages": [
+        "https://www.celltypist.org/encyclopedia",
+        "https://github.com/Teichlab/celltypist_wiki"
+      ],
+      "articles": [
+        "https://www.biorxiv.org/content/10.1101/2021.04.28.441762v2"
+      ]
+    },
+    "emails": ["celltypist@sanger.ac.uk", "CellTypist Team"]
   }
 }

@@ -6,12 +6,14 @@
 #  (Planned for) centrally handling cache for all databases/resources.
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -35,3 +37,19 @@ def get_cachedir(cachedir = None):
     os.makedirs(cachedir, exist_ok = True)
 
     return cachedir
+
+
+def cache_item(key):
+    """
+    For a key of a cache item returns its path. It does not mean the file
+    actually exists.
+
+    Args:
+        key (str): A label for a named cache item. These are typically
+            processed data dumped by the processing function for a quicker
+            loading at next use.
+    """
+
+    if key in settings.in_cachedir:
+
+        return os.path.join(get_cachedir(), settings.get(key))

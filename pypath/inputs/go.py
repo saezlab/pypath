@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -58,7 +60,10 @@ def go_annotations_uniprot(organism = 9606, swissprot = 'yes'):
                  if len(x) > 1])
 
 
-def go_annotations_goa(organism = 'human'):
+def go_annotations_goa(
+    organism = 'human',
+    evidence_codes=False):
+    
     """
     Downloads GO annotation from UniProt GOA.
     """
@@ -82,9 +87,12 @@ def go_annotations_goa(organism = 'human'):
             continue
 
         line = line.strip().split('\t')
-        annot[line[8]][line[1]].add(line[4])
+        if evidence_codes:
+            annot[line[8]][line[1]].add((line[4], line[6]))
+        else:
+            annot[line[8]][line[1]].add(line[4])
 
-    return annot
+    return dict((k, dict(v)) for k, v in iteritems(annot))
 
 
 # synonym for the default method
@@ -172,11 +180,16 @@ def go_descendants_to_ancestors(desc):
     ancestors = {}
 
     for asp, dct in iteritems(desc):
+
         ancestors[asp] = collections.defaultdict(set)
 
         for anc_term, des in iteritems(dct):
+
             for des_term, rel in des:
+
                 ancestors[asp][des_term].add((anc_term, rel))
+
+        ancestors[asp] = dict(ancestors[asp])
 
     return ancestors
 
@@ -236,6 +249,7 @@ def go_descendants_quickgo(
 
 
     def download_in_chunks(terms, chunk_size, target = None):
+
         target = target or collections.defaultdict(set)
 
         paginator = common.paginate(terms, chunk_size)

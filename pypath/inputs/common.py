@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -50,6 +52,18 @@ def read_xls(
     """
 
     table = []
+    opened_here = False
+
+    if isinstance(xls_file, common.basestring):
+
+        if os.path.exists(xls_file):
+
+            xls_file = open(xls_file, 'rb')
+            opened_here = True
+
+        else:
+
+            raise FileNotFoundError(xls_file)
 
     if not use_openpyxl:
 
@@ -61,10 +75,6 @@ def read_xls(
                     file_contents = xls_file.read(),
                     on_demand = True,
                 )
-
-            else:
-
-                book = xlrd.open_workbook(xls_file, on_demand = True)
 
             try:
                 if isinstance(sheet, int):
@@ -90,13 +100,6 @@ def read_xls(
             use_openpyxl = True
 
     if use_openpyxl:
-
-        if (
-            isinstance(xls_file, common.basestring) and
-            not os.path.exists(xls_file)
-        ):
-
-            raise FileNotFoundError(xls_file)
 
         try:
 
@@ -137,6 +140,10 @@ def read_xls(
     if 'book' in locals() and hasattr(book, 'release_resources'):
 
         book.release_resources()
+
+    if opened_here:
+
+        xls_file.close()
 
     return table
 
@@ -202,9 +209,9 @@ def read_table(
     cols : dict
         Dictionary of columns to read. Keys identifying fields are returned
         in the result. Values are column numbers.
-    sepLevel1 : str
+    sep : str
         Field separator of the file.
-    sepLevel2 : dict
+    sep2 : dict
         Subfield separators and prefixes.
         E.g. {2: ',', 3: '|'}
     hdr : int
@@ -255,13 +262,21 @@ def read_table(
 
                 field = l[col].strip()
 
-                if sep2 is not None:
+                _sep2 = (
+                    sep2[col]
+                        if isinstance(sep2, dict) and col in sep2 else
+                    sep2
+                        if isinstance(sep2, common.basestring) else
+                    None
+                )
 
-                    field = [
+                if _sep2:
+
+                    field = tuple(
                         sf.strip()
-                        for sf in field.split(sep2)
-                        if len(sf) > 0
-                    ]
+                        for sf in field.split(_sep2)
+                        if sf
+                    )
 
                 dic[name] = field
 

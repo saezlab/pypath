@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -36,8 +38,10 @@ def dip_interactions(
     strDirect = 'direct interaction'
     strPhysInt = 'physical interaction'
     strSmallS = 'small scale'
-    url = urls.urls['dip']['url'] % ('CR' if core_only else '') \
-        if url is None else url
+    url = (
+        url or
+        (urls.urls['dip']['url_rescued'] % ('CR' if core_only else ''))
+    )
     c = curl.Curl(url, silent = False, large = True)
     f = c.result
     i = []

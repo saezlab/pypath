@@ -6,12 +6,14 @@
 #  Helps to translate from the mouse data to human data
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -110,7 +112,7 @@ def cpad_annotations(include_unknown_type = False):
 
                 result[regulator_name_0].add(record)
 
-    return result
+    return dict(result)
 
 
 def cpad_pathway_cancer():
@@ -136,6 +138,7 @@ def cpad_pathway_cancer():
     by_pathway = collections.defaultdict(set)
 
     for rec in cpad:
+
         record = CpadPathwayCancer(
             pathway = rec['Pathway'],
             cancer = rec['Cancer'],
@@ -147,4 +150,5 @@ def cpad_pathway_cancer():
         by_cancer[rec['Cancer']].add(record)
         by_pathway[rec['Pathway']].add(record)
 
-    return by_cancer, by_pathway
+    return dict(by_cancer), dict(by_pathway)
+

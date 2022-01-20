@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -195,7 +197,7 @@ def kegg_pathway_annotations():
         for uniprot in uniprots:
             result[uniprot].add(record)
 
-    return result
+    return dict(result)
 
 
 def kegg_pathway_annotations_pathwaycommons():
@@ -218,7 +220,7 @@ def kegg_pathway_annotations_pathwaycommons():
 
             result[uniprot].add(annot)
 
-    return result
+    return dict(result)
 
 
 def kegg_medicus(max_entity_variations = 10):

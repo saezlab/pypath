@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -28,6 +30,7 @@ import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 import pypath.inputs.common as inputs_common
+import pypath.inputs.science as science
 
 
 def get_proteinatlas(normal = True, pathology = True, cancer = True):
@@ -83,7 +86,7 @@ def get_proteinatlas(normal = True, pathology = True, cancer = True):
 
                 result['pathology'][tissue][u] = values
 
-    return result
+    return dict((k, dict(v)) for k, v in iteritems(result))
 
 
 def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
@@ -188,10 +191,11 @@ def proteinatlas_annotations(normal = True, pathology = True, cancer = True):
                         )
                     )
 
-    return result
+    return dict(result)
 
 
 def proteinatlas_subcellular_annotations():
+
     ProteinatlasSubcellularAnnotation = collections.namedtuple(
         'ProteinatlasSubcellularAnnotation',
         [
@@ -244,14 +248,8 @@ def proteinatlas_secretome_annotations():
 
 
     url = urls.urls['proteinatlas']['secretome']
-
-    c = curl.Curl(
-        url,
-        large = True,
-        silent = False,
-    )
-
-    reader = inputs_common.read_xls(c.fileobj.name)[1:]
+    path = science.science_download(url)
+    reader = inputs_common.read_xls(path)[1:]
     result = collections.defaultdict(set)
 
     for rec in reader:

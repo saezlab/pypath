@@ -2,7 +2,8 @@
 name = "pypath"
 summary = """A module for molecular signaling prior knowledge processing."""
 url = "http://pypath.omnipathdb.org/"
-author = "Dénes Türei and Nicolàs Palacio and Olga Ivanova"
+author = """Dénes Türei and Nicolàs Palacio and Olga Ivanova and
+Sebastian Lobentanzer and Ahmet Rifaioglu"""
 author-email = "turei.denes@gmail.com"
 license = "GPLv3"
 classifiers = [

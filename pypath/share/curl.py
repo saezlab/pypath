@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -833,6 +835,7 @@ class Curl(FileOpener):
             bypass_url_encoding = False,
             empty_attempt_again = True,
             keep_failed = False,
+            alpn = True,
         ):
 
         if not hasattr(self, '_logger'):
@@ -854,6 +857,7 @@ class Curl(FileOpener):
         self.bypass_url_encoding = bypass_url_encoding
         self.empty_attempt_again = empty_attempt_again
         self.keep_failed = keep_failed
+        self.alpn = alpn
 
         self._log(
             'Creating Curl object to retrieve '
@@ -1160,6 +1164,7 @@ class Curl(FileOpener):
         self.curl.setopt(self.curl.TIMEOUT, self.timeout)
         self.curl.setopt(self.curl.TCP_KEEPALIVE, 1)
         self.curl.setopt(self.curl.TCP_KEEPIDLE, 2)
+        self.curl.setopt(self.curl.SSL_ENABLE_ALPN, self.alpn)
 
         if self.ignore_content_length:
 
@@ -1255,6 +1260,12 @@ class Curl(FileOpener):
                         'pypath.curl.Curl().curl_call() :: attempt #%u'
                         % attempt
                     )
+
+                if attempt > 0:
+
+                    # apparently we have to set it again
+                    # before each perform
+                    self.set_binary_data()
 
                 self.curl.perform()
 

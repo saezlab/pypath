@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -88,6 +90,10 @@ class EnzymeSubstrateProcessor(
 
         """
 
+        if not hasattr(self, '_logger'):
+
+            session_mod.Logger.__init__(self, name = 'enz_sub')
+
         self.mammal_taxa = {9606, 10090, 10116}
         self.nomatch = []
         self.kin_ambig = {}
@@ -117,7 +123,7 @@ class EnzymeSubstrateProcessor(
         homology.Proteomes.__init__(self)
 
         self.set_inputargs(**kwargs)
-        self.load()
+        self.load_enz_sub()
 
 
     def setup(self):
@@ -153,7 +159,7 @@ class EnzymeSubstrateProcessor(
         )
 
 
-    def load(self):
+    def load_enz_sub(self):
 
         self._setup()
         self.load_data()
@@ -215,7 +221,26 @@ class EnzymeSubstrateProcessor(
         Loads the data by the defined input method.
         """
 
+        input_method_name = '%s.%s' % (
+            self.input_method.__module__,
+            self.input_method.__name__,
+        )
+
+        self._log(
+            'Calling `%s` with arguments %s.' % (
+                input_method_name,
+                str(self.inputargs)
+            )
+        )
+
         self.data = self.input_method(**self.inputargs)
+
+        self._log(
+            'Loaded data by `%s`, resulted %u records.' % (
+                input_method_name,
+                len(self.data),
+            )
+        )
 
 
     def _phosphosite_setup(self):
@@ -572,9 +597,9 @@ class EnzymeSubstrateHomologyProcessor(
 
         """
 
-        if not hasattr(self, '_log'):
+        if not hasattr(self, '_logger'):
 
-            session_mod.Logger.__init__(name = 'enz_sub_homology')
+            session_mod.Logger.__init__(self, name = 'enz_sub_homology')
 
         self.target_taxon = ncbi_tax_id
         self.map_by_homology_from = (
@@ -826,6 +851,11 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                         ev.references
                     )
 
+        self._log(
+            'Starting to build enzyme-substrate '
+            'database for organism `%u`.' % self.ncbi_tax_id
+        )
+
         self.enz_sub = {}
         self.references = collections.defaultdict(
             lambda: collections.defaultdict(set)
@@ -881,12 +911,14 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
 
             if self.map_by_homology_from:
 
+                source_taxons_str = ', '.join(
+                    '%u' % tax for tax in self.map_by_homology_from
+                )
+
                 self._log(
                     'Mapping `%s` by homology from taxons %s to %u.' % (
                         input_method,
-                        ', '.join(
-                            '%u' % tax for tax in self.map_by_homology_from
-                        ),
+                        source_taxons_str,
                         self.ncbi_tax_id,
                     )
                 )
@@ -902,8 +934,25 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
 
                 extend_lists(proc.__iter__())
 
+                self._log(
+                    'Finished translating `%s` by homology '
+                    'from %s to %u.' % (
+                        input_method,
+                        source_taxons_str,
+                        self.ncbi_tax_id,
+                    )
+                )
+
         self.references = dict(self.references)
         self.update_ptm_lookup_dict()
+
+        self._log(
+            'Finished building enzyme-substrate database '
+            'for organism `%u`, resulted %u relationships.' % (
+                self.ncbi_tax_id,
+                len(self),
+            )
+        )
 
 
     def update_ptm_lookup_dict(self):

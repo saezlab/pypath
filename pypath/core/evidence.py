@@ -6,12 +6,14 @@
 #  (Planned for) centrally handling cache for all databases/resources.
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -37,12 +39,13 @@ import pypath.internals.refs as refs
 import pypath.share.common as common
 import pypath.share.session as session_mod
 import pypath.core.entity as entity
+import pypath.core.attrs as attrs_mod
 
 _logger = session_mod.Logger(name = 'evidence')
 _log = _logger._log
 
 
-class Evidence(object):
+class Evidence(attrs_mod.AttributeHandler):
     """
     Represents an evidence supporting a relationship such as molecular
     interaction, molecular complex, enzyme-PTM interaction, annotation, etc.
@@ -63,10 +66,11 @@ class Evidence(object):
     ]
 
 
-    def __init__(self, resource, references = None):
+    def __init__(self, resource, references = None, attrs = None):
 
         self.resource = resource
         self.references = self._process_references(references)
+        attrs_mod.AttributeHandler.__init__(self, attrs)
 
 
     def reload(self):
@@ -123,6 +127,7 @@ class Evidence(object):
         if self == other:
 
             self.references.update(other.references)
+            attrs_mod.AttributeHandler.__iadd__(other)
 
         else:
 
@@ -136,10 +141,14 @@ class Evidence(object):
 
     def __add__(self, other):
 
-        return Evidence(
+        new = self.__class__(
             resource = self.resource,
             references = self.references | other.references,
         )
+        new.update_attrs(self.attrs.copy())
+        new.update_attrs(other.attrs.copy())
+
+        return new
 
 
     @property
@@ -175,9 +184,10 @@ class Evidence(object):
 
     def __copy__(self):
 
-        return Evidence(
+        return self.__class__(
             resource = self.resource,
             references = copy.copy(self.references),
+            attrs = self.attrs.copy(),
         )
 
 
@@ -190,7 +200,10 @@ class Evidence(object):
             limited only to primary databases).
         """
 
-        return self._contains(self, other)
+        return (
+            self._contains(self, other) or
+            attrs_mod.AttributeHandler.__contains__(self, other)
+        )
 
 
     def contains_database(self, database):
@@ -409,7 +422,10 @@ class Evidences(object):
 
         other = (
             other
-                if hasattr(other, '__iter__') else
+                if (
+                    hasattr(other, '__iter__') and
+                    not isinstance(other, Evidence)
+                ) else
             (other,)
                 if isinstance(other, self.__class__) else
             ()
@@ -765,4 +781,66 @@ class Evidences(object):
                     references = references,
                 )
             )
+        )
+
+
+    def __getitem__(self, key):
+        """
+        Key is a :py:class:`pypath.internals.resource.NetworkResourceKey` or
+        an equivalent tuple.
+        """
+
+        return self.evidences.get(key, None) or self.simple_dict[key]
+
+
+    def keys(self):
+        """
+        Returns:
+            (dict_keys): The keys of this dictionary are
+                :py:class:`pypath.internals.resource.NetworkResourceKey`
+                objects.
+        """
+
+        return self.evidences.keys()
+
+
+    def items(self):
+        """
+        Returns:
+            (dict_items): The evidences as a mapping, with
+                :py:class:`pypath.internals.resource.NetworkResourceKey`
+                objects as keys and :py:class:`pypath.core.evidence.Evidence`
+                objects as values.
+        """
+
+        return self.evidences.items()
+
+
+    @property
+    def simple_dict(self):
+        """
+        Returns:
+            (dict): Keys are resource labels, values are
+                :py:class:`pypath.core.evidence.Evidence` objects.
+        """
+
+        return dict(
+            (res.last, ev)
+            for res, ev in iteritems(self)
+        )
+
+
+    def serialize_attrs(self, top_key_prefix = True):
+        """
+        Serialize the extra attributes of the evidences as a JSON string.
+
+        Returns:
+            (str): A JSON serialized string with the evidences from each
+                resource.
+        """
+
+        return attrs_mod.AttributeHandler._serialize(
+            self.simple_dict,
+            top_key_prefix = top_key_prefix,
+            default = lambda obj: obj.serialize(),
         )

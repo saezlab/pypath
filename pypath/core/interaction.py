@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -41,6 +43,7 @@ import pypath.share.session as session_mod
 import pypath.share.common as common
 import pypath.utils.mapping as mapping
 import pypath.core.entity as entity
+import pypath.core.attrs as attrs_mod
 import pypath.utils.homology as homology
 
 _logger = session_mod.Logger(name = 'interaction')
@@ -74,7 +77,7 @@ InteractionDataFrameRecord = collections.namedtuple(
 InteractionDataFrameRecord.__new__.__defaults__ = (None,) * 8
 
 
-class Interaction(object):
+class Interaction(attrs_mod.AttributeHandler):
     """
     Represents a unique pair of molecular entities interacting with each
     other. One :py:class:`Interaction` object might represent multiple
@@ -112,7 +115,6 @@ class Interaction(object):
         'direction',
         'positive',
         'negative',
-        'attrs',
     ]
 
     _get_methods = {
@@ -209,7 +211,8 @@ class Interaction(object):
         ('complex', 'complexes'),
         'mirna',
         'lncrna',
-        'small_molecule',
+        # ugly :(
+        (('small_molecule', 'drug', 'metabolite'),),
         None,
     }
 
@@ -270,7 +273,7 @@ class Interaction(object):
             self.b_a: pypath_evidence.Evidences(),
         }
 
-        self.attrs = attrs or {}
+        attrs_mod.AttributeHandler.__init__(self, attrs)
 
 
     def reload(self):
@@ -382,6 +385,11 @@ class Interaction(object):
 
 
     def direction_key(self, direction):
+        """
+        The direction keys are tuples of `Entity` objects; this method
+        creates these tuples from a tuple of strings. The two strings
+        can be labels or identifiers.
+        """
 
         if direction == 'undirected':
 
@@ -418,6 +426,7 @@ class Interaction(object):
             direction = 'undirected',
             effect = 0,
             references = None,
+            attrs = None,
         ):
         """
         Adds directionality information with the corresponding data
@@ -438,6 +447,8 @@ class Interaction(object):
         :arg set,NoneType references:
             A set of references, used only if the resource have been provided
             as ``NetworkResource`` object.
+        :arg dict attrs:
+            Custom (resource specific) attributes.
         """
 
         direction = self.direction_key(direction)
@@ -464,6 +475,10 @@ class Interaction(object):
                 references = references,
             )
         )
+
+        if hasattr(evidence, 'update_attrs'):
+
+            evidence.update_attrs(attrs)
 
         self.evidences += evidence
         self.direction[direction] += evidence
@@ -509,22 +524,9 @@ class Interaction(object):
             return self
 
         self._merge_evidences(self, other)
-        self.update_attrs(**other.attrs)
+        attrs_mod.AttributeHandler.__iadd__(self, other)
 
         return self
-
-
-    def update_attrs(self, **kwargs):
-
-        for key, val in iteritems(kwargs):
-
-            if key in self.attrs:
-
-                self.attrs[key] = common.combine_attrs((self.attrs[key], val))
-
-            else:
-
-                self.attrs[key] = val
 
 
     def __add__(self, other):
@@ -540,6 +542,7 @@ class Interaction(object):
 
         new = Interaction(*self.key)
         new += self
+        new.update_attrs(self)
 
         return new
 
@@ -596,7 +599,8 @@ class Interaction(object):
         return (
             other == self.a or
             other == self.b or
-            self.evidences.__contains__(other)
+            self.evidences.__contains__(other) or
+            attrs_mod.AttributeHandler.__contains__(self, other)
         )
 
 
@@ -1113,6 +1117,7 @@ class Interaction(object):
             resource_name = None,
             interaction_type = 'PPI',
             data_model = None,
+            attrs = None,
             **kwargs
         ):
         """
@@ -1132,6 +1137,8 @@ class Interaction(object):
         :arg set resource:
             Contains the name(s) of the source(s) from which the
             information was obtained.
+        :arg attrs dict:
+            Custom (resource specific) edge attributes.
         :arg **kwargs:
             Passed to ``pypath.resource.NetworkResource`` if ``resource``
             is not already a ``NetworkResource`` or ``Evidence``
@@ -1159,6 +1166,8 @@ class Interaction(object):
                 if resource_name is not None else
             None
         )
+
+        evidence.update_attrs(attrs)
 
         direction = self.direction_key(direction)
 
@@ -1942,9 +1951,7 @@ class Interaction(object):
             for label in ('a', 'b')
         )
 
-        all_new_attrs['attrs'] = (
-            new_attrs['attrs'] if 'attrs' in new_attrs else self.attrs
-        )
+        all_new_attrs['attrs'] = new_attrs.get('attrs', self.attrs)
 
         new = Interaction(
             a = new_a,
@@ -2233,17 +2240,18 @@ class Interaction(object):
 
                 continue
 
-            entity_type = etype[0] if isinstance(etype, tuple) else etype
+            entity_type = common.sfirst(etype)
+            entity_type_label = common.sfirst(entity_type)
             return_type = vtype
 
             etype_part = (
                 ''
-                    if not entity_type else
-                entity_type
+                    if not entity_type_label else
+                entity_type_label
                     if vtype else
                 etype[1]
-                    if isinstance(etype, tuple) else
-                '%ss' % entity_type
+                    if isinstance(etype, tuple) and len(etype) > 1 else
+                '%ss' % entity_type_label
             )
             vtype_part = '%s' % vtype if vtype else ''
 
@@ -3163,6 +3171,93 @@ class Interaction(object):
                             sources = sources,
                             references = refs,
                         )
+
+
+    def serialize_attrs(self, direction = None):
+
+        evs = self.evidences if not direction else self.direction[direction]
+
+        return evs.serialize_attrs()
+
+
+    def _get_attr(self, resource, key, direction):
+
+        if resource in self.direction[direction]:
+
+            return self.direction[direction][resource][key]
+
+
+    def get_attr(self, resource, key, direction = None):
+        """
+        Extracts the values of one specific attribute.
+
+        Args:
+            resource (str): Name of the resource.
+            key (str): Name of the attribute.
+            direction (tuple,str): Direction(s) to consider, either a tuple
+                of entities or entity names, or the string `undirected`.
+
+        Return:
+            Depends on the arguments. The value of the attribute if direction
+            is defined. Otherwise a dict with the value of the attribute for
+            each direction. The value of the attribute is `None` if the
+            resource or the attribute does not belong to this interaction.
+        """
+
+        if direction:
+
+            return self._get_attr(resource, key, direction)
+
+        else:
+
+            return dict(
+                (
+                    d,
+                    self._get_attr(resource, key, d)
+                )
+                for d in self.direction.keys()
+            )
+
+
+    def dorothea_levels(self, direction = None):
+        """
+        Retrieves the DoRothEA confidence levels.
+
+        Args:
+            direction (tuple,str): Direction(s) to consider, either a tuple
+                of entities or entity names, or the string `undirected`.
+
+        Return:
+            List of unique single letter strings representing the five
+            confidence levels (A-E).
+        """
+
+        directions = (direction,) if direction else (self.a_b, self.b_a)
+
+        return sorted(
+            {
+                level
+                for direction in directions
+                for level in (
+                    self._get_attr('DoRothEA', 'level', direction) or
+                    ()
+                )
+            }
+        )
+
+
+    def dorothea_level(self, direction):
+        """
+        DoRothEA confidence level for one direction as a single letter. Some
+        interactions might have multiple levels due to the ambiguous nature
+        of translating gene symbols to UniProt IDs. Here we take the highest
+        level and drop the rest. For interactions without DoRothEA levels
+        None is returned.
+        """
+
+        levels = self.dorothea_levels(direction = direction)
+
+        return common.first(levels)
 
 
 Interaction._generate_entity_methods()

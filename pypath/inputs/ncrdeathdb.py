@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -41,7 +43,7 @@ def ncrdeathdb_interactions():
         ),
     )
 
-    url = urls.urls['ncrdeathdb']['url']
+    url = urls.urls['ncrdeathdb']['url_rescued']
     c = curl.Curl(
         url,
         large = True,
@@ -70,7 +72,7 @@ def ncrdeathdb_interactions():
             result.append(
                 NcrdeathdbInteraction(
                     ncrna = rna_id,
-                    protein = protein_id,
+                    target_gene = protein_id,
                     ncrna_type = typ,
                     pathway = rec['Pathway'].strip(),
                     effect = rec['Action_Mode'].strip() or None,

@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -25,33 +27,35 @@ import numpy as np
 
 def _rdata_data_frame_get_rownames(robj):
 
-    for i, attr in enumerate(robj.attributes):
+    for i, attr in enumerate(robj.attributes.value):
 
         if (
-            attr and
-            attr[1] and (
+            attr.value and
+            attr.value[1] and (
                 (
-                    hasattr(attr[1].value[1], 'tag') and
-                    attr[1].value[1].tag and (
+                    hasattr(attr.value[1], 'tag') and
+                    attr.value[1].tag and (
                         (
-                            attr[1].value[1].tag.referenced_object and
-                            attr[1].value[1].tag.referenced_object.value and
-                            attr[1].value[1].tag.referenced_object.value.\
+                            attr.value[1].tag.referenced_object and
+                            attr.value[1].tag.referenced_object.value and
+                            attr.value[1].tag.referenced_object.value.\
                                 value == b'row.names'
                         ) or (
-                            attr[1].value[1].tag.value and
-                            attr[1].value[1].tag.value.value == b'row.names'
+                            attr.value[1].tag.value and
+                            attr.value[1].tag.value.value == b'row.names'
                         )
                     )
                 ) or (
-                    attr[1].tag and
-                    attr[1].tag.referenced_object and
-                    attr[1].tag.referenced_object.value and
-                    attr[1].tag.referenced_object.value.value == b'row.names'
+                    attr.value[1].tag and
+                    attr.value[1].tag.referenced_object and
+                    attr.value[1].tag.referenced_object.value and (
+                        attr.value[1].tag.referenced_object.value.value ==
+                        b'row.names'
+                    )
                 ) or (
-                    attr[1].tag and
-                    attr[1].tag.value and
-                    attr[1].tag.value.value == b'row.names'
+                    attr.value[1].tag and
+                    attr.value[1].tag.value and
+                    attr.value[1].tag.value.value == b'row.names'
                 )
             )
         ):
@@ -59,11 +63,11 @@ def _rdata_data_frame_get_rownames(robj):
             break
 
     rownames = (
-        attr[1].value[1].value[0].value
-            if attr[1].value[0].value[0].value == b'data.frame' else
-        attr[1].value[0].value
+        attr.value[1].value[0].value
+            if attr.value[0].value[0].value == b'data.frame' else
+        attr.value[0].value
             if (
-                attr[1].value[1].value[0].value[0].value ==
+                attr.value[1].value[0].value[0].value ==
                 b'data.frame'
             ) else
         []

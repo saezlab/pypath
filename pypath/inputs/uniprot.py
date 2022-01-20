@@ -5,12 +5,14 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -609,7 +611,7 @@ def uniprot_locations(organism = 9606, reviewed = True):
                 )
             )
 
-    return result
+    return dict(result)
 
 
 def uniprot_keywords(organism = 9606, reviewed = True):
@@ -640,7 +642,7 @@ def uniprot_keywords(organism = 9606, reviewed = True):
                 )
             )
 
-    return result
+    return dict(result)
 
 
 def uniprot_families(organism = 9606, reviewed = True):
@@ -680,7 +682,7 @@ def uniprot_families(organism = 9606, reviewed = True):
             )
         )
 
-    return result
+    return dict(result)
 
 
 def uniprot_topology(organism = 9606, reviewed = True):
@@ -766,7 +768,7 @@ def uniprot_topology(organism = 9606, reviewed = True):
                 )
             )
 
-    return result
+    return dict(result)
 
 
 def uniprot_tissues(organism = 9606, reviewed = True):
@@ -1157,7 +1159,7 @@ def uniprot_tissues(organism = 9606, reviewed = True):
                             )
                         )
 
-    return result
+    return dict(result)
 
 
 def uniprot_taxonomy():
@@ -1165,7 +1167,7 @@ def uniprot_taxonomy():
     Returns a dictionary with SwissProt IDs as keys and sets of various taxon
     names as values.
     """
-    
+
     rename = re.compile(r'\(?(\w[\w\s\',/\.-]+\w)\)?')
     reac = re.compile(r'\s*\w+\s+\(([A-Z\d]+)\)\s*,')
 
@@ -1173,20 +1175,20 @@ def uniprot_taxonomy():
     c = curl.Curl(url, large = True, silent = False)
 
     result = collections.defaultdict(set)
-    
+
     for line in c.result:
-        
+
         if line[0] != ' ':
-            
+
             names = set(rename.findall(line))
-            
+
         else:
-            
+
             for ac in reac.findall(line):
-                
+
                 result[ac].update(names)
-    
-    return result
+
+    return dict(result)
 
 
 Taxon = collections.namedtuple(
@@ -1202,33 +1204,33 @@ Taxon.__new__.__defaults__ = (None, None)
 
 
 def uniprot_ncbi_taxids():
-    
+
     url = urls.urls['uniprot_basic']['taxids']
     c = curl.Curl(url, large = True, silent = False, compr = 'gz')
-    
+
     _ = next(c.result)
-    
+
     result = {}
-    
+
     for line in c.result:
-        
+
         line = line.split('\t')
-        
+
         if line[0].isdigit() and len(line) > 3:
-            
+
             taxid = int(line[0])
-            
+
             result[taxid] = Taxon(
                 ncbi_id = taxid,
                 latin = line[2],
                 english = line[3],
             )
-    
+
     return result
 
 
 def uniprot_ncbi_taxids_2():
-    
+
     reline = re.compile(
         r'(?:([A-Z\d]+)\s+)?' # code
         r'(?:([A-Z]))?\s+' # kingdom
@@ -1236,44 +1238,44 @@ def uniprot_ncbi_taxids_2():
         r'([A-Z])=' # name type
         r'([ \w\(\),/\.\'-]+)[\n\r\s]*' # the name
     )
-    
+
     url = urls.urls['uniprot_basic']['speclist']
     c = curl.Curl(url, large = True, silent = False)
-    
+
     result = {}
     entry = {}
-    
+
     for line in c.result:
-        
+
         m = reline.match(line)
-        
+
         if m:
-            
+
             _code, _kingdom, _taxid, _name_type, _name = m.groups()
-            
+
             if _taxid:
-                
+
                 if entry and 'ncbi_id' in entry:
-                    
+
                     result[entry['ncbi_id']] = Taxon(**entry)
-                
+
                 entry = {}
                 entry['ncbi_id'] = int(_taxid)
-            
+
             if _name_type == 'N':
-                
+
                 entry['latin'] = _name
-                
+
             elif _name_type == 'C':
-                
+
                 entry['english'] = _name
-                
+
             elif _name_type == 'S':
-                
+
                 entry['latin_synonym'] = _name
-    
+
     if entry and 'ncbi_id' in entry:
-        
+
         result[entry['ncbi_id']] = Taxon(**entry)
-    
+
     return result

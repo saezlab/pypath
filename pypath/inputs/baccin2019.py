@@ -6,12 +6,14 @@
 #  Helps to translate from the mouse data to human data
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -58,9 +60,14 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
         )
 
         if ncbi_tax_id != 10090:
+
             uniprots = set(
                 itertools.chain(*(
-                    homology.translate(uniprot)
+                    homology_mod.translate(
+                        uniprot,
+                        target = ncbi_tax_id,
+                        source = 10090,
+                    )
                     for uniprot in uniprots
                 ))
             )
@@ -120,25 +127,22 @@ def baccin2019_interactions(ncbi_tax_id = 9606):
 
     result = []
 
-    if ncbi_tax_id != 10090:
-        homology = homology_mod.ProteinHomology(
-            target = ncbi_tax_id,
-            source = 10090,
-        )
-
     for rec in data[3:]:
 
         if rec[4].strip().lower() == 'incorrect':
+
             continue
 
         ligand_components = raw_to_uniprots(rec[1])
 
         if not ligand_components:
+
             continue
 
         receptor_components = raw_to_uniprots(rec[2])
 
         if not receptor_components:
+
             continue
 
         sources = {'Baccin2019', rec[3].strip()}

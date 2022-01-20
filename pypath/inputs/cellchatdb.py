@@ -6,12 +6,14 @@
 #  Helps to translate from the mouse data to human data
 #
 #  Copyright
-#  2014-2021
+#  2014-2022
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -336,7 +338,7 @@ def cellchatdb_annotations(organism = 9606):
                 )
             )
 
-    return annotations
+    return dict(annotations)
 
 
 def _cellchatdb_organism(organism = 9606):
