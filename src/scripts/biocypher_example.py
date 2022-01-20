@@ -49,7 +49,7 @@ def main():
     # We are creating a new database, so we wipe and initialise the 
     # local Neo4j instance. Set `wipe = False` if you want to update an 
     # existing BioCypher graph.
-    bcy_adapter = adapter.BiocypherAdapter(wipe = True)
+    bcy_adapter = adapter.BiocypherAdapter(wipe = False)
 
 
     # Build a pypath network database:

@@ -75,13 +75,7 @@ class pypath(object):
         
         sys.stdout.write(cls._disclaimer_text)
         sys.stdout.flush()
-    
-    
-    @classmethod
-    def license(cls):
         
-        cls_disclaimer()
-    
     
     def __getattribute__(self, attr):
         

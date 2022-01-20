@@ -1,43 +1,228 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#
-#  This file is part of the `pypath` python module.
-#  Settings for PyPath
-#
-#  Copyright
-#  2014-2021
-#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
-#
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#                  Olga Ivanova
-#
-#  Distributed under the GPLv3 License.
-#  See accompanying file LICENSE.txt or copy at
-#      http://www.gnu.org/licenses/gpl-3.0.html
-#
-#  Website: http://pypath.omnipathdb.org/
-#
+"""
+This file is part of the `pypath` python module. It provides user 
+settings to the remainder of PyPath modules. Settings are gathered from
+`ROOT/settings/pypath_settings.yaml`.
 
-#TODO move to yaml file
+Copyright
+2014-2021
+EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+
+File author(s): Dénes Türei (turei.denes@gmail.com)
+                Nicolàs Palacio
+                Olga Ivanova
+                Sebastian Lobentanzer
+
+Distributed under the GPLv3 License.
+See accompanying file LICENSE.txt or copy at
+    http://www.gnu.org/licenses/gpl-3.0.html
+
+Website: http://pypath.omnipathdb.org/
+"""
+
 
 from future.utils import iteritems
 
-import os
-import copy
+import os, yaml
 import collections
 
-ROOT = os.path.join(
-    *os.path.split(
-        os.path.abspath(
-            os.path.dirname(__file__)
-        )
-    )[:-1]
+ROOT = os.path.abspath(os.getcwd())
+
+# import settings from yaml
+# we are importing from the root of the repository
+settings_yaml = os.path.join(ROOT, "settings", "pypath_settings.yaml")
+_defaults = None
+with open(settings_yaml, "r") as f:
+    # log?
+    _defaults = yaml.load(f, Loader=yaml.FullLoader)
+
+# TODO what is this used for?
+Defaults = collections.namedtuple(
+    'Defaults',
+    sorted(_defaults.keys()),
 )
 
+defaults = Defaults(**_defaults)
 
-_defaults = {
+class Settings(object):
+    """
+    Class to provide settings to other modules.
+    
+    Args:
+        **kwargs: key-value pairs to be included in the settings dict
+    """
+
+    def __init__(self, **kwargs):
+
+        self.__dict__.update(kwargs)
+
+
+settings = Settings()
+
+
+def reset_all():
+    """
+    Main method of updating the settings object from data directory
+    structure and the YAML file contents.
+    """
+
+    # TODO put these custom collections into YAML as well?
+    in_datadir = {
+        'acsn_names',
+        'alzpw_ppi',
+        'goose_annot_sql',
+        'webpage_main',
+        'nrf2ome',
+        'ppoint',
+        'slk3_nodes',
+        'acsn',
+        'arn',
+        'goose_ancest_sql',
+        'goose_terms_sql',
+        'lmpid',
+        'nci_pid',
+        'old_dbptm',
+        'slk3_edges',
+        'slk01human',
+        'deathdomain',
+        'license_dir',
+    }
+
+    for k in _defaults.keys():
+
+        val = getattr(defaults, k)
+
+        if k in in_datadir:
+
+            val = os.path.join(ROOT, 'pypath', 'data', val)
+
+        setattr(settings, k, val)
+
+    # runtime attributes
+    # base directory
+    setattr(settings, "basedir", ROOT)
+
+    # special directories with built in default at user level
+    pypath_dirs = (
+        ('cachedir', 'cache'),
+        ('pickle_dir', 'pickles'),
+        ('secrets_dir', 'secrets'),
+    )
+
+    for _key, _dir in pypath_dirs:
+
+        if getattr(settings, _key) is None:
+
+            setattr(
+                settings,
+                _key,
+                os.path.join(
+                    os.path.expanduser('~'),
+                    '.pypath',
+                    _dir,
+                )
+            )
+
+    in_cachedir = {
+        'pubmed_cache',
+        'trip_preprocessed',
+        'hpmr_preprocessed',
+    }
+
+    for k in in_cachedir:
+
+        setattr(settings, k, os.path.join(settings.cachedir, _defaults[k]))
+
+
+    in_secrets_dir = {
+        'license_secret',
+    }
+
+    for k in in_secrets_dir:
+
+        setattr(settings, k, os.path.join(settings.secrets_dir, _defaults[k]))
+
+    globals()['settings'] = settings
+
+
+def setup(**kwargs):
+    '''
+    This function takes a dictionary of parameters and values and sets them
+    as attributes of the settings object.
+    
+    Args:
+      **kwargs: key-value pairs to set in the `settings` object
+    
+    Returns:
+      None
+    '''
+
+    for param, value in iteritems(kwargs):
+
+        setattr(settings, param, value)
+
+
+def get(param, value = None):
+    """
+    Retrieves the current value of a parameter.
+
+    :param str param:
+        The key for the parameter.
+    :param object,NoneType value:
+        If this value is not None it will be returned instead of the settings
+        value. It is useful if the parameter provided at the class or method
+        level should override the one in settings.
+    """
+
+    if value is not None:
+
+        return value
+
+    if hasattr(settings, param):
+
+        return getattr(settings, param)
+
+
+    
+def get_default(param):
+    '''
+    Returns the value of the parameter in the defaults object if it 
+    exists, otherwise returns None.
+    
+    Args:
+      param: keyword to look for in `defaults`
+    
+    Returns:
+      The value of the parameter or None.
+    '''
+
+    if hasattr(defaults, param):
+
+        return getattr(defaults, param)
+
+
+def reset(param):
+    '''
+    Reset the parameters to their default values.
+    
+    Args:
+      param: the name of the parameter to be set
+    
+    Returns:
+      None
+    '''
+
+    setup(**{param: get_default(param)})
+
+
+reset_all()
+
+
+# deprecated
+
+_defaults_old = {
     # name of the module
     'module_name': 'pypath',
     # The absolute root directory.
@@ -254,141 +439,3 @@ _defaults = {
 
 }
 
-in_datadir = {
-    'acsn_names',
-    'alzpw_ppi',
-    'goose_annot_sql',
-    'webpage_main',
-    'nrf2ome',
-    'ppoint',
-    'slk3_nodes',
-    'acsn',
-    'arn',
-    'goose_ancest_sql',
-    'goose_terms_sql',
-    'lmpid',
-    'nci_pid',
-    'old_dbptm',
-    'slk3_edges',
-    'slk01human',
-    'deathdomain',
-    'license_dir',
-}
-
-
-in_cachedir = {
-    'pubmed_cache',
-    'trip_preprocessed',
-    'hpmr_preprocessed',
-}
-
-
-in_secrets_dir = {
-    'license_secret',
-}
-
-
-class Settings(object):
-
-
-    def __init__(self, **kwargs):
-
-        self.__dict__.update(kwargs)
-
-
-Defaults = collections.namedtuple(
-    'Defaults',
-    sorted(_defaults.keys()),
-)
-
-
-def reset_all():
-
-    settings = Settings()
-
-    for k in _defaults.keys():
-
-        val = getattr(defaults, k)
-
-        if k in in_datadir:
-
-            val = os.path.join(ROOT, 'data', val)
-
-        setattr(settings, k, val)
-
-    # special directories with built in default at user level
-    pypath_dirs = (
-        ('cachedir', 'cache'),
-        ('pickle_dir', 'pickles'),
-        ('secrets_dir', 'secrets'),
-    )
-
-    for _key, _dir in pypath_dirs:
-
-        if getattr(settings, _key) is None:
-
-            setattr(
-                settings,
-                _key,
-                os.path.join(
-                    os.path.expanduser('~'),
-                    '.pypath',
-                    _dir,
-                )
-            )
-
-    for k in in_cachedir:
-
-        setattr(settings, k, os.path.join(settings.cachedir, _defaults[k]))
-
-    for k in in_secrets_dir:
-
-        setattr(settings, k, os.path.join(settings.secrets_dir, _defaults[k]))
-
-    globals()['settings'] = settings
-
-
-def setup(**kwargs):
-
-    for param, value in iteritems(kwargs):
-
-        setattr(settings, param, value)
-
-
-def get(param, value = None):
-    """
-    Retrieves the current value of a parameter.
-
-    :param str param:
-        The key for the parameter.
-    :param object,NoneType value:
-        If this value is not None it will be returned instead of the settings
-        value. It is useful if the parameter provided at the class or method
-        level should override the one in settings.
-    """
-
-    if value is not None:
-
-        return value
-
-    if hasattr(settings, param):
-
-        return getattr(settings, param)
-
-
-def get_default(param):
-
-    if hasattr(defaults, param):
-
-        return getattr(defaults, param)
-
-
-def reset(param):
-
-    setup(**{param: get_default(param)})
-
-
-defaults = Defaults(**_defaults)
-
-
-reset_all()
