@@ -116,21 +116,21 @@ def cancerdrugsdb_interactions():
 
     for rec in data:
 
-        chembl = strip_id(rec['ChEMBL'])
-        drugbank = strip_id(rec['DrugBank ID'])
+        chembl = strip_id(rec.get('ChEMBL'))
+        drugbank = strip_id(rec.get('DrugBank ID'))
 
         if chembl is None:
 
-            unmapped_drug.append(rec['Product'])
+            unmapped_drug.append(rec.get('Product'))
             continue
 
         pubchems = mapping.map_name(chembl, 'chembl', 'pubchem')
 
-        targets = rec['Targets']
+        targets = rec.get('Targets')
 
         if not targets:
 
-            no_targets.append(rec['Product'])
+            no_targets.append(rec.get('Product'))
             continue
 
         target_uniprots = mapping.map_names(
@@ -146,17 +146,17 @@ def cancerdrugsdb_interactions():
                     drug_pubchem = pubchem,
                     drug_chembl = chembl,
                     drug_drugbank = drugbank,
-                    drug_label = rec['Product'],
+                    drug_label = rec.get('Product'),
                     target_uniprot = uniprot,
-                    ema_approved = yes_no(rec['EMA']),
-                    fda_approved = yes_no(rec['FDA']),
-                    european_national_approved = yes_no(rec['EN']),
-                    who_approved = yes_no(rec['WHO']),
-                    generic = yes_no(rec['Generic']),
-                    approval_year = int(rec['Year']) if rec['Year'] else None,
+                    ema_approved = yes_no(rec.get('EMA')),
+                    fda_approved = yes_no(rec.get('FDA')),
+                    european_national_approved = yes_no(rec.get('EN')),
+                    who_approved = yes_no(rec.get('WHO')),
+                    generic = yes_no(rec.get('Generic')),
+                    approval_year = int(rec.get('Year')) if rec.get('Year') else None,
                     indications = tuple(
                         i.strip()
-                        for i in rec['Indications'].split(';')
+                        for i in rec.get('Indications').split(';')
                     ),
                 )
             )
