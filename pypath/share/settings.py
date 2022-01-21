@@ -36,20 +36,15 @@ import collections
 ROOT = os.path.abspath(os.getcwd())
 
 # import settings from yaml
-# we are importing from the root of the repository
-settings_yaml = os.path.join(ROOT, "data", "settings.yaml")
-_defaults = None
-with open(settings_yaml, "r") as f:
-    # log?
-    _defaults = yaml.load(f, Loader=yaml.FullLoader)
+# we are importing from module data
+settings_yaml = os.path.join(ROOT, 'pypath', 'data', 'settings.yaml')
 
-# TODO what is this used for?
-Defaults = collections.namedtuple(
-    'Defaults',
-    sorted(_defaults.keys()),
-)
 
-defaults = Defaults(**_defaults)
+with open(settings_yaml, 'r') as f:
+    # log? ## logger is not available here, as logging parameters
+    # are defined in the settings
+    _defaults = yaml.load(f, Loader = yaml.FullLoader)
+
 
 class Settings(object):
     """
@@ -93,9 +88,7 @@ class Settings(object):
             'license_dir',
         }
 
-        for k in _defaults.keys():
-
-            val = getattr(defaults, k)
+        for k, val in _defaults.items():
 
             if k in in_datadir:
 
@@ -105,7 +98,7 @@ class Settings(object):
 
         # runtime attributes
         # base directory
-        setattr(self, "basedir", ROOT)
+        setattr(self, 'basedir', ROOT)
 
         # special directories with built in default at user level
         pypath_dirs = (
@@ -151,7 +144,7 @@ class Settings(object):
 
 
     def setup(self, **kwargs):
-        '''
+        """
         This function takes a dictionary of parameters and values and sets them
         as attributes of the settings object.
 
@@ -160,7 +153,7 @@ class Settings(object):
 
         Returns:
         None
-        '''
+        """
 
         for param, value in iteritems(kwargs):
 
@@ -190,7 +183,7 @@ class Settings(object):
 
 
     def get_default(self, param):
-        '''
+        """
         Returns the value of the parameter in the defaults object if it
         exists, otherwise returns None.
 
@@ -199,7 +192,7 @@ class Settings(object):
 
         Returns:
         The value of the parameter or None.
-        '''
+        """
 
         if hasattr(defaults, param):
 
@@ -207,7 +200,7 @@ class Settings(object):
 
 
     def reset(self, param):
-        '''
+        """
         Reset the parameters to their default values.
 
         Args:
@@ -215,7 +208,7 @@ class Settings(object):
 
         Returns:
         None
-        '''
+        """
 
         self.setup(**{param: self.get_default(param)})
 
