@@ -33,11 +33,17 @@ from future.utils import iteritems
 import os, yaml
 import collections
 
-ROOT = os.path.abspath(os.getcwd())
+ROOT = os.path.join(
+    *os.path.split(
+        os.path.abspath(
+            os.path.dirname(__file__)
+        )
+    )[:-1]
+)
 
 # import settings from yaml
 # we are importing from module data
-settings_yaml = os.path.join(ROOT, 'pypath', 'data', 'settings.yaml')
+settings_yaml = os.path.join(ROOT, 'data', 'settings.yaml')
 
 
 with open(settings_yaml, 'r') as f:
@@ -95,7 +101,7 @@ class Settings(object):
 
             if k in in_datadir:
 
-                val = os.path.join(ROOT, 'pypath', 'data', val)
+                val = os.path.join(ROOT, 'data', val)
 
             setattr(self, k, val)
 
