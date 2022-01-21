@@ -61,6 +61,47 @@ class Settings(object):
         **kwargs: key-value pairs to be included in the settings dict
     """
 
+    # TODO put these custom collections into YAML as well?
+    # yes, and most of these are deprecated, these were module
+    # data files that we got rid of long time ago
+    in_datadir = {
+        'acsn_names',
+        'alzpw_ppi',
+        'goose_annot_sql',
+        'webpage_main',
+        'nrf2ome',
+        'ppoint',
+        'slk3_nodes',
+        'acsn',
+        'arn',
+        'goose_ancest_sql',
+        'goose_terms_sql',
+        'lmpid',
+        'nci_pid',
+        'old_dbptm',
+        'slk3_edges',
+        'slk01human',
+        'deathdomain',
+        'license_dir',
+    }
+
+    in_cachedir = {
+        'pubmed_cache',
+        'trip_preprocessed',
+        'hpmr_preprocessed',
+    }
+
+    in_secrets_dir = {
+        'license_secret',
+    }
+
+    # special directories with built in default at user level
+    pypath_dirs = (
+        ('cachedir', 'cache'),
+        ('pickle_dir', 'pickles'),
+        ('secrets_dir', 'secrets'),
+    )
+
     def __init__(self, **kwargs):
 
         self.__dict__.update(kwargs)
@@ -73,33 +114,9 @@ class Settings(object):
         structure and the YAML file contents.
         """
 
-        # TODO put these custom collections into YAML as well?
-        # yes, and most of these are deprecated, these were module
-        # data files that we got rid of long time ago
-        in_datadir = {
-            'acsn_names',
-            'alzpw_ppi',
-            'goose_annot_sql',
-            'webpage_main',
-            'nrf2ome',
-            'ppoint',
-            'slk3_nodes',
-            'acsn',
-            'arn',
-            'goose_ancest_sql',
-            'goose_terms_sql',
-            'lmpid',
-            'nci_pid',
-            'old_dbptm',
-            'slk3_edges',
-            'slk01human',
-            'deathdomain',
-            'license_dir',
-        }
-
         for k, val in _defaults.items():
 
-            if k in in_datadir:
+            if k in self.in_datadir:
 
                 val = os.path.join(ROOT, 'data', val)
 
@@ -109,14 +126,7 @@ class Settings(object):
         # base directory
         setattr(self, 'basedir', ROOT)
 
-        # special directories with built in default at user level
-        pypath_dirs = (
-            ('cachedir', 'cache'),
-            ('pickle_dir', 'pickles'),
-            ('secrets_dir', 'secrets'),
-        )
-
-        for _key, _dir in pypath_dirs:
+        for _key, _dir in self.pypath_dirs:
 
             if getattr(self, _key) is None:
 
@@ -130,22 +140,11 @@ class Settings(object):
                     )
                 )
 
-        in_cachedir = {
-            'pubmed_cache',
-            'trip_preprocessed',
-            'hpmr_preprocessed',
-        }
-
-        for k in in_cachedir:
+        for k in self.in_cachedir:
 
             setattr(self, k, os.path.join(self.cachedir, _defaults[k]))
 
-
-        in_secrets_dir = {
-            'license_secret',
-        }
-
-        for k in in_secrets_dir:
+        for k in self.in_secrets_dir:
 
             setattr(self, k, os.path.join(self.secrets_dir, _defaults[k]))
 
