@@ -1,25 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright
+#  2014-2022
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Olga Ivanova
+#           Sebastian Lobentanzer
+#           Ahmet Rifaioglu
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
+
 """
-This file is part of the `pypath` python module. It provides user 
+This file is part of the `pypath` python module. It provides user
 settings to the remainder of PyPath modules. Settings are gathered from
-`ROOT/settings/pypath_settings.yaml`.
-
-Copyright
-2014-2021
-EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
-
-File author(s): Dénes Türei (turei.denes@gmail.com)
-                Nicolàs Palacio
-                Olga Ivanova
-                Sebastian Lobentanzer
-
-Distributed under the GPLv3 License.
-See accompanying file LICENSE.txt or copy at
-    http://www.gnu.org/licenses/gpl-3.0.html
-
-Website: http://pypath.omnipathdb.org/
+`pypath/data/settings.yaml`.
 """
 
 
@@ -32,7 +37,7 @@ ROOT = os.path.abspath(os.getcwd())
 
 # import settings from yaml
 # we are importing from the root of the repository
-settings_yaml = os.path.join(ROOT, "settings", "pypath_settings.yaml")
+settings_yaml = os.path.join(ROOT, "data", "settings.yaml")
 _defaults = None
 with open(settings_yaml, "r") as f:
     # log?
@@ -49,7 +54,7 @@ defaults = Defaults(**_defaults)
 class Settings(object):
     """
     Class to provide settings to other modules.
-    
+
     Args:
         **kwargs: key-value pairs to be included in the settings dict
     """
@@ -59,7 +64,7 @@ class Settings(object):
         self.__dict__.update(kwargs)
         self.reset_all()
 
-    
+
     def reset_all(self):
         """
         Main method of updating the settings object from data directory
@@ -149,10 +154,10 @@ class Settings(object):
         '''
         This function takes a dictionary of parameters and values and sets them
         as attributes of the settings object.
-        
+
         Args:
         **kwargs: key-value pairs to set in the `settings` object
-        
+
         Returns:
         None
         '''
@@ -183,15 +188,15 @@ class Settings(object):
             return getattr(self, param)
 
 
-        
+
     def get_default(self, param):
         '''
-        Returns the value of the parameter in the defaults object if it 
+        Returns the value of the parameter in the defaults object if it
         exists, otherwise returns None.
-        
+
         Args:
         param: keyword to look for in `defaults`
-        
+
         Returns:
         The value of the parameter or None.
         '''
@@ -204,10 +209,10 @@ class Settings(object):
     def reset(self, param):
         '''
         Reset the parameters to their default values.
-        
+
         Args:
         param: the name of the parameter to be set
-        
+
         Returns:
         None
         '''
