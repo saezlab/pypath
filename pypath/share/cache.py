@@ -50,6 +50,6 @@ def cache_item(key):
             loading at next use.
     """
 
-    if key in settings.in_cachedir:
+    if key in settings.settings.in_cachedir:
 
         return os.path.join(get_cachedir(), settings.get(key))
