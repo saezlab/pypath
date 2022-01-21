@@ -148,8 +148,6 @@ class Settings(object):
 
             setattr(self, k, os.path.join(self.secrets_dir, _defaults[k]))
 
-        globals()['settings'] = self
-
 
     def setup(self, **kwargs):
         """
