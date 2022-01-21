@@ -229,3 +229,8 @@ def get(param, value = None):
     Wrapper of Settings.get().
     """
     return settings.get(param, value)
+
+
+def setup(**kwargs):
+
+    return settings.setup(**kwargs)
