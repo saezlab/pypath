@@ -661,11 +661,11 @@ class StatusReport(object):
 
             os.system('git clone --depth 1 %s pypath_git' % PYPATH_GIT_URL)
 
-            # os.symlink(
-            #     os.path.join('pypath_git', 'pypath'),
-            #     'pypath',
-            #     target_is_directory = True,
-            # )
+            os.symlink(
+                os.path.join('pypath_git', 'pypath'),
+                'pypath',
+                target_is_directory = True,
+            )
 
             self.pypath_from = 'git'
 
