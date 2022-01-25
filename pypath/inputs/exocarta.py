@@ -111,11 +111,7 @@ def _get_exocarta_vesiclepedia(
 
     # processing proteins
     url_p = urls.urls[database]['url_protein']
-
-    with settings.context(curl_timeout = 180):
-
-        c = curl.Curl(url_p, large = True, silent = False)
-
+    c = curl.Curl(url_p, large = True, silent = False, slow = True)
     _ = next(c.result)
 
     for s in c.result:

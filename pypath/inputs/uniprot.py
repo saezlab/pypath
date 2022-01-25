@@ -68,10 +68,7 @@ def _all_uniprots(organism = 9606, swissprot = None):
         'columns': 'id',
     }
 
-    with settings.context(curl_timeout = 60):
-
-        c = curl.Curl(url, get = get, silent = False)
-
+    c = curl.Curl(url, get = get, silent = False, slow = True)
     data = c.result
 
     return {
