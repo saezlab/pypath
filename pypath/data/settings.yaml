@@ -43,11 +43,11 @@ default_label_types:
   small_molecule: rxnorm
   drug: rxnrom
 small_molecule_entity_types:
-  small_molecule
-  drug
-  metabolite
-  lipid
-  compound
+- small_molecule
+- drug
+- metabolite
+- lipid
+- compound
 datasets:
 - omnipath
 - curated
