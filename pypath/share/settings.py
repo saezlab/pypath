@@ -33,7 +33,7 @@ import os, yaml
 import collections
 import contextlib
 
-__all__ = [Settings, settings, get, setup, context]
+__all__ = ['Settings', 'settings', 'get', 'setup', 'context']
 
 ROOT = os.path.join(
     *os.path.split(
@@ -372,7 +372,7 @@ _defaults = Settings()
 settings = Settings()
 
 
-def get(param, oeverride = None):
+def get(param, override = None):
     """
     The current value of a settings parameter.
 
