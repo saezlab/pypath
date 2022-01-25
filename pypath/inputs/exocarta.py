@@ -26,6 +26,7 @@ from future.utils import iteritems
 import collections
 
 import pypath.share.curl as curl
+import pypath.share.settings as settings
 import pypath.resources.urls as urls
 import pypath.utils.taxonomy as taxonomy
 
@@ -110,7 +111,11 @@ def _get_exocarta_vesiclepedia(
 
     # processing proteins
     url_p = urls.urls[database]['url_protein']
-    c = curl.Curl(url_p, large = True, silent = False)
+
+    with settings.context(curl_timeout = 180):
+
+        c = curl.Curl(url_p, large = True, silent = False)
+
     _ = next(c.result)
 
     for s in c.result:
