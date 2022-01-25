@@ -38,7 +38,7 @@ def oreganno_raw():
     """
 
     url = urls.urls['oreganno']['url']
-    c = curl.Curl(url, silent = False, large = True)
+    c = curl.Curl(url, silent = False, large = True, slow = True)
     data = c.result
     _ = next(data)
 

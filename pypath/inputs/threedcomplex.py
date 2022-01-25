@@ -206,6 +206,7 @@ def threedcomplex_contacts(chains = None, pdb_uniprot = None):
     c = curl.Curl(
         urls.urls['3dcomplex_contact']['url'],
         silent = False,
+        slow = True,
     )
     contact = c.result
 

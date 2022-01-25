@@ -39,7 +39,7 @@ def get_li2012():
     """
 
     url = urls.urls['li2012']['url']
-    c = curl.Curl(url, silent = False, large = True)
+    c = curl.Curl(url, silent = False, large = True, slow = True)
     xls = c.fileobj
     xlsfile = xls.name
     xls.close()

@@ -43,7 +43,7 @@ def stitch_interactions(threshold = None):
 
     url = urls.urls['stitch']['actions']
 
-    c = curl.Curl(url, silent = False, large = True)
+    c = curl.Curl(url, silent = False, large = True, slow = True)
 
     _ = next(c.result)
 

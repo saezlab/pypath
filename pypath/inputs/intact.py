@@ -108,6 +108,7 @@ def intact_interactions(
         silent = False,
         large = True,
         files_needed = ['intact.txt'],
+        slow = True,
     )
 
     data = c.result['intact.txt']

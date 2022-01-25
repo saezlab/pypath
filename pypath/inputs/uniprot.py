@@ -1210,7 +1210,7 @@ Taxon.__new__.__defaults__ = (None, None)
 def uniprot_ncbi_taxids():
 
     url = urls.urls['uniprot_basic']['taxids']
-    c = curl.Curl(url, large = True, silent = False, compr = 'gz')
+    c = curl.Curl(url, large = True, silent = False, compr = 'gz', slow = True)
 
     _ = next(c.result)
 

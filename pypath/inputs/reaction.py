@@ -59,7 +59,7 @@ def reactome_sbml():
     """
 
     url = urls.urls['reactome']['sbml']
-    c = curl.Curl(url, silent = False, large = True)
+    c = curl.Curl(url, silent = False, large = True, slow = True)
     sbml = c.fileobj
 
     return sbml
