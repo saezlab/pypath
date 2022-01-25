@@ -836,6 +836,7 @@ class Curl(FileOpener):
             empty_attempt_again = True,
             keep_failed = False,
             alpn = True,
+            slow = False,
         ):
 
         if not hasattr(self, '_logger'):
@@ -884,7 +885,11 @@ class Curl(FileOpener):
         self.files_needed = files_needed
 
         self.follow_http_redirect = follow
-        self.timeout = settings.get('curl_timeout')
+        self.timeout = (
+            settings.get('curl_extended_timeout')
+                if slow else
+            settings.get('curl_timeout')
+        )
         self.connect_timeout = settings.get('curl_connect_timeout')
         self.ignore_content_length = ignore_content_length
         self.override_post = override_post
