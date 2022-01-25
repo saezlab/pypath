@@ -113,7 +113,7 @@ def elm_instances():
     )
 
     url = urls.urls['elm_inst']['url']
-    c = curl.Curl(url, silent = False)
+    c = curl.Curl(url, silent = False, slow = True)
     data = c.result
     data = data.replace('"', '').split('\n')
     data = [
@@ -165,7 +165,7 @@ def elm_interactions():
 
     result = []
     url = urls.urls['elm_int']['url']
-    c = curl.Curl(url, silent = False)
+    c = curl.Curl(url, silent = False, slow = True)
     data = c.result
     data = data.split('\n')
     del data[0]
