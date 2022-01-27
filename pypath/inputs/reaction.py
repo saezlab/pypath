@@ -55,14 +55,13 @@ from pypath.resources import data_formats
 def reactome_sbml():
     """
     Downloads Reactome human reactions in SBML format.
-    Returns an open file object.
+    Returns a dict of file objects.
     """
 
     url = urls.urls['reactome']['sbml']
     c = curl.Curl(url, silent = False, large = True, slow = True)
-    sbml = c.fileobj
 
-    return sbml
+    return c.result
 
 
 def reactome_biopax(organism = 9606, cache = True):
@@ -118,7 +117,7 @@ def pid_biopax():
 
 def panther_biopax():
     url = urls.urls['panther']['biopax_l3']
-    c = curl.Curl(url, silent = False, large = True).values()
+    c = curl.Curl(url, silent = False, large = True)
 
     return c.result
 
@@ -131,11 +130,16 @@ def acsn_biopax():
 
 
 def reactome_bs():
+    """
+    Reactome pathways in SBML format. Yields tuples of pathway IDs (string)
+    and SBML representationa of the pathwaya as a `bs4.BeautifulSoup` objects.
+    """
 
     sbml = reactome_sbml()
-    soup = bs4.BeautifulSoup(sbml.read(), 'html.parser')
 
-    return soup
+    for k, v in sbml.items():
+
+        yield k[:-5], bs4.BeautifulSoup(v.read(), 'html.parser')
 
 
 # Process Reactome BioPAX level 3
@@ -764,24 +768,29 @@ def reactome_interactions(cacheFile = None, ask = True, **kwargs):
 
 
 def acsn_interactions_2(**kwargs):
+
     return get_interactions('acsn', **kwargs)
 
 
 def pid_interactions(**kwargs):
+
     return get_interactions('pid', **kwargs)
 
 
 def panther_interactions(**kwargs):
+
     return get_interactions('panther', **kwargs)
 
 
 def get_interactions(source, mandatory_refs = True):
+
     ctrls = get_controls(source)
 
     return process_controls(ctrls, mandatory_refs)[0]
 
 
 def get_controls(source, protein_name_type = None):
+
     name_types = {
         'acsn': 'HGNC',
         'reactome': 'UniProt',
@@ -810,6 +819,7 @@ def get_controls(source, protein_name_type = None):
 
 
 def process_controls(controls, mandatory_refs = True):
+
     interactions = set([])
     ptms = []
     regulations = []
@@ -951,59 +961,71 @@ def _reactome_extract_res(value):
 
 
 def _reactome_reactions():
+
     species = {}
     compartments = {}
     reactions = {}
-    soup = reactome_bs()
-    m = soup.find('model')
+    soups = reactome_bs()
 
-    for cp in m.find('listofcompartments').find_all('compartment'):
-        compartments[_reactome_id(cp, 'id')] = cp.attrs['name']
+    for pw, soup in soups:
 
-    for sp in m.find('listofspecies').find_all('species'):
-        cp = _reactome_id(sp, 'compartment')
-        si = _reactome_id(sp, 'id')
-        nm = sp.attrs['name']
-        ids = []
+        m = soup.find('model')
 
-        for i in sp.find('bqbiol:haspart').find_all('rdf:li'):
-            ids.append(_reactome_res(i))
+        for cp in m.find('listofcompartments').find_all('compartment'):
 
-        ids = sorted(common.uniq_list(ids))
-        species[si] = {'name': nm, 'comp': cp, 'ids': ids}
+            compartments[_reactome_id(cp, 'id')] = cp.attrs['name']
 
-    for rea in m.find('listofreactions').find_all('reaction'):
-        ri = _reactome_id(rea, 'id')
-        refs = []
+        for sp in m.find('listofspecies').find_all('species'):
 
-        for r in rea.find('bqbiol:isdescribedby').find_all('rdf:li'):
-            refs.append(_reactome_res(r))
+            cp = _reactome_id(sp, 'compartment')
+            si = _reactome_id(sp, 'id')
+            nm = sp.attrs['name']
+            ids = []
 
-        refs = sorted(common.uniq_list(refs))
-        reas = []
+            for i in sp.find('bqbiol:haspart').find_all('rdf:li'):
 
-        for r in rea.find('listofreactants').find_all('speciesreference'):
-            reas.append(_reactome_id(r, 'species'))
+                ids.append(_reactome_res(i))
 
-        reas = sorted(common.uniq_list(reas))
-        prds = []
+            ids = sorted(common.uniq_list(ids))
+            species[si] = {'name': nm, 'comp': cp, 'ids': ids}
 
-        for p in rea.find('listofproducts').find_all('speciesreference'):
-            prds.append(_reactome_id(p, 'species'))
+        for rea in m.find('listofreactions').find_all('reaction'):
 
-        prds = sorted(common.uniq_list(prds))
-        note = rea.find('notes').text
-        reactions[ri] = {
-            'refs': refs,
-            'reas': reas,
-            'prds': prds,
-            'note': note
-        }
+            ri = _reactome_id(rea, 'id')
+            refs = []
+
+            for r in rea.find('bqbiol:isdescribedby').find_all('rdf:li'):
+
+                refs.append(_reactome_res(r))
+
+            refs = sorted(common.uniq_list(refs))
+            reas = []
+
+            for r in rea.find('listofreactants').find_all('speciesreference'):
+
+                reas.append(_reactome_id(r, 'species'))
+
+            reas = sorted(common.uniq_list(reas))
+            prds = []
+
+            for p in rea.find('listofproducts').find_all('speciesreference'):
+
+                prds.append(_reactome_id(p, 'species'))
+
+            prds = sorted(common.uniq_list(prds))
+            note = rea.find('notes').text
+            reactions[ri] = {
+                'refs': refs,
+                'reas': reas,
+                'prds': prds,
+                'note': note
+            }
 
     return compartments, species, reactions
 
 
 def _reactome_reactions_et():
+
     sbmlPfx = '{http://www.sbml.org/sbml/level2/version4}'
     compStr = '%scompartment' % sbmlPfx
     reacStr = '%sreaction' % sbmlPfx
@@ -1012,27 +1034,35 @@ def _reactome_reactions_et():
     compartments = {}
     reactions = {}
     sbml = reactome_sbml()
-    ctx = etree.iterparse(sbml, events = ('end', ))
 
-    for ev, elem in ctx:
-        if elem.tag == compStr:
-            k, v = _reactome_compartment(elem)
-            compartments[k] = v
+    for pw_sbml in sbml.values():
 
-        elif elem.tag == reacStr:
-            k, v = _reactome_reaction(elem)
-            reactions[k] = v
+        ctx = etree.iterparse(pw_sbml, events = ('end', ))
 
-        elif elem.tag == specStr:
-            k, v = _reactome_species(elem)
-            species[k] = v
+        for ev, elem in ctx:
 
-        elem.clear()
+            if elem.tag == compStr:
 
-        while elem.getprevious() is not None:
-            del elem.getparent()[0]
+                k, v = _reactome_compartment(elem)
+                compartments[k] = v
 
-    return compartments, species, reactions
+            elif elem.tag == reacStr:
+
+                k, v = _reactome_reaction(elem)
+                reactions[k] = v
+
+            elif elem.tag == specStr:
+
+                k, v = _reactome_species(elem)
+                species[k] = v
+
+            elem.clear()
+
+            while elem.getprevious() is not None:
+
+                del elem.getparent()[0]
+
+        return compartments, species, reactions
 
 
 def _reactome_compartment(elem):
