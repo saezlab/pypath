@@ -67,6 +67,7 @@ EXCLUDE = {
     'uniprot_deleted',
     'swissprot_deleted',
     'trembl_deleted',
+    'uniprot_ncbi_taxids', # takes too long
 }
 
 ARGS = {}
