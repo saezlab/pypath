@@ -709,7 +709,7 @@ class MapReader(session_mod.Logger):
             if c.result is None or c.fileobj.read(5) == '<!DOC':
 
                 self._console(
-                    'Error at downloading ID mapping data from UniProt.', -9
+                    'Error at downloading ID mapping data from UniProt.'
                 )
 
                 c.result = ''
