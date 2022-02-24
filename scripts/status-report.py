@@ -803,7 +803,7 @@ class StatusReport(object):
                             if size is not None else
                         len(value)
                             if hasattr(value, '__len__') else
-                        None
+                        0
                     ),
                 )
 
