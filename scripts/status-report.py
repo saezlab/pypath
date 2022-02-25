@@ -867,7 +867,7 @@ class StatusReport(object):
                 prev['value_size'] != result['value_size']
             ):
 
-                diff['size'] = result['value_size'] - prev['value_size']
+                diff['size'] = result['value_size'] - (prev['value_size'] or 0)
 
             if (
                 'value_type' in prev and
