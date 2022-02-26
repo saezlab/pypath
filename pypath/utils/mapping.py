@@ -831,7 +831,22 @@ class MapReader(session_mod.Logger):
         Loads a mapping table using BioMart data.
         """
 
-        biomart_data = biomart_input.biomart_query(attrs = self.param.attrs)
+        ens_organism = taxonomy.ensure_ensembl_name(self.param.ncbi_tax_id)
+
+        if not ens_organism:
+
+            self._log(
+                'Organism not available in Ensembl: `%u`.' % (
+                    self.param.ncbi_tax_id
+                )
+            )
+            return
+
+        dataset = '%s_gene_ensembl' % ens_organism
+        biomart_data = biomart_input.biomart_query(
+            attrs = self.param.attrs,
+            dataset = dataset,
+        )
 
         a_to_b = collections.defaultdict(set)
         b_to_a = collections.defaultdict(set)
@@ -850,8 +865,6 @@ class MapReader(session_mod.Logger):
                 if self.load_b_to_a:
 
                     b_to_a[id_b].add(id_a)
-
-
 
         self.a_to_b = dict(a_to_b) if self.load_a_to_b else None
         self.b_to_a = dict(b_to_a) if self.load_b_to_a else None

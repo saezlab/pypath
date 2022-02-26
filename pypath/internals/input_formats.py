@@ -445,7 +445,7 @@ class BiomartMapping(MappingInput):
             type_ = 'biomart',
             id_type_a = id_type_a,
             id_type_b = id_type_b,
-            ncbi_tax_id = 9606,
+            ncbi_tax_id = ncbi_tax_id,
             resource_id_type_a = biomart_id_type_a,
             resource_id_type_b = biomart_id_type_b,
         )
