@@ -1031,6 +1031,11 @@ class MappingTable(session_mod.Logger):
         return key in self.data
 
 
+    def __len__(self):
+
+        return len(self.data)
+
+
     def _used(self):
 
         self._last_used = time.time()
@@ -1066,7 +1071,9 @@ class MappingTable(session_mod.Logger):
 
     def __repr__(self):
 
-        return '<MappingTable from=%s, to=%s, taxon=%u>' % self.key
+        return '<MappingTable from=%s, to=%s, taxon=%u (%u IDs)>' % (
+            self.key + (len(self),)
+        )
 
 
 class Mapper(session_mod.Logger):
