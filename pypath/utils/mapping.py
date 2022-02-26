@@ -1481,7 +1481,11 @@ class Mapper(session_mod.Logger):
 
             if tbl is None:
 
-                if id_type in self.uniprot_static_names:
+                if (
+                    settings.get('mapping_uniprot_static') and
+                    id_type in self.uniprot_static_names and
+                    target_id_type == 'uniprot'
+                ):
 
                     self.load_uniprot_static([id_type])
 

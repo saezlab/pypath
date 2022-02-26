@@ -101,6 +101,7 @@ lncrna_mrna_pickle: lncrna_mrna.pickle
 # Internet settings
 server_annotations_full_download: false
 mapping_use_cache: true
+mapping_uniprot_static: false
 use_intermediate_cache: true
 uniprot_uploadlists_chunk_size: 10000
 timestamp_dirs: true
