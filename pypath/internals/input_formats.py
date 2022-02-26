@@ -82,6 +82,7 @@ BIOMART_MAPPING = {
     'hgnc_trans_name': 'hgnc_trans_name',
     'wikigene_name': 'wikigene_name',
     'gene_name': 'external_gene_name',
+    'genesymbol': 'external_gene_name',
     'transcript_name': 'external_transcript_name',
     'gene_description': 'description',
     'gene_synonym': 'external_synonym',
