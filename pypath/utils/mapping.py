@@ -2924,6 +2924,7 @@ class Mapper(session_mod.Logger):
         data = dict((key, collections.defaultdict(set)) for key in keys)
         cache_files = {}
         to_load = set()
+        id_type_b = 'uniprot'
 
         # attempting to load them from Pickle
         for key in keys:
@@ -2959,8 +2960,6 @@ class Mapper(session_mod.Logger):
                 'Processing ID conversion list',
                 99,
             )
-
-            id_type_b = 'uniprot'
 
             for line in c.result:
 
@@ -3003,8 +3002,8 @@ class Mapper(session_mod.Logger):
 
             table = MappingTable(
                 data = this_data,
-                id_type = key.id_type,
-                target_id_type = key.target_id_type,
+                id_type = key,
+                target_id_type = id_type_b,
                 ncbi_tax_id = ncbi_tax_id,
                 lifetime = 600,
             )
