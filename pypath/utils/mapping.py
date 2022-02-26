@@ -1759,7 +1759,7 @@ class Mapper(session_mod.Logger):
             )
 
         # as ID translation tables for PRO IDs are not organism specific
-        # we need an extra step to limit the results for the target organism
+        # we need an extra step to limit the results to the target organism
         if id_type == 'pro' and target_id_type == 'uniprot':
 
             mapped_names = (
@@ -1832,6 +1832,24 @@ class Mapper(session_mod.Logger):
                     if mapped_names:
 
                         break
+
+        # for genesymbol, we automatically try 2 steps mapping via uniprot
+        if (
+            not mapped_names and (
+                id_type =='genesymbol' or
+                target_id_type == 'genesymbol'
+            ) and
+            id_type != 'uniprot' and
+            target_id_type != 'uniprot'
+        ):
+
+            mapped_names = self.chain_map(
+                name = name,
+                id_type = id_type,
+                by_id_type = 'uniprot',
+                target_id_type = target_id_type,
+                ncbi_tax_id = ncbi_tax_id,
+            )
 
         if not mapped_names:
 
