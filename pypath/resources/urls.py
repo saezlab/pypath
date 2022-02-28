@@ -1419,6 +1419,10 @@ urls = {
         'label': 'Cancer Drug Database of licensed drugs by the Anticancer Fund',
         'url': 'https://acfdata.coworks.be/cancerdrugsdb.txt',
     },
+    'biomodels': {
+        'label': 'RESTful API base URL of EMBL-EBI BioModels (https://www.ebi.ac.uk/biomodels/)',
+        'url': 'https://www.ebi.ac.uk/biomodels/',
+    },
     'biogps': {
         'label': 'A collection of human and mouse tissue and cell line '
             'gene expression profiles',
