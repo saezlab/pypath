@@ -35,12 +35,13 @@ def test_cancerdrugsdb():
     # how to test for specific interactions when they are not 1 to 1?
 
 def test_biomodels_one_model():
-    model = biomodels.get_single_model_information("BIOMD0000000299")
+    model = biomodels.get_single_model_information(
+        "BIOMD0000000299", invalidate = False)
 
     assert model["name"] == 'Leloup1999_CircadianRhythms_Neurospora'
 
 def test_biomodels_all_models():
-    models = biomodels.get_all_models()
+    models = biomodels.get_all_models(invalidate = False)
 
     assert (
         len(models) > 2000 
@@ -52,7 +53,10 @@ def test_biomodels_download():
     model = biomodels.get_single_model_information("BIOMD0000000299")
 
     dl = biomodels.get_single_model_main_file(
-        model["publicationId"], model["files"]["main"][0]["name"])
+            model["publicationId"], 
+            model["files"]["main"][0]["name"], 
+            invalidate = False
+        )
 
     od = dl["sbml"]
     md = od["model"]
