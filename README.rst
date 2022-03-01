@@ -42,7 +42,7 @@ need to build the database yourself, try our `Python client`_.
   client`_ for the OmniPath web service has been developed and is maintained
   by Michael Klein in the group of Fabian Theis.
 
-.. _`Python client`_: https://github.com/saezlab/omnipath
+.. _`Python client`: https://github.com/saezlab/omnipath
 
 **pypath** is a Python module for processing molecular biology data resources,
 combining them into databases and providing a versatile interface in Python

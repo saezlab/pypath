@@ -67,6 +67,7 @@ EXCLUDE = {
     'uniprot_deleted',
     'swissprot_deleted',
     'trembl_deleted',
+    'uniprot_ncbi_taxids', # takes too long
 }
 
 ARGS = {}
@@ -802,7 +803,7 @@ class StatusReport(object):
                             if size is not None else
                         len(value)
                             if hasattr(value, '__len__') else
-                        None
+                        0
                     ),
                 )
 
@@ -866,7 +867,7 @@ class StatusReport(object):
                 prev['value_size'] != result['value_size']
             ):
 
-                diff['size'] = result['value_size'] - prev['value_size']
+                diff['size'] = result['value_size'] - (prev['value_size'] or 0)
 
             if (
                 'value_type' in prev and

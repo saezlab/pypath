@@ -753,9 +753,9 @@ urls = {
     'reactome': {
         'label': 'The Reactome reaction network database',
         'sbml':
-        'http://www.reactome.org/download/current/homo_sapiens.2.sbml.gz',
-        'biopax_l3': 'http://www.reactome.org/download/current/biopax.zip',
-        'biopax_l2': 'http://www.reactome.org/download/current/biopax2.zip'
+        'https://reactome.org/download/current/homo_sapiens.3.1.sbml.tgz',
+        'biopax_l3': 'https://reactome.org/download/current/biopax.zip',
+        'biopax_l2': 'https://reactome.org/download/current/biopax2.zip',
     },
     'acsn': {
         'label': 'Atlas of Cancer Signaling Networks',

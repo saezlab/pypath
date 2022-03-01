@@ -351,7 +351,7 @@ def hpmr_complexes(use_cache = None):
             cplex.__str__(),
             cplex,
         )
-        for cplex in hpmr_data['complexes']
+        for cplex in hpmr_data.get('complexes', ())
     )
 
     return complexes

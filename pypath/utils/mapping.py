@@ -709,7 +709,7 @@ class MapReader(session_mod.Logger):
             if c.result is None or c.fileobj.read(5) == '<!DOC':
 
                 self._console(
-                    'Error at downloading ID mapping data from UniProt.', -9
+                    'Error at downloading ID mapping data from UniProt.'
                 )
 
                 c.result = ''
@@ -831,7 +831,22 @@ class MapReader(session_mod.Logger):
         Loads a mapping table using BioMart data.
         """
 
-        biomart_data = biomart_input.biomart_query(attrs = self.param.attrs)
+        ens_organism = taxonomy.ensure_ensembl_name(self.param.ncbi_tax_id)
+
+        if not ens_organism:
+
+            self._log(
+                'Organism not available in Ensembl: `%u`.' % (
+                    self.param.ncbi_tax_id
+                )
+            )
+            return
+
+        dataset = '%s_gene_ensembl' % ens_organism
+        biomart_data = biomart_input.biomart_query(
+            attrs = self.param.attrs,
+            dataset = dataset,
+        )
 
         a_to_b = collections.defaultdict(set)
         b_to_a = collections.defaultdict(set)
@@ -850,8 +865,6 @@ class MapReader(session_mod.Logger):
                 if self.load_b_to_a:
 
                     b_to_a[id_b].add(id_a)
-
-
 
         self.a_to_b = dict(a_to_b) if self.load_a_to_b else None
         self.b_to_a = dict(b_to_a) if self.load_b_to_a else None
@@ -1031,6 +1044,11 @@ class MappingTable(session_mod.Logger):
         return key in self.data
 
 
+    def __len__(self):
+
+        return len(self.data)
+
+
     def _used(self):
 
         self._last_used = time.time()
@@ -1066,7 +1084,9 @@ class MappingTable(session_mod.Logger):
 
     def __repr__(self):
 
-        return '<MappingTable from=%s, to=%s, taxon=%u>' % self.key
+        return '<MappingTable from=%s, to=%s, taxon=%u (%u IDs)>' % (
+            self.key + (len(self),)
+        )
 
 
 class Mapper(session_mod.Logger):
@@ -1481,7 +1501,11 @@ class Mapper(session_mod.Logger):
 
             if tbl is None:
 
-                if id_type in self.uniprot_static_names:
+                if (
+                    settings.get('mapping_uniprot_static') and
+                    id_type in self.uniprot_static_names and
+                    target_id_type == 'uniprot'
+                ):
 
                     self.load_uniprot_static([id_type])
 
@@ -1755,7 +1779,7 @@ class Mapper(session_mod.Logger):
             )
 
         # as ID translation tables for PRO IDs are not organism specific
-        # we need an extra step to limit the results for the target organism
+        # we need an extra step to limit the results to the target organism
         if id_type == 'pro' and target_id_type == 'uniprot':
 
             mapped_names = (
@@ -1828,6 +1852,24 @@ class Mapper(session_mod.Logger):
                     if mapped_names:
 
                         break
+
+        # for genesymbol, we automatically try 2 steps mapping via uniprot
+        if (
+            not mapped_names and (
+                id_type =='genesymbol' or
+                target_id_type == 'genesymbol'
+            ) and
+            id_type != 'uniprot' and
+            target_id_type != 'uniprot'
+        ):
+
+            mapped_names = self.chain_map(
+                name = name,
+                id_type = id_type,
+                by_id_type = 'uniprot',
+                target_id_type = target_id_type,
+                ncbi_tax_id = ncbi_tax_id,
+            )
 
         if not mapped_names:
 
@@ -2924,6 +2966,7 @@ class Mapper(session_mod.Logger):
         data = dict((key, collections.defaultdict(set)) for key in keys)
         cache_files = {}
         to_load = set()
+        id_type_b = 'uniprot'
 
         # attempting to load them from Pickle
         for key in keys:
@@ -2959,8 +3002,6 @@ class Mapper(session_mod.Logger):
                 'Processing ID conversion list',
                 99,
             )
-
-            id_type_b = 'uniprot'
 
             for line in c.result:
 
@@ -3003,8 +3044,8 @@ class Mapper(session_mod.Logger):
 
             table = MappingTable(
                 data = this_data,
-                id_type = key.id_type,
-                target_id_type = key.target_id_type,
+                id_type = key,
+                target_id_type = id_type_b,
                 ncbi_tax_id = ncbi_tax_id,
                 lifetime = 600,
             )

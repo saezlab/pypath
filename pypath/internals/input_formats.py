@@ -82,6 +82,7 @@ BIOMART_MAPPING = {
     'hgnc_trans_name': 'hgnc_trans_name',
     'wikigene_name': 'wikigene_name',
     'gene_name': 'external_gene_name',
+    'genesymbol': 'external_gene_name',
     'transcript_name': 'external_transcript_name',
     'gene_description': 'description',
     'gene_synonym': 'external_synonym',
@@ -444,7 +445,7 @@ class BiomartMapping(MappingInput):
             type_ = 'biomart',
             id_type_a = id_type_a,
             id_type_b = id_type_b,
-            ncbi_tax_id = 9606,
+            ncbi_tax_id = ncbi_tax_id,
             resource_id_type_a = biomart_id_type_a,
             resource_id_type_b = biomart_id_type_b,
         )
