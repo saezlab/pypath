@@ -21,6 +21,12 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+"""
+This file collects all available models from the biomodels repository
+using the bioservices python module, then downloads the individual
+models to parse for the relevant information to enter into pypath.
+"""
+
 import time
 import json
 
@@ -36,12 +42,17 @@ import pypath.share.session as session
 _logger = session.Logger(name = 'biomodels_input')
 _log = _logger._log
 
-"""
-Colon character in IDs must be escaped. Askerisk too?
-"""
-
 def get_single_model(model_id):
-    """Get single BioModel using bioservices."""
+    """
+    Get single BioModel using bioservices.
+    
+    Args:
+        model_id (str): ID of model
+
+    Returns:
+        dict: dictionary containing model specifics, eg name/id,
+        description, associated files
+    """
     bm = biom.BioModels()
     model = bm.get_model(model_id)
 
@@ -49,19 +60,26 @@ def get_single_model(model_id):
 
 def get_all_models():
     """
-    Fetch list of available models from API.
+    Fetch list of available models using bioservices.
 
     Returns: 
         dict: A dictionary of models with model identifiers as keys and
-        model attributes as values.
+        model attributes as values. Model attributes include format
+        (SMBL being most common), model id, name,
+        submission/modification date and author.
     """
 
     bm = biom.BioModels()
+    # CAUTION: Below function has a bug causing an infinite loop (Mar22)
     models = bm.get_all_models()
 
     return models
 
-
+def download_single_model(model_id):
+    """
+    Download the main file of a single model to extract relevant data 
+    for pypath integration. Downloaded models should be cached.
+    """
 
 
 def _get_biomodels():
