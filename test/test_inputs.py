@@ -1,6 +1,7 @@
 import pypath.inputs.cancerdrugs_db as cancerdrugs_db
 import pypath.inputs.cancerdrugsdb as cancerdrugsdb
 import pypath.inputs.biomodels as biomodels
+from collections import OrderedDict
 
 def test_cancerdrugs_db():
     # test annotations
@@ -34,7 +35,7 @@ def test_cancerdrugsdb():
     # how to test for specific interactions when they are not 1 to 1?
 
 def test_biomodels_one_model():
-    model = biomodels.get_single_model("BIOMD0000000299")
+    model = biomodels.get_single_model_information("BIOMD0000000299")
 
     assert model["name"] == 'Leloup1999_CircadianRhythms_Neurospora'
 
@@ -46,5 +47,27 @@ def test_biomodels_all_models():
         and isinstance(models[0], dict) 
         and 'format' in models[0].keys()
         )
+
+def test_biomodels_download():
+    model = biomodels.get_single_model_information("BIOMD0000000299")
+
+    dl = biomodels.get_single_model_main_file(
+        model["publicationId"], model["files"]["main"][0]["name"])
+
+    od = dl["sbml"]
+    md = od["model"]
+
+    assert (
+        isinstance(od, OrderedDict)
+        and isinstance(md, OrderedDict)
+        and all(key in md.keys() 
+                for key in [
+                    "listOfCompartments", 
+                    "listOfSpecies", 
+                    "listOfParameters", 
+                    "listOfRules", 
+                    "annotation"
+                ])
+    )
 
     

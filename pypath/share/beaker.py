@@ -31,6 +31,10 @@ from beaker.cache import CacheManager, cache_regions
 from beaker.util import parse_cache_config_options
 
 import pypath.share.settings as settings
+import pypath.share.session as session
+
+_logger = session.Logger(name = 'beaker')
+_log = _logger._log
 
 # def get_cache_regions():
 #     cache_regions.update({
@@ -58,7 +62,11 @@ def get_cache_manager():
 
     Todo:
         explicit purge functionality
+
+        do we want a "daily" type (for updating lists such as all 
+        biomodels)?
     """
+    _log("Returning cache manager.")
 
     cache_opts = {
         'cache.data_dir': settings.get('cachedir') + '/data',
