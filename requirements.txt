@@ -16,4 +16,5 @@ future
 tqdm
 tabulate
 rdata
+beaker
 -e .
