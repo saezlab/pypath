@@ -25,6 +25,11 @@
 """
 File cache management using beaker
 (https://beaker.readthedocs.io/en/latest/index.html).
+
+Notes:
+    "_dbm.error: cannot add item to database": sometimes
+    deleting cache helps. The dbm.db file goes to 4.4 TB
+    on one specific biomodel download and can't be repaired.
 """
 
 from beaker.cache import CacheManager, cache_regions

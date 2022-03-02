@@ -105,10 +105,10 @@ def get_all_models(invalidate=False):
     return _get_all_models()
     
 
-def get_single_model_main_file(model_id, filename, invalidate = False):
+def get_single_model_main_file(model_id, filename, version, invalidate = False):
     """
     Download or load from cache the main file of a single model to
-    extract relevant data for pypath integration. Parse original XML to 
+    extract relevant data for pypath integration. Parse original XML to
     OrderedDict.
 
     Args:
@@ -116,7 +116,11 @@ def get_single_model_main_file(model_id, filename, invalidate = False):
     
         filename (str): Model filename
 
-        invalidate (bool): Whether to invalidate the cache file for a 
+        version (int): Current version of model derived from single
+        model information; necessary to generate the correct download
+        URL
+
+        invalidate (bool): Whether to invalidate the cache file for a
         given model and filename
 
     Returns:
@@ -124,13 +128,16 @@ def get_single_model_main_file(model_id, filename, invalidate = False):
     """
 
     @cache.region('long_term', 'download_single_biomodels_model_main_file')
-    def _get_single_model_main_file(model_id, filename):
+    def _get_single_model_main_file(model_id, filename, version):
 
         if not "xml" in filename.lower():
             _log("Warning: it appears you are attempting to download a non-xml " 
             "file. This function is designed to retrieve the main BioModels "
             "XML file for a given model.")
             return False
+
+        if version > 1:
+            model_id = f"{model_id}.{version}"
 
         params = {}
         if filename:
@@ -149,9 +156,83 @@ def get_single_model_main_file(model_id, filename, invalidate = False):
                 None, 
                 "download_single_biomodels_model_main_file",
                 model_id,
-                filename
+                filename,
+                version
             )
 
     _log(f"Returning BioModels download: model {model_id}, file {filename}.")
-    return _get_single_model_main_file(model_id, filename)
+    return _get_single_model_main_file(model_id, filename, version)
     
+
+def parse_biomodels(invalidate=False):
+    """
+    Get the entire list of BioModels, download each model's main file, 
+    and parse the main file for integration data.
+    """
+
+    # @cache.region("long_term", "parse_biomodels")
+    def _parse_biomodels():
+
+        all_models = get_all_models(invalidate)
+
+        all_model_info = [
+            get_single_model_information(model_id, invalidate) 
+            for model_id in
+            [model["id"] for model in all_models]
+        ]
+
+        def get_model_file_version_tuples(model):
+            """
+            Get model id, online file name, and current version.
+
+            Args:
+                model (str): dict of model info from
+                `get_single_model_information()`  
+
+            Returns:
+                tuple of str: model id, filename, and current version
+            """
+            id = model.get("publicationId") or model.get("submissionId")
+            history = model.get("history")
+            if history and model["files"].get("main"):
+                version = history.get("revisions")[-1].get("version")
+                filename = model["files"]["main"][0]["name"]
+                return (id, filename, version)
+            else:
+                _log(f"Model {id} does not appear to have an associated main "
+                    "file and/or version.")
+                return (id, None, None)
+
+        # parse and extract TODO
+        for model in all_model_info:
+            model_id, filename, version = get_model_file_version_tuples(model)
+            f = get_single_model_main_file(
+                model_id, 
+                filename, 
+                version, 
+                invalidate
+            )
+
+            d = f.get("sbml").get("model")
+
+            # get RDF description
+            rdf_desc = d["annotation"]["rdf:RDF"]["rdf:Description"]
+            # disease 
+            rdf_desc.get("")
+            
+            ["bqbiol:hasProperty"][0]["rdf:Bag"]["rdf:li"]["@rdf:resource"]
+
+            # tissue
+
+            # compound
+            
+
+    # if invalidate:
+    #     cache.region_invalidate(
+    #             _parse_biomodels, 
+    #             None, 
+    #             "parse_biomodels",
+    #             invalidate
+    #         )
+
+    return _parse_biomodels()

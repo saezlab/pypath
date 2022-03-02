@@ -36,7 +36,7 @@ def test_cancerdrugsdb():
 
 def test_biomodels_one_model():
     model = biomodels.get_single_model_information(
-        "BIOMD0000000299", invalidate = False)
+        "MODEL1508040001", invalidate = False)
 
     assert model["name"] == 'Leloup1999_CircadianRhythms_Neurospora'
 
@@ -50,11 +50,19 @@ def test_biomodels_all_models():
         )
 
 def test_biomodels_download():
-    model = biomodels.get_single_model_information("BIOMD0000000299")
+    """
+    MODEL1508040001: is v2 on webpage, download fails because ".2" is missing from URL
+    https://www.ebi.ac.uk/biomodels/model/download/MODEL1508040001.2?filename=MODEL1508040001_url.xml
+    """
+    model = biomodels.get_single_model_information("MODEL1508040001")
+
+    model_id = model.get("publicationId") or model.get("submissionId")
+    version = model.get("history").get("revisions")[-1].get("version")
 
     dl = biomodels.get_single_model_main_file(
-            model["publicationId"], 
+            model_id, 
             model["files"]["main"][0]["name"], 
+            version = version,
             invalidate = False
         )
 
@@ -68,10 +76,41 @@ def test_biomodels_download():
                 for key in [
                     "listOfCompartments", 
                     "listOfSpecies", 
-                    "listOfParameters", 
-                    "listOfRules", 
                     "annotation"
                 ])
     )
 
+def test_biomodels_download2():
+    """
+    MODEL1509220012: doesn't fail after deleting cache..??
+    https://www.ebi.ac.uk/biomodels/model/download/MODEL1508040001.2?filename=MODEL1508040001_url.xml
+    """
+    model = biomodels.get_single_model_information("MODEL1509220012")
+
+    model_id = model.get("publicationId") or model.get("submissionId")
+    version = model.get("history").get("revisions")[-1].get("version")
+
+    dl = biomodels.get_single_model_main_file(
+            model_id, 
+            model["files"]["main"][0]["name"], 
+            version = version,
+            invalidate = False
+        )
+
+    od = dl["sbml"]
+    md = od["model"]
+
+    assert (
+        isinstance(od, OrderedDict)
+        and isinstance(md, OrderedDict)
+        and all(key in md.keys() 
+                for key in [
+                    "listOfCompartments", 
+                    "listOfSpecies", 
+                    "annotation"
+                ])
+    )
+
+def test_biomodels_parse():
+    parse = biomodels.parse_biomodels(invalidate = False)
     
