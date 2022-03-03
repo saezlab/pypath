@@ -28,6 +28,7 @@ models to parse for the relevant information to enter into pypath.
 """
 
 import bioservices.biomodels as biom
+from sbmlutils.metadata.annotator import ModelAnnotator
 import xmltodict
 
 import pypath.share.session as session
@@ -38,6 +39,39 @@ _log = _logger._log
 cache = bk.get_cache_manager()
 
 bm = biom.BioModels()
+
+
+def get_all_models(invalidate=False):
+    """
+    Fetch list of available models using bioservices or load from cache.
+
+    Args:
+        invalidate (bool): Whether to invalidate the cache file
+
+    Returns: 
+        dict: A dictionary of models with model identifiers as keys and
+        model attributes as values. Model attributes include format
+        (SMBL being most common), model id, name,
+        submission/modification date and author.
+    """
+    @cache.region('long_term', 'get_all_biomodels_models')
+    def _get_all_models():
+
+        # CAUTION: Below function has a bug causing an infinite loop (Mar22)
+        models = bm.get_all_models()
+
+        return models
+
+    if invalidate:
+        cache.region_invalidate(
+                _get_all_models, 
+                None, 
+                "get_all_biomodels_models"
+            )
+
+    _log("Returning all BioModels models.")
+    return _get_all_models()
+    
 
 def get_single_model_information(model_id, invalidate = False):
     """
@@ -72,37 +106,6 @@ def get_single_model_information(model_id, invalidate = False):
     
     _log(f"Returning single BioModel: {model_id}.")
     return _get_single_model_information(model_id)
-
-def get_all_models(invalidate=False):
-    """
-    Fetch list of available models using bioservices or load from cache.
-
-    Args:
-        invalidate (bool): Whether to invalidate the cache file
-
-    Returns: 
-        dict: A dictionary of models with model identifiers as keys and
-        model attributes as values. Model attributes include format
-        (SMBL being most common), model id, name,
-        submission/modification date and author.
-    """
-    @cache.region('long_term', 'get_all_biomodels_models')
-    def _get_all_models():
-
-        # CAUTION: Below function has a bug causing an infinite loop (Mar22)
-        models = bm.get_all_models()
-
-        return models
-
-    if invalidate:
-        cache.region_invalidate(
-                _get_all_models, 
-                None, 
-                "get_all_biomodels_models"
-            )
-
-    _log("Returning all BioModels models.")
-    return _get_all_models()
     
 
 def get_single_model_main_file(model_id, filename, version, invalidate = False):
@@ -148,7 +151,7 @@ def get_single_model_main_file(model_id, filename, version, invalidate = False):
             )
 
         
-        return xmltodict.parse(dl.text)
+        return xmltodict.parse(dl.text, dict_constructor=dict)
     
     if invalidate:
         cache.region_invalidate(
@@ -213,7 +216,10 @@ def parse_biomodels(invalidate=False):
                 invalidate
             )
 
-            d = f.get("sbml").get("model")
+            d = dict(f)
+            annot = ModelAnnotator.read_annotations(d)
+
+            m = f.get("sbml").get("model")
 
             # get RDF description
             rdf_desc = d["annotation"]["rdf:RDF"]["rdf:Description"]

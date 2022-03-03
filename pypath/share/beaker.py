@@ -78,10 +78,14 @@ def get_cache_manager():
         'cache.lock_dir': settings.get('cachedir') + '/lock',
         'cache.regions': 'short_term, long_term',
         'cache.short_term.type': 'memory',
-        'cache.short_term.expire': '60',
+        'cache.short_term.expire': '60', # seconds
+        'cache.short_term.enabled': 'true',
         'cache.long_term.type': 'dbm',
+        'cache.long_term.enabled': 'false' # set false for development 
     }
 
-    cache = CacheManager(**parse_cache_config_options(cache_opts))
+    cache = CacheManager(
+        **parse_cache_config_options(cache_opts)
+    )
 
     return cache

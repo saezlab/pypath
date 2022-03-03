@@ -17,4 +17,6 @@ tqdm
 tabulate
 rdata
 beaker
+bioservices
+sbmlutils
 -e .

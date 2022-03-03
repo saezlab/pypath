@@ -38,7 +38,7 @@ def test_biomodels_one_model():
     model = biomodels.get_single_model_information(
         "MODEL1508040001", invalidate = False)
 
-    assert model["name"] == 'Leloup1999_CircadianRhythms_Neurospora'
+    assert model["name"] == 'Tomàs-Gamisans2016 - Genome-Scale Metabolic Model of Pichia pastoris (version 2)'
 
 def test_biomodels_all_models():
     models = biomodels.get_all_models(invalidate = False)
@@ -70,8 +70,8 @@ def test_biomodels_download():
     md = od["model"]
 
     assert (
-        isinstance(od, OrderedDict)
-        and isinstance(md, OrderedDict)
+        isinstance(od, dict)
+        and isinstance(md, dict)
         and all(key in md.keys() 
                 for key in [
                     "listOfCompartments", 
@@ -101,8 +101,8 @@ def test_biomodels_download2():
     md = od["model"]
 
     assert (
-        isinstance(od, OrderedDict)
-        and isinstance(md, OrderedDict)
+        isinstance(od, dict)
+        and isinstance(md, dict)
         and all(key in md.keys() 
                 for key in [
                     "listOfCompartments", 
