@@ -81,7 +81,7 @@ def get_cache_manager():
         'cache.short_term.expire': '60', # seconds
         'cache.short_term.enabled': 'true',
         'cache.long_term.type': 'dbm',
-        'cache.long_term.enabled': 'false' # set false for development 
+        'cache.long_term.enabled': 'true' # set false for development 
     }
 
     cache = CacheManager(

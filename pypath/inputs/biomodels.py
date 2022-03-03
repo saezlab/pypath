@@ -27,9 +27,11 @@ using the bioservices python module, then downloads the individual
 models to parse for the relevant information to enter into pypath.
 """
 
+from curses import KEY_A1
 import bioservices.biomodels as biom
-from sbmlutils.metadata.annotator import ModelAnnotator
-import xmltodict
+from sbmlutils.io import read_sbml
+import xmltodict, json
+import pandas as pd
 
 import pypath.share.session as session
 import pypath.share.beaker as bk
@@ -71,7 +73,7 @@ def get_all_models(invalidate=False):
 
     _log("Returning all BioModels models.")
     return _get_all_models()
-    
+
 
 def get_single_model_information(model_id, invalidate = False):
     """
@@ -112,7 +114,7 @@ def get_single_model_main_file(model_id, filename, version, invalidate = False):
     """
     Download or load from cache the main file of a single model to
     extract relevant data for pypath integration. Parse original XML to
-    OrderedDict.
+    dict.
 
     Args:
         model_id (str): Model identifier
@@ -127,7 +129,7 @@ def get_single_model_main_file(model_id, filename, version, invalidate = False):
         given model and filename
 
     Returns:
-        OrderedDict: complete model data
+        dict: complete model data
     """
 
     @cache.region('long_term', 'download_single_biomodels_model_main_file')
@@ -146,13 +148,18 @@ def get_single_model_main_file(model_id, filename, version, invalidate = False):
         if filename:
             params["filename"] = filename
 
+        # as xml (.text)
         dl = bm.http_get(
                 f"model/download/{model_id}", params=params
             )
 
+        # as dict
+        d = xmltodict.parse(dl.text, dict_constructor=dict)
+        # as json
+        # j = json.dumps(d)
+
+        return d
         
-        return xmltodict.parse(dl.text, dict_constructor=dict)
-    
     if invalidate:
         cache.region_invalidate(
                 _get_single_model_main_file, 
@@ -181,7 +188,8 @@ def parse_biomodels(invalidate=False):
         all_model_info = [
             get_single_model_information(model_id, invalidate) 
             for model_id in
-            [model["id"] for model in all_models]
+            [model["id"] for model in all_models[0:1]]
+            # TODO revert to full range
         ]
 
         def get_model_file_version_tuples(model):
@@ -207,38 +215,125 @@ def parse_biomodels(invalidate=False):
                 return (id, None, None)
 
         # parse and extract TODO
-        for model in all_model_info:
-            model_id, filename, version = get_model_file_version_tuples(model)
+        for model_info in all_model_info:
+            model_id, filename, version = get_model_file_version_tuples(model_info)
             f = get_single_model_main_file(
                 model_id, 
                 filename, 
                 version, 
-                invalidate
+                invalidate = True
             )
 
-            d = dict(f)
-            annot = ModelAnnotator.read_annotations(d)
+            ## read using SBMLutils directly from xml string
+            # annot = read_sbml(f)
+            # this does not return annotations ATM ...
 
-            m = f.get("sbml").get("model")
+            ## read from parsed dict and find relevant annotations
+            """
+            We are interested in bqbiol annotations
+            (https://co.mbine.org/standards/qualifiers), which can refer
+            to several relevant ontologies: - uniprot, - cl, - go, -
+            kegg (kegg.compound, kegg.drug), - chebi, - taxonomy, -
+            pubmed, - ..?
 
-            # get RDF description
-            rdf_desc = d["annotation"]["rdf:RDF"]["rdf:Description"]
-            # disease 
-            rdf_desc.get("")
+            A model has general annotation (in the model root), but
+            model components (eg species) also have their own
+            annotations which describe the individual component.
+
+            We need to parse the entire dict for relevant information
+            that should be connected to pypath constituents.
+
+            The structure of annotation is always: (to be confirmed) 
+
+            - "annotation" 
+
+            - "rdf:RDF" 
+
+            - "rdf:Description" 
+
+            - specific descriptors (eg "bqbiol:is",
+              "bqbiol:hasProperty") 
             
-            ["bqbiol:hasProperty"][0]["rdf:Bag"]["rdf:li"]["@rdf:resource"]
+            - one "rdf:Bag" or a list containing "rdf:Bag" entities 
+            
+            - each bagcontains (always one?) "rdf:li" which contains the
+              identifier url
+                
+            - the identifier url gives the single identifier and the
+              ontology type in the ultimate and penultimate component
+            """
+            # get model
+            model = f.get("sbml").get("model")
+            # get RDF description
+            parse = parse_single_biomodel(model)
 
-            # tissue
-
-            # compound
+            return parse
             
 
     # if invalidate:
     #     cache.region_invalidate(
     #             _parse_biomodels, 
     #             None, 
-    #             "parse_biomodels",
-    #             invalidate
+    #             "parse_biomodels"
     #         )
 
     return _parse_biomodels()
+
+def deconstruct_url(url: str):
+    """
+    Get last and second to last part of url (id and ontology).
+    """
+    l = url.split("/")
+    return {l[-2]: l[-1]}
+
+def parse_description(component: dict):
+    try:
+        desc = component.get("annotation").get("rdf:RDF").get("rdf:Description")
+        res = {}
+        for k, v in desc.items():
+            if "bqbiol" in k:
+                # single bag
+                if isinstance(v, dict):
+                    id_on = deconstruct_url(
+                        v.get("rdf:Bag").get("rdf:li").get("@rdf:resource")
+                    )
+                    res.update({k: id_on})
+                elif isinstance(v, list):
+                    ids = [
+                        i.get("rdf:Bag").get("rdf:li").get("@rdf:resource")
+                        for i in v
+                    ]
+                    id_l = [
+                        deconstruct_url(id)
+                        for id in ids
+                    ]
+                    # id_d = {k: v for d in id_l for k, v in d.items()}
+                    # same key can occur more than once; needs to remain list
+                    res.update({k: id_l})
+        
+        return res
+    except AttributeError:
+        return None
+
+def parse_single_biomodel(model):
+    res = {}
+    # root annotation
+    ra = parse_description(model)
+
+    res.update({"main": ra})
+
+    # single components
+    for k, v in model.items():
+        if "listOf" in k:
+            # TODO generalise? which lists are relevant?
+            if "Species" in k:
+                species = v.get("species")
+                if isinstance(species, list):
+                    rc_d = {}
+                    for i, s in enumerate(species):
+                        d = parse_description(s)
+                        if d is not None:
+                            rc_d.update({i: d})
+                    res.update({"species": rc_d})
+
+    return res
