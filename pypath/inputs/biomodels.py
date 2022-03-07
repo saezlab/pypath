@@ -214,7 +214,7 @@ def parse_biomodels(invalidate=False):
                     "file and/or version.")
                 return (id, None, None)
 
-        # parse and extract TODO
+        # parse and extract
         for model_info in all_model_info:
             model_id, filename, version = get_model_file_version_tuples(model_info)
             f = get_single_model_main_file(
@@ -224,17 +224,26 @@ def parse_biomodels(invalidate=False):
                 invalidate = True
             )
 
-            ## read using SBMLutils directly from xml string
-            # annot = read_sbml(f)
-            # this does not return annotations ATM ...
-
-            ## read from parsed dict and find relevant annotations
             """
             We are interested in bqbiol annotations
             (https://co.mbine.org/standards/qualifiers), which can refer
-            to several relevant ontologies: - uniprot, - cl, - go, -
-            kegg (kegg.compound, kegg.drug), - chebi, - taxonomy, -
-            pubmed, - ..?
+            to several relevant ontologies: 
+            
+            - uniprot, 
+            
+            - cl, 
+            
+            - go, 
+            
+            - kegg (kegg.compound, kegg.drug), 
+            
+            - chebi, 
+            
+            - taxonomy, 
+            
+            - pubmed, 
+            
+            - ..?
 
             A model has general annotation (in the model root), but
             model components (eg species) also have their own
@@ -315,6 +324,7 @@ def parse_description(component: dict):
     except AttributeError:
         return None
 
+# cache?
 def parse_single_biomodel(model):
     res = {}
     # root annotation
@@ -329,6 +339,7 @@ def parse_single_biomodel(model):
             if "Species" in k:
                 species = v.get("species")
                 if isinstance(species, list):
+                    # TODO make list also?
                     rc_d = {}
                     for i, s in enumerate(species):
                         d = parse_description(s)
