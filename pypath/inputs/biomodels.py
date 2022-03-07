@@ -27,11 +27,8 @@ using the bioservices python module, then downloads the individual
 models to parse for the relevant information to enter into pypath.
 """
 
-from curses import KEY_A1
 import bioservices.biomodels as biom
-from sbmlutils.io import read_sbml
-import xmltodict, json
-import pandas as pd
+import xmltodict
 
 import pypath.share.session as session
 import pypath.share.beaker as bk
