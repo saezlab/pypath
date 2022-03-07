@@ -56,6 +56,7 @@ def intact_interactions(
             'id_type_b',
             'pubmeds',
             'methods',
+            'interaction_types',
             'mi_score',
             'isoform_a',
             'isoform_b',
@@ -186,6 +187,11 @@ def intact_interactions(
                 for met in  l[6].split('|')
             )
 
+            interaction_types= set(
+                int_type.split('(')[1].strip(')"')
+                for int_type in  l[11].split('|')
+            )
+
             results.append(
                 IntactInteraction(
                     id_a = id_a,
@@ -194,6 +200,7 @@ def intact_interactions(
                     id_type_b = id_type_b,
                     pubmeds = pubmeds,
                     methods = methods,
+                    interaction_types= interaction_types,
                     mi_score = sc,
                     isoform_a = isoform_a,
                     isoform_b = isoform_b,

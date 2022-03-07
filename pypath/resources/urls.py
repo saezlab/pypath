@@ -791,9 +791,10 @@ urls = {
     },
     'biogrid': {
         'label': 'BioGRID version 2 tab format',
-        'url':
-        'http://thebiogrid.org/downloads/archives/Latest%20Release/'\
-            'BIOGRID-MV-Physical-LATEST.tab2.zip'
+        'mv': 'http://thebiogrid.org/downloads/archives/Latest%20Release/'\
+            'BIOGRID-MV-Physical-LATEST.tab2.zip',
+        'all': 'http://thebiogrid.org/downloads/archives/Latest%20Release/'\
+            'BIOGRID-ALL-LATEST.tab2.zip'
     },
     'wang': {
         'label':
@@ -930,8 +931,10 @@ urls = {
         'label': 'STRING',
         'actions': 'https://stringdb-static.org/download/'
             'protein.actions.v11.0/%u.protein.actions.v11.0.txt.gz',
-        'links': 'http://string-db.org/download/protein.links.detailed.v10/%u'
-        '.protein.links.detailed.v10.txt.gz'
+        'links': 'https://stringdb-static.org/download/protein.links.detailed.v11.5/%u'
+            '.protein.links.detailed.v11.5.txt.gz',
+        'physical_links': 'https://stringdb-static.org/download/protein.physical.links.detailed.v11.5/%u'
+            '.protein.physical.links.detailed.v11.5.txt.gz'
     },
     'wikipw': {
         'label': 'WikiPathways human biopax',
@@ -1090,7 +1093,9 @@ urls = {
     'stitch': {
         'label': 'The STITCH small molecule-protein interaction database',
         'actions': 'http://stitch.embl.de/download/actions.v5.0/'\
-            '9606.actions.v5.0.tsv.gz'
+            '9606.actions.v5.0.tsv.gz',
+        'links': 'http://stitch.embl.de/download/protein_chemical.links.detailed.v5.0/%u'\
+            '.protein_chemical.links.detailed.v5.0.tsv.gz'
     },
     'cspa': {
         'label': 'Cell Surface Protein Atlas',
