@@ -56,7 +56,6 @@ def get_all_models(invalidate=False):
     @cache.region('long_term', 'get_all_biomodels_models')
     def _get_all_models():
 
-        # CAUTION: Below function has a bug causing an infinite loop (Mar22)
         models = bm.get_all_models()
 
         return models
@@ -288,6 +287,12 @@ def parse_biomodels(invalidate=False):
 def deconstruct_url(url: str):
     """
     Get last and second to last part of url (id and ontology).
+
+    Args:
+        url (str): identifiers.org URL or similar
+
+    Returns:
+        dict: dictionary of ontology (key) and identifier (value)
     """
     l = url.split("/")
     return {l[-2]: l[-1]}
