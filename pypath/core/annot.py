@@ -129,6 +129,7 @@ protein_sources_default = {
     'Cancerdrugsdb',
     'Progeny',
     'Celltypist',
+    'Cytosig',
 }
 
 #TODO this should be part of json files
@@ -5958,6 +5959,34 @@ class Celltypist(AnnotationBase):
             name = 'CellTypist',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'celltypist.celltypist_annotations',
+            infer_complexes = False,
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class Cytosig(AnnotationBase):
+
+    _eq_fields = ('cytokine',)
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Cytokine perturbation signatures from the CytoSig database.
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'CytoSig',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'cytosig.cytosig_annotations',
             infer_complexes = False,
             **kwargs
         )
