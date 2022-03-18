@@ -13,6 +13,7 @@
 #           Olga Ivanova
 #           Sebastian Lobentanzer
 #           Ahmet Rifaioglu
+#           Erva Ulusoy
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -21,27 +22,33 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from typing import List, Optional
+from numbers import Number
+
 import collections
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 
 
-def biogrid_interactions(organism = 9606, htp_limit = 1, ltp = True):
+def biogrid_interactions(
+        organism: int = 9606,
+        htp_limit: Optional[Number] = 1,
+        ltp: bool = True,
+    ) -> List[tuple]:
     """
     Downloads and processes Physical multi-validated BioGRID interactions.
     Keeps only the "low throughput" interactions.
     Returns list of interactions.
 
-    @organism : int
-        NCBI Taxonomy ID of organism.
-    @htp_limit : int
-        Exclude interactions only from references
-        cited at more than this number of interactions.
+    Args:
+        organism: NCBI Taxonomy ID of organism.
+        htp_limit: Exclude interactions only from references cited at more
+        than this number of interactions.
     """
 
-    BiogridInteraction = collections.namedtuple(
-        'BiogridInteraction',
+    BiogridPhysicalInteraction = collections.namedtuple(
+        'BiogridPhysicalInteraction',
         (
             'partner_a',
             'partner_b',
@@ -74,10 +81,10 @@ def biogrid_interactions(organism = 9606, htp_limit = 1, ltp = True):
             ):
 
                 interactions.append(
-                    BiogridInteraction(
+                    BiogridPhysicalInteraction(
                         partner_a = l[7],
                         partner_b = l[8],
-                        pmid = l[14]
+                        pmid = l[14],
                     )
                 )
                 refc.append(l[14])
@@ -91,18 +98,20 @@ def biogrid_interactions(organism = 9606, htp_limit = 1, ltp = True):
     return interactions
 
 
-def biogrid_all_interactions(organism = 9606, htp_limit = 1, ltp = True):
-
+def biogrid_all_interactions(
+        organism: int = 9606,
+        htp_limit: Optional[Number] = 1,
+        ltp: bool = True,
+    ) -> List[tuple]:
     """
     Downloads and processes all BioGRID interactions.
     Keeps only the "low throughput" interactions.
     Returns list of interactions.
 
-    @organism : int
-        NCBI Taxonomy ID of organism.
-    @htp_limit : int
-        Exclude interactions only from references
-        cited at more than this number of interactions.
+    Args:
+        organism: NCBI Taxonomy ID of organism.
+        htp_limit: Exclude interactions only from references cited at
+            more than this number of interactions.
     """
 
 
@@ -114,7 +123,7 @@ def biogrid_all_interactions(organism = 9606, htp_limit = 1, ltp = True):
             'pmid',
             'experimental_system',
             'experimental_system_type',
-            'throughput',
+            'ltp',
             'htp_score',
             'multi_validated',
         ),
@@ -146,22 +155,22 @@ def biogrid_all_interactions(organism = 9606, htp_limit = 1, ltp = True):
                     l[16] == organism
                 )
             ):
-                if l[8] in mv_dict[l[7]] or l[7] in mv_dict[l[8]]:
-                    mv="+"
-                else:
-                    mv=""
+
+                mv = l[8] in mv_dict[l[7]] or l[7] in mv_dict[l[8]]
+
                 interactions.append(
                     BiogridInteraction(
                         partner_a = l[7],
                         partner_b = l[8],
                         pmid = l[14],
-                        experimental_system= l[11],
-                        experimental_system_type= l[12],
-                        throughput= l[17],
-                        htp_score= l[18],
-                        multi_validated= mv
+                        experimental_system = l[11],
+                        experimental_system_type = l[12],
+                        ltp = 'Low T' in l[17],
+                        htp_score = None if l[18] == '-' else float(l[18]),
+                        multi_validated = mv,
                     )
                 )
+
                 refc.append(l[14])
 
     refc = collections.Counter(refc)

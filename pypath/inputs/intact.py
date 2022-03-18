@@ -13,6 +13,7 @@
 #           Olga Ivanova
 #           Sebastian Lobentanzer
 #           Ahmet Rifaioglu
+#           Erva Ulusoy
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -20,6 +21,9 @@
 #
 #  Website: http://pypath.omnipathdb.org/
 #
+
+from numbers import Number
+from typing import List
 
 import collections
 
@@ -29,12 +33,12 @@ import pypath.share.progress as progress
 
 
 def intact_interactions(
-        miscore = 0.6,
-        organism = 9606,
-        complex_expansion = False,
-        only_proteins = False,
-        only_ids = False,
-    ):
+        miscore: Number = .6,
+        organism: int = 9606,
+        complex_expansion: bool = False,
+        only_proteins: bool = False,
+        only_ids: bool = False,
+    ) -> List[tuple]:
     """
     only_proteins : bool
         Keep only records of protein-protein interactions.
@@ -148,13 +152,15 @@ def intact_interactions(
             for s in l[14].split('|'):
 
                 if s.startswith('intact-miscore'):
-                    sc = s.split(':')[1]
+
+                    sc = float(s.split(':')[1])
 
                 if s.startswith('author'):
+
                     au = len(s.split(':')[1])
 
             # filtering for mi-score
-            if float(sc) < miscore:
+            if sc < miscore:
 
                 continue
 
@@ -200,7 +206,7 @@ def intact_interactions(
                     id_type_b = id_type_b,
                     pubmeds = pubmeds,
                     methods = methods,
-                    interaction_types= interaction_types,
+                    interaction_types = interaction_types,
                     mi_score = sc,
                     isoform_a = isoform_a,
                     isoform_b = isoform_b,
