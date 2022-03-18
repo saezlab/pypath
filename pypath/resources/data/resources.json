@@ -4587,5 +4587,20 @@
       "articles": ["https://doi.org/10.1093/database/baz046"]
     },
     "emails": ["contact@panglaodb.se", "PanglaoDB Team"]
+  },
+  "CytoSig": {
+    "full_name": "Cytokine Signaling Analyzer",
+    "license": "CytoSig",
+    "urls": {
+      "webpages": [
+        "https://cytosig.ccr.cancer.gov/",
+        "https://github.com/data2intelligence/CytoSig"
+      ],
+      "articles": ["https://www.nature.com/articles/s41592-021-01274-5"]
+    },
+    "emails": [
+      "peng.jiang@nih.gov", "Peng Jiang",
+      "kai_wucherpfennig@dfci.harvard.edu", "Kai W. Wucherpfennig"
+    ]
   }
 }

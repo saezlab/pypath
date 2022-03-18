@@ -1490,6 +1490,11 @@ urls = {
         'url': 'https://panglaodb.se/markers/'
             'PanglaoDB_markers_27_Mar_2020.tsv.gz',
     },
+    'cytosig': {
+        'label': 'Cytokine perturbation footprints',
+        'url': 'https://raw.githubusercontent.com/data2intelligence/'
+            'CytoSig/master/CytoSig/signature.centroid',
+    },
 }
 
 
