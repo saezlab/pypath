@@ -136,7 +136,7 @@ def stitch_links_interactions(
                 (s.partner_a, s.partner_b),
                 s.score
             )
-            for s in stitch_interactions()
+            for s in stitch_actions_interactions()
             if s.mechanism == 'binding'
         )
 

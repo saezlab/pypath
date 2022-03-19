@@ -152,7 +152,7 @@ def string_links_interactions(
                 i.combined_score
             )
             for i in
-            string_physical_links(
+            string_physical_interactions(
                 ncbi_tax_id = ncbi_tax_id,
                 score_threshold = 0,
             )
