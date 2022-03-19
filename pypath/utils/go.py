@@ -60,7 +60,7 @@ _reexprname = re.compile(
 ROOT_NODES = {
     'cellular_component': 'GO:0005575',
     'biological_process': 'GO:0008150',
-    'molecular_function': 'GO:0003647',
+    'molecular_function': 'GO:0003674',
 }
 
 ROOT_ACS = set(ROOT_NODES.values())
