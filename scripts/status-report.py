@@ -68,6 +68,7 @@ EXCLUDE = {
     'swissprot_deleted',
     'trembl_deleted',
     'uniprot_ncbi_taxids', # takes too long
+    'get_all_models', # infinite loop bug
 }
 
 ARGS = {}
