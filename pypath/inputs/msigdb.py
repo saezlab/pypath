@@ -36,6 +36,32 @@ _logger = session.Logger(name = 'msigdb_input')
 _log = _logger._log
 
 
+ALL_COLLECTIONS = {
+    'hallmark': 'h.all',
+    'positional': 'c1.all',
+    'chemical_and_genetic_perturbations': 'c2.cgp',
+    'biocarta_pathways': 'c2.cp.biocarta',
+    'kegg_pathways': 'c2.cp.kegg',
+    'pid_pathways': 'c2.cp.pid',
+    'reactome_pathways': 'c2.cp.reactome',
+    'wikipathways': 'c2.cp.wikipathways',
+    'mirna_targets_mirdb': 'c3.mir.mirdb',
+    'mirna_targets_legacy': 'c3.mir.mir_legacy',
+    'tf_targets_gtrf': 'c3.tft.gtrd',
+    'tf_targets_legacy': 'c3.tft.tft_legacy',
+    'cancer_gene_neighborhoods': 'c4.cgn',
+    'cancer_modules': 'c4.cm',
+    'go_biological_process': 'c5.bp',
+    'go_molecular_function': 'c5.mf',
+    'go_cellular_component': 'c5.cc',
+    'human_protein_ontology': 'c5.hpo',
+    'oncogenic_signatures': 'c6.all',
+    'immunesigdb': 'c7.immunesigdb',
+    'vaccine_response': 'c7.vax',
+    'cell_type_signatures': 'c8.all',
+}
+
+
 def msigdb_download(
         registered_email = None,
         collection = 'msigdb',
@@ -214,28 +240,9 @@ def msigdb_download_collections(
         ],
     )
 
-    all_collections = {
-        'hallmark': 'h.all',
-        'positional': 'c1.all',
-        'chemical_and_genetic_perturbations': 'c2.cgp',
-        'biocarta_pathways': 'c2.cp.biocarta',
-        'kegg_pathways': 'c2.cp.kegg',
-        'pid_pathways': 'c2.cp.pid',
-        'reactome_pathways': 'c2.cp.reactome',
-        'mirna_targets': 'c3.mir',
-        'tf_targets': 'c3.tft',
-        'cancer_gene_neighborhoods': 'c4.cgn',
-        'cancer_modules': 'c4.cm',
-        'go_biological_process': 'c5.bp',
-        'go_molecular_function': 'c5.mf',
-        'go_cellular_component': 'c5.cc',
-        'oncogenic_signatures': 'c6.all',
-        'immunologic_signatures': 'c7.all',
-    }
-
     collection_data = {}
 
-    for collection, label in iteritems(all_collections):
+    for collection, label in iteritems(ALL_COLLECTIONS):
         if (
             (
                 only_collections and
