@@ -4281,6 +4281,7 @@ class Msigdb(AnnotationBase):
             name = 'MSigDB',
             input_method = 'msigdb.msigdb_annotations',
             ncbi_tax_id = ncbi_tax_id,
+            input_args = {'exclude': ()},
             **kwargs
         )
 
