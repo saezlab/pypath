@@ -101,9 +101,16 @@ def guide2pharma_download(
 
     c = curl.Curl(url, silent = False, large = True, encoding = 'utf-8')
 
+    line0 = next(c.result)
+
+    if line0[0] != '#':
+
+        c.fileobj.seek(0)
+
     data = csv.DictReader(c.result)
 
     if organism is not None:
+
         data = [
             d for d in data
             if (
