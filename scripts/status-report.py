@@ -450,7 +450,7 @@ class StatusReport(object):
 
                 exc = sys.exc_info()
                 _log('Failed to import module `%s`:' % mod_name)
-                self._logger._log_traceback()
+                _logger._log_traceback()
                 self.n_import_errors += 1
 
 
