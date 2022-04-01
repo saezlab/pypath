@@ -53,7 +53,7 @@ def kinasedotcom_annotations():
             )
 
 
-    url = urls.urls['kinome']['url']
+    url = urls.urls['kinome']['rescued']
     c = curl.Curl(url, large = True, silent = False)
     xlsf = c.fileobj
     xlsname = xlsf.name

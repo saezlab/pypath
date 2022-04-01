@@ -422,8 +422,9 @@ urls = {
     },
     'kinclass': {
         'label': 'Kinase families and groups',
-        'url':
-        'http://kinase.com/static/colt/data/human/kinome/tables/Table%20S2.txt'
+        'url': 'http://kinase.com/static/colt/data/human/kinome/'
+            'tables/Table%20S2.txt',
+        'rescued': 'https://rescued.omnipathdb.org/kinase.com__Table_S2.txt',
     },
     'protdb_exp': {
         'label': 'Expression data from ProteomicsDB',
@@ -726,9 +727,9 @@ urls = {
     },
     'kinome': {
         'label': 'List of human kinases',
-        'url':
-        'http://kinase.com/static/colt/data/human/kinome/tables/'\
-            'Kincat_Hsap.08.02.xls'
+        'url': 'http://kinase.com/static/colt/data/human/kinome/tables/'
+            'Kincat_Hsap.08.02.xls',
+        'rescued': 'https://rescued.omnipathdb.org/Kincat_Hsap.08.02.xls',
     },
     'phosphatome': {
         'label': 'List of human and other phosphatases',

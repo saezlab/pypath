@@ -107,7 +107,7 @@ def get_kinase_class():
     result = {'groups': {}, 'families': {}, 'subfamilies': {}, 'kinases': {}}
     tabs = re.compile(r'[\t]{3,}')
     reps = re.compile(r'ps[0-9]*$')
-    url = urls.urls['kinclass']['url']
+    url = urls.urls['kinclass']['rescued']
     c = curl.Curl(url, silent = False)
     data = c.result
     data = tabs.sub('', data)
