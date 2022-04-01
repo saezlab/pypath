@@ -6363,17 +6363,15 @@ class AnnotationTable(session_mod.Logger):
 
                 self.annots[annot.name] = annot
 
-            except Exception:
+            except Exception as e:
 
+                exc = sys.exc_info()
                 self._log(
-                    'Failed to load annotations from resource `%s`.\n'
-                    '%s\n' % (
-                        cls.__name__
-                            if hasattr(cls, '__name__') else
-                        str(cls),
-                        traceback.format_exc(),
+                    'Failed to load annotations from resource `%s`:' % (
+                        cls.__name__ if hasattr(cls, '__name__') else str(cls)
                     )
                 )
+                self._log_traceback()
 
 
     def make_dataframe(self, reference_set = None):
