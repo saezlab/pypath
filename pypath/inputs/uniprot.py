@@ -501,7 +501,8 @@ def uniprot_data(field, organism = 9606, reviewed = True):
     Retrieves a field from UniProt for all proteins of one organism, by
     default only the reviewed (SwissProt) proteins.
     For the available fields refer to the ``_uniprot_fields`` attribute of
-    this module or the UniProt website.
+    this module or the UniProt website:
+    https://www.uniprot.org/help/uniprotkb_column_names
     """
 
     rev = (
