@@ -26,26 +26,48 @@ from future.utils import iteritems
 import json
 import collections
 
+from typing import Callable, List, Optional, Union
+GlomSpec = Union[str, tuple, dict, Callable]
+
+import glom
+
 import pypath.share.curl as curl
+import pypath.inputs.common as inputs_common
 
 
 def ebi_rest(
-    url,
-    qs = None,
-    fields = None,
-    paginate = True,
-    page_length = 500
-):
+        url: str,
+        qs: Optional[dict] = None,
+        fields: Optional[GlomSpec] = None,
+        paginate: bool = True,
+        page_length: int = 500,
+        size_param: str = 'size',
+        page_param: str = 'offset',
+        page_field: GlomSpec = 'page.number',
+        total_field: GlomSpec = 'page.totalPages',
+        record_name: Optional[str] = None,
+    ) -> List[tuple]:
     """
     Collects data from an EBI REST web service.
 
     Args:
-        url (str): The URL of the web service.
-        qs (str,dict): Query string parameters to be appended to the URL.
-        fields (list): List of field names to be extracted from the result.
-        paginate (bool): Retrieve all pages until the end (if False, only
+        url: The URL of the web service.
+        qs: Query string parameters to be appended to the URL.
+        fields : Glom spec of the fields to be extracted from the result.
+        paginate: Retrieve all pages until the end (if False, only
             one page will be downloaded).
-        page_length (int): Number of records on one page.
+        page_length: Number of records on one page.
+        size_param: Query string key for number of records per page.
+        page_param: Query string key to request a specific page by.
+        page_field: Glom spec of the JSON field that contains the current
+            page number.
+        total_field: Glom spec of the JSON field that contains the total
+            number of pages.
+        record_name: Class name for the named tuples in the result.
+
+    Details:
+        Read more about glom specs here:
+        https://glom.readthedocs.io/en/latest/tutorial.html
 
     Returns:
         A list of named tuples with the requested fields.
@@ -54,50 +76,70 @@ def ebi_rest(
     result = []
 
     qs = qs or {}
-    qs['size'] = qs.get('size', page_length)
-
-    record = None
+    qs[size_param] = qs.get(size_param, page_length)
+    page = 0
 
     while True:
 
         page_url = '%s?%s' % (
             url,
             '&'.join(
-                '%s=%s' % it
+                '{}={}'.format(*it)
                 for it in qs.items()
             )
         )
 
         c = curl.Curl(page_url)
 
-        this_result = json.loads(c.result)
+        if not c.result:
 
-        qs['page'] = str(int(this_result['page']['number']) + 1)
+            break
 
-        data = next(iteritems(this_result['_embedded']).__iter__())[1]
+        res = inputs_common.json_read(c.result)
 
-        for item in data:
+        qs[page_param] = glom.glom(
+            res,
+            page_field,
+            default = page,
+        )
 
-            if not record:
+        page = qs[page_param] = int(qs[page_param]) + 1
+        total = int(glom.glom(res, total_field, default = 0))
 
-                record = collections.namedtuple(
-                    'WebserviceRecord',
-                    fields or sorted(item.keys())
-                )
+        if fields:
 
-            result.append(
-                record(*(
-                    item.get(field, None)
-                    for field in record._fields
-                ))
-            )
+            res = inputs_common.json_extract(c.result, fields)
+
+        res = res if isinstance(res, list) else [res]
+
+        if res == [None]:
+
+            break
+
+        result.extend(res)
 
         if (
             not paginate or
-            int(this_result['page']['number']) + 1 >=
-            int(this_result['page']['totalPages'])
+            (total and page > total)
         ):
 
             break
+
+    record_name = (
+        record_name or
+        '%sRecord' % url.rsplit('/', maxsplit = 1)[-1].capitalize()
+    )
+    record = collections.namedtuple(
+        record_name,
+        sorted({k for i in result for k in i.keys()})
+    )
+
+    result = [
+        record(*values)
+        for section in result
+        for values in zip(
+            *(section.get(f, None) for f in record._fields)
+        )
+    ]
 
     return result
