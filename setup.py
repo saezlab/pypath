@@ -72,8 +72,8 @@ setup(
     maintainer = 'Dénes Türei, Sebastian Lobentanzer, Ahmet Rifaioglu',
     maintainer_email = 'turei.denes@gmail.com',
     author = (
-        'Dénes Türei, Nicolàs Palacio, Olga Ivanova, '
-        'Sebastian Lobentanzer, Ahmet Rifaioglu'
+        'Dénes Türei, Nicolàs Palacio, Sebastian Lobentanzer, Erva Ulusoy, '
+        'Olga Ivanova, Ahmet Rifaioglu'
     ),
     author_email = 'turei.denes@gmail.com',
     long_description = readme + '\n' + history,

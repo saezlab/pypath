@@ -8,8 +8,9 @@
 #
 #  Authors: Dénes Türei (turei.denes@gmail.com)
 #           Nicolàs Palacio
-#           Olga Ivanova
 #           Sebastian Lobentanzer
+#           Erva Ulusoy
+#           Olga Ivanova
 #           Ahmet Rifaioglu
 #
 #  Distributed under the GNU GPLv3 License.

@@ -15,7 +15,6 @@ Authors: Dénes Türei (turei.denes@gmail.com)
                  Nicolàs Palacio
 #
                  Olga Ivanova
-#           Sebastian Lobentanzer
 #           Ahmet Rifaioglu
 
 Distributed under the GPLv3 License.
