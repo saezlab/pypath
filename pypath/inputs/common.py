@@ -27,9 +27,13 @@ from past.builtins import xrange, range
 import os
 import sys
 import warnings
+import json
+
+from typing import Any, IO, List, Union
 
 import xlrd
 import openpyxl
+import glom
 
 import pypath.share.session as session_mod
 import pypath.share.common as common
@@ -287,3 +291,46 @@ def read_table(
         fileObject.close()
 
     return res
+
+
+def json_extract(
+        data: Union[dict, list, str, IO],
+        spec: dict,
+    ) -> List[dict]:
+    """
+    Extracts fields of arbitrary depth from JSON data into a list of dicts.
+
+    Args:
+        data: JSON as a string or a file-like object.
+        spec: Dict of glom field specifications.
+    """
+
+    data = json_read(data)
+
+    if isinstance(data, dict):
+
+        data = [data]
+
+    if not isinstance(data, list):
+
+        msg = 'Don\'t know how to process data of type `%s`.' % type(data)
+        raise TypeError(msg)
+
+
+    return [glom.glom(rec, spec, default = None) for rec in data]
+
+
+def json_read(data: Union[str, IO, Any]) -> Union[list, dict, Any]:
+    """
+    Reads JSON from file or string, pass through for any other value.
+    """
+
+    if isinstance(data, IO):
+
+        data = json.load(data)
+
+    elif isinstance(data, str):
+
+        data = json.loads(data)
+
+    return data
