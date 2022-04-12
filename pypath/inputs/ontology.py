@@ -21,29 +21,53 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from typing import Dict, List, Optional, Union
+
 import pypath.share.session as session
+import pypath.share.common as common
 import pypath.resources.urls as urls
 import pypath.inputs.ebi as ebi
 
 _logger = session.Logger(name = 'ontology_input')
 
 
-def ontology(ontology, fields = None):
+def ontology(
+        ontology: str,
+        fields: Optional[Union[List, str]] = None,
+    ) -> Union[List[tuple], Dict[str, str]]:
     """
     Downloads an ontology using the EBI Ontology Lookup Service.
 
     Args:
-        ontology (str): The ID of an ontology available in EBI OLS. For a
+        ontology: The ID of an ontology available in EBI OLS. For a
             full list, call ``listof_ontologies``.
-        fields (list): Additional fields to include, apart from the default
+        fields: Additional fields to include, apart from the default
             ones.
     """
 
     _logger._log('Retrieving ontology `%s` from EBI OLS.' % ontology)
 
     url = urls.urls['ols']['url'] + '/%s/terms' % ontology.lower()
-    _fields = sorted(['label', 'obo_id'] + (fields or []))
-    result = ebi.ebi_rest(url = url, fields = _fields)
+
+    _fields = {
+        'label': ('_embedded.terms', ['label']),
+        'obo_id': ('_embedded.terms', ['obo_id']),
+    }
+
+    _fields.update(
+        dict(
+            (f, ('_embedded.terms', [f]))
+            for f in common.to_list(fields)
+        )
+    )
+
+    result = ebi.ebi_rest(
+        url = url,
+        fields = _fields,
+        page_param = 'page',
+        page_field = 'page.number',
+        paginate = True,
+    )
 
     if not fields:
 
@@ -56,19 +80,44 @@ def ontology(ontology, fields = None):
     return result
 
 
-def listof_ontologies(fields = None, full_config = False):
+def listof_ontologies(
+        fields: Optional[Union[List, str]] = None,
+        full_config: bool = False,
+    ) -> Union[List[tuple], Dict[str, str]]:
     """
     Returns a list of available ontologies in the EBI Ontology Lookup Service.
 
     Args:
-        fields (list): Additional fields to include, apart from the default
+        fields: Additional field(s) to include, apart from the default
             ones.
-        full_config (bool): Keep the full config dict.
+        full_config: Keep the full config dict.
+
+    Return:
+        If no extra fields and no full config are requested: a dict with
+        ontology abbreviations as keys and ontology names as values.
+        Otherwise a list of named tuples, each representing an ontology
+        described by the requested fields.
     """
 
-    url = urls.urls['ols']['url']
-    _fields = sorted(['ontologyId', 'config'] + (fields or []))
-    result = ebi.ebi_rest(url, fields = _fields)
+    _fields = {
+        'config': ('_embedded.ontologies', ['config']),
+        'ontologyId': ('_embedded.ontologies', ['ontologyId']),
+    }
+
+    _fields.update(
+        dict(
+            (f, ('_embedded.ontologies', [f]))
+            for f in common.to_list(fields)
+        )
+    )
+
+    result = ebi.ebi_rest(
+        url = urls.urls['ols']['url'],
+        fields = _fields,
+        page_param = 'page',
+        page_field = 'page.number',
+        paginate = True,
+    )
 
     if not fields and not full_config:
 
