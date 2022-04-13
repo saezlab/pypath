@@ -24,6 +24,8 @@
 
 from typing import Dict, List, Optional, Union
 
+import glom
+
 import pypath.share.session as session
 import pypath.share.common as common
 import pypath.resources.urls as urls
@@ -34,7 +36,7 @@ _logger = session.Logger(name = 'ontology_input')
 
 def ontology(
         ontology: str,
-        fields: Optional[Union[List, str]] = None,
+        fields: Optional[Union[List, str, dict]] = None,
     ) -> Union[List[tuple], Dict[str, str]]:
     """
     Downloads an ontology using the EBI Ontology Lookup Service.
@@ -43,7 +45,8 @@ def ontology(
         ontology: The ID of an ontology available in EBI OLS. For a
             full list, call ``listof_ontologies``.
         fields: Additional fields to include, apart from the default
-            ones.
+            ones. Can be a dict of glom specs or simply keys in the
+            terms section of the OLS Terms query response.
     """
 
     _logger._log('Retrieving ontology `%s` from EBI OLS.' % ontology)
@@ -55,12 +58,17 @@ def ontology(
         'obo_id': ('_embedded.terms', ['obo_id']),
     }
 
-    _fields.update(
-        dict(
-            (f, ('_embedded.terms', [f]))
+    if not isinstance(fields, dict):
+
+        fields = dict(
+            (
+                f.rsplit('.', maxsplit = 1)[-1],
+                ('_embedded.terms', [glom.Coalesce(f, default = None)])
+            )
             for f in common.to_list(fields)
         )
-    )
+
+    _fields.update(fields)
 
     result = ebi.ebi_rest(
         url = url,
