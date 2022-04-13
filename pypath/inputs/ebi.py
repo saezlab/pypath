@@ -33,6 +33,7 @@ GlomSpec = Union[str, tuple, dict, Callable]
 import glom
 
 import pypath.share.curl as curl
+import pypath.share.constants as constants
 import pypath.inputs.common as inputs_common
 
 
@@ -107,13 +108,15 @@ def ebi_rest(
         page = qs[page_param] = int(qs[page_param]) + 1
         total = int(glom.glom(res, total_field, default = 0))
 
+        return c.result, fields
+
         if fields:
 
             res = inputs_common.json_extract(c.result, fields)
 
         res = res if isinstance(res, list) else [res]
 
-        if res == [None]:
+        if res == [None] or res == [constants.GLOM_ERROR]:
 
             break
 

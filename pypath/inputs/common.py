@@ -38,6 +38,7 @@ import glom
 
 import pypath.share.session as session_mod
 import pypath.share.common as common
+import pypath.share.constants as constants
 
 _logger = session_mod.Logger(name = 'inputs_common')
 _log = _logger._log
@@ -318,7 +319,10 @@ def json_extract(
         raise TypeError(msg)
 
 
-    return [glom.glom(rec, spec, default = None) for rec in data]
+    return [
+        glom.glom(rec, spec, default = constants.GLOM_ERROR)
+        for rec in data
+    ]
 
 
 def json_read(data: Union[str, IO, Any]) -> Union[list, dict, Any]:
