@@ -62,6 +62,7 @@ complex_resources = (
     'Kegg',
     'Cellchatdb',
     'Cellinker',
+    'Spike',
 )
 
 
@@ -528,6 +529,21 @@ class Icellnet(AbstractComplexResource):
             self,
             name = 'ICELLNET',
             input_method = 'icellnet.icellnet_complexes',
+            input_args = input_args or {},
+        )
+
+
+class Spike(AbstractComplexResource):
+
+
+    def __init__(self, input_args = None, **kwargs):
+
+        input_args = input_args or {}
+
+        AbstractComplexResource.__init__(
+            self,
+            name = 'SPIKE',
+            input_method = 'spike.spike_complexes',
             input_args = input_args or {},
         )
 
