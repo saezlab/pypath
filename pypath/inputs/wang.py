@@ -85,10 +85,19 @@ def hsn_interactions(
         def __new__(cls, *args):
 
             args = args[0] if len(args) == 1 else args
+            identifiers = dict(zip(
+                (
+                    'entrez_source',
+                    'genesymbol_source',
+                    'entrez_target',
+                    'genesymbol_target',
+                ),
+                args[:-1]
+            ))
 
             return super(HsnInteraction, cls).__new__(
                 cls,
-                *args[:-1],
+                **identifiers,
                 effect = effects.get(args[-1], args[-1]),
             )
 
