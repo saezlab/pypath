@@ -691,9 +691,13 @@ urls = {
     },
     'hsn': {
         'label': 'The Wang Human Signaling Network',
-        'url': (
+        'rescued': (
             'http://rescued.omnipathdb.org/WangLab_HumanSignalingNet_v6.csv'
-        )
+        ),
+        'researchgate': 'https://www.researchgate.net/profile/Edwin-Wang-6/'
+            'publication/264488606_Human_Signaling_Network_Version_6/data/'
+            '53e102ed0cf2235f35271ea3/'
+            'HuamnSignalingNet-v6.csv?origin=publication_detail',
     },
     'li2012': {
         'label': 'Human Phosphotyrosine Signaling Network',
@@ -806,6 +810,9 @@ urls = {
             'HumanSignalingNetwork_v6.csv',
         'rescued': 'https://rescued.omnipathdb.org/'
             'WangLab_HumanSignalingNetwork_v6-format2.csv',
+        'cui': 'https://www.embopress.org/action/downloadSupplement?'
+            'doi=10.1038%2Fmsb4100200&file=msb4100200-sup-0010.xls',
+        'cui_init': 'https://www.embopress.org/doi/full/10.1038/msb4100200',
     },
     'graphviz': {
         'label': 'List of Graphviz attributes',
