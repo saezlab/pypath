@@ -25,6 +25,8 @@
 import itertools
 import collections
 
+from typing import Dict, List
+
 import xml.etree.cElementTree as ET
 
 import pypath.share.curl as curl
@@ -33,7 +35,7 @@ import pypath.utils.mapping as mapping
 import pypath.internals.intera as intera
 
 
-def spike_interactions(high_confidence = True):
+def spike_interactions(high_confidence: bool = True) -> List[tuple]:
 
     url = urls.urls['spike']['url']
     c = curl.Curl(
@@ -173,3 +175,17 @@ def spike_interactions(high_confidence = True):
                     )
 
     return result
+
+
+def spike_complexes(high_confidence: bool = True) -> Dict[str, intera.Complex]:
+
+    interactions = spike_interactions(high_confidence = high_confidence)
+
+    complexes = [
+        getattr(i, attr)
+        for i in interactions
+        for attr in ('entrez_a', 'entrez_b')
+        if isinstance(getattr(i, attr), intera.Complex)
+    ]
+
+    return dict((cplx.__str__(), cplx) for cplx in complexes)
