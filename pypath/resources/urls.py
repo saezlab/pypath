@@ -1507,6 +1507,11 @@ urls = {
         'url': 'https://raw.githubusercontent.com/data2intelligence/'
             'CytoSig/master/CytoSig/signature.centroid',
     },
+    'proteins': {
+        'label': 'Key biological data from UniProt and data from Large Scale '
+            'Studies (LSS) mapped to UniProt.',
+        'url': 'https://www.ebi.ac.uk/proteins/api/%s',
+    },
 }
 
 
