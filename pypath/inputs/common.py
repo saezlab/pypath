@@ -30,7 +30,7 @@ import sys
 import warnings
 import json
 
-from typing import Any, IO, List, Union
+from typing import Any, Callable, Dict, IO, List, Optional, Union
 
 import xlrd
 import openpyxl
@@ -339,3 +339,31 @@ def json_read(data: Union[str, IO, Any]) -> Union[list, dict, Any]:
         data = json.loads(data)
 
     return data
+
+
+GlomSpec = Union[str, tuple, dict, Callable]
+
+GlomFields = Union[
+    List[str],
+    Dict[str, GlomSpec]
+]
+
+def glom_fields(fields: Optional[GlomFields] = None) -> Dict[str, GlomSpec]:
+    """
+    Generates a glom spec dict from a list or dict, protecting each field
+    by glom.Coalesce.
+    """
+
+    fields = fields or {}
+
+    fields = fields if isinstance(fields, dict) else dict(zip(fields, fields))
+
+    fields = dict(
+        (
+            k,
+            glom.Coalesce(v, default = None)
+        )
+        for k, v in fields.items()
+    )
+
+    return fields
