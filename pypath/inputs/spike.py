@@ -110,15 +110,19 @@ def spike_interactions(high_confidence: bool = True) -> List[tuple]:
 
                 genes[grp.attrib['id']] = [
                     Gene(
+                        entrez = cplex,
+                        genesymbol = cplex,
+                        type = 'complex',
+                    )
+                    for cplex in
+                    (
                         intera.Complex(
                             name = grp.attrib['name'],
                             components = ups,
                             sources = 'SPIKE',
-                        ),
-                        None,
-                        'complex',
+                        )
+                        for ups in itertools.product(*uniprots)
                     )
-                    for ups in itertools.product(*uniprots)
                 ]
 
     for i in itertools.chain(
