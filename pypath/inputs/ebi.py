@@ -28,7 +28,6 @@ import json
 import collections
 
 from typing import Callable, List, Optional, Union
-GlomSpec = Union[str, tuple, dict, Callable]
 
 import glom
 
@@ -40,13 +39,14 @@ import pypath.inputs.common as inputs_common
 def ebi_rest(
         url: str,
         qs: Optional[dict] = None,
-        fields: Optional[GlomSpec] = None,
+        fields: Optional[inputs_common.GlomSpec] = None,
         paginate: bool = True,
         page_length: int = 500,
         size_param: str = 'size',
         page_param: str = 'offset',
-        page_field: GlomSpec = 'page.number',
-        total_field: GlomSpec = 'page.totalPages',
+        by_page: bool = True,
+        page_field: inputs_common.GlomSpec = 'page.number',
+        total_field: inputs_common.GlomSpec = 'page.totalPages',
         record_name: Optional[str] = None,
     ) -> List[tuple]:
     """
@@ -61,6 +61,8 @@ def ebi_rest(
         page_length: Number of records on one page.
         size_param: Query string key for number of records per page.
         page_param: Query string key to request a specific page by.
+        by_page: The pagination works by page numbers (True) or item
+            numbers (False).
         page_field: Glom spec of the JSON field that contains the current
             page number.
         total_field: Glom spec of the JSON field that contains the total
@@ -99,16 +101,15 @@ def ebi_rest(
 
         res = inputs_common.json_read(c.result)
 
-        qs[page_param] = glom.glom(
+        page = glom.glom(
             res,
-            page_field,
+            (page_field, int),
             default = page,
-        )
+        ) + 1
 
-        page = qs[page_param] = int(qs[page_param]) + 1
-        total = int(glom.glom(res, total_field, default = 0))
+        qs[page_param] = page * (by_page or page_length)
 
-        return c.result, fields
+        total = glom.glom(res, (total_field, int), default = 0)
 
         if fields:
 
@@ -133,10 +134,24 @@ def ebi_rest(
         record_name or
         '%sRecord' % url.rsplit('/', maxsplit = 1)[-1].capitalize()
     )
+
     record = collections.namedtuple(
         record_name,
         sorted({k for i in result for k in i.keys()})
     )
+
+    nested = all(
+        isinstance(val, list)
+        for section in result
+        for val in section.values()
+    )
+
+    if not nested:
+
+        result = [
+            dict((k, [v]) for k, v in section.items())
+            for section in result
+        ]
 
     result = [
         record(*values)
