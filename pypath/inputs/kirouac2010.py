@@ -27,18 +27,17 @@ import re
 import itertools
 import collections
 
+from typing import List
+
 import pypath.share.curl as curl
-import pypath.share.session as session
 import pypath.resources.urls as urls
-import pypath.inputs.common as inputs_common
-
-_logger = session.Logger(name = 'inputs.kirouac2010')
-_log = _logger._log
+import pypath.inputs.embopress as embo
 
 
-def kirouac2010_interactions():
+def kirouac2010_interactions() -> List[tuple]:
     """
-    Returns tuples of ligand-receptor genesymbol pairs.
+    Ligand-receptor pairs from Kirouac et al. 2010
+    (https://www.embopress.org/doi/10.1038/msb.2010.71).
     """
 
     Kiruac2010Interaction = collections.namedtuple(
@@ -90,61 +89,11 @@ def kirouac2010_interactions():
         return names
 
 
-    init_url = urls.urls['kirouac2010']['init_url']
-    req_headers = [
-        (
-            'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) '
-            'Gecko/20100101 Firefox/68.0'
-        ),
-    ]
-    url = urls.urls['kirouac2010']['url']
-
-    c00 = curl.Curl(url, call = False, process = False)
-
-    if (
-        not os.path.exists(c00.cache_file_name) or
-        os.path.getsize(c00.cache_file_name) == 0
-    ):
-        _log('Kirouac 2010 download: requesting website cookie.')
-
-        c0 = curl.Curl(
-            init_url,
-            silent = True,
-            large = False,
-            req_headers = req_headers,
-            follow = False,
-            cache = False,
-        )
-
-        cookies = []
-
-        if hasattr(c0, 'resp_headers'):
-            for hdr in c0.resp_headers:
-                if hdr.lower().startswith(b'set-cookie'):
-                    cookie = hdr.split(b':')[1].split(b';')[0].strip()
-
-                    if cookie not in cookies:
-                        cookies.append(cookie.decode('ascii'))
-
-            cookies = '; '.join(cookies)
-
-            req_headers.append('Cookie: %s' % cookies)
-
-            _log('Response header: %s' % str(c0.resp_headers))
-            _log('Cookies: %s' % str(cookies))
-            _log('Request header: %s' % str(req_headers))
-
-        os.remove(c00.cache_file_name)
-
-    c = curl.Curl(
-        url,
-        silent = False,
-        large = True,
-        req_headers = req_headers,
+    tbl = embo.embopress_supplementary(
+        url = urls.urls['kirouac2010']['url'],
+        init_url = urls.urls['kirouac2010']['init_url'],
+        sheet = 'S12',
     )
-    xlsname = c.fname
-    del(c)
-    tbl = inputs_common.read_xls(xlsname, sheet = 'S12')
 
     result = []
 
