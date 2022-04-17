@@ -218,14 +218,14 @@ methods and classes in that module. Each logger instance have a default label
 so in the log one can see which message comes from which part of the module.
 
 
-[1] https://www.python.org/dev/peps/pep-0008/
-[2] https://github.com/google/styleguide/blob/gh-pages/pyguide.md
-[3] pypath/resources/data/resources.json
-[4] pypath/resources/descriptions.py
-[5] pypath/data/licenses
-[6] https://status.omnipathdb.org/inputs/
-[7] pypath/share/curl.py
-[8] pypath/share/settings.py
-[9] pypath/data/settings.yaml
-[10] pypath/inputs
-[11] https://realpython.com/lessons/type-hinting/
+[1]: https://www.python.org/dev/peps/pep-0008/
+[2]: https://github.com/google/styleguide/blob/gh-pages/pyguide.md
+[3]: pypath/resources/data/resources.json
+[4]: pypath/resources/descriptions.py
+[5]: pypath/data/licenses
+[6]: https://status.omnipathdb.org/inputs/
+[7]: pypath/share/curl.py
+[8]: pypath/share/settings.py
+[9]: pypath/data/settings.yaml
+[10]: pypath/inputs
+[11]: https://realpython.com/lessons/type-hinting/
