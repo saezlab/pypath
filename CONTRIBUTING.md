@@ -1,15 +1,27 @@
 # Contribution guidelines
 
-Here are some guidelines to effectively contribute to PyPath development.
+Here are some guidelines to effectively contribute to `pypath` development.
 Please make sure you follow them as much as possible.
 
 ## Adding a new resource
 
-- Add all the required information in `descriptions.py`
-- Make sure which type of licensing the resource has.
-- Double check the formatting of the data upon import - both in PyPath itself
-as in the export table (e.g. web service).
-- Rebuild the webpage HTML.
+- Create a new module in the [`pypath.inputs`][10] module, or a new function
+  if a module for the resource already exists. Follow other input modules as
+  examples and use the module infrastructure, especially [`share.curl`][7]
+  for downloads and [`share.settings`][8] for configuration. Configuration
+  is stored in [`settings.yaml`][9].
+- Add all the required information in [`resources.json`][3] and
+  [`descriptions.py`][4]. These information will be shown also on the
+  OmniPath web page after the next update of the server.
+- Most important to add the license, for license short names see this
+  [directory][5]
+- Check the loaded data directly in the output of the new input method
+- Create input definitions for the relevant core databases (network,
+  enzyme-substrate, complexes, annotations, intercell); this might be
+  not straightforward, don't hesitate to ask for help
+- Check the data loaded into the core databases
+- Our [daily builds][6] might reveal issues and also here we can see if
+  the new resource is loaded correctly into the web service data frames.
 
 ## Adding a new class, method or function
 
@@ -24,11 +36,11 @@ as in the export table (e.g. web service).
 
 The `pypath` aims to follow the style standards most widely shared in the
 Python community such as [PEP8][1] and the [Google style guide][2]. `pypath`
-has undergone large refactoring efforts over the past year (2019) and it has
-still around 30% of its working codebase left with a sometimes messy and ugly
-style. Please be forgiving when you see these parts and feel free to improve
-them if you want. To see a more consistent style characteristic to this module
-we recommend to look at some new core modules, e.g. `pypath.core.network` or
+has undergone large refactoring efforts since 2019 and it has still around 30%
+of its working codebase left with a sometimes messy and ugly style. Please
+forgiving when you see these parts and feel free to improvethem if you want.
+To see a more consistent style characteristic to the module, we recommend to
+look at some new core modules, e.g. `pypath.core.network` or
 `pypath.core.interaction`. As we mentioned we follow the standards, we have
 exceptions in a few points. In the document below we only discuss these
 alterations and additional rules. For general guidelines you can refer to the
@@ -133,20 +145,23 @@ the closing quotes have their own line. For docstrings we follow the
 Napoleon (Google) standard:
 https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html
 
+Thanks to type hints we don't have to add the type of arguments and return
+values in parentheses (enough to write `arg:` instead of `arg (int):`).
+
 ```python
 
-def function(a):
+def function(a: int) -> List[int]:
     """
     Does something.
 
     Args:
-        a (int): A number. I just make this sentence longer, hopefully
+        a: A number. I just make this sentence longer, hopefully
             enough long to show how to make a line break: indent the rest
             of the lines, so the argument name itself sticks out.
 
     Returns:
-        (list): A list of integers. I just make this sentence longer,
-            hopefully enough long to show how to make a line break.
+        A list of integers. I just make this sentence longer,
+        hopefully enough long to show how to make a line break.
     """
 
     return [a, a + 1, a + 2]
@@ -155,16 +170,13 @@ def function(a):
 
 ### Python 3 features
 
-Most parts of `pypath` can still be used in Python 2, and although we don't
-take extra efforts to maintain and increase this compatibility, we don't
-want to break it unnecessarily either. For this reason, we don't use Python
-3 only features such as the popular type hinting:
-https://realpython.com/lessons/type-hinting/
+By the end of 2021 we stopped supporting Python 2. Since then we use Python
+3 only features such as [type hinting][11].
 
-Also, we use `future.utils.iteritems()` and `past.builtins.xrange()`
-instead of simply `.items()` and `range()`. And we use the `map`, `filter`,
-`reduce` (`past.builtins.reduce`) built-ins in a way that the code works
-both in Python 2 and 3.
+You can see many uses of `future.utils.iteritems()`, `past.builtins.xrange()`
+instead of simply `.items()` and `range()`, or `map`, `filter`, `reduce`
+(`past.builtins.reduce`) which all aimed to maintain Python 2 compatibility.
+These are already not necessary and should not be used in new code.
 
 ### Spaces around operators
 
@@ -185,6 +197,18 @@ def function(a = 1):
 
 We use single quotes unless there is any strong reason to use double.
 
+### Imports
+
+We group imports the following way:
+
+- Compatibility imports (e.g. `future.utils.iteritems`; not used any more)
+- Standard library imports
+- Typing imports
+- Imports from other third party dependencies (e.g. `numpy`)
+- Imports from `pypath` itself
+
+Between these sections we leave an empty line
+
 ## Logging
 
 `pypath` has its own session and log manager built in. A class either should
@@ -196,3 +220,12 @@ so in the log one can see which message comes from which part of the module.
 
 [1] https://www.python.org/dev/peps/pep-0008/
 [2] https://github.com/google/styleguide/blob/gh-pages/pyguide.md
+[3] pypath/resources/data/resources.json
+[4] pypath/resources/descriptions.py
+[5] pypath/data/licenses
+[6] https://status.omnipathdb.org/inputs/
+[7] pypath/share/curl.py
+[8] pypath/share/settings.py
+[9] pypath/data/settings.yaml
+[10] pypath/inputs
+[11] https://realpython.com/lessons/type-hinting/
