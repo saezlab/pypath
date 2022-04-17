@@ -987,7 +987,7 @@ pathway_noref = {
         extra_node_attrs_b = {},
     ),
     'spike_lc': input_formats.NetworkInput(
-        name = 'SPIKE-LC',
+        name = 'SPIKE_LC',
         separator = '\t',
         id_col_a = 1,
         id_col_b = 3,
