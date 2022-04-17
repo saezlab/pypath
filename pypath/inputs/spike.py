@@ -35,7 +35,13 @@ import pypath.utils.mapping as mapping
 import pypath.internals.intera as intera
 
 
-def spike_interactions(high_confidence: bool = True) -> List[tuple]:
+def spike_interactions(min_confidence: int = 2) -> List[tuple]:
+    """
+    Args:
+        min_confidence:
+            Confidence (integrity) levels in SPIKE span from 1 to 4, 1
+            being the highest confidence.
+    """
 
     url = urls.urls['spike']['url']
     c = curl.Curl(
@@ -156,7 +162,7 @@ def spike_interactions(high_confidence: bool = True) -> List[tuple]:
 
         if src in genes and tgt in genes:
 
-            if itg == '1' or not high_confidence:
+            if int(itg) <= min_confidence:
 
                 for _src, _tgt in itertools.product(genes[src], genes[tgt]):
 
