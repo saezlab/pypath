@@ -131,6 +131,7 @@ protein_sources_default = {
     'Progeny',
     'Celltypist',
     'Cytosig',
+    'Wang',
 }
 
 #TODO this should be part of json files
@@ -6019,6 +6020,33 @@ class Panglaodb(AnnotationBase):
             input_method = 'panglaodb.panglaodb_annotations',
             infer_complexes = False,
             check_ids = False,
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
+
+class Wang(AnnotationBase):
+
+    _eq_fields = ('function', 'location')
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Cytokine perturbation signatures from the CytoSig database.
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'Wang',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'wang.wang_annotations',
             **kwargs
         )
 
