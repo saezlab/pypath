@@ -1423,16 +1423,24 @@ class Curl(FileOpener):
             return (float(b), u'B')
 
     def get_headers(self):
+
         self.resp_headers_dict = {}
-        for header_line in self.resp_headers:
-            header_line = self._bytes_to_unicode(header_line)
-            if ':' not in header_line:
-                continue
-            name, value = header_line.split(':', 1)
-            name = name.strip()
-            value = value.strip()
-            name = name.lower()
-            self.resp_headers_dict[name] = value
+
+        if hasattr(self, 'resp_headers'):
+
+            for header_line in self.resp_headers:
+
+                header_line = self._bytes_to_unicode(header_line)
+
+                if ':' not in header_line:
+
+                    continue
+
+                name, value = header_line.split(':', 1)
+                name = name.strip()
+                value = value.strip()
+                name = name.lower()
+                self.resp_headers_dict[name] = value
 
     def guess_encoding(self):
 
