@@ -30,6 +30,8 @@ import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.share.settings as settings
 import pypath.inputs.embopress as embo
+import pypath.inputs.ca1 as ca1
+import pypath.utils.mapping as mapping
 
 
 KEY = {
@@ -39,10 +41,14 @@ KEY = {
     'Vesicles': 'Vesicle',
     'Endoplasmic reticulum': 'ER',
     'Not available': None,
+    'Not Available': None,
     'Mitochondrial': 'Mitochondrion',
     'Mitochondria': 'Mitochondrion',
     'Anti-Apoptic': 'Anti-apoptotic',
 }
+
+
+ca1_interactions = ca1.ca1_interactions
 
 
 def hsn_interactions(
@@ -239,3 +245,56 @@ def _wang_process(raw: List[Union[List, str]]) -> List[tuple]:
             reading_key = True
 
     return result
+
+
+def wang_annotations():
+
+    NA_VALUES = {None, 'NA', 'Not available'}
+
+    record = collections.namedtuple(
+        'WangAnnotation',
+        (
+            'function',
+            'location',
+        ),
+    )
+
+    result = collections.defaultdict(set)
+
+    for dataset in ('ca1', 'cui', 'wang'):
+
+        func = globals()['%s_interactions' % dataset]
+        data = func()
+
+        for i in data:
+
+            for side in ('source', 'target'):
+
+                a_uniprot = 'uniprot_%s' % side
+                a_entrez = 'entrez_%s' % side
+                a_function = 'function_%s' % side
+                a_location = 'location_%s' % side
+
+                function = getattr(i, a_function)
+                location = getattr(i, a_location)
+
+                if function in NA_VALUES and location in NA_VALUES:
+
+                    continue
+
+                uniprots = (
+                    (getattr(i, a_uniprot),)
+                        if hasattr(i, a_uniprot) else
+                    mapping.map_name(getattr(i, a_entrez), 'entrez', 'uniprot')
+                )
+
+                for uniprot in uniprots:
+
+                    result[uniprot].add(
+                        record(
+                            function = function,
+                            location = location,
+                        )
+                    )
+
+    return dict(result)
