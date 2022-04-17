@@ -986,6 +986,29 @@ pathway_noref = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
     ),
+    'spike_lc': input_formats.NetworkInput(
+        name = 'SPIKE-LC',
+        separator = '\t',
+        id_col_a = 1,
+        id_col_b = 3,
+        id_type_a = 'genesymbol',
+        id_type_b = 'genesymbol',
+        entity_type_a = 'protein',
+        entity_type_b = 'protein',
+        is_directed = (4, ['1']),
+        sign = (7, '1', '2'),
+        input = 'spike.spike_interactions',
+        references = (5, ';'),
+        ncbi_tax_id = 9606,
+        extra_edge_attrs = {
+            'effect': 7,
+            'mechanism': 11,
+        },
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+        must_have_references = False,
+        input_args = {min_confidence = 99},
+    ),
 }
 
 
