@@ -25,6 +25,7 @@
 from future.utils import iteritems
 
 import json
+import math
 import collections
 
 from typing import Callable, List, Optional, Union
@@ -33,7 +34,11 @@ import glom
 
 import pypath.share.curl as curl
 import pypath.share.constants as constants
+import pypath.share.session as session
 import pypath.inputs.common as inputs_common
+
+_logger = session.Logger(name = 'inputs.ebi')
+_log = _logger._log
 
 
 def ebi_rest(
@@ -82,6 +87,7 @@ def ebi_rest(
     qs = qs or {}
     qs[size_param] = qs.get(size_param, page_length)
     page = 0
+    totalrec = -1
 
     while True:
 
@@ -93,7 +99,20 @@ def ebi_rest(
             )
         )
 
+        _log(
+            'Downloading page %u (total: %s).' % (
+                page + 1,
+                'unknown'
+                    if totalrec < 0 else
+                str(math.ceil(totalrec / page_length))
+            )
+        )
+
         c = curl.Curl(page_url)
+        c.get_headers()
+        headers = c.resp_headers_dict
+
+        totalrec = int(headers.get('x-pagination-totalrecords', totalrec))
 
         if not c.result:
 
@@ -125,7 +144,8 @@ def ebi_rest(
 
         if (
             not paginate or
-            (total and page > total)
+            (total and page > total) or
+            (totalrec > 0 and len(result) >= totalrec)
         ):
 
             break
