@@ -1007,7 +1007,7 @@ pathway_noref = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
         must_have_references = False,
-        input_args = {min_confidence = 99},
+        input_args = {'min_confidence': 99},
     ),
 }
 
