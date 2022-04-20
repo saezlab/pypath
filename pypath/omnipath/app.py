@@ -199,7 +199,10 @@ class DatabaseManager(session_mod.Logger):
         the current settings.
         """
 
-        pickle_fname = self.get_param('%s_pickle' % dataset)
+        pickle_fname = (
+            self.get_param('%s_pickle' % dataset) or
+            '%s.pickle' % dataset
+        )
 
         if dataset == 'enz_sub':
 
