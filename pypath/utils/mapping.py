@@ -59,6 +59,8 @@ try:
 except:
     import pickle
 
+from typing import Iterable, List, Literal, Optional, Set, Union
+
 import timeloop
 
 # from pypath:
@@ -2352,7 +2354,7 @@ class Mapper(session_mod.Logger):
             ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
             entity_type = (
-            entity_type or
+                entity_type or
                 (
                     'small_molecule'
                         if ncbi_tax_id == constants.NOT_ORGANISM_SPECIFIC else
@@ -2402,6 +2404,105 @@ class Mapper(session_mod.Logger):
         else:
 
             return str(name)
+
+
+    def identifier(
+            self,
+            label: Union[str, Iterable[str]],
+            ncbi_tax_id: Optional[int] = None,
+            id_type: Optional[str] = None,
+            entity_type:
+                Optional[
+                    Literal[
+                        'drug',
+                        'lncrna',
+                        'mirna',
+                        'protein',
+                        'small_molecule',
+                    ]
+                ] = None,
+        ) -> Union[Set[str], List[Set[str]]]:
+        """
+        For a label returns the corresponding primary identifier. The type
+        of default identifiers is determined by the settings module. Note,
+        this kind of translation is not always unambigous, one gene symbol
+        might correspond to multiple UniProt IDs.
+        """
+
+        if not common.is_str(label):
+
+            return [
+                self.identifier(
+                    _label,
+                    entity_type = entity_type,
+                    id_type = id_type,
+                    ncbi_tax_id = ncbi_tax_id,
+                )
+                for _label in label
+            ]
+
+        elif hasattr(label, 'components'):
+
+            return label.__str__()
+
+        elif common.is_str(label):
+
+            ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+
+            entity_type = (
+                entity_type or
+                (
+                    'small_molecule'
+                        if ncbi_tax_id == constants.NOT_ORGANISM_SPECIFIC else
+                    'protein'
+                )
+            )
+
+            id_type = (
+                id_type or
+                settings.get('default_label_types')[entity_type]
+            )
+
+            target_id_type = settings.get('default_name_types')[entity_type]
+
+            return self.map_name(
+                label,
+                id_type = id_type,
+                target_id_type = target_id_type,
+                ncbi_tax_id = ncbi_tax_id,
+            )
+
+        else:
+
+            return str(name)
+
+
+    def identifier0(
+            self,
+            label: Union[str, Iterable[str]],
+            ncbi_tax_id: Optional[int] = None,
+            id_type: Optional[str] = None,
+            entity_type:
+                Optional[
+                    Literal[
+                        'drug',
+                        'lncrna',
+                        'mirna',
+                        'protein',
+                        'small_molecule',
+                    ]
+                ] = None,
+        ) -> Union[str, List[str]]:
+
+        args = locals()
+        _ = args.pop('self')
+        ids = self.identifier(**args)
+
+        return (
+            common.first(ids)
+                if isinstance(label, str) else
+            list(map(common.first, ids))
+        )
 
 
     def guess_type(self, name, entity_type = None):
