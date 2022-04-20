@@ -3,7 +3,6 @@
 
 #
 #  This file is part of the `pypath` python module
-#  (Planned for) centrally handling cache for all databases/resources.
 #
 #  Copyright
 #  2014-2022
@@ -28,3 +27,6 @@ GLOM_ERROR = 'PYPATH_GLOM_ERROR'
 CURSOR_UP_ONE = '\x1b[1A'
 ERASE_LINE = '\x1b[2K'
 NOT_ORGANISM_SPECIFIC = -1
+BOOLEAN_TRUE = frozenset(('1', 'yes', 'true'))
+BOOLEAN_FALSE = frozenset(('0', 'no','false'))
+BOOLEAN_VALUES = BOOLEAN_TRUE.union(BOOLEAN_FALSE)

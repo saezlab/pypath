@@ -57,6 +57,7 @@ import pypath.omnipath.server._html as _html
 import pypath.resources.urls as urls
 import pypath.resources as resources_mod
 import pypath.share.common as common
+import pypath.share.constants as constants
 import pypath.core.intercell_annot as intercell_annot
 import pypath.share.settings as settings
 from pypath.share.common import flat_list
@@ -536,15 +537,17 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
     def _parse_arg(self, arg):
 
-        if type(arg) is list and len(arg):
+        if isinstance(arg, list) and arg:
             arg = arg[0]
         if hasattr(arg, 'decode'):
             arg = arg.decode('utf-8')
+        if hasattr(arg, 'lower'):
+            arg = arg.lower()
         if hasattr(arg, 'isdigit') and arg.isdigit():
             arg = int(arg)
-        if arg == 'no':
+        if arg in constants.BOOLEAN_FALSE:
             arg = False
-        if arg == 'yes':
+        if arg in constants.BOOLEAN_TRUE:
             arg = True
 
         return bool(arg)
@@ -668,7 +671,7 @@ class TableServer(BaseServer):
             'databases': None,
             'targets':  None,
             'partners': None,
-            'genesymbols': {'1', '0', 'no', 'yes'},
+            'genesymbols': constants.BOOLEAN_VALUES,
             'fields': {
                 'entity_type',
                 'references',
@@ -717,9 +720,9 @@ class TableServer(BaseServer):
                 'and',
                 'or',
             },
-            'directed': {'1', '0', 'no', 'yes'},
-            'signed': {'1', '0', 'no', 'yes'},
-            'loops': {'1', '0', 'no', 'yes'},
+            'directed': constants.BOOLEAN_VALUES,
+            'signed': constants.BOOLEAN_VALUES,
+            'loops': constants.BOOLEAN_VALUES,
             'entity_types': {
                 'protein',
                 'complex',
@@ -754,7 +757,7 @@ class TableServer(BaseServer):
             'enzymes':     None,
             'substrates':  None,
             'partners':    None,
-            'genesymbols': {'1', '0', 'no', 'yes'},
+            'genesymbols': constants.BOOLEAN_VALUES,
             'organisms': {
                 '9606',
                 '10090',
@@ -806,7 +809,7 @@ class TableServer(BaseServer):
             'resources': None,
             'proteins': None,
             'fields': None,
-            'genesymbols': {'1', '0', 'no', 'yes'},
+            'genesymbols': constants.BOOLEAN_VALUES,
             'entity_types': {
                 'protein',
                 'complex',
@@ -830,7 +833,7 @@ class TableServer(BaseServer):
             'databases': None,
             'resources': None,
             'fields': None,
-            'cytoscape': {'1', '0', 'no', 'yes'},
+            'cytoscape': constants.BOOLEAN_VALUES,
         },
         'intercell': {
             'header': None,
@@ -880,16 +883,16 @@ class TableServer(BaseServer):
                 'metabolite',
                 'lipid',
             },
-            'transmitter': {'1', '0', 'no', 'yes'},
-            'receiver': {'1', '0', 'no', 'yes'},
-            'trans': {'1', '0', 'no', 'yes'},
-            'rec': {'1', '0', 'no', 'yes'},
-            'secreted': {'1', '0', 'no', 'yes'},
-            'plasma_membrane_peripheral': {'1', '0', 'no', 'yes'},
-            'plasma_membrane_transmembrane': {'1', '0', 'no', 'yes'},
-            'sec': {'1', '0', 'no', 'yes'},
-            'pmp': {'1', '0', 'no', 'yes'},
-            'pmtm': {'1', '0', 'no', 'yes'},
+            'transmitter': constants.BOOLEAN_VALUES,
+            'receiver': constants.BOOLEAN_VALUES,
+            'trans': constants.BOOLEAN_VALUES,
+            'rec': constants.BOOLEAN_VALUES,
+            'secreted': constants.BOOLEAN_VALUES,
+            'plasma_membrane_peripheral': constants.BOOLEAN_VALUES,
+            'plasma_membrane_transmembrane': constants.BOOLEAN_VALUES,
+            'sec': constants.BOOLEAN_VALUES,
+            'pmp': constants.BOOLEAN_VALUES,
+            'pmtm': constants.BOOLEAN_VALUES,
             'causality': {
                 'transmitter',
                 'trans',
@@ -932,16 +935,16 @@ class TableServer(BaseServer):
             'databases': None,
             'parent': None,
             'fields': None,
-            'transmitter': {'1', '0', 'no', 'yes'},
-            'receiver': {'1', '0', 'no', 'yes'},
-            'trans': {'1', '0', 'no', 'yes'},
-            'rec': {'1', '0', 'no', 'yes'},
-            'secreted': {'1', '0', 'no', 'yes'},
-            'plasma_membrane_peripheral': {'1', '0', 'no', 'yes'},
-            'plasma_membrane_transmembrane': {'1', '0', 'no', 'yes'},
-            'sec': {'1', '0', 'no', 'yes'},
-            'pmp': {'1', '0', 'no', 'yes'},
-            'pmtm': {'1', '0', 'no', 'yes'},
+            'transmitter': constants.BOOLEAN_VALUES,
+            'receiver': constants.BOOLEAN_VALUES,
+            'trans': constants.BOOLEAN_VALUES,
+            'rec': constants.BOOLEAN_VALUES,
+            'secreted': constants.BOOLEAN_VALUES,
+            'plasma_membrane_peripheral': constants.BOOLEAN_VALUES,
+            'plasma_membrane_transmembrane': constants.BOOLEAN_VALUES,
+            'sec': constants.BOOLEAN_VALUES,
+            'pmp': constants.BOOLEAN_VALUES,
+            'pmtm': constants.BOOLEAN_VALUES,
         },
         'complexes': {
             'header': None,
