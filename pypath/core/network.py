@@ -468,7 +468,7 @@ class Network(session_mod.Logger):
         self.load(resources = resources, make_df = make_df, **kwargs)
 
 
-    def reload(self):
+    def reload(self, recursive: bool = False):
         """
         Reloads the object from the module level.
         """
@@ -479,18 +479,20 @@ class Network(session_mod.Logger):
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
 
-        imp.reload(entity_mod)
-        imp.reload(interaction_mod)
+        if recursive:
 
-        for entity in self.nodes.values():
+            imp.reload(entity_mod)
+            imp.reload(interaction_mod)
 
-            entity.__class__ = entity_mod.Entity
+            for entity in self.nodes.values():
 
-        for interaction in self.interactions.values():
+                entity.__class__ = entity_mod.Entity
 
-            interaction.__class__ = interaction_mod.Interaction
-            interaction.a.__class__ = entity_mod.Entity
-            interaction.b.__class__ = entity_mod.Entity
+            for interaction in self.interactions.values():
+
+                interaction.__class__ = interaction_mod.Interaction
+                interaction.a.__class__ = entity_mod.Entity
+                interaction.b.__class__ = entity_mod.Entity
 
 
     def __len__(self):
@@ -3508,7 +3510,8 @@ class Network(session_mod.Logger):
         """
 
         if (
-            not isinstance(entity, common.basestring) and
+            not common.is_str(entity) and
+            not hasattr(entity, 'identifier') and
             hasattr(entity, '__iter__')
         ):
 
