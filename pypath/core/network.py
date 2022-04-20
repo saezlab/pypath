@@ -4662,7 +4662,7 @@ def init_db(use_omnipath = False, method = None, **kwargs):
     method_name = (
         'load_omnipath'
             if use_omnipath else
-        (method or 'init_network')
+        (method or 'load')
     )
     n = Network()
     getattr(n, method_name)(**kwargs)
