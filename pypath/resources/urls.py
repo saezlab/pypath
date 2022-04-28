@@ -1519,6 +1519,11 @@ urls = {
             'Studies (LSS) mapped to UniProt.',
         'url': 'https://www.ebi.ac.uk/proteins/api/%s',
     },
+    'lambert2018': {
+        'label': 'A new compendium of human transcription factors',
+        's1': 'https://www.cell.com/cms/10.1016/j.cell.2018.01.029/'
+            'attachment/ede37821-fd6f-41b7-9a0e-9d5410855ae6/mmc2.xlsx',
+    },
 }
 
 
