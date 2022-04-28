@@ -3195,7 +3195,7 @@ class Mapper(session_mod.Logger):
 
         for key, table in iteritems(self.tables):
 
-            if table._expired():
+            if not table or table._expired():
 
                 to_remove.add(key)
 
