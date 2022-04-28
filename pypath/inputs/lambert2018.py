@@ -22,23 +22,37 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import re
 import collections
 
 import pypath.inputs.common as inputs_common
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 import pypath.inputs.cell as cell_input
+import pypath.share.common as common
 
 
 def lambert2018_s1_raw():
 
-    url = urls.urls['lambert2018']['s1']
-
     path = cell_input.cell_supplementary(
-        supp_url = urls.urls['wojtowicz2020']['url'],
-        article_url = urls.urls['wojtowicz2020']['article'],
+        supp_url = urls.urls['lambert2018']['s1'],
+        article_url = urls.urls['lambert2018']['article'],
     )
 
     content = inputs_common.read_xls(path, sheet = 1)
 
-    return content
+    names = content.pop(0)
+
+    record = collections.namedtuple(
+        'Lambert2018Raw',
+        [
+            re.sub('[- ]', '_', n).lower()
+
+            for n in names
+        ]
+    )
+
+    return [
+        record(*(common.try_float(f) for f in r))
+        for r in content
+    ]

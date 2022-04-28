@@ -233,6 +233,21 @@ def float_or_nan(num):
     return float(num) if is_float(num) else np.nan
 
 
+def try_float(num):
+    """
+    Returns `num` converted from string to float `num` represents a
+    float otherwise returns the input unchanged.
+    """
+
+    try:
+
+        return float(num)
+
+    except ValueError:
+
+        return num
+
+
 def to_set(var):
     """
     Makes sure the object `var` is a set, if it is a list converts it to set,

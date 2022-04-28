@@ -1523,6 +1523,7 @@ urls = {
         'label': 'A new compendium of human transcription factors',
         's1': 'https://www.cell.com/cms/10.1016/j.cell.2018.01.029/'
             'attachment/ede37821-fd6f-41b7-9a0e-9d5410855ae6/mmc2.xlsx',
+        'article': 'https://www.cell.com/cell/fulltext/S0092-8674(18)30106-5',
     },
 }
 
