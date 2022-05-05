@@ -133,6 +133,7 @@ protein_sources_default = {
     'Cytosig',
     'Wang',
     'Panglaodb',
+    'Lambert2018',
 }
 
 #TODO this should be part of json files
@@ -6031,6 +6032,36 @@ class Panglaodb(AnnotationBase):
         self.annot = self.data
 
         delattr(self, 'data')
+
+
+class Lambert2018(AnnotationBase):
+
+    _eq_fields = ('genesymbol', 'is_tf')
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Cell type markers from PanglaoDB
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'Lambert2018',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'lambert2018.lambert2018_annotations',
+            infer_complexes = True,
+            check_ids = False,
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+
+        delattr(self, 'data')
+
 
 
 class Wang(AnnotationBase):
