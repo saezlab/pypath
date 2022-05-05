@@ -187,9 +187,9 @@ def spike_interactions(min_confidence: int = 2) -> List[tuple]:
     return result
 
 
-def spike_complexes(high_confidence: bool = True) -> Dict[str, intera.Complex]:
+def spike_complexes(high_confidence: int = 2) -> Dict[str, intera.Complex]:
 
-    interactions = spike_interactions(high_confidence = high_confidence)
+    interactions = spike_interactions(min_confidence = min_confidence)
 
     complexes = [
         getattr(i, attr)
