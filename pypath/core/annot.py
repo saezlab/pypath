@@ -132,6 +132,7 @@ protein_sources_default = {
     'Celltypist',
     'Cytosig',
     'Wang',
+    'Panglaodb',
 }
 
 #TODO this should be part of json files
