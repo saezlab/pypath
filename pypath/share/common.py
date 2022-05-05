@@ -248,6 +248,23 @@ def try_float(num):
         return num
 
 
+def try_bool(val):
+    """
+    Attempts to convert a value to True or False, returns the input unchanged
+    upon failure.
+    """
+
+    _val = str(val).strip().lower()
+
+    return (
+        True
+            if _val in BOOLEAN_TRUE else
+        False
+            if _val in BOOLEAN_FALSE else
+        val
+    )
+
+
 def to_set(var):
     """
     Makes sure the object `var` is a set, if it is a list converts it to set,

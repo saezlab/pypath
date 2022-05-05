@@ -41,18 +41,25 @@ def lambert2018_s1_raw():
 
     content = inputs_common.read_xls(path, sheet = 1)
 
-    names = content.pop(0)
+    h0, h1 = content.pop(0), content.pop(0)
+    h1[3] = h0[3]
+
+    names = ['%s_%s' % n for n in zip()]
 
     record = collections.namedtuple(
         'Lambert2018Raw',
         [
-            re.sub('[- ]', '_', n).lower()
-
-            for n in names
+            nn for nn in (
+                re.sub('[- ?;:]', '_', n).lower().strip('_ ')
+                for n in h1
+            )
+            if nn
         ]
     )
 
+    nfields = len(record._fields)
+
     return [
-        record(*(common.try_float(f) for f in r))
+        record(*(common.try_bool(common.try_float(f)) for f in r[:nfields]))
         for r in content
     ]
