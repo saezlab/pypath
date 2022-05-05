@@ -34,6 +34,13 @@ import pypath.share.common as common
 
 def lambert2018_s1_raw():
 
+    def process_field(f):
+
+        f = common.try_bool(common.try_float(f.strip()))
+
+        return None if f in {'', '#N/A'} else f
+
+
     path = cell_input.cell_supplementary(
         supp_url = urls.urls['lambert2018']['s1'],
         article_url = urls.urls['lambert2018']['article'],
@@ -60,7 +67,7 @@ def lambert2018_s1_raw():
     nfields = len(record._fields)
 
     return [
-        record(*(common.try_bool(common.try_float(f)) for f in r[:nfields]))
+        record(*(process_field(f) for f in r[:nfields]))
         for r in content
     ]
 
@@ -85,7 +92,8 @@ def lambert2018_annotations():
             'vaquerizas2009',
             'cisbp',
             'tfclass',
-            'tfcat',
+            'tfcat_annot',
+            'tfcat_pmids',
             'go',
             'pdb',
         )
@@ -96,6 +104,31 @@ def lambert2018_annotations():
     for r in lambert2018_s1_raw():
 
         uniprots = mapping.map_name(r.name, 'genesymbol', 'uniprot')
+        vaquerizas = r.vaquerizas_2009_tf_classification or 'no'
+
+        tfcat_annot = (
+            tuple(common.del_empty(sorted(
+                a.strip() for a in
+                re.split(
+                    '[_;]',
+                    re.sub(
+                        'PMIDS:[\d;]+', '',
+                        r.tf_cat_classification
+                    ).
+                    replace('tf', 'TF').
+                    replace('Transcription Factor', 'TF')
+                )
+            )))
+                if r.tf_cat_classification else
+            ()
+        )
+
+        tfcat_pmids = common.re_safe_groups(
+            'PMIDS:([\d;]+)',
+            r.tf_cat_classification.strip()
+        )[0] if r.tf_cat_classification else None
+
+        tfcat_pmids = None if tfcat_pmids == '0' else tfcat_pmids
 
         for uniprot in uniprots:
 
@@ -107,16 +140,17 @@ def lambert2018_annotations():
                     tf_assessment = r.tf_assessment,
                     binding_mode = r.binding_mode,
                     binding_domain = r.dbd,
-                    tf_disagree = r.disagree_on_assessment,
-                    binding_disagree = r.disagree_on_binding,
+                    tf_disagree = r.disagree_on_assessment == 'Disagree',
+                    binding_disagree = r.disagree_on_binding == 'Disagree',
                     binding1 = r.binding1,
                     binding2 = r.binding2,
                     assessment1 = r.assesment1,
                     assessment2 = r.assesment2,
-                    vaquerizas2009 = r.vaquerizas_2009_tf_classification,
+                    vaquerizas2009 = vaquerizas,
                     cisbp = r.cisbp_considers_it_as_a_tf,
                     tfclass = r.tfclass_considers_it_as_a_tf,
-                    tfcat = r.tf_cat_classification,
+                    tfcat_annot = tfcat_annot,
+                    tfcat_pmids = tfcat_pmids,
                     go = r.is_a_go_tf,
                     pdb = r.pdb,
                 )
