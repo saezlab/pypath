@@ -404,6 +404,16 @@ def del_empty(lst): # XXX: Only used in main.py line: 1278
     return [i for i in lst if i or isinstance(i, (int, float))]
 
 
+def re_safe_groups(pattern, string, method = re.search):
+    """
+    Missing convenience for the built-in `re` module.
+    """
+
+    match = method(pattern, string)
+
+    return match.groups() if match else (None,)
+
+
 # Order preserving
 # From http://www.peterbe.com/plog/uniqifiers-benchmark
 def uniq_ord_list(seq, idfun=None): # XXX: Only used in plot.py line: 510
