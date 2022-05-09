@@ -43,6 +43,10 @@ _logger = session.Logger(name = 'uniprot_input')
 _log = _logger._log
 
 
+HEADER_ACCEPT_TSV = {'Accept': 'text/tsv'}
+HEADER_ACCEPT_JSON = {'Accept': 'application/json'}
+
+
 def go_annotations_uniprot(organism = 9606, swissprot = 'yes'):
     """
     Deprecated, should be removed soon.
@@ -264,7 +268,7 @@ def go_descendants_quickgo(
 
             c = curl.Curl(
                 url,
-                req_headers = req_headers,
+                req_headers = HEADER_ACCEPT_JSON,
                 silent = True,
                 large = True,
             )
@@ -314,8 +318,6 @@ def go_descendants_quickgo(
 
     terms = terms or go_terms_quickgo(aspects = aspects)
     relations = relations or ('is_a', 'part_of', 'occurs_in', 'regulates',)
-
-    req_headers = ['Accept:application/json']
 
     relations_part = ','.join(relations)
 
@@ -573,8 +575,6 @@ def go_annotations_quickgo(
     aspects_part = ','.join(ontologies[a] for a in aspects)
     relations_part = ','.join(relations)
 
-    req_headers = ['Accept:text/tsv']
-
     page = 1
 
     while True:
@@ -588,7 +588,7 @@ def go_annotations_quickgo(
 
         c = curl.Curl(
             url = this_url,
-            req_headers = req_headers,
+            req_headers = HEADER_ACCEPT_TSV,
             silent = False,
             large = True
         )
@@ -817,7 +817,10 @@ def get_go_desc(go_ids, organism = 9606):
 
     url = urls.urls['quickgo_desc']['url'] % (organism, go_ids)
     c = curl.Curl(
-        url, silent = False, large = True, req_headers = {'Accept': 'text/tsv'}
+        url,
+        silent = False,
+        large = True,
+        req_headers = HEADER_ACCEPT_TSV,
     )
     _ = c.result.readline()
 
@@ -849,21 +852,32 @@ def get_go_quick(
         'F': collections.defaultdict(set),
         'P': collections.defaultdict(set),
     }
+
     names = {}
     aspects_param = ','.join(sorted(ontologies[a] for a in aspects))
+
     url = urls.urls['quickgo']['url'] % (
         organism,
         aspects_param,
         '&goUsage = slim' if slim else '',
     )
 
-    c = curl.Curl(url, silent = False, large = True)
+    c = curl.Curl(
+        url,
+        silent = False,
+        large = True,
+        req_headers = HEADER_ACCEPT_TSV,
+        keep_failed = True,
+    )
+
     _ = next(c.result)
 
-    for l in result:
+    for l in c.result:
+
         l = l.split('\t')
 
         if not names_only:
+
             terms[l[5]][l[1]].add(l[4])
 
     return {'terms': terms, 'names': names}
