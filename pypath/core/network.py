@@ -1066,284 +1066,307 @@ class Network(session_mod.Logger):
                 name = 'Reading network data - %s' % networkinput.name,
             )
 
-            for lnum, line in enumerate(prg):
+            try:
 
-                if len(line) <= 1 or (lnum == 1 and networkinput.header):
-                    # empty lines
-                    # or header row
-                    continue
+                for lnum, line in enumerate(prg):
 
-                if not isinstance(line, (list, tuple)):
+                    if len(line) <= 1 or (lnum == 1 and networkinput.header):
+                        # empty lines
+                        # or header row
+                        continue
 
-                    if hasattr(line, 'decode'):
-                        line = line.decode('utf-8')
+                    if not isinstance(line, (list, tuple)):
 
-                    line = line.strip('\n\r').split(networkinput.separator)
+                        if hasattr(line, 'decode'):
+                            line = line.decode('utf-8')
 
-                else:
-                    line = [
-                        x.replace('\n', '').replace('\r', '')
-                            if hasattr(x, 'replace') else
-                        x
-                        for x in line
-                    ]
-
-                ## 1) filters
-                if self._filters(
-                    line,
-                    networkinput.positive_filters,
-                    networkinput.negative_filters
-                ):
-
-                    input_filtered += 1
-                    continue
-
-                ## 2) direction
-                # reading names and attributes:
-                if is_directed and not isinstance(is_directed, tuple):
-
-                    this_edge_dir = True
-
-                else:
-
-                    this_edge_dir = self._process_direction(
-                        line,
-                        dir_col,
-                        dir_val,
-                        dir_sep,
-                    )
-
-                ## 3) references
-                refs = []
-
-                if ref_col is not None:
-
-                    if line[ref_col] is None:
-
-                        refs = ()
-
-                    elif isinstance(line[ref_col], (list, set, tuple)):
-
-                        refs = line[ref_col]
-
-                    elif isinstance(line[ref_col], int):
-
-                        refs = (line[ref_col],)
+                        line = line.strip('\n\r').split(networkinput.separator)
 
                     else:
+                        line = [
+                            x.replace('\n', '').replace('\r', '')
+                                if hasattr(x, 'replace') else
+                            x
+                            for x in line
+                        ]
 
-                        refs = line[ref_col].split(ref_sep)
-
-                    refs = common.del_empty(list(set(refs)))
-
-                refs = pubmed_input.only_pmids([str(r).strip() for r in refs])
-
-                if len(refs) == 0 and must_have_references:
-
-                    ref_filtered += 1
-                    continue
-
-                ## 4) entity types
-                entity_type_a = self._process_field(
-                    networkinput.entity_type_a,
-                    line,
-                )
-                entity_type_b = self._process_field(
-                    networkinput.entity_type_b,
-                    line,
-                )
-
-                ## 5) ID types
-                id_type_a = self._process_field(networkinput.id_type_a, line)
-                id_type_b = self._process_field(networkinput.id_type_b, line)
-
-                ## 6) organisms
-                # to give an easy way for input definition:
-                if isinstance(networkinput.ncbi_tax_id, int):
-
-                    taxon_a = (
-                        constants.NOT_ORGANISM_SPECIFIC
-                            if entity_type_a in SMOL_TYPES else
-                        networkinput.ncbi_tax_id
-                    )
-                    taxon_b = (
-                        constants.NOT_ORGANISM_SPECIFIC
-                            if entity_type_b in SMOL_TYPES else
-                        networkinput.ncbi_tax_id
-                    )
-
-                # to enable more sophisticated inputs:
-                elif isinstance(networkinput.ncbi_tax_id, dict):
-
-                    taxx = self._process_taxon(
-                        networkinput.ncbi_tax_id,
+                    ## 1) filters
+                    if self._filters(
                         line,
-                    )
-
-                    if isinstance(taxx, tuple):
-
-                        taxon_a, taxon_b = taxx
-
-                    else:
-
-                        taxon_a = taxon_b = taxx
-
-                    taxd_a = (
-                        networkinput.ncbi_tax_id['A']
-                            if 'A' in networkinput.ncbi_tax_id else
-                        constants.NOT_ORGANISM_SPECIFIC
-                            if entity_type_a in SMOL_TYPES else
-                        networkinput.ncbi_tax_id
-                    )
-                    taxd_b = (
-                        networkinput.ncbi_tax_id['B']
-                            if 'B' in networkinput.ncbi_tax_id else
-                        constants.NOT_ORGANISM_SPECIFIC
-                            if entity_type_b in SMOL_TYPES else
-                        networkinput.ncbi_tax_id
-                    )
-
-                    only_default = networkinput.only_default_organism
-
-                    if not (
-                        self._match_taxon(taxd_a, taxon_a, only_default) and
-                        self._match_taxon(taxd_b, taxon_b, only_default)
+                        networkinput.positive_filters,
+                        networkinput.negative_filters
                     ):
+
+                        input_filtered += 1
+                        continue
+
+                    ## 2) direction
+                    # reading names and attributes:
+                    if is_directed and not isinstance(is_directed, tuple):
+
+                        this_edge_dir = True
+
+                    else:
+
+                        this_edge_dir = self._process_direction(
+                            line,
+                            dir_col,
+                            dir_val,
+                            dir_sep,
+                        )
+
+                    ## 3) references
+                    refs = []
+
+                    if ref_col is not None:
+
+                        if line[ref_col] is None:
+
+                            refs = ()
+
+                        elif isinstance(line[ref_col], (list, set, tuple)):
+
+                            refs = line[ref_col]
+
+                        elif isinstance(line[ref_col], int):
+
+                            refs = (line[ref_col],)
+
+                        else:
+
+                            refs = line[ref_col].split(ref_sep)
+
+                        refs = common.del_empty(list(set(refs)))
+
+                    refs = pubmed_input.only_pmids([str(r).strip() for r in refs])
+
+                    if len(refs) == 0 and must_have_references:
+
+                        ref_filtered += 1
+                        continue
+
+                    ## 4) entity types
+                    entity_type_a = self._process_field(
+                        networkinput.entity_type_a,
+                        line,
+                    )
+                    entity_type_b = self._process_field(
+                        networkinput.entity_type_b,
+                        line,
+                    )
+
+                    ## 5) ID types
+                    id_type_a = self._process_field(networkinput.id_type_a, line)
+                    id_type_b = self._process_field(networkinput.id_type_b, line)
+
+                    ## 6) organisms
+                    # to give an easy way for input definition:
+                    if isinstance(networkinput.ncbi_tax_id, int):
+
+                        taxon_a = (
+                            constants.NOT_ORGANISM_SPECIFIC
+                                if entity_type_a in SMOL_TYPES else
+                            networkinput.ncbi_tax_id
+                        )
+                        taxon_b = (
+                            constants.NOT_ORGANISM_SPECIFIC
+                                if entity_type_b in SMOL_TYPES else
+                            networkinput.ncbi_tax_id
+                        )
+
+                    # to enable more sophisticated inputs:
+                    elif isinstance(networkinput.ncbi_tax_id, dict):
+
+                        taxx = self._process_taxon(
+                            networkinput.ncbi_tax_id,
+                            line,
+                        )
+
+                        if isinstance(taxx, tuple):
+
+                            taxon_a, taxon_b = taxx
+
+                        else:
+
+                            taxon_a = taxon_b = taxx
+
+                        taxd_a = (
+                            networkinput.ncbi_tax_id['A']
+                                if 'A' in networkinput.ncbi_tax_id else
+                            constants.NOT_ORGANISM_SPECIFIC
+                                if entity_type_a in SMOL_TYPES else
+                            networkinput.ncbi_tax_id
+                        )
+                        taxd_b = (
+                            networkinput.ncbi_tax_id['B']
+                                if 'B' in networkinput.ncbi_tax_id else
+                            constants.NOT_ORGANISM_SPECIFIC
+                                if entity_type_b in SMOL_TYPES else
+                            networkinput.ncbi_tax_id
+                        )
+
+                        only_default = networkinput.only_default_organism
+
+                        if not (
+                            self._match_taxon(taxd_a, taxon_a, only_default) and
+                            self._match_taxon(taxd_b, taxon_b, only_default)
+                        ):
+
+                            taxon_filtered += 1
+                            continue
+
+                    # assuming by default the default organism
+                    else:
+
+                        taxon_a = taxon_b = self.ncbi_tax_id
+
+                    if taxon_a is None or taxon_b is None:
 
                         taxon_filtered += 1
                         continue
 
-                # assuming by default the default organism
-                else:
+                    ## 7) effect (sign)
+                    positive = False
+                    negative = False
 
-                    taxon_a = taxon_b = self.ncbi_tax_id
+                    if isinstance(sign, tuple):
 
-                if taxon_a is None or taxon_b is None:
-
-                    taxon_filtered += 1
-                    continue
-
-                ## 7) effect (sign)
-                positive = False
-                negative = False
-
-                if isinstance(sign, tuple):
-
-                    positive, negative = (
-                        self._process_sign(line[sign[0]], sign)
-                    )
-
-                ## 8) resources (source databases)
-                resource = (
-                    line[networkinput.resource]
-                        if isinstance(networkinput.resource, int) else
-                    line[networkinput.resource[0]].split(
-                        networkinput.resource[1]
-                    )
-                        if (
-                            isinstance(networkinput.resource, tuple) and
-                            hasattr(line[networkinput.resource[0]], 'split')
-                        ) else
-                    []
-                        if isinstance(networkinput.resource, tuple) else
-                    networkinput.resource
-                )
-
-                resource = common.to_set(resource)
-
-                _resources_secondary = tuple(
-                    network_resources.resource.NetworkResource(
-                        name = sec_res,
-                        interaction_type = _resource.interaction_type,
-                        data_model = _resource.data_model,
-                        via = _resource.name,
-                    )
-                    for sec_res in resource
-                    if sec_res != _resource.name
-                )
-
-                resource.add(networkinput.name)
-
-                ## 9) interacting partners
-                id_a = self._process_partner(networkinput.id_col_a, line)
-                id_b = self._process_partner(networkinput.id_col_b, line)
-
-                ## 10) further attributes
-                # getting additional edge and node attributes
-                attrs_edge = self._process_attrs(
-                    line,
-                    networkinput.extra_edge_attrs,
-                    lnum,
-                )
-                attrs_node_a = self._process_attrs(
-                    line,
-                    networkinput.extra_node_attrs_a,
-                    lnum,
-                )
-                attrs_node_b = self._process_attrs(
-                    line,
-                    networkinput.extra_node_attrs_b,
-                    lnum,
-                )
-
-                ## 11) creating the Evidence object
-                evidences = evidence.Evidences(
-                    evidences = (
-                        evidence.Evidence(
-                            resource = _res,
-                            references = refs,
-                            attrs = attrs_edge,
+                        positive, negative = (
+                            self._process_sign(line[sign[0]], sign)
                         )
-                        for _res in
-                        _resources_secondary + (_resource,)
+
+                    ## 8) resources (source databases)
+                    resource = (
+                        line[networkinput.resource]
+                            if isinstance(networkinput.resource, int) else
+                        line[networkinput.resource[0]].split(
+                            networkinput.resource[1]
+                        )
+                            if (
+                                isinstance(networkinput.resource, tuple) and
+                                hasattr(line[networkinput.resource[0]], 'split')
+                            ) else
+                        []
+                            if isinstance(networkinput.resource, tuple) else
+                        networkinput.resource
                     )
-                )
 
-                ## 12) node attributes that
-                ##     depend on the interaction direction
-                if networkinput.mark_source:
+                    resource = common.to_set(resource)
 
-                    attrs_node_a[networkinput.mark_source] = this_edge_dir
+                    _resources_secondary = tuple(
+                        network_resources.resource.NetworkResource(
+                            name = sec_res,
+                            interaction_type = _resource.interaction_type,
+                            data_model = _resource.data_model,
+                            via = _resource.name,
+                        )
+                        for sec_res in resource
+                        if sec_res != _resource.name
+                    )
 
-                if networkinput.mark_target:
+                    resource.add(networkinput.name)
 
-                    attrs_node_b[networkinput.mark_target] = this_edge_dir
+                    ## 9) interacting partners
+                    id_a = self._process_partner(networkinput.id_col_a, line)
+                    id_b = self._process_partner(networkinput.id_col_b, line)
 
-                ## 13) all interaction data goes into a dict
-                new_edge = {
-                    'id_a': id_a,
-                    'id_b': id_b,
-                    'id_type_a': id_type_a,
-                    'id_type_b': id_type_b,
-                    'entity_type_a': entity_type_a,
-                    'entity_type_b': entity_type_b,
-                    'source': resource,
-                    'is_directed': this_edge_dir,
-                    'references': refs,
-                    'positive': positive,
-                    'negative': negative,
-                    'taxon_a': taxon_a,
-                    'taxon_b': taxon_b,
-                    'interaction_type': networkinput.interaction_type,
-                    'evidences': evidences,
-                    'attrs_node_a': attrs_node_a,
-                    'attrs_node_b': attrs_node_b,
-                    'attrs_edge': attrs_edge,
-                }
+                    ## 10) further attributes
+                    # getting additional edge and node attributes
+                    attrs_edge = self._process_attrs(
+                        line,
+                        networkinput.extra_edge_attrs,
+                        lnum,
+                    )
+                    attrs_node_a = self._process_attrs(
+                        line,
+                        networkinput.extra_node_attrs_a,
+                        lnum,
+                    )
+                    attrs_node_b = self._process_attrs(
+                        line,
+                        networkinput.extra_node_attrs_b,
+                        lnum,
+                    )
 
-                if read_error:
+                    ## 11) creating the Evidence object
+                    evidences = evidence.Evidences(
+                        evidences = (
+                            evidence.Evidence(
+                                resource = _res,
+                                references = refs,
+                                attrs = attrs_edge,
+                            )
+                            for _res in
+                            _resources_secondary + (_resource,)
+                        )
+                    )
+
+                    ## 12) node attributes that
+                    ##     depend on the interaction direction
+                    if networkinput.mark_source:
+
+                        attrs_node_a[networkinput.mark_source] = this_edge_dir
+
+                    if networkinput.mark_target:
+
+                        attrs_node_b[networkinput.mark_target] = this_edge_dir
+
+                    ## 13) all interaction data goes into a dict
+                    new_edge = {
+                        'id_a': id_a,
+                        'id_b': id_b,
+                        'id_type_a': id_type_a,
+                        'id_type_b': id_type_b,
+                        'entity_type_a': entity_type_a,
+                        'entity_type_b': entity_type_b,
+                        'source': resource,
+                        'is_directed': this_edge_dir,
+                        'references': refs,
+                        'positive': positive,
+                        'negative': negative,
+                        'taxon_a': taxon_a,
+                        'taxon_b': taxon_b,
+                        'interaction_type': networkinput.interaction_type,
+                        'evidences': evidences,
+                        'attrs_node_a': attrs_node_a,
+                        'attrs_node_b': attrs_node_b,
+                        'attrs_edge': attrs_edge,
+                    }
+
+                    if read_error:
+
+                        self._log(
+                            'Errors occured, certain lines skipped.'
+                            'Trying to read the remaining.\n',
+                            5,
+                        )
+
+                    edge_list.append(new_edge)
+
+                    if first_n and len(edge_list) >= first_n:
+
+                        break
+
+                except Exception as e:
 
                     self._log(
-                        'Errors occured, certain lines skipped.'
-                        'Trying to read the remaining.\n',
-                        5,
+                        'Error at loading resource `%s`.' % networkinput.name
                     )
+                    self._log_traceback()
 
-                edge_list.append(new_edge)
+                    try:
 
-                if first_n and len(edge_list) >= first_n:
+                        traceback.print_tb(
+                            e.__traceback__,
+                            file = sys.stdout
+                        )
 
-                    break
+                    except Exception as e:
+
+                        self._log('Failed handling exception.')
+                        self._log_traceback()
+
+                    return None
 
             if hasattr(infile, 'close'):
 
