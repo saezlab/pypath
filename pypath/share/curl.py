@@ -1044,6 +1044,8 @@ class Curl(FileOpener):
 
             return
 
+        url_raw = self.url
+
         if type(self.url) is bytes:
 
             self.url = self._bytes_to_unicode(self.url, encoding = charset)
@@ -1060,6 +1062,10 @@ class Curl(FileOpener):
 
         self.url = urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
 
+        if self.url != url_raw:
+
+            self._log('Quoted URL: `%s`.' % self.url)
+
 
     def set_title(self):
 
@@ -1071,11 +1077,14 @@ class Curl(FileOpener):
     def set_post(self):
 
         if type(self.post) is dict:
+
             self.postfields = urllib.urlencode(self.post)
             self.curl.setopt(self.curl.POSTFIELDS, self.postfields)
             self.curl.setopt(self.curl.POST, 1)
             self._log('POST parameters set: %s' % self.postfields[:100])
+
         else:
+
             self.postfields = None
 
 
@@ -1361,12 +1370,27 @@ class Curl(FileOpener):
             (
                 self.status >= 400 or
                 self.download_failed
-            ) and
-            not self.keep_failed
+            )
         ):
 
-            self._log('Download failed, removing the resulted file.')
-            self.remove_target()
+            with open(self.target.name, 'rb') as fp:
+
+                contents = fp.read(5000)
+
+            try:
+
+                contents = contents.decode('utf8')
+
+            except UnicodeDecodeError:
+
+                contents = str(contents)
+
+            self._log('First 5000 bytes of response: %s' % contents)
+
+            if not self.keep_failed:
+
+                self._log('Download failed, removing the resulted file.')
+                self.remove_target()
 
 
     def remove_target(self):
