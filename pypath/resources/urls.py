@@ -960,7 +960,8 @@ urls = {
     },
     'homologene': {
         'label': 'NCBI HomoloGene data, recent release',
-        'url': 'ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data'
+        'url': 'https://ftp.ncbi.nih.gov/pub/HomoloGene/'
+            'current/homologene.data',
     },
     'mirbase' : {
         'label': 'miRBase: miRNA main reference database',
