@@ -126,6 +126,7 @@ def go_ancestors_goose(aspects = ('C','F','P')):
     }
 
     if set(aspects) != {'C', 'F', 'P'}:
+
         aspects_part = 'WHERE (%s)' % (
             ' OR '.join(
                 'term.term_type = "%s"' % ontologies[asp]
@@ -136,6 +137,7 @@ def go_ancestors_goose(aspects = ('C','F','P')):
     sql_path = os.path.join(common.DATA, 'goose_ancestors.sql')
 
     with open(sql_path, 'r') as fp:
+
         query = fp.read()
 
     query = query % aspects_part
@@ -148,6 +150,7 @@ def go_ancestors_goose(aspects = ('C','F','P')):
     ancestors = collections.defaultdict(set)
 
     for l in c.result:
+
         l = l.strip().split('\t')
         ancestors[l[0]].add(l[1])
 

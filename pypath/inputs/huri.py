@@ -97,7 +97,14 @@ def hi_iii_old():
         'form[request_dataset]': '2',
         'form[request_file_format]': 'psi',
     }
-    c = curl.Curl(url, silent = False, large = True, post = post_data)
+
+    c = curl.Curl(
+        url,
+        silent = False,
+        large = True,
+        post = post_data,
+        slow = True,
+    )
 
     for row in c.result:
 
@@ -143,7 +150,7 @@ def lit_bm_13_interactions():
     )
 
     url = urls.urls['hid']['lit-bm-13']
-    c = curl.Curl(url, silent = False, large = True)
+    c = curl.Curl(url, silent = False, large = True, slow = True)
 
     _ = next(c.result)
 
@@ -180,7 +187,7 @@ def lit_bm_17_interactions():
     c = curl.Curl(url, silent = False)
     data = c.result
 
-    c = curl.Curl(url, silent = False, large = True)
+    c = curl.Curl(url, silent = False, large = True, slow = True)
 
     _ = next(c.result)
 
@@ -249,7 +256,7 @@ def lit_bm_interactions():
     )
 
     url = urls.urls['hid']['lit-bm']
-    c = curl.Curl(url, large = True, silent = False)
+    c = curl.Curl(url, large = True, silent = False, slow = True)
 
     for row in c.result:
 
@@ -293,7 +300,7 @@ def _huri_interactions(dataset):
 
 
     url = dataset if dataset.startswith('http') else urls.urls['hid'][dataset]
-    c = curl.Curl(url, large = True, silent = False)
+    c = curl.Curl(url, large = True, silent = False, slow = True)
     path = (
         c.fileobj.name
             if hasattr(c, 'fileobj') else
