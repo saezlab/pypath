@@ -61,7 +61,7 @@ def biogrid_interactions(
     interactions = []
     refc = []
     url = urls.urls['biogrid']['mv']
-    c = curl.Curl(url, silent = False, large = True)
+    c = curl.Curl(url, silent = False, large = True, slow = True)
     f = next(iter(c.result.values()))
     nul = f.readline()
 
@@ -134,10 +134,13 @@ def biogrid_all_interactions(
     interactions = []
     refc = []
     mv_dict=collections.defaultdict(list)
+
     for i in biogrid_interactions(organism, htp_limit, ltp):
+
         mv_dict[i.partner_a].append(i.partner_b)
+
     url = urls.urls['biogrid']['all']
-    c = curl.Curl(url, silent = False, large = True)
+    c = curl.Curl(url, silent = False, large = True, slow = True)
     f = next(iter(c.result.values()))
     nul = f.readline()
 
