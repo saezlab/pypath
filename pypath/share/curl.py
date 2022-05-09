@@ -897,7 +897,8 @@ class Curl(FileOpener):
         self.ignore_content_length = ignore_content_length
         self.override_post = override_post
         self.retries = retries
-        self.req_headers = req_headers or []
+        self.req_headers = req_headers
+        self._req_headers_list()
         self.post = post
         self.get = get
         self.binary_data = binary_data
@@ -1215,6 +1216,18 @@ class Curl(FileOpener):
         self.target = open(target_path, 'wb')
 
         self.curl.setopt(self.curl.WRITEFUNCTION, self.target.write)
+
+
+    def _req_headers_list(self):
+
+        self.req_headers = self.req_headers or []
+
+        if isinstance(self.req_headers, dict):
+
+            self.req_headers = [
+                '%s: %s' % hdr
+                for hdr in self.req_headers.items()
+            ]
 
 
     def set_req_headers(self):
