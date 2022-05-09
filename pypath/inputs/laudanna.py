@@ -51,13 +51,11 @@ def laudanna_directions():
 
     for l in data:
 
-        if l:
+        partners = l.split('=')[0].strip().split(' (pp) ')
 
-            directions.append(
-                LaudannaDirection(
-                    *l.split('=')[0].strip().split(' (pp) ')
-                )
-            )
+        if len(partners) == 2:
+
+            directions.append(LaudannaDirection(*partners))
 
     return directions
 
