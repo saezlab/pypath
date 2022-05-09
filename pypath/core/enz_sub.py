@@ -30,6 +30,7 @@ import importlib as imp
 import itertools
 import collections
 import pickle
+import traceback
 
 import pandas as pd
 
@@ -870,79 +871,103 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                 input_param.name
             )
 
-            input_method = (
-                input_param['input_method']
-                    if isinstance(input_param, dict) else
-                input_param.input_method
-            )
+            try:
 
-            self._log(
-                'Loading enzyme-substrate interactions '
-                'from resource `%s` by method `%s`.' % (
-                    name,
-                    input_method,
+                input_method = (
+                    input_param['input_method']
+                        if isinstance(input_param, dict) else
+                    input_param.input_method
                 )
-            )
-
-            args = (
-                input_param
-                    if isinstance(input_param, dict) else
-                {'input_param': input_param}
-            )
-
-            if (
-                self.ncbi_tax_id == 9606 or (
-                    self.nonhuman_direct_lookup and
-                    input_param.organisms_supported
-                )
-            ):
 
                 self._log(
                     'Loading enzyme-substrate interactions '
-                    'for taxon `%u`.' % self.ncbi_tax_id
-                )
-
-                proc = EnzymeSubstrateProcessor(
-                    ncbi_tax_id = self.ncbi_tax_id,
-                    trace = self.trace,
-                    **args,
-                )
-
-                extend_lists(proc.__iter__())
-
-            if self.map_by_homology_from:
-
-                source_taxons_str = ', '.join(
-                    '%u' % tax for tax in self.map_by_homology_from
-                )
-
-                self._log(
-                    'Mapping `%s` by homology from taxons %s to %u.' % (
+                    'from resource `%s` by method `%s`.' % (
+                        name,
                         input_method,
-                        source_taxons_str,
-                        self.ncbi_tax_id,
                     )
                 )
 
-                proc = EnzymeSubstrateHomologyProcessor(
-                    ncbi_tax_id = self.ncbi_tax_id,
-                    map_by_homology_from = self.map_by_homology_from,
-                    trace = self.trace,
-                    homology_only_swissprot = self.homology_only_swissprot,
-                    ptm_homology_strict = self.ptm_homology_strict,
-                    **args
+                args = (
+                    input_param
+                        if isinstance(input_param, dict) else
+                    {'input_param': input_param}
                 )
 
-                extend_lists(proc.__iter__())
+                if (
+                    self.ncbi_tax_id == 9606 or (
+                        self.nonhuman_direct_lookup and
+                        input_param.organisms_supported
+                    )
+                ):
+
+                    self._log(
+                        'Loading enzyme-substrate interactions '
+                        'for taxon `%u`.' % self.ncbi_tax_id
+                    )
+
+                    proc = EnzymeSubstrateProcessor(
+                        ncbi_tax_id = self.ncbi_tax_id,
+                        trace = self.trace,
+                        **args,
+                    )
+
+                    extend_lists(proc.__iter__())
+
+                if self.map_by_homology_from:
+
+                    source_taxons_str = ', '.join(
+                        '%u' % tax for tax in self.map_by_homology_from
+                    )
+
+                    self._log(
+                        'Mapping `%s` by homology from taxons %s to %u.' % (
+                            input_method,
+                            source_taxons_str,
+                            self.ncbi_tax_id,
+                        )
+                    )
+
+                    proc = EnzymeSubstrateHomologyProcessor(
+                        ncbi_tax_id = self.ncbi_tax_id,
+                        map_by_homology_from = self.map_by_homology_from,
+                        trace = self.trace,
+                        homology_only_swissprot = self.homology_only_swissprot,
+                        ptm_homology_strict = self.ptm_homology_strict,
+                        **args
+                    )
+
+                    extend_lists(proc.__iter__())
+
+                    self._log(
+                        'Finished translating `%s` by homology '
+                        'from %s to %u.' % (
+                            input_method,
+                            source_taxons_str,
+                            self.ncbi_tax_id,
+                        )
+                    )
 
                 self._log(
-                    'Finished translating `%s` by homology '
-                    'from %s to %u.' % (
-                        input_method,
-                        source_taxons_str,
-                        self.ncbi_tax_id,
-                    )
+                    'Finished loading enzyme-substrate data '
+                    'from resource `%s`.' % name
                 )
+
+                except Exception as e:
+
+                    self._log('Failed to load resource `%s`.' % name)
+                    self._log_traceback()
+
+                    try:
+
+                        traceback.print_tb(
+                            e.__traceback__,
+                            file = sys.stdout,
+                        )
+
+                    except Exception as e:
+
+                        self._log('Failed handling exception.')
+                        self._log_traceback()
 
         self.references = dict(self.references)
         self.update_ptm_lookup_dict()
