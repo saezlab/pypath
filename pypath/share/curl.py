@@ -838,6 +838,7 @@ class Curl(FileOpener):
             keep_failed = False,
             alpn = True,
             slow = False,
+            http2 = True,
         ):
 
         if not hasattr(self, '_logger'):
@@ -860,6 +861,7 @@ class Curl(FileOpener):
         self.empty_attempt_again = empty_attempt_again
         self.keep_failed = keep_failed
         self.alpn = alpn
+        self.http2 = http2
 
         self._log(
             'Creating Curl object to retrieve '
@@ -1171,6 +1173,13 @@ class Curl(FileOpener):
         self.curl.setopt(self.curl.TCP_KEEPALIVE, 1)
         self.curl.setopt(self.curl.TCP_KEEPIDLE, 2)
         self.curl.setopt(self.curl.SSL_ENABLE_ALPN, self.alpn)
+
+        if not self.http2:
+
+            self.curl.setopt(
+                self.curl.HTTP_VERSION,
+                pycurl.CURL_HTTP_VERSION_1_1,
+            )
 
         if self.ignore_content_length:
 
