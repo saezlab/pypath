@@ -163,7 +163,7 @@ def _unichem_mapping(id_type, target_id_type):
     target_id_type = get_src_id(target_id_type)
 
     url = urls.urls['unichem']['mapping'] % (id_type, id_type, target_id_type)
-    c = curl.Curl(url, large = True, silent = False)
+    c = curl.Curl(url, large = True, silent = False, slow = True)
 
     if c.status == 404:
 
