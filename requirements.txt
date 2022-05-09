@@ -17,4 +17,5 @@ future
 tqdm
 tabulate
 rdata
+requests
 -e .
