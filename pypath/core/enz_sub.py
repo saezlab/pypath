@@ -952,22 +952,22 @@ class EnzymeSubstrateAggregator(session_mod.Logger):
                     'from resource `%s`.' % name
                 )
 
+            except Exception as e:
+
+                self._log('Failed to load resource `%s`.' % name)
+                self._log_traceback()
+
+                try:
+
+                    traceback.print_tb(
+                        e.__traceback__,
+                        file = sys.stdout,
+                    )
+
                 except Exception as e:
 
-                    self._log('Failed to load resource `%s`.' % name)
+                    self._log('Failed handling exception.')
                     self._log_traceback()
-
-                    try:
-
-                        traceback.print_tb(
-                            e.__traceback__,
-                            file = sys.stdout,
-                        )
-
-                    except Exception as e:
-
-                        self._log('Failed handling exception.')
-                        self._log_traceback()
 
         self.references = dict(self.references)
         self.update_ptm_lookup_dict()
