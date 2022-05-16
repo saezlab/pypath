@@ -1347,26 +1347,26 @@ class Network(session_mod.Logger):
 
                         break
 
+            except Exception as e:
+
+                self._log(
+                    'Error at loading resource `%s`.' % networkinput.name
+                )
+                self._log_traceback()
+
+                try:
+
+                    traceback.print_tb(
+                        e.__traceback__,
+                        file = sys.stdout
+                    )
+
                 except Exception as e:
 
-                    self._log(
-                        'Error at loading resource `%s`.' % networkinput.name
-                    )
+                    self._log('Failed handling exception.')
                     self._log_traceback()
 
-                    try:
-
-                        traceback.print_tb(
-                            e.__traceback__,
-                            file = sys.stdout
-                        )
-
-                    except Exception as e:
-
-                        self._log('Failed handling exception.')
-                        self._log_traceback()
-
-                    return None
+                return None
 
             if hasattr(infile, 'close'):
 
