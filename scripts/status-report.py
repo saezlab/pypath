@@ -355,10 +355,10 @@ class StatusReport(object):
 
     def start(self):
 
+        self.reset_result()
         self.reset_counters()
         self.set_timestamp()
         self.set_dirs() # calls init_pypath
-        self.reset_result()
         self.read_prev_result()
         _log('Started generating pypath inputs status report.')
 
