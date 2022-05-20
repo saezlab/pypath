@@ -21,12 +21,13 @@ Please make sure you follow them as much as possible.
   not straightforward, don't hesitate to ask for help. See a brief guidance
   below:
   - For each core database, create a function in the `inputs` module that
-    produces a similar output to existing functions for the same core database;
-    e.g. for the annotations database it should be a dict with UniProt IDs as
-    keys and sets of tuples as values; name this function after the name of
-    the resource and the name of the core database separated by underscore,
-    e.g. for a resource called Cool New Resource, the function name should be
-    `coolnew_annotations`.
+    produces an output similar to existing functions for the same core
+    database; e.g. for the annotations database it should be a dict with
+    UniProt IDs as keys and sets of tuples as values; name this function after
+    the name of the resource and the name of the core database separated by
+    underscore, e.g. for a resource called Cool New Resource, the function
+    name should be `coolnew_annotations` (avoid including redundant words
+    such as "resource" or "database")
   - `network`: Create an input definition in [`resources.data_formats`][12],
     make sure it is in the correct dataset dict
   - `annot`: Create a new resource specific class in [`core.annot`][13]
@@ -40,20 +41,23 @@ Please make sure you follow them as much as possible.
     examples of such definitions under any existing enz-sub resource, e.g.
     SIGNOR)
   - `intercell`: Make sure the resource is already added to the `annotations`
-    database; Add one or more `AnnotDef` class annotation definitions to
-    `annot_combined_classes` in the [`core.intercell_annot`][16] module
+    database. Add one or more `AnnotDef` class annotation definitions to
+    `annot_combined_classes` in the [`core.intercell_annot`][16] module. The
+    `args` dict of each definition is passed to
+    `core.annot.AnnotationBase.select`. Using `resource = AnnotOp(...)` in
+    the definitions provides a way to apply custom operations on multiple
+    definitions. The tilde notation refers to all defined specific categories
+    within a generic category, e.g. `"~ligand"` refers to the union of all
+    ligand categories. You can add identifiers to the `exclude` dict which
+    are misannotated in any resource (e.g. ESR1 is not secreted).
 - Check the data loaded into the core databases
 - Our [daily builds][6] might reveal issues and also here we can see if
   the new resource is loaded correctly into the web service data frames.
 
 ## Adding a new class, method or function
 
-- Class names should be `PascalCase` (camel case with first letter capital),
-  however resource names should be shown like a single word, e.g. a class
-  of annotation from Protein Atlas is `ProteinatlasAnnotation`
-- Function, method and variable names should follow `snake_case`, resource
-  names typically shown as a single word, e.g. a function yielding annotations
-  from Protein Atlas should be `proteinatlas_annotations`
+- Follow the coding style recommendations below when writing the new class or
+  function
 - Write the docstrings - description of the object, inputs, outputs, examples,
   etc (see below more details about docstrings).
 - Rebuild the documentation.
@@ -74,6 +78,18 @@ look at some new core modules, e.g. `pypath.core.network` or
 exceptions in a few points. In the document below we only discuss these
 alterations and additional rules. For general guidelines you can refer to the
 [PEP8][1] and the [Google style guide][2].
+
+### Names
+
+- Class names should be `PascalCase` (camel case with first letter capital),
+  however resource names should be shown like a single word, e.g. a class
+  of annotation from Protein Atlas is `ProteinatlasAnnotation`
+- Function, method and variable names should follow `snake_case`, resource
+  names typically shown as a single word, e.g. a function yielding annotations
+  from Protein Atlas should be `proteinatlas_annotations`
+- The names of the resources should not contain any underscore as it is used
+  to separate primary and secondary resources (e.g. to refer to PhosphoSite
+  data retrieved from ProtMapper we use the label "PhosphoSite_ProtMapper")
 
 ### Blank lines
 
@@ -171,8 +187,7 @@ foo = [
 
 After the triple double quotes the docstring starts in a new line and also
 the closing quotes have their own line. For docstrings we follow the
-Napoleon (Google) standard:
-https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html
+[Napoleon (Google) standard][17].
 
 Thanks to type hints we don't have to add the type of arguments and return
 values in parentheses (enough to write `arg:` instead of `arg (int):`).
@@ -262,3 +277,5 @@ so in the log one can see which message comes from which part of the module.
 [13]: pypath/core/annot.py
 [14]: pypath/core/complex.py
 [15]: https://github.com/saezlab/pypath/blob/master/pypath/resources/data/resources.json
+[16]: pypath/core/intercell_annot.py
+[17]: https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html
