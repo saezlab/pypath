@@ -18,15 +18,44 @@ Please make sure you follow them as much as possible.
 - Check the loaded data directly in the output of the new input method
 - Create input definitions for the relevant core databases (network,
   enzyme-substrate, complexes, annotations, intercell); this might be
-  not straightforward, don't hesitate to ask for help
+  not straightforward, don't hesitate to ask for help. See a brief guidance
+  below:
+  - For each core database, create a function in the `inputs` module that
+    produces a similar output to existing functions for the same core database;
+    e.g. for the annotations database it should be a dict with UniProt IDs as
+    keys and sets of tuples as values; name this function after the name of
+    the resource and the name of the core database separated by underscore,
+    e.g. for a resource called Cool New Resource, the function name should be
+    `coolnew_annotations`.
+  - `network`: Create an input definition in [`resources.data_formats`][12],
+    make sure it is in the correct dataset dict
+  - `annot`: Create a new resource specific class in [`core.annot`][13]
+    following the example of existing classes; add the name of the class to
+    the list of `protein_sources_default`
+  - `complex`: Create a new resource specific class in [`core.complex`][14]
+    following the example of existing classes; add the name of the class to
+    the list of `complex_resources`
+  - `enz_sub`: Create an input definition in [`resources.json`][15] under the
+    name of the resource, under keys "inputs" → "enzyme_substrate" (see
+    examples of such definitions under any existing enz-sub resource, e.g.
+    SIGNOR)
+  - `intercell`: Make sure the resource is already added to the `annotations`
+    database; Add one or more `AnnotDef` class annotation definitions to
+    `annot_combined_classes` in the [`core.intercell_annot`][16] module
 - Check the data loaded into the core databases
 - Our [daily builds][6] might reveal issues and also here we can see if
   the new resource is loaded correctly into the web service data frames.
 
 ## Adding a new class, method or function
 
-- Write the docstrings - description of the object, inputs, outputs, examples
-...
+- Class names should be `PascalCase` (camel case with first letter capital),
+  however resource names should be shown like a single word, e.g. a class
+  of annotation from Protein Atlas is `ProteinatlasAnnotation`
+- Function, method and variable names should follow `snake_case`, resource
+  names typically shown as a single word, e.g. a function yielding annotations
+  from Protein Atlas should be `proteinatlas_annotations`
+- Write the docstrings - description of the object, inputs, outputs, examples,
+  etc (see below more details about docstrings).
 - Rebuild the documentation.
 - Include in `__all__` module variable if applicable.
 - Write the unit test(s) necessary.
@@ -229,3 +258,7 @@ so in the log one can see which message comes from which part of the module.
 [9]: pypath/data/settings.yaml
 [10]: pypath/inputs
 [11]: https://realpython.com/lessons/type-hinting/
+[12]: pypath/resources/data_formats.py
+[13]: pypath/core/annot.py
+[14]: pypath/core/complex.py
+[15]: https://github.com/saezlab/pypath/blob/master/pypath/resources/data/resources.json
