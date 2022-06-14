@@ -1,0 +1,18 @@
+2022-06-14 12:52:24,758	INFO	module:_logger
+This is BioCypher v0.1.2.
+2022-06-14 12:52:24,758	INFO	module:_logger
+Logging into `biocypher-log/biocypher-20220614-125224.log`.
+2022-06-14 12:52:24,758	DEBUG	module:_driver
+Loading module biocypher._driver.
+2022-06-14 12:52:24,764	DEBUG	module:_create
+Loading module biocypher._create.
+2022-06-14 12:52:24,764	DEBUG	module:_translate
+Loading module biocypher._translate.
+2022-06-14 12:52:25,528	DEBUG	module:_check
+Loading module biocypher._check.
+2022-06-14 12:52:25,528	DEBUG	module:_utils
+Loading module biocypher._utils.
+2022-06-14 12:52:25,529	DEBUG	module:_write
+Loading module biocypher._write.
+2022-06-14 12:52:25,529	DEBUG	module:_driver_base
+Loading module biocypher._driver_base.
