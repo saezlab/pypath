@@ -147,10 +147,10 @@ class BiocypherAdapter(_session.Logger):
         # TODO: other node properties (as dict?)
         def gen_nodes(nodes):
             for n in nodes:
-                id = self._process_id(n.identifier)
-                type = n.entity_type
-                props = {"taxon": n.taxon}
-                yield (id, type, props)
+                _id = self._process_id(n.identifier)
+                _type = n.entity_type
+                _props = {"taxon": n.taxon}
+                yield (_id, _type, _props)
         id_type_tuples = gen_nodes(network.nodes.values())
         self.bcy.add_nodes(id_type_tuples)
 
@@ -159,10 +159,10 @@ class BiocypherAdapter(_session.Logger):
         # TODO: other edge properties (as dict?)
         def gen_edges(edges):
             for e in edges:
-                src = self._process_id(e.id_a)
-                tar = self._process_id(e.id_b)
-                type = e.type
-                yield (src, tar, type)
+                _src = self._process_id(e.id_a)
+                _tar = self._process_id(e.id_b)
+                _type = e.type
+                yield (_src, _tar, _type)
         src_tar_type_tuples = gen_edges(network.generate_df_records())
         self.bcy.add_edges(src_tar_type_tuples)
 
@@ -189,10 +189,10 @@ class BiocypherAdapter(_session.Logger):
         # write nodes
         def gen_nodes(nodes):
             for n in nodes:
-                id = self._process_id(n.identifier)
-                type = n.entity_type
-                props = {"taxon": n.taxon, "label": n.label}
-                yield (id, type, props)
+                _id = self._process_id(n.identifier)
+                _type = n.entity_type
+                _props = {"taxon": n.taxon, "label": n.label}
+                yield (_id, _type, _props)
         id_type_tuples = gen_nodes(network.nodes.values())
 
         self.bcy.write_nodes(id_type_tuples, db_name=db_name)
@@ -200,11 +200,11 @@ class BiocypherAdapter(_session.Logger):
         # write edges
         def gen_edges(edges):
             for e in edges:
-                src = self._process_id(e.id_a)
-                tar = self._process_id(e.id_b)
-                type = e.type
-                props = {"effect": e.effect, "directed": e.directed}
-                yield (src, tar, type, props)
+                _src = self._process_id(e.id_a)
+                _tar = self._process_id(e.id_b)
+                _type = e.type
+                _props = {"effect": e.effect, "directed": e.directed}
+                yield (_src, _tar, _type, _props)
         src_tar_type_tuples = gen_edges(network.generate_df_records())
 
         self.bcy.write_edges(src_tar_type_tuples, db_name=db_name)
