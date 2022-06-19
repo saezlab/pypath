@@ -123,6 +123,7 @@ def interpro_entries() -> List[tuple]:
                 member_ids[member.attrib['db']].append(member.attrib['dbkey'])
             
             else:
+                
                 member_ids[member.attrib['db']]=[]
                 member_ids[member.attrib['db']].append(member.attrib['dbkey'])
 
@@ -210,6 +211,7 @@ def interpro_xrefs(
                         other_db_keys[link.attrib['db']].append(link.attrib['dbkey'])
                     
                     else:
+
                         other_db_keys[link.attrib['db']]=[]
                         other_db_keys[link.attrib['db']].append(link.attrib['dbkey'])
 
@@ -248,7 +250,7 @@ def interpro_annotations(
         ),
     )
 
-    annotations = collections.defaultdict(list)
+    annotations = collections.defaultdict(set)
     page = 0
     proteins = (
         'reviewed'
@@ -289,15 +291,16 @@ def interpro_annotations(
 
                 for location in locations:
 
-                    start_end = [(str(fragment['start']) + '-' + str(fragment['end'])) for fragment in location['fragments']]
-                    start_end_list.append(start_end)
+                    for fragment in location['fragments']:
+
+                        start_end_list.append(str(fragment['start']) + '-' + str(fragment['end']))
 
                 uniprot_id = protein['accession'].upper()
-                annotations[uniprot_id].append(
+                annotations[uniprot_id].add(
                         InterproAnnotation(
                             interpro_acc = entry_info['accession'],
                             organism = protein['organism'],
-                            locations = start_end_list,
+                            locations = tuple(start_end_list),
                         )
                     )
     
@@ -305,7 +308,6 @@ def interpro_annotations(
 
             next = res['next']
             page = page + 1
-
 
         else:
 
