@@ -77,21 +77,27 @@ def intact_interactions(
         return id_types[id_type] if id_type in id_types else id_type
 
 
-    def get_id(field):
+    def get_uniprot_id(field):
+
+        uniprot, isoform = _try_isoform(
+            field.split(':')[1].replace('"', '')
+        )
+
+        uniprot = uniprot.split('-')[0]
+
+        return uniprot, isoform
+
+    def get_ebi_id(field):
 
         if field == '-':
 
             return None, None
-
+        
         else:
 
-            uniprot, isoform = _try_isoform(
-                field.split(':')[1].replace('"', '')
-            )
+            partner_id=field.split(':')[1]
 
-            uniprot = uniprot.split('-')[0]
-
-            return uniprot, isoform
+            return partner_id, None
 
 
     def get_taxon(field):
@@ -147,7 +153,7 @@ def intact_interactions(
         ):
 
             # finding mi-score and author
-            sc = '0'
+            sc = 0
             au = '0'
 
             for s in l[14].split('|'):
@@ -166,7 +172,7 @@ def intact_interactions(
                 continue
 
             id_type_a = get_id_type(l[0])
-            id_type_b = get_id_type(l[0])
+            id_type_b = get_id_type(l[1])
 
             if (
                 only_proteins and not (
@@ -177,10 +183,19 @@ def intact_interactions(
 
                 continue
 
-            id_a, isoform_a = get_id(l[0])
-            id_b, isoform_b = get_id(l[1])
+            id_a, isoform_a = (
+                get_uniprot_id(l[0])
+                    if id_type_a == 'uniprot' else
+                get_ebi_id(l[0])
+            )
 
-            key = tuple(sorted((id_a, id_b)))
+            id_b, isoform_b = (
+                get_uniprot_id(l[1])
+                    if id_type_b == 'uniprot' else
+                get_ebi_id(l[1])
+            )
+
+            # key = tuple(sorted((id_a, id_b)))
 
             pubmeds = set(
                 ref[1] for ref in (
