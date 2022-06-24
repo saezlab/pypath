@@ -61,7 +61,7 @@ import pypath.share.constants as constants
 import pypath.core.intercell_annot as intercell_annot
 import pypath.share.settings as settings
 from pypath.share.common import flat_list
-from pypath._version import __version__
+from pypath._metadata import __version__
 
 if 'unicode' not in __builtins__:
     unicode = str
