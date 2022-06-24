@@ -30,9 +30,9 @@ data from various resources.
 
 import sys
 import os
-import importlib
 
 from pypath._metadata import __version__, __author__, __license__
+from pypath._metadata import metadata as _metadata
 import pypath.share.session as _session_mod
 
 _session_mod.new_session()
