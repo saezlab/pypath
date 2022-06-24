@@ -16,3 +16,4 @@ src/scripts/pypath
 desc.rst
 *.prof
 *.cprof
+biocypher-log/
