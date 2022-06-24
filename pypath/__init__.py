@@ -30,13 +30,12 @@ data from various resources.
 
 import sys
 import os
-import importlib
 
-import pypath._version as _version_mod
+from pypath._metadata import __version__, __author__, __license__
+from pypath._metadata import metadata as _metadata
 import pypath.share.session as _session_mod
 
 _session_mod.new_session()
-__version__ = _version_mod.__version__
 session = _session_mod.get_session()
 
 
@@ -48,11 +47,12 @@ def log():
     _session_mod.get_log().browse()
 
 
-class pypath(object):
+def disclaimer():
+    """
+    Prints a disclaimer about copyrights of database data.
 
-
-    __version__ = __version__
-    __author__ = _version_mod.__author__
+    Also points to further information about licenses.
+    """
 
     _disclaimer_text = (
         '\n\t=== d i s c l a i m e r ===\n\n'
@@ -70,17 +70,14 @@ class pypath(object):
         '\t`pypath.resources.urls.urls`.\n\n'
     )
 
-
-    @classmethod
-    def _disclaimer(cls):
-
-        sys.stdout.write(cls._disclaimer_text)
-        sys.stdout.flush()
+    sys.stdout.write(_disclaimer_text)
+    sys.stdout.flush()
 
 
-def info():
-
-    pypath._disclaimer()
+def info(loglevel = -9):
+    """
+    Prints basic information about the current session.
+    """
 
     _session_mod.get_log().msg(
         (
@@ -96,6 +93,9 @@ def info():
             )
         ),
         label = 'pypath',
-        level = -9,
+        level = loglevel,
         wrap = False,
     )
+
+# include info at the beginning of the log:
+info(0)

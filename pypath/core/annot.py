@@ -134,6 +134,7 @@ protein_sources_default = {
     'Wang',
     'Panglaodb',
     'Lambert2018',
+    'InterPro',
 }
 
 #TODO this should be part of json files
@@ -6117,6 +6118,31 @@ class Cancerdrugsdb(AnnotationBase):
         #  already the appropriate format, no processing needed
         self.annot = self.data
 
+        delattr(self, 'data')
+
+
+class InterPro(AnnotationBase):
+
+    _eq_fields = ('interpro_acc', 'locations')
+
+
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        """
+        Protein signatures from the InterPro database.
+        """
+
+        AnnotationBase.__init__(
+            self,
+            name = 'InterPro',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'interpro.interpro_annotations',
+            **kwargs
+        )
+
+
+    def _process_method(self):
+
+        self.annot = self.data
         delattr(self, 'data')
 
 

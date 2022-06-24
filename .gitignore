@@ -17,3 +17,4 @@ desc.rst
 *.prof
 biocypher-log/
 biocypher-out/
+*.cprof

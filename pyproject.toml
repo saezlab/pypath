@@ -1,11 +1,24 @@
-[package]
-name = "pypath"
-summary = """A module for molecular signaling prior knowledge processing."""
-url = "http://pypath.omnipathdb.org/"
-author = """Dénes Türei and Nicolàs Palacio and Sebastian Lobentanzer and
-Erva Ulusoy and Olga Ivanova and and Ahmet Rifaioglu"""
-author-email = "turei.denes@gmail.com"
-license = "GPLv3"
+[build-system]
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "pypath-omnipath"
+version = "0.14.12"
+description = "Molecular signaling prior knowledge processing"
+license = "GPL-3.0-only"
+authors = [
+    "Denes Turei <turei.denes@gmail.com>",
+    "Nicolàs Palacio",
+    "Sebastian Lobentanzer",
+    "Olga Ivanova",
+    "Erva Ulusoy",
+    "Ahmet Rifaioglu",
+    "Charles Tapley Hoyt"
+]
+packages = [
+    { include = "pypath" }
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -19,23 +32,69 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Information Analysis",
     "Topic :: Scientific/Engineering :: Mathematics"
 ]
-
-[package.dependencies]
-runtime = []
-
-[package.build]
-dependencies = [
-    "setuptools",
-    "wheel",
-    "numpy"
+repository = "https://github.com/saezlab/pypath"
+homepage = "https://omnipathdb.org/"
+readme = "README.rst"
+keywords = [
+    "systems biology",
+    "molecular biology",
+    "omics",
+    "network",
+    "signaling"
 ]
 
-[build-system]
-requires = [
-    "setuptools",
-    "wheel",
-    "numpy"
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/saezlab/pypath/issues"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+beautifulsoup4 = "*"
+dill = "*"
+future = "*"
+glom = "*"
+lxml = "*"
+matplotlib = "*"
+numpy = "*"
+openpyxl = "*"
+pandas = "*"
+pycurl = "*"
+pyreadr = "*"
+rdata = "*"
+requests = "*"
+scipy = "*"
+tabulate = "*"
+timeloop = "*"
+toml = "*"
+tqdm = "*"
+xlrd = "*"
+pybel = { version = "*", optional = true }
+bio2bel = { version = "*", optional = true }
+click = { version = "*", optional = true }
+python-igraph = { version = "*", optional = true }
+biocypher = { path = "dev/biocypher/", develop = true, optional = true }
+
+[tool.poetry.extras]
+bel = [
+    "pybel",
+    "bio2bel",
+    "click",
+]
+graph = [
+    "python-igraph",
+]
+bcydev = [
+    "biocypher"
 ]
 
-[tool.black]
-exclude = '*'
+[tool.poetry.dev-dependencies]
+bump2version = "*"
+sphinx = ">=5.0.0"
+sphinx-rtd-theme = ">=1.0.0"
+sphinx-last-updated-by-git = ">=0.3"
+sphinx-autodoc-typehints = ">=1.18.0"
+
+[tool.poetry.scripts]
+bio2bel_omnipath = "pypath.omnipath.bel:main"
+
+[tool.poetry.plugins."bio2bel"]
+omnipath = "pypath.omnipath.bel"

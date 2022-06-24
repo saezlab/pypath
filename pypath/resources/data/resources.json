@@ -4598,5 +4598,12 @@
       "peng.jiang@nih.gov", "Peng Jiang",
       "kai_wucherpfennig@dfci.harvard.edu", "Kai W. Wucherpfennig"
     ]
+  },
+  "InterPro": {
+    "license": "CC0 1.0",
+    "urls": {
+      "webpages":["https://www.ebi.ac.uk/interpro/"],
+      "articles": ["https://doi.org/10.1093/nar/gkaa977"]
+    }
   }
 }
