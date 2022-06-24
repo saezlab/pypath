@@ -54,10 +54,10 @@ class BiocypherAdapter(_session.Logger):
         driver = None,
         db_name = None,
         db_uri = 'neo4j://localhost:7687',
-        db_auth = None,
-        config_file = '/config/module_config.yaml',
-        network = None,
+        db_user = None,
+        db_passwd = None,
         wipe = False,
+        network = None,
     ):
 
         _session.Logger.__init__(self, name = 'bcy_adapter')
@@ -66,9 +66,9 @@ class BiocypherAdapter(_session.Logger):
             driver = driver,
             db_name = db_name,
             db_uri = db_uri,
-            db_auth = db_auth,
-            config_file = config_file,
-            wipe = wipe,
+            db_user = db_user,
+            db_passwd = db_passwd,
+            wipe=False,
         )
 
         if network:
