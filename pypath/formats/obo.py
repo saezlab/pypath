@@ -197,3 +197,21 @@ class Obo(session.Logger):
     def __repr__(self):
         
         return '<OBO file `%s`>' % self.obofile
+
+
+    def parent_terms(self):
+        """
+        Retrieves is_a relations between ontology terms.
+        Defines a dictionary: keys are the ontology term IDs and 
+        values are list of their parent terms.
+        """
+
+        self.parents = dict(
+                (term.id.value, 
+                [is_a.value for is_a in term.attrs["is_a"]]
+                        if "is_a" in term.attrs else 
+                []
+            )
+                for term in self
+                if term.stanza == "Term"
+            )
