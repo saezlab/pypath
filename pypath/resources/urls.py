@@ -1526,6 +1526,12 @@ urls = {
             'attachment/ede37821-fd6f-41b7-9a0e-9d5410855ae6/mmc2.xlsx',
         'article': 'https://www.cell.com/cell/fulltext/S0092-8674(18)30106-5',
     },
+    'interpro': {
+        'label': 'Protein families, domains and functional sites',
+        'entries': 'https://ftp.ebi.ac.uk/pub/databases/interpro/interpro.xml.gz',
+        'annotations': 'https://www.ebi.ac.uk/interpro/api/entry/InterPro/protein/'
+            '%s/taxonomy/uniprot/%u?page_size=%u',
+    },
 }
 
 
