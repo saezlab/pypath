@@ -38,7 +38,7 @@ Todo:
 
 import pypath.biocypher.adapter as adapter
 
-def write_online():
+def bc_write_online():
     # Instantiating the adapter class.
     # We are creating a new database, so we wipe and initialise the 
     # local Neo4j instance. Set `wipe = False` if you want to update an 
@@ -57,7 +57,7 @@ def write_online():
     # functionality
     # bcy_adapter = adapter.BiocypherAdapter(wipe = False)
 
-def write_offline():
+def bc_write_offline():
     # Instantiating adapter in offline mode
     bcy_adapter = adapter.BiocypherAdapter(offline=True)
 
@@ -81,10 +81,10 @@ if __name__ == '__main__':
         profile.enable()
 
     if write_online:
-        write_online()
+        bc_write_online()
 
     if write_offline:
-        write_offline()
+        bc_write_offline()
 
     if profile:
         profile.disable()
