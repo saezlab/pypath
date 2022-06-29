@@ -120,7 +120,7 @@ web = ["flask", "flask-admin", "flask-bootstrap"]
 
 [[package]]
 name = "biocypher"
-version = "0.1.4"
+version = "0.1.5"
 description = "Graph database standard for molecular biology"
 category = "main"
 optional = true
@@ -174,7 +174,7 @@ web = ["pyyaml", "rdflib", "rdflib-jsonld", "flask", "flasgger", "bootstrap-flas
 
 [[package]]
 name = "bioversions"
-version = "0.5.33"
+version = "0.5.34"
 description = "What's the current version for each biological database?"
 category = "main"
 optional = true
@@ -2316,7 +2316,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "virtualenv"
-version = "20.15.0"
+version = "20.15.1"
 description = "Virtual Python Environment builder"
 category = "main"
 optional = true
@@ -2471,8 +2471,8 @@ bioregistry = [
     {file = "bioregistry-0.5.31.tar.gz", hash = "sha256:28809368c97e9c0be3dc57e2040237546c984460156101bdef35e636d63394a8"},
 ]
 bioversions = [
-    {file = "bioversions-0.5.33-py3-none-any.whl", hash = "sha256:450dcaee51af48d1b8e9170b94318a679e10d438f0c0d43f5d65d501ae11bc0b"},
-    {file = "bioversions-0.5.33.tar.gz", hash = "sha256:d6f91d7dc71910927919f56e153040437c1eaebcbb3ad23f6c8b081723bc3d99"},
+    {file = "bioversions-0.5.34-py3-none-any.whl", hash = "sha256:305986518e8771c3df2531a47c4aed9ec1d44ceba36fcb6716369d00e7a12aeb"},
+    {file = "bioversions-0.5.34.tar.gz", hash = "sha256:97845412ef0860a1e7bf7227dfd1ea759d3924a14fd4c2186cf3f62da6e775e2"},
 ]
 black = [
     {file = "black-21.12b0-py3-none-any.whl", hash = "sha256:a615e69ae185e08fdd73e4715e260e2479c861b5740057fde6e8b4e3b7dd589f"},
@@ -3718,8 +3718,8 @@ urllib3 = [
     {file = "urllib3-1.26.9.tar.gz", hash = "sha256:aabaf16477806a5e1dd19aa41f8c2b7950dd3c746362d7e3223dbe6de6ac448e"},
 ]
 virtualenv = [
-    {file = "virtualenv-20.15.0-py2.py3-none-any.whl", hash = "sha256:804cce4de5b8a322f099897e308eecc8f6e2951f1a8e7e2b3598dff865f01336"},
-    {file = "virtualenv-20.15.0.tar.gz", hash = "sha256:4c44b1d77ca81f8368e2d7414f9b20c428ad16b343ac6d226206c5b84e2b4fcc"},
+    {file = "virtualenv-20.15.1-py2.py3-none-any.whl", hash = "sha256:b30aefac647e86af6d82bfc944c556f8f1a9c90427b2fb4e3bfbf338cb82becf"},
+    {file = "virtualenv-20.15.1.tar.gz", hash = "sha256:288171134a2ff3bfb1a2f54f119e77cd1b81c29fc1265a2356f3e8d14c7d58c4"},
 ]
 watchdog = [
     {file = "watchdog-2.1.9-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:a735a990a1095f75ca4f36ea2ef2752c99e6ee997c46b0de507ba40a09bf7330"},

@@ -68,7 +68,8 @@ def write_offline():
     bcy_adapter.write_to_csv_for_admin_import(db_name="import")
     # TODO translate: unfound entities
 
-def main():
+
+if __name__ == '__main__':
 
     profile = False
     write_online = False # whether to write to graph via the driver
@@ -94,8 +95,3 @@ def main():
         # print(s.getvalue())
         filename = "create_network.prof"
         ps.dump_stats(filename)
-
-
-if __name__ == '__main__':
-
-    main()
