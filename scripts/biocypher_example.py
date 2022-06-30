@@ -36,6 +36,9 @@ Todo:
 
 """
 
+import sys
+sys.path.append('') # fix weird poetry behaviour that I don't understand
+
 import pypath.biocypher.adapter as adapter
 
 def bc_write_online():
@@ -66,7 +69,6 @@ def bc_write_offline():
 
     # Write CSVs for admin import function
     bcy_adapter.write_to_csv_for_admin_import(db_name="import")
-    # TODO translate: unfound entities
 
 
 if __name__ == '__main__':
