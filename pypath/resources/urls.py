@@ -34,10 +34,10 @@ urls = {
     },
     'uniprot_basic': {
         'label': 'URL for UniProt queries',
-        'url': 'https://www.uniprot.org/uniprot/',
+        'url': 'https://legacy.uniprot.org/uniprot/',
         'lists': 'https://www.uniprot.org/uploadlists/',
-        'datasheet': 'https://www.uniprot.org/uniprot/%s.txt',
-        'history': 'https://www.uniprot.org/uniprot/%s.tab?version=*',
+        'datasheet': 'https://legacy.uniprot.org/uniprot/%s.txt',
+        'history': 'https://legacy.uniprot.org/uniprot/%s.tab?version=*',
         'deleted_sp': 'ftp://ftp.expasy.org/databases/uniprot/'
             'current_release/knowledgebase/complete/docs/delac_sp.txt',
         'deleted_tr': 'ftp://ftp.expasy.org/databases/uniprot/'
