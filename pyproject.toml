@@ -71,7 +71,6 @@ pybel = { version = "*", optional = true }
 bio2bel = { version = "*", optional = true }
 click = { version = "*", optional = true }
 python-igraph = { version = "*", optional = true }
-biocypher = { path = "dev/biocypher/", develop = true, optional = true }
 
 [tool.poetry.extras]
 bel = [
@@ -81,9 +80,6 @@ bel = [
 ]
 graph = [
     "python-igraph",
-]
-bcydev = [
-    "biocypher"
 ]
 
 [tool.poetry.dev-dependencies]
