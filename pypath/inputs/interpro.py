@@ -224,7 +224,7 @@ def interpro_annotations(
         page_size: int = 200, 
         reviewed: bool = True, 
         tax_id: int = 9606
-    ) ->  Dict[str, List[tuple]]:
+    ) ->  dict:
     """
     Downloads UniProtKB proteins and the InterPro entries they match.
 
@@ -234,10 +234,7 @@ def interpro_annotations(
             Downloads all UniprotKB proteins otherwise.
 
     Returns:
-        A dictionary; keys are InterPro IDs.
-            If 'db_type' is 'go', values are list of GO terms related to the InterPro entry.
-            Otherwise values are dictionaries, where keys are database names 
-            and the values are list of cross references related to the InterPro entry.
+        A dictionary. Keys are Uniprot IDs, values are sets of annotations.
     """
 
     

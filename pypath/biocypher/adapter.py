@@ -57,6 +57,7 @@ class BiocypherAdapter(_session.Logger):
         db_user = None,
         db_passwd = None,
         wipe = False,
+        offline = False,
         network = None,
     ):
 
@@ -68,7 +69,8 @@ class BiocypherAdapter(_session.Logger):
             db_uri = db_uri,
             db_user = db_user,
             db_passwd = db_passwd,
-            wipe=False,
+            wipe=wipe,
+            offline=offline,
         )
 
         if network:
