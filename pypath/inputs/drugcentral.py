@@ -15,18 +15,16 @@ def drug_central(
     """
     Retrieves drug-target interactions datasets from Drug Central.
 
-    organism : str
-        Which organism to use for processing.
-    SMILES : bool
-        Whether to include SMILES structures from Drug Central.
-    InChI : bool
-        Whether to include InChI formats and InChI keys from Drug Central.
-    CAS_RN : bool
-        Whether to include CAS Registry Number from Drug Central.
-    
-    Returns namedtuple. 
-    """
+    Args:
+        organism (str): Which organism to use for processing.
+        SMILES (bool): Whether to include SMILES structures from Drug Central.
+        InChI (bool): Whether to include InChI formats and InChI keys from Drug Central.
+        CAS_RN (bool): Whether to include CAS Registry Number from Drug Central.
 
+    Returns:
+        namedtuple.
+    """
+    
     fields = ('DRUG_NAME','TARGET_NAME','TARGET_CLASS',
             'TARGET_ACCESSION','GENE','ACT_VALUE','ACT_TYPE',
             'ACTION_TYPE','TDL','ORGANISM','SMILES','InChI',
