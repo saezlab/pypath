@@ -1089,16 +1089,15 @@ urls = {
     },
     'cellphonedb_git': {
         'label': 'Intercellular communication database from Teichmann lab',
-        'proteins': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb/master/cellphonedb/src/core/data/protein_input.csv',
-        'complexes': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb/master/cellphonedb/src/core/data/complex_input.csv',
-        'interactions': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb/master/cellphonedb/src/core/data/'\
-            'interaction_input.csv',
-        'curated': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb-data/data/sources/interaction_curated.csv',
-        'negative': 'https://raw.githubusercontent.com/Teichlab/'\
+        'proteins': 'https://raw.githubusercontent.com/ventolab/'\
+            'cellphonedb-data/master/data/protein_input.csv',
+        'complexes': 'https://raw.githubusercontent.com/ventolab/'\
+            'cellphonedb-data/master/data/complex_input.csv',
+        'interactions': 'https://raw.githubusercontent.com/ventolab/'\
+            'cellphonedb-data/master/data/interaction_input.csv',
+        'curated': 'https://raw.githubusercontent.com/ventolab/'\
+            'cellphonedb-data/master/data/sources/interaction_curated.csv',
+        'negative': 'https://raw.githubusercontent.com/ventolab/'\
             'cellphonedb-data/master/data/sources/excluded_interaction.csv',
     },
     'stitch': {
