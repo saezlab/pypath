@@ -1654,14 +1654,17 @@ class TableServer(BaseServer):
 
         if query_type in self.args_reference:
 
-            result = self.args_reference[query_type]
+            result = dict(
+                (
+                    k,
+                    sorted(v) if isinstance(v, common.list_like) else v
+                )
+                for k, v in self.args_reference[query_type].items()
+            )
 
             if query_param is not None and query_param in result:
 
-                result = {}
-                result[query_param] = (
-                    self.args_reference[query_type][query_param]
-                )
+                result = {query_param: result[query_param]}
 
         else:
 
