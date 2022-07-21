@@ -72,6 +72,7 @@ bio2bel = { version = "*", optional = true }
 click = { version = "*", optional = true }
 python-igraph = { version = "*", optional = true }
 biocypher = { path = "dev/biocypher/", develop = true, optional = true }
+neo4j-utils = { git = "https://github.com/saezlab/neo4j-utils.git" , optional = true}
 
 [tool.poetry.extras]
 bel = [
@@ -83,7 +84,8 @@ graph = [
     "python-igraph",
 ]
 bcydev = [
-    "biocypher"
+    "biocypher",
+    "neo4j-utils",
 ]
 
 [tool.poetry.dev-dependencies]
