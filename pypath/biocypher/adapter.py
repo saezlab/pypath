@@ -15,6 +15,15 @@ File author(s): Dénes Türei
 Distributed under GPLv3 license, see LICENSE.txt.
 """
 
+from __future__ import annotations
+
+from typing import Optional
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+
+    import pypath.core.network as network
 
 import os
 import yaml
@@ -29,36 +38,46 @@ import pypath.share.session as _session
 
 class BiocypherAdapter(_session.Logger):
     """
-    The connection can be defined in three ways:
-        * Providing a ready ``neo4j.Driver`` instance
-        * By URI and authentication data
-        * By a YML config file
+    Load pypath database obejcts into biocypher (Neo4j).
 
     Args:
-        driver (neo4j.Driver): A ``neo4j.Driver`` instance, created by,
-            for example, ``neo4j.GraphDatabase.driver``.
-        db_name (str): Name of the database (Neo4j graph) to use.
-        db_uri (str): Protocol, host and port to access the Neo4j server.
-        db_auth (tuple): Neo4j server authentication data: tuple of user
-            name and password.
-        config_file (str): Path to a YML config file which provides the URI,
-            user name and password.
-        network (pypath.core.network.Network): A network database object.
-        wipe (bool): Wipe the database after connection, ensuring the data
-            is loaded into an empty database.
+        driver:
+            A ``neo4j.Driver`` instance, created by, for example,
+            ``neo4j.GraphDatabase.driver``.
+        db_name:
+            Name of the database (Neo4j graph) to use.
+        db_uri:
+            Protocol, host and port to access the Neo4j server.
+        db_user:
+            Neo4j user name.
+        db_passwd:
+            Password of the Neo4j user.
+        config:
+            Path to a YAML config file which provides the URI, user name
+            and password.
+        network:
+            A network database object.
+        kwargs:
+            Passed to ``biocypher.Driver``.
+
+    Details:
+        The connection can be defined in three ways:
+         * Providing a ready ``neo4j.Driver`` instance
+         * By URI and authentication data
+         * By a YML config file
     """
 
 
     def __init__(
         self,
-        driver = None,
-        db_name = None,
-        db_uri = 'neo4j://localhost:7687',
-        db_user = None,
-        db_passwd = None,
-        wipe = False,
-        offline = False,
-        network = None,
+        driver: Optional["neo4j.Driver"] = None,
+        db_name: Optional[str] = None,
+        db_uri: Optional[str] = None,
+        db_user: Optional[str] = None,
+        db_passwd: Optional[str] = None,
+        config: Optional[str] = "neo4j.yaml",
+        network: Optional[network.Network] = None,
+        **kwargs
     ):
 
         _session.Logger.__init__(self, name = 'bcy_adapter')
@@ -69,8 +88,8 @@ class BiocypherAdapter(_session.Logger):
             db_uri = db_uri,
             db_user = db_user,
             db_passwd = db_passwd,
-            wipe=wipe,
-            offline=offline,
+            config = config,
+            **kwargs
         )
 
         if network:
