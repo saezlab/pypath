@@ -1532,6 +1532,11 @@ urls = {
         'annotations': 'https://www.ebi.ac.uk/interpro/api/entry/InterPro/protein/'
             '%s/taxonomy/uniprot/%u?page_size=%u',
     },
+    'drugcentral': {
+        'label': 'Drug-target interactions',
+        'interactions': 'https://unmtid-shinyapps.net/download/DrugCentral/2021_09_01/drug.target.interaction.tsv.gz',
+        'SMILES_InChI' : 'https://unmtid-shinyapps.net/download/DrugCentral/2021_09_01/structures.smiles.tsv',
+    },
 }
 
 
