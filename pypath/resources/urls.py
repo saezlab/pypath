@@ -1459,7 +1459,7 @@ urls = {
     },
     'unichem': {
         'label': 'Mapping between drug compound IDs',
-        'sources': 'https://www.ebi.ac.uk/unichem/ucquery/listSources',
+        'sources': 'https://www.ebi.ac.uk/unichem/legacy/ucquery/listSources',
         'mapping': 'ftp://ftp.ebi.ac.uk/pub/databases/chembl/UniChem/data/'
             'wholeSourceMapping/src_id%s/src%ssrc%s.txt.gz',
     },
