@@ -1537,6 +1537,29 @@ urls = {
         'interactions': 'https://unmtid-shinyapps.net/download/DrugCentral/2021_09_01/drug.target.interaction.tsv.gz',
         'SMILES_InChI' : 'https://unmtid-shinyapps.net/download/DrugCentral/2021_09_01/structures.smiles.tsv',
     },
+    'drugbank': {
+        'label': 'DrugBank database',
+        'all_structures': 'https://go.drugbank.com/releases/5-1-9/downloads/all-structure-links',
+        'all_drug': 'https://go.drugbank.com/releases/5-1-9/downloads/all-drug-links',
+        'drug_target_identifiers' : 'https://go.drugbank.com/releases/5-1-9/downloads/target-all-polypeptide-ids',
+        'drug_enzym_identifiers' : 'https://go.drugbank.com/releases/5-1-9/downloads/enzyme-all-polypeptide-ids',
+        'drug_carrier_identifiers' : 'https://go.drugbank.com/releases/5-1-9/downloads/carrier-all-polypeptide-ids',
+        'drug_transporter_identifiers' : 'https://go.drugbank.com/releases/5-1-9/downloads/transporter-all-polypeptide-ids',
+    }, 
+    'chembl': {
+        'label': 'ChEMBL database',
+        'url': 'https://www.ebi.ac.uk',
+        'target': '/chembl/api/data/target.json?limit=1000',
+        'assay' : '/chembl/api/data/assay.json?limit=1000',
+        'activity' : '/chembl/api/data/activity.json?limit=1000',
+        'molecule' : '/chembl/api/data/molecule.json?limit=1000',
+    },
+    'hpo': {
+        'label': 'HPO database',
+        'ontology': 'https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.obo',
+        'disease' : 'http://purl.obolibrary.org/obo/hp/hpoa/phenotype.hpoa',
+        'gene' : 'http://purl.obolibrary.org/obo/hp/hpoa/genes_to_phenotype.txt',
+    },
 }
 
 
