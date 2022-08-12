@@ -23,6 +23,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from typing import Literal
+
 import json
 import collections
 
@@ -35,268 +37,302 @@ def chembl_targets() -> list[tuple]:
     Retrieves targets data from ChEMBL.
 
     Returns:
-        namedtuple.
+        List of drug target records as named tuples.
     """
 
-    fields_target = ('accession','target_chembl_id')
+    fields_target = (
+        'accession',
+        'target_chembl_id',
+    )
 
-    Target = collections.namedtuple('Target', fields_target,defaults = ("None",) * len(fields_target))
+    ChemblTarget = collections.namedtuple(
+        'ChemblTarget',
+        fields_target,
+        defaults = (None,) * len(fields_target),
+    )
 
-    trgtlst = []
-
-    flag = 0
+    tgt_lst = []
+    page_dct = {}
 
     while True:
 
-        if flag == 0:
+        if not page_dct:
 
-            url = urls.urls['chembl']['url'] + urls.urls['chembl']['target']
-            c = curl.Curl(url, large=True, silent=False)
-            flag = 1
+            url = (
+                f"{urls.urls['chembl']['url']}"
+                f"{urls.urls['chembl']['target']}"
+            )
+
+        elif page_dct['page_meta']['next']:
+
+            url = (
+                f"{urls.urls['chembl']['url']}"
+                f"{page_dct['page_meta']['next']}"
+            )
 
         else:
 
-            if lst['page_meta']['next']:
+            break
 
-                url = urls.urls['chembl']['url'] + lst['page_meta']['next']
-                c = curl.Curl(url, large=True, silent=False)
+        c = curl.Curl(url, large=True, silent=False)
+        fileobj = open(c.fileobj.name)
+        page_dct = json.loads(fileobj.read())
 
-            else:
+        tgt_lst.extend(
+            ChemblTarget(
+                accession = (
+                    tgt['target_components'][0]['accession']
+                        if 'target_components' in tgt else
+                    None
+                ),
+                target_chembl_id = tgt['target_chembl_id'],
+            )
+            for tgt in page_dct['targets']
+        )
 
-                break
+    return tgt_lst
 
-        fileObject = open(c.fileobj.name)
-        lst = json.loads(fileObject.read())
 
-        for trgt_attr in lst['targets']:
-
-            if trgt_attr['target_components']:
-
-                trgtlst.append(
-                    Target(
-                        accession = trgt_attr['target_components'][0]['accession'],
-                        target_chembl_id = trgt_attr['target_chembl_id'],
-                        )
-                    )
-
-            else:
-
-                trgtlst.append(
-                    Target(
-                        target_chembl_id = trgt_attr['target_chembl_id'],
-                        )
-                    )
-
-    return trgtlst
-
-def chembl_assays() -> List[tuple] :
+def chembl_assays() -> list[tuple] :
     """
     Retrieves assays data from ChEMBL.
 
     Returns:
-        namedtuple.
+        List of assay records as named tuples.
     """
 
-    fields_assay = ('assay_chembl_id','assay_organism','assay_type','confidence_score','target_chembl_id')
+    fields_assay = (
+        'assay_chembl_id',
+        'assay_organism',
+        'assay_type',
+        'confidence_score',
+        'target_chembl_id',
+    )
 
-    Assay = collections.namedtuple('Assay', fields_assay,defaults = ("None",) * len(fields_assay))
+    ChemblAssay = collections.namedtuple(
+        'ChemblAssay',
+        fields_assay,
+        defaults = (None,) * len(fields_assay),
+    )
 
-    assylst = []
-
-    flag = 0
+    assay_lst = []
+    page_dct = {}
 
     while True:
 
-        if flag == 0:
+        if not page_dct:
 
-            url = urls.urls['chembl']['url'] + urls.urls['chembl']['assay']
-            c = curl.Curl(url, large=True, silent=False)
-            flag = 1
+            url = (
+                f"{urls.urls['chembl']['url']}"
+                f"{urls.urls['chembl']['assay']}"
+            )
+
+        elif page_dct['page_meta']['next']:
+
+            url = (
+                f"{urls.urls['chembl']['url']}"
+                f"{page_dct['page_meta']['next']}"
+            )
 
         else:
 
-            if lst['page_meta']['next']:
+            break
 
-                url = urls.urls['chembl']['url'] + lst['page_meta']['next']
-                c = curl.Curl(url, large=True, silent=False)
+        c = curl.Curl(url, large=True, silent=False)
+        fileobj = open(c.fileobj.name)
+        page_dct = json.loads(fileobj.read())
 
-            else:
+        assay_lst.extend(
+            ChemblAssay(
+                assay_chembl_id = assy_attr['assay_chembl_id'],
+                assay_organism = assy_attr['assay_organism'],
+                assay_type = assy_attr['assay_type'],
+                confidence_score = assy_attr['confidence_score'],
+                target_chembl_id = assy_attr['target_chembl_id'],
+            )
+            for assy_attr in page_dct['assays']
+        )
 
-                break
+    return assay_lst
 
-        fileObject = open(c.fileobj.name)
-        lst = json.loads(fileObject.read())
 
-        for assy_attr in lst['assays']:
-
-            assylst.append(
-                Assay(
-                    assay_chembl_id = assy_attr['assay_chembl_id'],
-                    assay_organism = assy_attr['assay_organism'],
-                    assay_type = assy_attr['assay_type'],
-                    confidence_score = assy_attr['confidence_score'],
-                    target_chembl_id = assy_attr['target_chembl_id'],
-                    )
-                )
-
-    return assylst
-
-def chembl_molecules() -> List[tuple] :
+def chembl_molecules() -> list[tuple]:
     """
     Retrieves molecules data from ChEMBL.
 
     Returns:
-        namedtuple.
+        Molecule records as named tuples.
     """
 
-    fields_molecule = ('alogp','conanicle_smiles','chirality','full_mwt','heavy_atoms','standard_inchi_key','molecular_species',
-                        'molecul_type','molecule_chembl_id','parent_chembl_id','prodrug','standard_inchi', 'xrefs')
+    def _get(mol, key0, key1):
 
-    Molecule = collections.namedtuple('Molecule', fields_molecule,defaults = ("None",) * len(fields_molecule))
+        return mol.get(f'molecule_{key0}', {}).get(key1, None)
 
-    mlcllst = []
 
-    flag = 0
+    fields_molecule = (
+        'alogp',
+        'canonical_smiles',
+        'chirality',
+        'full_mwt',
+        'heavy_atoms',
+        'std_inchi_key',
+        'species',
+        'type',
+        'chembl',
+        'parent_chembl',
+        'prodrug',
+        'std_inchi',
+        'xrefs',
+    )
+
+    ChemblMolecule = collections.namedtuple(
+        'ChemblMolecule',
+        fields_molecule,
+        defaults = (None,) * len(fields_molecule),
+    )
+
+    mol_lst = []
+    page_dct = {}
 
     while True:
 
-        if flag == 0:
+        if not page_dct:
 
             url = urls.urls['chembl']['url'] + urls.urls['chembl']['molecule']
             c = curl.Curl(url, large=True, silent=False)
-            flag = 1
+
+        elif page_dct['page_meta']['next']:
+
+            url = (
+                f"{urls.urls['chembl']['url']}"
+                f"{lst['page_meta']['next']}"
+            )
 
         else:
 
-            if lst['page_meta']['next']:
+            break
 
-                url = urls.urls['chembl']['url'] + lst['page_meta']['next']
-                c = curl.Curl(url, large=True, silent=False)
+        c = curl.Curl(url, large=True, silent=False)
+        fileobj = open(c.fileobj.name)
+        page_dct = json.loads(fileobj.read())
 
-            else:
+        mol_lst.extend(
+            ChemblMolecule(
+                chirality = mol['chirality'],
+                type = mol['molecule_type'],
+                prodrug = mol['prodrug'],
 
-                break
+                chembl = _get(mol, 'hierarchy', 'molecule_chembl_id'),
+                parent_chembl = _get(mol, 'hierarchy', 'parent_chembl_id'),
 
-        fileObject = open(c.fileobj.name)
-        lst = json.loads(fileObject.read())
+                alogp = _get(mol, 'properties', 'alogp'),
+                full_mwt = _get(mol, 'properties', 'full_mwt'),
+                heavy_atoms = _get(mol, 'properties', 'heavy_atoms'),
+                species = _get(mol, 'properties', 'molecular_species'),
 
-        for mlcl_attr in lst['molecules']:
+                canonical_smiles = _get(mol, 'structures', 'canonical_smiles'),
+                std_inchi_key = _get(mol, 'structures', 'standard_inchi_key'),
+                std_inchi = _get(mol, 'structures', 'standard_inchi'),
 
-            xrefs = []
-            mlcllst.append(
-                Molecule(
-                    chirality = mlcl_attr['chirality'],
-                    molecul_type = mlcl_attr['molecule_type'],
-                    prodrug = mlcl_attr['prodrug'],
-                    )
+                xrefs = (
+                    [
+                        {
+                            'xref_id': rec['xref_id'],
+                            'xref_src': rec['xref_src'],
+                        }
+                        for rec in mol['cross_references']
+                    ]
+                        if mol['cross_references'] else
+                    None
                 )
+            )
+            for mol in page_dct['molecules']
+        )
 
-            if mlcl_attr['molecule_hierarchy'] != None:
-                mlcllst[-1] = mlcllst[-1]._replace(
-                    molecule_chembl_id = mlcl_attr['molecule_hierarchy']['molecule_chembl_id'],
-                    parent_chembl_id = mlcl_attr['molecule_hierarchy']['parent_chembl_id'],
-                )
+    return mol_lst
 
-            if mlcl_attr['molecule_properties'] != None:
-                mlcllst[-1] = mlcllst[-1]._replace(
-                    alogp = mlcl_attr['molecule_properties']['alogp'],
-                    full_mwt = mlcl_attr['molecule_properties']['full_mwt'],
-                    heavy_atoms = mlcl_attr['molecule_properties']['heavy_atoms'],
-                    molecular_species = mlcl_attr['molecule_properties']['molecular_species'],
-                )
-
-            if mlcl_attr['molecule_structures'] != None:
-                mlcllst[-1] = mlcllst[-1]._replace(
-                    conanicle_smiles = mlcl_attr['molecule_structures']['canonical_smiles'],
-                    standard_inchi_key = mlcl_attr['molecule_structures']['standard_inchi_key'],
-                    standard_inchi = mlcl_attr['molecule_structures']['standard_inchi'],
-                )
-
-            if mlcl_attr['cross_references'] != None:
-
-                for rec in mlcl_attr['cross_references']:
-
-                    xrefs.append({'xref_id' : rec['xref_id'], 'xref_src': rec['xref_src']})
-
-                mlcllst[-1] = mlcllst[-1]._replace(
-                    xrefs = xrefs
-                )
-
-
-    return mlcllst
 
 def chembl_activities(
         pchembl_value_none: bool = False,
-        standard_relation: bool = '=',
-    ) -> List[tuple] :
+        #TODO: are these below all the allowed values?
+        standard_relation: Literal['=', '>', '<', '>=', '<='],
+    ) -> list[tuple] :
     """
     Retrieves activities data from ChEMBL.
 
     Args:
-        pchembl_value_none (bool): Whether the pchembl value should be none or not.
-        standard_relation (str): Which standard relation in needed.
+        pchembl_value_none:
+            # TODO: it is allowed to be None or must be None?
+            Whether the pchembl value should be none or not.
+        standard_relation:
+            Which standard relation in needed.
 
     Returns:
-        namedtuple.
-            standard_flag and standard_units attributes are not included in the returned namedtuple.
-            Only records returned are the ones where data_validity_comment is none.
+        List of activity records as named tuples. `standard_flag` and
+        `standard_units` attributes are not included in the returned records.
+        # TODO: then why the data_validity_comment is part of the records?
+        Only records without `data_validity_comment` are returned.
     """
 
-    fields_activity = ('assay_chembl_id','data_validity_comment','molecule_chembl_id','pchembl_value',
-                        'standard_relation','standard_value','target_chembl_id')
+    fields_activity = (
+        'assay_chembl',
+        'data_validity_comment',
+        'chembl',
+        'pchembl',
+        'standard_relation',
+        'standard_value',
+        'target_chembl',
+    )
 
-    Activity = collections.namedtuple('Activity', fields_activity,defaults = ("None",) * len(fields_activity))
+    ChemblActivity = collections.namedtuple(
+        'ChemblActivity',
+        fields_activity,
+        defaults = (None,) * len(fields_activity),
+    )
 
-    actvtylst = []
-
-    flag = 0
+    activity_lst = []
+    page_dct = {}
 
     while True:
 
-        if flag == 0:
+        if not page_lst:
 
-            if pchembl_value_none == True:
 
-                url = urls.urls['chembl']['url'] + urls.urls['chembl']['activity']+'&pchembl_value__isnull=true'
+            url = (
+                f"{urls.urls['chembl']['url']}"
+                f"{urls.urls['chembl']['activity']}"
+                f"&pchembl_value__isnull={str(pchembl_value_none).lower()}"
+                f"&standard_relation__exact={standard_relation}"
+            )
 
-            else:
+        elif page_dct['page_meta']['next']:
 
-                url = urls.urls['chembl']['url'] + urls.urls['chembl']['activity']+'&pchembl_value__isnull=false'
-
-            url = url + '&standard_relation__exact='+standard_relation
-            c = curl.Curl(url, large=True, silent=False)
-            flag = 1
+            url = (
+                f"{urls.urls['chembl']['url']}"
+                f"{lst['page_meta']['next']}"
+            )
 
         else:
 
-            if lst['page_meta']['next']:
+            break
 
-                url = urls.urls['chembl']['url'] + lst['page_meta']['next']
-                c = curl.Curl(url, large=True, silent=False)
-
-            else:
-
-                break
-
-        fileObject = open(c.fileobj.name)
-        lst = json.loads(fileObject.read())
+        c = curl.Curl(url, large=True, silent=False)
+        fileobj = open(c.fileobj.name)
+        page_dct = json.loads(fileobj.read())
 
 
-        for actvty_attr in lst['activities']:
+        activity_lst.extend(
+            ChemblActivity(
+                assay_chembl = act['assay_chembl_id'],
+                data_validity_comment = act['data_validity_comment'],
+                chembl = act['molecule_chembl_id'],
+                pchembl = act['pchembl_value'],
+                standard_relation = act['standard_relation'],
+                standard_value = act['standard_value'],
+                target_chembl = act['target_chembl_id'],
+            )
+            for act in page_dct['activities']
+            if act['data_validity_comment'] is None
+        )
 
-            if actvty_attr['data_validity_comment'] == None:
-
-                actvtylst.append(
-                    Activity(
-                        assay_chembl_id = actvty_attr['assay_chembl_id'],
-                        data_validity_comment = actvty_attr['data_validity_comment'],
-                        molecule_chembl_id = actvty_attr['molecule_chembl_id'],
-                        pchembl_value = actvty_attr['pchembl_value'],
-                        standard_relation = actvty_attr['standard_relation'],
-                        standard_value = actvty_attr['standard_value'],
-                        target_chembl_id = actvty_attr['target_chembl_id'],
-                        )
-                    )
-
-
-    return actvtylst
+    return activity_lst
