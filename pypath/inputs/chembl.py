@@ -1,4 +1,27 @@
-from typing import List
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright
+#  2014-2022
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Sebastian Lobentanzer
+#           Erva Ulusoy
+#           Olga Ivanova
+#           Ahmet Rifaioglu
+#           Tennur Kılıç
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
 
 import json
 import collections
@@ -6,11 +29,12 @@ import collections
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 
-def chembl_targets() -> List[tuple] :
+
+def chembl_targets() -> list[tuple]:
     """
     Retrieves targets data from ChEMBL.
-    
-    Returns: 
+
+    Returns:
         namedtuple.
     """
 
@@ -40,10 +64,10 @@ def chembl_targets() -> List[tuple] :
             else:
 
                 break
-        
+
         fileObject = open(c.fileobj.name)
         lst = json.loads(fileObject.read())
-        
+
         for trgt_attr in lst['targets']:
 
             if trgt_attr['target_components']:
@@ -56,7 +80,7 @@ def chembl_targets() -> List[tuple] :
                     )
 
             else:
-                
+
                 trgtlst.append(
                     Target(
                         target_chembl_id = trgt_attr['target_chembl_id'],
@@ -68,8 +92,8 @@ def chembl_targets() -> List[tuple] :
 def chembl_assays() -> List[tuple] :
     """
     Retrieves assays data from ChEMBL.
-    
-    Returns: 
+
+    Returns:
         namedtuple.
     """
 
@@ -99,12 +123,12 @@ def chembl_assays() -> List[tuple] :
             else:
 
                 break
-        
+
         fileObject = open(c.fileobj.name)
         lst = json.loads(fileObject.read())
-        
+
         for assy_attr in lst['assays']:
-            
+
             assylst.append(
                 Assay(
                     assay_chembl_id = assy_attr['assay_chembl_id'],
@@ -120,8 +144,8 @@ def chembl_assays() -> List[tuple] :
 def chembl_molecules() -> List[tuple] :
     """
     Retrieves molecules data from ChEMBL.
-    
-    Returns: 
+
+    Returns:
         namedtuple.
     """
 
@@ -152,10 +176,10 @@ def chembl_molecules() -> List[tuple] :
             else:
 
                 break
-        
+
         fileObject = open(c.fileobj.name)
         lst = json.loads(fileObject.read())
-        
+
         for mlcl_attr in lst['molecules']:
 
             xrefs = []
@@ -166,7 +190,7 @@ def chembl_molecules() -> List[tuple] :
                     prodrug = mlcl_attr['prodrug'],
                     )
                 )
-                
+
             if mlcl_attr['molecule_hierarchy'] != None:
                 mlcllst[-1] = mlcllst[-1]._replace(
                     molecule_chembl_id = mlcl_attr['molecule_hierarchy']['molecule_chembl_id'],
@@ -179,26 +203,26 @@ def chembl_molecules() -> List[tuple] :
                     full_mwt = mlcl_attr['molecule_properties']['full_mwt'],
                     heavy_atoms = mlcl_attr['molecule_properties']['heavy_atoms'],
                     molecular_species = mlcl_attr['molecule_properties']['molecular_species'],
-                )   
-            
+                )
+
             if mlcl_attr['molecule_structures'] != None:
                 mlcllst[-1] = mlcllst[-1]._replace(
                     conanicle_smiles = mlcl_attr['molecule_structures']['canonical_smiles'],
                     standard_inchi_key = mlcl_attr['molecule_structures']['standard_inchi_key'],
                     standard_inchi = mlcl_attr['molecule_structures']['standard_inchi'],
                 )
-            
+
             if mlcl_attr['cross_references'] != None:
 
                 for rec in mlcl_attr['cross_references']:
-                    
+
                     xrefs.append({'xref_id' : rec['xref_id'], 'xref_src': rec['xref_src']})
 
                 mlcllst[-1] = mlcllst[-1]._replace(
                     xrefs = xrefs
                 )
 
-                
+
     return mlcllst
 
 def chembl_activities(
@@ -212,7 +236,7 @@ def chembl_activities(
         pchembl_value_none (bool): Whether the pchembl value should be none or not.
         standard_relation (str): Which standard relation in needed.
 
-    Returns: 
+    Returns:
         namedtuple.
             standard_flag and standard_units attributes are not included in the returned namedtuple.
             Only records returned are the ones where data_validity_comment is none.
@@ -232,11 +256,11 @@ def chembl_activities(
         if flag == 0:
 
             if pchembl_value_none == True:
-                
+
                 url = urls.urls['chembl']['url'] + urls.urls['chembl']['activity']+'&pchembl_value__isnull=true'
-                
+
             else:
-                
+
                 url = urls.urls['chembl']['url'] + urls.urls['chembl']['activity']+'&pchembl_value__isnull=false'
 
             url = url + '&standard_relation__exact='+standard_relation
@@ -253,15 +277,15 @@ def chembl_activities(
             else:
 
                 break
-        
+
         fileObject = open(c.fileobj.name)
         lst = json.loads(fileObject.read())
 
-        
+
         for actvty_attr in lst['activities']:
 
             if actvty_attr['data_validity_comment'] == None:
-                
+
                 actvtylst.append(
                     Activity(
                         assay_chembl_id = actvty_attr['assay_chembl_id'],
@@ -272,7 +296,7 @@ def chembl_activities(
                         standard_value = actvty_attr['standard_value'],
                         target_chembl_id = actvty_attr['target_chembl_id'],
                         )
-                    )  
+                    )
 
-                
+
     return actvtylst

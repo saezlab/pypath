@@ -1,3 +1,28 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright
+#  2014-2022
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Sebastian Lobentanzer
+#           Erva Ulusoy
+#           Olga Ivanova
+#           Ahmet Rifaioglu
+#           Tennur Kılıç
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
+
 from typing import List
 
 import csv
@@ -7,9 +32,9 @@ import pypath.share.curl as curl
 import pypath.resources.urls as urls
 
 def drug_central(
-        organism: str = "Homo sapiens", 
-        SMILES: bool = False, 
-        InChI: bool = False, 
+        organism: str = "Homo sapiens",
+        SMILES: bool = False,
+        InChI: bool = False,
         CAS_RN: bool = False,
     ) -> List[tuple]:
     """
@@ -24,7 +49,7 @@ def drug_central(
     Returns:
         namedtuple.
     """
-    
+
     fields = ('DRUG_NAME','TARGET_NAME','TARGET_CLASS',
             'TARGET_ACCESSION','GENE','ACT_VALUE','ACT_TYPE',
             'ACTION_TYPE','TDL','ORGANISM','SMILES','InChI',
@@ -35,7 +60,7 @@ def drug_central(
     interactions = list(csv.DictReader(c.result, delimiter = '\t'))
 
     temp_inter = []
-    
+
     for rec in interactions:
 
         if rec not in temp_inter:
@@ -51,9 +76,9 @@ def drug_central(
         url = urls.urls['drugcentral']['SMILES_InChI']
         c = curl.Curl(url, large = True, silent = False)
         structures = list(csv.DictReader(c.result, delimiter = '\t'))
-        
+
         temp_struct = []
-    
+
         for rec in structures:
 
             if rec not in temp_struct:
@@ -111,10 +136,10 @@ def drug_central(
                         ACT_TYPE = inter_attr['ACT_TYPE'],
                         ACTION_TYPE = inter_attr['ACTION_TYPE'],
                         TDL = inter_attr['TDL'],
-                        ORGANISM = inter_attr['ORGANISM'],    
+                        ORGANISM = inter_attr['ORGANISM'],
                         )
                     )
-                  
+
                 for struct_attr in structures:
 
                     if inter_attr['STRUCT_ID'] == struct_attr['ID']:
@@ -125,7 +150,7 @@ def drug_central(
                                 SMILES = struct_attr['SMILES'],
                                 InChI = struct_attr['InChI'],
                                 InChIKey = struct_attr['InChIKey'],
-                                CAS_RN = struct_attr['CAS_RN'],      
+                                CAS_RN = struct_attr['CAS_RN'],
                             )
 
                         elif SMILES == True and InChI == True and CAS_RN == False:
@@ -133,20 +158,20 @@ def drug_central(
                             result[-1] = result[-1]._replace(
                                 SMILES = struct_attr['SMILES'],
                                 InChI = struct_attr['InChI'],
-                                InChIKey = struct_attr['InChIKey'],     
+                                InChIKey = struct_attr['InChIKey'],
                             )
 
                         elif SMILES == True and InChI == False and CAS_RN == True:
 
                             result[-1] = result[-1]._replace(
                                 SMILES = struct_attr['SMILES'],
-                                CAS_RN = struct_attr['CAS_RN'],      
+                                CAS_RN = struct_attr['CAS_RN'],
                             )
 
                         elif SMILES == True and InChI == False and CAS_RN == False:
 
                             result[-1] = result[-1]._replace(
-                                SMILES = struct_attr['SMILES'],   
+                                SMILES = struct_attr['SMILES'],
                             )
 
                         elif SMILES == False and InChI == True and CAS_RN == True:
@@ -154,22 +179,22 @@ def drug_central(
                             result[-1] = result[-1]._replace(
                                 InChI = struct_attr['InChI'],
                                 InChIKey = struct_attr['InChIKey'],
-                                CAS_RN = struct_attr['CAS_RN'],      
+                                CAS_RN = struct_attr['CAS_RN'],
                             )
 
                         elif SMILES == False and InChI == False and CAS_RN == True:
 
                             result[-1] = result[-1]._replace(
-                                CAS_RN = struct_attr['CAS_RN'],      
+                                CAS_RN = struct_attr['CAS_RN'],
                             )
 
                         elif SMILES == False and InChI == True and CAS_RN == False:
 
                             result[-1] = result[-1]._replace(
                                 InChI = struct_attr['InChI'],
-                                InChIKey = struct_attr['InChIKey'],    
+                                InChIKey = struct_attr['InChIKey'],
                             )
-    
+
     else:
 
         DrugTargetInteractions = collections.namedtuple('DrugTargetInteractions', fields[0:10])
@@ -177,7 +202,7 @@ def drug_central(
         for inter_attr in interactions:
 
             if organism == inter_attr['ORGANISM']:
-                
+
                 result.append(
                     DrugTargetInteractions(
                         DRUG_NAME = inter_attr['DRUG_NAME'],
@@ -189,7 +214,7 @@ def drug_central(
                         ACT_TYPE = inter_attr['ACT_TYPE'],
                         ACTION_TYPE = inter_attr['ACTION_TYPE'],
                         TDL = inter_attr['TDL'],
-                        ORGANISM = inter_attr['ORGANISM'],    
+                        ORGANISM = inter_attr['ORGANISM'],
                     )
                 )
 

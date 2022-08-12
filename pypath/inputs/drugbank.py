@@ -1,3 +1,28 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright
+#  2014-2022
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Sebastian Lobentanzer
+#           Erva Ulusoy
+#           Olga Ivanova
+#           Ahmet Rifaioglu
+#           Tennur Kılıç
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
+
 from typing import List
 
 import os
@@ -14,8 +39,8 @@ _logger = session.Logger(name = 'drugbank')
 _log = _logger._log
 
 def add_prot_id(
-        user: str, 
-        passwd: str, 
+        user: str,
+        passwd: str,
         pharma_active: bool = False,
     ) -> List[tuple] :
     """
@@ -52,7 +77,7 @@ def add_prot_id(
         silent = False,
         req_headers = req_hdrs,
         cache = False,
-    ) 
+    )
 
     os.rename(c.fileobj.name, c.fileobj.name + ".csv.zip")
     zipfile = curl.FileOpener(c.fileobj.name + ".csv.zip")
@@ -65,7 +90,7 @@ def add_prot_id(
         for rec in active:
 
             enzym.append(rec)
-    
+
     result = []
 
     result.append(
@@ -121,7 +146,7 @@ def add_prot_id(
         silent = False,
         req_headers = req_hdrs,
         cache = False,
-    ) 
+    )
 
     os.rename(c.fileobj.name, c.fileobj.name + ".csv.zip")
     zipfile = curl.FileOpener(c.fileobj.name + ".csv.zip")
@@ -181,7 +206,7 @@ def add_prot_id(
         silent = False,
         req_headers = req_hdrs,
         cache = False,
-    ) 
+    )
 
     os.rename(c.fileobj.name, c.fileobj.name + ".csv.zip")
     zipfile = curl.FileOpener(c.fileobj.name + ".csv.zip")
@@ -240,7 +265,7 @@ def add_prot_id(
         silent = False,
         req_headers = req_hdrs,
         cache = False,
-    ) 
+    )
 
     os.rename(c.fileobj.name, c.fileobj.name + ".csv.zip")
     zipfile = curl.FileOpener(c.fileobj.name + ".csv.zip")
@@ -282,7 +307,7 @@ def add_prot_id(
                     break
 
                 index += 1
-                
+
             if flag == 0:
 
                 result.append(
@@ -295,9 +320,9 @@ def add_prot_id(
     return result
 
 def drug_bank(
-        user: str, 
-        passwd: str, 
-        addprotid: bool = True, 
+        user: str,
+        passwd: str,
+        addprotid: bool = True,
         pharma_active: bool = False,
     ) -> List[tuple] :
     """
@@ -336,7 +361,7 @@ def drug_bank(
         silent = False,
         req_headers = req_hdrs,
         cache = False
-    ) 
+    )
 
     os.rename(c.fileobj.name, c.fileobj.name + ".zip")
     zipfile = curl.FileOpener(c.fileobj.name + ".zip")
@@ -349,7 +374,7 @@ def drug_bank(
         silent = False,
         req_headers = req_hdrs,
         cache = False
-    ) 
+    )
 
     os.rename(c.fileobj.name, c.fileobj.name + ".zip")
     zipfile = curl.FileOpener(c.fileobj.name + ".zip")
@@ -363,7 +388,7 @@ def drug_bank(
         Combine = collections.namedtuple('Combine', fields[:17],defaults = ("",) * len(fields[:17]))
 
     result = []
-    
+
     for struct_attr in structure_links:
 
         for drug_attr in drug_links:
@@ -391,25 +416,25 @@ def drug_bank(
                         HET_ID = drug_attr['HET ID'],
                     )
                 )
-    
+
     if addprotid:
-        
+
         identifiers_list = add_prot_id(user, passwd, pharma_active)
         index = 0
-        
+
         for res_attr in result:
 
             for iden_attr in identifiers_list:
 
                 if res_attr.DrugBank_ID == iden_attr.DrugBank_ID:
-                
+
                     result[index] = result[index]._replace(
                         Target_UniProt_ID = iden_attr.Target_UniProt_ID,
                         Transporter_UniProt_ID = iden_attr.Transporter_UniProt_ID,
                         Enzym_UniProt_ID = iden_attr.Enzym_UniProt_ID,
-                        Carrier_UniProt_ID = iden_attr.Carrier_UniProt_ID,  
+                        Carrier_UniProt_ID = iden_attr.Carrier_UniProt_ID,
                     )
-                
+
                     break
 
             index += 1
