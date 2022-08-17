@@ -23,20 +23,19 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from typing import List
-
 import csv
 import collections
 
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
+import pypath.share.common as common
 
 def drug_central(
         organism: str = "Homo sapiens",
         SMILES: bool = False,
         InChI: bool = False,
         CAS_RN: bool = False,
-    ) -> List[tuple]:
+    ) -> list[tuple]:
     """
     Retrieves drug-target interactions datasets from Drug Central.
 
@@ -50,24 +49,28 @@ def drug_central(
         namedtuple.
     """
 
-    fields = ('DRUG_NAME','TARGET_NAME','TARGET_CLASS',
-            'TARGET_ACCESSION','GENE','ACT_VALUE','ACT_TYPE',
-            'ACTION_TYPE','TDL','ORGANISM','SMILES','InChI',
-            'InChIKey','CAS_RN',)
+    fields = (
+        'DRUG_NAME',
+        'TARGET_NAME',
+        'TARGET_CLASS',
+        'TARGET_ACCESSION',
+        'GENE',
+        'ACT_VALUE',
+        'ACT_TYPE',
+        'ACTION_TYPE',
+        'TDL',
+        'ORGANISM',
+        'SMILES',
+        'InChI',
+        'InChIKey',
+        'CAS_RN',
+    )
 
     url = urls.urls['drugcentral']['interactions']
     c = curl.Curl(url, large = True, silent = False)
     interactions = list(csv.DictReader(c.result, delimiter = '\t'))
 
-    temp_inter = []
-
-    for rec in interactions:
-
-        if rec not in temp_inter:
-
-            temp_inter.append(rec)
-
-    interactions = temp_inter
+    interactions = common.unique_list(interactions)
 
     result = []
 

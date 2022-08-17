@@ -23,8 +23,6 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from typing import List
-
 import os
 import csv
 import collections
@@ -38,37 +36,51 @@ import pypath.share.settings as settings
 _logger = session.Logger(name = 'drugbank')
 _log = _logger._log
 
-def add_prot_id(
+
+def drugbank_proteins(
         user: str,
         passwd: str,
         pharma_active: bool = False,
-    ) -> List[tuple] :
+    ) -> list[tuple] :
     """
     Retrieves protein identifiers from Drugbank.
 
     Args:
-        user (str): E-mail address for login to DrugBank.
-        passwd (str): Password for login to DrugBank.
-        pharma_active (bool): Wheter to include pharmacologically active identifiers.
+        user:
+            E-mail address with registered DrugBank account.
+        passwd:
+            Password for the DrugBank account.
+        pharma_active:
+            Wheter to include only pharmacologically active identifiers.
 
     Returns:
-        namedtuple.
+        List of protein records as named tuples.
     """
 
     credentials = {'user': user, 'passwd': passwd}
 
     auth_str = base64.b64encode(
-        ('%s:%s' % (credentials['user'], credentials['passwd'])).encode()
-    ).decode()
+        f"{credentials['user']}:{credentials['passwd']}".encode()
+    )
 
-    decoded = 'Basic %s' % auth_str
+    req_hdrs = [
+        f'Authorization: Basic {auth.decode()}',
+        settings.get('user_agent'),
+    ]
 
-    req_hdrs = ['Authorization: %s' % decoded]
-    req_hdrs.extend([settings.get('user_agent')])
+    fields = (
+        'DrugBank_ID',
+        'Target_UniProt_ID',
+        'Transporter_UniProt_ID',
+        'Enzym_UniProt_ID',
+        'Carrier_UniProt_ID',
+    )
 
-    fields = ('DrugBank_ID','Target_UniProt_ID','Transporter_UniProt_ID','Enzym_UniProt_ID','Carrier_UniProt_ID')
-
-    ProteinIdentifiers = collections.namedtuple('ProteinIndetifiers', fields,defaults = ("",) * len(fields))
+    DrugbankProtein = collections.namedtuple(
+        'DrugbankProtein',
+        fields,
+        defaults = (None,) * len(fields),
+    )
 
     url = urls.urls['drugbank']['drug_enzym_identifiers']
     c = curl.Curl(
@@ -319,12 +331,13 @@ def add_prot_id(
 
     return result
 
+
 def drug_bank(
         user: str,
         passwd: str,
         addprotid: bool = True,
         pharma_active: bool = False,
-    ) -> List[tuple] :
+    ) -> list[tuple] :
     """
     Retrieves structures, external links and protein identifiers from Drugbank.
 
@@ -438,6 +451,5 @@ def drug_bank(
                     break
 
             index += 1
-
 
     return result
