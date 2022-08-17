@@ -1420,11 +1420,13 @@ class TableServer(BaseServer):
 
         self._log('Preprocessing annotations.')
 
+        annot = self.data['annotations']
+
         values_by_key = collections.defaultdict(set)
 
         # we need to do it this way as we are memory limited on the server
         # and pandas groupby is very memory intensive
-        for row in self.data['annotations'].itertuples():
+        for row in annot.itertuples():
 
             value = (
                 '<numeric>'
@@ -1456,6 +1458,22 @@ class TableServer(BaseServer):
             ),
             columns = ['source', 'label', 'value'],
         )
+
+        self.data['annotations_large'] = {}
+        res_large = settings.get('annot_large_resources')
+
+        for res in res_large:
+
+            self._log(f'Creating data frame for annotation resource `{res}`.')
+            self.data['annotations_large'][res] = annot[annot['source'] == res]
+            size = common.df_memory_usage(self.data['annotations_large'][res])
+            self._log(f'Size of `{res}` data frame: {size}.')
+
+        self.data['annotations'] = annot[~annot['source'].isin(res_large)]
+        size = common.df_memory_usage(self.data['annotations'])
+        self._log(f'Size of the annotations data frame: {size}.')
+
+        self._log('Finished preprocessing annotations.')
 
 
     def _preprocess_intercell(self):
@@ -2300,6 +2318,8 @@ class TableServer(BaseServer):
                 'omnipath_webservice_annotations__recent.tsv'
             )
 
+        resources_large = settings.get('annot_large_resources')
+
         # starting from the entire dataset
         tbl = self.data['annotations']
 
@@ -2309,8 +2329,55 @@ class TableServer(BaseServer):
         if b'resources' in req.args:
 
             resources = self._args_set(req, 'resources')
+            req_res_small = resources - resources_large
+            req_res_large = resources & resources_large
 
-            tbl = tbl.loc[tbl.source.isin(resources)]
+            if req_res_small:
+
+                self._log(
+                    'From main annotations table: '
+                    f'{", ".join(req_res_small)}.'
+                )
+
+                tbl = tbl.loc[tbl.source.isin(req_res_small)]
+
+            else:
+
+                tbl.drop(tbl.index)
+
+        tbl = self._filter_annotations(tbl, req)
+        license = self._get_license(req)
+        tbl = self._filter_by_license_annotations(tbl, license)
+        res_ctrl = resources_mod.get_controller()
+
+        for res in req_res_large:
+
+            if res_ctrl.license(res).enables(license):
+
+                self._log(f'Adding resource `{res}`.')
+                tbl_res = self.data['annotations_large'][res]
+                tbl_res = self._filter_annotations(tbl_res, req)
+                tbl = pd.concat((tbl, tbl_res)) if len(tbl) else tbl_res
+                self._log(f'Added resource `{res}`.')
+
+        # provide genesymbols: yes or no
+        if (
+            b'genesymbols' in req.args and
+            self._parse_arg(req.args[b'genesymbols'])
+        ):
+            genesymbols = True
+            hdr.insert(1, 'genesymbol')
+        else:
+            genesymbols = False
+
+        self._log('Selecting annotation columns.')
+        tbl = tbl.loc[:,hdr]
+        self._log('Selected annotation columns.')
+
+        return self._serve_dataframe(tbl, req)
+
+
+    def _filter_annotations(self, tbl, req):
 
         # filtering for entity types
         if b'entity_types' in req.args:
@@ -2329,23 +2396,7 @@ class TableServer(BaseServer):
                 tbl.genesymbol.isin(proteins)
             ]
 
-        # provide genesymbols: yes or no
-        if (
-            b'genesymbols' in req.args and
-            self._parse_arg(req.args[b'genesymbols'])
-        ):
-            genesymbols = True
-            hdr.insert(1, 'genesymbol')
-        else:
-            genesymbols = False
-
-        license = self._get_license(req)
-
-        tbl = self._filter_by_license_annotations(tbl, license)
-
-        tbl = tbl.loc[:,hdr]
-
-        return self._serve_dataframe(tbl, req)
+        return tbl
 
 
     def annotations_summary(self, req):
@@ -2831,6 +2882,8 @@ class TableServer(BaseServer):
 
         if b'format' in req.args and req.args[b'format'][0] == b'json':
 
+            _log('Deserializing lists for JSON.')
+
             data_json = tbl.to_json(orient = 'records')
             # this is necessary because in the data frame we keep lists
             # as `;` separated strings but in json is nicer to serve
@@ -2859,9 +2912,13 @@ class TableServer(BaseServer):
                             []
                         )
 
+            _log('Writing JSON to output.')
+
             return json.dumps(data_json)
 
         else:
+
+            _log('Writing table to output.')
 
             return tbl.to_csv(
                 sep = '\t',

@@ -143,6 +143,9 @@ annot_infer_complexes: true
 annot_composite_database_name: OmniPath
   # the resource name for annotation categories
   # combined from multiple original resources
+annot_large_resources: !!set
+  MSigDB: null
+  HPA_tissue: null
 
 # load small, specific categories from CellPhoneDB
   # in the intercell database
