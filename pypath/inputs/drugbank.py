@@ -23,6 +23,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import re
 import csv
 import collections
 import base64
@@ -32,7 +33,7 @@ import pypath.share.curl as curl
 import pypath.share.session as session
 import pypath.share.settings as settings
 
-_logger = session.Logger(name = 'drugbank')
+_logger = session.Logger(name = 'drugbank_input')
 _log = _logger._log
 
 
@@ -116,6 +117,70 @@ def drugbank_raw_interactions(
                     relation = rel,
                 )
                 for drug in drugs
+            )
+
+    return result
+
+
+def drugbank_interactions(
+        user: str,
+        passwd: str,
+        pharma_active: bool = False,
+    ) -> list[tuple] :
+    """
+    Drug-protein and protein-drug interactions from Drugbank.
+
+    Args:
+        user:
+            E-mail address with registered DrugBank account.
+        passwd:
+            Password for the DrugBank account.
+        pharma_active:
+            Only pharmacologically active interactions.
+
+    Returns:
+        List of drug-protein and protein-drug interactions.
+    """
+
+    raw = drugbank_raw_interactions(
+        user = user,
+        passwd = passwd,
+        harma_active = pharma_active,
+    )
+
+    drugs = dict(
+        (d.drugbank, d)
+        for d in drugbank_drugs(user = user, passwd = passwd)
+    )
+
+    DrugbankInteraction = collections.namedtuple(
+        'DrugbankInteraction',
+        (
+            'source',
+            'target',
+            'source_entity_type',
+            'target_entity_type',
+            'interaction_type',
+        )
+    )
+
+    result = []
+
+    for r in raw:
+
+        drug = drugs.get(r.drugbank_id, None)
+
+        # TODO: later engage the mapping module here
+        if drug and drug.pubchem_cid:
+
+            src_tgt = reversed if r.relation == 'target' else lambda x: x
+
+            result.append(
+                DrugbankInteraction(
+                    *src_tgt(r.uniprot_id, drug.pubchem_cid),
+                    *src_tgt('protein', 'drug'),
+                    interaction_type = r.relation,
+                )
             )
 
     return result
