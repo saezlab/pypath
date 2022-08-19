@@ -84,8 +84,8 @@ def drugbank_raw_interactions(
         'relation',
     )
 
-    DrugbankProtein = collections.namedtuple(
-        'DrugbankProtein',
+    DrugbankRawInteraction = collections.namedtuple(
+        'DrugbankRawInteraction',
         fields,
         defaults = (None,) * len(fields),
     )
@@ -97,6 +97,7 @@ def drugbank_raw_interactions(
         url = urls.urls['drugbank'][f'drug_{rel}_identifiers']
 
         c = _drugbank_download(
+            url = url,
             user = user,
             passwd = passwd,
             files_needed = (csv_name,),
@@ -109,7 +110,7 @@ def drugbank_raw_interactions(
             drugs, uniprot = l.strip().split(',')
 
             result.extend(
-                DrugbankProtein(
+                DrugbankRawInteraction(
                     drugbank_id = drug,
                     uniprot_id = uniprot,
                     relation = rel,
@@ -120,132 +121,92 @@ def drugbank_raw_interactions(
     return result
 
 
-def drugbank(
-        user: str,
-        passwd: str,
-        addprotid: bool = True,
-        pharma_active: bool = False,
-    ) -> list[tuple] :
+def drugbank_drugs(user: str, passwd: str) -> list[tuple] :
     """
-    Retrieves structures, external links and protein identifiers from Drugbank.
+    Retrieves drug identifiers from Drugbank.
+
+    Each drug is annotated by its various database cross-references.
 
     Args:
-        user (str): E-mail address for login to DrugBank.
-        passwd (str): Password for login to DrugBank.
-        addprotid (bool): Wheter to include protein identifiers from DrugBank.
-        pharma_active (bool): Wheter to include pharmacologically active identifiers.
+        user:
+            E-mail address with registered DrugBank account.
+        passwd:
+            Password for the DrugBank account.
 
     Returns:
-        namedtuple.
+        List of named tuples, each field corresponding to various identifiers.
     """
 
-    fields = ('DrugBank_ID','Name','CAS_Number','Drug_Groups','InChIKey','InChI','SMILES','Formula',
-                'KEGG_Compound_ID','KEGG_Drug_ID','PubChem_Compound_ID','PubChem_Substance_ID','ChEBI_ID',
-                'ChEMBL_ID','Drug_Type','PharmGKB_ID','HET_ID','Target_UniProt_ID','Transporter_UniProt_ID',
-                'Enzym_UniProt_ID','Carrier_UniProt_ID')
-
-    credentials = {'user': user, 'passwd': passwd}
-
-    auth_str = base64.b64encode(
-        ('%s:%s' % (credentials['user'], credentials['passwd'])).encode()
-    ).decode()
-
-    decoded = 'Basic %s' % auth_str
-
-    req_hdrs = ['Authorization: %s' % decoded]
-    req_hdrs.extend([settings.get('user_agent')])
-
-    url = urls.urls['drugbank']['all_structures']
-    c = curl.Curl(
-        url,
-        large = True,
-        silent = False,
-        req_headers = req_hdrs,
-        compr = 'zip',
-        files_needed = ('structure links.csv',),
+    fields = (
+        'drugbank',
+        'name',
+        'type',
+        'groups',
+        'cas',
+        'inchikey',
+        'inchi',
+        'smiles',
+        'formula',
+        'kegg_compound',
+        'kegg_drug',
+        'pubchem_cid',
+        'pubchem_sid',
+        'chebi',
+        'chembl',
+        'pharmgkb',
+        'het',
     )
 
-    structure_links = list(
-        csv.DictReader(
-            c.result['structure links.csv'],
-            delimiter = ',',
+    raw = {}
+
+    for table in ('drug', 'structure'):
+
+        csv = f'{table} links.csv'
+
+        c = _drugbank_download(
+            url = urls.urls['drugbank'][f'all_{table}s'],
+            user = user,
+            passwd = passwd,
+            files_needed = (csv,),
         )
-    )
 
-    url = urls.urls['drugbank']['all_drug']
-    c = curl.Curl(
-        url,
-        large = True,
-        silent = False,
-        req_headers = req_hdrs,
-        compr = 'zip',
-        files_needed = ('drug links.csv',),
-    )
-
-    drug_links = list(
-        csv.DictReader(
-            c.result['drug links.csv'],
-            delimiter = ',',
+        raw[table] = dict(
+            (rec['DrugBank ID'], rec)
+            for rec in csv.DictReader(c.result[csv], delimiter = ',')
         )
+
+    DrugbankDrug = collections.namedtuple(
+        'DrugbankDrug',
+        fields,
+        defaults = (None,) * len(fields),
     )
-
-    if addprotid:
-
-        Combine = collections.namedtuple('Combine', fields,defaults = ("",) * len(fields))
-
-    else:
-        Combine = collections.namedtuple('Combine', fields[:17],defaults = ("",) * len(fields[:17]))
 
     result = []
 
-    for struct_attr in structure_links:
+    for dbid, struct in raw['structure'].items():
 
-        for drug_attr in drug_links:
+        drug = raw['drug'].get(dbid, {})
 
-            if struct_attr['DrugBank ID'] == drug_attr['DrugBank ID']:
-
-                result.append(
-                    Combine(
-                        DrugBank_ID = struct_attr['DrugBank ID'],
-                        Name = struct_attr['Name'],
-                        CAS_Number = struct_attr['CAS Number'],
-                        Drug_Groups = struct_attr['Drug Groups'],
-                        InChIKey = struct_attr['InChIKey'],
-                        InChI = struct_attr['InChI'],
-                        SMILES = struct_attr['SMILES'],
-                        Formula = struct_attr['Formula'],
-                        KEGG_Compound_ID = struct_attr['KEGG Compound ID'],
-                        KEGG_Drug_ID = struct_attr['KEGG Drug ID'],
-                        PubChem_Compound_ID = struct_attr['PubChem Compound ID'],
-                        PubChem_Substance_ID = struct_attr['PubChem Substance ID'],
-                        ChEBI_ID = struct_attr['ChEBI ID'],
-                        ChEMBL_ID = struct_attr['ChEMBL ID'],
-                        Drug_Type = drug_attr['Drug Type'],
-                        PharmGKB_ID = drug_attr['PharmGKB ID'],
-                        HET_ID = drug_attr['HET ID'],
-                    )
-                )
-
-    if addprotid:
-
-        identifiers_list = add_prot_id(user, passwd, pharma_active)
-        index = 0
-
-        for res_attr in result:
-
-            for iden_attr in identifiers_list:
-
-                if res_attr.DrugBank_ID == iden_attr.DrugBank_ID:
-
-                    result[index] = result[index]._replace(
-                        Target_UniProt_ID = iden_attr.Target_UniProt_ID,
-                        Transporter_UniProt_ID = iden_attr.Transporter_UniProt_ID,
-                        Enzym_UniProt_ID = iden_attr.Enzym_UniProt_ID,
-                        Carrier_UniProt_ID = iden_attr.Carrier_UniProt_ID,
-                    )
-
-                    break
-
-            index += 1
+        result.append(
+            DrugbankDrug(
+                drugbank = dbid,
+                name = struct['Name'],
+                type = drug.get('Drug Type', None),
+                groups = struct['Drug Groups'],
+                cas = struct['CAS Number'],
+                inchikey = struct['InChIKey'],
+                inchi = struct['InChI'],
+                smiles = struct['SMILES'],
+                formula = struct['Formula'],
+                kegg_compound = struct['KEGG Compound ID'],
+                kegg_drug = struct['KEGG Drug ID'],
+                pubchem_cid = struct['PubChem Compound ID'],
+                pubchem_sid = struct['PubChem Substance ID'],
+                chebi = struct['ChEBI ID'],
+                chembl = struct['ChEMBL ID'],
+                pharmgkb = drug.get('PharmGKB ID', None)
+                het = drug.get('HET ID', None),
+            )
+        )
 
     return result
