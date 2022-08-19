@@ -275,3 +275,47 @@ def drugbank_drugs(user: str, passwd: str) -> list[tuple] :
         )
 
     return result
+
+
+def drugbank_annotations(user: str, passwd: str):
+    """
+    Drug annotations from Drugbank.
+
+    The annotations are restricted to the drug molecule type and drug status.
+
+    Args:
+        user:
+            E-mail address with registered DrugBank account.
+        passwd:
+            Password for the DrugBank account.
+        pharma_active:
+            Only pharmacologically active interactions.
+
+    Returns:
+        List of drug annotations.
+    """
+
+    drugs = drugbank_drugs(user = user, passwd = passwd)
+
+    DrugbankAnnotation = collections.namedtuple(
+        'DrugbankAnnotation',
+        (
+            'type',
+            'status',
+        )
+    )
+
+    result = collections.defaultdict(set)
+
+    for d in drugs:
+
+        if d.pubchem_cid:
+
+            result[d.pubchem_cid].add(
+                DrugbankAnnotation(
+                    type = d.type,
+                    status = re.sub(',\s*', ';', d.groups),
+                )
+            )
+
+    return dict(result)
