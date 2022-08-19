@@ -23,6 +23,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from typing import Optional
+
 import re
 import csv
 import collections
@@ -37,7 +39,16 @@ _logger = session.Logger(name = 'drugbank_input')
 _log = _logger._log
 
 
-def _drugbank_download(user: str, passwd: str, *args, **kwargs):
+def _drugbank_credentials(
+        user: Optional[str] = None,
+        passwd: Optional[str] = None,
+    ) -> tuple[str, str]:
+    """
+
+    """
+
+
+def _drugbank_download(user: str, passwd: str, *args, **kwargs) -> curl.Curl:
 
     defaults = {
         'large': True,
@@ -186,7 +197,7 @@ def drugbank_interactions(
     return result
 
 
-def drugbank_drugs(user: str, passwd: str) -> list[tuple] :
+def drugbank_drugs(user: str, passwd: str) -> list[tuple]:
     """
     Retrieves drug identifiers from Drugbank.
 
@@ -277,7 +288,7 @@ def drugbank_drugs(user: str, passwd: str) -> list[tuple] :
     return result
 
 
-def drugbank_annotations(user: str, passwd: str):
+def drugbank_annotations(user: str, passwd: str) -> dict[str, set[tuple]]:
     """
     Drug annotations from Drugbank.
 
@@ -319,3 +330,9 @@ def drugbank_annotations(user: str, passwd: str):
             )
 
     return dict(result)
+
+
+def drugbank_mapping(user: str, passwd: str, ) -> dict[str, set[str]]:
+
+
+
