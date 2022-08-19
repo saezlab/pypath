@@ -1548,7 +1548,7 @@ urls = {
             'all-drug-links',
         'drug_target_identifiers' : 'https://go.drugbank.com/releases/'
             '5-1-9/downloads/target-all-polypeptide-ids',
-        'drug_enzym_identifiers' : 'https://go.drugbank.com/releases/5-1-9/'
+        'drug_enzyme_identifiers' : 'https://go.drugbank.com/releases/5-1-9/'
             'downloads/enzyme-all-polypeptide-ids',
         'drug_carrier_identifiers' : 'https://go.drugbank.com/releases/5-1-9/'
             'downloads/carrier-all-polypeptide-ids',
