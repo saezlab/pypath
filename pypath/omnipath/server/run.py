@@ -2866,7 +2866,8 @@ class TableServer(BaseServer):
             return tbl.to_csv(
                 sep = '\t',
                 index = False,
-                header = bool(req.args[b'header'])
+                header = bool(req.args[b'header']),
+                chunksize = 2e5,
             )
 
 
