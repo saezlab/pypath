@@ -66,6 +66,7 @@ def credentials(
 
     fields = ('user', 'passwd')
     kwargs.update(dict(zip(fields, args)))
+    kwargs = dict(it for kwargs.items() if it[1] is not None)
 
     if all(f in kwargs for f in fields):
 
