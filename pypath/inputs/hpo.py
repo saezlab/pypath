@@ -23,55 +23,43 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from typing import List, Dict
-
 import csv
 import collections
 
-import pypath.utils.mapping as map
+import pypath.utils.mapping as mapping
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.formats.obo as obo
 
-def hpo_gene_annotations() -> Dict[str, list]:
+
+def hpo_annotations() -> dict[str, set[str]]:
     """
-    Retrieves Gene-HPO relationships from HPO.
+    Human Phenotype Ontology annotations.
 
     Returns:
-        namedtuple.
+        Dict of proteins as keys and sets of HPO terms as values.
     """
 
     url = urls.urls['hpo']['gene']
     c = curl.Curl(url, large = True, silent = False)
+    _ = next(c.result)
 
-    gene = list(csv.DictReader(c.result, delimiter = ','))
+    result = collections.defaultdict(set)
 
-    fields = ('entrez_gene_id','entrez_gene_symbol','HPO_Term_ID')
+    for r in c.result:
 
-    HPOGeneAnnotations = collections.namedtuple('HPOGeneAnnotations', fields,defaults = ("",) * len(fields))
+        r = r.strip().split('\t')
 
-    annotations = collections.defaultdict(list)
+        uniprots = mapping.map_name(r[0], 'entrez', 'uniprot')
 
-    for rec in gene:
+        for uniprot in uniprots:
 
-        values = rec.values()
-        values = list(values)[0].replace('\t',',').split(',')
-        id = map.map_name(values[1], 'genesymbol', 'uniprot')
-        id = list(id)
+            result[uniprot].add(r[2])
 
-        if id:
+    return result
 
-            annotations[id[0]].append(
-                HPOGeneAnnotations(
-                    entrez_gene_id = values[0],
-                    entrez_gene_symbol = values[1],
-                    HPO_Term_ID = values[2],
-                    )
-            )
 
-    return annotations
-
-def hpo_disease_annotations() -> List[tuple] :
+def hpo_disease_annotations() -> list[tuple] :
     """
     Retrieves Disease-HPO relationships from HPO.
 
@@ -110,7 +98,8 @@ def hpo_disease_annotations() -> List[tuple] :
 
     return result
 
-def hpo_ontology() -> List[tuple] :
+
+def hpo_ontology() -> list[tuple] :
     """
     Retrieves ontology from HPO.
 
