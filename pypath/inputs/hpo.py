@@ -23,7 +23,9 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-import csv
+from typing import Union
+
+import re
 import collections
 
 import pypath.utils.mapping as mapping
@@ -59,122 +61,119 @@ def hpo_annotations() -> dict[str, set[str]]:
     return result
 
 
-def hpo_disease_annotations() -> list[tuple] :
+def hpo_terms() -> dict[str, str]:
     """
-    Retrieves Disease-HPO relationships from HPO.
+    Human Phenotype Ontology accession to term mapping.
+    """
+
+    return hpo_ontology()['terms']
+
+
+def hpo_diseases() -> dict[str, set[tuple]]:
+    """
+    HPO term-disease relationships from Human Phenotype Ontology.
 
     Returns:
-        namedtuple.
+        A set of disease records for each HPO term.
     """
 
     url = urls.urls['hpo']['disease']
     c = curl.Curl(url, large = True, silent = False)
 
-    disease = list(csv.DictReader(c.result, delimiter = '\t'))
+    HpoDisease = collections.namedtuple(
+        'HpoDisease',
+        (
+            'omim',
+            'name',
+            'pmid',
+            'evidence',
+            'onset',
+            'frequency',
+            'sex',
+            'modifier',
+            'aspect',
+        ),
+    )
 
-    fields = ('DatabaseID', 'DiseaseName', 'Qualifier', 'HPO_ID', 'Reference', 'Evidence', 'Aspect')
+    result = collections.defaultdict(set)
 
-    HPODiseaseAnnotations = collections.namedtuple('HPODiseaseAnnotations', fields,defaults = ("",) * len(fields))
+    for r in c.result:
 
-    result = []
+        if r[0] == '#': continue
 
-    for i in range(4,len(disease)):
+        r = r.split('\t')
 
-        values = disease[i].values()
-        values = list(values)
+        pmid = re.sub('^PMID:', '', r[4]) if r[4][:4] == 'PMID' else None
 
-        result.append(
-            HPODiseaseAnnotations(
-                DatabaseID = values[0],
-                DiseaseName = values[1][0],
-                Qualifier = values[1][1],
-                HPO_ID = values[1][2],
-                Reference = values[1][3],
-                Evidence = values[1][4],
-                Aspect = values[1][9],
-                )
+        result[r[3]].add(
+            HpoDisease(
+                omim = r[0],
+                name = r[1],
+                pmid = pmid,
+                evidence = r[5] or None,
+                onset = r[6] or None,
+                frequency = r[7] or None,
+                sex = r[8] or None,
+                modifier = r[9] or None,
+                aspect = r[10],
             )
+        )
+
+    return dict(result)
 
 
-    return result
-
-
-def hpo_ontology() -> list[tuple] :
+def hpo_ontology() -> dict[str, dict[str, Union[str, set[str]]]]:
     """
-    Retrieves ontology from HPO.
+    Ontology data from HPO.
 
     Returns:
-        namedtuple.
+        Five dictionaries with term names, term definitions, parents in the
+        ontology tree, term synonyms and cross references to other databases.
+        The dicts "terms" and "defs" are one-to-one, while "parents",
+        "synonyms" and "xrefs" are one-to-many mappings, the keys are always
+        HPO terms.
     """
 
     url = urls.urls['hpo']['ontology']
     reader = obo.Obo(url)
-    hpo_ontology = [i for i in reader]
 
+    result = {
+        'terms': {},
+        'defs': {},
+        'parents': collections.defaultdict(set),
+        'synonyms': collections.defaultdict(set),
+        'xrefs': collections.defaultdict(set),
+    }
 
-    fields = ('hpo_id','term_name','synonyms','xrefs','is_a')
+    for r in reader:
 
-    Ontology = collections.namedtuple('Ontology', fields,defaults = ("",) * len(fields))
+        if r.stanza != 'Term': continue
 
+        term = r.id.value
 
-    result = []
+        name = (r.name.value, r.name.modifiers)
+        name = ' '.join(n for n in name if n)
+        result['terms'][term] = name
 
-    for rec in hpo_ontology:
+        result['defs'][term] = r.definition.value if r.definition else None
 
-        syn_lst = []
-        xref_lst = []
-        isa_lst = []
+        for key, obokey in (
+            ('parents', 'is_a'),
+            ('synonyms', 'synonym'),
+            ('xrefs', 'xref'),
+        ):
 
-        if rec[2][1]:
-
-            name = rec[2][0] + " " + rec[2][1]
-
-        else:
-
-            name = rec[2][0]
-
-        result.append(
-            Ontology(
-                hpo_id = rec[1][0],
-                term_name = name,
-            )
-        )
-
-        if rec[5].get('synonym'):
-
-            synonym = list(rec[5].get('synonym'))
-
-            for i in synonym:
-
-                syn = i[0] + " " + i[1]
-                syn_lst.append(syn)
-
-            result[-1] = result[-1]._replace(
-                synonyms = syn_lst
+            proc = (
+                lambda x: tuple(x.split(':'))
+                    if key == 'xrefs' else
+                lambda x: x
             )
 
-        if rec[5].get('xref'):
-
-            xref = list(rec[5].get('xref'))
-
-            for i in xref:
-
-                xref_lst.append(i[0])
-
-            result[-1] = result[-1]._replace(
-                xrefs = xref_lst
+            result[key][term].update(
+                {
+                    proc(x.value)
+                    for x in r.attrs.get(obokey, ())
+                }
             )
 
-        if rec[5].get('is_a'):
-
-            is_a = list(rec[5].get('is_a'))
-
-            for i in is_a:
-
-                isa_lst.append(i[0] + " : " + i[2])
-
-            result[-1] = result[-1]._replace(
-                is_a = isa_lst
-            )
-
-    return result
+    return {k, dict(v) for k, v in result.items()}
