@@ -74,11 +74,12 @@ def credentials(
 
     else:
 
-        credentials = settings.get(f'{resource.lower()}_credentials')
+        settings_key = f'{resource.lower()}_credentials'
+        credentials = settings.get(settings_key)
 
         if not credentials:
 
-            secrets_fname = from_file
+            secrets_fname = from_file or settings_key
 
             if not os.path.exists(secrets_fname):
 
