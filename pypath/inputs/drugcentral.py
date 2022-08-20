@@ -27,58 +27,97 @@ import csv
 import collections
 
 import pypath.share.curl as curl
+import pypath.share.session as session
 import pypath.resources.urls as urls
-import pypath.share.common as common
+import pypath.utils.taxonomy as taxonomy
 
-def drug_central(
-        organism: str = "Homo sapiens",
-        SMILES: bool = False,
-        InChI: bool = False,
-        CAS_RN: bool = False,
-    ) -> list[tuple]:
+_logger = session.Logger(name = 'drugcentral_input')
+_log = _logger._log
+
+
+
+def drugcentral_drugs() -> list[tuple]:
     """
-    Retrieves drug-target interactions datasets from Drug Central.
-
-    Args:
-        organism (str): Which organism to use for processing.
-        SMILES (bool): Whether to include SMILES structures from Drug Central.
-        InChI (bool): Whether to include InChI formats and InChI keys from Drug Central.
-        CAS_RN (bool): Whether to include CAS Registry Number from Drug Central.
+    Drug names and structures from Drug Central.
 
     Returns:
-        namedtuple.
+        List of drugs, each represented by a named tuple.
+    """
+
+    DrugcentralDrug = collections.namedtuple(
+        'DrugcentralDrug',
+        (
+            'drugcentral',
+            'inn',
+            'cas',
+            'smiles',
+            'inchikey',
+            'inchi',
+        )
+    )
+
+    url = urls.urls['drugcentral']['SMILES_InChI']
+    c = curl.Curl(url, large = True, silent = False)
+    drugs = list(csv.DictReader(c.result, delimiter = '\t'))
+
+    result = [
+        DrugcentralDrug(
+            drugcentral = drug['ID'],
+            inn = drug['INN'],
+            cas = drug['CAS_RN'],
+            smiles = drug['SMILES'],
+            inchikey = drug['InChIKey'],
+            inchi = drug['InChI'],
+        )
+        for drug in drugs
+    ]
+
+    return result
+
+
+def drug_central(
+        organism: Union[str, int] = 'Homo sapiens',
+    ) -> list[tuple]:
+    """
+    Retrieves drug-target interactions from Drug Central.
+
+    Args:
+        organism:
+            Organism name or NCBI Taxonomy ID.
+
+    Returns:
+        List of drug-target relationships, represented as named tuples.
     """
 
     fields = (
-        'DRUG_NAME',
-        'TARGET_NAME',
-        'TARGET_CLASS',
-        'TARGET_ACCESSION',
-        'GENE',
-        'ACT_VALUE',
-        'ACT_TYPE',
-        'ACTION_TYPE',
-        'TDL',
-        'ORGANISM',
-        'SMILES',
-        'InChI',
-        'InChIKey',
-        'CAS_RN',
+        'drug',
+        'target',
+        'target_class',
+        'target_accession',
+        'gene',
+        'act_value',
+        'act_type',
+        'action_type',
+        'tdl',
+        'organism',
     )
 
     url = urls.urls['drugcentral']['interactions']
     c = curl.Curl(url, large = True, silent = False)
     interactions = list(csv.DictReader(c.result, delimiter = '\t'))
 
-    interactions = common.unique_list(interactions)
+    organism_latin = taxonomy.ensure_latin_name(organism)
+
+    if not organism_latin:
+
+        msg = f'Could not find latin name for organism: `{organism}`.'
+        _log(msg)
+
+        raise ValueError(msg)
 
     result = []
 
-    if SMILES == True or InChI == True or CAS_RN == True:
 
-        url = urls.urls['drugcentral']['SMILES_InChI']
-        c = curl.Curl(url, large = True, silent = False)
-        structures = list(csv.DictReader(c.result, delimiter = '\t'))
 
         temp_struct = []
 
