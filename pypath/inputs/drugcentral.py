@@ -23,17 +23,19 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from typing import Optional, Union
+
 import csv
 import collections
 
 import pypath.share.curl as curl
 import pypath.share.session as session
+import pypath.share.common as common
 import pypath.resources.urls as urls
 import pypath.utils.taxonomy as taxonomy
 
 _logger = session.Logger(name = 'drugcentral_input')
 _log = _logger._log
-
 
 
 def drugcentral_drugs() -> list[tuple]:
@@ -75,31 +77,40 @@ def drugcentral_drugs() -> list[tuple]:
     return result
 
 
-def drug_central(
-        organism: Union[str, int] = 'Homo sapiens',
+def drugcentral_interactions(
+        organism: Optional[Union[str, int]] = None,
+        comments: bool = False,
     ) -> list[tuple]:
     """
     Retrieves drug-target interactions from Drug Central.
 
     Args:
         organism:
-            Organism name or NCBI Taxonomy ID.
+            Organism name or NCBI Taxonomy ID. If not provided,
+            all organisms will be retained.
+        comments:
+            Include comments in the result.
 
     Returns:
         List of drug-target relationships, represented as named tuples.
     """
 
-    fields = (
-        'drug',
-        'target',
-        'target_class',
-        'target_accession',
-        'gene',
-        'act_value',
-        'act_type',
-        'action_type',
-        'tdl',
-        'organism',
+    DrugcentralInteraction = collections.namedtuple(
+        'DrugcentralInteraction',
+        (
+            'drug',
+            'drug_name',
+            'uniprot',
+            'target_type',
+            'canonical',
+            'act_value',
+            'act_type',
+            'relation',
+            'effect',
+            'tdl',
+            'organism',
+            'comment',
+        ),
     )
 
     url = urls.urls['drugcentral']['interactions']
@@ -108,156 +119,69 @@ def drug_central(
 
     organism_latin = taxonomy.ensure_latin_name(organism)
 
-    if not organism_latin:
+    if organism and not organism_latin:
 
         msg = f'Could not find latin name for organism: `{organism}`.'
         _log(msg)
 
-        raise ValueError(msg)
+    drugs = dict(
+        (d.drugcentral, d)
+        for d in drugcentral_drugs()
+    )
 
-    result = []
-
-
-
-        temp_struct = []
-
-        for rec in structures:
-
-            if rec not in temp_struct:
-
-                temp_struct.append(rec)
-
-        structures = temp_struct
-
-        if SMILES == True and InChI == True and CAS_RN == True:
-
-            InteractionsandStructures = collections.namedtuple('InteractionsandStructures', fields[0:], defaults = (None,) * len(fields))
-
-        elif SMILES == True and InChI == True and CAS_RN == False:
-
-            fields = fields[0:13]
-            InteractionsandStructures = collections.namedtuple('InteractionsandStructures', fields, defaults = (None,) * len(fields))
-
-        elif SMILES == True and InChI == False and CAS_RN == True:
-
-            fields = fields[0:11] + fields[13:]
-            InteractionsandStructures = collections.namedtuple('InteractionsandStructures', fields, defaults = (None,) * len(fields))
-
-        elif SMILES == True and InChI == False and CAS_RN == False:
-
-            fields = fields[0:11]
-            InteractionsandStructures = collections.namedtuple('InteractionsandStructures', fields, defaults = (None,) * len(fields))
-
-        elif SMILES == False and InChI == True and CAS_RN == True:
-
-            fields = fields[0:10] + fields[11:]
-            InteractionsandStructures = collections.namedtuple('InteractionsandStructures', fields, defaults = (None,) * len(fields))
-
-        elif SMILES == False and InChI == False and CAS_RN == True:
-
-            fields = fields[13:]
-            InteractionsandStructures = collections.namedtuple('InteractionsandStructures', fields, defaults = (None,) * len(fields))
-
-        elif SMILES == False and InChI == True and CAS_RN == False:
-
-            fields = fields[0:10] + fields[11:13]
-            InteractionsandStructures = collections.namedtuple('InteractionsandStructures', fields, defaults = (None,) * len(fields))
-
-        for inter_attr in interactions:
-
-            if organism == inter_attr['ORGANISM']:
-
-                result.append(
-                    InteractionsandStructures(
-                        DRUG_NAME = inter_attr['DRUG_NAME'],
-                        TARGET_NAME = inter_attr['TARGET_NAME'],
-                        TARGET_CLASS = inter_attr['TARGET_CLASS'],
-                        TARGET_ACCESSION = inter_attr['ACCESSION'],
-                        GENE = inter_attr['GENE'],
-                        ACT_VALUE = inter_attr['ACT_VALUE'],
-                        ACT_TYPE = inter_attr['ACT_TYPE'],
-                        ACTION_TYPE = inter_attr['ACTION_TYPE'],
-                        TDL = inter_attr['TDL'],
-                        ORGANISM = inter_attr['ORGANISM'],
-                        )
-                    )
-
-                for struct_attr in structures:
-
-                    if inter_attr['STRUCT_ID'] == struct_attr['ID']:
-
-                        if SMILES == True and InChI == True and CAS_RN == True:
-
-                            result[-1] = result[-1]._replace(
-                                SMILES = struct_attr['SMILES'],
-                                InChI = struct_attr['InChI'],
-                                InChIKey = struct_attr['InChIKey'],
-                                CAS_RN = struct_attr['CAS_RN'],
-                            )
-
-                        elif SMILES == True and InChI == True and CAS_RN == False:
-
-                            result[-1] = result[-1]._replace(
-                                SMILES = struct_attr['SMILES'],
-                                InChI = struct_attr['InChI'],
-                                InChIKey = struct_attr['InChIKey'],
-                            )
-
-                        elif SMILES == True and InChI == False and CAS_RN == True:
-
-                            result[-1] = result[-1]._replace(
-                                SMILES = struct_attr['SMILES'],
-                                CAS_RN = struct_attr['CAS_RN'],
-                            )
-
-                        elif SMILES == True and InChI == False and CAS_RN == False:
-
-                            result[-1] = result[-1]._replace(
-                                SMILES = struct_attr['SMILES'],
-                            )
-
-                        elif SMILES == False and InChI == True and CAS_RN == True:
-
-                            result[-1] = result[-1]._replace(
-                                InChI = struct_attr['InChI'],
-                                InChIKey = struct_attr['InChIKey'],
-                                CAS_RN = struct_attr['CAS_RN'],
-                            )
-
-                        elif SMILES == False and InChI == False and CAS_RN == True:
-
-                            result[-1] = result[-1]._replace(
-                                CAS_RN = struct_attr['CAS_RN'],
-                            )
-
-                        elif SMILES == False and InChI == True and CAS_RN == False:
-
-                            result[-1] = result[-1]._replace(
-                                InChI = struct_attr['InChI'],
-                                InChIKey = struct_attr['InChIKey'],
-                            )
-
-    else:
-
-        DrugTargetInteractions = collections.namedtuple('DrugTargetInteractions', fields[0:10])
-
-        for inter_attr in interactions:
-
-            if organism == inter_attr['ORGANISM']:
-
-                result.append(
-                    DrugTargetInteractions(
-                        DRUG_NAME = inter_attr['DRUG_NAME'],
-                        TARGET_NAME = inter_attr['TARGET_NAME'],
-                        TARGET_CLASS = inter_attr['TARGET_CLASS'],
-                        TARGET_ACCESSION = inter_attr['ACCESSION'],
-                        GENE = inter_attr['GENE'],
-                        ACT_VALUE = inter_attr['ACT_VALUE'],
-                        ACT_TYPE = inter_attr['ACT_TYPE'],
-                        ACTION_TYPE = inter_attr['ACTION_TYPE'],
-                        TDL = inter_attr['TDL'],
-                        ORGANISM = inter_attr['ORGANISM'],
-                    )
-                )
+    result = [
+        DrugcentralInteraction(
+            drug = drugs.get(i['STRUCT_ID'], None),
+            drug_name = i['DRUG_NAME'],
+            uniprot = uniprot,
+            target_type = i['TARGET_CLASS'],
+            canonical = i['MOA'] == '1',
+            act_value = common.try_float(i['ACT_VALUE']) or None,
+            act_type = i['ACT_TYPE'],
+            relation = i['RELATION'] or None, # what is relation??
+            effect = i['ACTION_TYPE'] or None,
+            tdl = i['TDL'],
+            organism = i['ORGANISM'],
+            comment = i['ACT_COMMENT'] if comments else None,
+        )
+        for i in interactions
+        for uniprot in i['ACCESSION'].split('|')
+        if not organism_latin or i['ORGANISM'] == organism_latin
+    ]
 
     return result
+
+
+def drugcentral_mapping(
+        id_type: str,
+        target_id_type: str,
+    ) -> dict[str, set[str]]:
+    """
+    Identifier translation table from Drug Central.
+
+    Available ID types: drugcentral, inn, cas, smiles, inchikey, inchi.
+
+    Args:
+        id_type:
+            The identifier type to be used as keys.
+        target_id_type:
+            The identifier type that will be collected into the values.
+
+    Returns:
+        An identifier translation table.
+    """
+
+    drugs = drugcentral_drugs()
+
+    result = collections.defaultdict(set)
+
+    for d in drugs:
+
+        the_id = getattr(d, id_type)
+        target_id = getattr(d, target_id_type)
+
+        if the_id and target_id:
+
+            result[the_id].add(target_id)
+
+    return dict(result)
