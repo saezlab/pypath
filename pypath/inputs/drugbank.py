@@ -34,6 +34,7 @@ import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.share.session as session
 import pypath.share.settings as settings
+import pypath.inputs.credentials as credentials
 
 _logger = session.Logger(name = 'drugbank_input')
 _log = _logger._log
@@ -42,13 +43,38 @@ _log = _logger._log
 def _drugbank_credentials(
         user: Optional[str] = None,
         passwd: Optional[str] = None,
+        credentials_fname: Optional[str] = None,
     ) -> tuple[str, str]:
-    """
 
-    """
+    return credentials.credentials(
+        user = user,
+        passwd = passwd,
+        resource = 'DrugBank',
+        from_file = credentials_fname,
+    )
 
 
-def _drugbank_download(user: str, passwd: str, *args, **kwargs) -> curl.Curl:
+def _drugbank_download(
+        *args,
+        user: Optional[str] = None,
+        passwd: Optional[str] = None,
+        credentials_fname: Optional[str] = None,
+        **kwargs
+    ) -> Optional[curl.Curl]:
+
+    try:
+
+        cred = _drugbank_credentials(
+            user = user,
+            passwd = passwd,
+            credentials_fname = credentials_fname,
+        )
+
+    except RuntimeError:
+
+        _log('No credentials available for the DrugBank website.')
+
+        return None
 
     defaults = {
         'large': True,
@@ -58,7 +84,7 @@ def _drugbank_download(user: str, passwd: str, *args, **kwargs) -> curl.Curl:
 
     defaults.update(kwargs)
 
-    auth_str = base64.b64encode(f"{user}:{passwd}".encode())
+    auth_str = base64.b64encode(f"{cred['user']}:{cred['passwd']}".encode())
 
     defaults['req_headers'] = [
         f'Authorization: Basic {auth.decode()}',
@@ -69,8 +95,9 @@ def _drugbank_download(user: str, passwd: str, *args, **kwargs) -> curl.Curl:
 
 
 def drugbank_raw_interactions(
-        user: str,
-        passwd: str,
+        user: Optional[str] = None,
+        passwd: Optional[str] = None,
+        credentials_fname: Optional[str] = None,
         pharma_active: bool = False,
     ) -> list[tuple] :
     """
@@ -112,8 +139,11 @@ def drugbank_raw_interactions(
             url = url,
             user = user,
             passwd = passwd,
+            credentials_fname = credentials_fname,
             files_needed = (csv_name,),
         )
+
+        if not c: continue
 
         _ = next(c.result[csv_name])
 
@@ -134,8 +164,9 @@ def drugbank_raw_interactions(
 
 
 def drugbank_interactions(
-        user: str,
-        passwd: str,
+        user: Optional[str] = None,
+        passwd: Optional[str] = None,
+        credentials_fname: Optional[str] = None,
         pharma_active: bool = False,
     ) -> list[tuple] :
     """
@@ -157,6 +188,7 @@ def drugbank_interactions(
         user = user,
         passwd = passwd,
         harma_active = pharma_active,
+        credentials_fname = credentials_fname,
     )
 
     drugs = dict(
@@ -197,7 +229,11 @@ def drugbank_interactions(
     return result
 
 
-def drugbank_drugs(user: str, passwd: str) -> list[tuple]:
+def drugbank_drugs(
+        user: Optional[str] = None,
+        passwd: Optional[str] = None,
+        credentials_fname: Optional[str] = None,
+    ) -> list[tuple]:
     """
     Retrieves drug identifiers from Drugbank.
 
@@ -243,8 +279,11 @@ def drugbank_drugs(user: str, passwd: str) -> list[tuple]:
             url = urls.urls['drugbank'][f'all_{table}s'],
             user = user,
             passwd = passwd,
+            credentials_fname = credentials_fname,
             files_needed = (csv,),
         )
+
+        if not c: continue
 
         raw[table] = dict(
             (rec['DrugBank ID'], rec)
@@ -288,7 +327,11 @@ def drugbank_drugs(user: str, passwd: str) -> list[tuple]:
     return result
 
 
-def drugbank_annotations(user: str, passwd: str) -> dict[str, set[tuple]]:
+def drugbank_annotations(
+        user: Optional[str] = None,
+        passwd: Optional[str] = None,
+        credentials_fname: Optional[str] = None,
+    ) -> dict[str, set[tuple]]:
     """
     Drug annotations from Drugbank.
 
@@ -299,14 +342,16 @@ def drugbank_annotations(user: str, passwd: str) -> dict[str, set[tuple]]:
             E-mail address with registered DrugBank account.
         passwd:
             Password for the DrugBank account.
-        pharma_active:
-            Only pharmacologically active interactions.
 
     Returns:
         List of drug annotations.
     """
 
-    drugs = drugbank_drugs(user = user, passwd = passwd)
+    drugs = drugbank_drugs(
+        user = user,
+        passwd = passwd
+        credentials_fname = credentials_fname,
+    )
 
     DrugbankAnnotation = collections.namedtuple(
         'DrugbankAnnotation',
@@ -332,7 +377,67 @@ def drugbank_annotations(user: str, passwd: str) -> dict[str, set[tuple]]:
     return dict(result)
 
 
-def drugbank_mapping(user: str, passwd: str, ) -> dict[str, set[str]]:
+def drugbank_mapping(
+        id_type: str,
+        target_id_type: str,
+        user: Optional[str] = None,
+        passwd: Optional[str] = None,
+        credentials_fname: Optional[str] = None,
+    ) -> dict[str, set[str]]:
+    """
+    Identifier translation table from DrugBank.
+
+    Available ID types: drugbank, name, type, groups, cas, inchikey,
+    inchi, smiles, formula, kegg_compound, kegg_drug, pubchem_cid,
+    pubchem_sid, chebi, chembl, pharmgkb, het.
+
+    Args:
+        id_type:
+            The identifier type to be used as keys.
+        target_id_type:
+            The identifier type that will be collected into the values.
+        user:
+            E-mail address with registered DrugBank account.
+        passwd:
+            Password for the DrugBank account.
+        credentials_fname:
+            File name or path to a file with DrugBank login credentials.
+
+    Returns:
+        An identifier translation table.
+    """
+
+    synonyms = {
+        'pubchem_compound': 'pubchem_cid',
+        'pubchem_substance': 'pubchem_sid',
+    }
 
 
+    def id_type_proc(_id_type):
 
+        _id_type = re.sub('[^cs]id$', '', _id_type.lower()).replace(' ', '_')
+
+        return synonyms.get(_id_type, _id_type)
+
+
+    drugs = drugbank_drugs(
+        user = user,
+        passwd = passwd
+        credentials_fname = credentials_fname,
+    )
+
+    result = collections.defaultdict(set)
+
+    id_type = id_type_proc(id_type)
+    target_id_type = id_type_proc(id_type)
+
+    for d in drugs:
+
+        the_id = getattr(d, id_type)
+        target_id = getattr(d, target_id_type)
+
+        if the_id and target_id:
+
+            result[the_id].add(target_id)
+
+    return dict(result)
