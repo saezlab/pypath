@@ -27,7 +27,7 @@ from typing import Optional
 import os
 
 import pypath.share.settings as settings
-import pypath.share.settings as session
+import pypath.share.session as session
 
 _logger = session.Logger(name = 'credentials')
 _log = _logger._log
