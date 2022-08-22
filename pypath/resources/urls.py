@@ -1544,7 +1544,7 @@ urls = {
         'label': 'DrugBank database',
         'all_structures': 'https://go.drugbank.com/releases/5-1-9/'
             'downloads/all-structure-links',
-        'all_drug': 'https://go.drugbank.com/releases/5-1-9/downloads/'
+        'all_drugs': 'https://go.drugbank.com/releases/5-1-9/downloads/'
             'all-drug-links',
         'drug_target_identifiers' : 'https://go.drugbank.com/releases/'
             '5-1-9/downloads/target-all-polypeptide-ids',
