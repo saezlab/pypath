@@ -31,7 +31,7 @@ schema.
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any, Generator, Optional
 
 import os
 import yaml
@@ -60,9 +60,6 @@ class BiocypherAdapter(_session.Logger):
             Neo4j user name.
         db_passwd:
             Password of the Neo4j user.
-        config:
-            Path to a YAML config file which provides the URI, user name
-            and password.
         network:
             A network database object.
         wipe:
@@ -87,7 +84,6 @@ class BiocypherAdapter(_session.Logger):
             db_uri: Optional[str] = None,
             db_user: Optional[str] = None,
             db_passwd: Optional[str] = None,
-            config: Optional[str] = None,
             wipe: bool = False,
             offline: bool = False,
             network: Optional[pypath.core.network.Network] = None,
@@ -102,7 +98,6 @@ class BiocypherAdapter(_session.Logger):
             db_uri = db_uri,
             db_user = db_user,
             db_passwd = db_passwd,
-            config = config,
             wipe=wipe,
             offline=offline,
             **kwargs
@@ -168,7 +163,7 @@ class BiocypherAdapter(_session.Logger):
     def translate_python_object_to_neo4j(
             self,
             network: Optional[pypath.core.network.Network] = None,
-        ):
+        ) -> Generator[tuple, None, None]:
         """
         Loads a pypath network into the biocypher (Neo4j) backend.
 
