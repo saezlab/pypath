@@ -87,7 +87,7 @@ def _drugbank_download(
     auth_str = base64.b64encode(f"{cred['user']}:{cred['passwd']}".encode())
 
     defaults['req_headers'] = [
-        f'Authorization: Basic {auth.decode()}',
+        f'Authorization: Basic {auth_str.decode()}',
         settings.get('user_agent'),
     ]
 
@@ -149,11 +149,13 @@ def drugbank_raw_interactions(
 
         for l in c.result[csv_name]:
 
-            drugs, uniprot = l.strip().split(',')
+            drugs, uniprot = l.strip().split(',')[-1], l.strip().split(',')[5]
+
+            drugs = drugs.strip().split(';')
 
             result.extend(
                 DrugbankRawInteraction(
-                    drugbank_id = drug,
+                    drugbank_id = drug.strip(),
                     uniprot_id = uniprot,
                     relation = rel,
                 )
@@ -187,7 +189,7 @@ def drugbank_interactions(
     raw = drugbank_raw_interactions(
         user = user,
         passwd = passwd,
-        harma_active = pharma_active,
+        pharma_active = pharma_active,
         credentials_fname = credentials_fname,
     )
 
@@ -349,7 +351,7 @@ def drugbank_annotations(
 
     drugs = drugbank_drugs(
         user = user,
-        passwd = passwd
+        passwd = passwd,
         credentials_fname = credentials_fname,
     )
 
@@ -422,7 +424,7 @@ def drugbank_mapping(
 
     drugs = drugbank_drugs(
         user = user,
-        passwd = passwd
+        passwd = passwd,
         credentials_fname = credentials_fname,
     )
 
