@@ -37,16 +37,18 @@ Todo:
 """
 
 import sys
+
 sys.path.append('') # fix weird poetry behaviour that I don't understand
 
 import pypath.biocypher.adapter as adapter
+
 
 def bc_write_online():
     # Instantiating the adapter class.
     # We are creating a new database, so we wipe and initialise the 
     # local Neo4j instance. Set `wipe = False` if you want to update an 
     # existing BioCypher graph.
-    bcy_adapter = adapter.BiocypherAdapter(wipe=True)
+    bcy_adapter = adapter.BiocypherAdapter(db_name = "test", wipe=True)
 
     # Build a pypath network database:
     bcy_adapter.build_python_object()
@@ -78,7 +80,9 @@ if __name__ == '__main__':
     write_offline = True # whether to write CSVs for admin import function
 
     if profile:
-        import cProfile, pstats, io
+        import cProfile
+        import io
+        import pstats
         profile = cProfile.Profile()
         profile.enable()
 
