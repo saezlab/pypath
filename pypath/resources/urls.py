@@ -30,7 +30,7 @@ import pypath.share.settings as settings
 urls = {
     'uniprot_pdb': {
         'label': 'Getting PDB IDs of 3D structures for UniProtIDs',
-        'url': 'http://www.uniprot.org/docs/pdbtosp.txt'
+        'url': 'https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/docs/pdbtosp.txt'
     },
     'uniprot_basic': {
         'label': 'URL for UniProt queries',
@@ -48,7 +48,7 @@ urls = {
             'knowledgebase/complete/docs/speindex.txt',
         'taxids': 'https://www.uniprot.org/taxonomy/?query='
             '*&format=tab&force=true&columns=id&compress=yes',
-        'speclist': 'https://www.uniprot.org/docs/speclist.txt',
+        'speclist': 'https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/docs/speclist.txt',
     },
     'corum': {
         'label':
@@ -1089,16 +1089,15 @@ urls = {
     },
     'cellphonedb_git': {
         'label': 'Intercellular communication database from Teichmann lab',
-        'proteins': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb/master/cellphonedb/src/core/data/protein_input.csv',
-        'complexes': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb/master/cellphonedb/src/core/data/complex_input.csv',
-        'interactions': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb/master/cellphonedb/src/core/data/'\
-            'interaction_input.csv',
-        'curated': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb-data/data/sources/interaction_curated.csv',
-        'negative': 'https://raw.githubusercontent.com/Teichlab/'\
+        'proteins': 'https://raw.githubusercontent.com/ventolab/'\
+            'cellphonedb-data/master/data/protein_input.csv',
+        'complexes': 'https://raw.githubusercontent.com/ventolab/'\
+            'cellphonedb-data/master/data/complex_input.csv',
+        'interactions': 'https://raw.githubusercontent.com/ventolab/'\
+            'cellphonedb-data/master/data/interaction_input.csv',
+        'curated': 'https://raw.githubusercontent.com/ventolab/'\
+            'cellphonedb-data/master/data/sources/interaction_curated.csv',
+        'negative': 'https://raw.githubusercontent.com/ventolab/'\
             'cellphonedb-data/master/data/sources/excluded_interaction.csv',
     },
     'stitch': {
@@ -1459,7 +1458,7 @@ urls = {
     },
     'unichem': {
         'label': 'Mapping between drug compound IDs',
-        'sources': 'https://www.ebi.ac.uk/unichem/ucquery/listSources',
+        'sources': 'https://www.ebi.ac.uk/unichem/legacy/ucquery/listSources',
         'mapping': 'ftp://ftp.ebi.ac.uk/pub/databases/chembl/UniChem/data/'
             'wholeSourceMapping/src_id%s/src%ssrc%s.txt.gz',
     },
@@ -1531,6 +1530,11 @@ urls = {
         'entries': 'https://ftp.ebi.ac.uk/pub/databases/interpro/interpro.xml.gz',
         'annotations': 'https://www.ebi.ac.uk/interpro/api/entry/InterPro/protein/'
             '%s/taxonomy/uniprot/%u?page_size=%u',
+    },
+    'drugcentral': {
+        'label': 'Drug-target interactions',
+        'interactions': 'https://unmtid-shinyapps.net/download/DrugCentral/2021_09_01/drug.target.interaction.tsv.gz',
+        'SMILES_InChI' : 'https://unmtid-shinyapps.net/download/DrugCentral/2021_09_01/structures.smiles.tsv',
     },
 }
 
