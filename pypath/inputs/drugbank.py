@@ -23,7 +23,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from typing import Optional
+from typing import Optional, Tuple, List, Set, Dict
 
 import re
 import csv
@@ -44,7 +44,7 @@ def _drugbank_credentials(
         user: Optional[str] = None,
         passwd: Optional[str] = None,
         credentials_fname: Optional[str] = None,
-    ) -> tuple[str, str]:
+    ) -> Tuple[str, str]:
 
     return credentials.credentials(
         user = user,
@@ -99,7 +99,7 @@ def drugbank_raw_interactions(
         passwd: Optional[str] = None,
         credentials_fname: Optional[str] = None,
         pharma_active: bool = False,
-    ) -> list[tuple] :
+    ) -> List[tuple] :
     """
     Retrieves protein identifiers from Drugbank.
 
@@ -170,7 +170,7 @@ def drugbank_interactions(
         passwd: Optional[str] = None,
         credentials_fname: Optional[str] = None,
         pharma_active: bool = False,
-    ) -> list[tuple] :
+    ) -> List[tuple] :
     """
     Drug-protein and protein-drug interactions from Drugbank.
 
@@ -222,8 +222,8 @@ def drugbank_interactions(
 
             result.append(
                 DrugbankInteraction(
-                    *src_tgt(r.uniprot_id, drug.pubchem_cid),
-                    *src_tgt('protein', 'drug'),
+                    *src_tgt((r.uniprot_id, drug.pubchem_cid)),
+                    *src_tgt(('protein', 'drug')),
                     interaction_type = r.relation,
                 )
             )
@@ -235,7 +235,7 @@ def drugbank_drugs(
         user: Optional[str] = None,
         passwd: Optional[str] = None,
         credentials_fname: Optional[str] = None,
-    ) -> list[tuple]:
+    ) -> List[tuple]:
     """
     Retrieves drug identifiers from Drugbank.
 
@@ -275,21 +275,21 @@ def drugbank_drugs(
 
     for table in ('drug', 'structure'):
 
-        csv = f'{table} links.csv'
+        csv_ = f'{table} links.csv'
 
         c = _drugbank_download(
             url = urls.urls['drugbank'][f'all_{table}s'],
             user = user,
             passwd = passwd,
             credentials_fname = credentials_fname,
-            files_needed = (csv,),
+            files_needed = (csv_,),
         )
 
         if not c: continue
 
         raw[table] = dict(
             (rec['DrugBank ID'], rec)
-            for rec in csv.DictReader(c.result[csv], delimiter = ',')
+            for rec in csv.DictReader(c.result[csv_], delimiter = ',')
         )
 
     DrugbankDrug = collections.namedtuple(
@@ -321,7 +321,7 @@ def drugbank_drugs(
                 pubchem_sid = struct['PubChem Substance ID'],
                 chebi = struct['ChEBI ID'],
                 chembl = struct['ChEMBL ID'],
-                pharmgkb = drug.get('PharmGKB ID', None)
+                pharmgkb = drug.get('PharmGKB ID', None),
                 het = drug.get('HET ID', None),
             )
         )
@@ -333,7 +333,7 @@ def drugbank_annotations(
         user: Optional[str] = None,
         passwd: Optional[str] = None,
         credentials_fname: Optional[str] = None,
-    ) -> dict[str, set[tuple]]:
+    ) -> Dict[str, Set[tuple]]:
     """
     Drug annotations from Drugbank.
 
@@ -385,13 +385,13 @@ def drugbank_mapping(
         user: Optional[str] = None,
         passwd: Optional[str] = None,
         credentials_fname: Optional[str] = None,
-    ) -> dict[str, set[str]]:
+    ) -> Dict[str, Set[str]]:
     """
     Identifier translation table from DrugBank.
 
     Available ID types: drugbank, name, type, groups, cas, inchikey,
-    inchi, smiles, formula, kegg_compound, kegg_drug, pubchem_cid,
-    pubchem_sid, chebi, chembl, pharmgkb, het.
+    inchi, smiles, formula, kegg_compound, kegg_drug, pubchem_compound,
+    pubchem_substance, chebi, chembl, pharmgkb, het.
 
     Args:
         id_type:
@@ -431,7 +431,7 @@ def drugbank_mapping(
     result = collections.defaultdict(set)
 
     id_type = id_type_proc(id_type)
-    target_id_type = id_type_proc(id_type)
+    target_id_type = id_type_proc(target_id_type)
 
     for d in drugs:
 

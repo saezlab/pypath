@@ -22,7 +22,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from typing import Optional
+from typing import Optional, Tuple, Dict
 
 import os
 
@@ -34,10 +34,10 @@ _log = _logger._log
 
 
 def credentials(
-        *args: tuple[str, str],
+        *args: Tuple[str, str],
         resource: Optional[str] = None,
         from_file: Optional[str] = None,
-        **kwargs: dict[str, str],
+        **kwargs: Dict[str, str],
     ) -> dict:
     """
     Credentials required for restricted access resources.
@@ -66,7 +66,7 @@ def credentials(
 
     fields = ('user', 'passwd')
     kwargs.update(dict(zip(fields, args)))
-    kwargs = dict(it for kwargs.items() if it[1] is not None)
+    kwargs = dict(it for it in kwargs.items() if it[1] is not None)
 
     if all(f in kwargs for f in fields):
 
