@@ -23,7 +23,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from typing import Optional, Tuple, List, Set, Dict
+from typing import Optional
 
 import re
 import csv
@@ -44,7 +44,7 @@ def _drugbank_credentials(
         user: Optional[str] = None,
         passwd: Optional[str] = None,
         credentials_fname: Optional[str] = None,
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
 
     return credentials.credentials(
         user = user,
@@ -99,7 +99,7 @@ def drugbank_raw_interactions(
         passwd: Optional[str] = None,
         credentials_fname: Optional[str] = None,
         pharma_active: bool = False,
-    ) -> List[tuple] :
+    ) -> list[tuple] :
     """
     Retrieves protein identifiers from Drugbank.
 
@@ -170,7 +170,7 @@ def drugbank_interactions(
         passwd: Optional[str] = None,
         credentials_fname: Optional[str] = None,
         pharma_active: bool = False,
-    ) -> List[tuple] :
+    ) -> list[tuple] :
     """
     Drug-protein and protein-drug interactions from Drugbank.
 
@@ -235,7 +235,7 @@ def drugbank_drugs(
         user: Optional[str] = None,
         passwd: Optional[str] = None,
         credentials_fname: Optional[str] = None,
-    ) -> List[tuple]:
+    ) -> list[tuple]:
     """
     Retrieves drug identifiers from Drugbank.
 
@@ -333,7 +333,7 @@ def drugbank_annotations(
         user: Optional[str] = None,
         passwd: Optional[str] = None,
         credentials_fname: Optional[str] = None,
-    ) -> Dict[str, Set[tuple]]:
+    ) -> dict[str, set[tuple]]:
     """
     Drug annotations from Drugbank.
 
@@ -385,7 +385,7 @@ def drugbank_mapping(
         user: Optional[str] = None,
         passwd: Optional[str] = None,
         credentials_fname: Optional[str] = None,
-    ) -> Dict[str, Set[str]]:
+    ) -> dict[str, set[str]]:
     """
     Identifier translation table from DrugBank.
 
