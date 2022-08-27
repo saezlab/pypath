@@ -22,7 +22,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from typing import Optional, Tuple, Dict
+from typing import Optional
 
 import os
 
@@ -34,10 +34,10 @@ _log = _logger._log
 
 
 def credentials(
-        *args: Tuple[str, str],
+        *args: tuple[str, str],
         resource: Optional[str] = None,
         from_file: Optional[str] = None,
-        **kwargs: Dict[str, str],
+        **kwargs: dict[str, str],
     ) -> dict:
     """
     Credentials required for restricted access resources.
