@@ -82,7 +82,7 @@ def chembl_targets() -> list[tuple]:
             ChemblTarget(
                 accession = (
                     tgt['target_components'][0]['accession']
-                        if 'target_components' in tgt else
+                        if tgt['target_components'] else
                     None
                 ),
                 target_chembl_id = tgt['target_chembl_id'],
@@ -165,8 +165,16 @@ def chembl_molecules() -> list[tuple]:
     """
 
     def _get(mol, key0, key1):
-
-        return mol.get(f'molecule_{key0}', {}).get(key1, None)
+    
+        molecule_properties = mol.get(f'molecule_{key0}', {})
+        
+        if molecule_properties:
+        
+            return molecule_properties.get(key1, None)
+            
+        else:
+        
+            return None
 
 
     fields_molecule = (
@@ -205,7 +213,7 @@ def chembl_molecules() -> list[tuple]:
 
             url = (
                 f"{urls.urls['chembl']['url']}"
-                f"{lst['page_meta']['next']}"
+                f"{page_dct['page_meta']['next']}"
             )
 
         else:
@@ -253,9 +261,9 @@ def chembl_molecules() -> list[tuple]:
 
 
 def chembl_activities(
-        pchembl_value_none: bool = False,
         #TODO: are these below all the allowed values?
         standard_relation: Literal['=', '>', '<', '>=', '<='],
+        pchembl_value_none: bool = False,
     ) -> list[tuple] :
     """
     Retrieves activities data from ChEMBL.
@@ -295,7 +303,7 @@ def chembl_activities(
 
     while True:
 
-        if not page_lst:
+        if not page_dct:
 
 
             url = (
@@ -309,7 +317,7 @@ def chembl_activities(
 
             url = (
                 f"{urls.urls['chembl']['url']}"
-                f"{lst['page_meta']['next']}"
+                f"{page_dct['page_meta']['next']}"
             )
 
         else:
