@@ -1,3 +1,0 @@
-[submodule "dev/biocypher"]
-	path = dev/biocypher
-	url = git@github.com:saezlab/biocypher.git

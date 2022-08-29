@@ -199,7 +199,7 @@ aaletters = dict(zip(aacodes.values(), aacodes.keys()))
 simple_types = (int, long, float, str, unicode, bytes, bool, type(None))
 numeric_types = (int, long, float)
 char_types = (str, unicode, bytes)
-list_like = (tuple, set, list)
+list_like = (tuple, set, list, frozenset)
 
 
 refloat = re.compile(r'\s*-?\s*[\s\.\d]+\s*')

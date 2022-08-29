@@ -76,8 +76,10 @@ def biogrid_interactions(
                     l[17].startswith('Low') or
                     not ltp
                 ) and (
-                    l[15] == organism and
-                    l[16] == organism
+                    organism == 'None' or (
+                        l[15] == organism and
+                        l[16] == organism
+                    )
                 )
             ):
 
@@ -155,8 +157,10 @@ def biogrid_all_interactions(
                     l[17].startswith('Low') or
                     not ltp
                 ) and (
-                    l[15] == organism and
-                    l[16] == organism
+                    organism == 'None' or (
+                        l[15] == organism and
+                        l[16] == organism
+                    )
                 )
             ):
 

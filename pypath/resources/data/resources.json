@@ -4605,5 +4605,16 @@
       "webpages":["https://www.ebi.ac.uk/interpro/"],
       "articles": ["https://doi.org/10.1093/nar/gkaa977"]
     }
+  },
+  "DrugCentral": {
+    "full_name": "Drug Central",
+    "license": "CC BY-SA 4.0",
+    "urls": {
+      "webpages": ["https://drugcentral.org/"],
+      "articles": [
+        "https://academic.oup.com/nar/article/45/D1/D932/2333938",
+        "https://academic.oup.com/nar/article/49/D1/D1160/5957163?login=false"
+      ]
+    }
   }
 }
