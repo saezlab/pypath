@@ -28,9 +28,9 @@ Package metadata (version, authors, etc).
 
 __all__ = ['get_metadata']
 
+import importlib.metadata
 import os
 import pathlib
-import importlib.metadata
 
 import toml
 

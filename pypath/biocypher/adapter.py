@@ -23,10 +23,11 @@ import biocypher
 import yaml
 
 import pypath.core.network as pypath_network
+import pypath.omnipath as op
 import pypath.resources.network as pypath_netres
 import pypath.share.session as _session
-import pypath.omnipath as op
-from pypath.core import annot, complex
+from pypath.core import annot
+from pypath.core import complex as cmplx
 
 
 class BiocypherAdapter(_session.Logger):
@@ -121,7 +122,7 @@ class BiocypherAdapter(_session.Logger):
             "mirna_target", # direct literature curated miRNA-target interaction
             "tf_mirna", # direct literature curated TF-miRNA interaction
             "lncrna_target", # direct literature curated lncRNA-target interaction
-            "ligand_receptor" # all ligand receptor interactions, with and without literature references
+            "ligand_receptor", # all ligand receptor interactions, with and without literature references
             "small_molecule_protein", # all small molecule-protein interactions, with and without literature references 
         ]
         for net in networks_literal:
@@ -131,7 +132,7 @@ class BiocypherAdapter(_session.Logger):
 
 
         ### complexes
-        for cls in complex.complex_resources:
+        for cls in cmplx.complex_resources:
             # each resource annotates complexes
             complex_db = getattr(complex, cls)()
 
