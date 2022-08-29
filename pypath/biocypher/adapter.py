@@ -31,14 +31,15 @@ schema.
 
 from __future__ import annotations
 
-from typing import Any, Generator, Optional
-
 import importlib as imp
 import os
+from typing import Any, Generator, Optional
 
 import biocypher
+import neo4j_utils
 import yaml
 
+import pypath
 import pypath.core.network as pypath_network
 import pypath.omnipath as op
 import pypath.resources.network as pypath_netres
