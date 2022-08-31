@@ -6922,7 +6922,7 @@ class HPO(AnnotationBase):
             self,
             name = 'HPO',
             ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
-            input_method = 'hpo.hpo_gene_annotations',
+            input_method = 'hpo.hpo_annotations',
             **kwargs
         )
 
