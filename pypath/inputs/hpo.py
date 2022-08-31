@@ -34,17 +34,21 @@ import pypath.resources.urls as urls
 import pypath.formats.obo as obo
 
 
-def hpo_annotations() -> dict[str, set[str]]:
+def hpo_annotations() -> dict[str, set[tuple]]:
     """
     Human Phenotype Ontology annotations.
 
     Returns:
-        Dict of proteins as keys and sets of HPO terms as values.
+        Dict of proteins as keys and sets of HPO annotations as values.
     """
 
     url = urls.urls['hpo']['gene']
     c = curl.Curl(url, large = True, silent = False)
     _ = next(c.result)
+    
+    fields = ('entrez_gene_id','entrez_gene_symbol','hpo_id')
+
+    HPOAnnotations = collections.namedtuple('HPOAnnotations', fields,defaults = ("",) * len(fields))
 
     result = collections.defaultdict(set)
 
@@ -56,7 +60,13 @@ def hpo_annotations() -> dict[str, set[str]]:
 
         for uniprot in uniprots:
 
-            result[uniprot].add(r[2])
+            result[uniprot].add(
+                HPOAnnotations(
+                    entrez_gene_id = r[0],
+                    entrez_gene_symbol = r[1],
+                    hpo_id = r[2],
+                    )
+            )
 
     return result
 
