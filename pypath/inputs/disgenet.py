@@ -2088,7 +2088,7 @@ def disease_id_mappings() -> dict[str, NamedTuple(
 
         mapping[key] = DiseaseIdMapping(
             value['name'],
-            value['vocabularies'],
+            tuple(value['vocabularies']),
         )
 
     return mapping
