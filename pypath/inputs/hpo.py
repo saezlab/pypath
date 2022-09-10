@@ -96,6 +96,7 @@ def hpo_diseases() -> dict[str, set[tuple]]:
             'omim',
             'name',
             'pmid',
+            'qualifier',
             'evidence',
             'onset',
             'frequency',
@@ -120,6 +121,7 @@ def hpo_diseases() -> dict[str, set[tuple]]:
                 omim = r[0],
                 name = r[1],
                 pmid = pmid,
+                qualifier = r[2] or None,
                 evidence = r[5] or None,
                 onset = r[6] or None,
                 frequency = r[7] or None,
@@ -179,11 +181,14 @@ def hpo_ontology() -> dict[str, dict[str, Union[str, set[str]]]]:
                 lambda x: x
             )
 
-            result[key][term].update(
-                {
-                    proc(x.value)
-                    for x in r.attrs.get(obokey, ())
-                }
-            )
+            for x in r.attrs.get(obokey, ()):
+                y = proc(x.value)
+                result[key][term].update(
+                    {
+                        y(x.value)
+                        if type(y) != tuple else
+                        y 
+                    }
+                )
 
-    return {k, dict(v) for k, v in result.items()}
+    return {k: dict(v) for k, v in result.items()}
