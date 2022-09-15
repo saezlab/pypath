@@ -33,6 +33,7 @@ import pypath.share.curl as curl
 import pypath.share.session as session_mod
 import pypath.share.settings as settings
 import pypath.utils.mapping as mapping
+import pypath.inputs.credentials as credentials
 
 _logger = session_mod.Logger(name = 'cosmic_input')
 _log = _logger._log
@@ -49,54 +50,27 @@ def cancer_gene_census_annotations(
     Returns dict of annotations.
     """
 
-    if not user or not passwd:
+    try:
 
-        credentials = settings.get('cosmic_credentials')
+        cosmic_cred = credentials.credentials(
+            user = user,
+            passwd = passwd,
+            resource = 'COSMIC',
+            from_file = credentials_fname,
+        )
 
-        if not credentials:
+    except RuntimeError:
 
-            if not os.path.exists(credentials_fname):
+        _log(
+            'No credentials available for the COSMIC website. '
+            'Either set the `cosmic_credentials` key in the `settings` '
+            'module (e.g. `{\'user\': \'myuser\', '
+            '\'passwd\': \'mypassword\'}`), or pass them directly to the '
+            '`pypath.inputs.cosmic.cancer_gene_census_annotations` '
+            'method.'
+        )
 
-                credentials_fname = os.path.join(
-                    settings.get('secrets_dir'),
-                    credentials_fname,
-                )
-
-            if os.path.exists(credentials_fname):
-
-                _log(
-                    'Reading COSMIC credentials '
-                    'from file `%s`.' % credentials_fname
-                )
-
-                with open(credentials_fname, 'r') as fp:
-
-                    credentials = dict(
-                        zip(
-                            ('user', 'passwd'),
-                            fp.read().split('\n')[:2],
-                        )
-                    )
-
-        else:
-            _log('COSMIC credentials provided by `settings`.')
-
-        if not credentials or {'user', 'passwd'} - set(credentials.keys()):
-
-            _log(
-                'No credentials available for the COSMIC website. '
-                'Either set the `cosmic_credentials` key in the `settings` '
-                'module (e.g. `{\'user\': \'myuser\', '
-                '\'passwd\': \'mypassword\'}`), or pass them directly to the '
-                '`pypath.inputs.cosmic.cancer_gene_census_annotations` '
-                'method.'
-            )
-
-            return {}
-
-    else:
-
-        credentials = {'user': user, 'passwd': passwd}
+        return {}
 
     CancerGeneCensusAnnotation = collections.namedtuple(
         'CancerGeneCensusAnnotation',
@@ -128,7 +102,7 @@ def cancer_gene_census_annotations(
     url = urls.urls['cgc']['url_new']
 
     auth_str = base64.b64encode(
-        ('%s:%s\n' % (credentials['user'], credentials['passwd'])).encode()
+        ('%s:%s\n' % (cosmic_cred['user'], cosmic_cred['passwd'])).encode()
     )
 
     req_hdrs = ['Authorization: Basic %s' % auth_str.decode()]

@@ -68,7 +68,7 @@ def go_annotations_uniprot(organism = 9606, swissprot = 'yes'):
 def go_annotations_goa(
     organism = 'human',
     evidence_codes=False):
-    
+
     """
     Downloads GO annotation from UniProt GOA.
     """
