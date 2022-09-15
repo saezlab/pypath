@@ -31,17 +31,21 @@ schema.
 
 from __future__ import annotations
 
+import importlib as imp
+import os
 from typing import Any, Generator, Optional
 
-import os
-import yaml
-import importlib as imp
-
 import biocypher
+import neo4j_utils
+import yaml
 
+import pypath
 import pypath.core.network as pypath_network
+import pypath.omnipath as op
 import pypath.resources.network as pypath_netres
 import pypath.share.session as _session
+from pypath.core import annot
+from pypath.core import complex as cmplx
 
 
 class BiocypherAdapter(_session.Logger):
@@ -136,26 +140,58 @@ class BiocypherAdapter(_session.Logger):
         attribute.
         """
 
+        ### network
         n = pypath_network.Network()
+        # exclude = {'TRIP', 'CellChatDB', 'ncRDeathDB', 'DIP', 'Wojtowicz2020'}
+        networks_literal = [
+            "pathway", # standard activity flow
+            "pathway_noref", # above without literature references
+            "interaction", # large undirected databases such as intact
+            "ptm", # == "enzyme_substrate" 
+            "ptm_noref", # enzyme_substrate without literature references
+            "transcription_onebyone", # direct literature curated TF-target interaction
+            "dorothea",
+            "mirna_target", # direct literature curated miRNA-target interaction
+            "tf_mirna", # direct literature curated TF-miRNA interaction
+            "lncrna_target", # direct literature curated lncRNA-target interaction
+            "ligand_receptor", # all ligand receptor interactions, with and without literature references
+            "small_molecule_protein", # all small molecule-protein interactions, with and without literature references 
+        ]
+        for net in networks_literal:
+            n.load(getattr(pypath_netres, net))
 
-        # load single pypath network components
-        # TODO which are the ones representing the "entire" pypath?
-        # --> defining and building databases belongs
-        # rather to pypath.omnipath.app - DT
-        exclude = {'TRIP', 'CellChatDB', 'ncRDeathDB', 'DIP', 'Wojtowicz2020'}
+            # for each net, build biocypher graph
 
-        n.load(pypath_netres.pathway, exclude=exclude)
-        # i want to exclude the ones that make trouble. why is the name not
-        # the same as the designation in the output? where can one get all
-        # the names in a convenient manner? eg, the name of 'trip' is 'TRIP',
-        # but I needed to go through several modules of code to find out.
 
-        # another question: how do I know which netres objects are relevant?
-        # -> omnipath/builtins.json & classes.json
+        ### complexes
+        for cls in cmplx.complex_resources:
+            # each resource annotates complexes
+            complex_db = getattr(complex, cls)()
 
-        n.load(pypath_netres.mirna_target, exclude=exclude)
-        # n.load(pypath_netres.interaction, exclude=exclude)
-        # n.load(pypath_netres.ligand_receptor, exclude=exclude)
+
+        ### annotations
+        # annot = op.db.get_db("annotations") # get everything at once
+        for cls in annot.protein_sources_default:
+            # each resource annotates proteins or genes
+            annot_db = getattr(annot, cls)()
+        
+        for cls in annot.complex_sources_default:
+            # each resource annotates complexes
+            annot_db = getattr(annot, cls)()
+
+
+        ### cell-cell
+        cell_db = op.db.get_db("intercell") # get everything at once
+        for role, participants in cell_db.classes.items():
+            # import into biocypher for each resource separately
+            pass
+
+
+        ### enzyme-substrate
+        enz_db = op.db.get_db("enz_sub") # get everything at once
+        for (enz, sub), ptms in enz_db.items():
+            # import individual interactions into biocypher 
+            pass
 
         self.set_network(n)
 

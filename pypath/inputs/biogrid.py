@@ -76,8 +76,10 @@ def biogrid_interactions(
                     l[17].startswith('Low') or
                     not ltp
                 ) and (
-                    l[15] == organism and
-                    l[16] == organism
+                    organism == 'None' or (
+                        l[15] == organism and
+                        l[16] == organism
+                    )
                 )
             ):
 
@@ -127,6 +129,8 @@ def biogrid_all_interactions(
             'ltp',
             'htp_score',
             'multi_validated',
+            'tax_a',
+            'tax_b',
         ),
     )
 
@@ -155,8 +159,10 @@ def biogrid_all_interactions(
                     l[17].startswith('Low') or
                     not ltp
                 ) and (
-                    l[15] == organism and
-                    l[16] == organism
+                    organism == 'None' or (
+                        l[15] == organism and
+                        l[16] == organism
+                    )
                 )
             ):
 
@@ -172,6 +178,8 @@ def biogrid_all_interactions(
                         ltp = 'Low T' in l[17],
                         htp_score = None if l[18] == '-' else float(l[18]),
                         multi_validated = mv,
+                        tax_a = l[15],
+                        tax_b = l[16],
                     )
                 )
 

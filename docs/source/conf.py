@@ -19,19 +19,21 @@ import time
 
 import sphinx_rtd_theme
 
-import pypath._version as _version
-
+from pypath._metadata import __author__, __license__, __version__
 
 # -- Project information -----------------------------------------------------
 
 project = u'pypath'
-copyright = ', '.join([time.strftime('%Y'), _version.__author__])
-author = _version.__author__
+copyright = ', '.join(
+    [time.strftime('%Y'), 
+    (", ").join(__author__)]
+)
+author = __author__
 
 # The short X.Y version
-version = _version.__version__
+version = __version__
 # The full version, including alpha/beta/rc tags
-release = _version.__version__
+release = __version__
 
 
 # -- General configuration ---------------------------------------------------
