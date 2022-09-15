@@ -22,6 +22,7 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import os
 import random
 import sys
 import traceback
@@ -57,7 +58,7 @@ class Session(object):
         all modules.
         """
 
-        self.logfile = 'pypath-%s.log' % self.label
+        self.logfile = os.getenv('PYPATH_LOG') or 'pypath-%s.log' % self.label
         self.log = log.Logger(self.logfile, verbosity=self.log_verbosity)
 
 
