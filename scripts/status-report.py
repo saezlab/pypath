@@ -244,7 +244,7 @@ def _log(*args, **kwargs):
 
     elif args:
 
-        sys.stdout.write(f'[{StatusReport.strftime()}] {str(args[0])}')
+        sys.stdout.write(f'[{StatusReport.strftime()}] {str(args[0])}\n')
         sys.stdout.flush()
 
 
@@ -359,7 +359,7 @@ class StatusReport(object):
             help = 'Running inside a poetry environment where pypath has '
                 'already been installed. Do not try to find or install '
                 'pypath but simply import it and run.',
-            type = 'store_true',
+            action = 'store_true',
         )
         self.clargs = self.clargs.parse_args()
 
@@ -684,20 +684,13 @@ class StatusReport(object):
 
                 os.chdir('pypath_git')
                 os.system('poetry install')
-                poenv_path = (
-                    sproc.run(
-                        ['poetry', 'env', 'info', '--path'],
-                        stdout = sproc.PIPE,
-                    ).
-                    decode('utf8').
-                    strip()
-                )
 
                 poetry_run = f'poetry run {self.spawn_cmd} --poetry'
 
                 _log(f'Running by poetry: {poetry_run}')
                 os.system(poetry_run)
                 _log(f'Spawn process has finished. Parent is exiting.')
+                self.finished = True
                 sys.exit(0)
 
             else:
@@ -765,10 +758,10 @@ class StatusReport(object):
             f'--dir {self.maindir} '
             f'--cache {self.cachedir} '
             f'--pickle_dir {self.pickle_dir} '
-            f'--build_dir {self.build_dir} '
-            f'--first {self.first} '
-            f'{"--prev_run " + self.prev_dir if self.prev_dir else ""}'
-            f'{"--nobuild " if self.nobuild else ""}'
+            f'--build_dir {self.build_dir}'
+            f'{" --first " + str(self.first) if self.first else ""}'
+            f'{" --prev_run " + self.prev_dir if self.prev_dir else ""}'
+            f'{" --nobuild" if self.nobuild else ""}'
         )
 
 
@@ -953,12 +946,12 @@ class StatusReport(object):
 
 
     @staticmethod
-    def strftime(t):
+    def strftime(t = None):
         """
         Converts time to string
         """
 
-        return time.strftime(REPORT_TIME_F, time.localtime(t))
+        return time.strftime(REPORT_TIME_F, time.localtime(t or time.time()))
 
 
     def save_results(self):
@@ -993,9 +986,9 @@ class StatusReport(object):
             bs4.BeautifulSoup(
                 'Compiled between <em>%s</em> and <em>%s;</em> '
                 'pypath version: %s (from %s%s' % (
-                    time.strftime(REPORT_TIME_F, self.start_time),
-                    time.strftime(REPORT_TIME_F, self.end_time),
-                    sys.modules['pypath']._version.__version__,
+                    self.strftime(self.start_time),
+                    self.strftime(self.end_time),
+                    sys.modules['pypath'].__version__,
                     self.pypath_from,
                     '; <a href="%s/tree/%s">%s</a>)' % (
                         PYPATH_GIT_URL,
