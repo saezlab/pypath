@@ -47,6 +47,7 @@ import argparse
 import weakref
 import types
 import csv
+import subprocess as sproc
 
 import bs4
 
@@ -243,7 +244,7 @@ def _log(*args, **kwargs):
 
     elif args:
 
-        sys.stdout.write(str(args[0]))
+        sys.stdout.write(f'[{StatusReport.strftime()}] {str(args[0])}')
         sys.stdout.flush()
 
 
@@ -268,6 +269,7 @@ class StatusReport(object):
             from_git = None,
             nobuild = None,
             prev_run = None,
+            poetry = None,
         ):
 
         self.parse_args()
@@ -278,6 +280,7 @@ class StatusReport(object):
         self.first = first or self.clargs.first
         self.nobuild = nobuild or self.clargs.nobuild
         self.prev_dir = prev_run or self.clargs.prev_run
+        self.poetry = poetry or self.clargs.poetry
         self.from_git = (
             from_git
                 if from_git is not None else
@@ -350,6 +353,13 @@ class StatusReport(object):
                 'itself. To disable comparison to a previous run, provide '
                 '"none" to this argument.',
             type = str,
+        )
+        self.clargs.add_argument(
+            '-y', '--poetry',
+            help = 'Running inside a poetry environment where pypath has '
+                'already been installed. Do not try to find or install '
+                'pypath but simply import it and run.',
+            type = 'store_true',
         )
         self.clargs = self.clargs.parse_args()
 
@@ -659,15 +669,44 @@ class StatusReport(object):
 
         self.pypath_from = 'from system directory'
 
-        if self.from_git:
+        if self.poetry:
+
+            self.pypath_from = 'installed by poetry'
+            sys.path = [p for p in sys.path if p and p != os.getcwd()]
+
+        elif self.from_git:
 
             os.system('git clone --depth 1 %s pypath_git' % PYPATH_GIT_URL)
 
-            os.symlink(
-                os.path.join('pypath_git', 'pypath'),
-                'pypath',
-                target_is_directory = True,
-            )
+            poetry_available = bool(shutil.which('poetry'))
+
+            if poetry_available:
+
+                os.chdir('pypath_git')
+                os.system('poetry install')
+                poenv_path = (
+                    sproc.run(
+                        ['poetry', 'env', 'info', '--path'],
+                        stdout = sproc.PIPE,
+                    ).
+                    decode('utf8').
+                    strip()
+                )
+
+                poetry_run = f'poetry run {self.spawn_cmd} --poetry'
+
+                _log(f'Running by poetry: {poetry_run}')
+                os.system(poetry_run)
+                _log(f'Spawn process has finished. Parent is exiting.')
+                sys.exit(0)
+
+            else:
+
+                os.symlink(
+                    os.path.join('pypath_git', 'pypath'),
+                    'pypath',
+                    target_is_directory = True,
+                )
 
             self.pypath_from = 'git'
 
@@ -690,7 +729,9 @@ class StatusReport(object):
 
                 self.pypath_from = 'local directory'
 
-        sys.path.insert(0, os.getcwd())
+        if not self.poetry:
+
+            sys.path.insert(0, os.getcwd())
 
         import pypath.inputs as inputs
         import pypath.share.session as session
@@ -714,6 +755,21 @@ class StatusReport(object):
         _log('Reporting directory: `%s`.' % self.reportdir)
         _log('Pypath from git: `%s`.' % self.from_git)
         _log('Pypath local path: `%s`.' % os.path.dirname(inputs.__path__[0]))
+
+
+    @property
+    def spawn_cmd(self):
+
+        return (
+            f'python {__file__} '
+            f'--dir {self.maindir} '
+            f'--cache {self.cachedir} '
+            f'--pickle_dir {self.pickle_dir} '
+            f'--build_dir {self.build_dir} '
+            f'--first {self.first} '
+            f'{"--prev_run " + self.prev_dir if self.prev_dir else ""}'
+            f'{"--nobuild " if self.nobuild else ""}'
+        )
 
 
     @staticmethod
