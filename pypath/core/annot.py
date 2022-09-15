@@ -6906,3 +6906,27 @@ def get_db(
         )
 
     return globals()['db']
+
+class HPO(AnnotationBase):
+
+    _eq_fields = ()
+
+    def __init__(self, **kwargs):
+        """
+        HPO Gene Annotations from the HPO database.
+        """
+
+        kwargs.pop('ncbi_tax_id', None)
+
+        AnnotationBase.__init__(
+            self,
+            name = 'HPO',
+            ncbi_tax_id = constants.NOT_ORGANISM_SPECIFIC,
+            input_method = 'hpo.hpo_annotations',
+            **kwargs
+        )
+
+    def _process_method(self):
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+        delattr(self, 'data')
