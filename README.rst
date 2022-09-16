@@ -27,20 +27,22 @@ need to build the database yourself, try our `Python client`_.
     questions by opening an issue on github. The old ``igraph`` based network
     class is still available in the ``pypath.legacy`` module.
 
-:Py2/3: Although we still keep the compatibility with Python 2, we don't
-        test ``pypath`` in this environment and already very few people use
-        Python 2. We highly recommend to use ``pypath`` in Python 3.6+.
+:Py2/3: The oldest Python required is version 3.9, as defined in
+        ``pyproject.toml``. Until about April 2022 we still kept most of
+        the module compatible with Python 2 and earlier Python 3 versions.
+        Since then we support only the recent Pythons.
 
 :documentation: https://saezlab.github.io/pypath
 :issues: https://github.com/saezlab/pypath/issues
 :contact: omnipathdb@gmail.com
 :developers: ``pypath`` is developed in the Saez Lab (https://saezlab.org) by
-  Ahmet Rifaioglu, Sebastian Lobentanzer and Dénes Türei. Olga Ivanova and
-  Nicolàs Palacio also contributed in the past. The R package and the
-  Cytoscape app are developed and maintained by Francesco Ceccarelli, Attila
-  Gábor, Alberto Valdeolivas, Dénes Türei and Nicolàs Palacio. The `Python
-  client`_ for the OmniPath web service has been developed and is maintained
-  by Michael Klein in the group of Fabian Theis.
+  Dénes Türei, Sebastian Lobentanzer and Ahmet Rifaioglu, and Erva Ulusoy
+  and Tennur Kılıç in Volkan Atalay's group (https://blog.metu.edu.tr/vatalay/)
+  Olga Ivanova and Nicolàs Palacio also contributed in the past. The R package
+  and the Cytoscape app are developed and maintained by Francesco Ceccarelli,
+  Attila   Gábor, Alberto Valdeolivas, Dénes Türei and Nicolàs Palacio. The
+  `Python client`_ for the OmniPath web service has been developed and is
+  maintained by Michael Klein in the group of Fabian Theis.
 
 .. _`Python client`: https://github.com/saezlab/omnipath
 
