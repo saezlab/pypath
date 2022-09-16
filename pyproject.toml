@@ -47,7 +47,7 @@ keywords = [
 "Bug Tracker" = "https://github.com/saezlab/pypath/issues"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 beautifulsoup4 = "*"
 dill = "*"
 future = "*"
