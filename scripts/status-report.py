@@ -233,6 +233,14 @@ RESULT_JSON_PATH = ('report', 'result.json')
 
 SCRIPT_PATH = os.path.abspath(__file__)
 
+BIN_PATHS = (
+    os.path.expanduser(os.path.join('~', '.local', 'bin')),
+    os.path.join(os.sep, 'sbin'),
+    os.path.join(os.sep, 'snap', 'sbin'),
+    os.path.join(os.sep, 'usr', 'local', 'bin'),
+    os.path.join(os.sep, 'usr', 'local', 'sbin'),
+)
+
 
 def _log(*args, **kwargs):
     """
@@ -370,6 +378,7 @@ class StatusReport(object):
         self.reset_result()
         self.reset_counters()
         self.set_timestamp()
+        self.set_bin_paths()
         self.set_dirs() # calls init_pypath
         self.read_prev_result()
         _log('Started generating pypath inputs status report.')
@@ -508,6 +517,16 @@ class StatusReport(object):
             '%s_time' % ('end' if end else 'start'),
             time.localtime(),
         )
+
+
+    @staticmethod
+    def set_bin_paths():
+
+        for path in reversed(BIN_PATHS):
+
+            if os.path.exists(path):
+
+                sys.path.insert(0, path)
 
 
     def set_dirs(self):
