@@ -231,6 +231,8 @@ MAINDIR_PREFIX = 'pypath_inputs_status'
 
 RESULT_JSON_PATH = ('report', 'result.json')
 
+SCRIPT_PATH = os.path.abspath(__file__)
+
 
 def _log(*args, **kwargs):
     """
@@ -757,7 +759,7 @@ class StatusReport(object):
     def spawn_cmd(self):
 
         return (
-            f'python {__file__} '
+            f'python {SCRIPT_PATH} '
             f'--dir {self.maindir} '
             f'--cache {self.cachedir} '
             f'--pickle_dir {self.pickle_dir} '
