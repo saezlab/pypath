@@ -682,6 +682,7 @@ class StatusReport(object):
 
             poetry_available = bool(shutil.which('poetry'))
             _log(f'Poetry is available: {poetry_available}.')
+            _log(f'Path: {os.environ["PATH"]}')
 
             if poetry_available:
 
