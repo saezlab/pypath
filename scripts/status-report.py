@@ -688,11 +688,11 @@ class StatusReport(object):
         according to the settings. Then imports the required pypath modules.
         """
 
-        self.pypath_from = 'from system directory'
+        self.pypath_from = 'system directory'
 
         if self.poetry:
 
-            self.pypath_from = 'installed by poetry'
+            self.pypath_from = 'git, installed by poetry'
             sys.path = [p for p in sys.path if p and p != os.getcwd()]
 
         elif self.from_git:
