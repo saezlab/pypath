@@ -526,7 +526,7 @@ class StatusReport(object):
 
             if os.path.exists(path):
 
-                sys.path.insert(0, path)
+                os.environ['PATH'] = f'{path}:{os.environ["PATH"]}'
 
 
     def set_dirs(self):
