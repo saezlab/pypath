@@ -679,10 +679,13 @@ class StatusReport(object):
             os.system('git clone --depth 1 %s pypath_git' % PYPATH_GIT_URL)
 
             poetry_available = bool(shutil.which('poetry'))
+            _log(f'Poetry is available: {poetry_available}.')
 
             if poetry_available:
 
+                _log('Entering directory `pypath_git`.')
                 os.chdir('pypath_git')
+                _log('Running `poetry install`.')
                 os.system('poetry install')
 
                 poetry_run = f'poetry run {self.spawn_cmd} --poetry'
@@ -986,8 +989,8 @@ class StatusReport(object):
             bs4.BeautifulSoup(
                 'Compiled between <em>%s</em> and <em>%s;</em> '
                 'pypath version: %s (from %s%s' % (
-                    self.strftime(self.start_time),
-                    self.strftime(self.end_time),
+                    time.strftime(REPORT_TIME_F, self.start_time),
+                    time.strftime(REPORT_TIME_F, self.end_time),
                     sys.modules['pypath'].__version__,
                     self.pypath_from,
                     '; <a href="%s/tree/%s">%s</a>)' % (
