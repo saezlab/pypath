@@ -70,6 +70,8 @@ EXCLUDE = {
     'trembl_deleted',
     'uniprot_ncbi_taxids', # takes too long
     'get_all_models', # infinite loop bug
+    'chembl_assays', # takes about 1 hour
+    'chembl_molecules', # takes about 4 hours
 }
 
 ARGS = {}
