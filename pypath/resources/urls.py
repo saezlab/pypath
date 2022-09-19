@@ -1570,6 +1570,10 @@ urls = {
         'gene' : 'http://purl.obolibrary.org/obo/hp/hpoa/'
             'genes_to_phenotype.txt',
     },
+    'oma': {
+        'label': 'A database for the inference of orthologs among complete genomes',
+        'url': 'https://omabrowser.org/api/pairs/'
+    }
 }
 
 

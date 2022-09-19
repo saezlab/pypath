@@ -4650,5 +4650,13 @@
         "https://pubmed.ncbi.nlm.nih.gov/33264411/"
       ]
     }
+  },
+  "OMA": {
+    "full_name": "Orthologous MAtrix",
+    "license": "CC BY-SA 2.5",
+    "urls": {
+      "webpages": ["https://omabrowser.org/"],
+      "articles": ["doi:10.1093/nar/gkaa1007"]
+    }
   }
 }
