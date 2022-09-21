@@ -4656,7 +4656,7 @@
     "license": "CC BY-SA 2.5",
     "urls": {
       "webpages": ["https://omabrowser.org/"],
-      "articles": ["doi:10.1093/nar/gkaa1007"]
+      "articles": ["https://doi.org/10.1093/nar/gkaa1007"]
     }
   }
 }
