@@ -1572,7 +1572,11 @@ urls = {
     'oma': {
         'label': 'A database for the inference of orthologs among complete genomes',
         'url': 'https://omabrowser.org/api/pairs/'
-    }
+    },
+    'pathophenodb': {
+        'label': 'A database of pathogens and their phenotypes for diagnostic support in infections.',
+        'url': 'http://patho.phenomebrowser.net/sparql/'
+    } 
 }
 
 

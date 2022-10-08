@@ -4658,5 +4658,12 @@
       "webpages": ["https://omabrowser.org/"],
       "articles": ["doi:10.1093/nar/gkaa1007"]
     }
+  },
+  "PathoPhenoDB": {
+    "license": "No license",
+    "urls": {
+      "webpages": ["http://patho.phenomebrowser.net"],
+      "articles": ["https://doi.org/10.1038/s41597-019-0090-x"]
+    }
   }
 }
