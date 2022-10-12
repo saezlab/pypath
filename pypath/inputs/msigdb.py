@@ -120,9 +120,6 @@ def msigdb_download(
 
     version = version or settings.get('msigdb_version')
 
-    #http://www.gsea-msigdb.org/gsea/msigdb/download_file.jsp?filePath=/msigdb/release/2022.1.Mm/mh.all.v2022.1.Mm.symbols.gmt
-    #http://www.gsea-msigdb.org/gsea/msigdb/download_file.jsp?filePath=/msigdb/release/2022.1.Hs/h.all.v2022.1.Hs.symbols.gmt
-
     url = urls.urls['msigdb']['url'] % (
         version,
         msigdb_org,
@@ -132,8 +129,10 @@ def msigdb_download(
         id_type,
     )
 
-    req_headers_1 = []
+    req_headers = []
 
+    # we shouldn't need this cookie game any more as all files are available
+    # without any login or cookie from data.broadinstitute.org
     c_nocall = curl.Curl(
         url,
         call = False,
@@ -146,16 +145,23 @@ def msigdb_download(
         os.path.getsize(c_nocall.cache_file_name) == 0 or
         force_download
     ):
+
         c_login_1 = curl.Curl(
             urls.urls['msigdb']['login1'],
             cache = False,
             write_cache = False,
             process = False,
-            large = False,
+            large = True,
             silent = True,
+            post = {
+                'username': registered_email,
+                'password': 'password',
+            },
+            empty_attempt_again = False,
+            follow = False,
         )
 
-        jsessionid = ''
+        cookies = {}
 
         if hasattr(c_login_1, 'resp_headers'):
 
@@ -163,68 +169,31 @@ def msigdb_download(
 
                 if hdr.lower().startswith(b'set-cookie'):
 
-                    jsessionid = hdr.split(b':')[1].split(b';')[0].strip()
-                    jsessionid = jsessionid.decode('ascii')
-                    _log('msigdb cookie obtained: `%s`.' % jsessionid)
+                    cookie = hdr.decode('ascii')
+                    cookie = cookie.split(':', maxsplit = 1)[1].strip()
+                    cookie = cookie.split(';', maxsplit = 1)[0].strip()
+                    cookie = tuple(cookie.split('=', maxsplit = 1))
+                    _log('msigdb cookie: `%s=%s`.' % cookie)
+                    cookies[cookie[0]] = cookie[1]
 
-                    break
-
-        if not jsessionid:
+        if not cookies:
 
             _log('msigdb: could not get cookie, returning empty list.')
 
             return {}
 
-        req_headers = ['Cookie: %s' % jsessionid]
-
-        c_login_2 = curl.Curl(
-            urls.urls['msigdb']['login2'],
-            cache = False,
-            write_cache = False,
-            large = False,
-            silent = True,
-            req_headers = req_headers,
-            post = {
-                'j_username': registered_email,
-                'j_password': 'password',
-            },
-            process = False,
-            empty_attempt_again = False,
-        )
-
-        jsessionid_1 = ''
-
-        if hasattr(c_login_2, 'resp_headers'):
-
-            for hdr in c_login_2.resp_headers:
-
-                if hdr.lower().startswith(b'set-cookie'):
-
-                    jsessionid_1 = hdr.split(b':')[1].split(b';')[0].strip()
-                    jsessionid_1 = jsessionid_1.decode('ascii')
-
-            _log(
-                'msigdb: logged in with email `%s`, '
-                'new cookie obtained: `%s`.' % (
-                    registered_email,
-                    jsessionid_1
-                )
+        req_headers = [
+            'Cookie: %s' % ';'.join(
+                '%s=%s' % cookie
+                for cookie in cookies.items()
             )
+        ]
 
-        if not jsessionid_1:
-
-            _log(
-                'msigdb: could not log in with email `%s`, '
-                'returning empty dict.' % registered_email
-            )
-
-            return {}
-
-        req_headers_1 = ['Cookie: %s' % jsessionid_1]
+        _log('msigdb cookies for upcoming request: %s' % req_headers[0])
 
     c = curl.Curl(
         url,
-        req_headers = req_headers_1,
+        req_headers = req_headers,
         silent = False,
         large = True,
         bypass_url_encoding = True,
@@ -234,6 +203,7 @@ def msigdb_download(
     result = {}
 
     for gset in c.result:
+
         gset = gset.strip().split('\t')
 
         result[gset[0]] = set(gset[2:])
