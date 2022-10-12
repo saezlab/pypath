@@ -658,7 +658,7 @@ urls = {
         'login2': 'https://www.gsea-msigdb.org/gsea/j_spring_security_check',
         'url': 'https://www.gsea-msigdb.org/gsea/msigdb/'
             'download_file.jsp?filePath=/msigdb/release/'
-            '7.5.1/%s.v7.5.1.%s.gmt',
+            '%s.%s/%s.v%s.%s.%s.gmt',
         'coll': 'https://www.gsea-msigdb.org/gsea/msigdb/collections.jsp',
         'url_stem': 'https://www.gsea-msigdb.org/gsea/%s',
         'one_set': 'hhttps://www.gsea-msigdb.org/gsea/msigdb/'
