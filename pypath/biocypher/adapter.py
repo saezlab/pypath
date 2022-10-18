@@ -52,34 +52,11 @@ __all__ = ['Adapter']
 
 class Adapter(_session.Logger):
     """
-    Load pypath database obejcts into biocypher (Neo4j).
+    Channel OmniPath database contents into BioCypher.
 
-    Args:
-        driver:
-            A ``neo4j.Driver`` instance, created by, for example,
-            ``neo4j.GraphDatabase.driver``.
-        db_name:
-            Name of the database (Neo4j graph) to use.
-        db_uri:
-            Protocol, host and port to access the Neo4j server.
-        db_user:
-            Neo4j user name.
-        db_passwd:
-            Password of the Neo4j user.
-        network:
-            A network database object.
-        wipe:
-            Wipe the database after connection, ensuring the data
-            is loaded into an empty database.
-        kwargs:
-            Passed to ``biocypher.Driver``, and ultimately to
-            ``neo4j_utils.Driver``.
-
-    Details:
-        The connection can be defined in three ways:
-         * Providing a ready ``neo4j.Driver`` instance
-         * By URI and authentication data
-         * By a YML config file
+    Here we implement a temporary solution for writing OmniPath data into
+    BioCypher. It will be replaced by methods integrated into fundamental
+    pypath object, especially Resource objects.
     """
 
 
@@ -95,6 +72,36 @@ class Adapter(_session.Logger):
             network: Optional[pypath.core.network.Network] = None,
             **kwargs
         ):
+        """
+        Load pypath database obejcts into biocypher (Neo4j).
+
+        Args:
+            driver:
+                A ``neo4j.Driver`` instance, created by, for example,
+                ``neo4j.GraphDatabase.driver``.
+            db_name:
+                Name of the database (Neo4j graph) to use.
+            db_uri:
+                Protocol, host and port to access the Neo4j server.
+            db_user:
+                Neo4j user name.
+            db_passwd:
+                Password of the Neo4j user.
+            network:
+                A network database object.
+            wipe:
+                Wipe the database after connection, ensuring the data
+                is loaded into an empty database.
+            kwargs:
+                Passed to ``biocypher.Driver``, and ultimately to
+                ``neo4j_utils.Driver``.
+
+        Details:
+            The connection can be defined in three ways:
+            * Providing a ready ``neo4j.Driver`` instance
+            * By URI and authentication data
+            * By a YML config file
+        """
 
         _session.Logger.__init__(self, name = 'bcy_adapter')
 
