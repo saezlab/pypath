@@ -130,7 +130,7 @@ class Adapter(_session.Logger):
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
-        setattr(self, '__class__', new)
+        self.__class__ = new
 
 
     def set_network(self, network):
@@ -139,75 +139,20 @@ class Adapter(_session.Logger):
         self.network = network
 
 
-    # this might be good for development, but should be removed later
-    def build_python_object(self):
+    def dummy_network(self):
         """
-        Builds a network database with two datasets: 'pathway' and
-        'mirna_target'. Intended to be an example. The dataset is preloaded
-        to avoid waiting time when applying multiple database tests.
-        The resulting network database is stored under the :py:attr:`network`
-        attribute.
+        Obtain a small network just to play with.
+
+        For development, to be removed later.
         """
 
-        ### network
         n = pypath_network.Network()
-        # exclude = {'TRIP', 'CellChatDB', 'ncRDeathDB', 'DIP', 'Wojtowicz2020'}
-        networks_literal = [
-            "pathway", # standard activity flow
-            "pathway_noref", # above without literature references
-            "interaction", # large undirected databases such as intact
-            "ptm", # == "enzyme_substrate" 
-            "ptm_noref", # enzyme_substrate without literature references
-            "transcription_onebyone", # direct literature curated TF-target interaction
-            "dorothea",
-            "mirna_target", # direct literature curated miRNA-target interaction
-            "tf_mirna", # direct literature curated TF-miRNA interaction
-            "lncrna_target", # direct literature curated lncRNA-target interaction
-            "ligand_receptor", # all ligand receptor interactions, with and without literature references
-            "small_molecule_protein", # all small molecule-protein interactions, with and without literature references 
-        ]
-        for net in networks_literal:
-            n.load(getattr(pypath_netres, net))
-
-            # for each net, build biocypher graph
-
-
-        ### complexes
-        for cls in cmplx.complex_resources:
-            # each resource annotates complexes
-            complex_db = getattr(complex, cls)()
-
-
-        ### annotations
-        # annot = op.db.get_db("annotations") # get everything at once
-        for cls in annot.protein_sources_default:
-            # each resource annotates proteins or genes
-            annot_db = getattr(annot, cls)()
-
-        for cls in annot.complex_sources_default:
-            # each resource annotates complexes
-            annot_db = getattr(annot, cls)()
-
-
-        ### cell-cell
-        cell_db = op.db.get_db("intercell") # get everything at once
-        for role, participants in cell_db.classes.items():
-            # import into biocypher for each resource separately
-            pass
-
-
-        ### enzyme-substrate
-        enz_db = op.db.get_db("enz_sub") # get everything at once
-        for (enz, sub), ptms in enz_db.items():
-            # import individual interactions into biocypher 
-            pass
-
         self.set_network(n)
 
 
-    def translate_python_object_to_neo4j(
+    def translate(
             self,
-            network: Optional[pypath.core.network.Network] = None,
+            network: Optional[pypath_network.Network] = None,
         ) -> Generator[tuple, None, None]:
         """
         Loads a pypath network into the biocypher (Neo4j) backend.
@@ -257,16 +202,16 @@ class Adapter(_session.Logger):
         self.bcy.add_edges(src_tar_type_tuples)
 
 
-    def write_to_csv_for_admin_import(
+    def write_csv(
             self,
-            network: Optional[pypath.core.network.Network] = None,
+            network: Optional[pypath_network.Network] = None,
             db_name: Optional[str] = None,
         ):
         """
-        Loads a pypath network into the biocypher (Neo4j) backend using
-        the fast Admin Import function, which requires text files that
-        need to be properly formatted since it turns off safety measures
-        at import.
+        Export network data into CSV files for neo4j-admin import.
+
+        These CSV  files that need to be properly formatted since it turns
+        off integrity checks at import.
 
         Args:
             network:
