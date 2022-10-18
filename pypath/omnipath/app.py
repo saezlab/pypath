@@ -530,11 +530,7 @@ class DatabaseManager(session_mod.Logger):
         object or from the module settings.
         """
 
-        if key in self.param:
-
-            return self.param[key]
-
-        return settings.get(key)
+        return self.param.get(key, settings.get(key))
 
 
     def _create_network_df(self, dataset = 'omnipath', **kwargs):
@@ -569,13 +565,13 @@ class DatabaseManager(session_mod.Logger):
 
 
     def _network_df(self, obj, **kwargs):
-        
+
         if not isinstance(obj, network.Network):
-            
+
             obj = network.Network.from_igraph(obj)
-        
+
         obj.make_df(**kwargs)
-        
+
         return obj.df
 
 
@@ -613,3 +609,47 @@ class DatabaseManager(session_mod.Logger):
         self.ensure_dataset('intercell')
 
         self.intercell.register_network(network_df)
+
+
+    def define_dataset(
+            self,
+            name: str,
+            module: Literal[
+                'annot',
+                'complex',
+                'enz_sub',
+                'intercell',
+                'network',
+            ],
+            args: dict | None = None,
+            pickle: str | None = None,
+            **param,
+        ):
+        """
+        Add a new dataset definition.
+
+        Args:
+            name:
+                Arbitrary name for the dataset.
+            module:
+                A database builder module: this determines the type of the
+                dataset.
+            args:
+                Arguments for the database provider method (typically
+                called ``get_db``) of the above module.
+            pickle:
+                A name for the pickle file, if not provided it will be
+                named as "<name>_<module>.pickle".
+            param:
+                Further parameters, saved directly into the :attr:``param``
+                dict of this object, however the three arguments above
+                override values provided this way.
+        """
+
+        settings.setup(datasets = setting.get('datasets') + [name])
+
+        param[f'{name}_pickle'] = pickle or f'{name}_{module}.pickle'
+        param[f'{name}_mod'] = module
+        param[f'{name}_args'] = args
+
+        self.param.update(param)
