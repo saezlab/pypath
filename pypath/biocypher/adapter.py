@@ -47,8 +47,10 @@ import pypath.share.session as _session
 from pypath.core import annot
 from pypath.core import complex as cmplx
 
+__all__ = ['Adapter']
 
-class BiocypherAdapter(_session.Logger):
+
+class Adapter(_session.Logger):
     """
     Load pypath database obejcts into biocypher (Neo4j).
 
@@ -174,7 +176,7 @@ class BiocypherAdapter(_session.Logger):
         for cls in annot.protein_sources_default:
             # each resource annotates proteins or genes
             annot_db = getattr(annot, cls)()
-        
+
         for cls in annot.complex_sources_default:
             # each resource annotates complexes
             annot_db = getattr(annot, cls)()
