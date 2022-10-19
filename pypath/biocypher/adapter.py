@@ -40,9 +40,9 @@ import neo4j_utils
 import yaml
 
 import pypath
-import pypath.core.network as pypath_network
+import pypath.core.network as network_mod
 import pypath.omnipath as op
-import pypath.resources.network as pypath_netres
+import pypath.resources.network as netres
 import pypath.share.session as _session
 from pypath.core import annot
 from pypath.core import complex as cmplx
@@ -59,17 +59,33 @@ class Adapter(_session.Logger):
     pypath object, especially Resource objects.
     """
 
+    _network_param = {
+        'name': 'dummy',
+        'module': 'network',
+        'args': {
+            'resources': (
+                netres.pathway['signor'],
+                netres.pathway['signalink3'],
+                netres.pathway['ca1'],
+                netres.transcription['signor'],
+                netres.transcription['oreganno'],
+                netres.mirna_target['signor'],
+                netres.mirna_target['ncrdeath'],
+            ),
+        },
+    }
+
 
     def __init__(
             self,
-            driver: Optional[neo4j_utils.Driver] = None,
-            db_name: Optional[str] = None,
-            db_uri: Optional[str] = None,
-            db_user: Optional[str] = None,
-            db_passwd: Optional[str] = None,
+            driver: neo4j_utils.Driver | None = None,
+            db_name: str | None = None,
+            db_uri: str | None = None,
+            db_user: str | None = None,
+            db_passwd: str | None = None,
             wipe: bool = False,
             offline: bool = False,
-            network: Optional[pypath.core.network.Network] = None,
+            network: pypath_network.Network | None = None,
             **kwargs
         ):
         """
@@ -146,8 +162,9 @@ class Adapter(_session.Logger):
         For development, to be removed later.
         """
 
-        n = pypath_network.Network()
-        self.set_network(n)
+        op.db.define_dataset(**self._network_param)
+        netw = op.db.get_db(*self._network_param['name'])
+        self.set_network(netw)
 
 
     def translate(
