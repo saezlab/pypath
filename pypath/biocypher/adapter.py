@@ -196,11 +196,11 @@ class Adapter(_session.Logger):
 
                 _id = self._process_id(n.identifier)
                 _type = n.entity_type
-                _props = {"taxon": n.taxon}
-                yield (_id, _type, _props)
+                props = {"taxon": n.taxon}
+                yield (_id, _type, props)
 
-        id_type_tuples = gen_nodes(network.nodes.values())
-        self.bcy.add_nodes(id_type_tuples)
+        nodes = gen_nodes(network.nodes.values())
+        self.bcy.add_nodes(nodes = nodes)
 
         # create id-type tuples for edges
         # to enable translation between pypath and biocypher notation
@@ -209,14 +209,19 @@ class Adapter(_session.Logger):
 
             for e in edges:
 
-                _src = self._process_id(e.id_a)
-                _tar = self._process_id(e.id_b)
+                src = self._process_id(e.id_a)
+                tar = self._process_id(e.id_b)
                 _type = e.type
+                props = {
+                    'directed': e.directed,
+                    'resources': e.sources,
+                    'references': e.references,
+                }
 
-                yield (_src, _tar, _type)
+                yield (src, tar, _type, props)
 
-        src_tar_type_tuples = gen_edges(network.generate_df_records())
-        self.bcy.add_edges(src_tar_type_tuples)
+        edges = gen_edges(network.generate_df_records(with_references = True))
+        self.bcy.add_edges(edges = edges)
 
 
     def write_csv(
