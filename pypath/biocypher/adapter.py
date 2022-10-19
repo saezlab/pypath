@@ -170,14 +170,24 @@ class Adapter(_session.Logger):
     def translate(
             self,
             network: Optional[pypath_network.Network] = None,
+            export_csv: bool = False,
+            db_name: Optional[str] = None,
         ) -> Generator[tuple, None, None]:
         """
         Loads a pypath network into the biocypher (Neo4j) backend.
 
         Args:
-            - network (pypath.core.network.Network): A network database
-              object. If `None`, the value of :py:attr:`network` will be
-              used.
+            network:
+                A network database object. If `None`, the value of
+                :py:attr:`network` will be used.
+            export_csv:
+                Write the data into CSV files that can be imported by the
+                *neo4j-admin* tool. The default behaviour is to connect to
+                the server and insert the data into the database.
+            db_name:
+                In case of writing CSV files, a CLI call of *neo4j-admin*
+                will also be created. The name of the target database is
+                part of this call.
         """
 
         network = network or self.network
@@ -196,11 +206,18 @@ class Adapter(_session.Logger):
 
                 _id = self._process_id(n.identifier)
                 _type = n.entity_type
-                props = {"taxon": n.taxon}
+                props = {'taxon': n.taxon, 'label': n.label}
                 yield (_id, _type, props)
 
         nodes = gen_nodes(network.nodes.values())
-        self.bcy.add_nodes(nodes = nodes)
+
+        if export_csv:
+
+            self.bcy.write_nodes(nodes, db_name = db_name)
+
+        else:
+
+            self.bcy.add_nodes(nodes = nodes)
 
         # create id-type tuples for edges
         # to enable translation between pypath and biocypher notation
@@ -216,71 +233,21 @@ class Adapter(_session.Logger):
                     'directed': e.directed,
                     'resources': e.sources,
                     'references': e.references,
+                    'effect': e.effect,
                 }
 
                 yield (src, tar, _type, props)
 
         edges = gen_edges(network.generate_df_records(with_references = True))
-        self.bcy.add_edges(edges = edges)
 
+        if export_csv:
 
-    def write_csv(
-            self,
-            network: Optional[pypath_network.Network] = None,
-            db_name: Optional[str] = None,
-        ):
-        """
-        Export network data into CSV files for neo4j-admin import.
+            self.bcy.write_edges(edges, db_name = db_name)
+            self.bcy.write_import_call()
 
-        These CSV  files that need to be properly formatted since it turns
-        off integrity checks at import.
+        else:
 
-        Args:
-            network:
-                A network database object. If `None`, the value of
-                :py:attr:`network` will be used.
-        """
-
-        network = network or self.network
-
-        if not network:
-
-            self._log("No network provided.")
-
-            return
-
-        # write nodes
-        def gen_nodes(nodes):
-
-            for n in nodes:
-
-                _id = self._process_id(n.identifier)
-                _type = n.entity_type
-                _props = {"taxon": n.taxon, "label": n.label}
-
-                yield (_id, _type, _props)
-
-        id_type_tuples = gen_nodes(network.nodes.values())
-
-        self.bcy.write_nodes(id_type_tuples, db_name=db_name)
-
-        # write edges
-        def gen_edges(edges):
-
-            for e in edges:
-
-                _src = self._process_id(e.id_a)
-                _tar = self._process_id(e.id_b)
-                _type = e.type
-                _props = {"effect": e.effect, "directed": e.directed}
-
-                yield (_src, _tar, _type, _props)
-
-        src_tar_type_tuples = gen_edges(network.generate_df_records())
-
-        self.bcy.write_edges(src_tar_type_tuples, db_name=db_name)
-
-        self.bcy.write_import_call()
+            self.bcy.add_edges(edges = edges)
 
 
     def _process_id(self, identifier: str) -> str:
