@@ -30,12 +30,13 @@ import pypath.share.settings as settings
 urls = {
     'uniprot_pdb': {
         'label': 'Getting PDB IDs of 3D structures for UniProtIDs',
-        'url': 'https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/docs/pdbtosp.txt'
+        'url': 'https://ftp.uniprot.org/pub/databases/uniprot/'
+            'current_release/knowledgebase/complete/docs/pdbtosp.txt'
     },
     'uniprot_basic': {
         'label': 'URL for UniProt queries',
         'url': 'https://legacy.uniprot.org/uniprot/',
-        'lists': 'https://www.uniprot.org/uploadlists/',
+        'lists': 'https://legacy.uniprot.org/uploadlists/',
         'datasheet': 'https://legacy.uniprot.org/uniprot/%s.txt',
         'history': 'https://legacy.uniprot.org/uniprot/%s.tab?version=*',
         'deleted_sp': 'ftp://ftp.expasy.org/databases/uniprot/'
@@ -48,7 +49,8 @@ urls = {
             'knowledgebase/complete/docs/speindex.txt',
         'taxids': 'https://www.uniprot.org/taxonomy/?query='
             '*&format=tab&force=true&columns=id&compress=yes',
-        'speclist': 'https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/docs/speclist.txt',
+        'speclist': 'https://ftp.uniprot.org/pub/databases/uniprot/'
+            'current_release/knowledgebase/complete/docs/speclist.txt',
     },
     'corum': {
         'label':
