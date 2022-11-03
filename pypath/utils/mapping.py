@@ -127,6 +127,14 @@ RESOURCES_IMPLICIT = (
     ),
 )
 
+UNIPROT_ID_TYPES = {
+    'uniprot',
+    'trembl',
+    'swissprot',
+    'uniprot-pri',
+    'uniprot-sec',
+}
+
 """
 Classes for reading and use serving ID mapping data from custom file,
 function, UniProt, UniProt uploadlists, Ensembl BioMart,
@@ -1859,11 +1867,11 @@ class Mapper(session_mod.Logger):
         # for genesymbol, we automatically try 2 steps mapping via uniprot
         if (
             not mapped_names and (
-                id_type =='genesymbol' or
+                id_type == 'genesymbol' or
                 target_id_type == 'genesymbol'
             ) and
-            id_type != 'uniprot' and
-            target_id_type != 'uniprot'
+            id_type not in UNIPROT_ID_TYPES and
+            target_id_type not in UNIPROT_ID_TYPES
         ):
 
             mapped_names = self.chain_map(
