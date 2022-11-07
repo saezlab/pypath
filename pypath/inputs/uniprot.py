@@ -24,6 +24,8 @@
 
 from future.utils import iteritems
 
+from typing import Iterable
+
 import re
 import time
 import datetime
@@ -37,6 +39,7 @@ import pypath.share.curl as curl
 import pypath.share.common as common
 import pypath.share.session as session_mod
 import pypath.share.settings as settings
+import pypath.utils.taxonomy as taxonomy
 
 _logger = session_mod.Logger(name = 'uniprot_input')
 
@@ -497,13 +500,32 @@ _uniprot_fields = {
 }
 
 
-def uniprot_data(field, organism = 9606, reviewed = True):
+def uniprot_data(
+        field: str | Iterable[str],
+        organism: str | int = 9606,
+        reviewed: bool = True,
+    ) -> dict[str, str] | dict[str, dict[str, str]]:
     """
+    Basic client for the legacy, plain UniProt API.
+
     Retrieves a field from UniProt for all proteins of one organism, by
     default only the reviewed (SwissProt) proteins.
     For the available fields refer to the ``_uniprot_fields`` attribute of
     this module or the UniProt website:
     https://legacy.uniprot.org/help/uniprotkb_column_names
+
+    Args:
+        field:
+            One or more UniProt field name. See details.
+        organism:
+            Organism name or identifier, e.g. "human", or "Homo sapiens",
+            or 9606.
+        reviewed:
+            Restrict the query to SwissProt (True), to TrEMBL (False), or
+            cover both (None).
+
+    Return:
+        A dictionary for each ke
     """
 
     rev = (
@@ -513,27 +535,40 @@ def uniprot_data(field, organism = 9606, reviewed = True):
         if reviewed == False or reviewed == 'no' else
         ''
     )
-    _field = _uniprot_fields[field] if field in _uniprot_fields else field
+
+    organism = taxonomy.ensure_ncbi_tax_id(organism)
+
+    field = common.to_list(field)
+    field_qs = ','.join(['id'] + [_uniprot_fields.get(f, f) for f in field])
+
     url = urls.urls['uniprot_basic']['url']
     get = {
         'query': 'organism:%s%s' % (str(organism), rev),
         'format': 'tab',
-        'columns': 'id,%s' % _field,
+        'columns': field_qs,
         'compress': 'yes',
     }
 
     c = curl.Curl(url, get = get, silent = False, large = True, compr = 'gz')
     _ = next(c.result)
 
-    return dict(
-        id_value
-        for id_value in
+
+    _id, *variables = zip(*(
+        line.strip('\n\r').split('\t')
+        for line in c.result if line.strip('\n\r')
+    ))
+
+    result = dict(
         (
-            line.strip('\n\r').split('\t')
-            for line in c.result if line.strip('\n\r')
+            f,
+            dict(id_value for id_value in zip(_id, v) if id_value[1])
         )
-        if id_value[1]
+        for f, v in zip(field, variables)
     )
+
+    result = common.first(result.values()) if len(result) == 1 else result
+
+    return result
 
 
 def uniprot_preprocess(field, organism = 9606, reviewed = True):
