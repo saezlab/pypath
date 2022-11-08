@@ -23,6 +23,7 @@
 #
 #  Website: http://pypath.omnipathdb.org/
 
+from typing import Literal
 
 import os
 import sys
