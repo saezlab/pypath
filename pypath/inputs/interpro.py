@@ -23,6 +23,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 from typing import List, Dict, Union, Literal
 
 import collections
