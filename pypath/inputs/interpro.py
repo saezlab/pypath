@@ -223,7 +223,7 @@ def interpro_xrefs(
 def interpro_annotations(
         page_size: int = 200, 
         reviewed: bool = True, 
-        tax_id: int = 9606
+        tax_id: str | int = 9606,
     ) ->  dict:
     """
     Downloads UniProtKB proteins and the InterPro entries they match.

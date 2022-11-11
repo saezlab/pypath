@@ -1532,7 +1532,7 @@ urls = {
         'entries': 'https://ftp.ebi.ac.uk/pub/databases/'
             'interpro/interpro.xml.gz',
         'annotations': 'https://www.ebi.ac.uk/interpro/api/entry/InterPro/'
-            'protein/%s/taxonomy/uniprot/%u?page_size=%u',
+            'protein/%s/taxonomy/uniprot/%s?page_size=%u',
         'interpro2go': 'http://www.geneontology.org/external2go/interpro2go',
     },
     'drugcentral': {
