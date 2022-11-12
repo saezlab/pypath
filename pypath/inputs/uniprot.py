@@ -538,7 +538,10 @@ def uniprot_data(
         ''
     )
 
-    organism = taxonomy.ensure_ncbi_tax_id(organism)
+
+    if organism != '*':
+
+        organism = taxonomy.ensure_ncbi_tax_id(organism)
 
     field = common.to_list(field)
     field_qs = ','.join(['id'] + [_uniprot_fields.get(f, f) for f in field])
