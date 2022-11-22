@@ -4665,5 +4665,12 @@
       "webpages": ["http://patho.phenomebrowser.net"],
       "articles": ["https://doi.org/10.1038/s41597-019-0090-x"]
     }
+  },
+  "Clinvar": {
+    "license": "No license",
+    "urls": {
+      "webpages": ["https://www.ncbi.nlm.nih.gov/clinvar/"],
+      "articles": ["https://pubmed.ncbi.nlm.nih.gov/29165669/"]
+    }
   }
 }

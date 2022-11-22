@@ -1576,6 +1576,10 @@ urls = {
     'pathophenodb': {
         'label': 'A database of pathogens and their phenotypes for diagnostic support in infections.',
         'url': 'http://patho.phenomebrowser.net/sparql/'
+    },
+    'clinvar': {
+        'label': 'A database archiving submissions that interpret the effect of a single variant or set of variants on phenotype.',
+        'url': 'https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/variant_summary.txt.gz'
     } 
 }
 
