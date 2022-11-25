@@ -1716,7 +1716,7 @@ class Mapper(session_mod.Logger):
         # translating from an ID type to the same ID type?
         elif id_type == target_id_type:
 
-            if target_id_type != 'uniprot':
+            if target_id_type != 'uniprot' or not uniprot_cleanup:
 
                 # no need for translation
                 return {name}
