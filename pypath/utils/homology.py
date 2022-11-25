@@ -23,6 +23,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 from future.utils import iteritems
 from past.builtins import xrange, range
 from typing import Literal
@@ -871,7 +873,7 @@ class ProteinHomology(Proteomes):
 
     def translate_df(
             self,
-            df,
+            df: pd.DataFrame,
             cols: str | list[str] | dict[str, str] | None = None,
             source: int | str = None,
             homologene: bool = None,
@@ -884,6 +886,16 @@ class ProteinHomology(Proteomes):
         ):
         """
         Translate columns in a data frame.
+
+        Args:
+            df:
+                A data frame.
+            cols:
+                One or more columns to be translated. It can be a single
+                column name, an iterable of column names or a dict where
+                keys are column names and values are ID types. Except this
+                last case, identifiers are assumed to be UniProt.
+
         """
 
         loc = locals()
