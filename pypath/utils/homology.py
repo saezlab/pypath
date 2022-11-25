@@ -64,6 +64,8 @@ _homology_cleanup_timeloop.logger.setLevel(9999)
 _logger = session.Logger(name = 'homology')
 _log = _logger._log
 
+ID_TYPE = str | tuple[str, str]
+
 
 class Ortholog(
         collections.namedtuple(
@@ -307,21 +309,37 @@ class HomologyManager(session.Logger):
             id_type = 'uniprot',
         ) -> dict[str, set[str]]:
         """
+        Create a dictionary for one source organism and ID type.
+
         Args:
-            source_id (str,list): UniProt ID of one or more protein in the
-                source organism.
-            target (int,str): The target organism.
-            source (int,str): The source organism.
-            homologene (bool): Use NCBI HomoloGene data for ortholog lookup.
-            ensembl (bool): Use Ensembl data for ortholog lookup.
-            ensembl_hc (bool): Use only high confidence orthology relations
+            target:
+                Tha organism to translate to.
+            source:
+                The organism to translate from.
+            homologene:
+                Use NCBI HomoloGene data for ortholog lookup.
+            ensembl:
+                Use Ensembl data for ortholog lookup.
+            ensembl_hc:
+                Use only high confidence orthology relations
                 from Ensembl. By default it is True. You can also set it
                 by the `ensembl_hc` attribute.
-            ensembl_types (list): The Ensembl orthology relationship types
+            ensembl_types:
+                The Ensembl orthology relationship types
                 to use. Possible values are `one2one`, `one2many` and
                 `many2many`. By default only `one2one` is used. You can
                 also set this parameter by the `ensembl_types` attribute.
-            id_type (str): Identifier type to translate from and to.
+            id_type:
+                Identifier type to translate from and to. If a tuple, the
+                first element will be used for keys (source organism) and
+                the second for the values (target organism). By default
+                UniProt IDs are assumed. For a complete list of ID types see
+                ``pypath.utils.mapping.get_mapper().id_types()`` and
+                ``pypath.utils.mapping.get_mapper().mapping_tables()``.
+
+        Return:
+            A dict with identifiers of the source organism as keys, and
+            sets of their orthologs as values.
         """
 
         table = self.which_table(
@@ -350,6 +368,39 @@ class HomologyManager(session.Logger):
             ensembl_types = None,
             id_type = 'uniprot',
         ):
+        """
+        Create a data frame for one source organism and ID type.
+
+        Args:
+            target:
+                The target organism.
+            source:
+                The source organism.
+            homologene:
+                Use NCBI HomoloGene data for ortholog lookup.
+            ensembl:
+                Use Ensembl data for ortholog lookup.
+            ensembl_hc:
+                Use only high confidence orthology relations
+                from Ensembl. By default it is True. You can also set it
+                by the `ensembl_hc` attribute.
+            ensembl_types:
+                The Ensembl orthology relationship types
+                to use. Possible values are `one2one`, `one2many` and
+                `many2many`. By default only `one2one` is used. You can
+                also set this parameter by the `ensembl_types` attribute.
+            id_type:
+                Identifier type to translate from and to. If a tuple, the
+                first element will be used for keys (source organism) and
+                the second for the values (target organism). By default
+                UniProt IDs are assumed. For a complete list of ID types see
+                ``pypath.utils.mapping.get_mapper().id_types()`` and
+                ``pypath.utils.mapping.get_mapper().mapping_tables()``.
+
+        Return:
+            A data frame with pairs of orthologous identifiers,
+            in two columns: "source" and "target".
+        """
 
         table = self.which_table(
             target = target,
@@ -382,6 +433,39 @@ class HomologyManager(session.Logger):
         ):
         """
         Translate columns in a data frame.
+
+        Args:
+            df:
+                A data frame.
+            cols:
+                One or more columns to be translated. It can be a single
+                column name, an iterable of column names or a dict where
+                keys are column names and values are ID types. Except this
+                last case, identifiers are assumed to be UniProt.
+            source:
+                The organism to translate from.
+            homologene:
+                Use NCBI HomoloGene data for ortholog lookup.
+            ensembl:
+                Use Ensembl data for ortholog lookup.
+            ensembl_hc:
+                Use only high confidence orthology relations
+                from Ensembl. By default it is True. You can also set it
+                by the `ensembl_hc` attribute.
+            ensembl_types:
+                The Ensembl orthology relationship types
+                to use. Possible values are `one2one`, `one2many` and
+                `many2many`. By default only `one2one` is used. You can
+                also set this parameter by the `ensembl_types` attribute.
+            kwargs:
+                Same as providing a dict to ``cols``, but beware, keys
+                (column names) can not match existing argument names of
+                this function.
+
+        Return:
+            A data frame with the same column layout as the input, and the
+            identifiers translated as demanded. Rows that could not be
+            translated are omitted.
         """
 
         table = self.which_table(
@@ -798,47 +882,87 @@ class ProteinHomology(Proteomes):
             ensembl_types: list[Literal[
                 'one2one', 'one2many', 'many2many'
             ]] = None,
-            id_type: str = 'uniprot',
+            id_type: ID_TYPE = 'uniprot',
         ):
         """
         Create a dictionary for one source organism and ID type.
+
+        Args:
+            source:
+                The source organism.
+            homologene:
+                Use NCBI HomoloGene data for ortholog lookup.
+            ensembl:
+                Use Ensembl data for ortholog lookup.
+            ensembl_hc:
+                Use only high confidence orthology relations
+                from Ensembl. By default it is True. You can also set it
+                by the `ensembl_hc` attribute.
+            ensembl_types:
+                The Ensembl orthology relationship types
+                to use. Possible values are `one2one`, `one2many` and
+                `many2many`. By default only `one2one` is used. You can
+                also set this parameter by the `ensembl_types` attribute.
+            id_type:
+                Identifier type to translate from and to. If a tuple, the
+                first element will be used for keys (source organism) and
+                the second for the values (target organism). By default
+                UniProt IDs are assumed. For a complete list of ID types see
+                ``pypath.utils.mapping.get_mapper().id_types()`` and
+                ``pypath.utils.mapping.get_mapper().mapping_tables()``.
+
+        Return:
+            A dict with identifiers of the source organism as keys, and
+            sets of their orthologs as values.
         """
 
         source = self.get_source(source)
         self.ensure_source_taxon(source)
 
-        if id_type == 'uniprot':
+        id_type = (id_type,) * 2 if isinstance(id_type, str) else id_type
 
-            result = dict(
-                (
-                    uniprot_src,
-                    {o.uniprot for o in orthologs}
-                )
-                for uniprot_src, orthologs in self.orthologs[source].items()
+        if not (
+                isinstance(id_type, tuple) and
+                len(id_type) >= 2 and
+                isinstance(id_type[0], str) and
+                isinstance(id_type[1], str)
+            ):
+
+            msg = (
+                '`ProteinHomology.asdict`: '
+                f'wrong format for `id_type`: `{id_type}`.'
             )
+            _log(msg)
+            raise ValueError(msg)
 
-        else:
+        _log(
+            'Creating dict of orthologous genes between organisms '
+            f'`{source}` (ID type `{id_type[0]}`) and '
+            f'`{self.target}` (ID type `{id_type[1]}`).'
+        )
 
-            result = dict(
-                (
-                    id_src,
-                    mapping.map_names(
-                        names = {o.uniprot for o in orthologs},
-                        id_type = 'uniprot',
-                        target_id_type = id_type,
-                        ncbi_tax_id = self.target,
-                    )
+        return dict(
+            (
+                id_src,
+                mapping.map_names(
+                    names = {o.uniprot for o in orthologs},
+                    id_type = 'uniprot',
+                    target_id_type = id_type[1],
+                    ncbi_tax_id = self.target,
+                    uniprot_cleanup = False,
                 )
-                for uniprot_src, orthologs in self.orthologs[source].items()
-                for id_src in mapping.map_name(
+            )
+            for uniprot_src, orthologs in self.orthologs[source].items()
+            for id_src in (
+                mapping.map_name(
                     name = uniprot_src,
                     id_type = 'uniprot',
-                    target_id_type = id_type,
+                    target_id_type = id_type[0],
                     ncbi_tax_id = source,
+                    uniprot_cleanup = False,
                 )
             )
-
-        return result
+        )
 
 
     def df(
@@ -850,10 +974,38 @@ class ProteinHomology(Proteomes):
             ensembl_types: list[Literal[
                 'one2one', 'one2many', 'many2many'
             ]] = None,
-            id_type: str = 'uniprot',
+            id_type: ID_TYPE = 'uniprot',
         ):
         """
         Create a data frame for one source organism and ID type.
+
+        Args:
+            source:
+                The source organism.
+            homologene:
+                Use NCBI HomoloGene data for ortholog lookup.
+            ensembl:
+                Use Ensembl data for ortholog lookup.
+            ensembl_hc:
+                Use only high confidence orthology relations
+                from Ensembl. By default it is True. You can also set it
+                by the `ensembl_hc` attribute.
+            ensembl_types:
+                The Ensembl orthology relationship types
+                to use. Possible values are `one2one`, `one2many` and
+                `many2many`. By default only `one2one` is used. You can
+                also set this parameter by the `ensembl_types` attribute.
+            id_type:
+                Identifier type to translate from and to. If a tuple, the
+                first element will be used for keys (source organism) and
+                the second for the values (target organism). By default
+                UniProt IDs are assumed. For a complete list of ID types see
+                ``pypath.utils.mapping.get_mapper().id_types()`` and
+                ``pypath.utils.mapping.get_mapper().mapping_tables()``.
+
+        Return:
+            A data frame with pairs of orthologous identifiers,
+            in two columns: "source" and "target".
         """
 
         args = locals().copy()
@@ -874,7 +1026,7 @@ class ProteinHomology(Proteomes):
     def translate_df(
             self,
             df: pd.DataFrame,
-            cols: str | list[str] | dict[str, str] | None = None,
+            cols: str | list[str] | dict[str, ID_TYPE] | None = None,
             source: int | str = None,
             homologene: bool = None,
             ensembl: bool = None,
@@ -882,7 +1034,7 @@ class ProteinHomology(Proteomes):
             ensembl_types: list[Literal[
                 'one2one', 'one2many', 'many2many'
             ]] = None,
-            **kwargs
+            **kwargs: ID_TYPE
         ):
         """
         Translate columns in a data frame.
@@ -895,7 +1047,30 @@ class ProteinHomology(Proteomes):
                 column name, an iterable of column names or a dict where
                 keys are column names and values are ID types. Except this
                 last case, identifiers are assumed to be UniProt.
+            source:
+                The source organism.
+            homologene:
+                Use NCBI HomoloGene data for ortholog lookup.
+            ensembl:
+                Use Ensembl data for ortholog lookup.
+            ensembl_hc:
+                Use only high confidence orthology relations
+                from Ensembl. By default it is True. You can also set it
+                by the `ensembl_hc` attribute.
+            ensembl_types:
+                The Ensembl orthology relationship types
+                to use. Possible values are `one2one`, `one2many` and
+                `many2many`. By default only `one2one` is used. You can
+                also set this parameter by the `ensembl_types` attribute.
+            kwargs:
+                Same as providing a dict to ``cols``, but beware, keys
+                (column names) can not match existing argument names of
+                this function.
 
+        Return:
+            A data frame with the same column layout as the input, and the
+            identifiers translated as demanded. Rows that could not be
+            translated are omitted.
         """
 
         loc = locals()
@@ -1537,7 +1712,37 @@ def get_dict(
         id_type = 'uniprot',
     ):
     """
-    Create a translation dictionary between a pair of organisms.
+    Create a dictionary for one source organism and ID type.
+
+    Args:
+        target:
+            Tha organism to translate to.
+        source:
+            The organism to translate from.
+        homologene:
+            Use NCBI HomoloGene data for ortholog lookup.
+        ensembl:
+            Use Ensembl data for ortholog lookup.
+        ensembl_hc:
+            Use only high confidence orthology relations
+            from Ensembl. By default it is True. You can also set it
+            by the `ensembl_hc` attribute.
+        ensembl_types:
+            The Ensembl orthology relationship types
+            to use. Possible values are `one2one`, `one2many` and
+            `many2many`. By default only `one2one` is used. You can
+            also set this parameter by the `ensembl_types` attribute.
+        id_type:
+            Identifier type to translate from and to. If a tuple, the
+            first element will be used for keys (source organism) and
+            the second for the values (target organism). By default
+            UniProt IDs are assumed. For a complete list of ID types see
+            ``pypath.utils.mapping.get_mapper().id_types()`` and
+            ``pypath.utils.mapping.get_mapper().mapping_tables()``.
+
+    Return:
+        A dict with identifiers of the source organism as keys, and
+        sets of their orthologs as values.
     """
 
     manager = get_manager()
@@ -1560,6 +1765,36 @@ def get_df(
     ):
     """
     Create a data frame for one source organism and ID type.
+
+    Args:
+        target:
+            The organism to translate to.
+        source:
+            The organism to translate from.
+        homologene:
+            Use NCBI HomoloGene data for ortholog lookup.
+        ensembl:
+            Use Ensembl data for ortholog lookup.
+        ensembl_hc:
+            Use only high confidence orthology relations
+            from Ensembl. By default it is True. You can also set it
+            by the `ensembl_hc` attribute.
+        ensembl_types:
+            The Ensembl orthology relationship types
+            to use. Possible values are `one2one`, `one2many` and
+            `many2many`. By default only `one2one` is used. You can
+            also set this parameter by the `ensembl_types` attribute.
+        id_type:
+            Identifier type to translate from and to. If a tuple, the
+            first element will be used for keys (source organism) and
+            the second for the values (target organism). By default
+            UniProt IDs are assumed. For a complete list of ID types see
+            ``pypath.utils.mapping.get_mapper().id_types()`` and
+            ``pypath.utils.mapping.get_mapper().mapping_tables()``.
+
+    Return:
+        A data frame with pairs of orthologous identifiers,
+        in two columns: "source" and "target".
     """
 
     manager = get_manager()
@@ -1573,7 +1808,7 @@ def get_df(
 def translate_df(
         df,
         target: int | str,
-        cols: str | list[str] | dict[str, str] | None = None,
+        cols: str | list[str] | dict[str, ID_TYPE] | None = None,
         source: int | str = 9606,
         homologene: bool = None,
         ensembl: bool = None,
@@ -1581,10 +1816,45 @@ def translate_df(
         ensembl_types: list[Literal[
             'one2one', 'one2many', 'many2many'
         ]] = None,
-        **kwargs
+        **kwargs: ID_TYPE
     ):
     """
     Translate columns in a data frame.
+
+    Args:
+        df:
+            A data frame.
+        target:
+            The organism to translate to.
+        cols:
+            One or more columns to be translated. It can be a single
+            column name, an iterable of column names or a dict where
+            keys are column names and values are ID types. Except this
+            last case, identifiers are assumed to be UniProt.
+        source:
+            The organism to translate from.
+        homologene:
+            Use NCBI HomoloGene data for ortholog lookup.
+        ensembl:
+            Use Ensembl data for ortholog lookup.
+        ensembl_hc:
+            Use only high confidence orthology relations
+            from Ensembl. By default it is True. You can also set it
+            by the `ensembl_hc` attribute.
+        ensembl_types:
+            The Ensembl orthology relationship types
+            to use. Possible values are `one2one`, `one2many` and
+            `many2many`. By default only `one2one` is used. You can
+            also set this parameter by the `ensembl_types` attribute.
+        kwargs:
+            Same as providing a dict to ``cols``, but beware, keys
+            (column names) can not match existing argument names of
+            this function.
+
+    Return:
+        A data frame with the same column layout as the input, and the
+        identifiers translated as demanded. Rows that could not be
+        translated are omitted.
     """
 
     manager = get_manager()
