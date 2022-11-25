@@ -364,6 +364,41 @@ class HomologyManager(session.Logger):
         )
 
 
+    def translate_df(
+            self,
+            df,
+            target: int | str,
+            cols: str | list[str] | dict[str, str] | None = None,
+            source: int | str = 9606,
+            homologene: bool = None,
+            ensembl: bool = None,
+            ensembl_hc: bool = None,
+            ensembl_types: list[Literal[
+                'one2one', 'one2many', 'many2many'
+            ]] = None,
+            **kwargs
+        ):
+        """
+        Translate columns in a data frame.
+        """
+
+        table = self.which_table(
+            target = target,
+            source = source,
+        )
+
+        param = self._translation_param(locals())
+
+        return table.translate_df(
+            df = df,
+            cols = cols,
+            source = source,
+            **param,
+            **kwargs
+        )
+
+
+
     def _translation_param(self, loc: dict) -> dict:
 
         param = dict(
@@ -833,6 +868,76 @@ class ProteinHomology(Proteomes):
 
         return df
 
+
+    def translate_df(
+            self,
+            df,
+            cols: str | list[str] | dict[str, str] | None = None,
+            source: int | str = None,
+            homologene: bool = None,
+            ensembl: bool = None,
+            ensembl_hc: bool = None,
+            ensembl_types: list[Literal[
+                'one2one', 'one2many', 'many2many'
+            ]] = None,
+            **kwargs
+        ):
+        """
+        Translate columns in a data frame.
+        """
+
+        loc = locals()
+
+        col_order = df.columns
+
+        if not isinstance(cols, dict):
+
+            cols = dict((col, 'uniprot') for col in common.to_list(cols))
+
+        kwargs.update(cols)
+        id_types = set(kwargs.values())
+
+        transdfs = dict(
+            (
+                id_type,
+                self.df(
+                    source = source,
+                    id_type = id_type,
+                    **self._translation_param(loc)
+                ).
+                rename(
+                    {
+                        'source': 'pypath_internal_source',
+                        'target': 'pypath_internal_target',
+                    },
+                    axis = 1,
+                )
+            )
+            for id_type in id_types
+        )
+
+        for col, id_type in kwargs.items():
+
+            df = (
+                df.merge(
+                    transdfs[id_type].
+                        rename({'pypath_internal_source': col}, axis = 1),
+                    on = col,
+                    how = 'inner',
+                ).
+                drop(col, axis = 1).
+                rename({'pypath_internal_target': col}, axis = 1)
+            )
+
+        return df[col_order]
+
+
+    def _translation_param(self, loc: dict) -> dict:
+
+        return dict(
+            (p, loc[p])
+            for p in HomologyManager.TRANSLATION_PARAM
+        )
 
     def load_homologene(self, source):
         """
@@ -1451,3 +1556,29 @@ def get_df(
     args.pop('manager')
 
     return manager.get_df(**args)
+
+
+def translate_df(
+        df,
+        target: int | str,
+        cols: str | list[str] | dict[str, str] | None = None,
+        source: int | str = 9606,
+        homologene: bool = None,
+        ensembl: bool = None,
+        ensembl_hc: bool = None,
+        ensembl_types: list[Literal[
+            'one2one', 'one2many', 'many2many'
+        ]] = None,
+        **kwargs
+    ):
+    """
+    Translate columns in a data frame.
+    """
+
+    manager = get_manager()
+
+    args = locals().copy()
+    args.pop('manager')
+    kwargs = args.pop('kwargs')
+
+    return manager.translate_df(**args, **kwargs)
