@@ -946,7 +946,8 @@ urls = {
         'links': 'https://stringdb-static.org/download/protein.links.detailed.v11.5/%u'
             '.protein.links.detailed.v11.5.txt.gz',
         'physical_links': 'https://stringdb-static.org/download/protein.physical.links.detailed.v11.5/%u'
-            '.protein.physical.links.detailed.v11.5.txt.gz'
+            '.protein.physical.links.detailed.v11.5.txt.gz',
+        'species': 'https://stringdb-static.org/download/species.v11.5.txt'
     },
     'wikipw': {
         'label': 'WikiPathways human biopax',
