@@ -429,7 +429,7 @@ class HomologyManager(session.Logger):
             ensembl_types: list[Literal[
                 'one2one', 'one2many', 'many2many'
             ]] = None,
-            **kwargs
+            **kwargs: ID_TYPE
         ):
         """
         Translate columns in a data frame.
@@ -1008,6 +1008,11 @@ class ProteinHomology(Proteomes):
             in two columns: "source" and "target".
         """
 
+        _log(
+            'Creating translation data frame between '
+            f'organisms `{source}` and `{self.target}`.'
+        )
+
         args = locals().copy()
         args.pop('self')
 
@@ -1073,6 +1078,11 @@ class ProteinHomology(Proteomes):
             translated are omitted.
         """
 
+        _log(
+            f'Translating data frame column(s) from '
+            f'organism `{source}` to `{self.target}`.'
+        )
+
         loc = locals()
 
         col_order = df.columns
@@ -1104,6 +1114,12 @@ class ProteinHomology(Proteomes):
         )
 
         for col, id_type in kwargs.items():
+
+            _log(
+                f'Translating `{id_type[0]}` IDs of organism `{source}` '
+                f'in column `{col}` to `{id_type[1]}` IDs of '
+                f'organism `{self.target}`.'
+            )
 
             df = (
                 df.merge(
