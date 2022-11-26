@@ -27,6 +27,7 @@ import random
 import sys
 import traceback
 import itertools
+import builtins
 
 import pypath.share.log as log
 
@@ -58,8 +59,17 @@ class Session(object):
         all modules.
         """
 
-        self.logfile = os.getenv('PYPATH_LOG') or 'pypath-%s.log' % self.label
-        self.log = log.Logger(self.logfile, verbosity=self.log_verbosity)
+        self.logfile = str(
+            os.getenv('PYPATH_LOG') or
+            getattr(builtins, 'PYPATH_LOG', None) or
+            'pypath-%s.log' % self.label
+        )
+
+        self.log = log.Logger(
+            fname = os.path.basename(self.logfile),
+            verbosity=self.log_verbosity,
+            logdir = os.path.dirname(self.logfile),
+        )
 
 
     def finish_logger(self):
