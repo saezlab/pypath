@@ -342,6 +342,9 @@ class HomologyManager(session.Logger):
             sets of their orthologs as values.
         """
 
+        source = taxonomy.ensure_ncbi_tax_id(source)
+        target = taxonomy.ensure_ncbi_tax_id(target)
+
         table = self.which_table(
             target = target,
             source = source,
@@ -401,6 +404,9 @@ class HomologyManager(session.Logger):
             A data frame with pairs of orthologous identifiers,
             in two columns: "source" and "target".
         """
+
+        source = taxonomy.ensure_ncbi_tax_id(source)
+        target = taxonomy.ensure_ncbi_tax_id(target)
 
         table = self.which_table(
             target = target,
@@ -467,6 +473,9 @@ class HomologyManager(session.Logger):
             identifiers translated as demanded. Rows that could not be
             translated are omitted.
         """
+
+        source = taxonomy.ensure_ncbi_tax_id(source)
+        target = taxonomy.ensure_ncbi_tax_id(target)
 
         table = self.which_table(
             target = target,
