@@ -64,8 +64,6 @@ _homology_cleanup_timeloop.logger.setLevel(9999)
 _logger = session.Logger(name = 'homology')
 _log = _logger._log
 
-ID_TYPE = str | tuple[str, str]
-
 
 class Ortholog(
         collections.namedtuple(
@@ -435,7 +433,7 @@ class HomologyManager(session.Logger):
             ensembl_types: list[Literal[
                 'one2one', 'one2many', 'many2many'
             ]] = None,
-            **kwargs: ID_TYPE
+            **kwargs: str | tuple[str, str]
         ):
         """
         Translate columns in a data frame.
@@ -891,7 +889,7 @@ class ProteinHomology(Proteomes):
             ensembl_types: list[Literal[
                 'one2one', 'one2many', 'many2many'
             ]] = None,
-            id_type: ID_TYPE = 'uniprot',
+            id_type: str | tuple[str, str] = 'uniprot',
         ):
         """
         Create a dictionary for one source organism and ID type.
@@ -983,7 +981,7 @@ class ProteinHomology(Proteomes):
             ensembl_types: list[Literal[
                 'one2one', 'one2many', 'many2many'
             ]] = None,
-            id_type: ID_TYPE = 'uniprot',
+            id_type: str | tuple[str, str] = 'uniprot',
         ):
         """
         Create a data frame for one source organism and ID type.
@@ -1040,7 +1038,12 @@ class ProteinHomology(Proteomes):
     def translate_df(
             self,
             df: pd.DataFrame,
-            cols: str | list[str] | dict[str, ID_TYPE] | None = None,
+            cols: (
+                str |
+                list[str] |
+                dict[str, str | tuple[str, str]] |
+                None
+            ) = None,
             source: int | str = None,
             homologene: bool = None,
             ensembl: bool = None,
@@ -1048,7 +1051,7 @@ class ProteinHomology(Proteomes):
             ensembl_types: list[Literal[
                 'one2one', 'one2many', 'many2many'
             ]] = None,
-            **kwargs: ID_TYPE
+            **kwargs: str | tuple[str, str]
         ):
         """
         Translate columns in a data frame.
@@ -1833,7 +1836,12 @@ def get_df(
 def translate_df(
         df,
         target: int | str,
-        cols: str | list[str] | dict[str, ID_TYPE] | None = None,
+        cols: (
+            str |
+            list[str] |
+            dict[str, str | tuple[str, str]] |
+            None
+        ) = None,
         source: int | str = 9606,
         homologene: bool = None,
         ensembl: bool = None,
@@ -1841,7 +1849,7 @@ def translate_df(
         ensembl_types: list[Literal[
             'one2one', 'one2many', 'many2many'
         ]] = None,
-        **kwargs: ID_TYPE
+        **kwargs: str | tuple[str, str]
     ):
     """
     Translate columns in a data frame.
