@@ -188,9 +188,30 @@ nonstandard_taxids = {
 }
 
 
-dbptm_to_ncbi_tax_id = common.swap_dict_simple(dbptm_taxids)
-latin_name_to_ncbi_tax_id = common.swap_dict_simple(phosphoelm_taxids)
-ensembl_name_to_ncbi_tax_id = common.swap_dict_simple(ensembl_taxids)
+def shorten_latin_name(name: str, dot: bool = True) -> str:
+    """
+    For a complete latin name, returns its shortened version.
+
+    In short latin names the genus name is marked only by its initial.
+    """
+
+    if name:
+
+        name = name.split()
+
+        return f'{name[0][0].upper()}{"." if dot else ""} {"".join(name[1:])}'
+
+
+def short_latin_names(long_names: dict[str, int]) -> dict[str, int]:
+    """
+    For a dict of long latin names returns a dict with all names shortened.
+    """
+
+    return {
+        shorten_latin_name(k, dot = dot): v
+        for k, v in long_names.items()
+        for dot in (True, False)
+    }
 
 
 def ensure_common_name(taxon_id):
@@ -238,31 +259,31 @@ def taxid_from_common_name(taxon_name):
         taxon_name = taxon_name.strip()
         taxon_name_l = taxon_name.lower()
         taxon_name_c = taxon_name.capitalize()
-    
+
     if (
         taxon_name is None or
         not taxon_name_l or
         taxon_name in {'none', 'unknown'}
     ):
-        
+
         return None
-    
+
     if taxon_name_l in taxa_synonyms:
-        
+
         return taxid_from_common_name(taxa_synonyms[taxon_name_l])
-    
+
     if taxon_name_l in taxa:
-        
+
         return taxa[taxon_name_l]
 
     if taxon_name_l in taxa2:
 
         return taxa2[taxon_name_l]
-    
+
     common_to_ncbi = get_db('common')
-    
+
     if taxon_name in common_to_ncbi:
-        
+
         return common_to_ncbi[taxon_name]
 
     if taxon_name_c in common_to_ncbi:
@@ -271,29 +292,33 @@ def taxid_from_common_name(taxon_name):
 
 
 def taxid_from_latin_name(taxon_name):
-    
+
     if taxon_name in latin_name_to_ncbi_tax_id:
-        
+
         return latin_name_to_ncbi_tax_id[taxon_name]
-    
+
+    if taxon_name in short_latin_name_to_ncbi_tax_id:
+
+        return short_latin_name_to_ncbi_tax_id[taxon_name]
+
     latin_to_ncbi = get_db('latin')
-    
+
     if taxon_name in latin_to_ncbi:
-        
+
         return latin_to_ncbi[taxon_name]
 
 
 def taxid_from_dbptm_taxon_name(taxon_name):
-    
+
     if taxon_name in dbptm_to_ncbi_tax_id:
-        
+
         return dbptm_to_ncbi_tax_id[taxon_name]
 
 
 def taxid_from_nonstandard(taxon_name):
-    
+
     if taxon_name in nonstandard_taxids:
-        
+
         return nonstandard_taxids[taxon_name]
 
 
@@ -310,32 +335,32 @@ def ensure_ncbi_tax_id(taxon_id):
     Handles English names, scientific names and other common language
     synonyms and database specific codenames.
     """
-    
+
     if isinstance(taxon_id, int):
-        
+
         return taxon_id
-        
+
     else:
-        
+
         if hasattr(taxon_id, 'strip'):
-            
+
             taxon_id = taxon_id.strip()
-        
+
         if common.is_str(taxon_id) and '(' in taxon_id:
-            
+
             part0, part1 = taxon_id.split('(', maxsplit = 1)
-            
+
             ncbi_tax_id = (
                 ensure_ncbi_tax_id(part0) or
                 ensure_ncbi_tax_id(part1.split(')', maxsplit = 1)[0])
             )
-            
+
         elif hasattr(taxon_id, 'isdigit') and taxon_id.isdigit():
-            
+
             ncbi_tax_id = int(taxon_id)
-            
+
         else:
-            
+
             ncbi_tax_id = (
                 taxid_from_dbptm_taxon_name(taxon_id) or
                 taxid_from_nonstandard(taxon_id) or
@@ -343,11 +368,11 @@ def ensure_ncbi_tax_id(taxon_id):
                 taxid_from_latin_name(taxon_id) or
                 taxid_from_ensembl_name(taxon_id)
             )
-        
+
         if not ncbi_tax_id:
-            
+
             _log('Could not map to NCBI Taxonomy ID: `%s`.' % str(taxon_id))
-        
+
         return ncbi_tax_id
 
 
@@ -362,6 +387,11 @@ def uniprot_taxid(uniprot):
 
         return uniprot_to_taxid[uniprot]
 
+
+dbptm_to_ncbi_tax_id = common.swap_dict_simple(dbptm_taxids)
+latin_name_to_ncbi_tax_id = common.swap_dict_simple(phosphoelm_taxids)
+short_latin_name_to_ncbi_tax_id = short_latin_names(latin_name_to_ncbi_tax_id)
+ensembl_name_to_ncbi_tax_id = common.swap_dict_simple(ensembl_taxids)
 
 _cleanup_timeloop = timeloop.Timeloop()
 _cleanup_timeloop.logger.setLevel(9999)
@@ -437,6 +467,10 @@ def init_db(key):
             for taxon in ncbi_data.values()
         )
 
+        if not swap:
+
+            this_db.update(short_latin_names(this_db))
+
     elif _key == 'common':
 
         this_db = (
@@ -484,6 +518,10 @@ def init_db(key):
     if swap:
 
         this_db = common.swap_dict_simple(this_db)
+
+    else:
+
+        this_db.update({k.lower(): v for k, v in this_db.items()})
 
     if this_db:
 
