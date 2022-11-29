@@ -2,7 +2,7 @@
 *pypath:* A Python module for molecular signaling prior knowledge processing
 ============================================================================
 
-.. image:: docs/source/_static/pypath-demo.webp
+|Demo|
 
 OmniPath
 ========
@@ -217,6 +217,10 @@ similar services as pypath: `ID translation`_, `homology translation`_,
 .. _`taxonomy support`: https://saezlab.github.io/OmnipathR/reference/ncbi_taxid.html
 .. _`GO support`: https://saezlab.github.io/OmnipathR/reference/go_annot_download.html
 
+**`Questions about OmniPath`_**
+
+.. _`Questions about OmniPath`: https://omnipathdb.org/#faq
+
 Contact
 =======
 
@@ -252,3 +256,5 @@ about recent developments see the `Github releases`_.
 
 .. _here: https://saezlab.github.io/pypath/releasehistory.html
 .. _`Github releases`: https://github.com/saezlab/pypath/releases
+
+.. |Demo| image:: https://raw.githubusercontent.com/saezlab/pypath/master/docs/source/_static/img/pypath-demo.webp
