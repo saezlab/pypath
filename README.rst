@@ -217,7 +217,7 @@ similar services as pypath: `ID translation`_, `homology translation`_,
 .. _`taxonomy support`: https://saezlab.github.io/OmnipathR/reference/ncbi_taxid.html
 .. _`GO support`: https://saezlab.github.io/OmnipathR/reference/go_annot_download.html
 
-**`Questions about OmniPath`_**
+`Questions about OmniPath`_
 
 .. _`Questions about OmniPath`: https://omnipathdb.org/#faq
 
