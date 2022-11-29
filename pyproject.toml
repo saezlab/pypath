@@ -86,7 +86,7 @@ graph = [
 [tool.poetry.dev-dependencies]
 bump2version = "*"
 sphinx = ">=5.0.0"
-sphinx-rtd-theme = ">=1.0.0"
+insipid-sphinx-theme = ">=0.3.6"
 sphinx-last-updated-by-git = ">=0.3"
 sphinx-autodoc-typehints = ">=1.18.0"
 

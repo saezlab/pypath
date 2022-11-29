@@ -268,6 +268,8 @@ class HomologyManager(session.Logger):
             Set of UniProt IDs of homologous proteins in the target taxon.
         """
 
+        target = taxonomy.ensure_ncbi_tax_id(target)
+
         table = self.which_table(
             target = target,
             source = source,

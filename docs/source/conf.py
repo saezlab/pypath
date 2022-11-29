@@ -17,8 +17,6 @@
 # sys.path.insert(0, os.path.abspath('.'))
 import time
 
-import sphinx_rtd_theme
-
 from pypath._metadata import __author__, __license__, __version__
 
 # -- Project information -----------------------------------------------------
@@ -34,8 +32,6 @@ author = (", ").join(__author__)
 version = __version__
 # The full version, including alpha/beta/rc tags
 release = __version__
-language = 'en'
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -48,13 +44,12 @@ language = 'en'
 # ones.
 extensions = [
     'sphinx.ext.napoleon',
-    'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.mathjax',
-    'sphinx_rtd_theme',
+    'sphinx_last_updated_by_git',
 ]
 
 autosummary_generate = True
@@ -76,7 +71,7 @@ master_doc = 'index'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -84,7 +79,7 @@ language = None
 exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'manni'
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -92,7 +87,8 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_permalinks_icon = '§'
+html_theme = 'insipid'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -104,6 +100,10 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+html_css_files = [
+    'css/pypathdocs.css',
+]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.

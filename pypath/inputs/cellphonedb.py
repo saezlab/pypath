@@ -36,8 +36,11 @@ import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 import pypath.internals.intera as intera
 import pypath.share.common as common
+import pypath.share.session as session
 import pypath.inputs.uniprot as uniprot_input
 
+_logger = session.Logger(name = 'cellphonedb_input')
+_log = _logger._log
 
 CellPhoneDBAnnotation = collections.namedtuple(
     'CellPhoneDBAnnotation',
@@ -229,6 +232,10 @@ def _cellphonedb_get_entity(name, complexes):
 
     if name in complexes:
         return (complexes[name],)
+
+    if '_by' in name:
+        _log(f'Ignoring entity: `{name}`.')
+        return ()
 
     if ':' in name:
         name = name.split(':')[1]
