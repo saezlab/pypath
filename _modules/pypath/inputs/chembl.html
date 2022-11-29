@@ -1,0 +1,485 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.inputs.chembl &#8212; pypath 0.14.29 documentation</title>
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script defer src="../../../_static/insipid.js"></script>
+    <script defer src="../../../_static/insipid-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head><body>
+    <script type="text/javascript">
+        document.body.classList.add('js');
+    </script>
+    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
+    <label id="overlay" for="sidebar-checkbox"></label>
+    <div class="sidebar-resize-handle"></div>
+    <script type="text/javascript">
+        try {
+            let sidebar = localStorage.getItem('sphinx-sidebar');
+            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
+            if (sidebar_width) {
+                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
+            }
+            // show sidebar on wide screen
+            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
+                sidebar = 'visible';
+                // NB: We don't store the value in localStorage!
+            }
+            if (sidebar === 'visible') {
+                document.getElementById('sidebar-checkbox').checked = true;
+            }
+        } catch(e) {
+            console.info(e);
+        }
+    </script>
+    <header id="topbar-placeholder">
+      <div id="topbar">
+        <div id="titlebar">
+          <div class="buttons">
+            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+            </label>
+            <button id="search-button" type="button" title="Search" aria-label="Search" aria-expanded="false" aria-controls="search-form" accesskey="S">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
+            </button>
+          </div>
+          <div class="title">
+            <a class="parent" href="../inputs.html" accesskey="U">pypath.inputs</a>
+            <a class="top" href="#">pypath.inputs.chembl</a>
+          </div>
+          <div class="buttons">
+            <button id="fullscreen-button" type="button" aria-hidden="true">
+              <span class="enable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
+              </span>
+              <span class="disable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+        <div id="searchbox" role="search">
+          <form id="search-form" class="search" style="display: none" action="../../../search.html" method="get">
+            <input type="search" name="q" placeholder="Search ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            <button>Go</button>
+          </form>
+        </div>
+      </div>
+    </header>
+    <nav>
+    </nav>
+
+    <nav class="relbar">
+    </nav>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+<h1>Source code for pypath.inputs.chembl</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright</span>
+<span class="c1">#  2014-2022</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  Authors: Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#           Nicolàs Palacio</span>
+<span class="c1">#           Sebastian Lobentanzer</span>
+<span class="c1">#           Erva Ulusoy</span>
+<span class="c1">#           Olga Ivanova</span>
+<span class="c1">#           Ahmet Rifaioglu</span>
+<span class="c1">#           Tennur Kılıç</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
+<span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
+
+
+<div class="viewcode-block" id="chembl_targets"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.chembl.chembl_targets.html#pypath.inputs.chembl.chembl_targets">[docs]</a><span class="k">def</span> <span class="nf">chembl_targets</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves targets data from ChEMBL.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        List of drug target records as named tuples.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fields_target</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;accession&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;target_chembl_id&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">ChemblTarget</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;ChemblTarget&#39;</span><span class="p">,</span>
+        <span class="n">fields_target</span><span class="p">,</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields_target</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">tgt_lst</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">page_dct</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">page_dct</span><span class="p">:</span>
+
+            <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;target&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;page_meta&#39;</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">]:</span>
+
+            <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;page_meta&#39;</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">break</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">page_dct</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">fileobj</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="n">tgt_lst</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="n">ChemblTarget</span><span class="p">(</span>
+                <span class="n">accession</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">tgt</span><span class="p">[</span><span class="s1">&#39;target_components&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;accession&#39;</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">tgt</span><span class="p">[</span><span class="s1">&#39;target_components&#39;</span><span class="p">]</span> <span class="k">else</span>
+                    <span class="kc">None</span>
+                <span class="p">),</span>
+                <span class="n">target_chembl_id</span> <span class="o">=</span> <span class="n">tgt</span><span class="p">[</span><span class="s1">&#39;target_chembl_id&#39;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">tgt</span> <span class="ow">in</span> <span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;targets&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">tgt_lst</span></div>
+
+
+<div class="viewcode-block" id="chembl_assays"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.chembl.chembl_assays.html#pypath.inputs.chembl.chembl_assays">[docs]</a><span class="k">def</span> <span class="nf">chembl_assays</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span> <span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves assays data from ChEMBL.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        List of assay records as named tuples.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fields_assay</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;assay_chembl_id&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;assay_organism&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;assay_type&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;confidence_score&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;target_chembl_id&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">ChemblAssay</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;ChemblAssay&#39;</span><span class="p">,</span>
+        <span class="n">fields_assay</span><span class="p">,</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields_assay</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">assay_lst</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">page_dct</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">page_dct</span><span class="p">:</span>
+
+            <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;assay&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;page_meta&#39;</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">]:</span>
+
+            <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;page_meta&#39;</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">break</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">page_dct</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">fileobj</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="n">assay_lst</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="n">ChemblAssay</span><span class="p">(</span>
+                <span class="n">assay_chembl_id</span> <span class="o">=</span> <span class="n">assy_attr</span><span class="p">[</span><span class="s1">&#39;assay_chembl_id&#39;</span><span class="p">],</span>
+                <span class="n">assay_organism</span> <span class="o">=</span> <span class="n">assy_attr</span><span class="p">[</span><span class="s1">&#39;assay_organism&#39;</span><span class="p">],</span>
+                <span class="n">assay_type</span> <span class="o">=</span> <span class="n">assy_attr</span><span class="p">[</span><span class="s1">&#39;assay_type&#39;</span><span class="p">],</span>
+                <span class="n">confidence_score</span> <span class="o">=</span> <span class="n">assy_attr</span><span class="p">[</span><span class="s1">&#39;confidence_score&#39;</span><span class="p">],</span>
+                <span class="n">target_chembl_id</span> <span class="o">=</span> <span class="n">assy_attr</span><span class="p">[</span><span class="s1">&#39;target_chembl_id&#39;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">assy_attr</span> <span class="ow">in</span> <span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;assays&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">assay_lst</span></div>
+
+
+<div class="viewcode-block" id="chembl_molecules"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.chembl.chembl_molecules.html#pypath.inputs.chembl.chembl_molecules">[docs]</a><span class="k">def</span> <span class="nf">chembl_molecules</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves molecules data from ChEMBL.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        Molecule records as named tuples.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">key0</span><span class="p">,</span> <span class="n">key1</span><span class="p">):</span>
+    
+        <span class="n">molecule_properties</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;molecule_</span><span class="si">{</span><span class="n">key0</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        
+        <span class="k">if</span> <span class="n">molecule_properties</span><span class="p">:</span>
+        
+            <span class="k">return</span> <span class="n">molecule_properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+        
+            <span class="k">return</span> <span class="kc">None</span>
+
+
+    <span class="n">fields_molecule</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;alogp&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;canonical_smiles&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;chirality&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;full_mwt&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;heavy_atoms&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;std_inchi_key&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;species&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;chembl&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;parent_chembl&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;prodrug&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;std_inchi&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;xrefs&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">ChemblMolecule</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;ChemblMolecule&#39;</span><span class="p">,</span>
+        <span class="n">fields_molecule</span><span class="p">,</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields_molecule</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">mol_lst</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">page_dct</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">page_dct</span><span class="p">:</span>
+
+            <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;molecule&#39;</span><span class="p">]</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;page_meta&#39;</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">]:</span>
+
+            <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;page_meta&#39;</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">break</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">page_dct</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">fileobj</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="n">mol_lst</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="n">ChemblMolecule</span><span class="p">(</span>
+                <span class="n">chirality</span> <span class="o">=</span> <span class="n">mol</span><span class="p">[</span><span class="s1">&#39;chirality&#39;</span><span class="p">],</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">mol</span><span class="p">[</span><span class="s1">&#39;molecule_type&#39;</span><span class="p">],</span>
+                <span class="n">prodrug</span> <span class="o">=</span> <span class="n">mol</span><span class="p">[</span><span class="s1">&#39;prodrug&#39;</span><span class="p">],</span>
+
+                <span class="n">chembl</span> <span class="o">=</span> <span class="n">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;hierarchy&#39;</span><span class="p">,</span> <span class="s1">&#39;molecule_chembl_id&#39;</span><span class="p">),</span>
+                <span class="n">parent_chembl</span> <span class="o">=</span> <span class="n">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;hierarchy&#39;</span><span class="p">,</span> <span class="s1">&#39;parent_chembl_id&#39;</span><span class="p">),</span>
+
+                <span class="n">alogp</span> <span class="o">=</span> <span class="n">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">,</span> <span class="s1">&#39;alogp&#39;</span><span class="p">),</span>
+                <span class="n">full_mwt</span> <span class="o">=</span> <span class="n">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">,</span> <span class="s1">&#39;full_mwt&#39;</span><span class="p">),</span>
+                <span class="n">heavy_atoms</span> <span class="o">=</span> <span class="n">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">,</span> <span class="s1">&#39;heavy_atoms&#39;</span><span class="p">),</span>
+                <span class="n">species</span> <span class="o">=</span> <span class="n">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">,</span> <span class="s1">&#39;molecular_species&#39;</span><span class="p">),</span>
+
+                <span class="n">canonical_smiles</span> <span class="o">=</span> <span class="n">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;structures&#39;</span><span class="p">,</span> <span class="s1">&#39;canonical_smiles&#39;</span><span class="p">),</span>
+                <span class="n">std_inchi_key</span> <span class="o">=</span> <span class="n">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;structures&#39;</span><span class="p">,</span> <span class="s1">&#39;standard_inchi_key&#39;</span><span class="p">),</span>
+                <span class="n">std_inchi</span> <span class="o">=</span> <span class="n">_get</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;structures&#39;</span><span class="p">,</span> <span class="s1">&#39;standard_inchi&#39;</span><span class="p">),</span>
+
+                <span class="n">xrefs</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="p">{</span>
+                            <span class="s1">&#39;xref_id&#39;</span><span class="p">:</span> <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;xref_id&#39;</span><span class="p">],</span>
+                            <span class="s1">&#39;xref_src&#39;</span><span class="p">:</span> <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;xref_src&#39;</span><span class="p">],</span>
+                        <span class="p">}</span>
+                        <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">mol</span><span class="p">[</span><span class="s1">&#39;cross_references&#39;</span><span class="p">]</span>
+                    <span class="p">]</span>
+                        <span class="k">if</span> <span class="n">mol</span><span class="p">[</span><span class="s1">&#39;cross_references&#39;</span><span class="p">]</span> <span class="k">else</span>
+                    <span class="kc">None</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">mol</span> <span class="ow">in</span> <span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;molecules&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mol_lst</span></div>
+
+
+<div class="viewcode-block" id="chembl_activities"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.chembl.chembl_activities.html#pypath.inputs.chembl.chembl_activities">[docs]</a><span class="k">def</span> <span class="nf">chembl_activities</span><span class="p">(</span>
+        <span class="c1">#TODO: are these below all the allowed values?</span>
+        <span class="n">standard_relation</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;=&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;=&#39;</span><span class="p">],</span>
+        <span class="n">pchembl_value_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span> <span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves activities data from ChEMBL.</span>
+
+<span class="sd">    Args</span>
+<span class="sd">        pchembl_value_none:</span>
+<span class="sd">            # TODO: it is allowed to be None or must be None?</span>
+<span class="sd">            Whether the pchembl value should be none or not.</span>
+<span class="sd">        standard_relation:</span>
+<span class="sd">            Which standard relation in needed.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        List of activity records as named tuples. `standard_flag` and</span>
+<span class="sd">        `standard_units` attributes are not included in the returned records.</span>
+<span class="sd">        # TODO: then why the data_validity_comment is part of the records?</span>
+<span class="sd">        Only records without `data_validity_comment` are returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fields_activity</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;assay_chembl&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;data_validity_comment&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;chembl&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;pchembl&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;standard_relation&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;standard_value&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;target_chembl&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">ChemblActivity</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;ChemblActivity&#39;</span><span class="p">,</span>
+        <span class="n">fields_activity</span><span class="p">,</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields_activity</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">activity_lst</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">page_dct</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">page_dct</span><span class="p">:</span>
+
+
+            <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;activity&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;&amp;pchembl_value__isnull=</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">pchembl_value_none</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;&amp;standard_relation__exact=</span><span class="si">{</span><span class="n">standard_relation</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;page_meta&#39;</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">]:</span>
+
+            <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;page_meta&#39;</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">break</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">page_dct</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">fileobj</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+
+        <span class="n">activity_lst</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="n">ChemblActivity</span><span class="p">(</span>
+                <span class="n">assay_chembl</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;assay_chembl_id&#39;</span><span class="p">],</span>
+                <span class="n">data_validity_comment</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;data_validity_comment&#39;</span><span class="p">],</span>
+                <span class="n">chembl</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;molecule_chembl_id&#39;</span><span class="p">],</span>
+                <span class="n">pchembl</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;pchembl_value&#39;</span><span class="p">],</span>
+                <span class="n">standard_relation</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;standard_relation&#39;</span><span class="p">],</span>
+                <span class="n">standard_value</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;standard_value&#39;</span><span class="p">],</span>
+                <span class="n">target_chembl</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;target_chembl_id&#39;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">act</span> <span class="ow">in</span> <span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;activities&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;data_validity_comment&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">activity_lst</span></div>
+</pre></div>
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+          <div class="sidebar-resize-handle"></div>
+
+<h3><a href="../../../index.html">Table of Contents</a></h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releasehistory.html">Release History</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/pypath.html">pypath</a></li>
+</ul>
+
+<hr class="docutils" />
+<ul>
+  <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html" accesskey="I">General Index</a></li>
+  <li class="toctree-l1"><a class="reference internal" href="../../../py-modindex.html">Python Module Index</a></li>
+</ul>
+<div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <nav class="relbar">
+    </nav>
+
+    <footer role="contentinfo">
+      &#169; Copyright 2022, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
+    </footer>
+  </body>
+</html>

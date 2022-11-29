@@ -1,0 +1,736 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.core.entity &#8212; pypath 0.14.29 documentation</title>
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script defer src="../../../_static/insipid.js"></script>
+    <script defer src="../../../_static/insipid-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head><body>
+    <script type="text/javascript">
+        document.body.classList.add('js');
+    </script>
+    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
+    <label id="overlay" for="sidebar-checkbox"></label>
+    <div class="sidebar-resize-handle"></div>
+    <script type="text/javascript">
+        try {
+            let sidebar = localStorage.getItem('sphinx-sidebar');
+            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
+            if (sidebar_width) {
+                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
+            }
+            // show sidebar on wide screen
+            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
+                sidebar = 'visible';
+                // NB: We don't store the value in localStorage!
+            }
+            if (sidebar === 'visible') {
+                document.getElementById('sidebar-checkbox').checked = true;
+            }
+        } catch(e) {
+            console.info(e);
+        }
+    </script>
+    <header id="topbar-placeholder">
+      <div id="topbar">
+        <div id="titlebar">
+          <div class="buttons">
+            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+            </label>
+            <button id="search-button" type="button" title="Search" aria-label="Search" aria-expanded="false" aria-controls="search-form" accesskey="S">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
+            </button>
+          </div>
+          <div class="title">
+            <a class="parent" href="../../pypath.html" accesskey="U">pypath</a>
+            <a class="top" href="#">pypath.core.entity</a>
+          </div>
+          <div class="buttons">
+            <button id="fullscreen-button" type="button" aria-hidden="true">
+              <span class="enable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
+              </span>
+              <span class="disable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+        <div id="searchbox" role="search">
+          <form id="search-form" class="search" style="display: none" action="../../../search.html" method="get">
+            <input type="search" name="q" placeholder="Search ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            <button>Go</button>
+          </form>
+        </div>
+      </div>
+    </header>
+    <nav>
+    </nav>
+
+    <nav class="relbar">
+    </nav>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+<h1>Source code for pypath.core.entity</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#  Exports tables for webservice.</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright (c) 2014-2022 - EMBL</span>
+<span class="c1">#</span>
+<span class="c1">#  Authors: Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#           Nicolàs Palacio</span>
+<span class="c1">#           Sebastian Lobentanzer</span>
+<span class="c1">#           Erva Ulusoy</span>
+<span class="c1">#           Olga Ivanova</span>
+<span class="c1">#           Ahmet Rifaioglu</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Provides classes for representing molecular entities and their collections.</span>
+<span class="sd">A molecular entity is defined by its identifier, type and taxon.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
+
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">importlib</span> <span class="k">as</span> <span class="nn">imp</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
+<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session_mod</span>
+<span class="kn">import</span> <span class="nn">pypath.utils.mapping</span> <span class="k">as</span> <span class="nn">mapping</span>
+<span class="kn">import</span> <span class="nn">pypath.share.settings</span> <span class="k">as</span> <span class="nn">settings</span>
+<span class="kn">import</span> <span class="nn">pypath.share.constants</span> <span class="k">as</span> <span class="nn">constants</span>
+<span class="kn">import</span> <span class="nn">pypath.core.attrs</span> <span class="k">as</span> <span class="nn">attrs_mod</span>
+
+
+<span class="n">EntityKey</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+    <span class="s1">&#39;EntityKey&#39;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="s1">&#39;identifier&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;id_type&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;entity_type&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;taxon&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="Entity"><a class="viewcode-back" href="../../../_autosummary/pypath.core.entity.Entity.html#pypath.core.entity.Entity">[docs]</a><span class="k">class</span> <span class="nc">Entity</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span> <span class="n">attrs_mod</span><span class="o">.</span><span class="n">AttributeHandler</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a molecular entity such as protein, miRNA, lncRNA or small</span>
+<span class="sd">    molecule.</span>
+
+<span class="sd">    :arg str identifier:</span>
+<span class="sd">        An identifier from the reference database e.g. UniProt ID for</span>
+<span class="sd">        proteins.</span>
+<span class="sd">    :arg str entity_type:</span>
+<span class="sd">        The type of the molecular entity, defaults to ``&#39;protein&#39;``.</span>
+<span class="sd">    :arg str id_type:</span>
+<span class="sd">        The type of the identifier (the reference database), default is</span>
+<span class="sd">        ``&#39;uniprot&#39;``.</span>
+<span class="sd">    :arg int taxon:</span>
+<span class="sd">        The NCBI Taxonomy Identifier of the molecular entity, e.g. ``9606``</span>
+<span class="sd">        for human. Use ``0`` for non taxon specific molecules e.g. metabolites</span>
+<span class="sd">        or drug compounds.</span>
+<span class="sd">    :arg NoneType,dict attrs:</span>
+<span class="sd">        A dictionary of additional attributes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;identifier&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;entity_type&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;id_type&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;taxon&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;label&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;key&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+
+    <span class="n">_default_id_types</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;default_name_types&#39;</span><span class="p">)</span>
+    <span class="n">_smol_types</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;small_molecule_entity_types&#39;</span><span class="p">)</span>
+
+    <span class="n">_id_type_to_entity_type</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;uniprot&#39;</span><span class="p">:</span> <span class="s1">&#39;protein&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;genesymbol&#39;</span><span class="p">:</span> <span class="s1">&#39;protein&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;mir-name&#39;</span><span class="p">:</span> <span class="s1">&#39;mirna&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;mir-mat-name&#39;</span><span class="p">:</span> <span class="s1">&#39;mirna&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;mir-pre&#39;</span><span class="p">:</span> <span class="s1">&#39;mirna&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;mir-mat&#39;</span><span class="p">:</span> <span class="s1">&#39;mirna&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;lncrna-genesymbol&#39;</span><span class="p">:</span> <span class="s1">&#39;lncrna&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">_label_types</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">Mapper</span><span class="o">.</span><span class="n">label_type_to_id_type</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="Entity.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.core.entity.Entity.html#pypath.core.entity.Entity.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">identifier</span><span class="p">,</span>
+            <span class="n">entity_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">id_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">taxon</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">Entity</span><span class="p">)</span> <span class="ow">or</span>
+            <span class="nb">hasattr</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="s1">&#39;identifier&#39;</span><span class="p">)</span>
+        <span class="p">):</span>
+
+            <span class="p">(</span>
+                <span class="n">identifier</span><span class="p">,</span>
+                <span class="n">entity_type</span><span class="p">,</span>
+                <span class="n">id_type</span><span class="p">,</span>
+                <span class="n">taxon</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">identifier</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>
+                <span class="n">identifier</span><span class="o">.</span><span class="n">entity_type</span><span class="p">,</span>
+                <span class="n">identifier</span><span class="o">.</span><span class="n">id_type</span><span class="p">,</span>
+                <span class="n">identifier</span><span class="o">.</span><span class="n">taxon</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bootstrap</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">taxon</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key</span>
+
+        <span class="n">attrs_mod</span><span class="o">.</span><span class="n">AttributeHandler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_label</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="kn">import</span> <span class="nn">importlib</span> <span class="k">as</span> <span class="nn">imp</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_bootstrap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">id_type</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">taxon</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_complex</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+
+            <span class="n">entity_type</span> <span class="o">=</span> <span class="s1">&#39;complex&#39;</span>
+            <span class="n">id_type</span> <span class="o">=</span> <span class="s1">&#39;complex&#39;</span>
+            <span class="n">taxon</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">identifier</span><span class="o">.</span><span class="n">ncbi_tax_id</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="s1">&#39;ncbi_tax_id&#39;</span><span class="p">)</span> <span class="k">else</span>
+                <span class="n">taxon</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">entity_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_smol_types</span><span class="p">:</span>
+
+            <span class="n">taxon</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">NOT_ORGANISM_SPECIFIC</span>
+
+        <span class="n">taxon</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;default_organism&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">taxon</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">taxon</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">entity_type</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">id_type</span> <span class="ow">and</span> <span class="n">id_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id_type_to_entity_type</span><span class="p">:</span>
+
+                <span class="n">entity_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id_type_to_entity_type</span><span class="p">[</span><span class="n">id_type</span><span class="p">]</span>
+
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">id_type</span><span class="p">:</span>
+
+            <span class="n">id_type</span><span class="p">,</span> <span class="n">entity_type</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">guess_type</span><span class="p">(</span>
+                <span class="n">identifier</span><span class="p">,</span>
+                <span class="n">entity_type</span> <span class="o">=</span> <span class="n">entity_type</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">id_type</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">entity_type</span> <span class="ow">or</span> <span class="n">entity_type</span> <span class="o">==</span> <span class="s1">&#39;protein&#39;</span><span class="p">):</span>
+
+            <span class="n">id_type</span><span class="p">,</span> <span class="n">entity_type</span> <span class="o">=</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;protein&#39;</span>
+
+        <span class="k">if</span> <span class="n">id_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_types</span><span class="p">:</span>
+
+            <span class="n">_identifier</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">id_from_label0</span><span class="p">(</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">identifier</span><span class="p">,</span>
+                <span class="n">label_id_type</span> <span class="o">=</span> <span class="n">id_type</span><span class="p">,</span>
+                <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">taxon</span><span class="p">,</span>
+            <span class="p">)</span>
+
+
+
+            <span class="k">if</span> <span class="n">_identifier</span> <span class="ow">and</span> <span class="n">_identifier</span> <span class="o">!=</span> <span class="n">identifier</span><span class="p">:</span>
+
+                <span class="n">id_type</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">label_type_to_id_type</span><span class="p">[</span><span class="n">id_type</span><span class="p">]</span>
+                <span class="n">identifier</span> <span class="o">=</span> <span class="n">_identifier</span>
+
+            <span class="k">if</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s1">&#39;mir-pre&#39;</span><span class="p">:</span>
+
+                <span class="n">_identifier</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">map_name0</span><span class="p">(</span>
+                    <span class="n">identifier</span><span class="p">,</span>
+                    <span class="n">id_type</span><span class="p">,</span>
+                    <span class="s1">&#39;mirbase&#39;</span><span class="p">,</span>
+                    <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">taxon</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">_identifier</span> <span class="ow">and</span> <span class="n">_identifier</span> <span class="o">!=</span> <span class="n">identifier</span><span class="p">:</span>
+
+                    <span class="n">identifier</span> <span class="o">=</span> <span class="n">_identifier</span>
+                    <span class="n">id_type</span> <span class="o">=</span> <span class="s1">&#39;mirbase&#39;</span>
+
+        <span class="n">entity_type</span> <span class="o">=</span> <span class="n">entity_type</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_entity_type</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="n">identifier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entity_type</span> <span class="o">=</span> <span class="n">entity_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">taxon</span> <span class="o">=</span> <span class="n">taxon</span>
+
+
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">entity_name_str</span><span class="p">(</span><span class="n">entity</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">entity</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">)</span> <span class="k">else</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+        <span class="p">)</span>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">igraph_vertex_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">igraph_v</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">entity_name_str</span><span class="p">(</span><span class="n">igraph_v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">igraph_vertex_label</span><span class="p">(</span><span class="n">igraph_v</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">igraph_v</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">igraph_vertex_name_label</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">igraph_v</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">igraph_vertex_name</span><span class="p">(</span><span class="n">igraph_v</span><span class="p">),</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">igraph_vertex_label</span><span class="p">(</span><span class="n">igraph_v</span><span class="p">),</span>
+        <span class="p">)</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_is_protein</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span>
+                <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;default_name_types&#39;</span><span class="p">)[</span><span class="s1">&#39;protein&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;entrez&#39;</span>
+            <span class="p">)</span> <span class="ow">and</span>
+            <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;MIMAT&#39;</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;COMPLEX&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_is_small_molecule</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+
+        <span class="k">return</span><span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="n">key</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;default_name_types&#39;</span><span class="p">)[</span><span class="s1">&#39;protein&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;entrez&#39;</span>
+        <span class="p">)</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_is_mirna</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;MIMAT&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_is_complex</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">key</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Complex&#39;</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;COMPLEX&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_entity_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s1">&#39;complex&#39;</span>
+                <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_complex</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">else</span>
+            <span class="s1">&#39;mirna&#39;</span>
+                <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_mirna</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">else</span>
+            <span class="s1">&#39;small_molecule&#39;</span>
+                <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_small_molecule</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">else</span>
+            <span class="s1">&#39;protein&#39;</span>
+        <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">is_small_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">entity_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_smol_types</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_default_id_types</span><span class="p">[</span><span class="s1">&#39;protein&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;entrez&#39;</span> <span class="ow">or</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">id_type</span> <span class="o">==</span> <span class="s1">&#39;pubchem&#39;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">is_protein</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">entity_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_smol_types</span> <span class="ow">and</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id_type</span> <span class="o">!=</span> <span class="s1">&#39;pubchem&#39;</span> <span class="ow">and</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_protein</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+        <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">is_mirna</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_mirna</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">is_complex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_complex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">get_entity_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_entity_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Entity.filter_entity_type"><a class="viewcode-back" href="../../../_autosummary/pypath.core.entity.Entity.html#pypath.core.entity.Entity.filter_entity_type">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">filter_entity_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">entities</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filters an iterable of entities or identifiers keeping only the ones</span>
+<span class="sd">        of type(s) in ``entity_type``.</span>
+<span class="sd">        </span>
+<span class="sd">        :param iterable entities:</span>
+<span class="sd">            A list, set, tuple or other iterable yielding entities or</span>
+<span class="sd">            identifiers.</span>
+<span class="sd">        :param str,set entity_type:</span>
+<span class="sd">            One or more entity types e.g. ``{&#39;protein&#39;, &#39;mirna&#39;}``.</span>
+<span class="sd">        </span>
+<span class="sd">        :returns:</span>
+<span class="sd">            Same type of object as ``entities`` if the type of the object is</span>
+<span class="sd">            list, set or tuple, otherwise a generator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">entity_type</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">entities</span><span class="p">:</span>
+            
+            <span class="k">return</span> <span class="n">entities</span>
+        
+        <span class="n">entity_type</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="n">entity_type</span><span class="p">)</span>
+        <span class="n">obj_type</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">type</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">list_like</span><span class="p">)</span> <span class="k">else</span>
+            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
+        <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">obj_type</span><span class="p">(</span>
+            <span class="n">e</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_entity_type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">in</span> <span class="n">entity_type</span>
+        <span class="p">)</span></div>
+    
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">only_proteins</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
+        
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">filter_entity_type</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="n">entity_type</span> <span class="o">=</span> <span class="s1">&#39;protein&#39;</span><span class="p">)</span>
+    
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">only_complexes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
+        
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">filter_entity_type</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="n">entity_type</span> <span class="o">=</span> <span class="s1">&#39;complex&#39;</span><span class="p">)</span>
+    
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">only_mirnas</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
+        
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">filter_entity_type</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="n">entity_type</span> <span class="o">=</span> <span class="s1">&#39;mirna&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Entity.count_entity_type"><a class="viewcode-back" href="../../../_autosummary/pypath.core.entity.Entity.html#pypath.core.entity.Entity.count_entity_type">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">count_entity_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">entities</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Counts elements in an iterable of entities or identifiers of type(s)</span>
+<span class="sd">        in ``entity_type``.</span>
+<span class="sd">        </span>
+<span class="sd">        :param iterable entities:</span>
+<span class="sd">            A list, set, tuple or other iterable yielding entities or</span>
+<span class="sd">            identifiers.</span>
+<span class="sd">        :param str,set entity_type:</span>
+<span class="sd">            One or more entity types e.g. ``{&#39;protein&#39;, &#39;mirna&#39;}``.</span>
+<span class="sd">        </span>
+<span class="sd">        :returns:</span>
+<span class="sd">            int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">entities</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">entities</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">list_like</span><span class="p">)</span> <span class="k">else</span>
+            <span class="nb">list</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span>
+        <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">filter_entity_type</span><span class="p">(</span>
+                <span class="n">entities</span><span class="p">,</span>
+                <span class="n">entity_type</span> <span class="o">=</span> <span class="n">entity_type</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">EntityKey</span><span class="p">(</span>
+            <span class="n">identifier</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>
+            <span class="n">id_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_type</span><span class="p">,</span>
+            <span class="n">entity_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity_type</span><span class="p">,</span>
+            <span class="n">taxon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">taxon</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">)</span> <span class="k">else</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span> <span class="o">==</span> <span class="n">other</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="n">other</span>
+        <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">key</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">)</span> <span class="k">else</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span> <span class="o">&lt;</span> <span class="n">other</span>
+        <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">key</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">)</span> <span class="k">else</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span> <span class="o">&lt;</span> <span class="n">other</span>
+        <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">set_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">label</span><span class="p">(</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>
+            <span class="n">id_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_type</span><span class="p">,</span>
+            <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">taxon</span><span class="p">,</span>
+            <span class="n">entity_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity_type</span><span class="p">,</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="s1">&#39;&lt;Entity: </span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">:</span>
+
+            <span class="n">attrs_mod</span><span class="o">.</span><span class="n">AttributeHandler</span><span class="o">.</span><span class="fm">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">entity_info</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_protein</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+
+            <span class="kn">import</span> <span class="nn">pypath.utils.uniprot</span> <span class="k">as</span> <span class="nn">uniprot</span>
+            <span class="k">return</span> <span class="n">uniprot</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">entity_info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EntityList"><a class="viewcode-back" href="../../../_autosummary/pypath.core.entity.EntityList.html#pypath.core.entity.EntityList">[docs]</a><span class="k">class</span> <span class="nc">EntityList</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+
+<div class="viewcode-block" id="EntityList.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.core.entity.EntityList.html#pypath.core.entity.EntityList.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entities</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entities</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">entities</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">set</span><span class="p">))</span> <span class="k">else</span>
+            <span class="nb">list</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entities</span><span class="p">:</span>
+
+            <span class="k">yield</span> <span class="n">e</span>
+
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_entities</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="s1">&#39;&lt;EntityList (</span><span class="si">%u</span><span class="s1"> elements)&gt;&#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">EntityList</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_entities</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">other</span><span class="p">))))</span>
+
+
+    <span class="k">def</span> <span class="fm">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entities</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_entities</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">other</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+
+            <span class="k">yield</span> <span class="n">e</span><span class="o">.</span><span class="n">label</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+
+            <span class="k">yield</span> <span class="n">e</span><span class="o">.</span><span class="n">identifier</span>
+
+
+    <span class="n">identifiers</span> <span class="o">=</span> <span class="n">ids</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+
+            <span class="k">yield</span> <span class="n">e</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">list_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="p">)</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">list_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">list_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">)</span>
+
+
+    <span class="n">l</span> <span class="o">=</span> <span class="n">labels</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">ids</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">entities</span>
+    <span class="n">ll</span> <span class="o">=</span> <span class="n">list_labels</span>
+    <span class="n">li</span> <span class="o">=</span> <span class="n">list_ids</span>
+    <span class="n">le</span> <span class="o">=</span> <span class="n">list_entities</span></div>
+</pre></div>
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+          <div class="sidebar-resize-handle"></div>
+
+<h3><a href="../../../index.html">Table of Contents</a></h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releasehistory.html">Release History</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/pypath.html">pypath</a></li>
+</ul>
+
+<hr class="docutils" />
+<ul>
+  <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html" accesskey="I">General Index</a></li>
+  <li class="toctree-l1"><a class="reference internal" href="../../../py-modindex.html">Python Module Index</a></li>
+</ul>
+<div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <nav class="relbar">
+    </nav>
+
+    <footer role="contentinfo">
+      &#169; Copyright 2022, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
+    </footer>
+  </body>
+</html>

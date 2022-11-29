@@ -1,0 +1,795 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.omnipath.app &#8212; pypath 0.14.29 documentation</title>
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script defer src="../../../_static/insipid.js"></script>
+    <script defer src="../../../_static/insipid-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head><body>
+    <script type="text/javascript">
+        document.body.classList.add('js');
+    </script>
+    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
+    <label id="overlay" for="sidebar-checkbox"></label>
+    <div class="sidebar-resize-handle"></div>
+    <script type="text/javascript">
+        try {
+            let sidebar = localStorage.getItem('sphinx-sidebar');
+            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
+            if (sidebar_width) {
+                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
+            }
+            // show sidebar on wide screen
+            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
+                sidebar = 'visible';
+                // NB: We don't store the value in localStorage!
+            }
+            if (sidebar === 'visible') {
+                document.getElementById('sidebar-checkbox').checked = true;
+            }
+        } catch(e) {
+            console.info(e);
+        }
+    </script>
+    <header id="topbar-placeholder">
+      <div id="topbar">
+        <div id="titlebar">
+          <div class="buttons">
+            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+            </label>
+            <button id="search-button" type="button" title="Search" aria-label="Search" aria-expanded="false" aria-controls="search-form" accesskey="S">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
+            </button>
+          </div>
+          <div class="title">
+            <a class="parent" href="../omnipath.html" accesskey="U">pypath.omnipath</a>
+            <a class="top" href="#">pypath.omnipath.app</a>
+          </div>
+          <div class="buttons">
+            <button id="fullscreen-button" type="button" aria-hidden="true">
+              <span class="enable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
+              </span>
+              <span class="disable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+        <div id="searchbox" role="search">
+          <form id="search-form" class="search" style="display: none" action="../../../search.html" method="get">
+            <input type="search" name="q" placeholder="Search ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            <button>Go</button>
+          </form>
+        </div>
+      </div>
+    </header>
+    <nav>
+    </nav>
+
+    <nav class="relbar">
+    </nav>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+<h1>Source code for pypath.omnipath.app</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module.</span>
+<span class="c1">#  Provides a high level interface for managing builds of the</span>
+<span class="c1">#  OmniPath databases.</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright</span>
+<span class="c1">#  2014-2022</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  Authors: Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#           Nicolàs Palacio</span>
+<span class="c1">#           Sebastian Lobentanzer</span>
+<span class="c1">#           Erva Ulusoy</span>
+<span class="c1">#           Olga Ivanova</span>
+<span class="c1">#           Ahmet Rifaioglu</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">importlib</span> <span class="k">as</span> <span class="nn">imp</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">import</span> <span class="nn">pypath.resources.network</span> <span class="k">as</span> <span class="nn">netres</span>
+<span class="kn">from</span> <span class="nn">pypath.core</span> <span class="kn">import</span> <span class="n">annot</span>
+<span class="kn">from</span> <span class="nn">pypath.core</span> <span class="kn">import</span> <span class="n">intercell</span>
+<span class="kn">from</span> <span class="nn">pypath.core</span> <span class="kn">import</span> <span class="nb">complex</span>
+<span class="kn">from</span> <span class="nn">pypath.core</span> <span class="kn">import</span> <span class="n">enz_sub</span>
+<span class="kn">from</span> <span class="nn">pypath.core</span> <span class="kn">import</span> <span class="n">network</span>
+<span class="kn">from</span> <span class="nn">pypath.share</span> <span class="kn">import</span> <span class="n">session</span> <span class="k">as</span> <span class="n">session_mod</span>
+
+<span class="kn">import</span> <span class="nn">pypath.share.settings</span> <span class="k">as</span> <span class="nn">settings</span>
+<span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
+
+
+<div class="viewcode-block" id="DatabaseManager"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager">[docs]</a><span class="k">class</span> <span class="nc">DatabaseManager</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Builds and serves the databases in OmniPath such as various networks,</span>
+<span class="sd">    enzyme-substrate interactions, protein complexes, annotations and</span>
+<span class="sd">    inter-cellular communication roles. Saves the databases to and loads</span>
+<span class="sd">    them from pickle dumps on demand.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="DatabaseManager.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rebuild</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;omnipath.dbmanager&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;timestamp_format&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rebuild</span> <span class="o">=</span> <span class="n">rebuild</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;datasets&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ensure_dirs</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_dfs</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;The OmniPath database manager has been initialized.&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.reload"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reloads the object from the module level.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">foreach_dataset</span><span class="p">(</span><span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reload_module</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.build"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds all built-in datasets.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+            <span class="s1">&#39;Building databases. Rebuild forced: </span><span class="si">%s</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rebuild</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">foreach_dataset</span><span class="p">(</span><span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensure_dataset</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.ensure_dataset"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.ensure_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_dataset</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">dataset</span><span class="p">,</span>
+            <span class="n">force_reload</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">force_rebuild</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Makes sure a dataset is loaded. It loads only if it&#39;s not loaded</span>
+<span class="sd">        yet or :py:arg:`force_reload` is ``True``. It only builds if it&#39;s</span>
+<span class="sd">        not availabe as a pickle dump or :py:arg:`force_rebuild` is ``True``.</span>
+
+<span class="sd">        :arg str dataset:</span>
+<span class="sd">            The name of the dataset.</span>
+<span class="sd">        :arg int ncbi_tax_id:</span>
+<span class="sd">            NCBI Taxonomy ID of the organism. Considered only if the dataset</span>
+<span class="sd">            builds for one organism and saved to organism specific pickle</span>
+<span class="sd">            files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">dep_dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_dependencies</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">ensure_dataset</span><span class="p">(</span><span class="n">dep_dataset</span><span class="p">)</span>
+
+        <span class="n">rebuild_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;rebuild_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">)</span>
+
+        <span class="n">_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataset_taxid</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">force_reload</span> <span class="ow">or</span>
+            <span class="n">force_rebuild</span> <span class="ow">or</span>
+            <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_dataset</span><span class="p">)</span>
+        <span class="p">):</span>
+
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">force_rebuild</span> <span class="ow">or</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rebuild</span> <span class="ow">or</span>
+                <span class="n">rebuild_dataset</span> <span class="ow">or</span>
+                <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pickle_exists</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+            <span class="p">):</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">remove_db</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">build_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_dataset</span><span class="p">)</span> <span class="ow">or</span>
+                <span class="n">force_reload</span>
+            <span class="p">):</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.dataset_dependencies"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.dataset_dependencies">[docs]</a>    <span class="k">def</span> <span class="nf">dataset_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the dependencies of a dataset. E.g. to build `annotations`</span>
+<span class="sd">        `complexes` must be loaded hence the former is dependent on the</span>
+<span class="sd">        latter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">deps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;dependencies&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">deps</span><span class="p">[</span><span class="n">dataset</span><span class="p">]</span> <span class="k">if</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">deps</span> <span class="k">else</span> <span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.ensure_dirs"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.ensure_dirs">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_dirs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the directories for tables, figures and pickles exist and</span>
+<span class="sd">        creates them if necessary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;timestamp_dirs&#39;</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">tables_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;tables_dir&#39;</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">figures_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;figures_dir&#39;</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span>
+                <span class="n">tables_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables_dir</span><span class="p">,</span>
+                <span class="n">figures_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figures_dir</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;pickle_dir&#39;</span><span class="p">),</span> <span class="n">exist_ok</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">_dir</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;pickle&#39;</span><span class="p">,</span> <span class="s1">&#39;tables&#39;</span><span class="p">,</span> <span class="s1">&#39;figures&#39;</span><span class="p">):</span>
+
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_dir&#39;</span> <span class="o">%</span> <span class="n">_dir</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> directory: `</span><span class="si">%s</span><span class="s1">` (exists: </span><span class="si">%s</span><span class="s1">).&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">_dir</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span>
+                    <span class="n">path</span><span class="p">,</span>
+                    <span class="s1">&#39;yes&#39;</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;no&#39;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.pickle_path"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.pickle_path">[docs]</a>    <span class="k">def</span> <span class="nf">pickle_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the path of the pickle dump for a dataset according to</span>
+<span class="sd">        the current settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">pickle_fname</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_pickle&#39;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">)</span> <span class="ow">or</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.pickle&#39;</span> <span class="o">%</span> <span class="n">dataset</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dataset</span> <span class="o">==</span> <span class="s1">&#39;enz_sub&#39;</span><span class="p">:</span>
+
+            <span class="n">pickle_fname</span> <span class="o">=</span> <span class="n">pickle_fname</span> <span class="o">%</span> <span class="n">ncbi_tax_id</span>
+
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;pickle_dir&#39;</span><span class="p">),</span>
+            <span class="n">pickle_fname</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.pickle_exists"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.pickle_exists">[docs]</a>    <span class="k">def</span> <span class="nf">pickle_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tells if a pickle dump of a particular dataset exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pickle_path</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.table_path"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.table_path">[docs]</a>    <span class="k">def</span> <span class="nf">table_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the full path for a table (to be exported or imported).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;tables_dir&#39;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_tsv&#39;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.build_dataset"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.build_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">build_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds a dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Building dataset `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">)</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_build_args</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Build param: [</span><span class="si">%s</span><span class="s1">].&#39;</span> <span class="o">%</span> <span class="n">common</span><span class="o">.</span><span class="n">dict_str</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
+
+        <span class="n">mod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensure_module</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dataset</span> <span class="o">==</span> <span class="s1">&#39;enz_sub&#39;</span><span class="p">:</span>
+
+            <span class="n">args</span><span class="p">[</span><span class="s1">&#39;ncbi_tax_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s1">&#39;db&#39;</span><span class="p">):</span>
+
+            <span class="nb">delattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s1">&#39;db&#39;</span><span class="p">)</span>
+
+        <span class="n">db</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">get_db</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="n">pickle_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pickle_path</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+
+        <span class="n">old_pickle_path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.old&#39;</span> <span class="o">%</span> <span class="n">pickle_path</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">pickle_path</span><span class="p">):</span>
+
+            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">pickle_path</span><span class="p">,</span> <span class="n">old_pickle_path</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Saving dataset `</span><span class="si">%s</span><span class="s1">` to `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">pickle_path</span><span class="p">))</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">save_to_pickle</span><span class="p">(</span><span class="n">pickle_file</span> <span class="o">=</span> <span class="n">pickle_path</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">old_pickle_path</span><span class="p">):</span>
+
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">old_pickle_path</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="s1">&#39;Saved dataset `</span><span class="si">%s</span><span class="s1">` to `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">dataset</span><span class="p">,</span>
+                    <span class="n">pickle_path</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+
+            <span class="n">exc</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_traceback</span><span class="p">()</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">pickle_path</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="s1">&#39;Failed to save dataset `</span><span class="si">%s</span><span class="s1">` to `</span><span class="si">%s</span><span class="s1">`. &#39;</span>
+                <span class="s1">&#39;The dataset is currently loaded. &#39;</span>
+                <span class="s1">&#39;Try restart Python and re-build the dataset. &#39;</span>
+                <span class="s1">&#39;If the issue persists please report it.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">dataset</span><span class="p">,</span>
+                    <span class="n">pickle_path</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">old_pickle_path</span><span class="p">):</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Restoring the old version of `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">pickle_path</span><span class="p">)</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">old_pickle_path</span><span class="p">,</span> <span class="n">pickle_path</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Successfully built dataset `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">)</span>
+
+        <span class="n">_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataset_taxid</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_dataset</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_network_df</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.ensure_module"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.ensure_module">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">reset</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Makes sure the module providing a particular dataset is available</span>
+<span class="sd">        and has no default database loaded yet (:py:attr:`db` attribute</span>
+<span class="sd">        of the module).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mod_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_mod&#39;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">)</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s1">&#39;pypath.core.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">mod_str</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">reset</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s1">&#39;db&#39;</span><span class="p">):</span>
+
+            <span class="nb">delattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s1">&#39;db&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mod</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.reload_module"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.reload_module">[docs]</a>    <span class="k">def</span> <span class="nf">reload_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reloads the module of the database object of a particular dataset.</span>
+<span class="sd">        E.g. in case of network datasets the ``pypath.network`` module</span>
+<span class="sd">        will be reloaded.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensure_module</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">reset</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s1">&#39;db&#39;</span><span class="p">):</span>
+
+            <span class="n">mod</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.get_build_args"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_build_args">[docs]</a>    <span class="k">def</span> <span class="nf">get_build_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the default database build parameters for a dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_args&#39;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;get_args_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">):</span>
+
+            <span class="n">args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;get_args_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">)())</span>
+
+        <span class="k">return</span> <span class="n">args</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.load_dataset"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.load_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">load_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads a dataset, builds it if no pickle dump is available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">pickle_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pickle_path</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Loading dataset `</span><span class="si">%s</span><span class="s1">` from `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">pickle_path</span><span class="p">))</span>
+
+        <span class="n">mod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensure_module</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+
+        <span class="n">_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataset_taxid</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_dataset</span><span class="p">,</span> <span class="n">mod</span><span class="o">.</span><span class="n">get_db</span><span class="p">(</span><span class="n">pickle_file</span> <span class="o">=</span> <span class="n">pickle_path</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Loaded dataset `</span><span class="si">%s</span><span class="s1">` from `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">pickle_path</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_network_df</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_dataset_taxid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">dataset</span><span class="p">,</span>
+            <span class="s1">&#39;_</span><span class="si">%u</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">ncbi_tax_id</span> <span class="k">if</span> <span class="n">dataset</span> <span class="o">==</span> <span class="s1">&#39;enz_sub&#39;</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+    <span class="c1"># TODO</span>
+    <span class="c1"># the get_args_* methods below will be replaced by the</span>
+    <span class="c1"># pypath.omnipath.databases module</span>
+
+<div class="viewcode-block" id="DatabaseManager.get_args_curated"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_curated">[docs]</a>    <span class="k">def</span> <span class="nf">get_args_curated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the arguments for building the curated PPI network dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">resources</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">pathway</span><span class="p">)</span>
+        <span class="n">resources</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">netres</span><span class="o">.</span><span class="n">enzyme_substrate</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;resources&#39;</span><span class="p">:</span> <span class="n">resources</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.get_args_tf_target"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_tf_target">[docs]</a>    <span class="k">def</span> <span class="nf">get_args_tf_target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the arguments for building the TF-target network dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">transcription</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">netres</span><span class="o">.</span><span class="n">dorothea_expand_levels</span><span class="p">(</span>
+                <span class="n">resources</span> <span class="o">=</span> <span class="n">netres</span><span class="o">.</span><span class="n">transcription</span><span class="p">,</span>
+                <span class="n">levels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;tfregulons_levels&#39;</span><span class="p">),</span>
+            <span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;dorothea_expand_levels&#39;</span><span class="p">)</span> <span class="k">else</span>
+            <span class="n">netres</span><span class="o">.</span><span class="n">transcription</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;resources&#39;</span><span class="p">:</span> <span class="n">transcription</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.get_args_tf_mirna"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_tf_mirna">[docs]</a>    <span class="k">def</span> <span class="nf">get_args_tf_mirna</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the arguments for building the TF-miRNA network dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;resources&#39;</span><span class="p">:</span> <span class="n">netres</span><span class="o">.</span><span class="n">tf_mirna</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.get_args_mirna_mrna"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_mirna_mrna">[docs]</a>    <span class="k">def</span> <span class="nf">get_args_mirna_mrna</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the arguments for building the miRNA-mRNA network dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;resources&#39;</span><span class="p">:</span> <span class="n">netres</span><span class="o">.</span><span class="n">mirna_target</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.get_args_lncrna_mrna"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_lncrna_mrna">[docs]</a>    <span class="k">def</span> <span class="nf">get_args_lncrna_mrna</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the arguments for building the lncRNA-mRNA network dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;resources&#39;</span><span class="p">:</span> <span class="n">netres</span><span class="o">.</span><span class="n">lncrna_target</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.get_args_small_molecule"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_args_small_molecule">[docs]</a>    <span class="k">def</span> <span class="nf">get_args_small_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the arguments for building the small molecule-protein</span>
+<span class="sd">        network dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;resources&#39;</span><span class="p">:</span> <span class="n">netres</span><span class="o">.</span><span class="n">small_molecule_protein</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.compile_tables"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.compile_tables">[docs]</a>    <span class="k">def</span> <span class="nf">compile_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compiles the `summaries` table for all datasets. These tables contain</span>
+<span class="sd">        various quantitative descriptions of the data contents.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">foreach_dataset</span><span class="p">(</span><span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile_table</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.compile_table"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.compile_table">[docs]</a>    <span class="k">def</span> <span class="nf">compile_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compiles the `summaries` table for a dataset. These tables contain</span>
+<span class="sd">        various quantitative descriptions of the data contents.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">table_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">table_path</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">update_summaries</span><span class="p">()</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">summaries_tab</span><span class="p">(</span><span class="n">outfile</span> <span class="o">=</span> <span class="n">table_path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.foreach_dataset"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.foreach_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">foreach_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies a method for each dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
+
+            <span class="n">_</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.get_db"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_db">[docs]</a>    <span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dataset object. Loads and builds the dataset if necessary.</span>
+
+<span class="sd">        :arg int ncbi_tax_id:</span>
+<span class="sd">            NCBI Taxonomy ID of the organism. Considered only if the dataset</span>
+<span class="sd">            builds for one organism and saved to organism specific pickle</span>
+<span class="sd">            files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ensure_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+
+        <span class="n">_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataset_taxid</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_dataset</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.remove_db"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.remove_db">[docs]</a>    <span class="k">def</span> <span class="nf">remove_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes a dataset. Deletes the references to the object</span>
+<span class="sd">        in the module, however if you have references elsewhere in your</span>
+<span class="sd">        code it remains in the memory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataset_taxid</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_dataset</span><span class="p">):</span>
+
+            <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_dataset</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.remove_all"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.remove_all">[docs]</a>    <span class="k">def</span> <span class="nf">remove_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes all loaded datasets. Deletes the references to the objects</span>
+<span class="sd">        in the module, however if you have references elsewhere in your</span>
+<span class="sd">        code they remain in the memory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">foreach_dataset</span><span class="p">(</span><span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensure_module</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">foreach_dataset</span><span class="p">(</span><span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_db</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.get_param"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.get_param">[docs]</a>    <span class="k">def</span> <span class="nf">get_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a parameter from the :py:attr:`param` dict of the current</span>
+<span class="sd">        object or from the module settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">))</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_create_network_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span> <span class="o">=</span> <span class="s1">&#39;omnipath&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network_df</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DatabaseManager.network_df"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.network_df">[docs]</a>    <span class="k">def</span> <span class="nf">network_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">by_source</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a data frame of a network dataset where rows aggregate</span>
+<span class="sd">        information from all resources describing an interaction.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ensure_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+
+        <span class="n">by_source_str</span> <span class="o">=</span> <span class="s1">&#39;by_source&#39;</span> <span class="k">if</span> <span class="n">by_source</span> <span class="k">else</span> <span class="s1">&#39;plain&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_dfs</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="n">by_source_str</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.network_df_by_source"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.network_df_by_source">[docs]</a>    <span class="k">def</span> <span class="nf">network_df_by_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span> <span class="o">=</span> <span class="s1">&#39;omnipath&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a data frame of a network dataset where each row contains</span>
+<span class="sd">        information from one resource.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ensure_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_dfs</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="s1">&#39;by_source&#39;</span><span class="p">]</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_network_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">Network</span><span class="p">):</span>
+
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">Network</span><span class="o">.</span><span class="n">from_igraph</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+        <span class="n">obj</span><span class="o">.</span><span class="n">make_df</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">df</span>
+
+
+    <span class="k">def</span> <span class="nf">_add_network_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
+
+        <span class="n">_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataset_taxid</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">)</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_dataset</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="p">(</span>
+                <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;graph&#39;</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="s1">&#39;es&#39;</span><span class="p">)</span>
+            <span class="p">)</span> <span class="ow">or</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">Network</span><span class="p">)</span>
+        <span class="p">):</span>
+
+            <span class="n">network_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network_df</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">by_source</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="n">network_df_by_source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network_df</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">by_source</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">network_dfs</span><span class="p">[</span><span class="n">dataset</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">network_dfs</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="s1">&#39;plain&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network_df</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">network_dfs</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="s1">&#39;by_source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network_df_by_source</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Created network data frames for `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DatabaseManager.set_network"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.set_network">[docs]</a>    <span class="k">def</span> <span class="nf">set_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">by_source</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets dataset as the default</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">network_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_df</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">by_source</span> <span class="o">=</span> <span class="n">by_source</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ensure_dataset</span><span class="p">(</span><span class="s1">&#39;intercell&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">intercell</span><span class="o">.</span><span class="n">register_network</span><span class="p">(</span><span class="n">network_df</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DatabaseManager.define_dataset"><a class="viewcode-back" href="../../../_autosummary/pypath.omnipath.app.DatabaseManager.html#pypath.omnipath.app.DatabaseManager.define_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">define_dataset</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">module</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+                <span class="s1">&#39;annot&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;complex&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;enz_sub&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;intercell&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;network&#39;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="n">args</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">pickle</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">param</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new dataset definition.</span>
+
+<span class="sd">        Args</span>
+<span class="sd">            name:</span>
+<span class="sd">                Arbitrary name for the dataset.</span>
+<span class="sd">            module:</span>
+<span class="sd">                A database builder module: this determines the type of the</span>
+<span class="sd">                dataset.</span>
+<span class="sd">            args:</span>
+<span class="sd">                Arguments for the database provider method (typically</span>
+<span class="sd">                called ``get_db``) of the above module.</span>
+<span class="sd">            pickle:</span>
+<span class="sd">                A name for the pickle file, if not provided it will be</span>
+<span class="sd">                named as &quot;&lt;name&gt;_&lt;module&gt;.pickle&quot;.</span>
+<span class="sd">            param:</span>
+<span class="sd">                Further parameters, saved directly into the :attr:``param``</span>
+<span class="sd">                dict of this object, however the three arguments above</span>
+<span class="sd">                override values provided this way.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">settings</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">datasets</span> <span class="o">=</span> <span class="n">setting</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;datasets&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">name</span><span class="p">])</span>
+
+        <span class="n">param</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">_pickle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pickle</span> <span class="ow">or</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s1">.pickle&#39;</span>
+        <span class="n">param</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">_mod&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">module</span>
+        <span class="n">param</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">_args&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">param</span><span class="p">)</span></div></div>
+</pre></div>
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+          <div class="sidebar-resize-handle"></div>
+
+<h3><a href="../../../index.html">Table of Contents</a></h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releasehistory.html">Release History</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/pypath.html">pypath</a></li>
+</ul>
+
+<hr class="docutils" />
+<ul>
+  <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html" accesskey="I">General Index</a></li>
+  <li class="toctree-l1"><a class="reference internal" href="../../../py-modindex.html">Python Module Index</a></li>
+</ul>
+<div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <nav class="relbar">
+    </nav>
+
+    <footer role="contentinfo">
+      &#169; Copyright 2022, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
+    </footer>
+  </body>
+</html>

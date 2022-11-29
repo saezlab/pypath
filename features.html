@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Features &#8212; pypath 0.14.29 documentation</title>
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/pypathdocs.css" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script defer src="_static/insipid.js"></script>
+    <script defer src="_static/insipid-sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head><body>
+    <script type="text/javascript">
+        document.body.classList.add('js');
+    </script>
+    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
+    <label id="overlay" for="sidebar-checkbox"></label>
+    <div class="sidebar-resize-handle"></div>
+    <script type="text/javascript">
+        try {
+            let sidebar = localStorage.getItem('sphinx-sidebar');
+            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
+            if (sidebar_width) {
+                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
+            }
+            // show sidebar on wide screen
+            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
+                sidebar = 'visible';
+                // NB: We don't store the value in localStorage!
+            }
+            if (sidebar === 'visible') {
+                document.getElementById('sidebar-checkbox').checked = true;
+            }
+        } catch(e) {
+            console.info(e);
+        }
+    </script>
+    <header id="topbar-placeholder">
+      <div id="topbar">
+        <div id="titlebar">
+          <div class="buttons">
+            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+            </label>
+            <button id="search-button" type="button" title="Search" aria-label="Search" aria-expanded="false" aria-controls="search-form" accesskey="S">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
+            </button>
+          </div>
+          <div class="title">
+            <a class="parent" href="index.html" accesskey="U">pypath 0.14.29 documentation</a>
+            <a class="top" href="#">Features</a>
+          </div>
+          <div class="buttons">
+            <button id="fullscreen-button" type="button" aria-hidden="true">
+              <span class="enable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
+              </span>
+              <span class="disable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+        <div id="searchbox" role="search">
+          <form id="search-form" class="search" style="display: none" action="search.html" method="get">
+            <input type="search" name="q" placeholder="Search ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            <button>Go</button>
+          </form>
+        </div>
+      </div>
+    </header>
+    <nav>
+    </nav>
+
+    <nav class="relbar">
+    </nav>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+<section id="features">
+<h1>Features<a class="headerlink" href="#features" title="Permalink to this heading">§</a></h1>
+<blockquote>
+<div><p><em>Warning:</em>
+The sections below are outdated, will be updated soon</p>
+</div></blockquote>
+<p>In the beginning the primary aim of <strong>pypath</strong> was to build networks from
+multiple sources using an igraph object as the fundament of the integrated
+data structure. From version 0.7 and 0.8 this design principle started to
+change. Today <strong>pypath</strong> builds a number of different databases each having
+<strong>pandas.DataFrame</strong> as a final format. Each of these integrates a specific
+kind of data from various databases (e.g. protein complexes, interactions,
+enzyme-PTM relationships, etc). <strong>pypath</strong> has many submodules with standalone
+functionality which can be used in other modules and scripts. For example
+the ID conversion module <strong>pypath.mapping</strong>.</p>
+<p>Submodules perform various features, e.g. graph visualization, working with
+rug compound data, searching drug targets and compounds in <strong>ChEMBL</strong>.</p>
+<section id="id-conversion">
+<h2>ID conversion<a class="headerlink" href="#id-conversion" title="Permalink to this heading">§</a></h2>
+<p>The ID conversion module <code class="docutils literal notranslate"><span class="pre">utils.mapping</span></code> can be used independently. It has
+the feature to translate secondary UniProt IDs to primaries, and Trembl IDs to
+SwissProt, using primary Gene Symbols to find the connections. This module
+automatically loads and stores the necessary conversion tables. Many tables
+are predefined, such as all the IDs in <strong>UniProt mapping service,</strong> while
+users are able to load any table from <strong>file</strong> or <strong>MySQL,</strong> using the classes
+provided in the module <code class="docutils literal notranslate"><span class="pre">input_formats</span></code>.</p>
+</section>
+<section id="pathways">
+<h2>Pathways<a class="headerlink" href="#pathways" title="Permalink to this heading">§</a></h2>
+<p><strong>pypath</strong> includes data and predefined format descriptions for more than 25
+high quality, literature curated databases. The input formats are defined in
+the <code class="docutils literal notranslate"><span class="pre">data_formats</span></code> module. For some resources data downloaded on the fly,
+where it is not possible, data is redistributed with the module. Descriptions
+and comprehensive information about the resources is available in the
+<code class="docutils literal notranslate"><span class="pre">descriptions</span></code> module.</p>
+</section>
+<section id="structural-features">
+<h2>Structural features<a class="headerlink" href="#structural-features" title="Permalink to this heading">§</a></h2>
+<p>One of the modules called <code class="docutils literal notranslate"><span class="pre">intera</span></code> provides many classes for representing
+structures and mechanisms behind protein interactions. These are <code class="docutils literal notranslate"><span class="pre">Residue</span></code>
+(optionally mutated), <code class="docutils literal notranslate"><span class="pre">Motif</span></code>, <code class="docutils literal notranslate"><span class="pre">Ptm</span></code>, <code class="docutils literal notranslate"><span class="pre">Domain</span></code>, <code class="docutils literal notranslate"><span class="pre">DomainMotif</span></code>,
+<code class="docutils literal notranslate"><span class="pre">DomainDomain</span></code> and <code class="docutils literal notranslate"><span class="pre">Interface</span></code>. All these classes have <code class="docutils literal notranslate"><span class="pre">__eq__()</span></code>
+methods to test equality between instances, and also <code class="docutils literal notranslate"><span class="pre">__contains__()</span></code>
+methods to look up easily if a residue is within a short motif or protein
+domain, or is the target residue of a PTM.</p>
+</section>
+<section id="sequences">
+<h2>Sequences<a class="headerlink" href="#sequences" title="Permalink to this heading">§</a></h2>
+<p>The module <code class="docutils literal notranslate"><span class="pre">seq</span></code> contains a simple class for quick lookup any residue or
+segment in <strong>UniProt</strong> protein sequences while being aware of isoforms.</p>
+</section>
+<section id="tissue-expression">
+<h2>Tissue expression<a class="headerlink" href="#tissue-expression" title="Permalink to this heading">§</a></h2>
+<p>For three protein expression databases there are functions and modules for
+downloading and combining the expression data with the network. These are the
+Human Protein Atlas, the ProteomicsDB and GIANT. The <code class="docutils literal notranslate"><span class="pre">giant</span></code> and
+<code class="docutils literal notranslate"><span class="pre">proteomicsdb</span></code> modules can be used also as stand alone Python clients for
+these resources.</p>
+</section>
+<section id="functional-annotations">
+<h2>Functional annotations<a class="headerlink" href="#functional-annotations" title="Permalink to this heading">§</a></h2>
+<p><strong>GSEA</strong> and <strong>Gene Ontology</strong> are two approaches for annotating genes and
+gene products, and enrichment analysis technics aims to use these annotations
+to highlight the biological functions a given set of genes is related to. Here
+the <code class="docutils literal notranslate"><span class="pre">enrich</span></code> module gives abstract classes to calculate enrichment
+statistics, while the <code class="docutils literal notranslate"><span class="pre">go</span></code> and the <code class="docutils literal notranslate"><span class="pre">gsea</span></code> modules give access to GO and
+GSEA data, and make it easy to count enrichment statistics for sets of genes.</p>
+</section>
+<section id="drug-compounds">
+<h2>Drug compounds<a class="headerlink" href="#drug-compounds" title="Permalink to this heading">§</a></h2>
+<p><strong>UniChem</strong> submodule provides an interface to effectively query the UniChem
+service, use connectivity search with custom settings, and translate SMILEs to
+ChEMBL IDs with ChEMBL web service.</p>
+<p><strong>ChEMBL</strong> submodule queries directly your own ChEMBL MySQL instance, has the
+features to search targets and compounds from custom assay types and
+relationship types, to get activity values, binding domains, and action types.
+You need to download the ChEMBL MySQL dump, and load into your own server.</p>
+</section>
+<section id="technical">
+<h2>Technical<a class="headerlink" href="#technical" title="Permalink to this heading">§</a></h2>
+<p>The module <code class="docutils literal notranslate"><span class="pre">pypath.curl</span></code> provides a very flexible <strong>download manager</strong>
+built on top of <code class="docutils literal notranslate"><span class="pre">pycurl</span></code>. The classes <code class="docutils literal notranslate"><span class="pre">pypath.curl.Curl()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">pypath.curl.FileOpener</span></code> accept numerous arguments to deal in a smart
+way with local <strong>cache</strong>, authentication, redirects, uncompression, character
+encodings, FTP and HTTP transactions, and many other stuff. Cache can grow to
+several GBs, and takes place in <code class="docutils literal notranslate"><span class="pre">~/.pypath/cache</span></code> by default. If you
+experience issues using <code class="docutils literal notranslate"><span class="pre">pypath</span></code> these are most often related to failed
+downloads which often result nonsense cache contents. To debug such issues
+you can see the cache file names and cache usage in the log, and you can use
+the context managers in <code class="docutils literal notranslate"><span class="pre">pypath.curl</span></code> to show, delete or bypass the cache
+for some particular method calls (<code class="docutils literal notranslate"><span class="pre">pypath.curl.cache_print_on()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">pypath.curl.cache_delete_on()</span></code> and <code class="docutils literal notranslate"><span class="pre">pypath.curl.cache_off()</span></code>.
+You can always set up an alternative cache directory for the entire session
+using the <code class="docutils literal notranslate"><span class="pre">pypath.settings</span></code> module.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">pypath.session</span></code> and <code class="docutils literal notranslate"><span class="pre">pypath.log</span></code> modules take care of setting up
+session level parameters and logging. Each session has a random 5 character
+identifier e.g. <code class="docutils literal notranslate"><span class="pre">y5jzx</span></code>. The default log file in this case is
+<code class="docutils literal notranslate"><span class="pre">pypath_log/pypath-y5jzx.log</span></code>. The log messages are flushed every 2 seconds
+by default. You can always change these things using the <code class="docutils literal notranslate"><span class="pre">settings</span></code> module.
+In this module you can get and set the values of various parameters using
+the <code class="docutils literal notranslate"><span class="pre">pypath.settings.setup()</span></code> and the <code class="docutils literal notranslate"><span class="pre">pypath.settings.get()</span></code> methods.</p>
+<p>A simple <strong>webservice</strong> comes with this module: the <code class="docutils literal notranslate"><span class="pre">server</span></code> module based on
+<code class="docutils literal notranslate"><span class="pre">twisted.web.server</span></code> opens a custom port and serves plain text tables over
+HTTP with REST style querying.</p>
+</section>
+</section>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+          <div class="sidebar-resize-handle"></div>
+
+<h3><a href="index.html">Table of Contents</a></h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="webservice.html">Webservice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasehistory.html">Release History</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="_autosummary/pypath.html">pypath</a></li>
+</ul>
+
+<hr class="docutils" />
+<ul>
+  <li class="toctree-l1"><a class="reference internal" href="genindex.html" accesskey="I">General Index</a></li>
+  <li class="toctree-l1"><a class="reference internal" href="py-modindex.html">Python Module Index</a></li>
+</ul>
+<div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <nav class="relbar">
+    </nav>
+
+    <footer role="contentinfo">
+      &#169; Copyright 2022, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
+<a class="reference internal" href="_sources/features.rst.txt" rel="nofollow">Show Source</a>.
+    </footer>
+  </body>
+</html>
