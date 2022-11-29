@@ -50,12 +50,12 @@ def threedcomplex_ddi(contacts = None):
     Downloads and preprocesses data from the 3DComplex database
     (http://shmoo.weizmann.ac.il/elevy/3dcomplexV6/Home.cgi).
 
-    Args:
+    Args
         contacts (set): A map of 3D structure based contacts, as provided by
             ``threedcomplex_contacts``. If None, it will be obtained
             automatically.
 
-    Returns:
+    Returns
         A list of domain-domain interaction objects.
     """
 
@@ -171,7 +171,7 @@ def threedcomplex_contacts(chains = None, pdb_uniprot = None):
     Returns the 3D structure based domain-domain contact map from the
     3D Complex database.
 
-    Args:
+    Args
         chains (dict): A dict of chain correspondancy map, as created by
             ``threedcomplex_chains``. If None, it will be obtained
             automatically.

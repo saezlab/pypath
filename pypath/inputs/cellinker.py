@@ -57,11 +57,11 @@ def cellinker_complexes_raw(organism = 9606):
     Downloads protein complex data from the Cellinker database
     (http://www.rna-society.org/cellinker/).
 
-    Args:
+    Args
         organism (int,str): Name or identifier of the organism. Only mouse
             and human are available.
 
-    Returns:
+    Returns
         (list): List of tuples each describing a protein complex with its
             role (ligand or receptor), components, localization and
             Cellinker ID.
@@ -133,14 +133,14 @@ def components_to_complex(components, organism = None):
     Converts a set of components to `pypath.internals.intera.Complex`
     objects.
 
-    Args:
+    Args
         components (tuple): Components of a complex, as returned by
             `cellinker_complexes_raw`.
         organism (int,str): Name or identifier of the organism. Only mouse
             and human are available. Optional, because organism can be
             guessed from the identifiers.
 
-    Returns:
+    Returns
         (set): A set of `pypath.internals.intera.Complex` objects.
     """
 
@@ -186,11 +186,11 @@ def cellinker_complexes(organism = 9606):
     Protein complex information from the Cellinker database
     (http://www.rna-society.org/cellinker/).
 
-    Args:
+    Args
         organism (int,str): Name or identifier of the organism. Only mouse
             and human are available.
 
-    Returns:
+    Returns
         (dict): A dict of complexes, with string representations as keys and
             `pypath.internals.intera.Complex` objects as values.
     """
@@ -211,11 +211,11 @@ def cellinker_lr_interactions_raw(organism = 9606):
     Ligand-receptor interactions from the Cellinker database
     (http://www.rna-society.org/cellinker/).
 
-    Args:
+    Args
         organism (int,str): Name or identifier of the organism. Only mouse
             and human are available.
 
-    Returns:
+    Returns
         (list): A list of dicts, each representing an interaction records
             as it is provided by the database.
     """
@@ -228,11 +228,11 @@ def cellinker_smol_interactions_raw(organism = 9606):
     Small molecule ligand-protein receptor interactions from the Cellinker
     database (http://www.rna-society.org/cellinker/).
 
-    Args:
+    Args
         organism (int,str): Name or identifier of the organism. Only mouse
             and human are available.
 
-    Returns:
+    Returns
         (list): A list of dicts, each representing an interaction records
             as it is provided by the database.
     """
@@ -245,13 +245,13 @@ def _cellinker_interactions_raw(dataset = 'lr', organism = 9606):
     Downloads either the ligand-receptor or the small molecule ligand-receptor
     dataset from the Cellinker database.
 
-    Args:
+    Args
         dataset (str): Either `lr` or `smol`, meainng protein-protein or
             small molecule-protein ligand-receptor interactions.
         organism (int,str): Name or identifier of the organism. Only mouse
             and human are available.
 
-    Returns:
+    Returns
         (list): A list of dicts, each representing an interaction records
             as it is provided by the database.
     """
@@ -296,11 +296,11 @@ def cellinker_lr_interactions(organism = 9606):
     Ligand-receptor interactions from the Cellinker database
     (http://www.rna-society.org/cellinker/).
 
-    Args:
+    Args
         organism (int,str): Name or identifier of the organism. Only mouse
             and human are available.
 
-    Returns:
+    Returns
         (set): A set of tuples, each representing a preprocessed Cellinker
             interaction. The proteins are represented by their UniProt IDs,
             while the protein complexes by `Complex` objects.
@@ -366,11 +366,11 @@ def cellinker_smol_interactions(organism = 9606):
     Small molecule ligand-protein receptor interactions from the Cellinker
     database (http://www.rna-society.org/cellinker/).
 
-    Args:
+    Args
         organism (int,str): Name or identifier of the organism. Only mouse
             and human are available.
 
-    Returns:
+    Returns
         (set): A set of tuples, each representing a preprocessed Cellinker
             interaction. The proteins are represented by their UniProt IDs,
             the small molecules by PubChem CIDs, while the protein complexes
@@ -436,13 +436,13 @@ def cellinker_annotations(organism = 9606, entity_type = None):
     Ligand and receptor annotations from the Cellinker database
     (http://www.rna-society.org/cellinker/).
 
-    Args:
+    Args
         organism (int,str): Name or identifier of the organism. Only mouse
             and human are available.
         entity_type (str): Either `protein` or `complex`. If `None`, both
             proteins and protein complexes will be included.
 
-    Returns:
+    Returns
         (dict): A dict of sets of tuples, keys are UniProt IDs for proteins
             and `Complex` objects for protein complexes. The tuples are
             annotations with ligand or receptor role, localization and
@@ -487,11 +487,11 @@ def cellinker_protein_annotations(organism = 9606):
     Ligand and receptor annotations from the Cellinker database
     (http://www.rna-society.org/cellinker/).
 
-    Args:
+    Args
         organism (int,str): Name or identifier of the organism. Only mouse
             and human are available.
 
-    Returns:
+    Returns
         (dict): A dict of sets of tuples, keys are UniProt IDs. The tuples
             are annotations with ligand or receptor role, localization and
             type.
@@ -505,11 +505,11 @@ def cellinker_complex_annotations(organism = 9606):
     Ligand and receptor annotations from the Cellinker database
     (http://www.rna-society.org/cellinker/).
 
-    Args:
+    Args
         organism (int,str): Name or identifier of the organism. Only mouse
             and human are available.
 
-    Returns:
+    Returns
         (dict): A dict of sets of tuples, keys are `Complex` objects.
             The tuples are annotations with ligand or receptor role,
             localization and type.
@@ -522,7 +522,7 @@ def _cellinker_uniprots(gsymbol, entrez, ncbi_tax_id, complexes = None):
     """
     Translates the Gene Symbols and Entrez Gene IDs to UniProt IDs.
 
-    Returns:
+    Returns
         (set): Set of UniProt IDs.
     """
 

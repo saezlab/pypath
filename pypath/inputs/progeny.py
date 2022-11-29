@@ -40,11 +40,11 @@ def progeny_raw(organism = 9606):
     Pathway responsive genes: signatures based on transcriptomics data
     from PROGENy (https://github.com/saezlab/progeny).
 
-    Args:
+    Args
         organism (int,str): Name or NCBI Taxonomy ID of the organism. Human
             and mouse are supported.
 
-    Returns:
+    Returns
         (pandas.DataFrame): A data frame of genes, pathways, weights and
             p-values for each association.
     """
@@ -81,11 +81,11 @@ def progeny_annotations(organism = 9606):
     Pathway responsive genes: signatures based on transcriptomics data
     from PROGENy (https://github.com/saezlab/progeny).
 
-    Args:
+    Args
         organism (int,str): Name or NCBI Taxonomy ID of the organism. Human
             and mouse are supported.
 
-    Returns:
+    Returns
         (dict): Dict of sets, keys are UniProt IDs, values are pathway
             association records, each with a weight and p-value.
     """

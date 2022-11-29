@@ -42,7 +42,7 @@ def drugcentral_drugs() -> list[tuple]:
     """
     Drug names and structures from Drug Central.
 
-    Returns:
+    Returns
         List of drugs, each represented by a named tuple.
     """
 
@@ -84,14 +84,14 @@ def drugcentral_interactions(
     """
     Retrieves drug-target interactions from Drug Central.
 
-    Args:
+    Args
         organism:
             Organism name or NCBI Taxonomy ID. If not provided,
             all organisms will be retained.
         comments:
             Include comments in the result.
 
-    Returns:
+    Returns
         List of drug-target relationships, represented as named tuples.
     """
 
@@ -161,13 +161,13 @@ def drugcentral_mapping(
 
     Available ID types: drugcentral, inn, cas, smiles, inchikey, inchi.
 
-    Args:
+    Args
         id_type:
             The identifier type to be used as keys.
         target_id_type:
             The identifier type that will be collected into the values.
 
-    Returns:
+    Returns
         An identifier translation table.
     """
 

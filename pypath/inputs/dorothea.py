@@ -325,12 +325,12 @@ def dorothea_full_raw(organism = 9606):
     """
     DoRothEA data as it is provided in the R package.
 
-    Args:
+    Args
         organism (int,str): Name or NCBI Taxonomy ID of the organism. The
             complete DoRothEA database (with all the details about the
             original sources) is available only for human.
 
-    Returns:
+    Returns
         (pandas.DataFrame): A data frame of TF-target interactions from
             DoRothEA.
     """

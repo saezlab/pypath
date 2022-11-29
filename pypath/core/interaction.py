@@ -3192,13 +3192,13 @@ class Interaction(attrs_mod.AttributeHandler):
         """
         Extracts the values of one specific attribute.
 
-        Args:
+        Args
             resource (str): Name of the resource.
             key (str): Name of the attribute.
             direction (tuple,str): Direction(s) to consider, either a tuple
                 of entities or entity names, or the string `undirected`.
 
-        Return:
+        Return
             Depends on the arguments. The value of the attribute if direction
             is defined. Otherwise a dict with the value of the attribute for
             each direction. The value of the attribute is `None` if the
@@ -3224,11 +3224,11 @@ class Interaction(attrs_mod.AttributeHandler):
         """
         Retrieves the DoRothEA confidence levels.
 
-        Args:
+        Args
             direction (tuple,str): Direction(s) to consider, either a tuple
                 of entities or entity names, or the string `undirected`.
 
-        Return:
+        Return
             List of unique single letter strings representing the five
             confidence levels (A-E).
         """

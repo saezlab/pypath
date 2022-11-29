@@ -43,7 +43,7 @@ def unichem_info():
     List of ID types in UniChem. See more details at
     https://www.ebi.ac.uk/unichem/ucquery/listSources.
 
-    Returns:
+    Returns
         (list): A list of named tuples, each representing information about
             one UniChem resource.
     """
@@ -89,7 +89,7 @@ def unichem_sources():
     ID type numeric codes and labels in UniChem. For more information see
     `unichem_info`.
 
-    Returns:
+    Returns
         (dict): A dict with ID type numeric IDs as keys and ID type labels
             as values.
     """
@@ -108,14 +108,14 @@ def unichem_mapping(id_type, target_id_type):
     """
     Identifier translation data from UniChem.
 
-    Args:
+    Args
         id_type (int,str): An ID type in UniChem: either the integer ID or
             the string label of a resource. For a full list see
             `unichem_sources`.
         target_id_type (int,str): An ID type in UniChem, same way as
             `id_type`.
 
-    Returns:
+    Returns
         (dict): A dictionary with ID translation data, keys are IDs of
             `id_type`, values are sets of IDs of `target_id_type`.
     """
@@ -130,14 +130,14 @@ def _unichem_mapping(id_type, target_id_type):
     """
     Identifier translation data from UniChem.
 
-    Args:
+    Args
         id_type (int,str): An ID type in UniChem: either the integer ID or
             the string label of a resource. For a full list see
             `unichem_sources`.
         target_id_type (int,str): An ID type in UniChem, same way as
             `id_type`.
 
-    Returns:
+    Returns
         (dict): A dictionary with ID translation data, keys are IDs of
             `id_type`, values are sets of IDs of `target_id_type`.
     """
@@ -190,7 +190,7 @@ def info(source):
     """
     Print information about one source.
 
-    Args:
+    Args
         source (int,str): The numeric or string ID of one source.
     """
 

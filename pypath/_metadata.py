@@ -49,7 +49,7 @@ def get_metadata():
     pyproj_toml = 'pyproject.toml'
     meta = {}
 
-    for project_dir in (here, here.parent):
+    for project_dir in (here, here.parent, here.parent.parent):
 
         toml_path = str(project_dir.joinpath(pyproj_toml).absolute())
 

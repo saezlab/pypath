@@ -47,10 +47,10 @@ def get_single_model(model_id):
     """
     Get single BioModel using bioservices.
     
-    Args:
+    Args
         model_id (str): ID of model
 
-    Returns:
+    Returns
         dict: dictionary containing model specifics, eg name/id,
         description, associated files
     """
@@ -63,7 +63,7 @@ def get_all_models():
     """
     Fetch list of available models using bioservices.
 
-    Returns: 
+    Returns 
         dict: A dictionary of models with model identifiers as keys and
         model attributes as values. Model attributes include format
         (SMBL being most common), model id, name,

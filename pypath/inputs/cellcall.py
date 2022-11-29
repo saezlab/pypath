@@ -44,14 +44,14 @@ def cellcall_download(extended = False, mouse = False):
     ``cellcall_download_all``. The pathway identifiers refer to KEGG
     pathways.
 
-    Args:
+    Args
         extended (bool): CellCall has core and extended datasets, if this
             argument is True, the extended dataset will be retrieved.
         mouse (bool): CellCall has human and homology inferred mouse
             datasets. If this argument is True, the homology inferred
             dataset will be retrieved with mouse identifiers.
 
-    Returns:
+    Returns
         A list of dicts, each is a record as it provided by the CellCall
         database.
     """
@@ -76,12 +76,12 @@ def cellcall_download_all(extended = True, human = True, mouse = True):
     here, with the parameters you can exclude the extended part and select
     the organism. The pathway identifiers refer to KEGG pathways.
 
-    Args:
+    Args
         extended (bool): Use also the extended datasets.
         human (bool): Include human interactions.
         mouse (bool): Include mouse interactions.
 
-    Returns:
+    Returns
         A list of dicts, each is a record as it provided by the CellCall
         database.
     """
@@ -116,13 +116,13 @@ def cellcall_interactions(extended = False, organism = 9606):
     Ligand-receptor interactions from the CellCall database
     (https://github.com/ShellyCoder/cellcall).
 
-    Args:
+    Args
         extended (bool): Include not only the core but also the extended
             set of interactions.
         organism (int,str): The organism to use, human (9606) and mouse
             (10090) are supported.
 
-    Returns:
+    Returns
         List of named tuples, each describing a ligand-receptor interaction.
     """
 
@@ -202,13 +202,13 @@ def cellcall_annotations(extended = False, organism = 9606):
     Ligand and receptor annotations from the CellCall database
     (https://github.com/ShellyCoder/cellcall).
 
-    Args:
+    Args
         extended (bool): Include not only the core but also the extended
             set of interactions.
         organism (int,str): The organism to use, human (9606) and mouse
             (10090) are supported.
 
-    Returns:
+    Returns
         Dict of annotations, keys are UniProt IDs, values are sets of
         annotations.
     """

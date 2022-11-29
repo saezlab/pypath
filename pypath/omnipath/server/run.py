@@ -2899,7 +2899,7 @@ class Rest(object):
         Runs a webserver serving a `PyPath` instance listening
         to a custom port.
 
-        Args:
+        Args
         -----
         :param int port:
             The port to listen to.

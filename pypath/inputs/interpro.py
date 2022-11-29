@@ -46,7 +46,7 @@ def interpro_entries() -> List[tuple]:
     """
     Downloads detailed InterPro entry information.
 
-    Returns:
+    Returns
         A list of named tuples, each representing information about
         one InterPro entry. 
     """
@@ -155,10 +155,10 @@ def interpro_xrefs(
     """
     Downloads cross-references for each InterPro entry.
 
-    Args:
+    Args
         db_type: Type of the cross-reference databases.
 
-    Returns:
+    Returns
         A dictionary; keys are InterPro IDs.
             If 'db_type' is 'go', values are list of GO terms related to the InterPro entry.
             Otherwise values are dictionaries, where keys are database names 
@@ -230,12 +230,12 @@ def interpro_annotations(
     """
     Downloads UniProtKB proteins and the InterPro entries they match.
 
-    Args:
+    Args
         page_size: Number of results returned at a time.
         reviewed: Downloads only reviewed UniprotKB proteins if True,
             Downloads all UniprotKB proteins otherwise.
 
-    Returns:
+    Returns
         A dictionary. Keys are Uniprot IDs, values are sets of annotations.
     """
 
@@ -319,7 +319,7 @@ def interpro2go_annotations() -> dict[str, set[tuple]]:
     """
     Downloads GO term annotations for InterPro entries.
 
-    Returns:
+    Returns
         Dict of InterPro entries as keys and sets of GO terms as values.
     """
 

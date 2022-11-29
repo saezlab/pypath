@@ -43,7 +43,7 @@ _log = _logger._log
 
 def get_domino(none_values = False, outfile = None):
     """
-    Returns:
+    Returns
         A list of records with the following fields:
         header = ['uniprot_A', 'uniprot_B', 'isoform_A', 'isoform_B', #3
         'exp_method', 'references', 'taxon_A', 'taxon_B', #7
@@ -248,7 +248,7 @@ def domino_ddi():
 
 def domino_enzsub():
     """
-    Returns:
+    Returns
         A dict of two elements: `ddi` contains domain-domain, while `dmi`
         domain-motif interactions. The latter includes protein-PTM
         interactions.

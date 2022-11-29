@@ -54,11 +54,11 @@ def pfam_uniprot(uniprots = None, organism = 9606):
     """
     Mappings between Pfam and UniProt.
 
-    Args:
+    Args
         uniprots (set): The UniProt IDs to query.
         organism (int): NCBI Taxonomy ID of an organism.
 
-    Returns:
+    Returns
         A pair of dicts of sets, the first mapping from UniProt ACs to
         Pfam ACs, the second the other way around.
     """
@@ -160,7 +160,7 @@ def pfam_regions(
         value = 'both',
     ):
     """
-    Args:
+    Args
         uniprots (set): UniProt IDs to include in the result. If neither
             this or ``pfams`` provided, all SwissProts for the given
             organism will be queried.
@@ -256,7 +256,7 @@ def pfam_names():
     """
     Mappings between Pfam accessions and human readable names.
 
-    Returns:
+    Returns
         A pair of dictionaries, the first maps from names to accessions,
         the second from accessions to names.
     """
@@ -287,7 +287,7 @@ def pfam_pdb():
     """
     Mappings between Pfam and PDB.
 
-    Returns:
+    Returns
         A pair of dicts of dicts, the first mapping from PDB IDs to
         Pfam ACs, the second the other way around. Each inner dict contains
         sets of domains as values, each domain defined by the PDB chain ID,

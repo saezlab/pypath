@@ -516,7 +516,7 @@ def uniprot_data(
     this module or the UniProt website:
     https://legacy.uniprot.org/help/uniprotkb_column_names
 
-    Args:
+    Args
         field:
             One or more UniProt field name. See details.
         organism:
@@ -526,7 +526,7 @@ def uniprot_data(
             Restrict the query to SwissProt (True), to TrEMBL (False), or
             cover both (None).
 
-    Return:
+    Return
         A dictionary for each ke
     """
 

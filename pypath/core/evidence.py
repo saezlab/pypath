@@ -796,7 +796,7 @@ class Evidences(object):
 
     def keys(self):
         """
-        Returns:
+        Returns
             (dict_keys): The keys of this dictionary are
                 :py:class:`pypath.internals.resource.NetworkResourceKey`
                 objects.
@@ -807,7 +807,7 @@ class Evidences(object):
 
     def items(self):
         """
-        Returns:
+        Returns
             (dict_items): The evidences as a mapping, with
                 :py:class:`pypath.internals.resource.NetworkResourceKey`
                 objects as keys and :py:class:`pypath.core.evidence.Evidence`
@@ -820,7 +820,7 @@ class Evidences(object):
     @property
     def simple_dict(self):
         """
-        Returns:
+        Returns
             (dict): Keys are resource labels, values are
                 :py:class:`pypath.core.evidence.Evidence` objects.
         """
@@ -835,7 +835,7 @@ class Evidences(object):
         """
         Serialize the extra attributes of the evidences as a JSON string.
 
-        Returns:
+        Returns
             (str): A JSON serialized string with the evidences from each
                 resource.
         """

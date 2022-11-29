@@ -51,7 +51,7 @@ def biogps_datasets():
     """
     List the expression profile datasets available from BioGPS.
 
-    Returns:
+    Returns
         (list): Named tuples with the label, organism and URL of the datasets.
     """
 
@@ -74,12 +74,12 @@ def biogps_download(dataset):
     """
     Retrieve one BioGPS expression profile dataset.
 
-    Args:
+    Args
         dataset (str,BiogpsDataset): Either the label of a dataset or a
             `BiogpsDataset` object. For a list of available datasets, see
             `biogps_datasets`.
 
-    Returns:
+    Returns
         (pandas.DataFrame): A data frame of expression values, columns are
             tissues, cell types or cell lines, rows are microarray probes
             representing transcripts.
@@ -139,14 +139,14 @@ def biogps_download_all(organism = None, exclude = None, only = None):
     """
     Downloads all expression data from BioGPS.
 
-    Args:
+    Args
         organism (str,int): Restrict the download to this organism. Human,
             mouse and rat datasets are available.
         exclude (str,set): One or more datasets to exclude. Should be
             dataset labels as shown by `biogps_datasets`.
         only (str,set): Restrict the download only to these datasets.
 
-    Returns:
+    Returns
         (dict): Dict of pandas data frames, keys are dataset labels, values
             are data frames of expression values, columns are tissues, cell
             types or cell lines, rows are microarray probes representing
@@ -186,14 +186,14 @@ def biogps_annotations(organism = 9606, exclude = None, only = None):
     Expression data from BioGPS compiled in the annotation format commonly
     used in this module.
 
-    Args:
+    Args
         organism (int,str): Name or ID of the organism. This function
             is able to process data for one organism at once.
         exclude (str,set): One or more datasets to exclude. Should be
             dataset labels as shown by `biogps_datasets`.
         only (str,set): Restrict the download only to these datasets.
 
-    Returns:
+    Returns
         (dict): Dict of annotations, keys are UniProt IDs, values are
             sets of named tuples of annotations.
     """

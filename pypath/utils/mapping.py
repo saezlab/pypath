@@ -172,7 +172,7 @@ class MapReader(session_mod.Logger):
             lifetime = 300,
         ):
         """
-        Args:
+        Args
             param (MappingInput): A mapping table definition, any child of
                 the `internals.input_formats.MappingInput` class.
             ncbi_tax_id (int): NCBI Taxonomy identifier of the organism.
@@ -295,10 +295,10 @@ class MapReader(session_mod.Logger):
         Tells if an ID type is on the "a" or "b" (source or target) side
         in the current mapping table definition.
 
-        Args:
+        Args
             id_type (str): An ID type label.
 
-        Returns:
+        Returns
             Returns the string "a" if `id_type` is on the source side in
             the mapping table definition, "b" if it is on the target side,
             None if the `id_type` is not in the definition.
@@ -626,7 +626,7 @@ class MapReader(session_mod.Logger):
         """
         Sets up a search space of UniProt IDs.
 
-        Args:
+        Args
             swissprot (bool): Use only SwissProt IDs, not TrEMBL. True
                 loads only SwissProt IDs, False only TrEMBL IDs, None
                 loads both.
@@ -650,7 +650,7 @@ class MapReader(session_mod.Logger):
         """
         Reads a mapping table from UniProt "upload lists" service.
 
-        Args:
+        Args
             uniprot_id_type_a (str): Source ID type label as used in UniProt.
             uniprot_id_type_b (str): Target ID type label as used in UniProt.
             upload_ac_list (list): The identifiers to use in the query to
@@ -1008,7 +1008,7 @@ class MappingTable(session_mod.Logger):
         unambigous, which means one target identifier for each source
         identifier.
 
-        Args:
+        Args
             data (dict): The identifier translation dictionary.
             id_type (str): The source ID type.
             target_id_type (str): The target ID type.
@@ -1535,10 +1535,10 @@ class Mapper(session_mod.Logger):
         Creates an opposite direction `MappingTable` by swapping the
         dictionary inside an existing `MappingTable` object.
 
-        Args:
+        Args
             mapping_table (MappingTable): A `MappingTable` object.
 
-        Returns:
+        Returns
             A new `MappingTable` object.
         """
 
@@ -1558,10 +1558,10 @@ class Mapper(session_mod.Logger):
         For a mapping table key returns a new key with the identifiers
         reversed.
 
-        Args:
+        Args
             key (tuple): A mapping table key.
 
-        Returns:
+        Returns
             A tuple representing a mapping table key, identifiers swapped.
         """
 
@@ -1648,7 +1648,7 @@ class Mapper(session_mod.Logger):
         primary. Then, for the Trembl IDs it looks up the preferred gene
         names, and find Swissprot IDs with the same preferred gene name.
 
-        Args:
+        Args
             name (str): The original name to be converted.
             id_type (str): The type of the name. Available by default:
                 - genesymbol (gene name)
@@ -2012,11 +2012,11 @@ class Mapper(session_mod.Logger):
         if they are part of the organism proteome, attempts to translate
         secondary and deleted IDs to their primary, recent counterparts.
 
-        Args:
+        Args
             uniprots (str,set): One or more UniProt IDs.
             ncbi_tax_id (int): The NCBI Taxonomy identifier of the organism.
 
-        Returns:
+        Returns
             Set of checked and potentially translated UniProt iDs. Elements
             which do not fit the criteria will be discarded.
         """
@@ -2073,7 +2073,7 @@ class Mapper(session_mod.Logger):
         separate functions to always make it explicit if a set of translated
         IDs come from multiple original IDs.
 
-        Args:
+        Args
             name (str): The original name to be converted.
             id_type (str): The type of the name. Available by default:
                 - genesymbol (gene name)
@@ -2131,7 +2131,7 @@ class Mapper(session_mod.Logger):
         Translate IDs which can not be directly translated in two steps:
         from `id_type` to `via_id_type` and from there to `target_id_type`.
 
-        Args:
+        Args
             name (str): The original name to be converted.
             id_type (str): The type of the name.
             by_id_type (str): The intermediate name type.
@@ -2140,7 +2140,7 @@ class Mapper(session_mod.Logger):
             ncbi_tax_id (int): The NCBI Taxonomy identifier of the organism.
             kwargs: Passed to `map_name`.
 
-        Returns:
+        Returns
             Set of IDs of type `target_id_type`.
         """
 
@@ -2806,7 +2806,7 @@ class Mapper(session_mod.Logger):
         """
         List of mapping tables available to load.
 
-        Returns:
+        Returns
             (list): A list of tuples, each representing an ID translation
                 table, with the ID types, the data source and the loader
                 class.
@@ -2877,7 +2877,7 @@ class Mapper(session_mod.Logger):
         A list of all identifier types that can be handled by any of the
         resources.
 
-        Returns:
+        Returns
             (list): A list of tuples with the identifier type labels used
                 in pypath and in the original resource. If the latter is
                 None, typically the ID type has no name in the original
@@ -2913,7 +2913,7 @@ class Mapper(session_mod.Logger):
         Tells if a mapping table is loaded. If it's loaded, it resets the
         expiry timer so the table remains loaded.
 
-        Returns:
+        Returns
             (bool): True if the mapping table is loaded.
         """
 
@@ -3229,7 +3229,7 @@ def init(**kwargs):
     Create a new `Mapper` instance under the `mapper` attribute of this
     module.
 
-    Returns:
+    Returns
         None.
     """
 
@@ -3246,7 +3246,7 @@ def get_mapper(**kwargs):
     object, which manages the ID translations. This function creates the
     instance if does not exist and returns it.
 
-    Returns:
+    Returns
         A Mapper object.
     """
 
@@ -3286,7 +3286,7 @@ def map_name(
     primary. Then, for the Trembl IDs it looks up the preferred gene
     names, and find Swissprot IDs with the same preferred gene name.
 
-    Args:
+    Args
         name (str): The original name to be converted.
         id_type (str): The type of the name. Available by default:
             - genesymbol (gene name)
@@ -3376,7 +3376,7 @@ def map_names(
     separate functions to always make it explicit if a set of translated
     IDs come from multiple original IDs.
 
-    Args:
+    Args
         name (str): The original name to be converted.
         id_type (str): The type of the name. Available by default:
             - genesymbol (gene name)

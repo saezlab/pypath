@@ -90,7 +90,7 @@ class ResidueMapper(session.Logger):
         """
         Loads PDB-UniProt sequence mapping for one or more PDB IDs.
 
-        Args:
+        Args
             pdb (str,list): One or more PDB IDs.
         """
 
@@ -159,12 +159,12 @@ class ResidueMapper(session.Logger):
         For a residue in a PDB structure returns the UniProt ID and
         the position of the residue in the UniProt sequence.
 
-        Args:
+        Args
             pdb (str): A PDB structure ID.
             resnum (int): The position of the residue.
             chain (str): The chain ID, optional.
 
-        Returns:
+        Returns
             Tuple of residue number, offset, UniProt ID and chain ID.
             Returns None if the residue can not be found.
         """

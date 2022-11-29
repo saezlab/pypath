@@ -47,16 +47,6 @@ data_formats
 .. automodule:: pypath.resources.data_formats
    :members:
 
-dataio
-======
-.. automodule:: pypath.inputs.main
-   :members:
-
-descriptions
-============
-.. automodule:: pypath.resources.descriptions
-   :members:
-
 entity
 ======
 .. automodule:: pypath.core.entity
@@ -85,6 +75,11 @@ homology
 input_formats
 =============
 .. automodule:: pypath.internals.input_formats
+   :members:
+
+inputs
+======
+.. automodule:: pypath.inputs
    :members:
 
 interaction
@@ -138,8 +133,6 @@ network
 =======
 .. automodule:: pypath.core.network
    :members:
-
-.. XXX: should we remove this?
 
 omnipath
 ========

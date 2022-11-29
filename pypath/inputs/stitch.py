@@ -102,7 +102,7 @@ def stitch_links_interactions(
     The combined physical interaction score is defined
     between the interactors for which we have evidence of their binding.
 
-    Args:
+    Args
         score_threshold: Minimum required interaction score. user can use
             pre-defined confidence limits or can define a custom value.
     """

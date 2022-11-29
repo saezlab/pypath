@@ -52,7 +52,7 @@ def signor_interactions(
     If ``raw_records`` is `True` it returns the table split to list of
     lists but unchanged content.
 
-    Args:
+    Args
         organism (int, str): The NCBI Taxonomy ID or name of the organism.
             Human (9606), mouse (10090) and rat (10116) are available.
         raw_records (bool): Process the records or return them raw,
@@ -60,7 +60,7 @@ def signor_interactions(
         expand_families (int): Expand protein families up to this size.
             Zero or one means no expansion.
 
-    Return:
+    Return
         list: A list with processed records as named tuples or dicts of
             raw records if ``raw_records`` is True.
     """

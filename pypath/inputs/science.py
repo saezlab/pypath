@@ -38,11 +38,11 @@ def science_download(url):
     """
     Downloads a supplementary material from the Science journal webpage.
 
-    Args:
+    Args
         url (str):
             URL of the supplementary material.
 
-    Returns:
+    Returns
         The path of the downloaded file.
     """
 

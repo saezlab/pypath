@@ -42,7 +42,7 @@ def biogrid_interactions(
     Keeps only the "low throughput" interactions.
     Returns list of interactions.
 
-    Args:
+    Args
         organism: NCBI Taxonomy ID of organism.
         htp_limit: Exclude interactions only from references cited at more
         than this number of interactions.
@@ -111,7 +111,7 @@ def biogrid_all_interactions(
     Keeps only the "low throughput" interactions.
     Returns list of interactions.
 
-    Args:
+    Args
         organism: NCBI Taxonomy ID of organism.
         htp_limit: Exclude interactions only from references cited at
             more than this number of interactions.

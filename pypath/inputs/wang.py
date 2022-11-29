@@ -58,7 +58,7 @@ def hsn_interactions(
     Downloads and processes HumanSignalingNetwork version 6
     (published 2014 Jan by Edwin Wang).
 
-    Args:
+    Args
         source: The same file is available from two domains: the OmniPath
             rescued repository and Research Gate. These both are secondary
             sources, the dataset is not available any more from its original

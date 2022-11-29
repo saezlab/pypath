@@ -306,7 +306,7 @@ class UniprotMapping(MappingInput):
         UniProt web service. If the label is not available in the built in
         list None is returned.
 
-        Returns:
+        Returns
             (str): The ID type label used by UniProt; None if the input
                 label is not known.
         """

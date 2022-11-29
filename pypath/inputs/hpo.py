@@ -38,7 +38,7 @@ def hpo_annotations() -> dict[str, set[tuple]]:
     """
     Human Phenotype Ontology annotations.
 
-    Returns:
+    Returns
         Dict of proteins as keys and sets of HPO annotations as values.
     """
 
@@ -83,7 +83,7 @@ def hpo_diseases() -> dict[str, set[tuple]]:
     """
     HPO term-disease relationships from Human Phenotype Ontology.
 
-    Returns:
+    Returns
         A set of disease records for each HPO term.
     """
 
@@ -138,7 +138,7 @@ def hpo_ontology() -> dict[str, dict[str, Union[str, set[str]]]]:
     """
     Ontology data from HPO.
 
-    Returns:
+    Returns
         Five dictionaries with term names, term definitions, parents in the
         ontology tree, term synonyms and cross references to other databases.
         The dicts "terms" and "defs" are one-to-one, while "parents",

@@ -1524,7 +1524,7 @@ class CustomAnnotation(session_mod.Logger):
 
             self._log(
                 'Using previously created network-annotation data frame. '
-                'Parameters: %s' % param_str
+                'Parameters %s' % param_str
             )
             network_df = None
 
@@ -1532,7 +1532,7 @@ class CustomAnnotation(session_mod.Logger):
 
             self._log(
                 'Combining custom annotation with network data frame. '
-                'Parameters: %s' % param_str
+                'Parameters %s' % param_str
             )
 
             network_df = (

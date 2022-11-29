@@ -36,7 +36,7 @@ def chembl_targets() -> list[tuple]:
     """
     Retrieves targets data from ChEMBL.
 
-    Returns:
+    Returns
         List of drug target records as named tuples.
     """
 
@@ -97,7 +97,7 @@ def chembl_assays() -> list[tuple] :
     """
     Retrieves assays data from ChEMBL.
 
-    Returns:
+    Returns
         List of assay records as named tuples.
     """
 
@@ -160,7 +160,7 @@ def chembl_molecules() -> list[tuple]:
     """
     Retrieves molecules data from ChEMBL.
 
-    Returns:
+    Returns
         Molecule records as named tuples.
     """
 
@@ -268,14 +268,14 @@ def chembl_activities(
     """
     Retrieves activities data from ChEMBL.
 
-    Args:
+    Args
         pchembl_value_none:
             # TODO: it is allowed to be None or must be None?
             Whether the pchembl value should be none or not.
         standard_relation:
             Which standard relation in needed.
 
-    Returns:
+    Returns
         List of activity records as named tuples. `standard_flag` and
         `standard_units` attributes are not included in the returned records.
         # TODO: then why the data_validity_comment is part of the records?

@@ -121,7 +121,7 @@ def string_links_interactions(
     The combined physical interaction score is defined between the proteins
     for which we have evidence of their binding or forming a physical complex.
 
-    Args:
+    Args
         score_threshold: Minimum required interaction score. user can use
             pre-defined confidence limits or can define a custom value.
     """
@@ -208,7 +208,7 @@ def string_physical_interactions(
     channel. The interactions indicate that the proteins are part of a
     physical complex.
 
-    Args:
+    Args
         score_threshold: Minimum required interaction score. user can use
             pre-defined confidence limits or can define a custom value.
     """
@@ -257,7 +257,7 @@ def string_species() -> dict[int, str]:
     """
     Downloads list of organisms in STRING.
 
-    Returns:
+    Returns
         Dict of tax ids as keys and scientific names of organisms as values.
     """
 

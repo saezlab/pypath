@@ -42,7 +42,7 @@ def credentials(
     """
     Credentials required for restricted access resources.
 
-    Args:
+    Args
         args:
             Two strings: a user name and password. If only one provided, it
             is assumed to be a user name; if more provided, apart from the
@@ -59,7 +59,7 @@ def credentials(
             way to explicitely provide user and password, and any further
             fields.
 
-    Returns:
+    Returns
         A dictionary with the credentials. Raises RuntimeError if credentials
         not provided by any of the available ways.
     """

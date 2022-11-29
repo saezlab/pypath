@@ -45,7 +45,7 @@ def pepcyber_interactions(dataframe = False, cache = True):
     Downloads phosphoprotein binding protein interactions
     from the PepCyber database (http://www.pepcyber.org/).
 
-    Args:
+    Args
         dataframe (bool): Return a pandas data frame instead of list of
             tuples.
         cache (bool): Read the data from an intermediate cache file,
@@ -188,7 +188,7 @@ def pepcyber_details(num):
     Retrieves detailed information about an interaction from the PepCyber
     database.
 
-    Returns:
+    Returns
         Dict with gene symbols as keys and lists of length 2 as values,
         with UniProt ID and RefSeq protein ID. A special key `_refs`
         holds a list of dictionaries, each with category, evidence type and

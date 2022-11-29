@@ -629,7 +629,7 @@ class DatabaseManager(session_mod.Logger):
         """
         Add a new dataset definition.
 
-        Args:
+        Args
             name:
                 Arbitrary name for the dataset.
             module:

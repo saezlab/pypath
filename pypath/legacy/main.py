@@ -12328,7 +12328,7 @@ class PyPath(session_mod.Logger):
         Returns a network which includes the proteins expressed in
         certain tissue according to ProteomicsDB.
 
-        Args:
+        Args
         -----
         :param str tissue:
             Tissue name as used in ProteomicsDB.
@@ -12755,7 +12755,7 @@ class PyPath(session_mod.Logger):
         the protein has at least one compound binding with
         affinity higher than `pchembl`, otherwise *False*.
 
-        Args:
+        Args
         -----
         :param float pchembl:
             Pchembl threshold.
@@ -12782,7 +12782,7 @@ class PyPath(session_mod.Logger):
         Creates a vertex attribute `tf` with value *True* if
         the protein is a transcription factor, otherwise *False*.
 
-        Args:
+        Args
         -----
         :param list classes:
             Classes to use from TF Census. Default is `['a', 'b', 'other']`.
@@ -12806,7 +12806,7 @@ class PyPath(session_mod.Logger):
         if the protein encoded by a disease related gene according to
         DisGeNet.
 
-        Args:
+        Args
         -----
         :param str dataset:
             Which dataset to use from DisGeNet. Default is `curated`.
@@ -12886,7 +12886,7 @@ class PyPath(session_mod.Logger):
         or `sirnor_pathways()` or call `load_all_pathways()` to
         load all resources.
 
-        Args:
+        Args
         -----
 
         :param str source:
@@ -16189,7 +16189,7 @@ class PyPath(session_mod.Logger):
         Random walk with return (RWR) starting from one or more query nodes.
         Returns affinity (probability) vector of all nodes in the graph.
 
-        Args:
+        Args
         -----
             :param int,list q:
                 Vertex IDs of query nodes.

@@ -31,7 +31,7 @@ def cpdb_interactions(exclude = None):
     """
     Interactions from ConsensusPathDB.
 
-    Args:
+    Args
         exclude (set): A set of resource names to exclude.
     """
 
@@ -73,7 +73,7 @@ def cpdb_interactions_ltp():
     ``cpdb_interactions`` with excluding HPRD, BioGRID, PhosphoPOINT,
     MINT, BIND and IntAct.
 
-    Args:
+    Args
         exclude (set): A set of resource names to exclude.
     """
 

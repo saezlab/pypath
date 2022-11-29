@@ -45,7 +45,7 @@ def scconnect_annotations(organism = 9606):
     Ligand and receptor annotations from scConnect
     (https://github.com/JonETJakobsson/scConnect).
 
-    Args:
+    Args
         organism (int,str): Name or identifier of the organism. Human, mouse,
             fruitfly, zebrafish, chicken, C. elegans, Xenopus tropicalis,
             yeast and Anolis carolinensis are available.
@@ -143,7 +143,7 @@ def scconnect_complexes(organism = 9606):
     Protein complexes from scConnect
     (https://github.com/JonETJakobsson/scConnect).
 
-    Args:
+    Args
         organism (int,str): Name or identifier of the organism. Human, mouse,
             fruitfly, zebrafish, chicken, C. elegans, Xenopus tropicalis,
             yeast and Anolis carolinensis are available.
@@ -163,7 +163,7 @@ def scconnect_interactions():
     Ligand-receptor interactions from scConnect
     (https://github.com/JonETJakobsson/scConnect).
 
-    Returns:
+    Returns
         (list): List of interactions, each represented as a named tuple.
             Proteins and protein complexes are translated to UniProt IDs,
             small molecule IDs are left intact.

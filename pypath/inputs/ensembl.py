@@ -40,7 +40,7 @@ def ensembl_organisms():
     List of organisms in Ensembl with various taxon IDs and metadata about
     related Ensembl database contents.
 
-    Returns:
+    Returns
         List of named tuples.
     """
 

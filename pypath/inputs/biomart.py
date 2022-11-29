@@ -57,7 +57,7 @@ def biomart_query(
     Use https://www.ensembl.org/biomart/martview/ to check for attribute
     and dataset names.
 
-    Args:
+    Args
         attrs (str,list): One or more Ensembl attribute names.
         filters (str,list): One or more Ensembl filter names.
         transcript (bool): Include Ensembl transcript IDs in the result.
@@ -162,7 +162,7 @@ def biomart_homology(
     """
     Retrieves homology data from Ensembl Biomart.
 
-    Returns:
+    Returns
         List of named tuples filtered to genes of the source organism having
         orthologues in the target organism, with homology related fields.
     """
@@ -217,7 +217,7 @@ def biomart_microarray_types(organism = 9606):
     """
     Retrieves a list of available microarray types for an organism.
 
-    Args:
+    Args
         organism (int,str): Name or ID of an organism.
     """
 
@@ -250,7 +250,7 @@ def biomart_microarray(
     """
     Microarray probe identifier mappings.
 
-    Args:
+    Args
         array_type (str): The microarray model, as shown on the BioMart
             webpage, or the corresponding code. For a full list of available
             identifiers see the ``biomart_microarray_types``.
@@ -259,7 +259,7 @@ def biomart_microarray(
         peptide (bool): Include the mapping to Ensembl peptide IDs.
         organism (int,str): Name or ID of an organism.
 
-    Returns:
+    Returns
         A dictionary with Ensembl gene, transcript and peptide IDs as keys
         and sets of microarray probe IDs as values.
     """
@@ -337,7 +337,7 @@ def biomart_microarrays(
     on the number of array models, it can take minutes to download
     the data.
 
-    Args:
+    Args
         organism (int,str): Name or ID of an organism.
         vendor (str,set): One or more vendors. None means all vendors. For
             human, possible values are AFFY, ILLUMINA, AGILENT, CODELINK
@@ -346,7 +346,7 @@ def biomart_microarrays(
         transcript (bool): Include the mapping to Ensembl transcript IDs.
         peptide (bool): Include the mapping to Ensembl peptide IDs.
 
-    Returns:
+    Returns
         A dictionary with Ensembl gene, transcript and peptide IDs as keys
         and sets of tuples with microarray types and probe IDs as values.
     """

@@ -34,7 +34,6 @@
 
     installation
     webservice
-    reference
     releasehistory
 
 **pypath** is a Python module for processing molecular biology data resources,
@@ -63,3 +62,15 @@ The most important higher level submodules:
   web server
 * *pypath.utils:* stand alone useful utilities, e.g. identifier translator,
   Gene Ontology processor, BioPax processor, etc
+
+
+*********
+Reference
+*********
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-module-template.rst
+   :recursive:
+
+   pypath

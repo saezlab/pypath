@@ -103,7 +103,7 @@ def drugbank_raw_interactions(
     """
     Retrieves protein identifiers from Drugbank.
 
-    Args:
+    Args
         user:
             E-mail address with registered DrugBank account.
         passwd:
@@ -111,7 +111,7 @@ def drugbank_raw_interactions(
         pharma_active:
             Only pharmacologically active relations.
 
-    Returns:
+    Returns
         List of drug-protein relations.
     """
 
@@ -174,7 +174,7 @@ def drugbank_interactions(
     """
     Drug-protein and protein-drug interactions from Drugbank.
 
-    Args:
+    Args
         user:
             E-mail address with registered DrugBank account.
         passwd:
@@ -182,7 +182,7 @@ def drugbank_interactions(
         pharma_active:
             Only pharmacologically active interactions.
 
-    Returns:
+    Returns
         List of drug-protein and protein-drug interactions.
     """
 
@@ -241,13 +241,13 @@ def drugbank_drugs(
 
     Each drug is annotated by its various database cross-references.
 
-    Args:
+    Args
         user:
             E-mail address with registered DrugBank account.
         passwd:
             Password for the DrugBank account.
 
-    Returns:
+    Returns
         List of named tuples, each field corresponding to various identifiers.
     """
 
@@ -339,13 +339,13 @@ def drugbank_annotations(
 
     The annotations are restricted to the drug molecule type and drug status.
 
-    Args:
+    Args
         user:
             E-mail address with registered DrugBank account.
         passwd:
             Password for the DrugBank account.
 
-    Returns:
+    Returns
         List of drug annotations.
     """
 
@@ -393,7 +393,7 @@ def drugbank_mapping(
     inchi, smiles, formula, kegg_compound, kegg_drug, pubchem_compound,
     pubchem_substance, chebi, chembl, pharmgkb, het.
 
-    Args:
+    Args
         id_type:
             The identifier type to be used as keys.
         target_id_type:
@@ -405,7 +405,7 @@ def drugbank_mapping(
         credentials_fname:
             File name or path to a file with DrugBank login credentials.
 
-    Returns:
+    Returns
         An identifier translation table.
     """
 

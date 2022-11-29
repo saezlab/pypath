@@ -91,7 +91,7 @@ class Adapter(_session.Logger):
         """
         Load pypath database obejcts into biocypher (Neo4j).
 
-        Args:
+        Args
             driver:
                 A ``neo4j.Driver`` instance, created by, for example,
                 ``neo4j.GraphDatabase.driver``.
@@ -176,7 +176,7 @@ class Adapter(_session.Logger):
         """
         Loads a pypath network into the biocypher (Neo4j) backend.
 
-        Args:
+        Args
             network:
                 A network database object. If `None`, the value of
                 :py:attr:`network` will be used.
@@ -263,7 +263,7 @@ class Adapter(_session.Logger):
         """
         Loads any compatible object into the biocypher (Neo4j) database.
 
-        Args:
+        Args
             obj:
                 An object from this module compatible with the current
                 adapter. Currently the following database objects are

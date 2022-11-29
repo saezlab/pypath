@@ -28,12 +28,13 @@ copyright = ', '.join(
     [time.strftime('%Y'), 
     (", ").join(__author__)]
 )
-author = __author__
+author = (", ").join(__author__)
 
 # The short X.Y version
 version = __version__
 # The full version, including alpha/beta/rc tags
 release = __version__
+language = 'en'
 
 
 # -- General configuration ---------------------------------------------------
@@ -48,12 +49,15 @@ release = __version__
 extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.mathjax',
-	'sphinx_rtd_theme',
+    'sphinx_rtd_theme',
 ]
+
+autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

@@ -1474,7 +1474,7 @@ class Network(session_mod.Logger):
         and if all other criteria fit then will be added to the network
         after identifier translation.
 
-        Return:
+        Return
             (bool): True if the line should be filtered (removed), False
                 if all filters passed, the record can be further processed.
         """
@@ -1488,13 +1488,13 @@ class Network(session_mod.Logger):
     @classmethod
     def _process_filters(cls, line, filters = None, negate = False):
         """
-        Args:
+        Args
             negate (bool): Whether to negate the filter matches. Sorry for
                 the confusion, but it should be True for positive filters
                 and False for negatives.
 
 
-        Return:
+        Return
             (bool): True if the line should be filtered (removed), False
                 if all filters passed, the record can be further processed.
         """
@@ -1515,7 +1515,7 @@ class Network(session_mod.Logger):
     @classmethod
     def _process_filter(cls, line, filtr):
         """
-        Return:
+        Return
             (bool): True if the filter matches.
         """
 
@@ -1635,12 +1635,12 @@ class Network(session_mod.Logger):
         """
         Extract a value from a line describing an interaction.
 
-        Args:
+        Args
             fmt (str, tuple, callable): The value, or a definition how to
                 process it.
             line (list): The raw interaction record.
 
-        Return:
+        Return
             (str): The extracted value.
         """
 
@@ -2746,7 +2746,7 @@ class Network(session_mod.Logger):
         """
         Picks a random interaction from the network.
 
-        Returns:
+        Returns
             An Interaction object, or None if the network is empty.
         """
 

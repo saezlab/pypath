@@ -36,7 +36,7 @@ def pdzbase_interactions():
     """
     Downloads data from PDZbase. Parses data from the HTML tables.
 
-    Returns:
+    Returns
         List of named tuples with interaction data.
     """
 

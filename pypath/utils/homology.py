@@ -248,7 +248,7 @@ class HomologyManager(session.Logger):
         For one or more UniProt ID of the source organism returns all
         orthologs from the target organism.
 
-        Args:
+        Args
             source_id (str,list): UniProt ID of one or more protein in the
                 source organism.
             target (int,str): The target organism.
@@ -264,7 +264,7 @@ class HomologyManager(session.Logger):
                 also set this parameter by the `ensembl_types` attribute.
             id_type (str): Identifier type to translate from and to.
 
-        Returns:
+        Returns
             Set of UniProt IDs of homologous proteins in the target taxon.
         """
 
@@ -309,7 +309,7 @@ class HomologyManager(session.Logger):
         """
         Create a dictionary for one source organism and ID type.
 
-        Args:
+        Args
             target:
                 Tha organism to translate to.
             source:
@@ -335,7 +335,7 @@ class HomologyManager(session.Logger):
                 ``pypath.utils.mapping.get_mapper().id_types()`` and
                 ``pypath.utils.mapping.get_mapper().mapping_tables()``.
 
-        Return:
+        Return
             A dict with identifiers of the source organism as keys, and
             sets of their orthologs as values.
         """
@@ -372,7 +372,7 @@ class HomologyManager(session.Logger):
         """
         Create a data frame for one source organism and ID type.
 
-        Args:
+        Args
             target:
                 The target organism.
             source:
@@ -398,7 +398,7 @@ class HomologyManager(session.Logger):
                 ``pypath.utils.mapping.get_mapper().id_types()`` and
                 ``pypath.utils.mapping.get_mapper().mapping_tables()``.
 
-        Return:
+        Return
             A data frame with pairs of orthologous identifiers,
             in two columns: "source" and "target".
         """
@@ -438,7 +438,7 @@ class HomologyManager(session.Logger):
         """
         Translate columns in a data frame.
 
-        Args:
+        Args
             df:
                 A data frame.
             cols:
@@ -466,7 +466,7 @@ class HomologyManager(session.Logger):
                 (column names) can not match existing argument names of
                 this function.
 
-        Return:
+        Return
             A data frame with the same column layout as the input, and the
             identifiers translated as demanded. Rows that could not be
             translated are omitted.
@@ -669,7 +669,7 @@ class ProteinHomology(Proteomes):
         to the target organism UniProt IDs. In case of Ensembl, we obtain
         data with Ensembl protein identifiers and translate those to UniProt.
 
-        Args:
+        Args
             target (int): NCBI Taxonomy ID of the target organism.
             source (int): NCBI Taxonomy ID of the default source organism.
                 Multiple source organisms can be used on the same instance.
@@ -777,7 +777,7 @@ class ProteinHomology(Proteomes):
         For one UniProt ID of the source organism returns all orthologues
         from the target organism.
 
-        Args:
+        Args
             protein:
                 UniProt ID of one or more protein in the source organism.
             source:
@@ -798,7 +798,7 @@ class ProteinHomology(Proteomes):
             id_type:
                 Identifier type to translate from and to.
 
-        Returns:
+        Returns
             Set of UniProt IDs of homologous proteins in the target taxon.
         """
 
@@ -894,7 +894,7 @@ class ProteinHomology(Proteomes):
         """
         Create a dictionary for one source organism and ID type.
 
-        Args:
+        Args
             source:
                 The source organism.
             homologene:
@@ -918,7 +918,7 @@ class ProteinHomology(Proteomes):
                 ``pypath.utils.mapping.get_mapper().id_types()`` and
                 ``pypath.utils.mapping.get_mapper().mapping_tables()``.
 
-        Return:
+        Return
             A dict with identifiers of the source organism as keys, and
             sets of their orthologs as values.
         """
@@ -986,7 +986,7 @@ class ProteinHomology(Proteomes):
         """
         Create a data frame for one source organism and ID type.
 
-        Args:
+        Args
             source:
                 The source organism.
             homologene:
@@ -1010,7 +1010,7 @@ class ProteinHomology(Proteomes):
                 ``pypath.utils.mapping.get_mapper().id_types()`` and
                 ``pypath.utils.mapping.get_mapper().mapping_tables()``.
 
-        Return:
+        Return
             A data frame with pairs of orthologous identifiers,
             in two columns: "source" and "target".
         """
@@ -1056,7 +1056,7 @@ class ProteinHomology(Proteomes):
         """
         Translate columns in a data frame.
 
-        Args:
+        Args
             df:
                 A data frame.
             cols:
@@ -1084,7 +1084,7 @@ class ProteinHomology(Proteomes):
                 (column names) can not match existing argument names of
                 this function.
 
-        Return:
+        Return
             A data frame with the same column layout as the input, and the
             identifiers translated as demanded. Rows that could not be
             translated are omitted.
@@ -1690,7 +1690,7 @@ def translate(
     Homology translation. For a UniProt ID, finds the corresponding
     homologous (orthologous) genes in another organism.
 
-    Args:
+    Args
         source_id (str,list): UniProt ID of one or more protein in the
                 source organism.
         target (int,str): The target organism.
@@ -1709,7 +1709,7 @@ def translate(
             also set this parameter by the `ensembl_types` attribute.
         id_type (str): Type of the identifiers to translate from and to.
 
-    Returns:
+    Returns
         Set of UniProt IDs of orthologous gene products in the target
         organism.
     """
@@ -1742,7 +1742,7 @@ def get_dict(
     """
     Create a dictionary for one source organism and ID type.
 
-    Args:
+    Args
         target:
             Tha organism to translate to.
         source:
@@ -1768,7 +1768,7 @@ def get_dict(
             ``pypath.utils.mapping.get_mapper().id_types()`` and
             ``pypath.utils.mapping.get_mapper().mapping_tables()``.
 
-    Return:
+    Return
         A dict with identifiers of the source organism as keys, and
         sets of their orthologs as values.
     """
@@ -1794,7 +1794,7 @@ def get_df(
     """
     Create a data frame for one source organism and ID type.
 
-    Args:
+    Args
         target:
             The organism to translate to.
         source:
@@ -1820,7 +1820,7 @@ def get_df(
             ``pypath.utils.mapping.get_mapper().id_types()`` and
             ``pypath.utils.mapping.get_mapper().mapping_tables()``.
 
-    Return:
+    Return
         A data frame with pairs of orthologous identifiers,
         in two columns: "source" and "target".
     """
@@ -1854,7 +1854,7 @@ def translate_df(
     """
     Translate columns in a data frame.
 
-    Args:
+    Args
         df:
             A data frame.
         target:
@@ -1884,7 +1884,7 @@ def translate_df(
             (column names) can not match existing argument names of
             this function.
 
-    Return:
+    Return
         A data frame with the same column layout as the input, and the
         identifiers translated as demanded. Rows that could not be
         translated are omitted.

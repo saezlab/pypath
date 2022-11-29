@@ -68,11 +68,11 @@ def get_hpmr(use_cache = None):
     Downloads ligand-receptor and receptor-receptor interactions from the
     Human Plasma Membrane Receptome database.
 
-    Args:
+    Args
         use_cache (bool): Use the intermediate cache (pickle file of
             processed data).
 
-    Returns:
+    Returns
         (dict): Two elements: "interactions" and "families".
     """
 
