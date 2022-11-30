@@ -88,7 +88,7 @@ web = ["flask", "flask-admin", "flask-bootstrap"]
 
 [[package]]
 name = "bioregistry"
-version = "0.6.26"
+version = "0.6.27"
 description = "Integrated registry of biological databases and nomenclatures"
 category = "main"
 optional = true
@@ -158,14 +158,14 @@ python-versions = "*"
 
 [[package]]
 name = "boto3"
-version = "1.26.18"
+version = "1.26.19"
 description = "The AWS SDK for Python"
 category = "main"
 optional = true
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.29.18,<1.30.0"
+botocore = ">=1.29.19,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -174,7 +174,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.18"
+version = "1.29.19"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = true
@@ -186,7 +186,7 @@ python-dateutil = ">=2.1,<3.0.0"
 urllib3 = ">=1.25.4,<1.27"
 
 [package.extras]
-crt = ["awscrt (==0.14.0)"]
+crt = ["awscrt (==0.15.3)"]
 
 [[package]]
 name = "bump2version"
@@ -603,7 +603,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "jsonschema"
-version = "4.17.1"
+version = "4.17.3"
 description = "An implementation of JSON Schema validation for Python"
 category = "main"
 optional = true
@@ -1312,6 +1312,14 @@ lint = ["flake8", "mypy", "docutils-stubs"]
 test = ["pytest"]
 
 [[package]]
+name = "sphinxcontrib-fulltoc"
+version = "1.2.0"
+description = "Include a full table of contents in your Sphinx HTML sidebar"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "sphinxcontrib-htmlhelp"
 version = "2.0.0"
 description = "sphinxcontrib-htmlhelp is a sphinx extension which renders HTML help files"
@@ -1585,7 +1593,7 @@ graph = ["python-igraph"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "be8193408dbc5bce70e8db77132b9fba1c0c002f59f43ceef9f03cf6b5dc13bb"
+content-hash = "0b3391c1aa4f55e58311f1f4f7f02db5298b39b5f3b6e8a47a97878f68d61f73"
 
 [metadata.files]
 alabaster = [
@@ -1959,6 +1967,7 @@ sphinxcontrib-devhelp = [
     {file = "sphinxcontrib-devhelp-1.0.2.tar.gz", hash = "sha256:ff7f1afa7b9642e7060379360a67e9c41e8f3121f2ce9164266f61b9f4b338e4"},
     {file = "sphinxcontrib_devhelp-1.0.2-py2.py3-none-any.whl", hash = "sha256:8165223f9a335cc1af7ffe1ed31d2871f325254c0423bc0c4c7cd1c1e4734a2e"},
 ]
+sphinxcontrib-fulltoc = []
 sphinxcontrib-htmlhelp = [
     {file = "sphinxcontrib-htmlhelp-2.0.0.tar.gz", hash = "sha256:f5f8bb2d0d629f398bf47d0d69c07bc13b65f75a81ad9e2f71a63d4b7a2f6db2"},
     {file = "sphinxcontrib_htmlhelp-2.0.0-py2.py3-none-any.whl", hash = "sha256:d412243dfb797ae3ec2b59eca0e52dac12e75a241bf0e4eb861e450d06c6ed07"},
