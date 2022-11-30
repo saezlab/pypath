@@ -15,7 +15,7 @@ about the `web service here`_.
 
 .. _OmnipathR: https://saezlab.github.io/OmnipathR
 .. _`Python client`: https://github.com/saezlab/omnipath
-.. _`web service here`: https://saezlab.github.io/pypath/webservice.html
+.. _`web service here`: https://pypath.omnipathdb.org/webservice.html
 
 Do you need pypath?
 ===================
@@ -53,7 +53,7 @@ Docs
 
 Read the `reference documentation`_ or check out the tutorials_.
 
-.. _`reference documentation`: https://saezlab.github.io/pypath
+.. _`reference documentation`: https://pypath.omnipathdb.org/
 .. _tutorials: https://workflows.omnipathdb.org/
 
 The *Pypath guide*, the comprehensive tutorial for pypath is currently out
@@ -71,11 +71,11 @@ Features
 **pypath** is a Python module for processing molecular biology data resources,
 combining them into databases and providing a versatile interface in Python
 as well as exporting the data for access through other platforms such as
-the R (the OmnipathR R/Bioconductor package;
-https://github.com/saezlab/OmnipathR), web service (at
-https://omnipathdb.org), Cytoscape (the OmniPath Cytoscape app;
-https://apps.cytoscape.org/apps/omnipath) and BEL
-(Biological Expression Language).
+R_, `web service`_, Cytoscape_ and BEL (Biological Expression Language).
+
+.. _R: https://github.com/saezlab/OmnipathR
+.. _`web service`: https://omnipathdb.org/
+.. _Cytoscape: https://apps.cytoscape.org/apps/omnipath
 
 **pypath** provides access to more than 100 resources! It builds 5 major
 combined databases and within these we can distinguish different datasets.
@@ -254,7 +254,7 @@ History and releases
 See here_ a bird eye view of pypath's development history. For more details
 about recent developments see the `Github releases`_.
 
-.. _here: https://saezlab.github.io/pypath/releasehistory.html
+.. _here: https://pypath.omnipathdb.org/releasehistory.html
 .. _`Github releases`: https://github.com/saezlab/pypath/releases
 
 .. |Demo| image:: https://raw.githubusercontent.com/saezlab/pypath/master/docs/source/_static/img/pypath-demo.webp

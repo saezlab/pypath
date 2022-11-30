@@ -89,6 +89,7 @@ sphinx = ">=5.0.0"
 insipid-sphinx-theme = ">=0.3.6"
 sphinx-last-updated-by-git = ">=0.3"
 sphinx-autodoc-typehints = ">=1.18.0"
+sphinxcontrib-fulltoc = ">=1.2.0"
 
 [tool.poetry.scripts]
 bio2bel_omnipath = "pypath.omnipath.bel:main"

@@ -50,6 +50,7 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.mathjax',
     'sphinx_last_updated_by_git',
+    'sphinxcontrib.fulltoc',
 ]
 
 autosummary_generate = True
@@ -115,6 +116,12 @@ html_css_files = [
 #
 # html_sidebars = {}
 
+html_sidebars = {
+    '**': [
+        'localtoc.html',
+        'searchbox.html',
+    ]
+}
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
