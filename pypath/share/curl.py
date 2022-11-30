@@ -550,6 +550,8 @@ class FileOpener(session_mod.Logger):
     as you request. It examines the file type and size.
     """
 
+    FORBIDDEN_CHARS = re.compile(r'[/\\<>:"\?\*\|]')
+
     def __init__(
             self,
             file_param,
@@ -1632,9 +1634,21 @@ class Curl(FileOpener):
             os.path.join(
                 os.getcwd(),
                 self.cache_dir,
-                '%s-%s' % (self.urlmd5, self.filename)
+                self.replace_forbidden('%s-%s' % (self.urlmd5, self.filename))
             )
         )
+
+
+    @classmethod
+    def replace_forbidden(cls, name: str, repl: str = '_') -> str:
+        """
+        Replaces the characters that are forbidden in certain file systems.
+
+        The slash is forbidden in Unix, while many other characters in Windows
+        environments.
+        """
+
+        return cls.FORBIDDEN_CHARS.sub(repl, name)
 
 
     def delete_cache_file(self):
