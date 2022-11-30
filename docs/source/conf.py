@@ -16,8 +16,16 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 import time
+import sys
 
 from pypath._metadata import __author__, __license__, __version__
+import pypath
+
+print(sys.executable)
+print(sys.path)
+print(pypath)
+from pypath.inputs import biomodels
+print(biomodels)
 
 # -- Project information -----------------------------------------------------
 

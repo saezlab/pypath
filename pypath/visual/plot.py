@@ -44,7 +44,13 @@ import numpy as np
 from numpy.random import randn
 import matplotlib as mpl
 import scipy.cluster.hierarchy as hc
-import igraph
+
+try:
+    import igraph
+
+except ModuleNotFoundError:
+    sys.stdout.write('Module `igraph` is not available.'
+                     '\nSome plotting functionalities won\'t be accessible.\n')
 
 try:
     import hcluster as hc2

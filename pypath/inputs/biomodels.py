@@ -33,7 +33,6 @@ import json
 
 import pycurl
 import requests
-import bioservices.biomodels as biom
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
@@ -42,6 +41,18 @@ import pypath.share.session as session
 
 _logger = session.Logger(name = 'biomodels_input')
 _log = _logger._log
+
+try:
+
+    import bioservices.biomodels as biom
+
+except ModuleNotFoundError:
+
+    _log(
+        'Module `bioservices` not available. '
+        'Install it by: pip install bioservices'
+    )
+
 
 def get_single_model(model_id):
     """

@@ -67,13 +67,13 @@ except NameError:
 try:
     import cPickle as pickle
 
-except ImportError:
+except ModuleNotFoundError:
     import pickle
 
 try:
     import pygraphviz as graphviz
 
-except ImportError:
+except ModuleNotFoundError:
     _logger._log(
         'Module `pygraphviz` not available. '
         'You don\'t need it unless you want to export dot files.'
@@ -82,13 +82,13 @@ except ImportError:
 try:
     import pandas
 
-except ImportError:
+except ModuleNotFoundError:
     _logger._log('Module `pandas` not available.')
 
 try:
     import igraph
 
-except ImportError:
+except ModuleNotFoundError:
     _logger._log(
         'Module `igraph` not available. '
         'The legacy `pypath.main.PyPath` class requires `igraph`.'

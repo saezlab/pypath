@@ -49,6 +49,7 @@ L{CytoscapeGraphDrawer}. L{CytoscapeGraphDrawer} can also fetch the current
 network from Cytoscape and convert it to igraph format.
 """
 
+import sys
 from collections import defaultdict
 try:
     from itertools import izip
@@ -58,34 +59,43 @@ except ImportError:
 from math import atan2, cos, pi, sin, tan
 from warnings import warn
 
-from igraph._igraph import convex_hull, VertexSeq
 try:
-    from igraph.compat import property
+    from igraph._igraph import convex_hull, VertexSeq
+    try:
+        from igraph.compat import property
+    except ModuleNotFoundError:
+        pass
+    from igraph.configuration import Configuration
+    from igraph.drawing.baseclasses import AbstractDrawer, AbstractCairoDrawer, \
+        AbstractXMLRPCDrawer
+    from igraph.drawing.colors import color_to_html_format, color_name_to_rgb
+    from pypath.visual.igraph_drawing.edge import ArrowEdgeDrawer
+    from igraph.drawing.text import TextAlignment, TextDrawer
+    from igraph.drawing.metamagic import AttributeCollectorBase
+    from igraph.drawing.shapes import PolygonDrawer
+    from igraph.drawing.utils import Point
+    from pypath.visual.igraph_drawing.vertex import DefaultVertexDrawer
+    from igraph.layout import Layout
+    from igraph.drawing.graph import AbstractCairoGraphDrawer
+    try:
+        import cairo
+    except ModuleNotFoundError:
+        # No cairo support is installed. Create a fake module
+        # pylint: disable-msg=C0103
+        from igraph.drawing.utils import FakeModule
+        cairo = FakeModule("igraph module could not be imported")
+
 except ModuleNotFoundError:
-    pass
-from igraph.configuration import Configuration
-from igraph.drawing.baseclasses import AbstractDrawer, AbstractCairoDrawer, \
-    AbstractXMLRPCDrawer
-from igraph.drawing.colors import color_to_html_format, color_name_to_rgb
-from pypath.visual.igraph_drawing.edge import ArrowEdgeDrawer
-from igraph.drawing.text import TextAlignment, TextDrawer
-from igraph.drawing.metamagic import AttributeCollectorBase
-from igraph.drawing.shapes import PolygonDrawer
-from igraph.drawing.utils import Point
-from pypath.visual.igraph_drawing.vertex import DefaultVertexDrawer
-from igraph.layout import Layout
-from igraph.drawing.graph import AbstractCairoGraphDrawer
+    sys.stdout.write('Module `igraph` is not available.'
+                     '\nSome plotting functionalities won\'t be accessible.\n')
+    class AbstractCairoGraphDrawer:
+        pass
+    DefaultVertexDrawer = ArrowEdgeDrawer = TextDrawer = AbstractCairoGraphDrawer
 
 __all__ = ["DefaultGraphDrawerFFsupport"]
 __license__ = "GPL"
 
-try:
-    import cairo
-except ImportError:
-    # No cairo support is installed. Create a fake module
-    # pylint: disable-msg=C0103
-    from igraph.drawing.utils import FakeModule
-    cairo = FakeModule("igraph module could not be imported")
+
 
 #####################################################################
 

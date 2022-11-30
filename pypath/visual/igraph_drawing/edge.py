@@ -45,6 +45,8 @@ __all__ = [
 
 __license__ = "GPL"
 
+import sys
+
 try:
     from cairo import LinearGradient
 except ImportError:
@@ -52,9 +54,14 @@ except ImportError:
     # be a fake Cairo module in igraph.drawing
     pass
 
-from igraph.drawing.colors import clamp
-from igraph.drawing.metamagic import AttributeCollectorBase
-from igraph.drawing.text import TextAlignment
+try:
+    from igraph.drawing.colors import clamp
+    from igraph.drawing.metamagic import AttributeCollectorBase
+    from igraph.drawing.text import TextAlignment
+except ModuleNotFoundError:
+    sys.stdout.write('Module `igraph` is not available.'
+                     '\nSome plotting functionalities won\'t be accessible.\n')
+
 from math import atan2, cos, pi, sin
 
 

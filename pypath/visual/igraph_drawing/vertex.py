@@ -5,9 +5,18 @@ This module provides implementations of vertex drawers, i.e. drawers that the
 default graph drawer will use to draw vertices.
 """
 
-from igraph.drawing.baseclasses import AbstractDrawer, AbstractCairoDrawer
-from igraph.drawing.metamagic import AttributeCollectorBase
-from igraph.drawing.shapes import ShapeDrawerDirectory
+import sys
+
+try:
+    from igraph.drawing.baseclasses import AbstractDrawer, AbstractCairoDrawer
+    from igraph.drawing.metamagic import AttributeCollectorBase
+    from igraph.drawing.shapes import ShapeDrawerDirectory
+except ModuleNotFoundError:
+    sys.stdout.write('Module `igraph` is not available.'
+                     '\nSome plotting functionalities won\'t be accessible.\n')
+    class AbstractDrawer: pass
+    class AbstractCairoDrawer: pass
+
 from math import pi
 
 __all__ = [
