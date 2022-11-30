@@ -30,6 +30,8 @@ interactions serve as the building elements of the network and the
 of the :py:class:`Interaction`` objects.
 """
 
+from __future__ import annotations
+
 from future.utils import iteritems
 
 import importlib as imp
@@ -37,6 +39,7 @@ import collections
 import operator
 import itertools
 import functools
+from typing_extensions import Literal
 
 import pypath.core.evidence as pypath_evidence
 import pypath.internals.resource as pypath_resource
@@ -3188,17 +3191,25 @@ class Interaction(attrs_mod.AttributeHandler):
             return self.direction[direction][resource][key]
 
 
-    def get_attr(self, resource, key, direction = None):
+    def get_attr(
+            self,
+            resource: str,
+            key: str,
+            direction: tuple | str | None = None,
+        ):
         """
         Extracts the values of one specific attribute.
 
         Args
-            resource (str): Name of the resource.
-            key (str): Name of the attribute.
-            direction (tuple,str): Direction(s) to consider, either a tuple
-                of entities or entity names, or the string `undirected`.
+            resource :
+                Name of the resource.
+            key:
+                Name of the attribute.
+            direction:
+                Direction(s) to consider, either a tuple of entities or
+                entity names, or the string `undirected`.
 
-        Return
+        Returns
             Depends on the arguments. The value of the attribute if direction
             is defined. Otherwise a dict with the value of the attribute for
             each direction. The value of the attribute is `None` if the
@@ -3220,15 +3231,16 @@ class Interaction(attrs_mod.AttributeHandler):
             )
 
 
-    def dorothea_levels(self, direction = None):
+    def dorothea_levels(self, direction: str | tuple | None = None):
         """
         Retrieves the DoRothEA confidence levels.
 
         Args
-            direction (tuple,str): Direction(s) to consider, either a tuple
-                of entities or entity names, or the string `undirected`.
+            direction:
+                Direction(s) to consider, either a tuple of entities or
+                entity names, or the string `undirected`.
 
-        Return
+        Returns
             List of unique single letter strings representing the five
             confidence levels (A-E).
         """
@@ -3247,13 +3259,17 @@ class Interaction(attrs_mod.AttributeHandler):
         )
 
 
-    def dorothea_level(self, direction):
+    def dorothea_level(
+            self,
+            direction: str | tuple,
+        ) -> Literal['A', 'B', 'C', 'D', 'E']:
         """
-        DoRothEA confidence level for one direction as a single letter. Some
-        interactions might have multiple levels due to the ambiguous nature
-        of translating gene symbols to UniProt IDs. Here we take the highest
-        level and drop the rest. For interactions without DoRothEA levels
-        None is returned.
+        DoRothEA confidence level for one direction as a single letter.
+
+        Some interactions might have multiple levels due to the ambiguous
+        nature of translating gene symbols to UniProt IDs. Here we take the
+        highest level and drop the rest. For interactions without DoRothEA
+        levels None is returned.
         """
 
         levels = self.dorothea_levels(direction = direction)

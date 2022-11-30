@@ -22,6 +22,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 from future.utils import iteritems
 
 import importlib as imp
@@ -35,6 +37,7 @@ import copy as copy_mod
 import pickle
 import random
 import traceback
+from typing_extensions import Literal
 
 import numpy as np
 import pandas as pd
@@ -3504,14 +3507,14 @@ class Network(session_mod.Logger):
             self,
             entity,
             mode = 'ALL',
-            direction = None,
-            effect = None,
-            resources = None,
-            interaction_type = None,
-            data_model = None,
-            via = None,
-            references = None,
-            return_interactions = False,
+            direction: bool | tuple | None = None,
+            effect: bool | str | None = None,
+            resources: str | set[str] | None = None,
+            interaction_type: str | set[str] | None = None,
+            data_model: str | set[str] | None = None,
+            via: bool | str | set[str] | None = None,
+            references: bool | str | set[str] | None = None,
+            return_interactions: bool = False,
         ):
         """
         :arg str,Entity,list,set,tuple,EntityList entity:
@@ -3649,81 +3652,93 @@ class Network(session_mod.Logger):
 
     def find_paths(
             self,
-            start,
-            end = None,
-            loops = False,
-            mode = 'OUT',
-            maxlen = 2,
-            minlen = 1,
-            direction = None,
-            effect = None,
-            resources = None,
-            interaction_type = None,
-            data_model = None,
-            via = None,
-            references = None,
-            silent = False,
+            start: (
+                str | entity.Entity | entity.EntityList |
+                Iterable[str | entity.Entity]
+            ),
+            end: (
+                str | entity.Entity | entity.EntityList |
+                Iterable[str | entity.Entity] |
+                None
+            ) = None,
+            loops: bool = False,
+            mode: Literal['OUT', 'IN', 'ALL'] = 'OUT',
+            maxlen: int = 2,
+            minlen: int = 1,
+            direction: bool | tuple | None = None,
+            effect: bool | str | None = None,
+            resources: str | set[str] | None = None,
+            interaction_type: str | set[str] | None = None,
+            data_model: str | set[str] | None = None,
+            via: bool | str | set[str] | None = None,
+            references: bool | str | set[str] | None = None,
+            silent: bool = False,
         ):
         """
+        Find paths or motifs in a network.
+
         Finds all paths up to length ``maxlen`` between groups of nodes.
         In addition is able to search for motifs or select the nodes of a
         subnetwork around certain nodes.
 
-        :arg str,Entity,list,tuple,set,EntityList start:
-            Starting node(s) of the paths.
-        :arg str,Entity,list,tuple,set,EntityList,NoneType end:
-            Target node(s) of the paths. If ``None`` any target node will
-            be accepted and all paths from the starting nodes with length
-            ``maxlen`` will be returned.
-        :arg bool loops:
-            Search for loops, i.e. the start and end nodes of each path
-            should be the same.
-        :arg str mode:
-            Direction of the paths. ``'OUT'`` means from ``start`` to ``end``,
-            ``'IN'`` the opposite direction while ``'ALL'`` both directions.
-        :arg int maxlen:
-            Maximum length of paths in steps, i.e. if maxlen = 3, then
-            the longest path may consist of 3 edges and 4 nodes.
-        :arg int minlen:
-            Minimum length of the path.
-        :arg bool silent:
-            Indicate progress by showing a progress bar.
+        Args
+            start:
+                Starting node(s) of the paths.
+            end:
+                Target node(s) of the paths. If ``None`` any target node will
+                be accepted and all paths from the starting nodes with length
+                ``maxlen`` will be returned.
+            loops:
+                Search for loops, i.e. the start and end nodes of each path
+                should be the same.
+            mode:
+                Direction of the paths. ``'OUT'`` means from ``start`` to ``end``,
+                ``'IN'`` the opposite direction while ``'ALL'`` both directions.
+            maxlen:
+                Maximum length of paths in steps, i.e. if maxlen = 3, then
+                the longest path may consist of 3 edges and 4 nodes.
+            minlen:
+                Minimum length of the path.
+            silent:
+                Indicate progress by showing a progress bar.
 
-        :details:
-        The arguments: ``direction``, ``effect``, ``resources``,
-        ``interaction_type``, ``data_model``, ``via`` and ``references``
-        will be passed to the ``partners`` method of this object and from
-        there to the relevant methods of the ``Interaction`` and ``Evidence``
-        objects. By these arguments it is possible to filter the interactions
-        in the paths according to custom criteria. If any of these arguments
-        is a ``tuple`` or ``list``, its first value will be used to match the
-        first interaction in the path, the second for the second one and so
-        on. If the list or tuple is shorter then ``maxlen``, its last
-        element will be used for all interactions. If it's longer than
-        ``maxlen``, the remaining elements will be discarded. This way the
-        method is able to search for custom motives.
-        For example, let's say you want to find the motives where the
-        estrogen receptor transcription factor *ESR1* transcriptionally
-        regulates a gene encoding a protein which then has some effect
-        post-translationally on *ESR1*:
+        Details
+            The arguments: ``direction``, ``effect``, ``resources``,
+            ``interaction_type``, ``data_model``, ``via`` and ``references``
+            will be passed to the ``partners`` method of this object and from
+            there to the relevant methods of the ``Interaction`` and
+            ``Evidence`` objects. By these arguments it is possible to filter
+            the interactions in the paths according to custom criteria. If any
+            of these arguments is a ``tuple`` or ``list``, its first value will
+            be used to match the first interaction in the path, the second for
+            the second one and so on. If the list or tuple is shorter then
+            ``maxlen``, its last element will be used for all interactions.
+            If it's longer than ``maxlen``, the remaining elements will be
+            discarded. This way the method is able to search for custom
+            motives. For example, let's say you want to find the motives
+            where the estrogen receptor transcription factor *ESR1*
+            transcriptionally regulates a gene encoding a protein which
+            then has some effect post-translationally on *ESR1*:
 
-        >>> n.find_paths(
-        ...     'ESR1',
-        ...     loops = True,
-        ...     minlen = 2,
-        ...     interaction_type = ('transcriptional', 'post_translational'),
-        ... )
+        Examples
 
-        Or if you are interested only in the -/+ feedback loops i.e.
-        *ESR1 --(-)--> X --(+)--> ESR1*:
+            n.find_paths(
+                'ESR1',
+                loops = True,
+                minlen = 2,
+                interaction_type = ('transcriptional', 'post_translational'),
+            )
 
-        >>> n.find_paths(
-        ...     'ESR1',
-        ...     loops = True,
-        ...     minlen = 2,
-        ...     interaction_type = ('transcriptional', 'post_translational'),
-        ...     effect = ('negative', 'positive'),
-        ... )
+            # Or if you are interested only in the -/+ feedback loops i.e.
+            # *ESR1 --(-)--> X --(+)--> ESR1*:
+
+            n.find_paths(
+                'ESR1',
+                loops = True,
+                minlen = 2,
+                interaction_type = ('transcriptional', 'post_translational'),
+                effect = ('negative', 'positive'),
+            )
         """
 
         def list_of_entities(entities):

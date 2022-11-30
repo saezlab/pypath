@@ -1389,7 +1389,7 @@ class CustomAnnotation(session_mod.Logger):
     def filter_classes(classes, **kwargs):
         """
         Returns a list of annotation classes filtered by their attributes.
-        ``**kwargs`` contains attributes and values.
+        ``kwargs`` contains attributes and values.
         """
 
         classes = classes
@@ -1407,7 +1407,7 @@ class CustomAnnotation(session_mod.Logger):
     def filter(self, entity_type = None, **kwargs):
         """
         Filters the annotated entities by annotation class attributes and
-        ``entity_type``. ``**kwargs`` passed to ``filter_classes``.
+        ``entity_type``. ``kwargs`` passed to ``filter_classes``.
         """
 
         return set(
@@ -2516,15 +2516,17 @@ class CustomAnnotation(session_mod.Logger):
             return self.classes_by_entity(item)
 
 
-    def browse(self, start = 0, **kwargs):
+    def browse(self, start: int = 0, **kwargs):
         """
+        Print gene information as a table.
+
         Presents information about annotation classes as ascii tables printed
         in the terminal. If one class provided, prints one table. If multiple
         classes provided, prints a table for each of them one by one
         proceeding to the next one once you hit return. If no classes
         provided goes through all classes.
 
-        **kwargs passed to ``pypath.utils.uniprot.info``.
+        ``kwargs`` passed to ``pypath.utils.uniprot.info``.
         """
 
         classes = dict(
@@ -3061,8 +3063,8 @@ class AnnotationBase(resource.AbstractResource):
         """
         Returns a boolean vector with True and False values for each entity
         in the reference set. The values represent presence absence data
-        in the simplest case, but by providing **kwargs any kind of matching
-        and filtering is possible. **kwargs are passed to the ``select``
+        in the simplest case, but by providing ``kwargs`` any kind of matching
+        and filtering is possible. ``kwargs`` are passed to the ``select``
         method.
         """
 
@@ -3470,7 +3472,7 @@ class AnnotationBase(resource.AbstractResource):
     def subset_intersection(self, universe, **kwargs):
         """
         Calculates the proportion of entities in a subset occuring in the
-        set ``universe``. The subset is selected by passing **kwargs to the
+        set ``universe``. The subset is selected by passing ``kwargs`` to the
         ``select`` method.
         """
 
@@ -3647,36 +3649,46 @@ class AnnotationBase(resource.AbstractResource):
         }
 
 
-    def browse(self, field = None, start = 0, **kwargs):
+    def browse(
+            self,
+            field: str | list[str] | dict[str, str] | None = None,
+            start: int = 0,
+            **kwargs
+        ):
         """
+        Print gene information as a table.
+
         Presents information about annotation categories as ascii tables
-        printed in the terminal.
-        If one category provided, prints one table. If multiple
-        categories provided, prints a table for each of them one by one
-        proceeding to the next one once you hit return. If no categories
+        printed in the terminal. If one category provided, prints one table.
+        If multiple categories provided, prints a table for each of them one
+        by one proceeding to the next one once you hit return. If no categories
         provided goes through all levels of the primary category.
 
-        :param NoneType,str,list,dict field:
-            The field to browse categories by.
-            * If None the primary field will be selected.
-              If this annotation resource doesn't have fields, all proteins
-              will be presented as one single category.
-            * If a string it will be considered a field name and it will
-              browse through all levels of this field.
-            * If a list, set or tuple, it will be considered either a list
-              of field names or a list of values from the primary field.
-              In the former case all combinations of the values of the
-              fields will be presented, in the latter case the browsing
-              will be limited to the levels of the primary field contained
-              in ``field``.
-            * If a dict, keys are supposed to be field names and values
-              as list of levels. If any of the values are None, all levels
-              from that field will be used.
-        :param int start:
-            Start browsing from this category. E.g. if there are 500
-            categories and start is 250 it will skip everything before the
-            250th.
-        **kwargs passed to ``pypath.utils.uniprot.info``.
+        Args
+            field:
+                The field to browse categories by.
+
+                * If None the primary field will be selected.
+                  If this annotation resource doesn't have fields, all proteins
+                  will be presented as one single category.
+                * If a string it will be considered a field name and it will
+                  browse through all levels of this field.
+                * If a ``list``, set or tuple, it will be considered either a
+                  ``list`` of field names or a list of values from the primary
+                  field. In the former case all combinations of the values of
+                  the fields will be presented, in the latter case the browsing
+                  will be limited to the levels of the primary field contained
+                  in ``field``.
+                * If a ``dict``, keys are supposed to be field names and values
+                  as list of levels. If any of the values are None, all levels
+                  from that field will be used.
+
+            start:
+                Start browsing from this category. E.g. if there are 500
+                categories and start is 250 it will skip everything before the
+                250th.
+            kwargs:
+                Passed to ``pypath.utils.uniprot.info``.
         """
 
         if not field and not self.primary_field:
