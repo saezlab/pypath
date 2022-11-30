@@ -170,7 +170,7 @@ UniProt IDs as keys or an object suitable for <code class="docutils literal notr
 <td><p>Infers annotations for a single complex.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.HpmrComplex.browse" title="pypath.core.annot.HpmrComplex.browse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">browse</span></code></a>([field, start])</p></td>
-<td><p>Presents information about annotation categories as ascii tables printed in the terminal.</p></td>
+<td><p>Print gene information as a table.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.HpmrComplex.complex_inference" title="pypath.core.annot.HpmrComplex.complex_inference"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complex_inference</span></code></a>([complexes])</p></td>
 <td><p>Annotates all complexes in <cite>complexes</cite>, by default in the default complex database (existing in the <cite>complex</cite> module or generated on demand according to the module's current settings).</p></td>
@@ -197,7 +197,7 @@ UniProt IDs as keys or an object suitable for <code class="docutils literal notr
 <td><p>Retrieves a subset by filtering based on <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.HpmrComplex.get_subset_bool_array" title="pypath.core.annot.HpmrComplex.get_subset_bool_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_subset_bool_array</span></code></a>([reference_set])</p></td>
-<td><p>Returns a boolean vector with True and False values for each entity in the reference set. The values represent presence absence data in the simplest case, but by providing <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs any kind of matching and filtering is possible. <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs are passed to the <code class="docutils literal notranslate"><span class="pre">select</span></code> method.</p></td>
+<td><p>Returns a boolean vector with True and False values for each entity in the reference set.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.HpmrComplex.get_values" title="pypath.core.annot.HpmrComplex.get_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_values</span></code></a>(name[, exclude_none])</p></td>
 <td><p>Returns the set of all possible values of a field.</p></td>
@@ -281,7 +281,7 @@ UniProt IDs as keys or an object suitable for <code class="docutils literal notr
 <td><p>Same as <code class="docutils literal notranslate"><span class="pre">select</span></code> but prints a table to the console with basic information from the UniProt datasheets.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.HpmrComplex.subset_intersection" title="pypath.core.annot.HpmrComplex.subset_intersection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subset_intersection</span></code></a>(universe, **kwargs)</p></td>
-<td><p>Calculates the proportion of entities in a subset occuring in the set <code class="docutils literal notranslate"><span class="pre">universe</span></code>. The subset is selected by passing <a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs to the <code class="docutils literal notranslate"><span class="pre">select</span></code> method.</p></td>
+<td><p>Calculates the proportion of entities in a subset occuring in the set <code class="docutils literal notranslate"><span class="pre">universe</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pypath.core.annot.HpmrComplex.to_array" title="pypath.core.annot.HpmrComplex.to_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_array</span></code></a>([reference_set, use_fields])</p></td>
 <td><p>Returns an entity vs feature array.</p></td>
@@ -352,43 +352,42 @@ across all records. Returns <em>list</em>.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.core.annot.HpmrComplex.browse">
-<span class="sig-name descname"><span class="pre">browse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.annot.HpmrComplex.browse" title="Permalink to this definition">§</a></dt>
-<dd><p>Presents information about annotation categories as ascii tables
-printed in the terminal.
-If one category provided, prints one table. If multiple
-categories provided, prints a table for each of them one by one
-proceeding to the next one once you hit return. If no categories
+<span class="sig-name descname"><span class="pre">browse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.annot.HpmrComplex.browse" title="Permalink to this definition">§</a></dt>
+<dd><p>Print gene information as a table.</p>
+<p>Presents information about annotation categories as ascii tables
+printed in the terminal. If one category provided, prints one table.
+If multiple categories provided, prints a table for each of them one
+by one proceeding to the next one once you hit return. If no categories
 provided goes through all levels of the primary category.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>field</strong> (<em>NoneType</em><em>,</em><em>str</em><em>,</em><em>list</em><em>,</em><em>dict</em>) – <p>The field to browse categories by.
-* If None the primary field will be selected.</p>
-<blockquote>
-<div><p>If this annotation resource doesn’t have fields, all proteins
-will be presented as one single category.</p>
-</div></blockquote>
-<ul>
+<dl class="simple">
+<dt>Args</dt><dd><dl class="simple">
+<dt>field:</dt><dd><p>The field to browse categories by.</p>
+<ul class="simple">
+<li><p>If None the primary field will be selected.
+If this annotation resource doesn’t have fields, all proteins
+will be presented as one single category.</p></li>
 <li><p>If a string it will be considered a field name and it will
 browse through all levels of this field.</p></li>
-<li><p>If a list, set or tuple, it will be considered either a list
-of field names or a list of values from the primary field.
-In the former case all combinations of the values of the
-fields will be presented, in the latter case the browsing
+<li><p>If a <code class="docutils literal notranslate"><span class="pre">list</span></code>, set or tuple, it will be considered either a
+<code class="docutils literal notranslate"><span class="pre">list</span></code> of field names or a list of values from the primary
+field. In the former case all combinations of the values of
+the fields will be presented, in the latter case the browsing
 will be limited to the levels of the primary field contained
 in <code class="docutils literal notranslate"><span class="pre">field</span></code>.</p></li>
-<li><p>If a dict, keys are supposed to be field names and values
+<li><p>If a <code class="docutils literal notranslate"><span class="pre">dict</span></code>, keys are supposed to be field names and values
 as list of levels. If any of the values are None, all levels
 from that field will be used.</p></li>
 </ul>
-</p></li>
-<li><p><strong>start</strong> (<em>int</em>) – Start browsing from this category. E.g. if there are 500
+</dd>
+<dt>start:</dt><dd><p>Start browsing from this category. E.g. if there are 500
 categories and start is 250 it will skip everything before the
-250th.</p></li>
-</ul>
+250th.</p>
+</dd>
+<dt>kwargs:</dt><dd><p>Passed to <code class="docutils literal notranslate"><span class="pre">pypath.utils.uniprot.info</span></code>.</p>
 </dd>
 </dl>
-<p><a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs passed to <code class="docutils literal notranslate"><span class="pre">pypath.utils.uniprot.info</span></code>.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -459,8 +458,8 @@ Returns a set of UniProt IDs.</p>
 <span class="sig-name descname"><span class="pre">get_subset_bool_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reference_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.annot.HpmrComplex.get_subset_bool_array" title="Permalink to this definition">§</a></dt>
 <dd><p>Returns a boolean vector with True and False values for each entity
 in the reference set. The values represent presence absence data
-in the simplest case, but by providing <a href="#id9"><span class="problematic" id="id10">**</span></a>kwargs any kind of matching
-and filtering is possible. <a href="#id11"><span class="problematic" id="id12">**</span></a>kwargs are passed to the <code class="docutils literal notranslate"><span class="pre">select</span></code>
+in the simplest case, but by providing <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> any kind of matching
+and filtering is possible. <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are passed to the <code class="docutils literal notranslate"><span class="pre">select</span></code>
 method.</p>
 </dd></dl>
 
@@ -577,7 +576,7 @@ information from the UniProt datasheets.</p>
 <dt class="sig sig-object py" id="pypath.core.annot.HpmrComplex.subset_intersection">
 <span class="sig-name descname"><span class="pre">subset_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">universe</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.core.annot.HpmrComplex.subset_intersection" title="Permalink to this definition">§</a></dt>
 <dd><p>Calculates the proportion of entities in a subset occuring in the
-set <code class="docutils literal notranslate"><span class="pre">universe</span></code>. The subset is selected by passing <a href="#id13"><span class="problematic" id="id14">**</span></a>kwargs to the
+set <code class="docutils literal notranslate"><span class="pre">universe</span></code>. The subset is selected by passing <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> to the
 <code class="docutils literal notranslate"><span class="pre">select</span></code> method.</p>
 </dd></dl>
 

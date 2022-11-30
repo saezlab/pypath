@@ -119,6 +119,8 @@
 <span class="sd">example they can be combined or filtered.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
 
 <span class="kn">import</span> <span class="nn">importlib</span> <span class="k">as</span> <span class="nn">imp</span>
@@ -906,11 +908,10 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">simple_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">simple_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">evidence</span><span class="o">.</span><span class="n">Evidence</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns</span>
-<span class="sd">            (dict): Keys are resource labels, values are</span>
-<span class="sd">                :py:class:`pypath.core.evidence.Evidence` objects.</span>
+<span class="sd">            Keys are resource labels, values are ``Evidence`` objects.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
@@ -919,13 +920,12 @@
         <span class="p">)</span>
 
 
-<div class="viewcode-block" id="Evidences.serialize_attrs"><a class="viewcode-back" href="../../../_autosummary/pypath.core.evidence.Evidences.html#pypath.core.evidence.Evidences.serialize_attrs">[docs]</a>    <span class="k">def</span> <span class="nf">serialize_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_key_prefix</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Evidences.serialize_attrs"><a class="viewcode-back" href="../../../_autosummary/pypath.core.evidence.Evidences.html#pypath.core.evidence.Evidences.serialize_attrs">[docs]</a>    <span class="k">def</span> <span class="nf">serialize_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_key_prefix</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serialize the extra attributes of the evidences as a JSON string.</span>
 
 <span class="sd">        Returns</span>
-<span class="sd">            (str): A JSON serialized string with the evidences from each</span>
-<span class="sd">                resource.</span>
+<span class="sd">            A JSON serialized string with the evidences from each resource.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="n">attrs_mod</span><span class="o">.</span><span class="n">AttributeHandler</span><span class="o">.</span><span class="n">_serialize</span><span class="p">(</span>

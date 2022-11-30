@@ -110,6 +110,8 @@
 <span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
 <span class="c1">#</span>
 
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
 
 <span class="kn">import</span> <span class="nn">importlib</span> <span class="k">as</span> <span class="nn">imp</span>
@@ -123,6 +125,7 @@
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Literal</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -3592,14 +3595,14 @@
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">entity</span><span class="p">,</span>
             <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;ALL&#39;</span><span class="p">,</span>
-            <span class="n">direction</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">effect</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">resources</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">interaction_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">data_model</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">via</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">references</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">return_interactions</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">direction</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">effect</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">resources</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">interaction_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">data_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">via</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">references</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">return_interactions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg str,Entity,list,set,tuple,EntityList entity:</span>
@@ -3737,81 +3740,93 @@
 
 <div class="viewcode-block" id="Network.find_paths"><a class="viewcode-back" href="../../../_autosummary/pypath.core.network.Network.html#pypath.core.network.Network.find_paths">[docs]</a>    <span class="k">def</span> <span class="nf">find_paths</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">start</span><span class="p">,</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">loops</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;OUT&#39;</span><span class="p">,</span>
-            <span class="n">maxlen</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
-            <span class="n">minlen</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="n">direction</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">effect</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">resources</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">interaction_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">data_model</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">via</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">references</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">start</span><span class="p">:</span> <span class="p">(</span>
+                <span class="nb">str</span> <span class="o">|</span> <span class="n">entity</span><span class="o">.</span><span class="n">Entity</span> <span class="o">|</span> <span class="n">entity</span><span class="o">.</span><span class="n">EntityList</span> <span class="o">|</span>
+                <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">entity</span><span class="o">.</span><span class="n">Entity</span><span class="p">]</span>
+            <span class="p">),</span>
+            <span class="n">end</span><span class="p">:</span> <span class="p">(</span>
+                <span class="nb">str</span> <span class="o">|</span> <span class="n">entity</span><span class="o">.</span><span class="n">Entity</span> <span class="o">|</span> <span class="n">entity</span><span class="o">.</span><span class="n">EntityList</span> <span class="o">|</span>
+                <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">entity</span><span class="o">.</span><span class="n">Entity</span><span class="p">]</span> <span class="o">|</span>
+                <span class="kc">None</span>
+            <span class="p">)</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">loops</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;OUT&#39;</span><span class="p">,</span> <span class="s1">&#39;IN&#39;</span><span class="p">,</span> <span class="s1">&#39;ALL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;OUT&#39;</span><span class="p">,</span>
+            <span class="n">maxlen</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="n">minlen</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">direction</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">effect</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">resources</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">interaction_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">data_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">via</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">references</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find paths or motifs in a network.</span>
+
 <span class="sd">        Finds all paths up to length ``maxlen`` between groups of nodes.</span>
 <span class="sd">        In addition is able to search for motifs or select the nodes of a</span>
 <span class="sd">        subnetwork around certain nodes.</span>
 
-<span class="sd">        :arg str,Entity,list,tuple,set,EntityList start:</span>
-<span class="sd">            Starting node(s) of the paths.</span>
-<span class="sd">        :arg str,Entity,list,tuple,set,EntityList,NoneType end:</span>
-<span class="sd">            Target node(s) of the paths. If ``None`` any target node will</span>
-<span class="sd">            be accepted and all paths from the starting nodes with length</span>
-<span class="sd">            ``maxlen`` will be returned.</span>
-<span class="sd">        :arg bool loops:</span>
-<span class="sd">            Search for loops, i.e. the start and end nodes of each path</span>
-<span class="sd">            should be the same.</span>
-<span class="sd">        :arg str mode:</span>
-<span class="sd">            Direction of the paths. ``&#39;OUT&#39;`` means from ``start`` to ``end``,</span>
-<span class="sd">            ``&#39;IN&#39;`` the opposite direction while ``&#39;ALL&#39;`` both directions.</span>
-<span class="sd">        :arg int maxlen:</span>
-<span class="sd">            Maximum length of paths in steps, i.e. if maxlen = 3, then</span>
-<span class="sd">            the longest path may consist of 3 edges and 4 nodes.</span>
-<span class="sd">        :arg int minlen:</span>
-<span class="sd">            Minimum length of the path.</span>
-<span class="sd">        :arg bool silent:</span>
-<span class="sd">            Indicate progress by showing a progress bar.</span>
+<span class="sd">        Args</span>
+<span class="sd">            start:</span>
+<span class="sd">                Starting node(s) of the paths.</span>
+<span class="sd">            end:</span>
+<span class="sd">                Target node(s) of the paths. If ``None`` any target node will</span>
+<span class="sd">                be accepted and all paths from the starting nodes with length</span>
+<span class="sd">                ``maxlen`` will be returned.</span>
+<span class="sd">            loops:</span>
+<span class="sd">                Search for loops, i.e. the start and end nodes of each path</span>
+<span class="sd">                should be the same.</span>
+<span class="sd">            mode:</span>
+<span class="sd">                Direction of the paths. ``&#39;OUT&#39;`` means from ``start`` to ``end``,</span>
+<span class="sd">                ``&#39;IN&#39;`` the opposite direction while ``&#39;ALL&#39;`` both directions.</span>
+<span class="sd">            maxlen:</span>
+<span class="sd">                Maximum length of paths in steps, i.e. if maxlen = 3, then</span>
+<span class="sd">                the longest path may consist of 3 edges and 4 nodes.</span>
+<span class="sd">            minlen:</span>
+<span class="sd">                Minimum length of the path.</span>
+<span class="sd">            silent:</span>
+<span class="sd">                Indicate progress by showing a progress bar.</span>
 
-<span class="sd">        :details:</span>
-<span class="sd">        The arguments: ``direction``, ``effect``, ``resources``,</span>
-<span class="sd">        ``interaction_type``, ``data_model``, ``via`` and ``references``</span>
-<span class="sd">        will be passed to the ``partners`` method of this object and from</span>
-<span class="sd">        there to the relevant methods of the ``Interaction`` and ``Evidence``</span>
-<span class="sd">        objects. By these arguments it is possible to filter the interactions</span>
-<span class="sd">        in the paths according to custom criteria. If any of these arguments</span>
-<span class="sd">        is a ``tuple`` or ``list``, its first value will be used to match the</span>
-<span class="sd">        first interaction in the path, the second for the second one and so</span>
-<span class="sd">        on. If the list or tuple is shorter then ``maxlen``, its last</span>
-<span class="sd">        element will be used for all interactions. If it&#39;s longer than</span>
-<span class="sd">        ``maxlen``, the remaining elements will be discarded. This way the</span>
-<span class="sd">        method is able to search for custom motives.</span>
-<span class="sd">        For example, let&#39;s say you want to find the motives where the</span>
-<span class="sd">        estrogen receptor transcription factor *ESR1* transcriptionally</span>
-<span class="sd">        regulates a gene encoding a protein which then has some effect</span>
-<span class="sd">        post-translationally on *ESR1*:</span>
+<span class="sd">        Details</span>
+<span class="sd">            The arguments: ``direction``, ``effect``, ``resources``,</span>
+<span class="sd">            ``interaction_type``, ``data_model``, ``via`` and ``references``</span>
+<span class="sd">            will be passed to the ``partners`` method of this object and from</span>
+<span class="sd">            there to the relevant methods of the ``Interaction`` and</span>
+<span class="sd">            ``Evidence`` objects. By these arguments it is possible to filter</span>
+<span class="sd">            the interactions in the paths according to custom criteria. If any</span>
+<span class="sd">            of these arguments is a ``tuple`` or ``list``, its first value will</span>
+<span class="sd">            be used to match the first interaction in the path, the second for</span>
+<span class="sd">            the second one and so on. If the list or tuple is shorter then</span>
+<span class="sd">            ``maxlen``, its last element will be used for all interactions.</span>
+<span class="sd">            If it&#39;s longer than ``maxlen``, the remaining elements will be</span>
+<span class="sd">            discarded. This way the method is able to search for custom</span>
+<span class="sd">            motives. For example, let&#39;s say you want to find the motives</span>
+<span class="sd">            where the estrogen receptor transcription factor *ESR1*</span>
+<span class="sd">            transcriptionally regulates a gene encoding a protein which</span>
+<span class="sd">            then has some effect post-translationally on *ESR1*:</span>
 
-<span class="sd">        &gt;&gt;&gt; n.find_paths(</span>
-<span class="sd">        ...     &#39;ESR1&#39;,</span>
-<span class="sd">        ...     loops = True,</span>
-<span class="sd">        ...     minlen = 2,</span>
-<span class="sd">        ...     interaction_type = (&#39;transcriptional&#39;, &#39;post_translational&#39;),</span>
-<span class="sd">        ... )</span>
+<span class="sd">        Examples</span>
 
-<span class="sd">        Or if you are interested only in the -/+ feedback loops i.e.</span>
-<span class="sd">        *ESR1 --(-)--&gt; X --(+)--&gt; ESR1*:</span>
+<span class="sd">            n.find_paths(</span>
+<span class="sd">                &#39;ESR1&#39;,</span>
+<span class="sd">                loops = True,</span>
+<span class="sd">                minlen = 2,</span>
+<span class="sd">                interaction_type = (&#39;transcriptional&#39;, &#39;post_translational&#39;),</span>
+<span class="sd">            )</span>
 
-<span class="sd">        &gt;&gt;&gt; n.find_paths(</span>
-<span class="sd">        ...     &#39;ESR1&#39;,</span>
-<span class="sd">        ...     loops = True,</span>
-<span class="sd">        ...     minlen = 2,</span>
-<span class="sd">        ...     interaction_type = (&#39;transcriptional&#39;, &#39;post_translational&#39;),</span>
-<span class="sd">        ...     effect = (&#39;negative&#39;, &#39;positive&#39;),</span>
-<span class="sd">        ... )</span>
+<span class="sd">            # Or if you are interested only in the -/+ feedback loops i.e.</span>
+<span class="sd">            # *ESR1 --(-)--&gt; X --(+)--&gt; ESR1*:</span>
+
+<span class="sd">            n.find_paths(</span>
+<span class="sd">                &#39;ESR1&#39;,</span>
+<span class="sd">                loops = True,</span>
+<span class="sd">                minlen = 2,</span>
+<span class="sd">                interaction_type = (&#39;transcriptional&#39;, &#39;post_translational&#39;),</span>
+<span class="sd">                effect = (&#39;negative&#39;, &#39;positive&#39;),</span>
+<span class="sd">            )</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">list_of_entities</span><span class="p">(</span><span class="n">entities</span><span class="p">):</span>

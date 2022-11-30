@@ -4625,25 +4625,26 @@ can be labels or identifiers.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.core.interaction.Interaction.dorothea_level">
-<span class="sig-name descname"><span class="pre">dorothea_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/interaction.html#Interaction.dorothea_level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.interaction.Interaction.dorothea_level" title="Permalink to this definition">§</a></dt>
-<dd><p>DoRothEA confidence level for one direction as a single letter. Some
-interactions might have multiple levels due to the ambiguous nature
-of translating gene symbols to UniProt IDs. Here we take the highest
-level and drop the rest. For interactions without DoRothEA levels
-None is returned.</p>
+<span class="sig-name descname"><span class="pre">dorothea_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'A'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'B'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'C'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'D'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'E'</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pypath/core/interaction.html#Interaction.dorothea_level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.interaction.Interaction.dorothea_level" title="Permalink to this definition">§</a></dt>
+<dd><p>DoRothEA confidence level for one direction as a single letter.</p>
+<p>Some interactions might have multiple levels due to the ambiguous
+nature of translating gene symbols to UniProt IDs. Here we take the
+highest level and drop the rest. For interactions without DoRothEA
+levels None is returned.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.core.interaction.Interaction.dorothea_levels">
-<span class="sig-name descname"><span class="pre">dorothea_levels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/interaction.html#Interaction.dorothea_levels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.interaction.Interaction.dorothea_levels" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">dorothea_levels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/interaction.html#Interaction.dorothea_levels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.interaction.Interaction.dorothea_levels" title="Permalink to this definition">§</a></dt>
 <dd><p>Retrieves the DoRothEA confidence levels.</p>
 <dl class="simple">
 <dt>Args</dt><dd><dl class="simple">
-<dt>direction (tuple,str): Direction(s) to consider, either a tuple</dt><dd><p>of entities or entity names, or the string <cite>undirected</cite>.</p>
+<dt>direction:</dt><dd><p>Direction(s) to consider, either a tuple of entities or
+entity names, or the string <cite>undirected</cite>.</p>
 </dd>
 </dl>
 </dd>
-<dt>Return</dt><dd><p>List of unique single letter strings representing the five
+<dt>Returns</dt><dd><p>List of unique single letter strings representing the five
 confidence levels (A-E).</p>
 </dd>
 </dl>
@@ -4808,17 +4809,20 @@ significantly.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.core.interaction.Interaction.get_attr">
-<span class="sig-name descname"><span class="pre">get_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/interaction.html#Interaction.get_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.interaction.Interaction.get_attr" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">get_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/interaction.html#Interaction.get_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.interaction.Interaction.get_attr" title="Permalink to this definition">§</a></dt>
 <dd><p>Extracts the values of one specific attribute.</p>
-<dl>
-<dt>Args</dt><dd><p>resource (str): Name of the resource.
-key (str): Name of the attribute.
-direction (tuple,str): Direction(s) to consider, either a tuple</p>
-<blockquote>
-<div><p>of entities or entity names, or the string <cite>undirected</cite>.</p>
-</div></blockquote>
+<dl class="simple">
+<dt>Args</dt><dd><dl class="simple">
+<dt>resource :</dt><dd><p>Name of the resource.</p>
 </dd>
-<dt>Return</dt><dd><p>Depends on the arguments. The value of the attribute if direction
+<dt>key:</dt><dd><p>Name of the attribute.</p>
+</dd>
+<dt>direction:</dt><dd><p>Direction(s) to consider, either a tuple of entities or
+entity names, or the string <cite>undirected</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns</dt><dd><p>Depends on the arguments. The value of the attribute if direction
 is defined. Otherwise a dict with the value of the attribute for
 each direction. The value of the attribute is <cite>None</cite> if the
 resource or the attribute does not belong to this interaction.</p>

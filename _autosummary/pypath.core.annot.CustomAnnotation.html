@@ -167,7 +167,7 @@ the build can be executed on later.</p></li>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.annot.CustomAnnotation.browse" title="pypath.core.annot.CustomAnnotation.browse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">browse</span></code></a>([start])</p></td>
-<td><p>Presents information about annotation classes as ascii tables printed in the terminal.</p></td>
+<td><p>Print gene information as a table.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code>()</p></td>
 <td><p></p></td>
@@ -479,13 +479,14 @@ the build can be executed on later.</p></li>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.core.annot.CustomAnnotation.browse">
-<span class="sig-name descname"><span class="pre">browse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#CustomAnnotation.browse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.CustomAnnotation.browse" title="Permalink to this definition">§</a></dt>
-<dd><p>Presents information about annotation classes as ascii tables printed
+<span class="sig-name descname"><span class="pre">browse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#CustomAnnotation.browse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.CustomAnnotation.browse" title="Permalink to this definition">§</a></dt>
+<dd><p>Print gene information as a table.</p>
+<p>Presents information about annotation classes as ascii tables printed
 in the terminal. If one class provided, prints one table. If multiple
 classes provided, prints a table for each of them one by one
 proceeding to the next one once you hit return. If no classes
 provided goes through all classes.</p>
-<p><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs passed to <code class="docutils literal notranslate"><span class="pre">pypath.utils.uniprot.info</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">kwargs</span></code> passed to <code class="docutils literal notranslate"><span class="pre">pypath.utils.uniprot.info</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -553,14 +554,14 @@ or the target class.</p>
 <dt class="sig sig-object py" id="pypath.core.annot.CustomAnnotation.filter">
 <span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#CustomAnnotation.filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.CustomAnnotation.filter" title="Permalink to this definition">§</a></dt>
 <dd><p>Filters the annotated entities by annotation class attributes and
-<code class="docutils literal notranslate"><span class="pre">entity_type</span></code>. <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> passed to <code class="docutils literal notranslate"><span class="pre">filter_classes</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">entity_type</span></code>. <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> passed to <code class="docutils literal notranslate"><span class="pre">filter_classes</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.core.annot.CustomAnnotation.filter_classes">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filter_classes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classes</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/annot.html#CustomAnnotation.filter_classes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.annot.CustomAnnotation.filter_classes" title="Permalink to this definition">§</a></dt>
 <dd><p>Returns a list of annotation classes filtered by their attributes.
-<code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> contains attributes and values.</p>
+<code class="docutils literal notranslate"><span class="pre">kwargs</span></code> contains attributes and values.</p>
 </dd></dl>
 
 <dl class="py method">

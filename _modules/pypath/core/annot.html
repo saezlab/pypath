@@ -1477,7 +1477,7 @@
     <span class="k">def</span> <span class="nf">filter_classes</span><span class="p">(</span><span class="n">classes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of annotation classes filtered by their attributes.</span>
-<span class="sd">        ``**kwargs`` contains attributes and values.</span>
+<span class="sd">        ``kwargs`` contains attributes and values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">classes</span> <span class="o">=</span> <span class="n">classes</span>
@@ -1495,7 +1495,7 @@
 <div class="viewcode-block" id="CustomAnnotation.filter"><a class="viewcode-back" href="../../../_autosummary/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.filter">[docs]</a>    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filters the annotated entities by annotation class attributes and</span>
-<span class="sd">        ``entity_type``. ``**kwargs`` passed to ``filter_classes``.</span>
+<span class="sd">        ``entity_type``. ``kwargs`` passed to ``filter_classes``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="nb">set</span><span class="p">(</span>
@@ -2604,15 +2604,17 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">classes_by_entity</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="CustomAnnotation.browse"><a class="viewcode-back" href="../../../_autosummary/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.browse">[docs]</a>    <span class="k">def</span> <span class="nf">browse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="CustomAnnotation.browse"><a class="viewcode-back" href="../../../_autosummary/pypath.core.annot.CustomAnnotation.html#pypath.core.annot.CustomAnnotation.browse">[docs]</a>    <span class="k">def</span> <span class="nf">browse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print gene information as a table.</span>
+
 <span class="sd">        Presents information about annotation classes as ascii tables printed</span>
 <span class="sd">        in the terminal. If one class provided, prints one table. If multiple</span>
 <span class="sd">        classes provided, prints a table for each of them one by one</span>
 <span class="sd">        proceeding to the next one once you hit return. If no classes</span>
 <span class="sd">        provided goes through all classes.</span>
 
-<span class="sd">        **kwargs passed to ``pypath.utils.uniprot.info``.</span>
+<span class="sd">        ``kwargs`` passed to ``pypath.utils.uniprot.info``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">classes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
@@ -3149,8 +3151,8 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a boolean vector with True and False values for each entity</span>
 <span class="sd">        in the reference set. The values represent presence absence data</span>
-<span class="sd">        in the simplest case, but by providing **kwargs any kind of matching</span>
-<span class="sd">        and filtering is possible. **kwargs are passed to the ``select``</span>
+<span class="sd">        in the simplest case, but by providing ``kwargs`` any kind of matching</span>
+<span class="sd">        and filtering is possible. ``kwargs`` are passed to the ``select``</span>
 <span class="sd">        method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3558,7 +3560,7 @@
 <div class="viewcode-block" id="AnnotationBase.subset_intersection"><a class="viewcode-back" href="../../../_autosummary/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.subset_intersection">[docs]</a>    <span class="k">def</span> <span class="nf">subset_intersection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">universe</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the proportion of entities in a subset occuring in the</span>
-<span class="sd">        set ``universe``. The subset is selected by passing **kwargs to the</span>
+<span class="sd">        set ``universe``. The subset is selected by passing ``kwargs`` to the</span>
 <span class="sd">        ``select`` method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3735,36 +3737,46 @@
         <span class="p">}</span>
 
 
-<div class="viewcode-block" id="AnnotationBase.browse"><a class="viewcode-back" href="../../../_autosummary/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.browse">[docs]</a>    <span class="k">def</span> <span class="nf">browse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AnnotationBase.browse"><a class="viewcode-back" href="../../../_autosummary/pypath.core.annot.AnnotationBase.html#pypath.core.annot.AnnotationBase.browse">[docs]</a>    <span class="k">def</span> <span class="nf">browse</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print gene information as a table.</span>
+
 <span class="sd">        Presents information about annotation categories as ascii tables</span>
-<span class="sd">        printed in the terminal.</span>
-<span class="sd">        If one category provided, prints one table. If multiple</span>
-<span class="sd">        categories provided, prints a table for each of them one by one</span>
-<span class="sd">        proceeding to the next one once you hit return. If no categories</span>
+<span class="sd">        printed in the terminal. If one category provided, prints one table.</span>
+<span class="sd">        If multiple categories provided, prints a table for each of them one</span>
+<span class="sd">        by one proceeding to the next one once you hit return. If no categories</span>
 <span class="sd">        provided goes through all levels of the primary category.</span>
 
-<span class="sd">        :param NoneType,str,list,dict field:</span>
-<span class="sd">            The field to browse categories by.</span>
-<span class="sd">            * If None the primary field will be selected.</span>
-<span class="sd">              If this annotation resource doesn&#39;t have fields, all proteins</span>
-<span class="sd">              will be presented as one single category.</span>
-<span class="sd">            * If a string it will be considered a field name and it will</span>
-<span class="sd">              browse through all levels of this field.</span>
-<span class="sd">            * If a list, set or tuple, it will be considered either a list</span>
-<span class="sd">              of field names or a list of values from the primary field.</span>
-<span class="sd">              In the former case all combinations of the values of the</span>
-<span class="sd">              fields will be presented, in the latter case the browsing</span>
-<span class="sd">              will be limited to the levels of the primary field contained</span>
-<span class="sd">              in ``field``.</span>
-<span class="sd">            * If a dict, keys are supposed to be field names and values</span>
-<span class="sd">              as list of levels. If any of the values are None, all levels</span>
-<span class="sd">              from that field will be used.</span>
-<span class="sd">        :param int start:</span>
-<span class="sd">            Start browsing from this category. E.g. if there are 500</span>
-<span class="sd">            categories and start is 250 it will skip everything before the</span>
-<span class="sd">            250th.</span>
-<span class="sd">        **kwargs passed to ``pypath.utils.uniprot.info``.</span>
+<span class="sd">        Args</span>
+<span class="sd">            field:</span>
+<span class="sd">                The field to browse categories by.</span>
+
+<span class="sd">                * If None the primary field will be selected.</span>
+<span class="sd">                  If this annotation resource doesn&#39;t have fields, all proteins</span>
+<span class="sd">                  will be presented as one single category.</span>
+<span class="sd">                * If a string it will be considered a field name and it will</span>
+<span class="sd">                  browse through all levels of this field.</span>
+<span class="sd">                * If a ``list``, set or tuple, it will be considered either a</span>
+<span class="sd">                  ``list`` of field names or a list of values from the primary</span>
+<span class="sd">                  field. In the former case all combinations of the values of</span>
+<span class="sd">                  the fields will be presented, in the latter case the browsing</span>
+<span class="sd">                  will be limited to the levels of the primary field contained</span>
+<span class="sd">                  in ``field``.</span>
+<span class="sd">                * If a ``dict``, keys are supposed to be field names and values</span>
+<span class="sd">                  as list of levels. If any of the values are None, all levels</span>
+<span class="sd">                  from that field will be used.</span>
+
+<span class="sd">            start:</span>
+<span class="sd">                Start browsing from this category. E.g. if there are 500</span>
+<span class="sd">                categories and start is 250 it will skip everything before the</span>
+<span class="sd">                250th.</span>
+<span class="sd">            kwargs:</span>
+<span class="sd">                Passed to ``pypath.utils.uniprot.info``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">field</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_field</span><span class="p">:</span>

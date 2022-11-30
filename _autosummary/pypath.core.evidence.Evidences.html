@@ -225,7 +225,7 @@ show this way that certain relationship has no supporting evidences.</p>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pypath.core.evidence.Evidences.simple_dict" title="pypath.core.evidence.Evidences.simple_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simple_dict</span></code></a></p></td>
-<td><p>Returns (dict): Keys are resource labels, values are     <a class="reference internal" href="pypath.core.evidence.Evidence.html#pypath.core.evidence.Evidence" title="pypath.core.evidence.Evidence"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.core.evidence.Evidence</span></code></a> objects.</p></td>
+<td><p>Returns Keys are resource labels, values are <code class="docutils literal notranslate"><span class="pre">Evidence</span></code> objects.</p></td>
 </tr>
 </tbody>
 </table>
@@ -271,25 +271,19 @@ objects.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pypath.core.evidence.Evidences.serialize_attrs">
-<span class="sig-name descname"><span class="pre">serialize_attrs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_key_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/core/evidence.html#Evidences.serialize_attrs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.evidence.Evidences.serialize_attrs" title="Permalink to this definition">§</a></dt>
+<span class="sig-name descname"><span class="pre">serialize_attrs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_key_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/pypath/core/evidence.html#Evidences.serialize_attrs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.core.evidence.Evidences.serialize_attrs" title="Permalink to this definition">§</a></dt>
 <dd><p>Serialize the extra attributes of the evidences as a JSON string.</p>
 <dl class="simple">
-<dt>Returns</dt><dd><dl class="simple">
-<dt>(str): A JSON serialized string with the evidences from each</dt><dd><p>resource.</p>
-</dd>
-</dl>
+<dt>Returns</dt><dd><p>A JSON serialized string with the evidences from each resource.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pypath.core.evidence.Evidences.simple_dict">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">simple_dict</span></span><a class="headerlink" href="#pypath.core.evidence.Evidences.simple_dict" title="Permalink to this definition">§</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">simple_dict</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pypath.core.evidence.Evidence.html#pypath.core.evidence.Evidence" title="pypath.core.evidence.Evidence"><span class="pre">evidence.Evidence</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pypath.core.evidence.Evidences.simple_dict" title="Permalink to this definition">§</a></dt>
 <dd><p>Returns
-(dict): Keys are resource labels, values are</p>
-<blockquote>
-<div><p><a class="reference internal" href="pypath.core.evidence.Evidence.html#pypath.core.evidence.Evidence" title="pypath.core.evidence.Evidence"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.core.evidence.Evidence</span></code></a> objects.</p>
-</div></blockquote>
+Keys are resource labels, values are <code class="docutils literal notranslate"><span class="pre">Evidence</span></code> objects.</p>
 </dd></dl>
 
 </dd></dl>

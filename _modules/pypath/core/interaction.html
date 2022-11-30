@@ -118,6 +118,8 @@
 <span class="sd">of the :py:class:`Interaction`` objects.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
 
 <span class="kn">import</span> <span class="nn">importlib</span> <span class="k">as</span> <span class="nn">imp</span>
@@ -125,6 +127,7 @@
 <span class="kn">import</span> <span class="nn">operator</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Literal</span>
 
 <span class="kn">import</span> <span class="nn">pypath.core.evidence</span> <span class="k">as</span> <span class="nn">pypath_evidence</span>
 <span class="kn">import</span> <span class="nn">pypath.internals.resource</span> <span class="k">as</span> <span class="nn">pypath_resource</span>
@@ -3276,17 +3279,25 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="n">direction</span><span class="p">][</span><span class="n">resource</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="Interaction.get_attr"><a class="viewcode-back" href="../../../_autosummary/pypath.core.interaction.Interaction.html#pypath.core.interaction.Interaction.get_attr">[docs]</a>    <span class="k">def</span> <span class="nf">get_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">direction</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Interaction.get_attr"><a class="viewcode-back" href="../../../_autosummary/pypath.core.interaction.Interaction.html#pypath.core.interaction.Interaction.get_attr">[docs]</a>    <span class="k">def</span> <span class="nf">get_attr</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">resource</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">direction</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extracts the values of one specific attribute.</span>
 
 <span class="sd">        Args</span>
-<span class="sd">            resource (str): Name of the resource.</span>
-<span class="sd">            key (str): Name of the attribute.</span>
-<span class="sd">            direction (tuple,str): Direction(s) to consider, either a tuple</span>
-<span class="sd">                of entities or entity names, or the string `undirected`.</span>
+<span class="sd">            resource :</span>
+<span class="sd">                Name of the resource.</span>
+<span class="sd">            key:</span>
+<span class="sd">                Name of the attribute.</span>
+<span class="sd">            direction:</span>
+<span class="sd">                Direction(s) to consider, either a tuple of entities or</span>
+<span class="sd">                entity names, or the string `undirected`.</span>
 
-<span class="sd">        Return</span>
+<span class="sd">        Returns</span>
 <span class="sd">            Depends on the arguments. The value of the attribute if direction</span>
 <span class="sd">            is defined. Otherwise a dict with the value of the attribute for</span>
 <span class="sd">            each direction. The value of the attribute is `None` if the</span>
@@ -3308,15 +3319,16 @@
             <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Interaction.dorothea_levels"><a class="viewcode-back" href="../../../_autosummary/pypath.core.interaction.Interaction.html#pypath.core.interaction.Interaction.dorothea_levels">[docs]</a>    <span class="k">def</span> <span class="nf">dorothea_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Interaction.dorothea_levels"><a class="viewcode-back" href="../../../_autosummary/pypath.core.interaction.Interaction.html#pypath.core.interaction.Interaction.dorothea_levels">[docs]</a>    <span class="k">def</span> <span class="nf">dorothea_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the DoRothEA confidence levels.</span>
 
 <span class="sd">        Args</span>
-<span class="sd">            direction (tuple,str): Direction(s) to consider, either a tuple</span>
-<span class="sd">                of entities or entity names, or the string `undirected`.</span>
+<span class="sd">            direction:</span>
+<span class="sd">                Direction(s) to consider, either a tuple of entities or</span>
+<span class="sd">                entity names, or the string `undirected`.</span>
 
-<span class="sd">        Return</span>
+<span class="sd">        Returns</span>
 <span class="sd">            List of unique single letter strings representing the five</span>
 <span class="sd">            confidence levels (A-E).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3335,13 +3347,17 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Interaction.dorothea_level"><a class="viewcode-back" href="../../../_autosummary/pypath.core.interaction.Interaction.html#pypath.core.interaction.Interaction.dorothea_level">[docs]</a>    <span class="k">def</span> <span class="nf">dorothea_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
+<div class="viewcode-block" id="Interaction.dorothea_level"><a class="viewcode-back" href="../../../_autosummary/pypath.core.interaction.Interaction.html#pypath.core.interaction.Interaction.dorothea_level">[docs]</a>    <span class="k">def</span> <span class="nf">dorothea_level</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        DoRothEA confidence level for one direction as a single letter. Some</span>
-<span class="sd">        interactions might have multiple levels due to the ambiguous nature</span>
-<span class="sd">        of translating gene symbols to UniProt IDs. Here we take the highest</span>
-<span class="sd">        level and drop the rest. For interactions without DoRothEA levels</span>
-<span class="sd">        None is returned.</span>
+<span class="sd">        DoRothEA confidence level for one direction as a single letter.</span>
+
+<span class="sd">        Some interactions might have multiple levels due to the ambiguous</span>
+<span class="sd">        nature of translating gene symbols to UniProt IDs. Here we take the</span>
+<span class="sd">        highest level and drop the rest. For interactions without DoRothEA</span>
+<span class="sd">        levels None is returned.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">levels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dorothea_levels</span><span class="p">(</span><span class="n">direction</span> <span class="o">=</span> <span class="n">direction</span><span class="p">)</span>
