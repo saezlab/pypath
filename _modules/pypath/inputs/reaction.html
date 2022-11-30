@@ -1,0 +1,1338 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.inputs.reaction &#8212; pypath 0.14.30 documentation</title>
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script defer src="../../../_static/insipid.js"></script>
+    <script defer src="../../../_static/insipid-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head><body>
+    <script type="text/javascript">
+        document.body.classList.add('js');
+    </script>
+    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
+    <label id="overlay" for="sidebar-checkbox"></label>
+    <div class="sidebar-resize-handle"></div>
+    <script type="text/javascript">
+        try {
+            let sidebar = localStorage.getItem('sphinx-sidebar');
+            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
+            if (sidebar_width) {
+                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
+            }
+            // show sidebar on wide screen
+            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
+                sidebar = 'visible';
+                // NB: We don't store the value in localStorage!
+            }
+            if (sidebar === 'visible') {
+                document.getElementById('sidebar-checkbox').checked = true;
+            }
+        } catch(e) {
+            console.info(e);
+        }
+    </script>
+    <header id="topbar-placeholder">
+      <div id="topbar">
+        <div id="titlebar">
+          <div class="buttons">
+            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+            </label>
+          </div>
+          <div class="title">
+            <a class="parent" href="../inputs.html" accesskey="U">pypath.inputs</a>
+            <a class="top" href="#">pypath.inputs.reaction</a>
+          </div>
+          <div class="buttons">
+            <button id="fullscreen-button" type="button" aria-hidden="true">
+              <span class="enable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
+              </span>
+              <span class="disable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <nav>
+    </nav>
+
+    <nav class="relbar">
+    </nav>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+<h1>Source code for pypath.inputs.reaction</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright</span>
+<span class="c1">#  2014-2022</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  Authors: Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#           Nicolàs Palacio</span>
+<span class="c1">#           Sebastian Lobentanzer</span>
+<span class="c1">#           Erva Ulusoy</span>
+<span class="c1">#           Olga Ivanova</span>
+<span class="c1">#           Ahmet Rifaioglu</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
+
+<span class="c1"># Py 2/3</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">raw_input</span>
+<span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">cPickle</span> <span class="k">as</span> <span class="nn">pickle</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">gzip</span>
+<span class="kn">import</span> <span class="nn">bs4</span>
+<span class="kn">from</span> <span class="nn">lxml</span> <span class="kn">import</span> <span class="n">etree</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+
+<span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
+<span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
+<span class="kn">import</span> <span class="nn">pypath.share.progress</span> <span class="k">as</span> <span class="nn">progress</span>
+<span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
+<span class="kn">import</span> <span class="nn">pypath.share.cache</span> <span class="k">as</span> <span class="nn">cache_mod</span>
+<span class="kn">import</span> <span class="nn">pypath.inputs.acsn</span> <span class="k">as</span> <span class="nn">acsn_input</span>
+<span class="kn">from</span> <span class="nn">pypath.resources</span> <span class="kn">import</span> <span class="n">data_formats</span>
+
+
+<div class="viewcode-block" id="reactome_sbml"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.reactome_sbml.html#pypath.inputs.reaction.reactome_sbml">[docs]</a><span class="k">def</span> <span class="nf">reactome_sbml</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads Reactome human reactions in SBML format.</span>
+<span class="sd">    Returns a dict of file objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;reactome&#39;</span><span class="p">][</span><span class="s1">&#39;sbml&#39;</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">slow</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="reactome_biopax"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.reactome_biopax.html#pypath.inputs.reaction.reactome_biopax">[docs]</a><span class="k">def</span> <span class="nf">reactome_biopax</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">cache</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads Reactome human reactions in SBML format.</span>
+<span class="sd">    Returns File object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">organisms</span> <span class="o">=</span> <span class="p">{</span><span class="mi">9606</span><span class="p">:</span> <span class="s1">&#39;Homo_sapiens&#39;</span><span class="p">}</span>
+    <span class="n">unzipped</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">cache_mod</span><span class="o">.</span><span class="n">get_cachedir</span><span class="p">(),</span>
+        <span class="s1">&#39;reactome_biopax_</span><span class="si">%s</span><span class="s1">.owl&#39;</span> <span class="o">%</span> <span class="n">organisms</span><span class="p">[</span><span class="n">organism</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">unzipped</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">cache</span><span class="p">:</span>
+
+        <span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.owl&#39;</span> <span class="o">%</span> <span class="n">organisms</span><span class="p">[</span><span class="n">organism</span><span class="p">]</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;reactome&#39;</span><span class="p">][</span><span class="s1">&#39;biopax_l3&#39;</span><span class="p">]</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
+            <span class="n">url</span><span class="p">,</span>
+            <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">files_needed</span> <span class="o">=</span> <span class="p">[</span><span class="n">fname</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">fileobj</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">fname</span><span class="p">]</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">unzipped</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">_unzipped</span><span class="p">:</span>
+
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+
+                <span class="n">chunk</span> <span class="o">=</span> <span class="n">fileobj</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+                <span class="n">_unzipped</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+
+        <span class="n">fileobj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">_unzipped</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">unzipped</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_unzipped</span></div>
+
+
+<div class="viewcode-block" id="pid_biopax"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.pid_biopax.html#pypath.inputs.reaction.pid_biopax">[docs]</a><span class="k">def</span> <span class="nf">pid_biopax</span><span class="p">():</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;nci-pid&#39;</span><span class="p">][</span><span class="s1">&#39;biopax_l3&#39;</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="panther_biopax"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.panther_biopax.html#pypath.inputs.reaction.panther_biopax">[docs]</a><span class="k">def</span> <span class="nf">panther_biopax</span><span class="p">():</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;panther&#39;</span><span class="p">][</span><span class="s1">&#39;biopax_l3&#39;</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="acsn_biopax"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.acsn_biopax.html#pypath.inputs.reaction.acsn_biopax">[docs]</a><span class="k">def</span> <span class="nf">acsn_biopax</span><span class="p">():</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;acsn&#39;</span><span class="p">][</span><span class="s1">&#39;biopax_l3&#39;</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="reactome_bs"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.reactome_bs.html#pypath.inputs.reaction.reactome_bs">[docs]</a><span class="k">def</span> <span class="nf">reactome_bs</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reactome pathways in SBML format. Yields tuples of pathway IDs (string)</span>
+<span class="sd">    and SBML representationa of the pathwaya as a `bs4.BeautifulSoup` objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sbml</span> <span class="o">=</span> <span class="n">reactome_sbml</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sbml</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+        <span class="k">yield</span> <span class="n">k</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">],</span> <span class="n">bs4</span><span class="o">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span></div>
+
+
+<span class="c1"># Process Reactome BioPAX level 3</span>
+
+
+<div class="viewcode-block" id="get_soup"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.get_soup.html#pypath.inputs.reaction.get_soup">[docs]</a><span class="k">def</span> <span class="nf">get_soup</span><span class="p">(</span><span class="n">elem</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">bs4</span><span class="o">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">etree</span><span class="o">.</span><span class="n">tostring</span><span class="p">(</span><span class="n">elem</span><span class="p">),</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_bp_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="n">rdfpref</span> <span class="o">=</span> <span class="s1">&#39;{http://www.w3.org/1999/02/22-rdf-syntax-ns#}&#39;</span>
+    <span class="n">rdfres</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">resource&#39;</span> <span class="o">%</span> <span class="n">rdfpref</span>
+
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rdfres</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">elem</span><span class="o">.</span><span class="n">iterfind</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rdfres</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">attrib</span> <span class="ow">and</span> <span class="p">(</span><span class="n">restype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rdfres</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+            <span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">restype</span><span class="p">))</span>
+    <span class="p">]</span>
+
+
+<div class="viewcode-block" id="reactions_biopax"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.reactions_biopax.html#pypath.inputs.reaction.reactions_biopax">[docs]</a><span class="k">def</span> <span class="nf">reactions_biopax</span><span class="p">(</span><span class="n">biopax_file</span><span class="p">,</span>
+                     <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
+                     <span class="n">protein_name_type</span> <span class="o">=</span> <span class="s1">&#39;UniProt&#39;</span><span class="p">,</span>
+                     <span class="n">clean</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Processes a BioPAX file and extracts binary interactions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cachefile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">cache_mod</span><span class="o">.</span><span class="n">get_cachedir</span><span class="p">(),</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.processed.pickle&#39;</span> <span class="o">%</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">biopax_file</span><span class="o">.</span><span class="n">name</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cachefile</span><span class="p">):</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">:: Loading already processed data</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">))</span>
+
+    <span class="c1"># string constants</span>
+    <span class="n">bppref</span> <span class="o">=</span> <span class="s1">&#39;{http://www.biopax.org/release/biopax-level3.owl#}&#39;</span>
+    <span class="n">rdfpref</span> <span class="o">=</span> <span class="s1">&#39;{http://www.w3.org/1999/02/22-rdf-syntax-ns#}&#39;</span>
+    <span class="n">rdfid</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">ID&#39;</span> <span class="o">%</span> <span class="n">rdfpref</span>
+    <span class="n">rdfab</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">about&#39;</span> <span class="o">%</span> <span class="n">rdfpref</span>
+    <span class="n">rdfres</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">resource&#39;</span> <span class="o">%</span> <span class="n">rdfpref</span>
+    <span class="n">bpprot</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">Protein&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpcplx</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">Complex&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpprre</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">ProteinReference&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpreac</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">BiochemicalReaction&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpcata</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">Catalysis&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpctrl</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">Control&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpcoma</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">ComplexAssembly&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bppstp</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">PathwayStep&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpuxrf</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">UnificationXref&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpstoi</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">Stoichiometry&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bppubr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">PublicationXref&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bppath</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">Pathway&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpfrfe</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">FragmentFeature&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpseqi</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">SequenceInterval&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpseqs</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">SequenceSite&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpmodf</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">ModificationFeature&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpmodv</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">SequenceModificationVocabulary&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpmphe</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">memberPhysicalEntity&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bperef</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">entityReference&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpxref</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">xref&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpdnam</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">displayName&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bprelr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">RelationshipXref&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpcsto</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">componentStoichiometry&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpstoc</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">stoichiometricCoefficient&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpphye</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">physicalEntity&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpcted</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">controlled&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpcter</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">controller&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpctyp</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">controlType&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpleft</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">left&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bprgth</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">right&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpsprc</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">stepProcess&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpfeat</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">feature&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpfelo</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">featureLocation&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpibeg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">sequenceIntervalBegin&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpiend</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">sequenceIntervalEnd&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpseqp</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">sequencePosition&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpmoty</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">modificationType&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bppcom</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">pathwayComponent&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpterm</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">term&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpdb</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">db&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">bpid</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">id&#39;</span> <span class="o">%</span> <span class="n">bppref</span>
+    <span class="n">upStr</span> <span class="o">=</span> <span class="s1">&#39;UniProt&#39;</span>
+    <span class="n">modvoc</span> <span class="o">=</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">reactome_modifications</span>
+
+    <span class="c1"># intermediate results</span>
+    <span class="n">proteins</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">proteinfamilies</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">uniprots</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">proteinreferences</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">complexes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">complexvariations</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">stoichiometries</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">reactions</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">complexassemblies</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">catalyses</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">controls</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">pathways</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">pathwaysteps</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">publications</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">fragmentfeatures</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">sequenceintervals</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">sequencesites</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">modificationfeatures</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">modificationvocabulary</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">protein_name_type</span> <span class="o">=</span> <span class="n">protein_name_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="c1"># processing the XML</span>
+    <span class="n">bpf</span> <span class="o">=</span> <span class="n">reactome_biopax</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">)</span>
+    <span class="n">bp_filesize</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">biopax_file</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">biopax_file</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+
+        <span class="n">bp_filesize</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">biopax_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">biopax_file</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;r&#39;</span><span class="p">:</span>
+
+            <span class="n">biopax_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">biopax_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">biopax_file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">biopax_file</span><span class="p">)</span> <span class="ow">is</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">ExFileObject</span><span class="p">:</span>
+
+        <span class="n">bp_filesize</span> <span class="o">=</span> <span class="n">biopax_file</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">biopax_file</span><span class="p">)</span> <span class="ow">is</span> <span class="n">gzip</span><span class="o">.</span><span class="n">GzipFile</span><span class="p">:</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">biopax_file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">bp_filesize</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span><span class="n">bp_filesize</span><span class="p">,</span> <span class="s1">&#39;Processing BioPAX XML&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">fpos</span> <span class="o">=</span> <span class="n">biopax_file</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+    <span class="n">bp</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">iterparse</span><span class="p">(</span><span class="n">biopax_file</span><span class="p">,</span> <span class="n">events</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="p">))</span>
+    <span class="n">used_elements</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ev</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">bp</span><span class="p">:</span>
+            <span class="n">new_fpos</span> <span class="o">=</span> <span class="n">biopax_file</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+            <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">new_fpos</span> <span class="o">-</span> <span class="n">fpos</span><span class="p">)</span>
+            <span class="n">fpos</span> <span class="o">=</span> <span class="n">new_fpos</span>
+            <span class="n">_id</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rdfid</span><span class="p">)</span> <span class="k">if</span> <span class="n">rdfid</span> <span class="ow">in</span> <span class="n">elem</span><span class="o">.</span><span class="n">attrib</span> <span class="k">else</span> <span class="n">elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rdfab</span><span class="p">)</span>
+
+            <span class="c1"># Protein</span>
+            <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bpprot</span><span class="p">:</span>
+                <span class="n">entref</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bperef</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">entref</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">proteins</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s1">&#39;protein&#39;</span><span class="p">:</span> <span class="n">entref</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rdfres</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                        <span class="s1">&#39;seqfeatures&#39;</span><span class="p">:</span> <span class="n">_bp_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">bpfeat</span><span class="p">),</span>
+                        <span class="s1">&#39;modfeatures&#39;</span><span class="p">:</span> <span class="n">_bp_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">bpfeat</span><span class="p">)</span>
+                    <span class="p">}</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">proteinfamilies</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">_bp_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">bpmphe</span><span class="p">)</span>
+
+            <span class="c1"># ProteinReference</span>
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bpprre</span><span class="p">:</span>
+                <span class="n">proteinreferences</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">_bp_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">bpxref</span><span class="p">)</span>
+
+            <span class="c1"># UnificationXref</span>
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bpuxrf</span> <span class="ow">or</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bprelr</span><span class="p">:</span>
+                <span class="n">db</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpdb</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpdb</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+                            <span class="n">protein_name_type</span><span class="p">):</span>
+                        <span class="n">i</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpid</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">uniprots</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">text</span>
+            <span class="c1"># Complex</span>
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bpcplx</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpcsto</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">complexes</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">_bp_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">bpcsto</span><span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">complexvariations</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">_bp_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span>
+                                                                   <span class="n">bpmphe</span><span class="p">)</span>
+
+            <span class="c1"># Stoichiometry</span>
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bpstoi</span><span class="p">:</span>
+                <span class="n">stoichiometries</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpphye</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rdfres</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                    <span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpstoc</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)))</span>
+
+            <span class="c1"># BiochemicalReaction</span>
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bpreac</span><span class="p">:</span>
+                <span class="n">reactions</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;refs&#39;</span><span class="p">:</span> <span class="n">_bp_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">bpxref</span><span class="p">),</span>
+                    <span class="s1">&#39;left&#39;</span><span class="p">:</span> <span class="n">_bp_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">bpleft</span><span class="p">),</span>
+                    <span class="s1">&#39;right&#39;</span><span class="p">:</span> <span class="n">_bp_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">bprgth</span><span class="p">)</span>
+                <span class="p">}</span>
+
+            <span class="c1"># ComplexAssembly</span>
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bpcoma</span><span class="p">:</span>
+                <span class="n">complexassemblies</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;refs&#39;</span><span class="p">:</span> <span class="n">_bp_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">bpxref</span><span class="p">),</span>
+                    <span class="s1">&#39;left&#39;</span><span class="p">:</span> <span class="n">_bp_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">bpleft</span><span class="p">),</span>
+                    <span class="s1">&#39;right&#39;</span><span class="p">:</span> <span class="n">_bp_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">bprgth</span><span class="p">)</span>
+                <span class="p">}</span>
+
+            <span class="c1"># Catalysis</span>
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bpcata</span><span class="p">:</span>
+                <span class="n">cter</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpcter</span><span class="p">)</span>
+                <span class="n">cted</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpcted</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">cter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">cted</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">typ</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpctyp</span><span class="p">)</span>
+                    <span class="n">catalyses</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s1">&#39;controller&#39;</span><span class="p">:</span> <span class="n">cter</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rdfres</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                        <span class="s1">&#39;controlled&#39;</span><span class="p">:</span> <span class="n">cted</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rdfres</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                        <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">typ</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">typ</span><span class="o">.</span><span class="n">text</span>
+                    <span class="p">}</span>
+
+            <span class="c1"># Control</span>
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bpctrl</span><span class="p">:</span>
+                <span class="n">cter</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpcter</span><span class="p">)</span>
+                <span class="n">cted</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpcted</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">cter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">cted</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">typ</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpctyp</span><span class="p">)</span>
+                    <span class="n">controls</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s1">&#39;refs&#39;</span><span class="p">:</span> <span class="n">_bp_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">bpxref</span><span class="p">),</span>
+                        <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">typ</span><span class="o">.</span><span class="n">text</span> <span class="k">if</span> <span class="n">typ</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;controller&#39;</span><span class="p">:</span> <span class="n">cter</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rdfres</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                        <span class="s1">&#39;controlled&#39;</span><span class="p">:</span> <span class="n">cted</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rdfres</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                    <span class="p">}</span>
+
+            <span class="c1"># PathwayStep</span>
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bppstp</span><span class="p">:</span>
+                <span class="n">pathwaysteps</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">_bp_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">bppstp</span><span class="p">)</span>
+
+            <span class="c1"># PublicationXref</span>
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bppubr</span><span class="p">:</span>
+                <span class="n">pmid</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpid</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">pmid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">publications</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">pmid</span><span class="o">.</span><span class="n">text</span>
+
+            <span class="c1"># FragmentFeature</span>
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bpfrfe</span><span class="p">:</span>
+                <span class="n">fragmentfeatures</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpfelo</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rdfres</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                    <span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+            <span class="c1"># SequenceInterval</span>
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bpseqi</span><span class="p">:</span>
+                <span class="n">beg</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpibeg</span><span class="p">)</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpiend</span><span class="p">)</span>
+                <span class="n">sequenceintervals</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">beg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rdfres</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">beg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span>
+                    <span class="kc">None</span><span class="p">,</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpiend</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rdfres</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+
+            <span class="c1"># SequenceSite</span>
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bpseqs</span><span class="p">:</span>
+                <span class="n">seqp</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpseqp</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">seqp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">sequencesites</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">seqp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+            <span class="c1"># ModificationFeature</span>
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bpmodf</span><span class="p">:</span>
+                <span class="n">felo</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpfelo</span><span class="p">)</span>
+                <span class="n">moty</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpmoty</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">felo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">moty</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">modificationfeatures</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpfelo</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rdfres</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                        <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpmoty</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rdfres</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+
+            <span class="c1"># SequenceModificationVocabulary</span>
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bpmodv</span><span class="p">:</span>
+                <span class="n">term</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">bpterm</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">term</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">modificationvocabulary</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">text</span>
+
+            <span class="c1"># Pathway</span>
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">bppath</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">pathways</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s1">&#39;reactions&#39;</span><span class="p">:</span> <span class="n">_bp_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">bppcom</span><span class="p">),</span>
+                        <span class="s1">&#39;pathways&#39;</span><span class="p">:</span> <span class="n">_bp_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">bppcom</span><span class="p">)</span>
+                    <span class="p">}</span>
+
+                <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Wrong type at element:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">etree</span><span class="o">.</span><span class="n">tostring</span><span class="p">(</span><span class="n">elem</span><span class="p">))</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">clean</span><span class="p">:</span>
+                <span class="n">used_elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">used_elements</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">800</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">used_elements</span><span class="p">[:</span><span class="mi">400</span><span class="p">]:</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+                    <span class="n">used_elements</span> <span class="o">=</span> <span class="n">used_elements</span><span class="p">[</span><span class="mi">400</span><span class="p">:]</span>
+
+    <span class="k">except</span> <span class="n">etree</span><span class="o">.</span><span class="n">XMLSyntaxError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">WARNING: XML processing error: </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+    <span class="k">del</span> <span class="n">bp</span>
+    <span class="n">biopax_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1"># # # # # # # # # # # # # # # # # #</span>
+    <span class="c1"># from intermediate to final results</span>
+    <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">proteins</span><span class="p">),</span> <span class="s1">&#39;Processing proteins&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span>
+    <span class="n">proteins_uniprots</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># return proteinreferences, uniprots</span>
+    <span class="k">for</span> <span class="n">pref</span><span class="p">,</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">proteins</span><span class="p">):</span>
+        <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">protein</span><span class="p">[</span><span class="s1">&#39;protein&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">proteinreferences</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">prref</span> <span class="ow">in</span> <span class="n">proteinreferences</span><span class="p">[</span><span class="n">protein</span><span class="p">[</span><span class="s1">&#39;protein&#39;</span><span class="p">]]:</span>
+                <span class="k">if</span> <span class="n">prref</span> <span class="ow">in</span> <span class="n">uniprots</span><span class="p">:</span>
+                    <span class="n">proteins_uniprots</span><span class="p">[</span><span class="n">pref</span><span class="p">]</span> <span class="o">=</span> <span class="n">uniprots</span><span class="p">[</span><span class="n">prref</span><span class="p">]</span>
+
+    <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+    <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">proteins</span><span class="p">),</span> <span class="s1">&#39;Processing PTMs&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span>
+    <span class="n">proteins_modifications</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">pref</span><span class="p">,</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">proteins</span><span class="p">):</span>
+        <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">modf</span> <span class="ow">in</span> <span class="n">protein</span><span class="p">[</span><span class="s1">&#39;modfeatures&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">modf</span> <span class="ow">in</span> <span class="n">modificationfeatures</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">modificationfeatures</span><span class="p">[</span><span class="n">modf</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">sequencesites</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">modificationfeatures</span><span class="p">[</span><span class="n">modf</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">modificationvocabulary</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">modificationvocabulary</span><span class="p">[</span><span class="n">modificationfeatures</span><span class="p">[</span><span class="n">modf</span><span class="p">][</span>
+                                <span class="mi">1</span><span class="p">]]</span> <span class="ow">in</span> <span class="n">modvoc</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">pref</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">proteins_modifications</span><span class="p">:</span>
+                                <span class="n">proteins_modifications</span><span class="p">[</span><span class="n">pref</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+
+                            <span class="n">proteins_modifications</span><span class="p">[</span><span class="n">pref</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                                <span class="p">(</span><span class="n">sequencesites</span><span class="p">[</span><span class="n">modificationfeatures</span><span class="p">[</span><span class="n">modf</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span>
+                                 <span class="n">modvoc</span><span class="p">[</span><span class="n">modificationvocabulary</span><span class="p">[</span>
+                                     <span class="n">modificationfeatures</span><span class="p">[</span><span class="n">modf</span><span class="p">][</span><span class="mi">1</span><span class="p">]]][</span><span class="mi">1</span><span class="p">],</span>
+                                 <span class="n">modvoc</span><span class="p">[</span><span class="n">modificationvocabulary</span><span class="p">[</span>
+                                     <span class="n">modificationfeatures</span><span class="p">[</span><span class="n">modf</span><span class="p">][</span><span class="mi">1</span><span class="p">]]][</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+
+    <span class="c1"># build a uniform dict to handle all protein based entities</span>
+    <span class="c1"># including complexes and variations/families</span>
+    <span class="n">entity_uniprot</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">proteins_uniprots</span><span class="p">),</span> <span class="s1">&#39;Processing proteins&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">pref</span><span class="p">,</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">proteins_uniprots</span><span class="p">):</span>
+        <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+        <span class="n">entity_uniprot</span><span class="p">[</span><span class="n">pref</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span>
+            <span class="s1">&#39;members&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">protein</span><span class="p">],</span>
+            <span class="s1">&#39;ptms&#39;</span><span class="p">:</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">protein</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">proteins_modifications</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="n">protein</span><span class="p">:</span> <span class="n">proteins_modifications</span><span class="p">[</span><span class="n">pref</span><span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}]</span>
+
+    <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+    <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">proteinfamilies</span><span class="p">),</span> <span class="s1">&#39;Processing protein families&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">pfref</span><span class="p">,</span> <span class="n">prefs</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">proteinfamilies</span><span class="p">):</span>
+        <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+        <span class="n">entity_uniprot</span><span class="p">[</span><span class="n">pfref</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">pref</span> <span class="ow">in</span> <span class="n">prefs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pref</span> <span class="ow">in</span> <span class="n">proteins_uniprots</span><span class="p">:</span>
+                <span class="n">entity_uniprot</span><span class="p">[</span><span class="n">pfref</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s1">&#39;members&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">proteins_uniprots</span><span class="p">[</span><span class="n">pref</span><span class="p">]],</span>
+                    <span class="s1">&#39;ptms&#39;</span><span class="p">:</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">pref</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">proteins_modifications</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="n">proteins_uniprots</span><span class="p">[</span><span class="n">pref</span><span class="p">]:</span> <span class="n">proteins_modifications</span><span class="p">[</span><span class="n">pref</span><span class="p">]</span>
+                    <span class="p">}</span>
+                <span class="p">})</span>
+
+    <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+
+    <span class="c1"># return entity_uniprot, complexes, proteins, proteinreferences, uniprots,</span>
+    <span class="c1"># proteinfamilies, proteins_uniprots, reactions, controls, catalyses,</span>
+    <span class="c1"># complexassemblies</span>
+    <span class="k">del</span> <span class="n">proteins</span>
+    <span class="k">del</span> <span class="n">proteinfamilies</span>
+    <span class="k">del</span> <span class="n">proteinreferences</span>
+
+    <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">complexes</span><span class="p">),</span> <span class="s1">&#39;Processing complexes&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">cref</span><span class="p">,</span> <span class="n">cplex</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">complexes</span><span class="p">):</span>
+        <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">cref</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">entity_uniprot</span><span class="p">:</span>
+            <span class="n">process_complex</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cref</span><span class="p">,</span> <span class="n">entity_uniprot</span><span class="p">,</span> <span class="n">complexes</span><span class="p">,</span>
+                            <span class="n">complexvariations</span><span class="p">,</span> <span class="n">cplex</span><span class="p">,</span> <span class="n">stoichiometries</span><span class="p">)</span>
+
+    <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+    <span class="k">del</span> <span class="n">complexes</span>
+    <span class="k">del</span> <span class="n">stoichiometries</span>
+    <span class="k">del</span> <span class="n">proteins_uniprots</span>
+
+    <span class="c1"># return entity_uniprot, proteins, proteinreferences, uniprots, complexes, stoichiometries</span>
+    <span class="c1"># # #</span>
+    <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">reactions</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">complexassemblies</span><span class="p">),</span> <span class="s1">&#39;Processing reactions&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span>
+    <span class="n">reactions_uniprots</span> <span class="o">=</span> \
+        <span class="n">process_reactions</span><span class="p">(</span><span class="n">reactions</span><span class="p">,</span> <span class="n">entity_uniprot</span><span class="p">,</span> <span class="n">publications</span><span class="p">)</span>
+    <span class="n">complexassemblies_uniprots</span> <span class="o">=</span> \
+        <span class="n">process_reactions</span><span class="p">(</span><span class="n">complexassemblies</span><span class="p">,</span> <span class="n">entity_uniprot</span><span class="p">,</span> <span class="n">publications</span><span class="p">)</span>
+
+    <span class="k">del</span> <span class="n">reactions</span>
+    <span class="k">del</span> <span class="n">complexassemblies</span>
+    <span class="c1"># # #</span>
+
+    <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">controls</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">catalyses</span><span class="p">),</span> <span class="s1">&#39;Processing controls and catalyses&#39;</span><span class="p">,</span>
+        <span class="mi">11</span><span class="p">)</span>
+    <span class="n">controls_uniprots</span> <span class="o">=</span> <span class="n">_process_controls</span><span class="p">(</span>
+        <span class="nb">dict</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span>
+            <span class="n">iteritems</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">(</span><span class="n">controls</span><span class="p">,</span> <span class="n">catalyses</span><span class="p">)</span>
+        <span class="p">)),</span>
+        <span class="n">entity_uniprot</span><span class="p">,</span>
+        <span class="nb">dict</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span>
+            <span class="n">iteritems</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="n">reactions_uniprots</span><span class="p">,</span>
+                <span class="n">complexassemblies_uniprots</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)),</span>
+        <span class="n">publications</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">caref</span><span class="p">,</span> <span class="n">ca</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">complexassemblies_uniprots</span><span class="p">):</span>
+        <span class="n">controls_uniprots</span><span class="p">[</span><span class="n">caref</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;BINDING&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;refs&#39;</span><span class="p">:</span>
+            <span class="p">[</span><span class="n">publications</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ca</span><span class="p">[</span><span class="s1">&#39;refs&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">publications</span><span class="p">],</span>
+            <span class="s1">&#39;controller&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;controlled&#39;</span><span class="p">:</span> <span class="n">ca</span>
+        <span class="p">}</span>
+
+    <span class="k">del</span> <span class="n">entity_uniprot</span>
+    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">controls_uniprots</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">))</span>
+
+    <span class="c1"># return controls_uniprots, entity_uniprot, proteins, proteinreferences,</span>
+    <span class="c1"># uniprots, complexes, stoichiometries</span>
+    <span class="k">return</span> <span class="n">controls_uniprots</span></div>
+
+
+<div class="viewcode-block" id="process_reactions"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.process_reactions.html#pypath.inputs.reaction.process_reactions">[docs]</a><span class="k">def</span> <span class="nf">process_reactions</span><span class="p">(</span><span class="n">reactions</span><span class="p">,</span> <span class="n">entity_uniprot</span><span class="p">,</span> <span class="n">publications</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">rref</span><span class="p">,</span> <span class="n">rea</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">reactions</span><span class="p">):</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">rref</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;refs&#39;</span><span class="p">:</span>
+            <span class="p">[</span><span class="n">publications</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rea</span><span class="p">[</span><span class="s1">&#39;refs&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">publications</span><span class="p">],</span>
+            <span class="s1">&#39;left&#39;</span><span class="p">:</span>
+            <span class="p">[</span><span class="n">entity_uniprot</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">rea</span><span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">entity_uniprot</span><span class="p">],</span>
+            <span class="s1">&#39;right&#39;</span><span class="p">:</span>
+            <span class="p">[</span><span class="n">entity_uniprot</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rea</span><span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">entity_uniprot</span><span class="p">]</span>
+        <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<span class="k">def</span> <span class="nf">_process_controls</span><span class="p">(</span><span class="n">controls</span><span class="p">,</span> <span class="n">entity_uniprot</span><span class="p">,</span> <span class="n">reactions_uniprots</span><span class="p">,</span>
+                      <span class="n">publications</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">cref</span><span class="p">,</span> <span class="n">ctrl</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">controls</span><span class="p">):</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">cref</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">ctrl</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;refs&#39;</span><span class="p">:</span>
+            <span class="p">[</span><span class="n">publications</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ctrl</span><span class="p">[</span><span class="s1">&#39;refs&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">publications</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;refs&#39;</span> <span class="ow">in</span> <span class="n">ctrl</span> <span class="k">else</span> <span class="p">[],</span>
+            <span class="s1">&#39;controller&#39;</span><span class="p">:</span> <span class="n">entity_uniprot</span><span class="p">[</span><span class="n">ctrl</span><span class="p">[</span><span class="s1">&#39;controller&#39;</span><span class="p">]]</span>
+            <span class="k">if</span> <span class="n">ctrl</span><span class="p">[</span><span class="s1">&#39;controller&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">entity_uniprot</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;controlled&#39;</span><span class="p">:</span> <span class="n">reactions_uniprots</span><span class="p">[</span><span class="n">ctrl</span><span class="p">[</span><span class="s1">&#39;controlled&#39;</span><span class="p">]]</span>
+            <span class="k">if</span> <span class="n">ctrl</span><span class="p">[</span><span class="s1">&#39;controlled&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">reactions_uniprots</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<div class="viewcode-block" id="process_complex"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.process_complex.html#pypath.inputs.reaction.process_complex">[docs]</a><span class="k">def</span> <span class="nf">process_complex</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="n">cref</span><span class="p">,</span> <span class="n">entity_uniprot</span><span class="p">,</span> <span class="n">complexes</span><span class="p">,</span> <span class="n">complexvariations</span><span class="p">,</span>
+                    <span class="n">cplex</span><span class="p">,</span> <span class="n">stoichiometries</span><span class="p">):</span>
+    <span class="n">log</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;reactome.log&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+    <span class="n">tabs</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">Starting processing </span><span class="si">%s</span><span class="s1">, depth = </span><span class="si">%u</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span>
+              <span class="p">(</span><span class="n">tabs</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">cref</span><span class="p">,</span> <span class="n">depth</span><span class="p">))</span>
+    <span class="n">this_cplex</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;members&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;ptms&#39;</span><span class="p">:</span> <span class="p">{}}]</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">Complex </span><span class="si">%s</span><span class="s1"> have </span><span class="si">%u</span><span class="s1"> member entities</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span>
+              <span class="p">(</span><span class="n">tabs</span><span class="p">,</span> <span class="n">cref</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">cplex</span><span class="p">)))</span>
+
+    <span class="k">for</span> <span class="n">stoi</span> <span class="ow">in</span> <span class="n">cplex</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">stoi</span> <span class="ow">in</span> <span class="n">stoichiometries</span><span class="p">:</span>
+            <span class="n">ref</span><span class="p">,</span> <span class="n">num</span> <span class="o">=</span> <span class="n">stoichiometries</span><span class="p">[</span><span class="n">stoi</span><span class="p">]</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">New member entity: </span><span class="si">%s</span><span class="s1">, stoichiometric coeff: </span><span class="si">%u</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span>
+                      <span class="p">(</span><span class="n">tabs</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">num</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">ref</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;Complex&#39;</span><span class="p">)</span> \
+                    <span class="ow">and</span> <span class="n">ref</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">entity_uniprot</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">complexes</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                        <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1"> is a complex with </span><span class="si">%u</span><span class="s1"> subentities, and hasn</span><span class="se">\&#39;</span><span class="s1">t been processed yet</span><span class="se">\n</span><span class="s1">&#39;</span>
+                        <span class="o">%</span> <span class="p">(</span><span class="n">tabs</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">complexes</span><span class="p">[</span><span class="n">ref</span><span class="p">])))</span>
+                    <span class="n">process_complex</span><span class="p">(</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">entity_uniprot</span><span class="p">,</span> <span class="n">complexes</span><span class="p">,</span>
+                                    <span class="n">complexvariations</span><span class="p">,</span> <span class="n">complexes</span><span class="p">[</span><span class="n">ref</span><span class="p">],</span>
+                                    <span class="n">stoichiometries</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">complexvariations</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                        <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1"> is a complex group with </span><span class="si">%u</span><span class="s1"> variations, and hasn</span><span class="se">\&#39;</span><span class="s1">t been processed yet</span><span class="se">\n</span><span class="s1">&#39;</span>
+                        <span class="o">%</span> <span class="p">(</span><span class="n">tabs</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">complexvariations</span><span class="p">[</span><span class="n">ref</span><span class="p">])))</span>
+                    <span class="n">entity_uniprot</span><span class="p">[</span><span class="n">ref</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+                    <span class="k">for</span> <span class="n">mref</span> <span class="ow">in</span> <span class="n">complexvariations</span><span class="p">[</span><span class="n">ref</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="n">mref</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">entity_uniprot</span> <span class="ow">and</span> <span class="n">mref</span> <span class="ow">in</span> <span class="n">complexes</span><span class="p">:</span>
+                            <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                                <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1"> is a complex with </span><span class="si">%u</span><span class="s1"> subentities, and hasn</span><span class="se">\&#39;</span><span class="s1">t been processed yet</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                <span class="o">%</span> <span class="p">(</span><span class="n">tabs</span><span class="p">,</span> <span class="n">mref</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">complexes</span><span class="p">[</span><span class="n">mref</span><span class="p">])))</span>
+                            <span class="n">process_complex</span><span class="p">(</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mref</span><span class="p">,</span> <span class="n">entity_uniprot</span><span class="p">,</span>
+                                            <span class="n">complexes</span><span class="p">,</span> <span class="n">complexvariations</span><span class="p">,</span>
+                                            <span class="n">complexes</span><span class="p">[</span><span class="n">mref</span><span class="p">],</span> <span class="n">stoichiometries</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">mref</span> <span class="ow">in</span> <span class="n">entity_uniprot</span><span class="p">:</span>
+                            <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                                <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1"> is now processed, adding it as an instance of </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                <span class="o">%</span> <span class="p">(</span><span class="n">tabs</span><span class="p">,</span> <span class="n">mref</span><span class="p">,</span> <span class="n">ref</span><span class="p">))</span>
+                            <span class="n">entity_uniprot</span><span class="p">[</span><span class="n">ref</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">entity_uniprot</span><span class="p">[</span><span class="n">mref</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">entity_uniprot</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                    <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1"> is an already processed entity, with </span><span class="si">%u</span><span class="s1"> variants and </span><span class="si">%u</span><span class="s1"> members</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="n">tabs</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">entity_uniprot</span><span class="p">[</span><span class="n">ref</span><span class="p">]),</span>
+                       <span class="nb">len</span><span class="p">(</span><span class="n">entity_uniprot</span><span class="p">[</span><span class="n">ref</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;members&#39;</span><span class="p">])</span>
+                       <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">entity_uniprot</span><span class="p">[</span><span class="n">ref</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">))</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                    <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">Number of variants after processing </span><span class="si">%s</span><span class="s1">: </span><span class="si">%u</span><span class="s1"> x </span><span class="si">%u</span><span class="s1"> = </span><span class="si">%u</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="n">tabs</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_cplex</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">entity_uniprot</span><span class="p">[</span><span class="n">ref</span><span class="p">]),</span>
+                       <span class="nb">len</span><span class="p">(</span><span class="n">this_cplex</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">entity_uniprot</span><span class="p">[</span><span class="n">ref</span><span class="p">])))</span>
+                <span class="n">this_cplex_new</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">this_cplex</span><span class="p">:</span>
+                    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+
+                    <span class="k">for</span> <span class="n">new_member</span> <span class="ow">in</span> <span class="n">entity_uniprot</span><span class="p">[</span><span class="n">ref</span><span class="p">]:</span>
+                        <span class="n">var_new</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+                        <span class="n">var_new</span><span class="p">[</span><span class="s1">&#39;members&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_member</span><span class="p">[</span><span class="s1">&#39;members&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">num</span><span class="p">)</span>
+
+                        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">ptm</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">new_member</span><span class="p">[</span><span class="s1">&#39;ptms&#39;</span><span class="p">]):</span>
+                            <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">var_new</span><span class="p">[</span><span class="s1">&#39;ptms&#39;</span><span class="p">]:</span>
+                                <span class="n">var_new</span><span class="p">[</span><span class="s1">&#39;ptms&#39;</span><span class="p">][</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+                            <span class="n">var_new</span><span class="p">[</span><span class="s1">&#39;ptms&#39;</span><span class="p">][</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">var_new</span><span class="p">[</span><span class="s1">&#39;ptms&#39;</span><span class="p">][</span>
+                                <span class="n">u</span><span class="p">]</span> <span class="o">|</span> <span class="n">new_member</span><span class="p">[</span><span class="s1">&#39;ptms&#39;</span><span class="p">][</span><span class="n">u</span><span class="p">]</span>
+                        <span class="n">this_cplex_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var_new</span><span class="p">)</span>
+                        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="n">this_cplex</span> <span class="o">=</span> <span class="n">this_cplex_new</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">Number of variants after processing </span><span class="si">%s</span><span class="s1">: </span><span class="si">%u</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span>
+                          <span class="p">(</span><span class="n">tabs</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_cplex</span><span class="p">)))</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">Number of members in </span><span class="si">%s</span><span class="s1">: </span><span class="si">%u</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span>
+                          <span class="p">(</span><span class="n">tabs</span><span class="p">,</span> <span class="n">cref</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_cplex</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;members&#39;</span><span class="p">])</span>
+                           <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_cplex</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">))</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">Permanently missing: </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tabs</span><span class="p">,</span> <span class="n">ref</span><span class="p">))</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">Finished processing </span><span class="si">%s</span><span class="s1">, found </span><span class="si">%u</span><span class="s1"> variants with </span><span class="si">%u</span><span class="s1"> members</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span>
+              <span class="p">(</span><span class="n">tabs</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">cref</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_cplex</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_cplex</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;members&#39;</span><span class="p">])</span>
+               <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_cplex</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">cref</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">entity_uniprot</span><span class="p">:</span>
+        <span class="n">entity_uniprot</span><span class="p">[</span><span class="n">cref</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">entity_uniprot</span><span class="p">[</span><span class="n">cref</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">this_cplex</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="reactome_interactions"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.reactome_interactions.html#pypath.inputs.reaction.reactome_interactions">[docs]</a><span class="k">def</span> <span class="nf">reactome_interactions</span><span class="p">(</span><span class="n">cacheFile</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ask</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads and processes Reactome BioPAX.</span>
+<span class="sd">    Extracts binary interactions.</span>
+<span class="sd">    The applied criteria are very stringent, yields very few interactions.</span>
+<span class="sd">    Requires large free memory, approx. 2G.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cacheFile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">cache_mod</span><span class="o">.</span><span class="n">get_cachedir</span><span class="p">(),</span>
+        <span class="s1">&#39;reactome.interactions.pickle&#39;</span>
+    <span class="p">)</span> <span class="k">if</span> <span class="n">cacheFile</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cacheFile</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cacheFile</span><span class="p">):</span>
+        <span class="n">interactions</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">cacheFile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">))</span>
+
+    <span class="k">elif</span> <span class="n">ask</span><span class="p">:</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">Processing Reactome requires huge memory.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Please hit `y` if you have at least 2G free memory,</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">or `n` to omit Reactome.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">After processing once, it will be saved in </span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="s1">&#39;</span><span class="se">\t</span><span class="si">%s</span><span class="s1">, so next time can be loaded quickly.</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+                <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Process Reactome now? [y/n]</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">cacheFile</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">answer</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">}:</span>
+
+                <span class="k">break</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="n">answer</span> <span class="o">=</span> <span class="s1">&#39;y&#39;</span>
+
+    <span class="k">if</span> <span class="n">answer</span> <span class="o">==</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_interactions</span><span class="p">(</span><span class="s1">&#39;reactome&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="acsn_interactions_2"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.acsn_interactions_2.html#pypath.inputs.reaction.acsn_interactions_2">[docs]</a><span class="k">def</span> <span class="nf">acsn_interactions_2</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">get_interactions</span><span class="p">(</span><span class="s1">&#39;acsn&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="pid_interactions"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.pid_interactions.html#pypath.inputs.reaction.pid_interactions">[docs]</a><span class="k">def</span> <span class="nf">pid_interactions</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">get_interactions</span><span class="p">(</span><span class="s1">&#39;pid&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="panther_interactions"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.panther_interactions.html#pypath.inputs.reaction.panther_interactions">[docs]</a><span class="k">def</span> <span class="nf">panther_interactions</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">get_interactions</span><span class="p">(</span><span class="s1">&#39;panther&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_interactions"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.get_interactions.html#pypath.inputs.reaction.get_interactions">[docs]</a><span class="k">def</span> <span class="nf">get_interactions</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">mandatory_refs</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+    <span class="n">ctrls</span> <span class="o">=</span> <span class="n">get_controls</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">process_controls</span><span class="p">(</span><span class="n">ctrls</span><span class="p">,</span> <span class="n">mandatory_refs</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_controls"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.get_controls.html#pypath.inputs.reaction.get_controls">[docs]</a><span class="k">def</span> <span class="nf">get_controls</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">protein_name_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+    <span class="n">name_types</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;acsn&#39;</span><span class="p">:</span> <span class="s1">&#39;HGNC&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;reactome&#39;</span><span class="p">:</span> <span class="s1">&#39;UniProt&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;pid&#39;</span><span class="p">:</span> <span class="s1">&#39;UniProt&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;panther&#39;</span><span class="p">:</span> <span class="s1">&#39;UniProt&#39;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">protein_name_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">name_types</span><span class="p">:</span>
+        <span class="n">protein_name_type</span> <span class="o">=</span> <span class="n">name_types</span><span class="p">[</span><span class="n">source</span><span class="p">]</span>
+    <span class="n">biopax</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_biopax&#39;</span> <span class="o">%</span> <span class="n">source</span><span class="p">]</span>
+    <span class="n">bpfile</span> <span class="o">=</span> <span class="n">biopax</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">bpfile</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">bpf</span> <span class="ow">in</span> <span class="n">bpfile</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">reactions_biopax</span><span class="p">(</span>
+                    <span class="n">bpf</span><span class="p">,</span> <span class="n">protein_name_type</span> <span class="o">=</span> <span class="n">protein_name_type</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="o">+</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">reactions_biopax</span><span class="p">(</span><span class="n">bpfile</span><span class="p">,</span> <span class="n">protein_name_type</span> <span class="o">=</span> <span class="n">protein_name_type</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="process_controls"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.process_controls.html#pypath.inputs.reaction.process_controls">[docs]</a><span class="k">def</span> <span class="nf">process_controls</span><span class="p">(</span><span class="n">controls</span><span class="p">,</span> <span class="n">mandatory_refs</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+    <span class="n">interactions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+    <span class="n">ptms</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">regulations</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">controls</span><span class="p">),</span> <span class="s1">&#39;Processing interactions&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">controls</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;refs&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">mandatory_refs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;controller&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;controller&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">ctr</span> <span class="ow">in</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;controller&#39;</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">uniq_list</span><span class="p">(</span><span class="n">ctr</span><span class="p">[</span><span class="s1">&#39;members&#39;</span><span class="p">]))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">this_ctr</span> <span class="o">=</span> <span class="n">ctr</span><span class="p">[</span><span class="s1">&#39;members&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">ctd</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;controlled&#39;</span><span class="p">]</span>
+
+                        <span class="k">if</span> <span class="n">ctd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="c1"># ctd[&#39;left&#39;] is not None and ctd[&#39;right&#39;] is not</span>
+                            <span class="c1"># None:</span>
+
+                            <span class="k">for</span> <span class="n">leftInst</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">ctd</span><span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">]):</span>
+                                <span class="k">for</span> <span class="n">rightInst</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span>
+                                        <span class="o">*</span><span class="n">ctd</span><span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">]):</span>
+                                    <span class="n">lr</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">uniq_list</span><span class="p">(</span>
+                                        <span class="n">common</span><span class="o">.</span><span class="n">flat_list</span><span class="p">([</span>
+                                            <span class="n">l</span><span class="p">[</span><span class="s1">&#39;members&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">leftInst</span>
+                                        <span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;members&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rightInst</span><span class="p">]))</span>
+
+                                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lr</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                                        <span class="n">this_ctd</span> <span class="o">=</span> <span class="n">lr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                                        <span class="n">interactions</span><span class="o">.</span><span class="n">add</span><span class="p">((</span>
+                                            <span class="n">this_ctr</span><span class="p">,</span> <span class="n">this_ctd</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span>
+                                            <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;refs&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">[</span>
+                                                <span class="s1">&#39;refs&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">ctd</span><span class="p">[</span><span class="s1">&#39;refs&#39;</span><span class="p">]),</span>
+                                            <span class="s1">&#39;directed&#39;</span><span class="p">))</span>
+
+                                    <span class="k">else</span><span class="p">:</span>
+                                        <span class="n">modDiff</span> <span class="o">=</span> <span class="p">{}</span>
+                                        <span class="n">ptmsLeft</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+                                            <span class="p">[(</span><span class="n">ptms</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ptm</span><span class="p">)</span>
+                                             <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">leftInst</span>
+                                             <span class="k">for</span> <span class="n">ptms</span> <span class="ow">in</span> <span class="n">l</span><span class="p">[</span><span class="s1">&#39;ptms&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                                             <span class="k">for</span> <span class="n">ptm</span> <span class="ow">in</span> <span class="n">ptms</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+                                        <span class="n">ptmsRight</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+                                            <span class="p">[(</span><span class="n">ptms</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ptm</span><span class="p">)</span>
+                                             <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rightInst</span>
+                                             <span class="k">for</span> <span class="n">ptms</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;ptms&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                                             <span class="k">for</span> <span class="n">ptm</span> <span class="ow">in</span> <span class="n">ptms</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+                                        <span class="n">ptmsDiff</span> <span class="o">=</span> <span class="n">ptmsLeft</span> <span class="o">^</span> <span class="n">ptmsRight</span>
+                                        <span class="n">diffUniProts</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">uniq_list</span><span class="p">(</span>
+                                            <span class="p">[</span><span class="n">ptm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">ptm</span> <span class="ow">in</span> <span class="n">ptmsDiff</span><span class="p">])</span>
+
+                                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">diffUniProts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                                            <span class="n">this_ctd</span> <span class="o">=</span> <span class="n">diffUniProts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span>
+                                                <span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                                            <span class="n">interactions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                                                <span class="p">(</span><span class="n">this_ctr</span><span class="p">,</span> <span class="n">this_ctd</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span>
+                                                 <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;refs&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">[</span>
+                                                     <span class="s1">&#39;refs&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">ctd</span><span class="p">[</span>
+                                                         <span class="s1">&#39;refs&#39;</span><span class="p">]),</span> <span class="s1">&#39;directed&#39;</span><span class="p">))</span>
+
+                                        <span class="k">else</span><span class="p">:</span>
+                                            <span class="n">lefts</span> <span class="o">=</span> <span class="p">[</span>
+                                                <span class="nb">set</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="s1">&#39;members&#39;</span><span class="p">])</span>
+                                                <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">leftInst</span>
+                                            <span class="p">]</span>
+                                            <span class="n">rights</span> <span class="o">=</span> <span class="p">[</span>
+                                                <span class="nb">set</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;members&#39;</span><span class="p">])</span>
+                                                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rightInst</span>
+                                            <span class="p">]</span>
+                                            <span class="n">onlyLefts</span> <span class="o">=</span> <span class="p">[</span>
+                                                <span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lefts</span>
+                                                <span class="k">if</span> <span class="n">l</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rights</span>
+                                            <span class="p">]</span>
+                                            <span class="n">onlyRights</span> <span class="o">=</span> <span class="p">[</span>
+                                                <span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rights</span>
+                                                <span class="k">if</span> <span class="n">r</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lefts</span>
+                                            <span class="p">]</span>
+                                            <span class="n">diffs</span> <span class="o">=</span> <span class="p">[]</span>
+
+                                            <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">onlyLefts</span><span class="p">:</span>
+                                                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">onlyRights</span><span class="p">:</span>
+                                                    <span class="n">diff</span> <span class="o">=</span> <span class="n">l</span> <span class="o">^</span> <span class="n">r</span>
+                                                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                                                        <span class="n">diffs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                                            <span class="nb">list</span><span class="p">(</span><span class="n">diff</span><span class="p">))</span>
+                                            <span class="n">diffs</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">uniq_list</span><span class="p">(</span>
+                                                <span class="n">common</span><span class="o">.</span><span class="n">flat_list</span><span class="p">(</span><span class="n">diffs</span><span class="p">))</span>
+
+                                            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">diffs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                                                <span class="n">this_ctd</span> <span class="o">=</span> <span class="n">diffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span>
+                                                    <span class="mi">0</span><span class="p">]</span>
+                                                <span class="n">interactions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                                                    <span class="p">(</span><span class="n">this_ctr</span><span class="p">,</span> <span class="n">this_ctd</span><span class="p">,</span>
+                                                     <span class="n">c</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span>
+                                                     <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;refs&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span>
+                                                         <span class="n">c</span><span class="p">[</span><span class="s1">&#39;refs&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span>
+                                                              <span class="n">ctd</span><span class="p">[</span><span class="s1">&#39;refs&#39;</span><span class="p">]),</span>
+                                                     <span class="s1">&#39;undirected&#39;</span><span class="p">))</span>
+
+            <span class="c1"># if the controller is unknown</span>
+            <span class="c1"># and the reaction has only 2 proteins</span>
+            <span class="c1"># these most probably bind each other</span>
+            <span class="c1"># to form a complex</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ctd</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;controlled&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">ctd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">leftInst</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">ctd</span><span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">]):</span>
+                        <span class="k">for</span> <span class="n">rightInst</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">ctd</span><span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">]):</span>
+                            <span class="n">lr</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">uniq_list</span><span class="p">(</span>
+                                <span class="n">common</span><span class="o">.</span><span class="n">flat_list</span><span class="p">([</span>
+                                    <span class="n">l</span><span class="p">[</span><span class="s1">&#39;members&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">leftInst</span>
+                                <span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;members&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rightInst</span><span class="p">]))</span>
+
+                            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lr</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                                <span class="n">interactions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                                    <span class="p">(</span><span class="n">lr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                                     <span class="n">c</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ctd</span><span class="p">[</span><span class="s1">&#39;refs&#39;</span><span class="p">])))</span>
+
+    <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">interactions</span><span class="p">),</span> <span class="n">ptms</span><span class="p">,</span> <span class="n">regulations</span></div>
+
+<span class="c1"># Process Reactome SBML</span>
+
+<span class="k">def</span> <span class="nf">_reactome_id</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_reactome_extract_id</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">_reactome_extract_id</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">_reactome_res</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_reactome_extract_res</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;rdf:resource&#39;</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">_reactome_extract_res</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_reactome_reactions</span><span class="p">():</span>
+
+    <span class="n">species</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">compartments</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">reactions</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">soups</span> <span class="o">=</span> <span class="n">reactome_bs</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">pw</span><span class="p">,</span> <span class="n">soup</span> <span class="ow">in</span> <span class="n">soups</span><span class="p">:</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">cp</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;listofcompartments&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;compartment&#39;</span><span class="p">):</span>
+
+            <span class="n">compartments</span><span class="p">[</span><span class="n">_reactome_id</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;listofspecies&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;species&#39;</span><span class="p">):</span>
+
+            <span class="n">cp</span> <span class="o">=</span> <span class="n">_reactome_id</span><span class="p">(</span><span class="n">sp</span><span class="p">,</span> <span class="s1">&#39;compartment&#39;</span><span class="p">)</span>
+            <span class="n">si</span> <span class="o">=</span> <span class="n">_reactome_id</span><span class="p">(</span><span class="n">sp</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">)</span>
+            <span class="n">nm</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="n">ids</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sp</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bqbiol:haspart&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;rdf:li&#39;</span><span class="p">):</span>
+
+                <span class="n">ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_reactome_res</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+            <span class="n">ids</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">uniq_list</span><span class="p">(</span><span class="n">ids</span><span class="p">))</span>
+            <span class="n">species</span><span class="p">[</span><span class="n">si</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">nm</span><span class="p">,</span> <span class="s1">&#39;comp&#39;</span><span class="p">:</span> <span class="n">cp</span><span class="p">,</span> <span class="s1">&#39;ids&#39;</span><span class="p">:</span> <span class="n">ids</span><span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">rea</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;listofreactions&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;reaction&#39;</span><span class="p">):</span>
+
+            <span class="n">ri</span> <span class="o">=</span> <span class="n">_reactome_id</span><span class="p">(</span><span class="n">rea</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">)</span>
+            <span class="n">refs</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rea</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bqbiol:isdescribedby&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;rdf:li&#39;</span><span class="p">):</span>
+
+                <span class="n">refs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_reactome_res</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>
+
+            <span class="n">refs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">uniq_list</span><span class="p">(</span><span class="n">refs</span><span class="p">))</span>
+            <span class="n">reas</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rea</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;listofreactants&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;speciesreference&#39;</span><span class="p">):</span>
+
+                <span class="n">reas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_reactome_id</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="s1">&#39;species&#39;</span><span class="p">))</span>
+
+            <span class="n">reas</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">uniq_list</span><span class="p">(</span><span class="n">reas</span><span class="p">))</span>
+            <span class="n">prds</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">rea</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;listofproducts&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;speciesreference&#39;</span><span class="p">):</span>
+
+                <span class="n">prds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_reactome_id</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s1">&#39;species&#39;</span><span class="p">))</span>
+
+            <span class="n">prds</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">uniq_list</span><span class="p">(</span><span class="n">prds</span><span class="p">))</span>
+            <span class="n">note</span> <span class="o">=</span> <span class="n">rea</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+            <span class="n">reactions</span><span class="p">[</span><span class="n">ri</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;refs&#39;</span><span class="p">:</span> <span class="n">refs</span><span class="p">,</span>
+                <span class="s1">&#39;reas&#39;</span><span class="p">:</span> <span class="n">reas</span><span class="p">,</span>
+                <span class="s1">&#39;prds&#39;</span><span class="p">:</span> <span class="n">prds</span><span class="p">,</span>
+                <span class="s1">&#39;note&#39;</span><span class="p">:</span> <span class="n">note</span>
+            <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">compartments</span><span class="p">,</span> <span class="n">species</span><span class="p">,</span> <span class="n">reactions</span>
+
+
+<span class="k">def</span> <span class="nf">_reactome_reactions_et</span><span class="p">():</span>
+
+    <span class="n">sbmlPfx</span> <span class="o">=</span> <span class="s1">&#39;{http://www.sbml.org/sbml/level2/version4}&#39;</span>
+    <span class="n">compStr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">compartment&#39;</span> <span class="o">%</span> <span class="n">sbmlPfx</span>
+    <span class="n">reacStr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">reaction&#39;</span> <span class="o">%</span> <span class="n">sbmlPfx</span>
+    <span class="n">specStr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">species&#39;</span> <span class="o">%</span> <span class="n">sbmlPfx</span>
+    <span class="n">species</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">compartments</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">reactions</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">sbml</span> <span class="o">=</span> <span class="n">reactome_sbml</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">pw_sbml</span> <span class="ow">in</span> <span class="n">sbml</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+
+        <span class="n">ctx</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">iterparse</span><span class="p">(</span><span class="n">pw_sbml</span><span class="p">,</span> <span class="n">events</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">ev</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">ctx</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">compStr</span><span class="p">:</span>
+
+                <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">_reactome_compartment</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
+                <span class="n">compartments</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">reacStr</span><span class="p">:</span>
+
+                <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">_reactome_reaction</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
+                <span class="n">reactions</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+            <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">specStr</span><span class="p">:</span>
+
+                <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">_reactome_species</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
+                <span class="n">species</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+            <span class="n">elem</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+            <span class="k">while</span> <span class="n">elem</span><span class="o">.</span><span class="n">getprevious</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+                <span class="k">del</span> <span class="n">elem</span><span class="o">.</span><span class="n">getparent</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">compartments</span><span class="p">,</span> <span class="n">species</span><span class="p">,</span> <span class="n">reactions</span>
+
+
+<span class="k">def</span> <span class="nf">_reactome_compartment</span><span class="p">(</span><span class="n">elem</span><span class="p">):</span>
+    <span class="n">ci</span> <span class="o">=</span> <span class="n">_reactome_extract_id</span><span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">))</span>
+    <span class="n">nm</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ci</span><span class="p">,</span> <span class="n">nm</span>
+
+
+<span class="k">def</span> <span class="nf">_reactome_species</span><span class="p">(</span><span class="n">elem</span><span class="p">):</span>
+    <span class="n">bqBiolPfx</span> <span class="o">=</span> <span class="s1">&#39;{http://biomodels.net/biology-qualifiers/}&#39;</span>
+    <span class="n">rdfPfx</span> <span class="o">=</span> <span class="s1">&#39;{http://www.w3.org/1999/02/22-rdf-syntax-ns#}&#39;</span>
+    <span class="n">hasPartStr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">hasPart&#39;</span> <span class="o">%</span> <span class="n">bqBiolPfx</span>
+    <span class="n">resStr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">resource&#39;</span> <span class="o">%</span> <span class="n">rdfPfx</span>
+    <span class="n">si</span> <span class="o">=</span> <span class="n">_reactome_extract_id</span><span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">))</span>
+    <span class="n">cp</span> <span class="o">=</span> <span class="n">_reactome_extract_id</span><span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;compartment&#39;</span><span class="p">))</span>
+    <span class="n">nm</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+    <span class="n">ids</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+        <span class="n">common</span><span class="o">.</span><span class="n">uniq_list</span><span class="p">(</span><span class="n">_reactome_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">hasPartStr</span><span class="p">)))</span>
+
+    <span class="k">return</span> <span class="n">si</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">nm</span><span class="p">,</span> <span class="s1">&#39;comp&#39;</span><span class="p">:</span> <span class="n">cp</span><span class="p">,</span> <span class="s1">&#39;ids&#39;</span><span class="p">:</span> <span class="n">ids</span><span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_reactome_reaction</span><span class="p">(</span><span class="n">elem</span><span class="p">):</span>
+    <span class="n">bqBiolPfx</span> <span class="o">=</span> <span class="s1">&#39;{http://biomodels.net/biology-qualifiers/}&#39;</span>
+    <span class="n">rdfPfx</span> <span class="o">=</span> <span class="s1">&#39;{http://www.w3.org/1999/02/22-rdf-syntax-ns#}&#39;</span>
+    <span class="n">sbmlPfx</span> <span class="o">=</span> <span class="s1">&#39;{http://www.sbml.org/sbml/level2/version4}&#39;</span>
+    <span class="n">specStr</span> <span class="o">=</span> <span class="s1">&#39;species&#39;</span>
+    <span class="n">spRefStr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">speciesReference&#39;</span> <span class="o">%</span> <span class="n">sbmlPfx</span>
+    <span class="n">isDescStr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">isDescribedBy&#39;</span> <span class="o">%</span> <span class="n">bqBiolPfx</span>
+    <span class="n">resStr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">resource&#39;</span> <span class="o">%</span> <span class="n">rdfPfx</span>
+    <span class="n">lofReaStr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">listOfReactants&#39;</span> <span class="o">%</span> <span class="n">sbmlPfx</span>
+    <span class="n">lofPrdStr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">listOfProducts&#39;</span> <span class="o">%</span> <span class="n">sbmlPfx</span>
+    <span class="n">ri</span> <span class="o">=</span> <span class="n">_reactome_extract_id</span><span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">))</span>
+    <span class="n">refs</span> <span class="o">=</span> <span class="n">_reactome_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">isDescStr</span><span class="p">)</span>
+    <span class="n">reas</span> <span class="o">=</span> <span class="n">_reactome_collect_species</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">lofReaStr</span><span class="p">)</span>
+    <span class="n">prds</span> <span class="o">=</span> <span class="n">_reactome_collect_species</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">lofPrdStr</span><span class="p">)</span>
+    <span class="n">note</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;note&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>  <span class="c1"># prefix?</span>
+
+    <span class="k">return</span> <span class="n">ri</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;refs&#39;</span><span class="p">:</span> <span class="n">refs</span><span class="p">,</span> <span class="s1">&#39;reas&#39;</span><span class="p">:</span> <span class="n">reas</span><span class="p">,</span> <span class="s1">&#39;prds&#39;</span><span class="p">:</span> <span class="n">prds</span><span class="p">,</span> <span class="s1">&#39;note&#39;</span><span class="p">:</span> <span class="n">note</span><span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_reactome_collect_resources</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
+    <span class="n">rdfPfx</span> <span class="o">=</span> <span class="s1">&#39;{http://www.w3.org/1999/02/22-rdf-syntax-ns#}&#39;</span>
+    <span class="n">resStr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">resource&#39;</span> <span class="o">%</span> <span class="n">rdfPfx</span>
+    <span class="n">liStr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">li&#39;</span> <span class="o">%</span> <span class="n">rdfPfx</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;.//</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">tag</span><span class="p">)</span><span class="o">.</span><span class="n">iterfind</span><span class="p">(</span><span class="s1">&#39;.//</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">liStr</span><span class="p">):</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_reactome_extract_res</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">resStr</span><span class="p">)))</span>
+
+    <span class="k">return</span> <span class="n">res</span>
+
+
+<span class="k">def</span> <span class="nf">_reactome_collect_species</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
+    <span class="n">sbmlPfx</span> <span class="o">=</span> <span class="s1">&#39;{http://www.sbml.org/sbml/level2/version4}&#39;</span>
+    <span class="n">spRefStr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">speciesReference&#39;</span> <span class="o">%</span> <span class="n">sbmlPfx</span>
+    <span class="n">specStr</span> <span class="o">=</span> <span class="s1">&#39;species&#39;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;.//</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">tag</span><span class="p">)</span><span class="o">.</span><span class="n">iterfind</span><span class="p">(</span><span class="s1">&#39;.//</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">spRefStr</span><span class="p">):</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">apped</span><span class="p">(</span><span class="n">_reactome_extract_id</span><span class="p">(</span><span class="n">sp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">specStr</span><span class="p">)))</span>
+
+    <span class="k">return</span> <span class="n">res</span>
+
+
+<div class="viewcode-block" id="get_acsn_effects"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.get_acsn_effects.html#pypath.inputs.reaction.get_acsn_effects">[docs]</a><span class="k">def</span> <span class="nf">get_acsn_effects</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Processes ACSN data, returns list of effects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">negatives</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;NEGATIVE_INFLUENCE&#39;</span><span class="p">,</span> <span class="s1">&#39;UNKNOWN_NEGATIVE_INFLUENCE&#39;</span><span class="p">])</span>
+    <span class="n">positives</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+        <span class="p">[</span><span class="s1">&#39;TRIGGER&#39;</span><span class="p">,</span> <span class="s1">&#39;POSITIVE_INFLUENCE&#39;</span><span class="p">,</span> <span class="s1">&#39;UNKNOWN_POSITIVE_INFLUENCE&#39;</span><span class="p">])</span>
+    <span class="n">directed</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span>
+        <span class="s1">&#39;UNKNOWN_TRANSITION&#39;</span><span class="p">,</span> <span class="s1">&#39;INTERACTION_TYPE&#39;</span><span class="p">,</span> <span class="s1">&#39;KNOWN_TRANSITION_OMITTED&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;INHIBITION&#39;</span><span class="p">,</span> <span class="s1">&#39;UNKNOWN_POSITIVE_INFLUENCE&#39;</span><span class="p">,</span> <span class="s1">&#39;PROTEIN_INTERACTION&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;UNKNOWN_CATALYSIS&#39;</span><span class="p">,</span> <span class="s1">&#39;POSITIVE_INFLUENCE&#39;</span><span class="p">,</span> <span class="s1">&#39;STATE_TRANSITION&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;TRANSLATION&#39;</span><span class="p">,</span> <span class="s1">&#39;UNKNOWN_NEGATIVE_INFLUENCE&#39;</span><span class="p">,</span> <span class="s1">&#39;NEGATIVE_INFLUENCE&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;MODULATION&#39;</span><span class="p">,</span> <span class="s1">&#39;TRANSCRIPTION&#39;</span><span class="p">,</span> <span class="s1">&#39;COMPLEX_EXPANSION&#39;</span><span class="p">,</span> <span class="s1">&#39;TRIGGER&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;CATALYSIS&#39;</span><span class="p">,</span> <span class="s1">&#39;PHYSICAL_STIMULATION&#39;</span><span class="p">,</span> <span class="s1">&#39;UNKNOWN_INHIBITION&#39;</span><span class="p">,</span> <span class="s1">&#39;TRANSPORT&#39;</span>
+    <span class="p">])</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">acsn_input</span><span class="o">.</span><span class="n">acsn_interactions</span><span class="p">()</span>
+
+    <span class="n">effects</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">eff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">eff</span> <span class="o">&amp;</span> <span class="n">negatives</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">effects</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;-&#39;</span><span class="p">])</span>
+
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">eff</span> <span class="o">&amp;</span> <span class="n">positives</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">effects</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;+&#39;</span><span class="p">])</span>
+
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">eff</span> <span class="o">&amp;</span> <span class="n">directed</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">effects</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;*&#39;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">effects</span></div>
+
+
+<div class="viewcode-block" id="get_reactions"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.reaction.get_reactions.html#pypath.inputs.reaction.get_reactions">[docs]</a><span class="k">def</span> <span class="nf">get_reactions</span><span class="p">(</span><span class="n">types</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sources</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">types</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">types</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
+    <span class="n">cachefile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">cache_mod</span><span class="o">.</span><span class="n">get_cachedir</span><span class="p">(),</span>
+        <span class="s1">&#39;reaction_interactions_by_source.pickle&#39;</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cachefile</span><span class="p">):</span>
+        <span class="n">interactions</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">))</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">pypath.utils.pyreact</span> <span class="k">as</span> <span class="nn">pyreact</span>
+        <span class="n">rea</span> <span class="o">=</span> <span class="n">pyreact</span><span class="o">.</span><span class="n">PyReact</span><span class="p">()</span>
+        <span class="n">rea</span><span class="o">.</span><span class="n">load_all</span><span class="p">()</span>
+        <span class="n">rea</span><span class="o">.</span><span class="n">expand_by_source</span><span class="p">()</span>
+        <span class="n">interactions</span> <span class="o">=</span> <span class="n">rea</span><span class="o">.</span><span class="n">interactions_by_source</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">interactions</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">sources</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">i</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">)</span> <span class="ow">and</span> \
+                <span class="p">(</span><span class="n">types</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">types</span><span class="p">)):</span>
+            <span class="k">yield</span> <span class="p">[</span>
+                <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">types</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">i</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">types</span><span class="p">)),</span>
+                <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">3</span><span class="p">])),</span> <span class="n">i</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">5</span><span class="p">]))</span>
+            <span class="p">]</span></div>
+</pre></div>
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+          <div class="sidebar-resize-handle"></div>
+
+  <div>
+    <h3><a href="../../../index.html">Table of Contents</a></h3>
+    <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../releasehistory.html">Release history</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/pypath.html">pypath</a></li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <nav class="relbar">
+    </nav>
+
+    <footer role="contentinfo">
+      &#169; Copyright 2022, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
+    </footer>
+  </body>
+</html>

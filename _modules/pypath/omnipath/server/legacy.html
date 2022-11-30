@@ -1,0 +1,455 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.omnipath.server.legacy &#8212; pypath 0.14.30 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/pypathdocs.css" />
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script defer src="../../../../_static/insipid.js"></script>
+    <script defer src="../../../../_static/insipid-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head><body>
+    <script type="text/javascript">
+        document.body.classList.add('js');
+    </script>
+    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
+    <label id="overlay" for="sidebar-checkbox"></label>
+    <div class="sidebar-resize-handle"></div>
+    <script type="text/javascript">
+        try {
+            let sidebar = localStorage.getItem('sphinx-sidebar');
+            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
+            if (sidebar_width) {
+                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
+            }
+            // show sidebar on wide screen
+            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
+                sidebar = 'visible';
+                // NB: We don't store the value in localStorage!
+            }
+            if (sidebar === 'visible') {
+                document.getElementById('sidebar-checkbox').checked = true;
+            }
+        } catch(e) {
+            console.info(e);
+        }
+    </script>
+    <header id="topbar-placeholder">
+      <div id="topbar">
+        <div id="titlebar">
+          <div class="buttons">
+            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+            </label>
+          </div>
+          <div class="title">
+            <a class="parent" href="../../omnipath.html" accesskey="U">pypath.omnipath</a>
+            <a class="top" href="#">pypath.omnipath.server.legacy</a>
+          </div>
+          <div class="buttons">
+            <button id="fullscreen-button" type="button" aria-hidden="true">
+              <span class="enable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
+              </span>
+              <span class="disable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <nav>
+    </nav>
+
+    <nav class="relbar">
+    </nav>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+<h1>Source code for pypath.omnipath.server.legacy</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright</span>
+<span class="c1">#  2014-2022</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  Authors: Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#           Nicolàs Palacio</span>
+<span class="c1">#           Sebastian Lobentanzer</span>
+<span class="c1">#           Erva Ulusoy</span>
+<span class="c1">#           Olga Ivanova</span>
+<span class="c1">#           Ahmet Rifaioglu</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Old server class working from a ``pypath.legacy.main.PyPath`` object.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">import</span> <span class="nn">pypath.omnipath.server.run</span> <span class="k">as</span> <span class="nn">server</span>
+
+
+<div class="viewcode-block" id="PypathServer"><a class="viewcode-back" href="../../../../_autosummary/pypath.omnipath.server.legacy.PypathServer.html#pypath.omnipath.server.legacy.PypathServer">[docs]</a><span class="k">class</span> <span class="nc">PypathServer</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">BaseServer</span><span class="p">):</span>
+    
+    
+<div class="viewcode-block" id="PypathServer.__init__"><a class="viewcode-back" href="../../../../_autosummary/pypath.omnipath.server.legacy.PypathServer.html#pypath.omnipath.server.legacy.PypathServer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pypath</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">pypath</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">pypath</span><span class="o">.</span><span class="n">graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">isLeaf</span> <span class="o">=</span> <span class="kc">True</span>
+        
+        <span class="n">server</span><span class="o">.</span><span class="n">BaseServer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+    
+    
+    <span class="k">def</span> <span class="nf">network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">):</span>
+        
+        <span class="n">hdr</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">,</span> <span class="s1">&#39;edges&#39;</span><span class="p">,</span> <span class="s1">&#39;is_directed&#39;</span><span class="p">,</span> <span class="s1">&#39;sources&#39;</span><span class="p">]</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">ecount</span><span class="p">(),</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">sources</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="sa">b</span><span class="s1">&#39;format&#39;</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">args</span> <span class="ow">and</span> <span class="n">req</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="sa">b</span><span class="s1">&#39;format&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;json&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">hdr</span><span class="p">,</span> <span class="n">val</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">hdr</span><span class="p">),</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span> <span class="k">else</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">val</span><span class="p">]))</span>
+
+
+    <span class="k">def</span> <span class="nf">interactions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">):</span>
+        
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="sa">b</span><span class="s1">&#39;sources&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;references&#39;</span><span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">elist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_eids</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">hdr</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="s1">&#39;is_directed&#39;</span><span class="p">,</span> <span class="s1">&#39;is_stimulation&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;is_inhibition&#39;</span>
+        <span class="p">]</span>
+        
+        <span class="k">if</span> <span class="sa">b</span><span class="s1">&#39;fields&#39;</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            
+            <span class="n">hdr</span> <span class="o">+=</span> <span class="p">[</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span>
+                <span class="k">if</span> <span class="n">f</span> <span class="ow">in</span> <span class="sa">b</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="sa">b</span><span class="s1">&#39;fields&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="p">]</span>
+        
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="sa">b</span><span class="s1">&#39;genesymbols&#39;</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">args</span> <span class="ow">and</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parse_arg</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="sa">b</span><span class="s1">&#39;genesymbols&#39;</span><span class="p">])</span>
+        <span class="p">):</span>
+            <span class="n">genesymbols</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">hdr</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;source_genesymbol&#39;</span><span class="p">)</span>
+            <span class="n">hdr</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;target_genesymbol&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">genesymbols</span> <span class="o">=</span> <span class="kc">False</span>
+        
+        <span class="n">all_sources</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+        <span class="k">for</span> <span class="n">eid</span> <span class="ow">in</span> <span class="n">elist</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span>
+            <span class="n">all_sources</span> <span class="o">=</span> <span class="n">all_sources</span> <span class="o">|</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;straight&#39;</span><span class="p">,</span> <span class="s1">&#39;reverse&#39;</span><span class="p">]:</span>
+                <span class="n">uniprots</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">],</span> <span class="n">d</span><span class="p">)</span>
+                
+                <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="n">uniprots</span><span class="p">]:</span>
+                    
+                    <span class="n">thisEdge</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">uniprots</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">uniprots</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="p">]</span>
+                    
+                    <span class="k">if</span> <span class="n">genesymbols</span><span class="p">:</span>
+                        
+                        <span class="n">thisEdge</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">uniprots</span><span class="p">[</span><span class="mi">0</span><span class="p">]]][</span><span class="s1">&#39;label&#39;</span><span class="p">],</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">uniprots</span><span class="p">[</span><span class="mi">1</span><span class="p">]]][</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
+                        <span class="p">])</span>
+                    
+                    <span class="n">thisEdge</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+                        <span class="mi">1</span><span class="p">,</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">is_stimulation</span><span class="p">(</span><span class="n">uniprots</span><span class="p">)),</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">is_inhibition</span><span class="p">(</span><span class="n">uniprots</span><span class="p">))</span>
+                    <span class="p">])</span>
+                    <span class="n">dsources</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_dir</span><span class="p">(</span><span class="n">uniprots</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">dsources</span> <span class="o">=</span> <span class="n">dsources</span> <span class="o">|</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_dir</span><span class="p">(</span>
+                        <span class="s1">&#39;undirected&#39;</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="s1">&#39;sources&#39;</span> <span class="ow">in</span> <span class="n">hdr</span><span class="p">:</span>
+                        <span class="n">thisEdge</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">dsources</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="s1">&#39;references&#39;</span> <span class="ow">in</span> <span class="n">hdr</span><span class="p">:</span>
+                        <span class="n">thisEdge</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                            <span class="n">r</span><span class="o">.</span><span class="n">pmid</span>
+                            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">flat_list</span><span class="p">([</span>
+                                <span class="n">rs</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">rs</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;refs_by_source&#39;</span><span class="p">])</span>
+                                <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">dsources</span>
+                            <span class="p">])</span>
+                        <span class="p">])</span>
+                    <span class="n">thisEdge</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dip_urls</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                    <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thisEdge</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+                
+                <span class="n">thisEdge</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="k">if</span> <span class="n">genesymbols</span><span class="p">:</span>
+                    
+                    <span class="n">thisEdge</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]]][</span><span class="s1">&#39;label&#39;</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]]][</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
+                    <span class="p">])</span>
+                
+                <span class="n">thisEdge</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+                <span class="k">if</span> <span class="s1">&#39;sources&#39;</span> <span class="ow">in</span> <span class="n">hdr</span><span class="p">:</span>
+                    <span class="n">thisEdge</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]))</span>
+                <span class="k">if</span> <span class="s1">&#39;references&#39;</span> <span class="ow">in</span> <span class="n">hdr</span><span class="p">:</span>
+                    <span class="n">thisEdge</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">pmid</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;references&#39;</span><span class="p">]])</span>
+                <span class="n">thisEdge</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dip_urls</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thisEdge</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="s1">&#39;DIP&#39;</span> <span class="ow">in</span> <span class="n">all_sources</span><span class="p">:</span>
+            <span class="n">hdr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dip_url&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">res</span><span class="p">)</span>
+        <span class="k">if</span> <span class="sa">b</span><span class="s1">&#39;format&#39;</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">args</span> <span class="ow">and</span> <span class="n">req</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="sa">b</span><span class="s1">&#39;format&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;json&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">hdr</span><span class="p">,</span> <span class="n">r</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table_output</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">hdr</span><span class="p">,</span> <span class="n">req</span><span class="p">)</span>
+    
+    
+    
+    <span class="k">def</span> <span class="nf">_table_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">hdr</span><span class="p">,</span> <span class="n">req</span><span class="p">):</span>
+        
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="sa">b</span><span class="s1">&#39;header&#39;</span><span class="p">])</span> <span class="k">else</span>
+                         <span class="s1">&#39;</span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">hdr</span><span class="p">),</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+                             <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+                                 <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="ow">or</span>
+                                 <span class="nb">type</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">set</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">r</span>
+                             <span class="p">])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span>
+                         <span class="p">]))</span>
+    
+    
+    
+    <span class="k">def</span> <span class="nf">_get_eids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">):</span>
+        
+        <span class="n">names</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">postpath</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">req</span><span class="o">.</span><span class="n">postpath</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span>
+            <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">())</span> <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">names2vids</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
+        <span class="n">elist</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">ecount</span><span class="p">()))</span> <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">set</span><span class="p">([])</span>
+        <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">alist</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]))</span>
+            <span class="k">for</span> <span class="n">one</span><span class="p">,</span> <span class="n">others</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">alist</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">two</span> <span class="ow">in</span> <span class="n">others</span><span class="p">:</span>
+                    <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">get_eid</span><span class="p">(</span><span class="n">one</span><span class="p">,</span> <span class="n">two</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">e</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                        <span class="n">elist</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+                        <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">get_eid</span><span class="p">(</span>
+                            <span class="n">two</span><span class="p">,</span> <span class="n">one</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">e</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                            <span class="n">elist</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">elist</span>
+    
+    
+    <span class="k">def</span> <span class="nf">ptms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">):</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">b</span><span class="s1">&#39;is_stimulation&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;is_inhibition&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;sources&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;references&#39;</span>
+        <span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">elist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_eids</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">hdr</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;enzyme&#39;</span><span class="p">,</span> <span class="s1">&#39;substrate&#39;</span><span class="p">,</span> <span class="s1">&#39;residue_type&#39;</span><span class="p">,</span> <span class="s1">&#39;residue_offset&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;modification&#39;</span>
+        <span class="p">]</span>
+        
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="sa">b</span><span class="s1">&#39;genesymbols&#39;</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">args</span> <span class="ow">and</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parse_arg</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="sa">b</span><span class="s1">&#39;genesymbols&#39;</span><span class="p">])</span>
+        <span class="p">):</span>
+            <span class="n">genesymbols</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">hdr</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;enzyme_genesymbol&#39;</span><span class="p">)</span>
+            <span class="n">hdr</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;substrate_genesymbol&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">genesymbols</span> <span class="o">=</span> <span class="kc">False</span>
+        
+        <span class="k">if</span> <span class="sa">b</span><span class="s1">&#39;fields&#39;</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            
+            <span class="n">hdr</span> <span class="o">+=</span> <span class="p">[</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span>
+                <span class="k">if</span> <span class="n">f</span> <span class="ow">in</span> <span class="sa">b</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="sa">b</span><span class="s1">&#39;fields&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="p">]</span>
+        
+        <span class="k">if</span> <span class="s1">&#39;ptm&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">eid</span> <span class="ow">in</span> <span class="n">elist</span><span class="p">:</span>
+                <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">ptm</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;ptm&#39;</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="s1">&#39;ptmtype&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">args</span> <span class="ow">or</span> <span class="n">ptm</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">typ</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">args</span><span class="p">[</span>
+                            <span class="s1">&#39;ptmtype&#39;</span><span class="p">]:</span>
+                        <span class="n">thisPtm</span> <span class="o">=</span> <span class="p">[</span>
+                            <span class="n">ptm</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">protein</span><span class="p">,</span> <span class="n">ptm</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">protein</span>
+                        <span class="p">]</span>
+                        
+                        <span class="k">if</span> <span class="n">genesymbols</span><span class="p">:</span>
+                            
+                            <span class="n">thisPtm</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span>
+                                    <span class="n">ptm</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">protein</span><span class="p">]][</span><span class="s1">&#39;label&#39;</span><span class="p">],</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span>
+                                    <span class="n">ptm</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">protein</span><span class="p">]][</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
+                            <span class="p">])</span>
+                        
+                        <span class="n">thisPtm</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+                            <span class="n">ptm</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ptm</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span><span class="p">,</span>
+                            <span class="n">ptm</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">typ</span>
+                        <span class="p">])</span>
+                        
+                        <span class="k">if</span> <span class="s1">&#39;is_stimulation&#39;</span> <span class="ow">in</span> <span class="n">hdr</span><span class="p">:</span>
+                            <span class="n">thisPtm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="nb">int</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">is_stimulation</span><span class="p">((</span>
+                                    <span class="n">ptm</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">protein</span><span class="p">,</span> <span class="n">ptm</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">protein</span><span class="p">))))</span>
+                        
+                        <span class="k">if</span> <span class="s1">&#39;is_inhibition&#39;</span> <span class="ow">in</span> <span class="n">hdr</span><span class="p">:</span>
+                            <span class="n">thisPtm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="nb">int</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">is_inhibition</span><span class="p">((</span>
+                                    <span class="n">ptm</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">protein</span><span class="p">,</span> <span class="n">ptm</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">protein</span><span class="p">))))</span>
+                        
+                        <span class="k">if</span> <span class="s1">&#39;sources&#39;</span> <span class="ow">in</span> <span class="n">hdr</span><span class="p">:</span>
+                            <span class="n">thisPtm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ptm</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">sources</span><span class="p">))</span>
+                        
+                        <span class="k">if</span> <span class="s1">&#39;references&#39;</span> <span class="ow">in</span> <span class="n">hdr</span><span class="p">:</span>
+                            <span class="n">thisPtm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ptm</span><span class="o">.</span><span class="n">refs</span><span class="p">))</span>
+                        <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thisPtm</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="sa">b</span><span class="s1">&#39;format&#39;</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">args</span> <span class="ow">and</span> <span class="n">req</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="sa">b</span><span class="s1">&#39;format&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;json&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">hdr</span><span class="p">,</span> <span class="n">r</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table_output</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">hdr</span><span class="p">,</span> <span class="n">req</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">):</span>
+        
+        <span class="n">hdr</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;database&#39;</span><span class="p">,</span> <span class="s1">&#39;proteins&#39;</span><span class="p">,</span> <span class="s1">&#39;interactions&#39;</span><span class="p">,</span> <span class="s1">&#39;directions&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;stimulations&#39;</span><span class="p">,</span> <span class="s1">&#39;inhibitions&#39;</span><span class="p">,</span> <span class="s1">&#39;signs&#39;</span>
+        <span class="p">]</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[[</span>
+            <span class="c1"># database name</span>
+            <span class="n">s</span><span class="p">,</span>
+            <span class="c1"># number of proteins</span>
+            <span class="nb">len</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]]),</span>
+            <span class="c1"># number of interacting pairs</span>
+            <span class="nb">len</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">es</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]]),</span>
+            <span class="c1"># number of directions</span>
+            <span class="nb">sum</span><span class="p">([</span><span class="n">s</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> \
+                 <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">es</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">which_dirs</span><span class="p">()]),</span>
+            <span class="c1"># number of stimulations</span>
+            <span class="nb">sum</span><span class="p">([</span><span class="n">s</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> \
+                 <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">es</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">which_dirs</span><span class="p">()]),</span>
+            <span class="c1"># number of inhibitions</span>
+            <span class="nb">sum</span><span class="p">([</span><span class="n">s</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> \
+                 <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">es</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">which_dirs</span><span class="p">()]),</span>
+            <span class="c1"># number of signs</span>
+            <span class="nb">sum</span><span class="p">([</span><span class="n">s</span> <span class="ow">in</span> <span class="n">sg</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">es</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">which_dirs</span><span class="p">()</span> \
+                 <span class="k">for</span> <span class="n">sg</span> <span class="ow">in</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="n">d</span><span class="p">],</span>
+                            <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="n">d</span><span class="p">]]]),</span>
+        <span class="p">]</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">sources</span><span class="p">]</span>
+        <span class="k">if</span> <span class="sa">b</span><span class="s1">&#39;format&#39;</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">args</span> <span class="ow">and</span> <span class="n">req</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="sa">b</span><span class="s1">&#39;format&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;json&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">hdr</span><span class="p">,</span> <span class="n">r</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table_output</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">hdr</span><span class="p">,</span> <span class="n">req</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_dip_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="s1">&#39;dip_id&#39;</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">dip_id</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dip_id&#39;</span><span class="p">]:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;dip&#39;</span><span class="p">][</span><span class="s1">&#39;ik&#39;</span><span class="p">]</span> <span class="o">%</span>
+                                <span class="nb">int</span><span class="p">(</span><span class="n">dip_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="k">except</span><span class="p">:</span>
+                    
+                    <span class="nb">print</span><span class="p">(</span><span class="n">dip_id</span><span class="p">)</span>
+                
+        <span class="k">return</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+</pre></div>
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+          <div class="sidebar-resize-handle"></div>
+
+  <div>
+    <h3><a href="../../../../index.html">Table of Contents</a></h3>
+    <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../webservice.html">Webservice</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../releasehistory.html">Release history</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_autosummary/pypath.html">pypath</a></li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <nav class="relbar">
+    </nav>
+
+    <footer role="contentinfo">
+      &#169; Copyright 2022, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
+    </footer>
+  </body>
+</html>

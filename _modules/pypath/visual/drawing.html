@@ -1,0 +1,811 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.visual.drawing &#8212; pypath 0.14.30 documentation</title>
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script defer src="../../../_static/insipid.js"></script>
+    <script defer src="../../../_static/insipid-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head><body>
+    <script type="text/javascript">
+        document.body.classList.add('js');
+    </script>
+    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
+    <label id="overlay" for="sidebar-checkbox"></label>
+    <div class="sidebar-resize-handle"></div>
+    <script type="text/javascript">
+        try {
+            let sidebar = localStorage.getItem('sphinx-sidebar');
+            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
+            if (sidebar_width) {
+                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
+            }
+            // show sidebar on wide screen
+            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
+                sidebar = 'visible';
+                // NB: We don't store the value in localStorage!
+            }
+            if (sidebar === 'visible') {
+                document.getElementById('sidebar-checkbox').checked = true;
+            }
+        } catch(e) {
+            console.info(e);
+        }
+    </script>
+    <header id="topbar-placeholder">
+      <div id="topbar">
+        <div id="titlebar">
+          <div class="buttons">
+            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+            </label>
+          </div>
+          <div class="title">
+            <a class="parent" href="../../pypath.html" accesskey="U">pypath</a>
+            <a class="top" href="#">pypath.visual.drawing</a>
+          </div>
+          <div class="buttons">
+            <button id="fullscreen-button" type="button" aria-hidden="true">
+              <span class="enable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
+              </span>
+              <span class="disable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <nav>
+    </nav>
+
+    <nav class="relbar">
+    </nav>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+<h1>Source code for pypath.visual.drawing</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright</span>
+<span class="c1">#  2014-2022</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  Authors: Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#           Nicolàs Palacio</span>
+<span class="c1">#           Sebastian Lobentanzer</span>
+<span class="c1">#           Erva Ulusoy</span>
+<span class="c1">#           Olga Ivanova</span>
+<span class="c1">#           Ahmet Rifaioglu</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
+<span class="kn">from</span> <span class="nn">past.builtins</span> <span class="kn">import</span> <span class="n">xrange</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="n">reduce</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">cairo</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Module `cairo` is not available.&#39;</span>
+                     <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Some plotting functionalities won</span><span class="se">\&#39;</span><span class="s1">t be accessible.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">pypath.share.common</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session_mod</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Plot&#39;</span><span class="p">,</span> <span class="s1">&#39;InterSet&#39;</span><span class="p">]</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">igraph</span>
+
+<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Module `igraph` is not available.&#39;</span>
+                     <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Some plotting functionalities won</span><span class="se">\&#39;</span><span class="s1">t be accessible.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Plot"><a class="viewcode-back" href="../../../_autosummary/pypath.visual.drawing.Plot.html#pypath.visual.drawing.Plot">[docs]</a><span class="k">class</span> <span class="nc">Plot</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+    
+<div class="viewcode-block" id="Plot.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.visual.drawing.Plot.html#pypath.visual.drawing.Plot.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">graphix_dir</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">,</span>
+                 <span class="n">graphix_format</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">,</span>
+                 <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">title_text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">title_font_family</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">title_font_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">title_color</span><span class="o">=</span><span class="s1">&#39;#646567&#39;</span><span class="p">,</span>
+                 <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;fruchterman_reingold&quot;</span><span class="p">,</span>
+                 <span class="n">layout_param</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">vertex_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">vertex_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">vertex_label_size</span><span class="o">=</span><span class="s1">&#39;degree_label_size&#39;</span><span class="p">,</span>
+                 <span class="n">edge_width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">vertex_color</span><span class="o">=</span><span class="s1">&#39;#6EA945&#39;</span><span class="p">,</span>
+                 <span class="n">vertex_label_color</span><span class="o">=</span><span class="s1">&#39;#007B7F&#39;</span><span class="p">,</span>
+                 <span class="n">vertex_alpha</span><span class="o">=</span><span class="s1">&#39;AA&#39;</span><span class="p">,</span>
+                 <span class="n">vertex_frame_color</span><span class="o">=</span><span class="s1">&#39;#FFFFFF00&#39;</span><span class="p">,</span>
+                 <span class="n">vertex_frame_width</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">edge_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">edge_label_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">edge_label_color</span><span class="o">=</span><span class="s1">&#39;#007B7F&#39;</span><span class="p">,</span>
+                 <span class="n">edge_curved</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">edge_color</span><span class="o">=</span><span class="s1">&#39;#818284&#39;</span><span class="p">,</span>
+                 <span class="n">edge_alpha</span><span class="o">=</span><span class="s1">&#39;AA&#39;</span><span class="p">,</span>
+                 <span class="n">autocurve</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">vertex_label_font</span><span class="o">=</span><span class="s2">&quot;sans-serif&quot;</span><span class="p">,</span>
+                 <span class="n">edge_label_font</span><span class="o">=</span><span class="s2">&quot;sans-serif&quot;</span><span class="p">,</span>
+                 <span class="n">edge_arrow_size</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                 <span class="n">edge_arrow_width</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                 <span class="n">palettes</span><span class="o">=</span><span class="p">{},</span>
+                 <span class="n">bbox</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">margin</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                 <span class="n">small</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="mi">1280</span><span class="p">,</span> <span class="mi">1280</span><span class="p">),</span>
+                 <span class="n">grouping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># setting parameters:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="nb">locals</span><span class="p">()):</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_alpha</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;vertex_color&#39;</span><span class="p">:</span> <span class="s1">&#39;AA&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;edge_color&#39;</span><span class="p">:</span> <span class="s1">&#39;AA&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;vertex_label_color&#39;</span><span class="p">:</span> <span class="s1">&#39;FF&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;vertex_frame_color&#39;</span><span class="p">:</span> <span class="s1">&#39;00&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;edge_label_color&#39;</span><span class="p">:</span> <span class="s1">&#39;FF&#39;</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_vertex_label_size</span> <span class="o">=</span> <span class="mf">6.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">gen_session_id</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_sizes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;small&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">15.0</span><span class="p">,</span> <span class="mf">13.7</span><span class="p">),</span>
+            <span class="s1">&#39;medium&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">13.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span>
+            <span class="s1">&#39;large&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">9.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">palettes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;vertex&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;#6EA945&#39;</span><span class="p">,</span> <span class="s1">&#39;#007B7F&#39;</span><span class="p">,</span> <span class="s1">&#39;#FCCC06&#39;</span><span class="p">,</span> <span class="s1">&#39;#DA0025&#39;</span><span class="p">,</span> <span class="s1">&#39;#000000&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;edge&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;#007B7F&#39;</span><span class="p">,</span> <span class="s1">&#39;#6EA945&#39;</span><span class="p">,</span> <span class="s1">&#39;#DA0025&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;vertex_label&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;#454447&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;edge_label&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;#454447&#39;</span><span class="p">]</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">small_param</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;vertex_size&#39;</span><span class="p">:</span> <span class="mi">21</span><span class="p">,</span>
+            <span class="s1">&#39;edge_width&#39;</span><span class="p">:</span> <span class="mf">0.051</span><span class="p">,</span>
+            <span class="s1">&#39;autocurve&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;vertex_label_dist&#39;</span><span class="p">:</span> <span class="mf">1.5</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">medium_param</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;vertex_size&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+            <span class="s1">&#39;edge_width&#39;</span><span class="p">:</span> <span class="mf">0.051</span><span class="p">,</span>
+            <span class="s1">&#39;autocurve&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;vertex_label_dist&#39;</span><span class="p">:</span> <span class="mf">1.33</span><span class="p">,</span>
+            <span class="s1">&#39;edge_label_size&#39;</span><span class="p">:</span> <span class="mf">1.0</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">large_param</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;vertex_size&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s1">&#39;edge_width&#39;</span><span class="p">:</span> <span class="mf">0.051</span><span class="p">,</span>
+            <span class="s1">&#39;vertex_label_dist&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="s1">&#39;edge_label_size&#39;</span><span class="p">:</span> <span class="mf">1.0</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout_defaults</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;fruchterman_reingold&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;repulserad&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span><span class="o">**</span><span class="mf">2.8</span><span class="p">,</span>
+                <span class="s1">&#39;maxiter&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+                <span class="s1">&#39;area&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span><span class="o">**</span><span class="mf">2.3</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_page</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_has_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span> <span class="ow">is</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span>
+
+    <span class="k">def</span> <span class="nf">update_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">margin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span> <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">margin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span> <span class="k">if</span> <span class="n">margin</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">margin</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">margin</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bbox</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">drawing</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">BoundingBox</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">family</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title_text</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title_font_family</span> <span class="o">=</span> <span class="n">family</span> <span class="k">if</span> <span class="n">family</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex_label_font</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title_font_size</span> <span class="o">=</span> <span class="n">size</span> <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> \
+            <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bbox</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mf">50.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title_color</span> <span class="o">=</span> <span class="n">color</span> <span class="k">if</span> <span class="n">color</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">title_color</span>
+
+    <span class="k">def</span> <span class="nf">update_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span>
+        <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">title_text</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_graph</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertex_label</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="ow">and</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">vertex_label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vertex_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">vertex_label</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vertex_label_font</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex_label_font</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">edge_label_font</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_label_font</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="s1">&#39;small&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mi">100</span> \
+                <span class="k">else</span> <span class="s1">&#39;medium&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mi">500</span> \
+                <span class="k">else</span> <span class="s1">&#39;large&#39;</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_defaults&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_layout</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s1">&#39;vertex&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex_color</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex_alpha</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s1">&#39;edge&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_color</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_alpha</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s1">&#39;vertex&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex_label_color</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="s1">&#39;edge&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_label_color</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">autocurve</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">small</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">title_text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title_text</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">title_font_family</span><span class="p">,</span>
+                       <span class="bp">self</span><span class="o">.</span><span class="n">title_font_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">title_color</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout_update_needed</span><span class="p">(</span><span class="n">layout</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layout_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout_param</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout_param</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> \
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout_defaults</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout_defaults</span> \
+                <span class="k">else</span> <span class="p">{}</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Calculating </span><span class="si">%s</span><span class="s2"> layout... (numof nodes/edges: </span><span class="si">%u</span><span class="s2">/</span><span class="si">%u</span><span class="s2">)&quot;&quot;&quot;</span> <span class="o">%</span> \
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">(),</span> <span class="n">g</span><span class="o">.</span><span class="n">ecount</span><span class="p">())</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">::</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">msg</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grouping</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="ow">in</span> <span class="p">[</span>
+                        <span class="s2">&quot;intergroup&quot;</span><span class="p">,</span> <span class="s2">&quot;modular_fr&quot;</span><span class="p">,</span> <span class="s2">&quot;modular_circle&quot;</span>
+                <span class="p">]:</span>
+                    <span class="n">f</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">gr_plot</span><span class="p">,</span> <span class="s2">&quot;layout_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
+                    <span class="n">f</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grouping</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout_param</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+                            <span class="s2">&quot;fruchterman_reingold&quot;</span><span class="p">,</span> <span class="s2">&quot;fr&quot;</span><span class="p">,</span> <span class="s2">&quot;circle&quot;</span>
+                    <span class="p">]:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="s2">&quot;fr&quot;</span>
+                    <span class="n">g</span><span class="p">[</span><span class="s1">&#39;layout_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">layout_intergroup</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grouping</span><span class="p">,</span>
+                                                         <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">layout_param</span><span class="p">)</span>
+                    <span class="n">g</span><span class="p">[</span><span class="s1">&#39;layout_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;layout_intergroup&quot;</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex_color</span> <span class="o">==</span> <span class="s2">&quot;groups&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">what</span><span class="o">=</span><span class="s1">&#39;vertex&#39;</span><span class="p">,</span> <span class="n">coldef</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">grouping</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="k">if</span> <span class="n">layout</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">layout</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layout_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout_param</span> <span class="k">if</span> <span class="n">param</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">param</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layout_data</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">layout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">layout_param</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layout_data</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Layout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout_data</span><span class="p">)</span>
+            <span class="n">time_elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+            <span class="n">m</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">time_elapsed</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+            <span class="n">time_elapsed_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%02d</span><span class="s2"> min </span><span class="si">%02d</span><span class="s2"> sec&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; Done in </span><span class="si">%s</span><span class="s1">. </span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">time_elapsed_str</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">update_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;plot&#39;</span>
+        <span class="n">seq</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nextfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> \
+            <span class="k">else</span> <span class="s1">&#39;network-</span><span class="si">%s</span><span class="s1">-</span><span class="si">%u</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> \
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphix_format</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nextfile</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nextfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graphix_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nextfile</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">layout_update_needed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;layout&quot;</span><span class="p">)</span> <span class="ow">or</span> \
+            <span class="p">(</span><span class="n">layout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">!=</span> <span class="n">layout</span><span class="p">)</span> <span class="ow">or</span> \
+            <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;layout_data&quot;</span><span class="p">)</span> <span class="ow">or</span> \
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout_data</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span> <span class="ow">or</span> \
+            <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;layout_param&quot;</span><span class="p">)</span> <span class="ow">or</span> \
+            <span class="p">(</span><span class="n">param</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout_param</span> <span class="o">!=</span> <span class="n">param</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">colorize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">what</span><span class="o">=</span><span class="s1">&#39;vertex&#39;</span><span class="p">,</span>
+                 <span class="n">coldef</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">attr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">palette</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">color&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">attr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_&#39;</span> <span class="o">%</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="n">seq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span> <span class="k">if</span> <span class="n">what</span> <span class="o">==</span> <span class="s1">&#39;vertex&#39;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span>
+        <span class="n">coldef</span> <span class="o">=</span> <span class="n">coldef</span> <span class="k">if</span> <span class="n">coldef</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span> <span class="k">if</span> <span class="n">alpha</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_alpha</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">what</span><span class="p">,</span> <span class="n">attr</span><span class="p">)]</span>
+        <span class="n">pal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">palettes</span><span class="p">[</span><span class="n">what</span><span class="p">]</span> <span class="k">if</span> <span class="n">palette</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">palette</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">coldef</span><span class="p">)</span> <span class="ow">in</span> <span class="n">char_types</span> <span class="ow">and</span> <span class="n">coldef</span> <span class="ow">in</span> <span class="n">seq</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
+            <span class="n">lev</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">seq</span><span class="p">[</span><span class="n">coldef</span><span class="p">]))</span>
+            <span class="n">seq</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">pal</span><span class="p">[</span><span class="n">lev</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="n">coldef</span><span class="p">])]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">coldef</span><span class="p">)</span> <span class="ow">in</span> <span class="n">char_types</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">coldef</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">9</span><span class="p">:</span>
+            <span class="n">seq</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">coldef</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">coldef</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">coldef</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
+            <span class="n">seq</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">coldef</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">coldef</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">dict</span> <span class="ow">and</span> <span class="s1">&#39;__attr__&#39;</span> <span class="ow">in</span> <span class="n">coldef</span><span class="p">:</span>
+            <span class="n">seq</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">coldef</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="n">coldef</span><span class="p">[</span><span class="s1">&#39;__attr__&#39;</span><span class="p">]]]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">coldef</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">):</span>
+            <span class="n">seq</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">coldef</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">min</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">])</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">small_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="s1">&#39;small_param&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">medium_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="s1">&#39;medium_param&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">large_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="s1">&#39;large_param&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preset</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preset</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preset</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_param</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="n">seq</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">7</span><span class="p">],</span> <span class="n">alpha</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">[</span><span class="n">attr</span><span class="p">]]</span>
+
+    <span class="k">def</span> <span class="nf">hex2rgb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rgbhex</span><span class="p">):</span>
+        <span class="n">rgbhex</span> <span class="o">=</span> <span class="n">rgbhex</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)</span>
+        <span class="n">lv</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rgbhex</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">rgbhex</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">lv</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">rgb1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rgb256</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">rgb256</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">i</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rgb256</span><span class="p">])</span> \
+            <span class="k">else</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">x</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">rgb256</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">make_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="n">cairo</span><span class="o">.</span><span class="n">Context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">surface</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">set_font_size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title_font_size</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">select_font_face</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title_font_family</span><span class="p">,</span> <span class="n">cairo</span><span class="o">.</span><span class="n">FONT_SLANT_NORMAL</span><span class="p">,</span>
+                             <span class="n">cairo</span><span class="o">.</span><span class="n">FONT_WEIGHT_NORMAL</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">set_source_rgba</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">rgb1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hex2rgb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title_color</span><span class="p">)))</span>
+        <span class="n">title_drawer</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">drawing</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">TextDrawer</span><span class="p">(</span>
+            <span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">title_text</span><span class="p">,</span> <span class="n">halign</span><span class="o">=</span><span class="n">igraph</span><span class="o">.</span><span class="n">drawing</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">TextDrawer</span><span class="o">.</span><span class="n">CENTER</span><span class="p">)</span>
+        <span class="n">title_drawer</span><span class="o">.</span><span class="n">draw_at</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bbox</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_graph</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_filename</span><span class="p">()</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Plotting </span><span class="si">%s</span><span class="s2"> to file </span><span class="si">%s</span><span class="s2">...&quot;&quot;&quot;</span> <span class="o">%</span> \
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graphix_format</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nextfile</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">::</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphix_format</span> <span class="o">==</span> <span class="s2">&quot;pdf&quot;</span><span class="p">:</span>
+            <span class="n">sf</span> <span class="o">=</span> <span class="n">cairo</span><span class="o">.</span><span class="n">PDFSurface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nextfile</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># currently doing only pdf</span>
+            <span class="n">sf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nextfile</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex_label_size</span> <span class="o">==</span> <span class="s2">&quot;degree_label_size&quot;</span><span class="p">:</span>
+            <span class="c1"># TODO</span>
+            <span class="n">dgr</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
+            <span class="n">maxDgr</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">dgr</span><span class="p">))</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;label_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;label_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">degree</span><span class="p">())</span> <span class="o">/</span> <span class="n">maxDgr</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">label_sizes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_sizes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span>
+            <span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vertex_label_size</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;label_size&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertex_label_size</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vertex_label_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_vertex_label_size</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_curved</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">float</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;edge_curved&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_curved</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;autocurve&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocurve</span>
+
+        <span class="k">if</span> <span class="n">igraph</span><span class="o">.</span><span class="n">__version__</span> <span class="o">&lt;</span> <span class="s1">&#39;0.9.4&#39;</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">pypath.visual.igraph_drawing</span> <span class="k">as</span> <span class="nn">ig_drawing</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;drawer_factory&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">ig_drawing</span><span class="o">.</span><span class="n">DefaultGraphDrawerFFsupport</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">igraph</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">g</span><span class="p">,</span>
+                <span class="n">layout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">layout_data</span><span class="p">,</span>
+                <span class="n">target</span><span class="o">=</span><span class="n">sf</span><span class="p">,</span>
+                <span class="n">bbox</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bbox</span><span class="p">,</span>
+                <span class="n">vertex_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vertex_size</span><span class="p">,</span>
+                <span class="n">vertex_frame_width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vertex_frame_width</span><span class="p">,</span>
+                <span class="n">vertex_label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vertex_label</span><span class="p">,</span>
+                <span class="n">vertex_label_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vertex_label_size</span><span class="p">,</span>
+                <span class="n">edge_label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_label</span><span class="p">,</span>
+                <span class="n">edge_width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_width</span><span class="p">,</span>
+                <span class="n">edge_arrow_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_arrow_size</span><span class="p">,</span>
+                <span class="n">edge_arrow_width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_arrow_width</span><span class="p">,</span>
+                <span class="n">vertex_label_dist</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vertex_label_dist</span><span class="p">,</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">redraw</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">title_text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">make_title</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Ready.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s2">&quot;Plot saved to </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">nextfile</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">return_data</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">g</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout_data</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bbox</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">vertex_size</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">vertex_frame_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex_label</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">vertex_label_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_curved</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">edge_arrow_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_arrow_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="c1">#TODO this class may be dropped?</span>
+<div class="viewcode-block" id="InterSet"><a class="viewcode-back" href="../../../_autosummary/pypath.visual.drawing.InterSet.html#pypath.visual.drawing.InterSet">[docs]</a><span class="k">class</span> <span class="nc">InterSet</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="InterSet.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.visual.drawing.InterSet.html#pypath.visual.drawing.InterSet.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">xsizes</span><span class="p">,</span>
+                 <span class="n">intersects</span><span class="p">,</span>
+                 <span class="n">outf</span><span class="o">=</span><span class="s1">&#39;cairotest.pdf&#39;</span><span class="p">,</span>
+                 <span class="n">width</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
+                 <span class="n">height</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
+                 <span class="n">bgcol</span><span class="o">=</span><span class="s1">&#39;embl_gray125&#39;</span><span class="p">,</span>
+                 <span class="n">cols</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">interscols</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">ysizes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">ycols</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">skip</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span>
+                 <span class="n">margin</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
+                 <span class="n">mincircle</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                 <span class="n">cellpadding</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="nb">locals</span><span class="p">()):</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;embl_green&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">115</span><span class="p">,</span> <span class="mi">179</span><span class="p">,</span> <span class="mi">96</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="s1">&#39;embl_blue&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="s1">&#39;embl_yellow&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="mi">183</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="s1">&#39;embl_red&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">227</span><span class="p">,</span> <span class="mi">62</span><span class="p">,</span> <span class="mi">62</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="s1">&#39;embl_black&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="s1">&#39;embl_gray875&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="s1">&#39;embl_gray75&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="s1">&#39;embl_gray625&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">96</span><span class="p">,</span> <span class="mi">96</span><span class="p">,</span> <span class="mi">96</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="s1">&#39;embl_gray50&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="s1">&#39;embl_gray25&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">192</span><span class="p">,</span> <span class="mi">192</span><span class="p">,</span> <span class="mi">192</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="s1">&#39;embl_gray125&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+            <span class="s1">&#39;white&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="c1"># positions of circle labels:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clabels</span> <span class="o">=</span> <span class="p">[(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">),</span>
+                        <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">palette</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;embl_green&#39;</span><span class="p">,</span> <span class="s1">&#39;embl_blue&#39;</span><span class="p">,</span> <span class="s1">&#39;embl_yellow&#39;</span><span class="p">]</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fontpal</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;embl_gray875&#39;</span><span class="p">,</span> <span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="s1">&#39;embl_gray875&#39;</span><span class="p">]</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="s1">&#39;HelveticaNeueLT Std Lt&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bgcol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bgcol</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bgcol</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">tuple</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bgcol</span><span class="p">]</span>
+        <span class="c1"># set parameters for x:</span>
+        <span class="c1"># list of column labels (first elements of tuples in x list)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xlabs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">xsizes</span><span class="p">]</span>
+        <span class="c1"># colors of sets in column headers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xcols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_colors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xsizes</span><span class="p">)</span>
+        <span class="c1"># set sizes:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xsizes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sizes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xsizes</span><span class="p">)</span>
+        <span class="c1"># same for y:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ylabs</span> <span class="o">=</span> <span class="p">[</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ysizes</span>
+                      <span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ysizes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">xlabs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ycols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_colors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ysizes</span><span class="p">)</span> \
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ysizes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">xcols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ysizes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sizes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ysizes</span><span class="p">)</span> \
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ysizes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">xsizes</span>
+        <span class="c1"># margin:</span>
+        <span class="c1"># margin is either a single integer, or a tuple of 4 integers:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">margin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">tuple</span> <span class="k">else</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">,</span> <span class="p">)</span> <span class="o">*</span> <span class="mi">4</span>
+        <span class="c1"># table:</span>
+        <span class="c1"># proportions of cell sizes:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xcellsize</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xsizes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ycellsize</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ysizes</span><span class="p">)</span>
+        <span class="c1"># sizes of table cells:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xcoo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xcellsize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                               <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ycoo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ycellsize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                               <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="c1"># width and height of diagram cells:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cellw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xcoo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cellh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ycoo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># largest circle fit in the cells:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxcircle</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cellw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellh</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellpadding</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxarea</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxcircle</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minarea</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mincircle</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+        <span class="c1"># scaling circle sizes between min and max circle size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xcircsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_sizes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xsizes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ycircsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_sizes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ysizes</span><span class="p">)</span>
+        <span class="n">ssize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_sizes</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">intersects</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intersects</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">intersects</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;ssize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ssize</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;color&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">intersects</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">intersects</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">ssize</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span></div>
+
+<div class="viewcode-block" id="InterSet.draw"><a class="viewcode-back" href="../../../_autosummary/pypath.visual.drawing.InterSet.html#pypath.visual.drawing.InterSet.draw">[docs]</a>    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        main function of this class</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">srf</span> <span class="o">=</span> <span class="n">cairo</span><span class="o">.</span><span class="n">PDFSurface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="n">cairo</span><span class="o">.</span><span class="n">Context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">srf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_table</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colnames</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rownames</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw_circles</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">srf</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">srf</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">max_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+        <span class="n">pts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">lab</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+            <span class="n">pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fit_text</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">pts</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">fit_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">pt</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">overf</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">overf</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">select_font_face</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="p">,</span> <span class="n">cairo</span><span class="o">.</span><span class="n">FONT_SLANT_NORMAL</span><span class="p">,</span>
+                                      <span class="n">cairo</span><span class="o">.</span><span class="n">FONT_WEIGHT_NORMAL</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">set_font_size</span><span class="p">(</span><span class="n">pt</span><span class="p">)</span>
+            <span class="n">overf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">text_extents</span><span class="p">(</span><span class="n">txt</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">width</span> <span class="o">+</span> <span class="n">padding</span>
+            <span class="n">pt</span> <span class="o">*=</span> <span class="mf">0.95</span>
+        <span class="k">return</span> <span class="n">pt</span>
+
+    <span class="k">def</span> <span class="nf">get_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">palette</span> <span class="o">=</span> <span class="n">palette</span> <span class="k">if</span> <span class="n">palette</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span>
+        <span class="k">return</span> <span class="p">[[</span>
+            <span class="n">xx</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">xx</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">palette</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">xx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">get_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sizes</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[[</span><span class="n">xx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">xx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:])]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">scale_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sizes</span><span class="p">):</span>
+        <span class="n">scaled</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">sizes</span>
+                                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ii</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">minarea</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxarea</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">lens</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">scaled</span><span class="p">[</span><span class="nb">sum</span><span class="p">(</span><span class="n">lens</span><span class="p">[:</span><span class="n">i</span><span class="p">]):</span><span class="nb">sum</span><span class="p">(</span><span class="n">lens</span><span class="p">[:</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="n">l</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lens</span><span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">rgb1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rgb256</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">rgb256</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">i</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rgb256</span><span class="p">])</span> \
+            <span class="k">else</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">x</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">rgb256</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">set_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="o">+</span> <span class="p">[</span><span class="n">alpha</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">draw_circles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clabpt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_text</span><span class="p">(</span><span class="s1">&#39;00000&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellw</span> <span class="o">/</span> <span class="mi">7</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellh</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xcoo</span><span class="p">)):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xcoo</span><span class="p">[:</span><span class="n">xi</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellw</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sz</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xcircsize</span><span class="p">[</span><span class="n">xi</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">sz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rgb1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xcols</span><span class="p">[</span><span class="n">xi</span> <span class="o">-</span> <span class="mi">2</span><span class="p">][</span><span class="n">i</span><span class="p">]))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xsizes</span><span class="p">[</span><span class="n">xi</span> <span class="o">-</span> <span class="mi">2</span><span class="p">][</span><span class="n">i</span><span class="p">]),</span>
+                    <span class="o">*</span><span class="nb">tuple</span><span class="p">([</span>
+                        <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">sz</span>
+                        <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clabels</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                    <span class="p">]),</span>
+                    <span class="n">pt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">clabpt</span><span class="p">,</span>
+                    <span class="n">c</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;embl_gray875&#39;</span><span class="p">],</span>
+                    <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">vcenter</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">rot</span><span class="o">=-</span><span class="mi">45</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellw</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">yi</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ycoo</span><span class="p">)):</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ycoo</span><span class="p">[:</span><span class="n">yi</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellh</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sz</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ycircsize</span><span class="p">[</span><span class="n">yi</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">sz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rgb1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ycols</span><span class="p">[</span><span class="n">yi</span> <span class="o">-</span> <span class="mi">2</span><span class="p">][</span><span class="n">i</span><span class="p">]))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ysizes</span><span class="p">[</span><span class="n">yi</span> <span class="o">-</span> <span class="mi">2</span><span class="p">][</span><span class="n">i</span><span class="p">]),</span>
+                    <span class="o">*</span><span class="nb">tuple</span><span class="p">([</span>
+                        <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">sz</span>
+                        <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clabels</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                    <span class="p">]),</span>
+                    <span class="n">pt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">clabpt</span><span class="p">,</span>
+                    <span class="n">c</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;embl_gray875&#39;</span><span class="p">],</span>
+                    <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">vcenter</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">rot</span><span class="o">=-</span><span class="mi">45</span><span class="p">)</span>
+        <span class="c1"># intersections</span>
+        <span class="k">for</span> <span class="n">yi</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ycoo</span><span class="p">)):</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ycoo</span><span class="p">[:</span><span class="n">yi</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellh</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xcoo</span><span class="p">)):</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> \
+                    <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xcoo</span><span class="p">[:</span><span class="n">xi</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellw</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sz</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intersects</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">xlabs</span><span class="p">[</span>
+                        <span class="n">xi</span> <span class="o">-</span> <span class="mi">2</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">ylabs</span><span class="p">[</span><span class="n">yi</span> <span class="o">-</span> <span class="mi">2</span><span class="p">])][</span><span class="s1">&#39;ssize&#39;</span><span class="p">]):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">sz</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">rgb1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intersects</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">xlabs</span><span class="p">[</span>
+                                    <span class="n">xi</span> <span class="o">-</span> <span class="mi">2</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">ylabs</span><span class="p">[</span><span class="n">yi</span> <span class="o">-</span> <span class="mi">2</span><span class="p">])][</span><span class="s1">&#39;color&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">(</span>
+                        <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intersects</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">xlabs</span><span class="p">[</span><span class="n">xi</span> <span class="o">-</span> <span class="mi">2</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">ylabs</span><span class="p">[</span>
+                            <span class="n">yi</span> <span class="o">-</span> <span class="mi">2</span><span class="p">])][</span><span class="s1">&#39;size&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]),</span>
+                        <span class="o">*</span><span class="nb">tuple</span><span class="p">([</span>
+                            <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">sz</span>
+                            <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clabels</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                        <span class="p">]),</span>
+                        <span class="n">pt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">clabpt</span><span class="p">,</span>
+                        <span class="n">c</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;embl_gray875&#39;</span><span class="p">],</span>
+                        <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">vcenter</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">rot</span><span class="o">=-</span><span class="mi">45</span><span class="p">)</span>
+                    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">                    self.label(str(self.intersects[(self.xlabs[xi-2], </span>
+<span class="sd">                        self.ylabs[yi-2])][&#39;size&#39;]), x, y, </span>
+<span class="sd">                        self.intersects[(self.xlabs[xi-2], </span>
+<span class="sd">                            self.ylabs[yi-2])][&#39;ssize&#39;][i] * 0.5 + 3, self.colors[&#39;white&#39;])</span>
+<span class="sd">                    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">circle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">set_source_rgba</span><span class="p">(</span><span class="o">*</span><span class="n">c</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">arc</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">fill</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">pt</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rot</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">vcenter</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rgb1</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">select_font_face</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="p">,</span> <span class="n">cairo</span><span class="o">.</span><span class="n">FONT_SLANT_NORMAL</span><span class="p">,</span>
+                                  <span class="n">cairo</span><span class="o">.</span><span class="n">FONT_WEIGHT_NORMAL</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">set_font_size</span><span class="p">(</span><span class="n">pt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">rot</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">center</span><span class="p">:</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">text_extents</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="o">-</span><span class="n">ext</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vcenter</span><span class="p">:</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">text_extents</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="n">ext</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">set_source_rgba</span><span class="p">(</span><span class="o">*</span><span class="n">c</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">show_text</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">restore</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">colnames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># font size for labels:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xlabpt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xlabs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellw</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ycoo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ycoo</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xcoo</span><span class="p">)):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xcoo</span><span class="p">[:</span><span class="n">xi</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellw</span> <span class="o">/</span> <span class="mf">2.0</span>
+            <span class="n">lab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xlabs</span><span class="p">[</span><span class="n">xi</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xlabpt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;embl_gray875&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">rownames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># font size for labels:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xlabpt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xlabs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellw</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">xcoo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">xcoo</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="k">for</span> <span class="n">yi</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ycoo</span><span class="p">)):</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ycoo</span><span class="p">[:</span><span class="n">yi</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellh</span> <span class="o">/</span> <span class="mf">2.0</span>
+            <span class="n">lab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ylabs</span><span class="p">[</span><span class="n">yi</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">(</span>
+                <span class="n">lab</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xlabpt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="s1">&#39;embl_gray875&#39;</span><span class="p">],</span> <span class="n">rot</span><span class="o">=-</span><span class="mi">90</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">draw_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">bg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rgb1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bgcol</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">set_source_rgba</span><span class="p">(</span><span class="o">*</span><span class="n">bg</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xcoo</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">yi</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ycoo</span><span class="p">)):</span>
+                <span class="n">ulx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xcoo</span><span class="p">[:</span><span class="n">xi</span><span class="p">])</span>
+                <span class="n">uly</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ycoo</span><span class="p">[:</span><span class="n">yi</span><span class="p">])</span>
+                <span class="c1"># print &#39;Drawing rectangle at (%f, %f), size (%f, %f)&#39; % \</span>
+                <span class="c1">#    (ulx + self.skip, uly + self.skip, self.xcoo[xi] - self.skip,</span>
+                <span class="c1">#    self.ycoo[yi] - self.skip)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">ulx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip</span><span class="p">,</span> <span class="n">uly</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">xcoo</span><span class="p">[</span><span class="n">xi</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">ycoo</span><span class="p">[</span><span class="n">yi</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">stroke_preserve</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">fill</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">cells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">props</span><span class="p">,</span> <span class="n">mi</span><span class="p">,</span> <span class="n">ma</span><span class="p">):</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">ma</span> <span class="o">-</span> <span class="n">mi</span>
+        <span class="n">uni</span> <span class="o">=</span> <span class="n">rng</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">props</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="o">*</span> <span class="n">uni</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">props</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[((</span><span class="n">x</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">([</span><span class="mi">0</span><span class="p">]))</span>
+                  <span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">([</span><span class="mi">0</span><span class="p">])))</span> <span class="o">*</span>
+                 <span class="p">(</span><span class="n">upper</span> <span class="o">-</span> <span class="n">lower</span><span class="p">)</span> <span class="o">+</span> <span class="n">lower</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">]</span></div>
+</pre></div>
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+          <div class="sidebar-resize-handle"></div>
+
+  <div>
+    <h3><a href="../../../index.html">Table of Contents</a></h3>
+    <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../releasehistory.html">Release history</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/pypath.html">pypath</a></li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <nav class="relbar">
+    </nav>
+
+    <footer role="contentinfo">
+      &#169; Copyright 2022, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
+    </footer>
+  </body>
+</html>

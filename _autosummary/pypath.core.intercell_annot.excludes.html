@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>pypath.core.intercell_annot.excludes &#8212; pypath 0.14.30 documentation</title>
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pypathdocs.css" />
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script defer src="../_static/insipid.js"></script>
+    <script defer src="../_static/insipid-sidebar.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pypath.core.network" href="pypath.core.network.html" />
+    <link rel="prev" title="pypath.core.intercell_annot" href="pypath.core.intercell_annot.html" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head><body>
+    <script type="text/javascript">
+        document.body.classList.add('js');
+    </script>
+    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
+    <label id="overlay" for="sidebar-checkbox"></label>
+    <div class="sidebar-resize-handle"></div>
+    <script type="text/javascript">
+        try {
+            let sidebar = localStorage.getItem('sphinx-sidebar');
+            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
+            if (sidebar_width) {
+                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
+            }
+            // show sidebar on wide screen
+            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
+                sidebar = 'visible';
+                // NB: We don't store the value in localStorage!
+            }
+            if (sidebar === 'visible') {
+                document.getElementById('sidebar-checkbox').checked = true;
+            }
+        } catch(e) {
+            console.info(e);
+        }
+    </script>
+    <header id="topbar-placeholder">
+      <div id="topbar">
+        <div id="titlebar">
+          <div class="buttons">
+            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+            </label>
+          </div>
+          <div class="title">
+            <a class="parent" href="pypath.core.intercell_annot.html" accesskey="U">pypath.core.intercell_annot</a>
+            <a class="top" href="#">pypath.core.intercell_annot.excludes</a>
+          </div>
+          <div class="buttons">
+            <button id="fullscreen-button" type="button" aria-hidden="true">
+              <span class="enable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
+              </span>
+              <span class="disable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <nav>
+      <a href="pypath.core.intercell_annot.html" class="nav-icon previous" title="previous:&#13;pypath.core.intercell_annot" aria-label="Previous topic" accesskey="P" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"/></svg>
+      </a>
+      <a href="pypath.core.network.html" class="nav-icon next" title="next:&#13;pypath.core.network" aria-label="Next topic" accesskey="N" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"/></svg>
+      </a>
+    </nav>
+
+    <nav class="relbar">
+      <a class="previous" href="pypath.core.intercell_annot.html" aria-label="Previous topic" >
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"/></svg>
+        </div>
+        <div class="title">
+          <span class="text">
+            <span class="direction">previous</span>
+            pypath.core.intercell_annot
+          </span>
+        </div>
+      </a>
+      <a class="next" href="pypath.core.network.html" aria-label="Next topic" >
+        <div class="title">
+          <span class="text">
+            <span class="direction">next</span>
+            pypath.core.network
+          </span>
+        </div>
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 101.2c-9.8-9.3-10-24.8-.4-34.3z"/></svg>
+        </div>
+      </a>
+    </nav>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+<section id="pypath-core-intercell-annot-excludes">
+<h1>pypath.core.intercell_annot.excludes<a class="headerlink" href="#pypath-core-intercell-annot-excludes" title="Permalink to this heading">§</a></h1>
+<dl class="py data">
+<dt class="sig sig-object py" id="pypath.core.intercell_annot.excludes">
+<span class="sig-prename descclassname"><span class="pre">pypath.core.intercell_annot.</span></span><span class="sig-name descname"><span class="pre">excludes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'adhesion':</span> <span class="pre">{'O14976',</span> <span class="pre">'O15231',</span> <span class="pre">'O43294',</span> <span class="pre">'O60711',</span> <span class="pre">'O60759',</span> <span class="pre">'P07332',</span> <span class="pre">'P29965',</span> <span class="pre">'P35221',</span> <span class="pre">'P35222',</span> <span class="pre">'P50552',</span> <span class="pre">'P56945',</span> <span class="pre">'Q02297',</span> <span class="pre">'Q03001',</span> <span class="pre">'Q13153',</span> <span class="pre">'Q13895',</span> <span class="pre">'Q14451',</span> <span class="pre">'Q14511',</span> <span class="pre">'Q14943',</span> <span class="pre">'Q14952',</span> <span class="pre">'Q14953',</span> <span class="pre">'Q155Q3',</span> <span class="pre">'Q15654',</span> <span class="pre">'Q5JRA6',</span> <span class="pre">'Q5T4B2',</span> <span class="pre">'Q7L5Y9',</span> <span class="pre">'Q7Z4I7',</span> <span class="pre">'Q86TP1',</span> <span class="pre">'Q8IVT2',</span> <span class="pre">'Q8IZW8',</span> <span class="pre">'Q8N264',</span> <span class="pre">'Q8N743',</span> <span class="pre">'Q8NHK3',</span> <span class="pre">'Q8WX93',</span> <span class="pre">'Q92502',</span> <span class="pre">'Q96AC1',</span> <span class="pre">'Q96IF1',</span> <span class="pre">'Q96QB1',</span> <span class="pre">'Q99689',</span> <span class="pre">'Q9H792',</span> <span class="pre">'Q9HBI0',</span> <span class="pre">'Q9HBI1',</span> <span class="pre">'Q9NQ75',</span> <span class="pre">'Q9UBT7',</span> <span class="pre">'Q9UGI8',</span> <span class="pre">'Q9UGP4',</span> <span class="pre">'Q9UI47',</span> <span class="pre">'Q9UQB3'},</span> <span class="pre">'cell_surface_enzyme':</span> <span class="pre">{'O00391',</span> <span class="pre">'P04843',</span> <span class="pre">'P08842',</span> <span class="pre">'P09958',</span> <span class="pre">'P11117',</span> <span class="pre">'P19021',</span> <span class="pre">'P40126',</span> <span class="pre">'P52961',</span> <span class="pre">'Q13444',</span> <span class="pre">'Q15125',</span> <span class="pre">'Q8TCJ2',</span> <span class="pre">'Q8WUD6',</span> <span class="pre">'Q96JJ7',</span> <span class="pre">'Q9NPH5',</span> <span class="pre">'Q9UK23',</span> <span class="pre">'Q9UKF2'},</span> <span class="pre">'cell_surface_ligand':</span> <span class="pre">{'P00533',</span> <span class="pre">'P0DPD6'},</span> <span class="pre">'ligand':</span> <span class="pre">{'O00220',</span> <span class="pre">'O00300',</span> <span class="pre">'O00468',</span> <span class="pre">'O00587',</span> <span class="pre">'O00592',</span> <span class="pre">'O14594',</span> <span class="pre">'O14649',</span> <span class="pre">'O14672',</span> <span class="pre">'O15031',</span> <span class="pre">'O15197',</span> <span class="pre">'O15496',</span> <span class="pre">'O43157',</span> <span class="pre">'O43184',</span> <span class="pre">'O43278',</span> <span class="pre">'O43852',</span> <span class="pre">'O43914',</span> <span class="pre">'O60462',</span> <span class="pre">'O60469',</span> <span class="pre">'O60486',</span> <span class="pre">'O60494',</span> <span class="pre">'O75051',</span> <span class="pre">'O75077',</span> <span class="pre">'O75330',</span> <span class="pre">'O75508',</span> <span class="pre">'O75509',</span> <span class="pre">'O75534',</span> <span class="pre">'O75596',</span> <span class="pre">'O94887',</span> <span class="pre">'O95084',</span> <span class="pre">'O95236',</span> <span class="pre">'O95274',</span> <span class="pre">'O95428',</span> <span class="pre">'O95467',</span> <span class="pre">'O95711',</span> <span class="pre">'O95754',</span> <span class="pre">'P00451',</span> <span class="pre">'P00488',</span> <span class="pre">'P00533',</span> <span class="pre">'P00734',</span> <span class="pre">'P00740',</span> <span class="pre">'P00742',</span> <span class="pre">'P00748',</span> <span class="pre">'P00749',</span> <span class="pre">'P00750',</span> <span class="pre">'P00797',</span> <span class="pre">'P00813',</span> <span class="pre">'P00995',</span> <span class="pre">'P01008',</span> <span class="pre">'P01009',</span> <span class="pre">'P01023',</span> <span class="pre">'P01024',</span> <span class="pre">'P01031',</span> <span class="pre">'P01033',</span> <span class="pre">'P01112',</span> <span class="pre">'P01589',</span> <span class="pre">'P02452',</span> <span class="pre">'P02458',</span> <span class="pre">'P02461',</span> <span class="pre">'P02462',</span> <span class="pre">'P02654',</span> <span class="pre">'P02671',</span> <span class="pre">'P02675',</span> <span class="pre">'P02679',</span> <span class="pre">'P02741',</span> <span class="pre">'P02745',</span> <span class="pre">'P02746',</span> <span class="pre">'P02751',</span> <span class="pre">'P02753',</span> <span class="pre">'P02765',</span> <span class="pre">'P02768',</span> <span class="pre">'P02788',</span> <span class="pre">'P03951',</span> <span class="pre">'P03956',</span> <span class="pre">'P03973',</span> <span class="pre">'P04003',</span> <span class="pre">'P04070',</span> <span class="pre">'P04196',</span> <span class="pre">'P04278',</span> <span class="pre">'P04626',</span> <span class="pre">'P04899',</span> <span class="pre">'P05067',</span> <span class="pre">'P05106',</span> <span class="pre">'P05107',</span> <span class="pre">'P05121',</span> <span class="pre">'P05155',</span> <span class="pre">'P05543',</span> <span class="pre">'P05556',</span> <span class="pre">'P05997',</span> <span class="pre">'P06454',</span> <span class="pre">'P06734',</span> <span class="pre">'P06756',</span> <span class="pre">'P06858',</span> <span class="pre">'P07093',</span> <span class="pre">'P07225',</span> <span class="pre">'P07237',</span> <span class="pre">'P07288',</span> <span class="pre">'P07602',</span> <span class="pre">'P07900',</span> <span class="pre">'P08034',</span> <span class="pre">'P08069',</span> <span class="pre">'P08123',</span> <span class="pre">'P08174',</span> <span class="pre">'P08236',</span> <span class="pre">'P08253',</span> <span class="pre">'P08514',</span> <span class="pre">'P08571',</span> <span class="pre">'P08572',</span> <span class="pre">'P08575',</span> <span class="pre">'P08582',</span> <span class="pre">'P08603',</span> <span class="pre">'P08670',</span> <span class="pre">'P08709',</span> <span class="pre">'P08861',</span> <span class="pre">'P08865',</span> <span class="pre">'P09211',</span> <span class="pre">'P09237',</span> <span class="pre">'P09417',</span> <span class="pre">'P09429',</span> <span class="pre">'P0C0L4',</span> <span class="pre">'P0C7T3',</span> <span class="pre">'P0CG37',</span> <span class="pre">'P0DMV8',</span> <span class="pre">'P0DP23',</span> <span class="pre">'P0DP24',</span> <span class="pre">'P0DP25',</span> <span class="pre">'P10144',</span> <span class="pre">'P10153',</span> <span class="pre">'P10586',</span> <span class="pre">'P10646',</span> <span class="pre">'P11150',</span> <span class="pre">'P11226',</span> <span class="pre">'P11229',</span> <span class="pre">'P11362',</span> <span class="pre">'P11912',</span> <span class="pre">'P12107',</span> <span class="pre">'P12109',</span> <span class="pre">'P12110',</span> <span class="pre">'P12821',</span> <span class="pre">'P12830',</span> <span class="pre">'P13385',</span> <span class="pre">'P13591',</span> <span class="pre">'P13612',</span> <span class="pre">'P13637',</span> <span class="pre">'P13688',</span> <span class="pre">'P14416',</span> <span class="pre">'P14618',</span> <span class="pre">'P14625',</span> <span class="pre">'P14778',</span> <span class="pre">'P14780',</span> <span class="pre">'P15151',</span> <span class="pre">'P15531',</span> <span class="pre">'P15907',</span> <span class="pre">'P16035',</span> <span class="pre">'P16070',</span> <span class="pre">'P16109',</span> <span class="pre">'P16473',</span> <span class="pre">'P16520',</span> <span class="pre">'P16671',</span> <span class="pre">'P17302',</span> <span class="pre">'P17752',</span> <span class="pre">'P17948',</span> <span class="pre">'P18564',</span> <span class="pre">'P19113',</span> <span class="pre">'P19823',</span> <span class="pre">'P19835',</span> <span class="pre">'P20062',</span> <span class="pre">'P20273',</span> <span class="pre">'P20292',</span> <span class="pre">'P20309',</span> <span class="pre">'P20849',</span> <span class="pre">'P20908',</span> <span class="pre">'P20916',</span> <span class="pre">'P21462',</span> <span class="pre">'P21709',</span> <span class="pre">'P21802',</span> <span class="pre">'P21810',</span> <span class="pre">'P21815',</span> <span class="pre">'P21860',</span> <span class="pre">'P21917',</span> <span class="pre">'P21941',</span> <span class="pre">'P21980',</span> <span class="pre">'P22392',</span> <span class="pre">'P22692',</span> <span class="pre">'P22897',</span> <span class="pre">'P23471',</span> <span class="pre">'P23515',</span> <span class="pre">'P25063',</span> <span class="pre">'P25090',</span> <span class="pre">'P25940',</span> <span class="pre">'P25942',</span> <span class="pre">'P26012',</span> <span class="pre">'P26441',</span> <span class="pre">'P26842',</span> <span class="pre">'P27658',</span> <span class="pre">'P28335',</span> <span class="pre">'P28907',</span> <span class="pre">'P28908',</span> <span class="pre">'P29317',</span> <span class="pre">'P29322',</span> <span class="pre">'P29323',</span> <span class="pre">'P29400',</span> <span class="pre">'P30530',</span> <span class="pre">'P30533',</span> <span class="pre">'P30542',</span> <span class="pre">'P30874',</span> <span class="pre">'P31025',</span> <span class="pre">'P31785',</span> <span class="pre">'P35212',</span> <span class="pre">'P35354',</span> <span class="pre">'P35475',</span> <span class="pre">'P35555',</span> <span class="pre">'P35613',</span> <span class="pre">'P35625',</span> <span class="pre">'P36383',</span> <span class="pre">'P36897',</span> <span class="pre">'P36941',</span> <span class="pre">'P39019',</span> <span class="pre">'P39060',</span> <span class="pre">'P39900',</span> <span class="pre">'P41143',</span> <span class="pre">'P41594',</span> <span class="pre">'P42081',</span> <span class="pre">'P42127',</span> <span class="pre">'P43121',</span> <span class="pre">'P43405',</span> <span class="pre">'P43489',</span> <span class="pre">'P43490',</span> <span class="pre">'P45452',</span> <span class="pre">'P48039',</span> <span class="pre">'P48651',</span> <span class="pre">'P49768',</span> <span class="pre">'P49913',</span> <span class="pre">'P50052',</span> <span class="pre">'P50552',</span> <span class="pre">'P51654',</span> <span class="pre">'P52945',</span> <span class="pre">'P53420',</span> <span class="pre">'P54577',</span> <span class="pre">'P54753',</span> <span class="pre">'P54756',</span> <span class="pre">'P54760',</span> <span class="pre">'P54762',</span> <span class="pre">'P54764',</span> <span class="pre">'P55058',</span> <span class="pre">'P55789',</span> <span class="pre">'P56159',</span> <span class="pre">'P61626',</span> <span class="pre">'P61769',</span> <span class="pre">'P62987',</span> <span class="pre">'P63092',</span> <span class="pre">'P78310',</span> <span class="pre">'P78324',</span> <span class="pre">'P78536',</span> <span class="pre">'P80188',</span> <span class="pre">'P80303',</span> <span class="pre">'P84077',</span> <span class="pre">'P84996',</span> <span class="pre">'P98160',</span> <span class="pre">'P98164',</span> <span class="pre">'Q01469',</span> <span class="pre">'Q01955',</span> <span class="pre">'Q02094',</span> <span class="pre">'Q02388',</span> <span class="pre">'Q02817',</span> <span class="pre">'Q04721',</span> <span class="pre">'Q05707',</span> <span class="pre">'Q07326',</span> <span class="pre">'Q07954',</span> <span class="pre">'Q08334',</span> <span class="pre">'Q08722',</span> <span class="pre">'Q08828',</span> <span class="pre">'Q10588',</span> <span class="pre">'Q12913',</span> <span class="pre">'Q12918',</span> <span class="pre">'Q12933',</span> <span class="pre">'Q13158',</span> <span class="pre">'Q13241',</span> <span class="pre">'Q13255',</span> <span class="pre">'Q13352',</span> <span class="pre">'Q13361',</span> <span class="pre">'Q13442',</span> <span class="pre">'Q13443',</span> <span class="pre">'Q13444',</span> <span class="pre">'Q13477',</span> <span class="pre">'Q13936',</span> <span class="pre">'Q14031',</span> <span class="pre">'Q14050',</span> <span class="pre">'Q14055',</span> <span class="pre">'Q14118',</span> <span class="pre">'Q14242',</span> <span class="pre">'Q14766',</span> <span class="pre">'Q15165',</span> <span class="pre">'Q15223',</span> <span class="pre">'Q15262',</span> <span class="pre">'Q15303',</span> <span class="pre">'Q15375',</span> <span class="pre">'Q15762',</span> <span class="pre">'Q16613',</span> <span class="pre">'Q2MV58',</span> <span class="pre">'Q2VPA4',</span> <span class="pre">'Q4VX76',</span> <span class="pre">'Q5JWF2',</span> <span class="pre">'Q5SR53',</span> <span class="pre">'Q5T442',</span> <span class="pre">'Q5T5A4',</span> <span class="pre">'Q6NW40',</span> <span class="pre">'Q6UWW8',</span> <span class="pre">'Q6UWX4',</span> <span class="pre">'Q6V0I7',</span> <span class="pre">'Q7Z6A9',</span> <span class="pre">'Q86UR5',</span> <span class="pre">'Q8IWL1',</span> <span class="pre">'Q8IZJ3',</span> <span class="pre">'Q8IZL2',</span> <span class="pre">'Q8N2X6',</span> <span class="pre">'Q8N474',</span> <span class="pre">'Q8NFK1',</span> <span class="pre">'Q8NFT8',</span> <span class="pre">'Q8NGH5',</span> <span class="pre">'Q8NGH8',</span> <span class="pre">'Q8NHJ6',</span> <span class="pre">'Q8NHP8',</span> <span class="pre">'Q8TAX7',</span> <span class="pre">'Q8WTV0',</span> <span class="pre">'Q8WWY8',</span> <span class="pre">'Q8WZ79',</span> <span class="pre">'Q92819',</span> <span class="pre">'Q92854',</span> <span class="pre">'Q92896',</span> <span class="pre">'Q92956',</span> <span class="pre">'Q96A49',</span> <span class="pre">'Q96CG8',</span> <span class="pre">'Q96DA0',</span> <span class="pre">'Q96FE5',</span> <span class="pre">'Q99259',</span> <span class="pre">'Q99466',</span> <span class="pre">'Q99965',</span> <span class="pre">'Q9BQ66',</span> <span class="pre">'Q9BS26',</span> <span class="pre">'Q9BX66',</span> <span class="pre">'Q9BZR6',</span> <span class="pre">'Q9BZW8',</span> <span class="pre">'Q9BZZ2',</span> <span class="pre">'Q9C0C4',</span> <span class="pre">'Q9H2A7',</span> <span class="pre">'Q9H2E6',</span> <span class="pre">'Q9H3S1',</span> <span class="pre">'Q9H9H4',</span> <span class="pre">'Q9HCM2',</span> <span class="pre">'Q9NQC3',</span> <span class="pre">'Q9NR96',</span> <span class="pre">'Q9NRV9',</span> <span class="pre">'Q9NSG2',</span> <span class="pre">'Q9NTN9',</span> <span class="pre">'Q9NUP9',</span> <span class="pre">'Q9NV23',</span> <span class="pre">'Q9NWZ3',</span> <span class="pre">'Q9NX52',</span> <span class="pre">'Q9NZC2',</span> <span class="pre">'Q9NZR2',</span> <span class="pre">'Q9UBY5',</span> <span class="pre">'Q9UHG3',</span> <span class="pre">'Q9UIW2',</span> <span class="pre">'Q9UJU6',</span> <span class="pre">'Q9UKQ2',</span> <span class="pre">'Q9ULP9',</span> <span class="pre">'Q9UM47',</span> <span class="pre">'Q9UQ26',</span> <span class="pre">'Q9XRX5',</span> <span class="pre">'Q9Y215',</span> <span class="pre">'Q9Y2I2',</span> <span class="pre">'Q9Y4D7',</span> <span class="pre">'Q9Y566',</span> <span class="pre">'Q9Y5U5',</span> <span class="pre">'Q9Y624',</span> <span class="pre">'Q9Y625',</span> <span class="pre">'Q9Y6N7'},</span> <span class="pre">'receptor':</span> <span class="pre">{'A6NFA1',</span> <span class="pre">'B2RUY7',</span> <span class="pre">'B4DS77',</span> <span class="pre">'O00170',</span> <span class="pre">'O00468',</span> <span class="pre">'O00548',</span> <span class="pre">'O00555',</span> <span class="pre">'O14493',</span> <span class="pre">'O14638',</span> <span class="pre">'O14672',</span> <span class="pre">'O14788',</span> <span class="pre">'O14795',</span> <span class="pre">'O15162',</span> <span class="pre">'O15374',</span> <span class="pre">'O15551',</span> <span class="pre">'O15554',</span> <span class="pre">'O43184',</span> <span class="pre">'O43525',</span> <span class="pre">'O43813',</span> <span class="pre">'O43866',</span> <span class="pre">'O43914',</span> <span class="pre">'O43921',</span> <span class="pre">'O60291',</span> <span class="pre">'O60359',</span> <span class="pre">'O75078',</span> <span class="pre">'O75106',</span> <span class="pre">'O75144',</span> <span class="pre">'O75508',</span> <span class="pre">'O75575',</span> <span class="pre">'O75923',</span> <span class="pre">'O94772',</span> <span class="pre">'O94779',</span> <span class="pre">'O94856',</span> <span class="pre">'O95196',</span> <span class="pre">'O95259',</span> <span class="pre">'O95477',</span> <span class="pre">'O95727',</span> <span class="pre">'O95897',</span> <span class="pre">'O95967',</span> <span class="pre">'O95994',</span> <span class="pre">'O95998',</span> <span class="pre">'P00734',</span> <span class="pre">'P00747',</span> <span class="pre">'P01112',</span> <span class="pre">'P01133',</span> <span class="pre">'P01303',</span> <span class="pre">'P01889',</span> <span class="pre">'P01903',</span> <span class="pre">'P01906',</span> <span class="pre">'P01909',</span> <span class="pre">'P01911',</span> <span class="pre">'P01920',</span> <span class="pre">'P02649',</span> <span class="pre">'P04004',</span> <span class="pre">'P04439',</span> <span class="pre">'P05026',</span> <span class="pre">'P05156',</span> <span class="pre">'P05187',</span> <span class="pre">'P05231',</span> <span class="pre">'P05362',</span> <span class="pre">'P05538',</span> <span class="pre">'P07942',</span> <span class="pre">'P08034',</span> <span class="pre">'P09326',</span> <span class="pre">'P09917',</span> <span class="pre">'P09923',</span> <span class="pre">'P10321',</span> <span class="pre">'P10589',</span> <span class="pre">'P11168',</span> <span class="pre">'P12830',</span> <span class="pre">'P13056',</span> <span class="pre">'P13569',</span> <span class="pre">'P13591',</span> <span class="pre">'P13598',</span> <span class="pre">'P13637',</span> <span class="pre">'P13765',</span> <span class="pre">'P15514',</span> <span class="pre">'P15813',</span> <span class="pre">'P16422',</span> <span class="pre">'P16581',</span> <span class="pre">'P17302',</span> <span class="pre">'P17693',</span> <span class="pre">'P17813',</span> <span class="pre">'P18433',</span> <span class="pre">'P19256',</span> <span class="pre">'P19801',</span> <span class="pre">'P20827',</span> <span class="pre">'P20916',</span> <span class="pre">'P21246',</span> <span class="pre">'P21589',</span> <span class="pre">'P21926',</span> <span class="pre">'P22001',</span> <span class="pre">'P22460',</span> <span class="pre">'P22736',</span> <span class="pre">'P23276',</span> <span class="pre">'P23510',</span> <span class="pre">'P23515',</span> <span class="pre">'P24043',</span> <span class="pre">'P25098',</span> <span class="pre">'P25189',</span> <span class="pre">'P26038',</span> <span class="pre">'P27701',</span> <span class="pre">'P27824',</span> <span class="pre">'P28906',</span> <span class="pre">'P29016',</span> <span class="pre">'P29033',</span> <span class="pre">'P29460',</span> <span class="pre">'P29972',</span> <span class="pre">'P30301',</span> <span class="pre">'P30511',</span> <span class="pre">'P30533',</span> <span class="pre">'P31431',</span> <span class="pre">'P31749',</span> <span class="pre">'P31997',</span> <span class="pre">'P32004',</span> <span class="pre">'P32942',</span> <span class="pre">'P32970',</span> <span class="pre">'P32971',</span> <span class="pre">'P35212',</span> <span class="pre">'P35499',</span> <span class="pre">'P36021',</span> <span class="pre">'P36269',</span> <span class="pre">'P36383',</span> <span class="pre">'P41235',</span> <span class="pre">'P48050',</span> <span class="pre">'P48509',</span> <span class="pre">'P48552',</span> <span class="pre">'P48651',</span> <span class="pre">'P50591',</span> <span class="pre">'P51787',</span> <span class="pre">'P51828',</span> <span class="pre">'P52797',</span> <span class="pre">'P52798',</span> <span class="pre">'P52799',</span> <span class="pre">'P52803',</span> <span class="pre">'P52961',</span> <span class="pre">'P54709',</span> <span class="pre">'P54750',</span> <span class="pre">'P54851',</span> <span class="pre">'P55157',</span> <span class="pre">'P55160',</span> <span class="pre">'P55268',</span> <span class="pre">'P56705',</span> <span class="pre">'P57057',</span> <span class="pre">'P57087',</span> <span class="pre">'P57739',</span> <span class="pre">'P58401',</span> <span class="pre">'P61160',</span> <span class="pre">'P61769',</span> <span class="pre">'P62079',</span> <span class="pre">'P62955',</span> <span class="pre">'P78504',</span> <span class="pre">'P78509',</span> <span class="pre">'P78536',</span> <span class="pre">'P78562',</span> <span class="pre">'P79483',</span> <span class="pre">'P84022',</span> <span class="pre">'P84077',</span> <span class="pre">'P84157',</span> <span class="pre">'P98172',</span> <span class="pre">'Q00994',</span> <span class="pre">'Q01064',</span> <span class="pre">'Q02108',</span> <span class="pre">'Q02153',</span> <span class="pre">'Q02246',</span> <span class="pre">'Q02413',</span> <span class="pre">'Q02641',</span> <span class="pre">'Q02846',</span> <span class="pre">'Q03135',</span> <span class="pre">'Q04724',</span> <span class="pre">'Q05940',</span> <span class="pre">'Q06643',</span> <span class="pre">'Q07075',</span> <span class="pre">'Q07326',</span> <span class="pre">'Q08380',</span> <span class="pre">'Q08AM6',</span> <span class="pre">'Q10588',</span> <span class="pre">'Q12809',</span> <span class="pre">'Q12884',</span> <span class="pre">'Q12933',</span> <span class="pre">'Q13061',</span> <span class="pre">'Q13114',</span> <span class="pre">'Q13275',</span> <span class="pre">'Q13445',</span> <span class="pre">'Q13520',</span> <span class="pre">'Q13740',</span> <span class="pre">'Q13822',</span> <span class="pre">'Q13936',</span> <span class="pre">'Q14123',</span> <span class="pre">'Q14126',</span> <span class="pre">'Q14213',</span> <span class="pre">'Q14242',</span> <span class="pre">'Q14524',</span> <span class="pre">'Q14541',</span> <span class="pre">'Q14563',</span> <span class="pre">'Q14773',</span> <span class="pre">'Q14956',</span> <span class="pre">'Q14982',</span> <span class="pre">'Q14994',</span> <span class="pre">'Q14995',</span> <span class="pre">'Q15125',</span> <span class="pre">'Q15628',</span> <span class="pre">'Q15758',</span> <span class="pre">'Q15768',</span> <span class="pre">'Q15842',</span> <span class="pre">'Q15848',</span> <span class="pre">'Q16342',</span> <span class="pre">'Q16363',</span> <span class="pre">'Q16572',</span> <span class="pre">'Q16625',</span> <span class="pre">'Q16853',</span> <span class="pre">'Q19T08',</span> <span class="pre">'Q29983',</span> <span class="pre">'Q2TAL6',</span> <span class="pre">'Q30201',</span> <span class="pre">'Q401N2',</span> <span class="pre">'Q496H8',</span> <span class="pre">'Q4VCS5',</span> <span class="pre">'Q4VX76',</span> <span class="pre">'Q4W5P6',</span> <span class="pre">'Q5DX21',</span> <span class="pre">'Q5T442',</span> <span class="pre">'Q5T4B2',</span> <span class="pre">'Q5TAT6',</span> <span class="pre">'Q5VU97',</span> <span class="pre">'Q5VY80',</span> <span class="pre">'Q5ZPR3',</span> <span class="pre">'Q6NYC1',</span> <span class="pre">'Q6PIZ9',</span> <span class="pre">'Q6Q4G3',</span> <span class="pre">'Q6RW13',</span> <span class="pre">'Q6UW88',</span> <span class="pre">'Q6UWV6',</span> <span class="pre">'Q6UXB3',</span> <span class="pre">'Q6UXI9',</span> <span class="pre">'Q7L0J3',</span> <span class="pre">'Q7Z7D3',</span> <span class="pre">'Q86UF1',</span> <span class="pre">'Q86UK0',</span> <span class="pre">'Q86UR5',</span> <span class="pre">'Q8IU54',</span> <span class="pre">'Q8IU80',</span> <span class="pre">'Q8IUK5',</span> <span class="pre">'Q8IWV2',</span> <span class="pre">'Q8IZV2',</span> <span class="pre">'Q8IZY2',</span> <span class="pre">'Q8N126',</span> <span class="pre">'Q8N2G4',</span> <span class="pre">'Q8NCM2',</span> <span class="pre">'Q8NCS7',</span> <span class="pre">'Q8NEC5',</span> <span class="pre">'Q8NFK1',</span> <span class="pre">'Q8NFP4',</span> <span class="pre">'Q8NFY4',</span> <span class="pre">'Q8NFZ3',</span> <span class="pre">'Q8NG11',</span> <span class="pre">'Q8TAZ6',</span> <span class="pre">'Q8TCY5',</span> <span class="pre">'Q8TD07',</span> <span class="pre">'Q8TDM5',</span> <span class="pre">'Q8WUM9',</span> <span class="pre">'Q8WWA0',</span> <span class="pre">'Q8WWX8',</span> <span class="pre">'Q8WXS5',</span> <span class="pre">'Q92570',</span> <span class="pre">'Q92673',</span> <span class="pre">'Q92753',</span> <span class="pre">'Q92913',</span> <span class="pre">'Q92954',</span> <span class="pre">'Q96AP7',</span> <span class="pre">'Q96B86',</span> <span class="pre">'Q96DZ9',</span> <span class="pre">'Q96JB6',</span> <span class="pre">'Q96JK4',</span> <span class="pre">'Q96JQ0',</span> <span class="pre">'Q96L42',</span> <span class="pre">'Q96PB7',</span> <span class="pre">'Q96QT4',</span> <span class="pre">'Q96S97',</span> <span class="pre">'Q96SN7',</span> <span class="pre">'Q99075',</span> <span class="pre">'Q99523',</span> <span class="pre">'Q99712',</span> <span class="pre">'Q99784',</span> <span class="pre">'Q99965',</span> <span class="pre">'Q9BQQ7',</span> <span class="pre">'Q9BRK0',</span> <span class="pre">'Q9BUF7',</span> <span class="pre">'Q9BX67',</span> <span class="pre">'Q9BXJ0',</span> <span class="pre">'Q9BY67',</span> <span class="pre">'Q9BYE2',</span> <span class="pre">'Q9BZM4',</span> <span class="pre">'Q9GZM7',</span> <span class="pre">'Q9H0R3',</span> <span class="pre">'Q9H221',</span> <span class="pre">'Q9H222',</span> <span class="pre">'Q9H4B8',</span> <span class="pre">'Q9H7V2',</span> <span class="pre">'Q9NP59',</span> <span class="pre">'Q9NQC3',</span> <span class="pre">'Q9NQS3',</span> <span class="pre">'Q9NR61',</span> <span class="pre">'Q9NR82',</span> <span class="pre">'Q9NRQ2',</span> <span class="pre">'Q9NSA2',</span> <span class="pre">'Q9NY72',</span> <span class="pre">'Q9NY84',</span> <span class="pre">'Q9NYJ7',</span> <span class="pre">'Q9NYZ4',</span> <span class="pre">'Q9NZ08',</span> <span class="pre">'Q9NZ53',</span> <span class="pre">'Q9NZQ7',</span> <span class="pre">'Q9NZV8',</span> <span class="pre">'Q9P0K1',</span> <span class="pre">'Q9P0L9',</span> <span class="pre">'Q9P232',</span> <span class="pre">'Q9P2K9',</span> <span class="pre">'Q9P2U7',</span> <span class="pre">'Q9UBH0',</span> <span class="pre">'Q9UBN1',</span> <span class="pre">'Q9UBX5',</span> <span class="pre">'Q9UEF7',</span> <span class="pre">'Q9UF02',</span> <span class="pre">'Q9UGM3',</span> <span class="pre">'Q9UHC9',</span> <span class="pre">'Q9UIR0',</span> <span class="pre">'Q9UJZ1',</span> <span class="pre">'Q9UKR5',</span> <span class="pre">'Q9UKV5',</span> <span class="pre">'Q9UKY0',</span> <span class="pre">'Q9UL54',</span> <span class="pre">'Q9ULB1',</span> <span class="pre">'Q9ULD8',</span> <span class="pre">'Q9ULH0',</span> <span class="pre">'Q9ULT6',</span> <span class="pre">'Q9UMD9',</span> <span class="pre">'Q9UMF0',</span> <span class="pre">'Q9UNG2',</span> <span class="pre">'Q9UPU3',</span> <span class="pre">'Q9UQ05',</span> <span class="pre">'Q9UQD0',</span> <span class="pre">'Q9Y215',</span> <span class="pre">'Q9Y219',</span> <span class="pre">'Q9Y286',</span> <span class="pre">'Q9Y2I2',</span> <span class="pre">'Q9Y2J0',</span> <span class="pre">'Q9Y3R0',</span> <span class="pre">'Q9Y466',</span> <span class="pre">'Q9Y4C0',</span> <span class="pre">'Q9Y566',</span> <span class="pre">'Q9Y5R2',</span> <span class="pre">'Q9Y5Y6',</span> <span class="pre">'Q9Y5Y9',</span> <span class="pre">'Q9Y624',</span> <span class="pre">'Q9Y698',</span> <span class="pre">'Q9Y6Y9'}}</span></em><a class="headerlink" href="#pypath.core.intercell_annot.excludes" title="Permalink to this definition">§</a></dt>
+<dd><p>Higher level classes of intercellular communication roles.</p>
+</dd></dl>
+
+</section>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+          <div class="sidebar-resize-handle"></div>
+
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#omnipath">OmniPath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#do-you-need-pypath">Do you need pypath?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#docs">Docs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#get-help">Get help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#faq">FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#contact">Contact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#impressum">Impressum</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#history-and-releases">History and releases</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../webservice.html">Webservice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releasehistory.html">Release history</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="pypath.html">pypath</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pypath.disclaimer.html">pypath.disclaimer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.info.html">pypath.info</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.log.html">pypath.log</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="pypath.core.html">pypath.core</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.annot.html">pypath.core.annot</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.attrs.html">pypath.core.attrs</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.common.html">pypath.core.common</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.complex.html">pypath.core.complex</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.entity.html">pypath.core.entity</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.enz_sub.html">pypath.core.enz_sub</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.evidence.html">pypath.core.evidence</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.interaction.html">pypath.core.interaction</a></li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.intercell.html">pypath.core.intercell</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="pypath.core.intercell_annot.html">pypath.core.intercell_annot</a><ul class="current">
+<li class="toctree-l6 current"><a class="current reference internal" href="#">pypath.core.intercell_annot.excludes</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#pypath.core.intercell_annot.excludes"><code class="docutils literal notranslate"><span class="pre">excludes</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="pypath.core.network.html">pypath.core.network</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.data.html">pypath.data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.inputs.html">pypath.inputs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.internals.html">pypath.internals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.legacy.html">pypath.legacy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.obsolete.html">pypath.obsolete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.omnipath.html">pypath.omnipath</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.resources.html">pypath.resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.share.html">pypath.share</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.utils.html">pypath.utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pypath.visual.html">pypath.visual</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../webservice.html">Webservice</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../releasehistory.html">Release history</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pypath.html">pypath</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pypath.disclaimer.html">pypath.disclaimer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.info.html">pypath.info</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.log.html">pypath.log</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="pypath.core.html">pypath.core</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.annot.html">pypath.core.annot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.attrs.html">pypath.core.attrs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.common.html">pypath.core.common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.complex.html">pypath.core.complex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.entity.html">pypath.core.entity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.enz_sub.html">pypath.core.enz_sub</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.evidence.html">pypath.core.evidence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.interaction.html">pypath.core.interaction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.intercell.html">pypath.core.intercell</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="pypath.core.intercell_annot.html">pypath.core.intercell_annot</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pypath.core.intercell_annot.excludes</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#pypath.core.intercell_annot.excludes"><code class="docutils literal notranslate"><span class="pre">excludes</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pypath.core.network.html">pypath.core.network</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.data.html">pypath.data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.inputs.html">pypath.inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.internals.html">pypath.internals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.legacy.html">pypath.legacy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.obsolete.html">pypath.obsolete</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.omnipath.html">pypath.omnipath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.resources.html">pypath.resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.share.html">pypath.share</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.utils.html">pypath.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypath.visual.html">pypath.visual</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <nav class="relbar">
+      <a class="previous" href="pypath.core.intercell_annot.html" aria-label="Previous topic" >
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"/></svg>
+        </div>
+        <div class="title">
+          <span class="text">
+            <span class="direction">previous</span>
+            pypath.core.intercell_annot
+          </span>
+        </div>
+      </a>
+      <a class="next" href="pypath.core.network.html" aria-label="Next topic" >
+        <div class="title">
+          <span class="text">
+            <span class="direction">next</span>
+            pypath.core.network
+          </span>
+        </div>
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 101.2c-9.8-9.3-10-24.8-.4-34.3z"/></svg>
+        </div>
+      </a>
+    </nav>
+
+    <footer role="contentinfo">
+      &#169; Copyright 2022, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
+    </footer>
+  </body>
+</html>

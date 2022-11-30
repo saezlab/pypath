@@ -1,0 +1,580 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.obsolete.linkcomm &#8212; pypath 0.14.30 documentation</title>
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script defer src="../../../_static/insipid.js"></script>
+    <script defer src="../../../_static/insipid-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head><body>
+    <script type="text/javascript">
+        document.body.classList.add('js');
+    </script>
+    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
+    <label id="overlay" for="sidebar-checkbox"></label>
+    <div class="sidebar-resize-handle"></div>
+    <script type="text/javascript">
+        try {
+            let sidebar = localStorage.getItem('sphinx-sidebar');
+            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
+            if (sidebar_width) {
+                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
+            }
+            // show sidebar on wide screen
+            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
+                sidebar = 'visible';
+                // NB: We don't store the value in localStorage!
+            }
+            if (sidebar === 'visible') {
+                document.getElementById('sidebar-checkbox').checked = true;
+            }
+        } catch(e) {
+            console.info(e);
+        }
+    </script>
+    <header id="topbar-placeholder">
+      <div id="topbar">
+        <div id="titlebar">
+          <div class="buttons">
+            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+            </label>
+          </div>
+          <div class="title">
+            <a class="parent" href="../../pypath.html" accesskey="U">pypath</a>
+            <a class="top" href="#">pypath.obsolete.linkcomm</a>
+          </div>
+          <div class="buttons">
+            <button id="fullscreen-button" type="button" aria-hidden="true">
+              <span class="enable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
+              </span>
+              <span class="disable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <nav>
+    </nav>
+
+    <nav class="relbar">
+    </nav>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+<h1>Source code for pypath.obsolete.linkcomm</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python2</span>
+<span class="c1">#!/usr/bin/env python2</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># link_clustering.py</span>
+<span class="c1"># Jim Bagrow, Yong-Yeol Ahn</span>
+<span class="c1"># Last Modified: 2010-08-27</span>
+
+<span class="c1">#</span>
+<span class="c1"># Copyright 2008,2009,2010 James Bagrow, Yong-Yeol Ahn</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># This program is free software: you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU General Public License as published by</span>
+<span class="c1"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># This program is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">changes 2010-08-27:</span>
+<span class="sd">    * all three output files now contain the same community id numbers</span>
+<span class="sd">    * comm2nodes and comm2edges both present the cid as the first</span>
+<span class="sd">    entry of each line.  Previously only comm2nodes did this.</span>
+<span class="sd">    * implemented weighted version, added &#39;-w&#39; switch</span>
+<span class="sd">    * expanded help string to explain input and outputs</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">itemgetter</span>
+<span class="kn">from</span> <span class="nn">heapq</span> <span class="kn">import</span> <span class="n">heappush</span><span class="p">,</span> <span class="n">heappop</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">combinations</span><span class="p">,</span> <span class="n">chain</span>  <span class="c1"># requires python 2.6+</span>
+<span class="kn">from</span> <span class="nn">optparse</span> <span class="kn">import</span> <span class="n">OptionParser</span>
+
+
+<div class="viewcode-block" id="swap"><a class="viewcode-back" href="../../../_autosummary/pypath.obsolete.linkcomm.swap.html#pypath.obsolete.linkcomm.swap">[docs]</a><span class="k">def</span> <span class="nf">swap</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span>
+    <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span></div>
+
+
+<div class="viewcode-block" id="Dc"><a class="viewcode-back" href="../../../_autosummary/pypath.obsolete.linkcomm.Dc.html#pypath.obsolete.linkcomm.Dc">[docs]</a><span class="k">def</span> <span class="nf">Dc</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;partition density&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">m</span> <span class="o">*</span> <span class="p">(</span><span class="n">m</span> <span class="o">-</span> <span class="n">n</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>  <span class="c1"># numerator is &quot;strongly zero&quot;</span>
+        <span class="k">return</span> <span class="mf">0.0</span></div>
+
+
+<div class="viewcode-block" id="HLC"><a class="viewcode-back" href="../../../_autosummary/pypath.obsolete.linkcomm.HLC.html#pypath.obsolete.linkcomm.HLC">[docs]</a><span class="k">class</span> <span class="nc">HLC</span><span class="p">:</span>
+<div class="viewcode-block" id="HLC.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.obsolete.linkcomm.HLC.html#pypath.obsolete.linkcomm.HLC.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">edges</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adj</span> <span class="o">=</span> <span class="n">adj</span>  <span class="c1"># node -&gt; set of neighbors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="n">edges</span>  <span class="c1"># list of edges</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Mfactor</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge2cid</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid2nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid2edges</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig_cid2edge</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curr_maxcid</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linkage</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># dendrogram</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_edges</span><span class="p">()</span>  <span class="c1"># every edge in its own comm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># partition density</span></div>
+
+    <span class="k">def</span> <span class="nf">initialize_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">cid</span><span class="p">,</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">):</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="n">swap</span><span class="p">(</span><span class="o">*</span><span class="n">edge</span><span class="p">)</span>  <span class="c1"># just in case</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge2cid</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">=</span> <span class="n">cid</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cid2edges</span><span class="p">[</span><span class="n">cid</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">edge</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">orig_cid2edge</span><span class="p">[</span><span class="n">cid</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cid2nodes</span><span class="p">[</span><span class="n">cid</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curr_maxcid</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">merge_comms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge1</span><span class="p">,</span> <span class="n">edge2</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">dendro_flag</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># We&#39;ll get (None, None) at the end of clustering</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">edge1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">edge2</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">cid1</span><span class="p">,</span> <span class="n">cid2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge2cid</span><span class="p">[</span><span class="n">edge1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge2cid</span><span class="p">[</span><span class="n">edge2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">cid1</span> <span class="o">==</span> <span class="n">cid2</span><span class="p">:</span>  <span class="c1"># already merged!</span>
+            <span class="k">return</span>
+        <span class="n">m1</span><span class="p">,</span> <span class="n">m2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid2edges</span><span class="p">[</span><span class="n">cid1</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid2edges</span><span class="p">[</span><span class="n">cid2</span><span class="p">])</span>
+        <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid2nodes</span><span class="p">[</span><span class="n">cid1</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid2nodes</span><span class="p">[</span><span class="n">cid2</span><span class="p">])</span>
+        <span class="n">Dc1</span><span class="p">,</span> <span class="n">Dc2</span> <span class="o">=</span> <span class="n">Dc</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">n1</span><span class="p">),</span> <span class="n">Dc</span><span class="p">(</span><span class="n">m2</span><span class="p">,</span> <span class="n">n2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">m2</span> <span class="o">&gt;</span> <span class="n">m1</span><span class="p">:</span>  <span class="c1"># merge smaller into larger</span>
+            <span class="n">cid1</span><span class="p">,</span> <span class="n">cid2</span> <span class="o">=</span> <span class="n">cid2</span><span class="p">,</span> <span class="n">cid1</span>
+
+        <span class="k">if</span> <span class="n">dendro_flag</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">curr_maxcid</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">newcid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">curr_maxcid</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cid2edges</span><span class="p">[</span><span class="n">newcid</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid2edges</span><span class="p">[</span><span class="n">cid1</span><span class="p">]</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid2edges</span><span class="p">[</span>
+                <span class="n">cid2</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cid2nodes</span><span class="p">[</span><span class="n">newcid</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid2edges</span><span class="p">[</span><span class="n">cid1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid2edges</span><span class="p">[</span><span class="n">cid2</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cid2nodes</span><span class="p">[</span><span class="n">newcid</span><span class="p">]</span> <span class="o">|=</span> <span class="nb">set</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">edge2cid</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="n">newcid</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid2edges</span><span class="p">[</span><span class="n">cid1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid2nodes</span><span class="p">[</span><span class="n">cid1</span><span class="p">]</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid2edges</span><span class="p">[</span><span class="n">cid2</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid2nodes</span><span class="p">[</span><span class="n">cid2</span><span class="p">]</span>
+            <span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid2edges</span><span class="p">[</span><span class="n">newcid</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid2nodes</span><span class="p">[</span><span class="n">newcid</span><span class="p">])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">linkage</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">cid1</span><span class="p">,</span> <span class="n">cid2</span><span class="p">,</span> <span class="n">S</span><span class="p">))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cid2edges</span><span class="p">[</span><span class="n">cid1</span><span class="p">]</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid2edges</span><span class="p">[</span><span class="n">cid2</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid2edges</span><span class="p">[</span>
+                    <span class="n">cid2</span><span class="p">]:</span>  <span class="c1"># move edges,nodes from cid2 to cid1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cid2nodes</span><span class="p">[</span><span class="n">cid1</span><span class="p">]</span> <span class="o">|=</span> <span class="nb">set</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">edge2cid</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="n">cid1</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid2edges</span><span class="p">[</span><span class="n">cid2</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid2nodes</span><span class="p">[</span><span class="n">cid2</span><span class="p">]</span>
+
+            <span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid2edges</span><span class="p">[</span><span class="n">cid1</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid2nodes</span><span class="p">[</span><span class="n">cid1</span><span class="p">])</span>
+
+        <span class="n">Dc12</span> <span class="o">=</span> <span class="n">Dc</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">+</span> <span class="p">(</span><span class="n">Dc12</span> <span class="o">-</span> <span class="n">Dc1</span> <span class="o">-</span> <span class="n">Dc2</span><span class="p">)</span> <span class="o">*</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">Mfactor</span>  <span class="c1"># update partition density</span>
+
+    <span class="k">def</span> <span class="nf">single_linkage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dendro_flag</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1">#print &quot;clustering...&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">list_D</span> <span class="o">=</span> <span class="p">[(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)]</span>  <span class="c1"># list of (S_i,D_i) tuples...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">best_D</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">best_S</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># similarity threshold at best_D</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">best_P</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># best partition, dict: edge -&gt; cid</span>
+
+        <span class="k">if</span> <span class="n">w</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># unweighted</span>
+            <span class="n">H</span> <span class="o">=</span> <span class="n">similarities_unweighted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adj</span><span class="p">)</span>  <span class="c1"># min-heap ordered by 1-s</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">H</span> <span class="o">=</span> <span class="n">similarities_weighted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        <span class="n">S_prev</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="c1"># (1.0, (None, None)) takes care of the special case where the last</span>
+        <span class="c1"># merging gives the maximum partition density (e.g. a single clique).</span>
+        <span class="k">for</span> <span class="n">oms</span><span class="p">,</span> <span class="n">eij_eik</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="p">[(</span><span class="mf">1.0</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))]):</span>
+            <span class="n">S</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">oms</span>  <span class="c1"># remember, H is a min-heap</span>
+            <span class="k">if</span> <span class="n">threshold</span> <span class="ow">and</span> <span class="n">S</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">:</span>
+                <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">S</span> <span class="o">!=</span> <span class="n">S_prev</span><span class="p">:</span>  <span class="c1"># update list</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_D</span><span class="p">:</span>  <span class="c1"># check PREVIOUS merger, because that&#39;s</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">best_D</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span>  <span class="c1"># the end of the tie</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">best_S</span> <span class="o">=</span> <span class="n">S</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">best_P</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge2cid</span><span class="p">)</span>  <span class="c1"># slow...</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">list_D</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">))</span>
+                <span class="n">S_prev</span> <span class="o">=</span> <span class="n">S</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">merge_comms</span><span class="p">(</span><span class="n">eij_eik</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">eij_eik</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">S</span><span class="p">,</span> <span class="n">dendro_flag</span><span class="p">)</span>
+
+        <span class="c1"># self.list_D.append( (0.0,self.list_D[-1][1]) ) # add final val</span>
+        <span class="k">if</span> <span class="n">threshold</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge2cid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span>
+        <span class="k">if</span> <span class="n">dendro_flag</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_P</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_D</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_D</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_cid2edge</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">linkage</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_P</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_D</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_D</span></div>
+
+
+<div class="viewcode-block" id="similarities_unweighted"><a class="viewcode-back" href="../../../_autosummary/pypath.obsolete.linkcomm.similarities_unweighted.html#pypath.obsolete.linkcomm.similarities_unweighted">[docs]</a><span class="k">def</span> <span class="nf">similarities_unweighted</span><span class="p">(</span><span class="n">adj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get all the edge similarities. Input dict maps nodes to sets of neighbors.</span>
+<span class="sd">    Output is a list of decorated edge-pairs, (1-sim,eij,eik), ordered by similarity.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># print &quot;computing similarities...&quot;</span>
+    <span class="n">i_adj</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">|</span> <span class="nb">set</span><span class="p">([</span><span class="n">n</span><span class="p">]))</span>
+                 <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">adj</span><span class="p">)</span>  <span class="c1"># node -&gt; inclusive neighbors</span>
+    <span class="n">min_heap</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># elements are (1-sim,eij,eik)</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">adj</span><span class="p">:</span>  <span class="c1"># n is the shared node</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># all unordered pairs of neighbors</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="n">edge_pair</span> <span class="o">=</span> <span class="n">swap</span><span class="p">(</span><span class="n">swap</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">swap</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+                <span class="n">inc_ns_i</span><span class="p">,</span> <span class="n">inc_ns_j</span> <span class="o">=</span> <span class="n">i_adj</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">i_adj</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>  <span class="c1"># inclusive neighbors</span>
+                <span class="c1"># Jacc similarity...</span>
+                <span class="n">S</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">inc_ns_i</span> <span class="o">&amp;</span> <span class="n">inc_ns_j</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">inc_ns_i</span> <span class="o">|</span> <span class="n">inc_ns_j</span><span class="p">)</span>
+                <span class="n">heappush</span><span class="p">(</span><span class="n">min_heap</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">S</span><span class="p">,</span> <span class="n">edge_pair</span><span class="p">))</span>
+    <span class="c1"># return ordered edge pairs</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">heappop</span><span class="p">(</span><span class="n">min_heap</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">min_heap</span><span class="p">))]</span></div>
+
+
+<div class="viewcode-block" id="similarities_weighted"><a class="viewcode-back" href="../../../_autosummary/pypath.obsolete.linkcomm.similarities_weighted.html#pypath.obsolete.linkcomm.similarities_weighted">[docs]</a><span class="k">def</span> <span class="nf">similarities_weighted</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">ij2wij</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Same as similarities_unweighted but using tanimoto coefficient. `adj&#39; is a dict</span>
+<span class="sd">    mapping nodes to sets of neighbors, ij2wij is a dict mapping an edge (ni,nj) tuple</span>
+<span class="sd">    to the weight wij of that edge.  </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># print &quot;computing similarities...&quot;</span>
+    <span class="n">i_adj</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">|</span> <span class="nb">set</span><span class="p">([</span><span class="n">n</span><span class="p">]))</span>
+                 <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">adj</span><span class="p">)</span>  <span class="c1"># node -&gt; inclusive neighbors</span>
+
+    <span class="n">Aij</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">ij2wij</span><span class="p">)</span>
+    <span class="n">n2a_sqrd</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">adj</span><span class="p">:</span>
+        <span class="n">Aij</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ij2wij</span><span class="p">[</span><span class="n">swap</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">])</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+        <span class="c1"># includes (n,n)!</span>
+        <span class="n">n2a_sqrd</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">Aij</span><span class="p">[</span><span class="n">swap</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="p">)]</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">i_adj</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+
+    <span class="n">min_heap</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># elements are (1-sim,eij,eik)</span>
+    <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">adj</span><span class="p">):</span>  <span class="c1"># n is the shared node</span>
+        <span class="c1"># print ind, 100.0*ind/len(adj)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># all unordered pairs of neighbors</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="n">edge_pair</span> <span class="o">=</span> <span class="n">swap</span><span class="p">(</span><span class="n">swap</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">swap</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+                <span class="n">inc_ns_i</span><span class="p">,</span> <span class="n">inc_ns_j</span> <span class="o">=</span> <span class="n">i_adj</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">i_adj</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>  <span class="c1"># inclusive neighbors</span>
+
+                <span class="n">ai_dot_aj</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span><span class="n">Aij</span><span class="p">[</span><span class="n">swap</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">)]</span> <span class="o">*</span> <span class="n">Aij</span><span class="p">[</span><span class="n">swap</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">x</span><span class="p">)]</span>
+                                      <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">inc_ns_i</span> <span class="o">&amp;</span> <span class="n">inc_ns_j</span><span class="p">)</span>
+
+                <span class="c1"># tanimoto similarity</span>
+                <span class="n">S</span> <span class="o">=</span> <span class="n">ai_dot_aj</span> <span class="o">/</span> <span class="p">(</span><span class="n">n2a_sqrd</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">n2a_sqrd</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">ai_dot_aj</span><span class="p">)</span>
+                <span class="n">heappush</span><span class="p">(</span><span class="n">min_heap</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">S</span><span class="p">,</span> <span class="n">edge_pair</span><span class="p">))</span>
+    <span class="c1"># return ordered edge pairs</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">heappop</span><span class="p">(</span><span class="n">min_heap</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">min_heap</span><span class="p">))]</span></div>
+
+
+<div class="viewcode-block" id="read_edgelist_unweighted"><a class="viewcode-back" href="../../../_autosummary/pypath.obsolete.linkcomm.read_edgelist_unweighted.html#pypath.obsolete.linkcomm.read_edgelist_unweighted">[docs]</a><span class="k">def</span> <span class="nf">read_edgelist_unweighted</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nodetype</span><span class="o">=</span><span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;reads two-column edgelist, returns dictionary</span>
+<span class="sd">    mapping node -&gt; set of neighbors and a list of edges</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">adj</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>  <span class="c1"># node to set of neighbors</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;U&#39;</span><span class="p">):</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delimiter</span><span class="p">)</span>
+        <span class="n">ni</span><span class="p">,</span> <span class="n">nj</span> <span class="o">=</span> <span class="n">nodetype</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">nodetype</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># other columns ignored</span>
+        <span class="k">if</span> <span class="n">ni</span> <span class="o">!=</span> <span class="n">nj</span><span class="p">:</span>  <span class="c1"># skip any self-loops...</span>
+            <span class="n">edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">swap</span><span class="p">(</span><span class="n">ni</span><span class="p">,</span> <span class="n">nj</span><span class="p">))</span>
+            <span class="n">adj</span><span class="p">[</span><span class="n">ni</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nj</span><span class="p">)</span>
+            <span class="n">adj</span><span class="p">[</span><span class="n">nj</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ni</span><span class="p">)</span>  <span class="c1"># since undirected</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">adj</span><span class="p">),</span> <span class="n">edges</span></div>
+
+
+<div class="viewcode-block" id="read_edgelist_weighted"><a class="viewcode-back" href="../../../_autosummary/pypath.obsolete.linkcomm.read_edgelist_weighted.html#pypath.obsolete.linkcomm.read_edgelist_weighted">[docs]</a><span class="k">def</span> <span class="nf">read_edgelist_weighted</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span>
+                           <span class="n">delimiter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">nodetype</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                           <span class="n">weighttype</span><span class="o">=</span><span class="nb">float</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;same as read_edgelist_unweighted except the input file now has three</span>
+<span class="sd">    columns: node_i&lt;delimiter&gt;node_j&lt;delimiter&gt;weight_ij&lt;newline&gt;</span>
+<span class="sd">    and the output includes a dict `ij2wij&#39; mapping edge tuple (i,j) to w_ij</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">adj</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">ij2wij</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;U&#39;</span><span class="p">):</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delimiter</span><span class="p">)</span>
+        <span class="n">ni</span><span class="p">,</span> <span class="n">nj</span><span class="p">,</span> <span class="n">wij</span> <span class="o">=</span> <span class="n">nodetype</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">nodetype</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">weighttype</span><span class="p">(</span>
+            <span class="n">L</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>  <span class="c1"># other columns ignored</span>
+        <span class="k">if</span> <span class="n">ni</span> <span class="o">!=</span> <span class="n">nj</span><span class="p">:</span>  <span class="c1"># skip any self-loops...</span>
+            <span class="n">ni</span><span class="p">,</span> <span class="n">nj</span> <span class="o">=</span> <span class="n">swap</span><span class="p">(</span><span class="n">ni</span><span class="p">,</span> <span class="n">nj</span><span class="p">)</span>
+            <span class="n">edges</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">ni</span><span class="p">,</span> <span class="n">nj</span><span class="p">))</span>
+            <span class="n">ij2wij</span><span class="p">[</span><span class="n">ni</span><span class="p">,</span> <span class="n">nj</span><span class="p">]</span> <span class="o">=</span> <span class="n">wij</span>
+            <span class="n">adj</span><span class="p">[</span><span class="n">ni</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nj</span><span class="p">)</span>
+            <span class="n">adj</span><span class="p">[</span><span class="n">nj</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ni</span><span class="p">)</span>  <span class="c1"># since undirected</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">adj</span><span class="p">),</span> <span class="n">edges</span><span class="p">,</span> <span class="n">ij2wij</span></div>
+
+
+<div class="viewcode-block" id="write_edge2cid"><a class="viewcode-back" href="../../../_autosummary/pypath.obsolete.linkcomm.write_edge2cid.html#pypath.obsolete.linkcomm.write_edge2cid">[docs]</a><span class="k">def</span> <span class="nf">write_edge2cid</span><span class="p">(</span><span class="n">e2c</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;writes the .edge2comm, .comm2edges, and .comm2nodes files&quot;&quot;&quot;</span>
+
+    <span class="c1"># renumber community id&#39;s to be sequential, makes output file</span>
+    <span class="c1"># human-readable</span>
+    <span class="c1"># ugly...</span>
+    <span class="n">c2c</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">c</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+               <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">e2c</span><span class="o">.</span><span class="n">values</span><span class="p">())))))</span>
+
+    <span class="c1"># write edge2cid three-column file:</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;.edge2comm.txt&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">e2c</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">)):</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s%s%s%s%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>
+                <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">delimiter</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">delimiter</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">c2c</span><span class="p">[</span><span class="n">c</span><span class="p">])))</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">cid2edges</span><span class="p">,</span> <span class="n">cid2nodes</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">),</span> <span class="n">defaultdict</span><span class="p">(</span>
+        <span class="nb">set</span><span class="p">)</span>  <span class="c1"># faster to recreate here than</span>
+    <span class="k">for</span> <span class="n">edge</span><span class="p">,</span> <span class="n">cid</span> <span class="ow">in</span> <span class="n">e2c</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>  <span class="c1"># to keep copying all dicts</span>
+        <span class="c1"># during the linkage...</span>
+        <span class="n">cid2edges</span><span class="p">[</span><span class="n">cid</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+        <span class="n">cid2nodes</span><span class="p">[</span><span class="n">cid</span><span class="p">]</span> <span class="o">|=</span> <span class="nb">set</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+    <span class="n">cid2edges</span><span class="p">,</span> <span class="n">cid2nodes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">cid2edges</span><span class="p">),</span> <span class="nb">dict</span><span class="p">(</span><span class="n">cid2nodes</span><span class="p">)</span>
+
+    <span class="c1"># write list of edges for each comm, each comm on its own line</span>
+    <span class="c1"># first entry of each line is cid</span>
+    <span class="n">f</span><span class="p">,</span> <span class="n">g</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;.comm2edges.txt&quot;</span><span class="p">,</span>
+                <span class="s1">&#39;w&#39;</span><span class="p">),</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;.comm2nodes.txt&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">cid</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">cid2edges</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="n">strcid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">c2c</span><span class="p">[</span><span class="n">cid</span><span class="p">])</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">cid2nodes</span><span class="p">[</span><span class="n">cid</span><span class="p">])</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ni</span><span class="p">,</span> <span class="n">nj</span><span class="p">)</span> <span class="k">for</span> <span class="n">ni</span><span class="p">,</span> <span class="n">nj</span> <span class="ow">in</span> <span class="n">cid2edges</span><span class="p">[</span><span class="n">cid</span><span class="p">]]</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">delimiter</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">strcid</span><span class="p">]</span> <span class="o">+</span> <span class="n">edges</span><span class="p">))</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">delimiter</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">strcid</span><span class="p">]</span> <span class="o">+</span> <span class="n">nodes</span><span class="p">))</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="write_dendro"><a class="viewcode-back" href="../../../_autosummary/pypath.obsolete.linkcomm.write_dendro.html#pypath.obsolete.linkcomm.write_dendro">[docs]</a><span class="k">def</span> <span class="nf">write_dendro</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">orig_cid2edge</span><span class="p">,</span> <span class="n">linkage</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;.cid2edge.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">cid</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">orig_cid2edge</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="se">\t</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cid</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;.linkage.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">linkage</span><span class="p">:</span>
+            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">x</span><span class="p">)))</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># build option parser:</span>
+    <span class="k">class</span> <span class="nc">MyParser</span><span class="p">(</span><span class="n">OptionParser</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">format_epilog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formatter</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">epilog</span>
+
+    <span class="n">usage</span> <span class="o">=</span> <span class="s2">&quot;usage: python %prog [options] filename&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;The link communities method of Ahn, Bagrow, and Lehmann, Nature, 2010:</span>
+<span class="s2">    www.nature.com/nature/journal/v466/n7307/full/nature09182.html (doi:10.1038/nature09182)</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">epilog</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    </span>
+<span class="s2">Input:</span>
+<span class="s2">  An edgelist file where each line represents an edge:</span>
+<span class="s2">    node_i &lt;delimiter&gt; node_j &lt;newline&gt;</span>
+<span class="s2">  if unweighted, or</span>
+<span class="s2">    node_i &lt;delimiter&gt; node_j &lt;delimiter&gt; weight_ij &lt;newline&gt;</span>
+<span class="s2">  if weighted.</span>
+<span class="s2">    </span>
+<span class="s2">Output: </span>
+<span class="s2">  Three text files with extensions .edge2comm.txt, .comm2edges.txt,</span>
+<span class="s2">  and .comm2nodes.txt store the communities.</span>
+<span class="s2"> </span>
+<span class="s2">  edge2comm, an edge on each line followed by the community</span>
+<span class="s2">  id (cid) of the edge&#39;s link comm:</span>
+<span class="s2">    node_i &lt;delimiter&gt; node_j &lt;delimiter&gt; cid &lt;newline&gt;</span>
+<span class="s2">  </span>
+<span class="s2">  comm2edges, a list of edges representing one community per line:</span>
+<span class="s2">    cid &lt;delimiter&gt; ni,nj &lt;delimiter&gt; nx,ny [...] &lt;newline&gt;</span>
+
+<span class="s2">  comm2nodes, a list of nodes representing one community per line:</span>
+<span class="s2">    cid &lt;delimiter&gt; ni &lt;delimiter&gt; nj [...] &lt;newline&gt;</span>
+<span class="s2">  </span>
+<span class="s2">  The output filename contains the threshold at which the dendrogram</span>
+<span class="s2">  was cut, if applicable, or the threshold where the maximum</span>
+<span class="s2">  partition density was found, and the value of the partition </span>
+<span class="s2">  density.</span>
+<span class="s2">  </span>
+<span class="s2">  If no threshold was given to cut the dendrogram, a file ending with</span>
+<span class="s2">  `_thr_D.txt&#39; is generated, containing the partition density as a</span>
+<span class="s2">  function of clustering threshold.</span>
+
+<span class="s2">  If the dendrogram option was given, two files are generated. One with</span>
+<span class="s2">  `.cid2edge.txt&#39; records the id of each edge and the other one with</span>
+<span class="s2">  `.linkage.txt&#39; stores the linkage structure of the hierarchical </span>
+<span class="s2">  clustering. In the linkage file, the edge in the first column is </span>
+<span class="s2">  merged with the one in the second at the similarity value in the </span>
+<span class="s2">  third column.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">MyParser</span><span class="p">(</span><span class="n">usage</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">epilog</span><span class="o">=</span><span class="n">epilog</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span>
+        <span class="s2">&quot;-d&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--delimiter&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;delimiter&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;delimiter of input &amp; output files [default: tab]&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span>
+        <span class="s2">&quot;-t&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--threshold&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;threshold&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;float&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;threshold to cut the dendrogram (optional)&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span>
+        <span class="s2">&quot;-w&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--weighted&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;is_weighted&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;is the network weighted?&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span>
+        <span class="s2">&quot;-r&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--record-dendrogram&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;dendro_flag&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;recording the whole dendrogram (optional)&quot;</span><span class="p">)</span>
+
+    <span class="c1"># parse options:</span>
+    <span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;incorrect number of arguments&quot;</span><span class="p">)</span>
+    <span class="n">delimiter</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">delimiter</span>
+    <span class="k">if</span> <span class="n">delimiter</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">t&#39;</span><span class="p">:</span>
+        <span class="n">delimiter</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span>
+    <span class="n">threshold</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">threshold</span>
+    <span class="n">is_weighted</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">is_weighted</span>
+    <span class="n">dendro_flag</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">dendro_flag</span>
+
+    <span class="c1">#print &quot;# loading network from edgelist...&quot;</span>
+    <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">is_weighted</span><span class="p">:</span>
+        <span class="n">adj</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">ij2wij</span> <span class="o">=</span> <span class="n">read_edgelist_weighted</span><span class="p">(</span>
+            <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">adj</span><span class="p">,</span> <span class="n">edges</span> <span class="o">=</span> <span class="n">read_edgelist_unweighted</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">)</span>
+
+    <span class="c1"># run the method:</span>
+    <span class="k">if</span> <span class="n">threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_weighted</span><span class="p">:</span>
+            <span class="n">edge2cid</span><span class="p">,</span> <span class="n">D_thr</span> <span class="o">=</span> <span class="n">HLC</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span><span class="o">.</span><span class="n">single_linkage</span><span class="p">(</span>
+                <span class="n">threshold</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">ij2wij</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">edge2cid</span><span class="p">,</span> <span class="n">D_thr</span> <span class="o">=</span> <span class="n">HLC</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span><span class="o">.</span><span class="n">single_linkage</span><span class="p">(</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="c1">#print &quot;# D_thr = %f&quot; % D_thr</span>
+        <span class="n">write_edge2cid</span><span class="p">(</span>
+            <span class="n">edge2cid</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_thrS</span><span class="si">%f</span><span class="s2">_thrD</span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">basename</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">D_thr</span><span class="p">),</span>
+            <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_weighted</span><span class="p">:</span>
+            <span class="n">edge2cid</span><span class="p">,</span> <span class="n">S_max</span><span class="p">,</span> <span class="n">D_max</span><span class="p">,</span> <span class="n">list_D</span> <span class="o">=</span> <span class="n">HLC</span><span class="p">(</span>
+                <span class="n">adj</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span><span class="o">.</span><span class="n">single_linkage</span><span class="p">(</span><span class="n">w</span><span class="o">=</span><span class="n">ij2wij</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dendro_flag</span><span class="p">:</span>
+                <span class="n">edge2cid</span><span class="p">,</span> <span class="n">S_max</span><span class="p">,</span> <span class="n">D_max</span><span class="p">,</span> <span class="n">list_D</span><span class="p">,</span> <span class="n">orig_cid2edge</span><span class="p">,</span> <span class="n">linkage</span> <span class="o">=</span> <span class="n">HLC</span><span class="p">(</span>
+                    <span class="n">adj</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span><span class="o">.</span><span class="n">single_linkage</span><span class="p">(</span><span class="n">dendro_flag</span><span class="o">=</span><span class="n">dendro_flag</span><span class="p">)</span>
+                <span class="n">write_dendro</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_dendro&quot;</span> <span class="o">%</span> <span class="n">basename</span><span class="p">,</span> <span class="n">orig_cid2edge</span><span class="p">,</span> <span class="n">linkage</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">edge2cid</span><span class="p">,</span> <span class="n">S_max</span><span class="p">,</span> <span class="n">D_max</span><span class="p">,</span> <span class="n">list_D</span> <span class="o">=</span> <span class="n">HLC</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span>
+                                                     <span class="n">edges</span><span class="p">)</span><span class="o">.</span><span class="n">single_linkage</span><span class="p">()</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_thr_D.txt&quot;</span> <span class="o">%</span> <span class="n">basename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">D</span> <span class="ow">in</span> <span class="n">list_D</span><span class="p">:</span>
+            <span class="c1">#print &gt;&gt; f, s, D</span>
+            <span class="k">pass</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="c1">#print &quot;# D_max = %f\n# S_max = %f&quot; % (D_max, S_max)</span>
+        <span class="n">write_edge2cid</span><span class="p">(</span>
+            <span class="n">edge2cid</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_maxS</span><span class="si">%f</span><span class="s2">_maxD</span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">basename</span><span class="p">,</span> <span class="n">S_max</span><span class="p">,</span> <span class="n">D_max</span><span class="p">),</span>
+            <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">)</span>
+</pre></div>
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+          <div class="sidebar-resize-handle"></div>
+
+  <div>
+    <h3><a href="../../../index.html">Table of Contents</a></h3>
+    <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../releasehistory.html">Release history</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/pypath.html">pypath</a></li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <nav class="relbar">
+    </nav>
+
+    <footer role="contentinfo">
+      &#169; Copyright 2022, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
+    </footer>
+  </body>
+</html>

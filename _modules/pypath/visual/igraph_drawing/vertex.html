@@ -1,0 +1,259 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.visual.igraph_drawing.vertex &#8212; pypath 0.14.30 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/pypathdocs.css" />
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script defer src="../../../../_static/insipid.js"></script>
+    <script defer src="../../../../_static/insipid-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head><body>
+    <script type="text/javascript">
+        document.body.classList.add('js');
+    </script>
+    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
+    <label id="overlay" for="sidebar-checkbox"></label>
+    <div class="sidebar-resize-handle"></div>
+    <script type="text/javascript">
+        try {
+            let sidebar = localStorage.getItem('sphinx-sidebar');
+            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
+            if (sidebar_width) {
+                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
+            }
+            // show sidebar on wide screen
+            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
+                sidebar = 'visible';
+                // NB: We don't store the value in localStorage!
+            }
+            if (sidebar === 'visible') {
+                document.getElementById('sidebar-checkbox').checked = true;
+            }
+        } catch(e) {
+            console.info(e);
+        }
+    </script>
+    <header id="topbar-placeholder">
+      <div id="topbar">
+        <div id="titlebar">
+          <div class="buttons">
+            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+            </label>
+          </div>
+          <div class="title">
+            <a class="parent" href="../igraph_drawing.html" accesskey="U">pypath.visual.igraph_drawing</a>
+            <a class="top" href="#">pypath.visual.igraph_drawing.vertex</a>
+          </div>
+          <div class="buttons">
+            <button id="fullscreen-button" type="button" aria-hidden="true">
+              <span class="enable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
+              </span>
+              <span class="disable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <nav>
+    </nav>
+
+    <nav class="relbar">
+    </nav>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+<h1>Source code for pypath.visual.igraph_drawing.vertex</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Drawing routines to draw the vertices of graphs.</span>
+
+<span class="sd">This module provides implementations of vertex drawers, i.e. drawers that the</span>
+<span class="sd">default graph drawer will use to draw vertices.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">igraph.drawing.baseclasses</span> <span class="kn">import</span> <span class="n">AbstractDrawer</span><span class="p">,</span> <span class="n">AbstractCairoDrawer</span>
+    <span class="kn">from</span> <span class="nn">igraph.drawing.metamagic</span> <span class="kn">import</span> <span class="n">AttributeCollectorBase</span>
+    <span class="kn">from</span> <span class="nn">igraph.drawing.shapes</span> <span class="kn">import</span> <span class="n">ShapeDrawerDirectory</span>
+<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Module `igraph` is not available.&#39;</span>
+                     <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Some plotting functionalities won</span><span class="se">\&#39;</span><span class="s1">t be accessible.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="AbstractDrawer"><a class="viewcode-back" href="../../../../_autosummary/pypath.visual.igraph_drawing.vertex.AbstractDrawer.html#pypath.visual.igraph_drawing.vertex.AbstractDrawer">[docs]</a>    <span class="k">class</span> <span class="nc">AbstractDrawer</span><span class="p">:</span> <span class="k">pass</span></div>
+<div class="viewcode-block" id="AbstractCairoDrawer"><a class="viewcode-back" href="../../../../_autosummary/pypath.visual.igraph_drawing.vertex.AbstractCairoDrawer.html#pypath.visual.igraph_drawing.vertex.AbstractCairoDrawer">[docs]</a>    <span class="k">class</span> <span class="nc">AbstractCairoDrawer</span><span class="p">:</span> <span class="k">pass</span></div>
+
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;AbstractVertexDrawer&quot;</span><span class="p">,</span> <span class="s2">&quot;AbstractCairoVertexDrawer&quot;</span><span class="p">,</span> <span class="s2">&quot;DefaultVertexDrawer&quot;</span>
+<span class="p">]</span>
+<span class="n">__license__</span> <span class="o">=</span> <span class="s2">&quot;GPL&quot;</span>
+
+
+<div class="viewcode-block" id="AbstractVertexDrawer"><a class="viewcode-back" href="../../../../_autosummary/pypath.visual.igraph_drawing.vertex.AbstractVertexDrawer.html#pypath.visual.igraph_drawing.vertex.AbstractVertexDrawer">[docs]</a><span class="k">class</span> <span class="nc">AbstractVertexDrawer</span><span class="p">(</span><span class="n">AbstractDrawer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Abstract vertex drawer object from which all concrete vertex drawer</span>
+<span class="sd">    implementations are derived.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AbstractVertexDrawer.__init__"><a class="viewcode-back" href="../../../../_autosummary/pypath.visual.igraph_drawing.vertex.AbstractVertexDrawer.html#pypath.visual.igraph_drawing.vertex.AbstractVertexDrawer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">palette</span><span class="p">,</span> <span class="n">layout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructs the vertex drawer and associates it to the given</span>
+<span class="sd">        palette.</span>
+
+<span class="sd">        @param palette: the palette that can be used to map integer</span>
+<span class="sd">                        color indices to colors when drawing vertices</span>
+<span class="sd">        @param layout:  the layout of the vertices in the graph being drawn</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">layout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">palette</span> <span class="o">=</span> <span class="n">palette</span></div>
+
+<div class="viewcode-block" id="AbstractVertexDrawer.draw"><a class="viewcode-back" href="../../../../_autosummary/pypath.visual.igraph_drawing.vertex.AbstractVertexDrawer.html#pypath.visual.igraph_drawing.vertex.AbstractVertexDrawer.draw">[docs]</a>    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visual_vertex</span><span class="p">,</span> <span class="n">vertex</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Draws the given vertex.</span>
+
+<span class="sd">        @param visual_vertex: object specifying the visual properties of the</span>
+<span class="sd">            vertex. Its structure is defined by the VisualVertexBuilder of the</span>
+<span class="sd">            L{DefaultGraphDrawer}; see its source code.</span>
+<span class="sd">        @param vertex: the raw igraph vertex being drawn</span>
+<span class="sd">        @param coords: the X and Y coordinates of the vertex as specified by the</span>
+<span class="sd">            layout algorithm, scaled into the bounding box.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;abstract class&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="AbstractCairoVertexDrawer"><a class="viewcode-back" href="../../../../_autosummary/pypath.visual.igraph_drawing.vertex.AbstractCairoVertexDrawer.html#pypath.visual.igraph_drawing.vertex.AbstractCairoVertexDrawer">[docs]</a><span class="k">class</span> <span class="nc">AbstractCairoVertexDrawer</span><span class="p">(</span><span class="n">AbstractVertexDrawer</span><span class="p">,</span> <span class="n">AbstractCairoDrawer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Abstract base class for vertex drawers that draw on a Cairo canvas.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AbstractCairoVertexDrawer.__init__"><a class="viewcode-back" href="../../../../_autosummary/pypath.visual.igraph_drawing.vertex.AbstractCairoVertexDrawer.html#pypath.visual.igraph_drawing.vertex.AbstractCairoVertexDrawer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">bbox</span><span class="p">,</span> <span class="n">palette</span><span class="p">,</span> <span class="n">layout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructs the vertex drawer and associates it to the given</span>
+<span class="sd">        Cairo context and the given L{BoundingBox}.</span>
+
+<span class="sd">        @param context: the context on which we will draw</span>
+<span class="sd">        @param bbox:    the bounding box within which we will draw.</span>
+<span class="sd">                        Can be anything accepted by the constructor</span>
+<span class="sd">                        of L{BoundingBox} (i.e., a 2-tuple, a 4-tuple</span>
+<span class="sd">                        or a L{BoundingBox} object).</span>
+<span class="sd">        @param palette: the palette that can be used to map integer</span>
+<span class="sd">                        color indices to colors when drawing vertices</span>
+<span class="sd">        @param layout:  the layout of the vertices in the graph being drawn</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">AbstractCairoDrawer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">bbox</span><span class="p">)</span>
+        <span class="n">AbstractVertexDrawer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">palette</span><span class="p">,</span> <span class="n">layout</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="DefaultVertexDrawer"><a class="viewcode-back" href="../../../../_autosummary/pypath.visual.igraph_drawing.vertex.DefaultVertexDrawer.html#pypath.visual.igraph_drawing.vertex.DefaultVertexDrawer">[docs]</a><span class="k">class</span> <span class="nc">DefaultVertexDrawer</span><span class="p">(</span><span class="n">AbstractCairoVertexDrawer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The default vertex drawer implementation of igraph.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DefaultVertexDrawer.__init__"><a class="viewcode-back" href="../../../../_autosummary/pypath.visual.igraph_drawing.vertex.DefaultVertexDrawer.html#pypath.visual.igraph_drawing.vertex.DefaultVertexDrawer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">bbox</span><span class="p">,</span> <span class="n">palette</span><span class="p">,</span> <span class="n">layout</span><span class="p">):</span>
+        <span class="n">AbstractCairoVertexDrawer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">bbox</span><span class="p">,</span> <span class="n">palette</span><span class="p">,</span>
+                                           <span class="n">layout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">VisualVertexBuilder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construct_visual_vertex_builder</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_construct_visual_vertex_builder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">class</span> <span class="nc">VisualVertexBuilder</span><span class="p">(</span><span class="n">AttributeCollectorBase</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Collects some visual properties of a vertex for drawing&quot;&quot;&quot;</span>
+            <span class="n">_kwds_prefix</span> <span class="o">=</span> <span class="s2">&quot;vertex_&quot;</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="o">.</span><span class="n">get</span><span class="p">)</span>
+            <span class="n">frame_color</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="o">.</span><span class="n">get</span><span class="p">)</span>
+            <span class="n">frame_width</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">label_angle</span> <span class="o">=</span> <span class="o">-</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">label_dist</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">label_color</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="o">.</span><span class="n">get</span><span class="p">)</span>
+            <span class="n">label_size</span> <span class="o">=</span> <span class="mf">14.0</span>
+            <span class="n">label_family</span> <span class="o">=</span> <span class="s1">&#39;sans-serif&#39;</span>
+            <span class="n">position</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">)</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;circle&quot;</span><span class="p">,</span> <span class="n">ShapeDrawerDirectory</span><span class="o">.</span><span class="n">resolve_default</span><span class="p">)</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="mf">20.0</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">VisualVertexBuilder</span>
+
+<div class="viewcode-block" id="DefaultVertexDrawer.draw"><a class="viewcode-back" href="../../../../_autosummary/pypath.visual.igraph_drawing.vertex.DefaultVertexDrawer.html#pypath.visual.igraph_drawing.vertex.DefaultVertexDrawer.draw">[docs]</a>    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visual_vertex</span><span class="p">,</span> <span class="n">vertex</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span>
+
+        <span class="k">if</span> <span class="n">visual_vertex</span><span class="o">.</span><span class="n">width</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">visual_vertex</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">visual_vertex</span><span class="o">.</span><span class="n">size</span>
+        <span class="k">if</span> <span class="n">visual_vertex</span><span class="o">.</span><span class="n">height</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">visual_vertex</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">visual_vertex</span><span class="o">.</span><span class="n">width</span>
+        <span class="n">visual_vertex</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">draw_path</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                      <span class="n">visual_vertex</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
+                                      <span class="n">visual_vertex</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">set_source_rgba</span><span class="p">(</span><span class="o">*</span><span class="n">visual_vertex</span><span class="o">.</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">fill_preserve</span><span class="p">()</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">set_source_rgba</span><span class="p">(</span><span class="o">*</span><span class="n">visual_vertex</span><span class="o">.</span><span class="n">frame_color</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">set_line_width</span><span class="p">(</span><span class="n">visual_vertex</span><span class="o">.</span><span class="n">frame_width</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">stroke</span><span class="p">()</span></div></div>
+</pre></div>
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+          <div class="sidebar-resize-handle"></div>
+
+  <div>
+    <h3><a href="../../../../index.html">Table of Contents</a></h3>
+    <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../webservice.html">Webservice</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../releasehistory.html">Release history</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_autosummary/pypath.html">pypath</a></li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <nav class="relbar">
+    </nav>
+
+    <footer role="contentinfo">
+      &#169; Copyright 2022, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,1471 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.core.enz_sub &#8212; pypath 0.14.30 documentation</title>
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script defer src="../../../_static/insipid.js"></script>
+    <script defer src="../../../_static/insipid-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head><body>
+    <script type="text/javascript">
+        document.body.classList.add('js');
+    </script>
+    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
+    <label id="overlay" for="sidebar-checkbox"></label>
+    <div class="sidebar-resize-handle"></div>
+    <script type="text/javascript">
+        try {
+            let sidebar = localStorage.getItem('sphinx-sidebar');
+            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
+            if (sidebar_width) {
+                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
+            }
+            // show sidebar on wide screen
+            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
+                sidebar = 'visible';
+                // NB: We don't store the value in localStorage!
+            }
+            if (sidebar === 'visible') {
+                document.getElementById('sidebar-checkbox').checked = true;
+            }
+        } catch(e) {
+            console.info(e);
+        }
+    </script>
+    <header id="topbar-placeholder">
+      <div id="topbar">
+        <div id="titlebar">
+          <div class="buttons">
+            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+            </label>
+          </div>
+          <div class="title">
+            <a class="parent" href="../../pypath.html" accesskey="U">pypath</a>
+            <a class="top" href="#">pypath.core.enz_sub</a>
+          </div>
+          <div class="buttons">
+            <button id="fullscreen-button" type="button" aria-hidden="true">
+              <span class="enable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
+              </span>
+              <span class="disable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <nav>
+    </nav>
+
+    <nav class="relbar">
+    </nav>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+<h1>Source code for pypath.core.enz_sub</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright</span>
+<span class="c1">#  2014-2022</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  Authors: Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#           Nicolàs Palacio</span>
+<span class="c1">#           Sebastian Lobentanzer</span>
+<span class="c1">#           Erva Ulusoy</span>
+<span class="c1">#           Olga Ivanova</span>
+<span class="c1">#           Ahmet Rifaioglu</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
+<span class="kn">from</span> <span class="nn">past.builtins</span> <span class="kn">import</span> <span class="n">xrange</span><span class="p">,</span> <span class="nb">range</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">importlib</span> <span class="k">as</span> <span class="nn">imp</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
+<span class="kn">import</span> <span class="nn">pypath.utils.mapping</span> <span class="k">as</span> <span class="nn">mapping</span>
+<span class="kn">import</span> <span class="nn">pypath.utils.homology</span> <span class="k">as</span> <span class="nn">homology</span>
+<span class="kn">import</span> <span class="nn">pypath.inputs.uniprot</span> <span class="k">as</span> <span class="nn">uniprot_input</span>
+<span class="kn">import</span> <span class="nn">pypath.internals.intera</span> <span class="k">as</span> <span class="nn">intera</span>
+<span class="kn">import</span> <span class="nn">pypath.share.progress</span> <span class="k">as</span> <span class="nn">progress</span>
+<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session_mod</span>
+<span class="kn">import</span> <span class="nn">pypath.utils.taxonomy</span> <span class="k">as</span> <span class="nn">taxonomy</span>
+<span class="kn">import</span> <span class="nn">pypath.inputs</span> <span class="k">as</span> <span class="nn">inputs</span>
+<span class="kn">import</span> <span class="nn">pypath.core.evidence</span> <span class="k">as</span> <span class="nn">evidence</span>
+<span class="kn">import</span> <span class="nn">pypath.core.entity</span> <span class="k">as</span> <span class="nn">entity</span>
+<span class="kn">import</span> <span class="nn">pypath.resources</span> <span class="k">as</span> <span class="nn">resources</span>
+
+
+<div class="viewcode-block" id="EnzymeSubstrateProcessor"><a class="viewcode-back" href="../../../_autosummary/pypath.core.enz_sub.EnzymeSubstrateProcessor.html#pypath.core.enz_sub.EnzymeSubstrateProcessor">[docs]</a><span class="k">class</span> <span class="nc">EnzymeSubstrateProcessor</span><span class="p">(</span>
+        <span class="n">homology</span><span class="o">.</span><span class="n">Proteomes</span><span class="p">,</span>
+        <span class="n">homology</span><span class="o">.</span><span class="n">SequenceContainer</span>
+    <span class="p">):</span>
+
+
+<div class="viewcode-block" id="EnzymeSubstrateProcessor.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.core.enz_sub.EnzymeSubstrateProcessor.html#pypath.core.enz_sub.EnzymeSubstrateProcessor.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">input_param</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">input_method</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">trace</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">id_type_enzyme</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">id_type_substrate</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">allow_mixed_organisms</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">organisms_supported</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes enzyme-substrate interaction data from various databases.</span>
+<span class="sd">        Provides generators to iterate over these interactions.</span>
+<span class="sd">        For organisms other than human obtains the organism specific</span>
+<span class="sd">        interactions from databases.</span>
+
+<span class="sd">        :param str input_method:</span>
+<span class="sd">            Either a method name in the ``inputs`` module or a database</span>
+<span class="sd">            name e.g. `PhosphoSite` or a callable which returns data in</span>
+<span class="sd">            list of dicts format.</span>
+<span class="sd">        :param int ncbi_tax_id: NCBI Taxonomy ID used at the database lookups.</span>
+<span class="sd">        :param bool trace: Keep data about ambiguous ID mappings and PTM data</span>
+<span class="sd">                           in mismatch with UniProt sequences.</span>
+<span class="sd">        :param pypath.mapping.Mapper: A `Mapper` instance. If `None` a new</span>
+<span class="sd">                                      instance will be created.</span>
+<span class="sd">        :param str id_type_enzyme: The ID type of the enzyme in the database.</span>
+<span class="sd">        :param str id_type_substrate: The ID type of the substrate in the</span>
+<span class="sd">                                      database.</span>
+
+<span class="sd">        :param bool nonhuman_direct_lookup: Use direct lookup at non-human</span>
+<span class="sd">                                            target species.</span>
+<span class="sd">        :param **kwargs: Args to be forwarded to the input method.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_logger&#39;</span><span class="p">):</span>
+
+            <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;enz_sub&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mammal_taxa</span> <span class="o">=</span> <span class="p">{</span><span class="mi">9606</span><span class="p">,</span> <span class="mi">10090</span><span class="p">,</span> <span class="mi">10116</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nomatch</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kin_ambig</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sub_ambig</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_param</span> <span class="o">=</span> <span class="n">input_param</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id_type_enzyme</span> <span class="o">=</span> <span class="n">id_type_enzyme</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id_type_substrate</span> <span class="o">=</span> <span class="n">id_type_substrate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allow_mixed_organisms</span> <span class="o">=</span> <span class="n">allow_mixed_organisms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_method</span> <span class="o">=</span> <span class="n">input_method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">organisms_supported</span> <span class="o">=</span> <span class="n">organisms_supported</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+
+        <span class="n">homology</span><span class="o">.</span><span class="n">SequenceContainer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_seq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_mixed_organisms</span><span class="p">:</span>
+
+            <span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mammal_taxa</span><span class="p">:</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">load_seq</span><span class="p">(</span><span class="n">taxon</span> <span class="o">=</span> <span class="n">taxon</span><span class="p">)</span>
+
+        <span class="n">homology</span><span class="o">.</span><span class="n">Proteomes</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_inputargs</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_enz_sub</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_param</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id_type_enzyme</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_param</span><span class="p">(</span><span class="s1">&#39;id_type_enzyme&#39;</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id_type_substrate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_param</span><span class="p">(</span>
+            <span class="s1">&#39;id_type_substrate&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id_type_substrate</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id_type_substrate</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_param</span><span class="p">(</span><span class="s1">&#39;ncbi_tax_id&#39;</span><span class="p">,</span> <span class="mi">9606</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">organisms_supported</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_param</span><span class="p">(</span>
+            <span class="s1">&#39;organisms_supported&#39;</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allow_mixed_organisms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_param</span><span class="p">(</span>
+            <span class="s1">&#39;allow_mixed_organisms&#39;</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_param</span><span class="p">(</span><span class="s1">&#39;input_method&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_method</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">_get_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_param</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_param</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="k">else</span>
+                <span class="n">default</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">load_enz_sub</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">reset_ptmprocessor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_taxon</span><span class="p">(</span><span class="n">ncbi_tax_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_seq</span><span class="p">(</span><span class="n">ncbi_tax_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">set_taxon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_organism_setup</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="EnzymeSubstrateProcessor.set_method"><a class="viewcode-back" href="../../../_autosummary/pypath.core.enz_sub.EnzymeSubstrateProcessor.html#pypath.core.enz_sub.EnzymeSubstrateProcessor.set_method">[docs]</a>    <span class="k">def</span> <span class="nf">set_method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Selects the input method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">empty_input</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="k">return</span> <span class="p">[]</span>
+
+
+        <span class="c1"># attempting to look up the method in the inputs module</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_method</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_method</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">inputs</span><span class="o">.</span><span class="n">get_method</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_method</span><span class="p">)</span> <span class="ow">or</span>
+                <span class="n">empty_input</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_method</span><span class="o">.</span><span class="vm">__name__</span></div>
+
+
+<div class="viewcode-block" id="EnzymeSubstrateProcessor.set_inputargs"><a class="viewcode-back" href="../../../_autosummary/pypath.core.enz_sub.EnzymeSubstrateProcessor.html#pypath.core.enz_sub.EnzymeSubstrateProcessor.set_inputargs">[docs]</a>    <span class="k">def</span> <span class="nf">set_inputargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">inputargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the arguments to be provided for the input method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputargs</span> <span class="o">=</span> <span class="n">inputargs</span></div>
+
+
+<div class="viewcode-block" id="EnzymeSubstrateProcessor.load_data"><a class="viewcode-back" href="../../../_autosummary/pypath.core.enz_sub.EnzymeSubstrateProcessor.html#pypath.core.enz_sub.EnzymeSubstrateProcessor.load_data">[docs]</a>    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the data by the defined input method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">input_method_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_method</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_method</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+            <span class="s1">&#39;Calling `</span><span class="si">%s</span><span class="s1">` with arguments </span><span class="si">%s</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">input_method_name</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputargs</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_method</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">inputargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+            <span class="s1">&#39;Loaded data by `</span><span class="si">%s</span><span class="s1">`, resulted </span><span class="si">%u</span><span class="s1"> records.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">input_method_name</span><span class="p">,</span>
+                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_phosphosite_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="s1">&#39;strict&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputargs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputargs</span><span class="p">[</span><span class="s1">&#39;strict&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputargs</span><span class="p">[</span><span class="s1">&#39;organism&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">taxonomy</span><span class="o">.</span><span class="n">taxids</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputargs</span><span class="p">[</span><span class="s1">&#39;organism&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">taxonomy</span><span class="o">.</span><span class="n">taxids</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">inputargs</span><span class="p">[</span><span class="s1">&#39;organism&#39;</span><span class="p">]]</span>
+            <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_phosphoelm_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">!=</span> <span class="mi">9606</span> <span class="ow">and</span> <span class="s1">&#39;ltp_only&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputargs</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputargs</span><span class="p">[</span><span class="s1">&#39;ltp_only&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+    <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">setupmethod</span> <span class="o">=</span> <span class="s1">&#39;_</span><span class="si">%s</span><span class="s1">_setup&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_organism_setup</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setupmethod</span><span class="p">):</span>
+
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">setupmethod</span><span class="p">)()</span>
+
+
+    <span class="k">def</span> <span class="nf">_organism_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">organisms_supported</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="ow">in</span> <span class="n">taxonomy</span><span class="o">.</span><span class="n">taxa</span><span class="p">:</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">taxonomy</span><span class="o">.</span><span class="n">taxa</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputargs</span><span class="p">[</span><span class="s1">&#39;organism&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_proteome</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+        <span class="c1"># human leukocyte antigenes result a result an</span>
+        <span class="c1"># extremely high number of combinations</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;kinase&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;substrate&#39;</span><span class="p">],</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="n">p</span><span class="p">[</span><span class="s1">&#39;substrate&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;HLA&#39;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">):</span>
+
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;kinase&#39;</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">p</span><span class="p">[</span><span class="s1">&#39;kinase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;kinase&#39;</span><span class="p">]]</span>
+
+        <span class="n">kinase_ups</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">map_names</span><span class="p">(</span>
+            <span class="n">p</span><span class="p">[</span><span class="s1">&#39;kinase&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id_type_enzyme</span><span class="p">,</span>
+            <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span>
+            <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">substrate_ups_all</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">sub_id_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_type_substrate</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sub_id_type</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="n">sub_id_type</span><span class="p">,</span> <span class="n">sub_id_attr</span> <span class="o">=</span> <span class="n">sub_id_type</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sub_id_attr</span> <span class="o">=</span> <span class="s1">&#39;substrate&#39;</span>
+
+            <span class="n">substrate_ups_all</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="nb">set</span><span class="p">(</span>
+                    <span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span>
+                        <span class="n">p</span><span class="p">[</span><span class="n">sub_id_attr</span><span class="p">],</span>
+                        <span class="n">sub_id_type</span><span class="p">,</span>
+                        <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># looking up sequences in all isoforms:</span>
+        <span class="n">substrate_ups</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">substrate_ups_all</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="s1">&#39;substrate_isoform&#39;</span> <span class="ow">in</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;substrate_isoform&#39;</span><span class="p">]:</span>
+
+                <span class="n">substrate_ups</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;substrate_isoform&#39;</span><span class="p">]))</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">se</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_seq</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">se</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="k">for</span> <span class="n">isof</span> <span class="ow">in</span> <span class="n">se</span><span class="o">.</span><span class="n">isoforms</span><span class="p">():</span>
+
+                    <span class="k">if</span> <span class="s1">&#39;instance&#39;</span> <span class="ow">in</span> <span class="n">p</span> <span class="ow">and</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;instance&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+                        <span class="k">if</span> <span class="n">se</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
+                            <span class="n">p</span><span class="p">[</span><span class="s1">&#39;instance&#39;</span><span class="p">],</span>
+                            <span class="n">p</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span>
+                            <span class="n">p</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span>
+                            <span class="n">isoform</span> <span class="o">=</span> <span class="n">isof</span><span class="p">,</span>
+                        <span class="p">):</span>
+
+                            <span class="n">substrate_ups</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">s</span><span class="p">,</span> <span class="n">isof</span><span class="p">))</span>
+
+                    <span class="k">else</span><span class="p">:</span>
+
+                        <span class="k">if</span> <span class="n">se</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
+                            <span class="n">p</span><span class="p">[</span><span class="s1">&#39;resaa&#39;</span><span class="p">],</span>
+                            <span class="n">p</span><span class="p">[</span><span class="s1">&#39;resnum&#39;</span><span class="p">],</span>
+                            <span class="n">isoform</span> <span class="o">=</span> <span class="n">isof</span><span class="p">,</span>
+                        <span class="p">):</span>
+
+                            <span class="n">substrate_ups</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">s</span><span class="p">,</span> <span class="n">isof</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;substrate&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_ambig</span><span class="p">:</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">sub_ambig</span><span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;substrate&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">substrate_ups</span>
+
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;kinase&#39;</span><span class="p">]:</span>
+
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kin_ambig</span><span class="p">:</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">kin_ambig</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kinase_ups</span>
+            <span class="c1"># generating report on non matching substrates</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">substrate_ups</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">substrate_ups_all</span><span class="p">:</span>
+
+                    <span class="n">se</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_seq</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+                    <span class="k">if</span> <span class="n">se</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">continue</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">nomatch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="p">(</span>
+                            <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                            <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                            <span class="p">(</span>
+                                <span class="n">p</span><span class="p">[</span><span class="s1">&#39;substrate_refseq&#39;</span><span class="p">]</span>
+                                    <span class="k">if</span> <span class="s1">&#39;substrate_refseq&#39;</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">else</span>
+                                <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                <span class="n">s</span><span class="p">,</span>
+                                <span class="n">p</span><span class="p">[</span><span class="s1">&#39;instance&#39;</span><span class="p">],</span>
+                                <span class="n">se</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                                    <span class="n">p</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span>
+                                    <span class="n">p</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span>
+                                <span class="p">),</span>
+                            <span class="p">),</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+        <span class="c1"># building objects representing the enzyme-substrate interaction(s)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;typ&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">p</span><span class="p">:</span>
+            <span class="n">p</span><span class="p">[</span><span class="s1">&#39;typ&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;phosphorylation&#39;</span>
+
+        <span class="n">_resources</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">input_param</span><span class="o">.</span><span class="n">get_via</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_param</span><span class="p">,</span> <span class="s1">&#39;get_via&#39;</span><span class="p">)</span> <span class="k">else</span>
+                <span class="n">name</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="n">p</span><span class="p">[</span><span class="s1">&#39;databases&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;databases&#39;</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">else</span> <span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">_resources</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_param</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">)</span> <span class="k">else</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_param</span><span class="p">,)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># collecting the evidences</span>
+        <span class="n">evidences</span> <span class="o">=</span> <span class="n">evidence</span><span class="o">.</span><span class="n">Evidences</span><span class="p">(</span>
+            <span class="n">evidence</span><span class="o">.</span><span class="n">Evidence</span><span class="p">(</span>
+                <span class="n">resource</span> <span class="o">=</span> <span class="n">_res</span><span class="p">,</span>
+                <span class="n">references</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;references&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;references&#39;</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">_res</span> <span class="ow">in</span> <span class="n">_resources</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">substrate_ups</span><span class="p">:</span>
+
+            <span class="c1"># building the objects representing the substrate</span>
+            <span class="n">se</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_seq</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">se</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">res</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">Residue</span><span class="p">(</span>
+                <span class="n">p</span><span class="p">[</span><span class="s1">&#39;resnum&#39;</span><span class="p">],</span>
+                <span class="n">p</span><span class="p">[</span><span class="s1">&#39;resaa&#39;</span><span class="p">],</span>
+                <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">isoform</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="s1">&#39;instance&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">p</span> <span class="ow">or</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;instance&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+                <span class="n">reg</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">get_region</span><span class="p">(</span>
+                    <span class="n">p</span><span class="p">[</span><span class="s1">&#39;resnum&#39;</span><span class="p">],</span>
+                    <span class="n">p</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;start&#39;</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">p</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;end&#39;</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">isoform</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">reg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+                    <span class="n">p</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reg</span>
+
+            <span class="n">mot</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">Motif</span><span class="p">(</span>
+                    <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="n">p</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span>
+                    <span class="n">p</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span>
+                    <span class="n">instance</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;instance&#39;</span><span class="p">],</span>
+                    <span class="n">isoform</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="n">ptm</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">Ptm</span><span class="p">(</span>
+                <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">motif</span> <span class="o">=</span> <span class="n">mot</span><span class="p">,</span>
+                <span class="n">residue</span> <span class="o">=</span> <span class="n">res</span><span class="p">,</span>
+                <span class="n">typ</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;typ&#39;</span><span class="p">],</span>
+                <span class="n">evidences</span> <span class="o">=</span> <span class="n">evidences</span><span class="p">,</span>
+                <span class="n">isoform</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kinase_ups</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_mixed_organisms</span> <span class="ow">and</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">get_taxon</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="ow">or</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">get_taxon</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span>
+                    <span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># the enzyme (kinase)</span>
+                <span class="n">dom</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">Domain</span><span class="p">(</span>
+                    <span class="n">protein</span> <span class="o">=</span> <span class="n">k</span><span class="p">,</span>
+                    <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="n">dommot</span> <span class="o">=</span> <span class="n">intera</span><span class="o">.</span><span class="n">DomainMotif</span><span class="p">(</span>
+                    <span class="n">domain</span> <span class="o">=</span> <span class="n">dom</span><span class="p">,</span>
+                    <span class="n">ptm</span> <span class="o">=</span> <span class="n">ptm</span><span class="p">,</span>
+                    <span class="n">evidences</span> <span class="o">=</span> <span class="n">evidences</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_param</span><span class="p">,</span> <span class="s1">&#39;extra_attrs&#39;</span><span class="p">):</span>
+
+                    <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_param</span><span class="o">.</span><span class="n">extra_attrs</span><span class="p">):</span>
+
+                        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">p</span><span class="p">:</span>
+
+                            <span class="nb">setattr</span><span class="p">(</span><span class="n">dommot</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+                <span class="k">yield</span> <span class="n">dommot</span>
+
+
+    <span class="k">def</span> <span class="nf">input_is</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">op</span> <span class="o">=</span> <span class="s1">&#39;__eq__&#39;</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">char_types</span> <span class="ow">and</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">op</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterates through the enzyme-substrate interactions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+
+            <span class="k">for</span> <span class="n">enz_sub</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+
+                <span class="k">yield</span> <span class="n">enz_sub</span>
+
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="s1">&#39;&lt;Enzyme-substrate processor: </span><span class="si">%u</span><span class="s1"> records&gt;&#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EnzymeSubstrateHomologyProcessor"><a class="viewcode-back" href="../../../_autosummary/pypath.core.enz_sub.EnzymeSubstrateHomologyProcessor.html#pypath.core.enz_sub.EnzymeSubstrateHomologyProcessor">[docs]</a><span class="k">class</span> <span class="nc">EnzymeSubstrateHomologyProcessor</span><span class="p">(</span>
+        <span class="n">homology</span><span class="o">.</span><span class="n">PtmHomology</span><span class="p">,</span>
+        <span class="n">EnzymeSubstrateProcessor</span><span class="p">,</span>
+        <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span>
+    <span class="p">):</span>
+
+
+<div class="viewcode-block" id="EnzymeSubstrateHomologyProcessor.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.core.enz_sub.EnzymeSubstrateHomologyProcessor.html#pypath.core.enz_sub.EnzymeSubstrateHomologyProcessor.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">ncbi_tax_id</span><span class="p">,</span>
+            <span class="n">input_param</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">input_method</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">map_by_homology_from</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">trace</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">id_type_enzyme</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">id_type_substrate</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">homology_only_swissprot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">ptm_homology_strict</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Unifies a `pypath.core.enz_sub.EnzymeSubstrateProcessor` and</span>
+<span class="sd">        a `pypath.utils.homology.EnzymeSubstrateHomology` object to build</span>
+<span class="sd">        a set of enzyme-substrate interactions from a database and</span>
+<span class="sd">        subsequently translate them by homology to one different organism.</span>
+<span class="sd">        Multiple organism can be chosen as the source of the</span>
+<span class="sd">        enzyme-substrate interactions. For example if you want mouse</span>
+<span class="sd">        interactions, you can translate them from human and from rat.</span>
+<span class="sd">        To get the original mouse interactions themselves, use an</span>
+<span class="sd">        other instance of the `EnzymeSubstrateProcessor`.</span>
+<span class="sd">        To have both the original and the homology translated set,</span>
+<span class="sd">        and also from multiple databases, whatmore all these merged</span>
+<span class="sd">        into a single set, use the `EnzymeSubstrateAggregator`.</span>
+
+<span class="sd">        :param str input_method: Data source for `EnzymeSubstrateProcessor`.</span>
+<span class="sd">        :param int ncbi_tax_id: The NCBI Taxonomy ID the interactions</span>
+<span class="sd">                                should be translated to.</span>
+<span class="sd">        :param bool homology_only_swissprot: Use only SwissProt</span>
+<span class="sd">                                             (i.e. not Trembl) at homology</span>
+<span class="sd">                                             translation.</span>
+<span class="sd">        :param bool ptm_homology_strict: Use only those homologous PTM pairs</span>
+<span class="sd">                                         which are in PhosphoSite data, i.e.</span>
+<span class="sd">                                         do not look for residues with same</span>
+<span class="sd">                                         offset in protein sequence.</span>
+
+<span class="sd">        See further options at `EnzymeSubstrateProcessor`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_logger&#39;</span><span class="p">):</span>
+
+            <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;enz_sub_homology&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_taxon</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">map_by_homology_from</span> <span class="ow">or</span>
+            <span class="p">{</span><span class="mi">9606</span><span class="p">,</span> <span class="mi">10090</span><span class="p">,</span> <span class="mi">10116</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_taxon</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_param</span> <span class="o">=</span> <span class="n">input_param</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_method</span> <span class="o">=</span> <span class="n">input_method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id_type_enzyme</span> <span class="o">=</span> <span class="n">id_type_enzyme</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id_type_substrate</span> <span class="o">=</span> <span class="n">id_type_substrate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ptmprocargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+        <span class="n">homology</span><span class="o">.</span><span class="n">PtmHomology</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span><span class="p">,</span>
+            <span class="n">only_swissprot</span> <span class="o">=</span> <span class="n">homology_only_swissprot</span><span class="p">,</span>
+            <span class="n">strict</span> <span class="o">=</span> <span class="n">ptm_homology_strict</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterates through enzyme-substrate interactions</span>
+<span class="sd">        translated to another organism by orthology.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">source_taxon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="s1">&#39;Translating enzyme-substrate interactions &#39;</span>
+                <span class="s1">&#39;from organism </span><span class="si">%u</span><span class="s1"> to </span><span class="si">%u</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">source_taxon</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">target_taxon</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_default_source</span><span class="p">(</span><span class="n">source_taxon</span><span class="p">)</span>
+
+            <span class="n">EnzymeSubstrateProcessor</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span>
+                <span class="n">input_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_param</span><span class="p">,</span>
+                <span class="n">input_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_method</span><span class="p">,</span>
+                <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">source_taxon</span><span class="p">,</span>
+                <span class="n">trace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span>
+                <span class="n">id_type_enzyme</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_type_enzyme</span><span class="p">,</span>
+                <span class="n">id_type_substrate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_type_substrate</span><span class="p">,</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">allow_mixed_organisms</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">ptmprocargs</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="s1">&#39;Enzyme-substrate interactions loaded from resource `</span><span class="si">%s</span><span class="s1">` &#39;</span>
+                <span class="s1">&#39;for organism </span><span class="si">%s</span><span class="s1">, </span><span class="si">%u</span><span class="s1"> raw records.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">source_taxon</span><span class="p">,</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">es</span> <span class="ow">in</span> <span class="n">EnzymeSubstrateProcessor</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+                <span class="k">for</span> <span class="n">target_es</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">es</span><span class="p">):</span>
+
+                    <span class="k">yield</span> <span class="n">target_es</span>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s1">&#39;&lt;Enzyme-substrate homology processor, &#39;</span>
+            <span class="s1">&#39;target taxon: </span><span class="si">%u</span><span class="s1">, source taxon(s): </span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">target_taxon</span><span class="p">,</span>
+                <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tax</span><span class="p">)</span> <span class="k">for</span> <span class="n">tax</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EnzymeSubstrateAggregator"><a class="viewcode-back" href="../../../_autosummary/pypath.core.enz_sub.EnzymeSubstrateAggregator.html#pypath.core.enz_sub.EnzymeSubstrateAggregator">[docs]</a><span class="k">class</span> <span class="nc">EnzymeSubstrateAggregator</span><span class="p">(</span><span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+
+
+<div class="viewcode-block" id="EnzymeSubstrateAggregator.__init__"><a class="viewcode-back" href="../../../_autosummary/pypath.core.enz_sub.EnzymeSubstrateAggregator.html#pypath.core.enz_sub.EnzymeSubstrateAggregator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">input_param</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">exclude</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span>
+            <span class="n">map_by_homology_from</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">trace</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">homology_only_swissprot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">ptm_homology_strict</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">nonhuman_direct_lookup</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">inputargs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">pickle_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Docs not written yet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">session_mod</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;enz_sub&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="nb">locals</span><span class="p">()):</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">main</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pickle_file</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_from_pickle</span><span class="p">(</span><span class="n">pickle_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pickle_file</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">load_from_pickle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pickle_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Loading from file `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">pickle_file</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pickle_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">enz_sub</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">references</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_ptm_lookup_dict</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">save_to_pickle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pickle_file</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Saving to file file `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">pickle_file</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pickle_file</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">enz_sub</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">references</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">file</span> <span class="o">=</span> <span class="n">fp</span><span class="p">,</span>
+            <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputargs</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span>
+                <span class="p">{</span><span class="mi">9606</span><span class="p">,</span> <span class="mi">10090</span><span class="p">,</span> <span class="mi">10116</span><span class="p">}</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">!=</span> <span class="mi">9606</span> <span class="k">else</span>
+                <span class="nb">set</span><span class="p">()</span>
+            <span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_inputs</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">build_list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">ptm</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">enz_sub</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+
+            <span class="k">yield</span> <span class="n">ptm</span>
+
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">esub</span><span class="p">)</span> <span class="k">for</span> <span class="n">esub</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">enz_sub</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="s1">&#39;&lt;Enzyme-substrate database: </span><span class="si">%s</span><span class="s1"> relationships&gt;&#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">args</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_enzyme_substrate</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">get_enzyme_substrate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enzyme</span><span class="p">,</span> <span class="n">substrate</span><span class="p">):</span>
+
+        <span class="n">enzyme</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">Entity</span><span class="p">(</span><span class="n">enzyme</span><span class="p">)</span>
+        <span class="n">substrate</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">Entity</span><span class="p">(</span><span class="n">substrate</span><span class="p">)</span>
+
+        <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">enzyme</span><span class="p">,</span> <span class="n">substrate</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">enz_sub</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">enz_sub</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="nf">set_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_param</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_param</span> <span class="ow">or</span>
+            <span class="n">resources</span><span class="o">.</span><span class="n">get_controller</span><span class="p">()</span><span class="o">.</span><span class="n">collect_enzyme_substrate</span><span class="p">()</span>
+        <span class="p">)</span>
+
+
+<div class="viewcode-block" id="EnzymeSubstrateAggregator.build_list"><a class="viewcode-back" href="../../../_autosummary/pypath.core.enz_sub.EnzymeSubstrateAggregator.html#pypath.core.enz_sub.EnzymeSubstrateAggregator.build_list">[docs]</a>    <span class="k">def</span> <span class="nf">build_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds a full list of enzyme-substrate interactions from</span>
+<span class="sd">        all the requested sources. This list might contain redundant</span>
+<span class="sd">        elements which later will be merged by `unique`.</span>
+<span class="sd">        This &#39;full list&#39; is organised into a dict by pairs of proteins</span>
+<span class="sd">        in order to make it more efficient to compile a unique set</span>
+<span class="sd">        for each pair.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">extend_lists</span><span class="p">(</span><span class="n">enz_sub</span><span class="p">):</span>
+
+            <span class="k">for</span> <span class="n">es</span> <span class="ow">in</span> <span class="n">enz_sub</span><span class="p">:</span>
+
+                <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">es</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">protein</span><span class="p">,</span> <span class="n">es</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">protein</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">enz_sub</span><span class="p">:</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">enz_sub</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">enz_sub</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">es</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">es</span><span class="o">.</span><span class="n">evidences</span><span class="p">:</span>
+
+                    <span class="n">resource_key</span> <span class="o">=</span> <span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ev</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">via</span><span class="p">)</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">references</span><span class="p">[</span><span class="n">resource_key</span><span class="p">][</span><span class="n">es</span><span class="o">.</span><span class="n">key</span><span class="p">()]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="n">ev</span><span class="o">.</span><span class="n">references</span>
+                    <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+            <span class="s1">&#39;Starting to build enzyme-substrate &#39;</span>
+            <span class="s1">&#39;database for organism `</span><span class="si">%u</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">enz_sub</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">references</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">input_param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_param</span><span class="p">:</span>
+
+            <span class="n">name</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">input_param</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_param</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span>
+                <span class="n">input_param</span><span class="o">.</span><span class="n">name</span>
+            <span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+
+                <span class="n">input_method</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">input_param</span><span class="p">[</span><span class="s1">&#39;input_method&#39;</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_param</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span>
+                    <span class="n">input_param</span><span class="o">.</span><span class="n">input_method</span>
+                <span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                    <span class="s1">&#39;Loading enzyme-substrate interactions &#39;</span>
+                    <span class="s1">&#39;from resource `</span><span class="si">%s</span><span class="s1">` by method `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="n">name</span><span class="p">,</span>
+                        <span class="n">input_method</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+                <span class="n">args</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">input_param</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_param</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span>
+                    <span class="p">{</span><span class="s1">&#39;input_param&#39;</span><span class="p">:</span> <span class="n">input_param</span><span class="p">}</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">==</span> <span class="mi">9606</span> <span class="ow">or</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">nonhuman_direct_lookup</span> <span class="ow">and</span>
+                        <span class="n">input_param</span><span class="o">.</span><span class="n">organisms_supported</span>
+                    <span class="p">)</span>
+                <span class="p">):</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                        <span class="s1">&#39;Loading enzyme-substrate interactions &#39;</span>
+                        <span class="s1">&#39;for taxon `</span><span class="si">%u</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span>
+                    <span class="p">)</span>
+
+                    <span class="n">proc</span> <span class="o">=</span> <span class="n">EnzymeSubstrateProcessor</span><span class="p">(</span>
+                        <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
+                        <span class="n">trace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">args</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="n">extend_lists</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">())</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span><span class="p">:</span>
+
+                    <span class="n">source_taxons_str</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="s1">&#39;</span><span class="si">%u</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">tax</span> <span class="k">for</span> <span class="n">tax</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span>
+                    <span class="p">)</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                        <span class="s1">&#39;Mapping `</span><span class="si">%s</span><span class="s1">` by homology from taxons </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%u</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                            <span class="n">input_method</span><span class="p">,</span>
+                            <span class="n">source_taxons_str</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+                    <span class="n">proc</span> <span class="o">=</span> <span class="n">EnzymeSubstrateHomologyProcessor</span><span class="p">(</span>
+                        <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
+                        <span class="n">map_by_homology_from</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_by_homology_from</span><span class="p">,</span>
+                        <span class="n">trace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span>
+                        <span class="n">homology_only_swissprot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">homology_only_swissprot</span><span class="p">,</span>
+                        <span class="n">ptm_homology_strict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ptm_homology_strict</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">args</span>
+                    <span class="p">)</span>
+
+                    <span class="n">extend_lists</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">())</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                        <span class="s1">&#39;Finished translating `</span><span class="si">%s</span><span class="s1">` by homology &#39;</span>
+                        <span class="s1">&#39;from </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%u</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                            <span class="n">input_method</span><span class="p">,</span>
+                            <span class="n">source_taxons_str</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                    <span class="s1">&#39;Finished loading enzyme-substrate data &#39;</span>
+                    <span class="s1">&#39;from resource `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">name</span>
+                <span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Failed to load resource `</span><span class="si">%s</span><span class="s1">`.&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log_traceback</span><span class="p">()</span>
+
+                <span class="k">try</span><span class="p">:</span>
+
+                    <span class="n">traceback</span><span class="o">.</span><span class="n">print_tb</span><span class="p">(</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">,</span>
+                        <span class="n">file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Failed handling exception.&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_log_traceback</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">references</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">references</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_ptm_lookup_dict</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+            <span class="s1">&#39;Finished building enzyme-substrate database &#39;</span>
+            <span class="s1">&#39;for organism `</span><span class="si">%u</span><span class="s1">`, resulted </span><span class="si">%u</span><span class="s1"> relationships.&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
+                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">update_ptm_lookup_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ptm_to_enzyme</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ptms</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="n">enz</span><span class="p">,</span> <span class="n">sub</span><span class="p">),</span> <span class="n">ptms</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">enz_sub</span><span class="p">):</span>
+
+            <span class="k">for</span> <span class="n">ptm</span> <span class="ow">in</span> <span class="n">ptms</span><span class="p">:</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">ptm_to_enzyme</span><span class="p">[</span><span class="n">ptm</span><span class="o">.</span><span class="n">ptm</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">enz</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ptms</span><span class="p">[</span><span class="n">ptm</span><span class="o">.</span><span class="n">ptm</span><span class="p">]</span> <span class="o">=</span> <span class="n">ptm</span><span class="o">.</span><span class="n">ptm</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ptm_to_enzyme</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ptm_to_enzyme</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="EnzymeSubstrateAggregator.unique"><a class="viewcode-back" href="../../../_autosummary/pypath.core.enz_sub.EnzymeSubstrateAggregator.html#pypath.core.enz_sub.EnzymeSubstrateAggregator.unique">[docs]</a>    <span class="k">def</span> <span class="nf">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Merges the redundant elements of the interaction list.</span>
+<span class="sd">        Elements are redundant if they agree in all their attributes</span>
+<span class="sd">        except the sources, references and isoforms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">unique_list</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">enz_sub</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">enz_sub</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">enz_sub</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniq_enz_sub</span><span class="p">(</span><span class="n">enz_sub</span><span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">uniq_enz_sub</span><span class="p">(</span><span class="n">enz_sub</span><span class="p">):</span>
+
+        <span class="n">enz_sub_uniq</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">es</span> <span class="ow">in</span> <span class="n">enz_sub</span><span class="p">:</span>
+
+            <span class="n">merged</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">es_u</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">enz_sub_uniq</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="n">es</span> <span class="o">==</span> <span class="n">es_u</span><span class="p">:</span>
+
+                    <span class="n">enz_sub_uniq</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">es</span><span class="p">)</span>
+                    <span class="n">merged</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">merged</span><span class="p">:</span>
+
+                <span class="n">enz_sub_uniq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">es</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">enz_sub_uniq</span>
+
+
+    <span class="k">def</span> <span class="nf">make_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tax_id</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">resources_only_primary</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s1">&#39;Creating enzyme-substrate interaction data frame.&#39;</span><span class="p">)</span>
+
+
+        <span class="n">hdr</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;enzyme&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;enzyme_genesymbol&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;substrate&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;substrate_genesymbol&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;isoforms&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;residue_type&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;residue_offset&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;modification&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;sources&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;references&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;curation_effort&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">dm</span><span class="o">.</span><span class="n">get_line</span><span class="p">(</span><span class="n">resources_only_primary</span> <span class="o">=</span> <span class="n">resources_only_primary</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">dm</span> <span class="ow">in</span> <span class="bp">self</span>
+            <span class="p">],</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="n">hdr</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;enzyme&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;substrate&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;isoforms&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;residue_type&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;residue_offset&#39;</span><span class="p">:</span> <span class="s1">&#39;int32&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;modification&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;sources&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;references&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;curation_effort&#39;</span><span class="p">:</span> <span class="s1">&#39;int32&#39;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span><span class="n">hdr</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">tax_id</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;ncbi_tax_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+            <span class="s1">&#39;Created enzyme-substrate interaction data frame. &#39;</span>
+            <span class="s1">&#39;Memory usage: </span><span class="si">%s</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="n">common</span><span class="o">.</span><span class="n">df_memory_usage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+        <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">export_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">make_df</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="EnzymeSubstrateAggregator.assign_to_network"><a class="viewcode-back" href="../../../_autosummary/pypath.core.enz_sub.EnzymeSubstrateAggregator.html#pypath.core.enz_sub.EnzymeSubstrateAggregator.assign_to_network">[docs]</a>    <span class="k">def</span> <span class="nf">assign_to_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pa</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns enzyme-substrate interactions to the edges of a</span>
+<span class="sd">        network in a py:class:``pypath.legacy.main.PyPath`` instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">pa</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;ptm&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pa</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
+            <span class="n">pa</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s1">&#39;ptm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">pa</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ptms</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">enz_sub</span><span class="p">):</span>
+
+            <span class="n">nodes</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">get_node_pair</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">directed</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">is_directed</span><span class="p">())</span>
+
+            <span class="n">e</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="n">nodes</span><span class="p">:</span>
+                <span class="n">e</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_eid</span><span class="p">(</span>
+                    <span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">error</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">e</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">pa</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="s1">&#39;ptm&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">pa</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="s1">&#39;ptm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="n">pa</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="s1">&#39;ptm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">ptms</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">resources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
+            <span class="n">es</span><span class="o">.</span><span class="n">evidences</span><span class="o">.</span><span class="n">get_resource_names_via</span><span class="p">(</span><span class="n">via</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">es</span> <span class="ow">in</span> <span class="bp">self</span>
+        <span class="p">))</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">resources_sorted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resources</span><span class="p">,</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">res</span><span class="p">:</span> <span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">res</span>
+        <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">update_summaries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collect_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">collect_args</span> <span class="o">=</span> <span class="n">collect_args</span> <span class="ow">or</span> <span class="p">{</span><span class="s1">&#39;via&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">summaries</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">resources</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">res</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">resources_sorted</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span>
+                <span class="s1">&#39;via&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">collect_args</span> <span class="ow">or</span>
+                <span class="n">collect_args</span><span class="p">[</span><span class="s1">&#39;via&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">False</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="n">refs_by_resource</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">resource</span><span class="p">,</span>
+                <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span>
+                    <span class="o">*</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">references</span><span class="p">[</span><span class="n">resource</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">resources</span>
+        <span class="p">)</span>
+        <span class="n">curation_effort_by_resource</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">resource</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="n">key</span> <span class="o">+</span> <span class="p">(</span><span class="n">ref</span><span class="p">,)</span>
+                    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">refs</span> <span class="ow">in</span>
+                    <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
+                        <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">references</span><span class="p">[</span><span class="n">resource</span><span class="p">])</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">refs</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">resources</span>
+        <span class="p">)</span>
+
+        <span class="n">resources_sorted</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">resources</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">resources</span><span class="p">:</span>
+
+            <span class="n">n_total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="mi">1</span>
+                <span class="k">for</span> <span class="n">es</span> <span class="ow">in</span> <span class="bp">self</span>
+                <span class="k">if</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">es</span><span class="o">.</span><span class="n">evidences</span><span class="o">.</span><span class="n">get_resource_names</span><span class="p">(</span><span class="o">**</span><span class="n">collect_args</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">n_unique</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="mi">1</span> <span class="k">for</span> <span class="n">es</span> <span class="ow">in</span> <span class="bp">self</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">resource</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">es</span><span class="o">.</span><span class="n">evidences</span> <span class="ow">and</span>
+                    <span class="n">es</span><span class="o">.</span><span class="n">evidences</span><span class="o">.</span><span class="n">count_resources</span><span class="p">(</span><span class="o">**</span><span class="n">collect_args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">n_shared</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="mi">1</span> <span class="k">for</span> <span class="n">es</span> <span class="ow">in</span> <span class="bp">self</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">resource</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">es</span><span class="o">.</span><span class="n">evidences</span> <span class="ow">and</span>
+                    <span class="n">es</span><span class="o">.</span><span class="n">evidences</span><span class="o">.</span><span class="n">count_resources</span><span class="p">(</span><span class="o">**</span><span class="n">collect_args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">curation_effort</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">curation_effort_by_resource</span><span class="p">[</span><span class="n">resource</span><span class="p">])</span>
+            <span class="n">ce_others</span> <span class="o">=</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
+                <span class="n">ce</span>
+                <span class="k">for</span> <span class="n">res</span><span class="p">,</span> <span class="n">ce</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">curation_effort_by_resource</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">res</span> <span class="o">!=</span> <span class="n">resource</span>
+            <span class="p">))</span>
+            <span class="n">curation_effort_shared</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
+                <span class="n">curation_effort_by_resource</span><span class="p">[</span><span class="n">resource</span><span class="p">]</span> <span class="o">&amp;</span>
+                <span class="n">ce_others</span>
+            <span class="p">)</span>
+            <span class="n">curation_effort_unique</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
+                <span class="n">curation_effort_by_resource</span><span class="p">[</span><span class="n">resource</span><span class="p">]</span> <span class="o">-</span>
+                <span class="n">ce_others</span>
+            <span class="p">)</span>
+
+            <span class="n">references</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">refs_by_resource</span><span class="p">[</span><span class="n">resource</span><span class="p">])</span>
+            <span class="n">refs_others</span> <span class="o">=</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
+                <span class="n">refs</span>
+                <span class="k">for</span> <span class="n">res</span><span class="p">,</span> <span class="n">refs</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">refs_by_resource</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">res</span> <span class="o">!=</span> <span class="n">resource</span>
+            <span class="p">))</span>
+            <span class="n">references_shared</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">refs_by_resource</span><span class="p">[</span><span class="n">resource</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">refs_others</span><span class="p">)</span>
+            <span class="n">references_unique</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">refs_by_resource</span><span class="p">[</span><span class="n">resource</span><span class="p">]</span> <span class="o">-</span> <span class="n">refs_others</span><span class="p">)</span>
+
+            <span class="n">enzymes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span>
+                <span class="n">es</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">protein</span>
+                <span class="k">for</span> <span class="n">es</span> <span class="ow">in</span> <span class="bp">self</span>
+                <span class="k">if</span> <span class="n">resource</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">es</span><span class="o">.</span><span class="n">evidences</span>
+            <span class="p">))</span>
+            <span class="n">substrates</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span>
+                <span class="n">es</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">protein</span>
+                <span class="k">for</span> <span class="n">es</span> <span class="ow">in</span> <span class="bp">self</span>
+                <span class="k">if</span> <span class="n">resource</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">es</span><span class="o">.</span><span class="n">evidences</span>
+            <span class="p">))</span>
+
+            <span class="n">modification_types</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> (</span><span class="si">%u</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="n">cnt</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">typ</span><span class="p">,</span> <span class="n">cnt</span> <span class="ow">in</span>
+                    <span class="nb">sorted</span><span class="p">(</span>
+                        <span class="n">iteritems</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span>
+                            <span class="n">es</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">typ</span>
+                            <span class="k">for</span> <span class="n">es</span> <span class="ow">in</span> <span class="bp">self</span>
+                            <span class="k">if</span> <span class="n">resource</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">es</span><span class="o">.</span><span class="n">evidences</span>
+                        <span class="p">)),</span>
+                        <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">type_cnt</span><span class="p">:</span> <span class="n">type_cnt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="n">reverse</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">typ</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">summaries</span><span class="p">[</span><span class="n">resource</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">resource</span><span class="p">,</span>
+                <span class="s1">&#39;n_es_total&#39;</span><span class="p">:</span> <span class="n">n_total</span><span class="p">,</span>
+                <span class="s1">&#39;n_es_unique&#39;</span><span class="p">:</span> <span class="n">n_unique</span><span class="p">,</span>
+                <span class="s1">&#39;n_es_shared&#39;</span><span class="p">:</span> <span class="n">n_shared</span><span class="p">,</span>
+                <span class="s1">&#39;n_enzymes&#39;</span><span class="p">:</span> <span class="n">enzymes</span><span class="p">,</span>
+                <span class="s1">&#39;n_substrates&#39;</span><span class="p">:</span> <span class="n">substrates</span><span class="p">,</span>
+                <span class="s1">&#39;references&#39;</span><span class="p">:</span> <span class="n">references</span><span class="p">,</span>
+                <span class="s1">&#39;references_unique&#39;</span><span class="p">:</span> <span class="n">references_unique</span><span class="p">,</span>
+                <span class="s1">&#39;references_shared&#39;</span><span class="p">:</span> <span class="n">references_shared</span><span class="p">,</span>
+                <span class="s1">&#39;curation_effort&#39;</span><span class="p">:</span> <span class="n">curation_effort</span><span class="p">,</span>
+                <span class="s1">&#39;curation_effort_unique&#39;</span><span class="p">:</span> <span class="n">curation_effort_shared</span><span class="p">,</span>
+                <span class="s1">&#39;curation_effort_shared&#39;</span><span class="p">:</span> <span class="n">curation_effort_shared</span><span class="p">,</span>
+                <span class="s1">&#39;modification_types&#39;</span><span class="p">:</span> <span class="n">modification_types</span><span class="p">,</span>
+            <span class="p">}</span>
+
+
+    <span class="k">def</span> <span class="nf">summaries_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_table</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;Resource&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;n_es_total&#39;</span><span class="p">,</span> <span class="s1">&#39;E-S interactions&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;n_es_shared&#39;</span><span class="p">,</span> <span class="s1">&#39;Shared E-S interactions&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;n_es_unique&#39;</span><span class="p">,</span> <span class="s1">&#39;Unique E-S interactions&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;n_enzymes&#39;</span><span class="p">,</span> <span class="s1">&#39;Enzymes&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;n_substrates&#39;</span><span class="p">,</span> <span class="s1">&#39;Substrates&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;references&#39;</span><span class="p">,</span> <span class="s1">&#39;References&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;references_shared&#39;</span><span class="p">,</span> <span class="s1">&#39;Shared references&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;references_unique&#39;</span><span class="p">,</span> <span class="s1">&#39;Unique references&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;curation_effort&#39;</span><span class="p">,</span> <span class="s1">&#39;Curation effort&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;curation_effort_shared&#39;</span><span class="p">,</span> <span class="s1">&#39;Shared curation effort&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;curation_effort_unique&#39;</span><span class="p">,</span> <span class="s1">&#39;Unique curation effort&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;modification_types&#39;</span><span class="p">,</span> <span class="s1">&#39;Modification types&#39;</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">tab</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">tab</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">])</span>
+
+        <span class="n">tab</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+            <span class="p">[</span>
+                <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summaries</span><span class="p">[</span><span class="n">src</span><span class="p">][</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+                <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">columns</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">summaries</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">res</span><span class="p">:</span> <span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">res</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">outfile</span><span class="p">:</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+
+                <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">tab</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">return_table</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="n">tab</span></div>
+
+
+
+<div class="viewcode-block" id="init_db"><a class="viewcode-back" href="../../../_autosummary/pypath.core.enz_sub.init_db.html#pypath.core.enz_sub.init_db">[docs]</a><span class="k">def</span> <span class="nf">init_db</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">EnzymeSubstrateAggregator</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../../../_autosummary/pypath.core.enz_sub.get_db.html#pypath.core.enz_sub.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="s1">&#39;db&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+
+        <span class="n">init_db</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span></div>
+</pre></div>
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+          <div class="sidebar-resize-handle"></div>
+
+  <div>
+    <h3><a href="../../../index.html">Table of Contents</a></h3>
+    <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../releasehistory.html">Release history</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/pypath.html">pypath</a></li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <nav class="relbar">
+    </nav>
+
+    <footer role="contentinfo">
+      &#169; Copyright 2022, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
+    </footer>
+  </body>
+</html>
