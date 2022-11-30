@@ -22,7 +22,7 @@
     <script defer src="_static/insipid-sidebar.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="next" title="Webservice" href="webservice.html" />
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
   </head><body>
@@ -58,9 +58,6 @@
             <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
             </label>
-            <button id="search-button" type="button" title="Search" aria-label="Search" aria-expanded="false" aria-controls="search-form" accesskey="S">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
-            </button>
           </div>
           <div class="title">
             <span class="parent">pypath 0.14.29 documentation</span>
@@ -77,26 +74,20 @@
             </button>
           </div>
         </div>
-        <div id="searchbox" role="search">
-          <form id="search-form" class="search" style="display: none" action="search.html" method="get">
-            <input type="search" name="q" placeholder="Search ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
-            <button>Go</button>
-          </form>
-        </div>
       </div>
     </header>
     <nav>
-      <a href="installation.html" class="nav-icon next" title="next:&#13;Installation" aria-label="Next topic" accesskey="N" tabindex="-1">
+      <a href="webservice.html" class="nav-icon next" title="next:&#13;Webservice" aria-label="Next topic" accesskey="N" tabindex="-1">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"/></svg>
       </a>
     </nav>
 
     <nav class="relbar">
-      <a class="next" href="installation.html" aria-label="Next topic" >
+      <a class="next" href="webservice.html" aria-label="Next topic" >
         <div class="title">
           <span class="text">
             <span class="direction">next</span>
-            Installation
+            Webservice
           </span>
         </div>
         <div class="icon">
@@ -112,105 +103,56 @@
             
 <section id="pypath-a-python-module-for-molecular-signaling-prior-knowledge-processing">
 <h1><em>pypath:</em> A Python module for molecular signaling prior knowledge processing<a class="headerlink" href="#pypath-a-python-module-for-molecular-signaling-prior-knowledge-processing" title="Permalink to this heading">§</a></h1>
-<blockquote>
-<div><p><strong>Important:</strong> New module structure and new network API</p>
-<p>Around the end of December we added a new network API to <code class="docutils literal notranslate"><span class="pre">pypath</span></code> which
-is not based on <code class="docutils literal notranslate"><span class="pre">igraph</span></code> any more and provides a modular and versatile
-access interface to the network data (since version <code class="docutils literal notranslate"><span class="pre">0.9</span></code>). In January
-we reorganized the submodules in <code class="docutils literal notranslate"><span class="pre">pypath</span></code> in order to create a clear
-structure (since version <code class="docutils literal notranslate"><span class="pre">0.10</span></code>). These are important milestones
-towards version <code class="docutils literal notranslate"><span class="pre">1.0</span></code> and we hope they will make <code class="docutils literal notranslate"><span class="pre">pypath</span></code> more
-convenient to use for everyone. By 18 February we merged these changes
-to the master branch however the <em>pypath guide</em> is still to be updated.
-Apologies for this inconvenience and please don’t hesitate to ask
-questions by opening an issue on github. The old <code class="docutils literal notranslate"><span class="pre">igraph</span></code> based network
-class is still available in the <code class="docutils literal notranslate"><span class="pre">pypath.legacy</span></code> module.</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Py2/3<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Although we still keep the compatibility with Python 2, we don’t
-test <code class="docutils literal notranslate"><span class="pre">pypath</span></code> in this environment and very few people uses it
-already. We highly recommend to use <code class="docutils literal notranslate"><span class="pre">pypath</span></code> in Python 3.6+.</p>
-</dd>
-<dt class="field-even">documentation<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="http://saezlab.github.io/pypath">http://saezlab.github.io/pypath</a></p>
-</dd>
-<dt class="field-odd">issues<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://github.com/saezlab/pypath/issues">https://github.com/saezlab/pypath/issues</a></p>
-</dd>
-<dt class="field-even">contact<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="mailto:omnipathdb&#37;&#52;&#48;gmail&#46;com">omnipathdb<span>&#64;</span>gmail<span>&#46;</span>com</a></p>
-</dd>
-<dt class="field-odd">developers<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">pypath</span></code> is developed in the Saez Lab (<a class="reference external" href="http://saezlab.org">http://saezlab.org</a>) by
-Olga Ivanova, Nicolàs Palacio and Dénes Türei; the R package and the
-Cytoscape app are developed and maintained by Francesco Ceccarelli, Attila
-Gábor, Alberto Valdeolivas and Nicolàs Palacio.</p>
-</dd>
-</dl>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#linux">Linux</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#igraph-c-library-cairo-and-pycairo">igraph C library, cairo and pycairo</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#directly-from-git">Directly from git</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#with-pip">With pip</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#build-source-distribution">Build source distribution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#mac-os-x">Mac OS X</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#troubleshooting">Troubleshooting</a></li>
+<p><img alt="Demo" src="https://raw.githubusercontent.com/saezlab/pypath/master/docs/source/_static/img/pypath-demo.webp" /></p>
+<section id="omnipath">
+<h2>OmniPath<a class="headerlink" href="#omnipath" title="Permalink to this heading">§</a></h2>
+<p>Are you interested in OmniPath data? Check out our R package <a class="reference external" href="https://saezlab.github.io/OmnipathR">OmnipathR</a>,
+the most popular and most versatile access point to OmniPath, a database
+built from more than 150 original resources. If you use Python and don’t
+need to build the database yourself, try our <a class="reference external" href="https://github.com/saezlab/omnipath">Python client</a>. Read more
+about the <a class="reference external" href="https://pypath.omnipathdb.org/webservice.html">web service here</a>.</p>
+</section>
+<section id="do-you-need-pypath">
+<h2>Do you need pypath?<a class="headerlink" href="#do-you-need-pypath" title="Permalink to this heading">§</a></h2>
+<p>Pypath is the database builder of OmniPath. For most people the data
+distributed in OmniPath is satisfying (see above), they don’t really need
+pypath. Typically you need pypath to:</p>
+<ul class="simple">
+<li><p>Build a custom or very fresh version of the OmniPath database(s)</p></li>
+<li><p>Use one of the utilities such as ID translation, homology translation, etc.
+(see the <a class="reference external" href="https://github.com/saezlab/pypath/tree/master/pypath/utils">utils module</a>)</p></li>
+<li><p>Access the raw or preprocessed data directly from the original resources
+(see the <a class="reference external" href="https://github.com/saezlab/pypath/tree/master/pypath/inputs">inputs module</a>)</p></li>
 </ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#microsoft-windows">Microsoft Windows</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#with-anaconda">With Anaconda</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#with-other-python-distributions">With other Python distributions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#known-issues">Known issues</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="webservice.html">Webservice</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="webservice.html#query-types">Query types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="webservice.html#interaction-datasets">Interaction datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="webservice.html#mouse-and-rat">Mouse and rat</a></li>
-<li class="toctree-l2"><a class="reference internal" href="webservice.html#examples">Examples</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="webservice.html#molecular-interaction-network">Molecular interaction network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="webservice.html#enzyme-substrate-interactions">Enzyme-substrate interactions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="webservice.html#molecular-complexes">Molecular complexes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="webservice.html#annotations">Annotations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="webservice.html#roles-in-inter-cellular-communication">Roles in inter-cellular communication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="webservice.html#exploring-possible-parameters">Exploring possible parameters</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="webservice.html#can-i-use-omnipath-in-r">Can I use OmniPath in R?</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="releasehistory.html">Release History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="releasehistory.html#id1">0.1.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasehistory.html#id2">0.2.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasehistory.html#id3">0.3.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasehistory.html#id4">0.4.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasehistory.html#id5">0.5.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasehistory.html#id6">0.5.32</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasehistory.html#id7">0.6.31</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasehistory.html#id8">0.7.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasehistory.html#id9">0.7.74</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasehistory.html#id10">0.7.93</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasehistory.html#id11">0.7.110</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasehistory.html#id12">0.8</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasehistory.html#id13">0.9</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasehistory.html#id14">0.10.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="releasehistory.html#upcoming">Upcoming</a></li>
-</ul>
-</li>
-</ul>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">§</a></h2>
+<p><strong>From PyPI:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install pypath-omnipath
+</pre></div>
 </div>
+<p><strong>From Git:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install git+https://github.com/saezlab/pypath.git
+</pre></div>
+</div>
+</section>
+<section id="docs">
+<h2>Docs<a class="headerlink" href="#docs" title="Permalink to this heading">§</a></h2>
+<p>Read the <a class="reference external" href="https://pypath.omnipathdb.org/">reference documentation</a> or check out the <a class="reference external" href="https://workflows.omnipathdb.org/">tutorials</a>.</p>
+<p>The <em>Pypath guide</em>, the comprehensive tutorial for pypath is currently out
+of date, we are very sorry about that!</p>
+</section>
+<section id="get-help">
+<h2>Get help<a class="headerlink" href="#get-help" title="Permalink to this heading">§</a></h2>
+<p>Should you have a question or experiencing an issue, please write us by
+the <a class="reference external" href="https://github.com/saezlab/pypath/issues">Github issues</a> page.</p>
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this heading">§</a></h2>
 <p><strong>pypath</strong> is a Python module for processing molecular biology data resources,
 combining them into databases and providing a versatile interface in Python
 as well as exporting the data for access through other platforms such as
-the R (the OmnipathR R/Bioconductor package), web service (at
-<a class="reference external" href="http://omnipathdb.org">http://omnipathdb.org</a>), Cytoscape (the OmniPath Cytoscape app) and BEL
-(Biological Expression Language).</p>
+<a class="reference external" href="https://github.com/saezlab/OmnipathR">R</a>, <a class="reference external" href="https://omnipathdb.org/">web service</a>, <a class="reference external" href="https://apps.cytoscape.org/apps/omnipath">Cytoscape</a> and BEL (Biological Expression Language).</p>
 <p><strong>pypath</strong> provides access to more than 100 resources! It builds 5 major
 combined databases and within these we can distinguish different datasets.
 The 5 major databases are interactions (molecular interaction network or
@@ -230,15 +172,133 @@ web server</p></li>
 <li><p><em>pypath.utils:</em> stand alone useful utilities, e.g. identifier translator,
 Gene Ontology processor, BioPax processor, etc</p></li>
 </ul>
-<section id="reference">
-<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this heading">§</a></h2>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/pypath.html#module-pypath" title="pypath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pypath</span></code></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">pypath</span></code> is a module primarily for building molecular interaction networks but also with several submodules for accessing, preprocessing and serving data from various resources.</p></td>
-</tr>
-</tbody>
-</table>
+<section id="integrated-databases">
+<h3>Integrated databases<a class="headerlink" href="#integrated-databases" title="Permalink to this heading">§</a></h3>
+<p>In the beginning the primary aim of <code class="docutils literal notranslate"><span class="pre">pypath</span></code> was to build networks from
+multiple sources using an igraph object as the fundament of the integrated
+data structure. From version 0.7 and 0.8 this design principle started to
+change. Today <code class="docutils literal notranslate"><span class="pre">pypath</span></code> builds a number of different databases, exposes them
+by a rich API and each of them can be converted to <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>.
+The modules and classes responsible for the integrated databases are located
+in <code class="docutils literal notranslate"><span class="pre">pypath.core</span></code>. The five main databases are the followings:</p>
+<ul class="simple">
+<li><p><em>network</em> - <code class="docutils literal notranslate"><span class="pre">core.network</span></code></p></li>
+<li><p><em>enzyme-substrate</em> - <code class="docutils literal notranslate"><span class="pre">core.enz_sub</span></code></p></li>
+<li><p><em>complexes</em> - <code class="docutils literal notranslate"><span class="pre">core.complex</span></code></p></li>
+<li><p><em>annotations</em> - <code class="docutils literal notranslate"><span class="pre">core.annot</span></code></p></li>
+<li><p><em>intercell</em> - <code class="docutils literal notranslate"><span class="pre">core.intercell</span></code></p></li>
+</ul>
+<p>Some of the databases have different variants (e.g. PPI and transcriptional
+network) and all can be customized by many parameters.</p>
+</section>
+<section id="database-management">
+<h3>Database management<a class="headerlink" href="#database-management" title="Permalink to this heading">§</a></h3>
+<p>The databases above can be loaded by calling the appropriate classes.
+However building the databases require time and memory so we want to avoid
+building them more often than necessary or keeping more than one copies
+in the memory. Some of the modules listed above have a method <code class="docutils literal notranslate"><span class="pre">get_db</span></code>
+which ensures only one instance of the database is loaded. But there is a
+more full featured database management system available in <strong>pypath</strong>,
+this is the <strong>pypath.omnipath</strong> module. This module is able to build the
+databases, automatically saves them to <code class="docutils literal notranslate"><span class="pre">pickle</span></code> files and loads them from
+there in subsequent sessions. <strong>pypath</strong> comes with a number of database
+definitions and users can add more. The <code class="docutils literal notranslate"><span class="pre">pickle</span></code> files are located by
+default in the <code class="docutils literal notranslate"><span class="pre">~/.pypath/pickles/</span></code> directory. With the <code class="docutils literal notranslate"><span class="pre">omnipath</span></code>
+module it’s easy to get an instance of a database. For example to get the
+<cite>omnipath</cite> PPI network dataset:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pypath</span> <span class="kn">import</span> <span class="n">omnipath</span>
+<span class="n">op</span> <span class="o">=</span> <span class="n">omnipath</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get_db</span><span class="p">(</span><span class="s1">&#39;omnipath&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Important:</strong> Building the databases for the first time requires the
+download of several MB or GB of data from the original resources. This
+normally takes long time and is prone of errors (e.g. truncated or empty
+downloads due to interrupted HTTP connection). In this case you should check
+the log to find the path of the problematic cache file, check the contents
+of this file to find out the reason and possibly delete the file to ensure
+another download attempt when you call the database build again. Sometimes
+the original resources change their content or go offline. If you encounter
+such case please open an issue at <a class="reference external" href="https://github.com/saezlab/pypath/issues">https://github.com/saezlab/pypath/issues</a>
+so we can fix it in <code class="docutils literal notranslate"><span class="pre">pypath</span></code>. Once all the necessary contents are
+downloaded and stored in the cache, the database builds are much faster,
+but still can take minutes.</p>
+</section>
+<section id="further-modules-in-pypath">
+<h3>Further modules in pypath<a class="headerlink" href="#further-modules-in-pypath" title="Permalink to this heading">§</a></h3>
+<p>Apart from the databases, <strong>pypath</strong> has many submodules with standalone
+functionality which can be used in other modules and scripts. Below we
+present a few of these.</p>
+</section>
+<section id="id-conversion">
+<h3>ID conversion<a class="headerlink" href="#id-conversion" title="Permalink to this heading">§</a></h3>
+<p>The ID conversion module <code class="docutils literal notranslate"><span class="pre">utils.mapping</span></code> translates between a large variety
+of gene, protein, miRNA and small molecule ID types. It has the feature to
+translate secondary UniProt ACs to primaries, and Trembl ACs to SwissProt,
+using primary Gene Symbols to find the connections. This module automatically
+loads and stores the necessary conversion tables. Many tables
+are predefined, such as all the IDs in <strong>UniProt mapping service,</strong> while
+users are able to load any table from <strong>file</strong> using the classes provided
+in the module <code class="docutils literal notranslate"><span class="pre">input_formats</span></code>. An example how to translate identifiers:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pypath.utils</span> <span class="kn">import</span> <span class="n">mapping</span>
+<span class="n">mapping</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="s1">&#39;P00533&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">)</span>
+<span class="c1"># {&#39;EGFR&#39;}</span>
+</pre></div>
+</div>
+</section>
+<section id="homology-translation">
+<h3>Homology translation<a class="headerlink" href="#homology-translation" title="Permalink to this heading">§</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">pypath.utils.homology</span></code> module is able to find the orthologs of genes
+between two organisms. It uses data both from NCBI HomoloGene, Ensembl and
+UniProt. This module is really simple to use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pypath.utils</span> <span class="kn">import</span> <span class="n">homology</span>
+<span class="n">homology</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s1">&#39;P00533&#39;</span><span class="p">,</span> <span class="mi">10090</span><span class="p">)</span> <span class="c1"># translating the human EGFR to mouse</span>
+<span class="c1"># [&#39;Q01279&#39;] # it returns the mouse Egfr UniProt AC</span>
+</pre></div>
+</div>
+<p>It is able to handle any ID type supported by <code class="docutils literal notranslate"><span class="pre">pypath.utils.mapping</span></code>.
+Alternatively, you can access a complete dictionary of orthologous genes,
+or translate columns in a pandas data frame.</p>
+</section>
+</section>
+<section id="faq">
+<h2>FAQ<a class="headerlink" href="#faq" title="Permalink to this heading">§</a></h2>
+<p><strong>Does it run on my old Python?</strong></p>
+<p>Most likely it doesn’t. The oldest supported version, currently 3.9, is
+defined in our <a class="reference external" href="https://github.com/saezlab/pypath/blob/master/pyproject.toml">pyproject.toml</a>.</p>
+<p><strong>Is there something similar in R?</strong></p>
+<p><a class="reference external" href="https://saezlab.github.io/OmnipathR">OmniPath’s R client</a>, besides accessing data from OmniPath, provides many
+similar services as pypath: <a class="reference external" href="https://saezlab.github.io/OmnipathR/reference/translate_ids.html">ID translation</a>, <a class="reference external" href="https://saezlab.github.io/OmnipathR/reference/homologene_uniprot_orthology.html">homology translation</a>,
+<a class="reference external" href="https://saezlab.github.io/OmnipathR/reference/ncbi_taxid.html">taxonomy support</a>, <a class="reference external" href="https://saezlab.github.io/OmnipathR/reference/go_annot_download.html">GO support</a>, and many more.</p>
+<p><a class="reference external" href="https://omnipathdb.org/#faq">Questions about OmniPath</a></p>
+</section>
+<section id="contact">
+<h2>Contact<a class="headerlink" href="#contact" title="Permalink to this heading">§</a></h2>
+<p>We prefer to keep all communication within the <a class="reference external" href="https://github.com/saezlab/pypath/issues">Github issues</a>. About private
+or sensitive matters feel free to contact us by <a class="reference external" href="mailto:omnipathdb&#37;&#52;&#48;gmail&#46;com">omnipathdb<span>&#64;</span>gmail<span>&#46;</span>com</a>.</p>
+</section>
+<section id="impressum">
+<h2>Impressum<a class="headerlink" href="#impressum" title="Permalink to this heading">§</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pypath</span></code> is developed in the <a class="reference external" href="https://saezlab.org/">Saez Lab</a> by <a class="reference external" href="https://denes.omnipathdb.org/">Dénes Türei</a>, Sebastian
+Lobentanzer and Ahmet Rifaioglu, and Erva Ulusoy and Tennur Kılıç in
+<a class="reference external" href="https://blog.metu.edu.tr/vatalay/">Volkan Atalay’s group</a>. Olga Ivanova and Nicolàs Palacio also
+contributed in the past. The <a class="reference external" href="https://saezlab.github.io/OmnipathR">R package</a> and the <a class="reference external" href="https://apps.cytoscape.org/apps/omnipath">Cytoscape app</a> are
+developed and maintained by Francesco Ceccarelli, Attila Gábor, Alberto
+Valdeolivas, Dénes Türei and Nicolàs Palacio. The <a class="reference external" href="https://github.com/saezlab/omnipath">Python client</a> for the
+OmniPath web service has been developed and is maintained by Michael Klein
+in the group of <a class="reference external" href="https://www.helmholtz-munich.de/en/icb/research-groups/theis-lab">Fabian Theis</a>.</p>
+</section>
+<section id="history-and-releases">
+<h2>History and releases<a class="headerlink" href="#history-and-releases" title="Permalink to this heading">§</a></h2>
+<p>See <a class="reference external" href="https://pypath.omnipathdb.org/releasehistory.html">here</a> a bird eye view of pypath’s development history. For more details
+about recent developments see the <a class="reference external" href="https://github.com/saezlab/pypath/releases">Github releases</a>.</p>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
 </section>
 </section>
 
@@ -251,22 +311,52 @@ Gene Ontology processor, BioPax processor, etc</p></li>
 
           <div class="sidebar-resize-handle"></div>
 
-<h3><a href="#">Table of Contents</a></h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="webservice.html">Webservice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="releasehistory.html">Release History</a></li>
+  <div>
+    <h3><a href="#">Table of Contents</a></h3>
+    <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#omnipath">OmniPath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#do-you-need-pypath">Do you need pypath?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docs">Docs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#get-help">Get help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#features">Features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#integrated-databases">Integrated databases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#database-management">Database management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#further-modules-in-pypath">Further modules in pypath</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id-conversion">ID conversion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#homology-translation">Homology translation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#faq">FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contact">Contact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#impressum">Impressum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#history-and-releases">History and releases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="webservice.html">Webservice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="releasehistory.html">Release history</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/pypath.html">pypath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="webservice.html">Webservice</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="releasehistory.html">Release history</a></li>
 </ul>
 
-<hr class="docutils" />
-<ul>
-  <li class="toctree-l1"><a class="reference internal" href="genindex.html" accesskey="I">General Index</a></li>
-  <li class="toctree-l1"><a class="reference internal" href="py-modindex.html">Python Module Index</a></li>
-</ul>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 <div id="ethical-ad-placement"></div>
         </div>
       </div>
@@ -274,11 +364,11 @@ Gene Ontology processor, BioPax processor, etc</p></li>
     </div>
 
     <nav class="relbar">
-      <a class="next" href="installation.html" aria-label="Next topic" >
+      <a class="next" href="webservice.html" aria-label="Next topic" >
         <div class="title">
           <span class="text">
             <span class="direction">next</span>
-            Installation
+            Webservice
           </span>
         </div>
         <div class="icon">
