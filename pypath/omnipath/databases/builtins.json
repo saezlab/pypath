@@ -36,6 +36,15 @@
             }
         }
     },
+    "dorothea": {
+        "dbclass": "network",
+        "def": {
+            "init": "dorothea",
+            "args": {
+                "levels": ["A", "B", "C", "D"]
+            }
+        }
+    },
     "mirna_mrna": {
         "dbclass": "network",
         "resources": "mirna_target"
