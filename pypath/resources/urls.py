@@ -367,7 +367,7 @@ urls = {
             'Formylation',
             'Citrullination',
             'GPI-anchor',
-            'Nitration',
+            'Nitration',.
             'S-diacylglycerol',
             'Carboxylation',
             'Lipoylation',
@@ -394,6 +394,10 @@ urls = {
         'dbget': 'https://www.kegg.jp/dbget-bin/www_bget?%s',
         'pw_annot': 'https://www.pathwaycommons.org/archives/PC2/v12/'
             'PathwayCommons12.kegg.uniprot.gmt.gz',
+    },
+    'kegg_api': {
+        'label': 'KEGG API',
+        'url': 'https://rest.kegg.jp/%s'
     },
     'pathbank': {
         'label': 'A functional annotation and process description network '
