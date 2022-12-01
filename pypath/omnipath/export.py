@@ -184,7 +184,7 @@ class Export(session.Logger):
         references, directionality and sign information and interaction type
         are included.
 
-        Args:
+        Args
         -----
         :param bool unique_pairs:
             If `True` each line corresponds to a unique pair of molecules,
@@ -471,7 +471,7 @@ class Export(session.Logger):
         annotations in a single row: directionality represented by fields
         like `Direction_A-B` and `Direction_B-A` effect sign a similar way.
 
-        Args:
+        Args
         -----
         :param igraph.Edge e:
             An edge from a pypath igraph object.
@@ -534,7 +534,7 @@ class Export(session.Logger):
         `is_directed`, `is_inhibition` and `is_stimulation`.
         This is the row format used in the webservice.
 
-        Args:
+        Args
         -----
         :param igraph.Edge e:
             An edge from a pypath igraph object.
@@ -635,7 +635,7 @@ class Export(session.Logger):
 
         Returns the row with extra fields added.
 
-        Args:
+        Args
         -----
         :param igraph.Edge e:
             One edge.
@@ -768,7 +768,7 @@ class Export(session.Logger):
         """
         Writes the data frame into a tab separated file.
 
-        Args:
+        Args
         -----
         :param **kwargs:
             Forwarded to `make_df()`.

@@ -57,7 +57,7 @@ def ebi_rest(
     """
     Collects data from an EBI REST web service.
 
-    Args:
+    Args
         url: The URL of the web service.
         qs: Query string parameters to be appended to the URL.
         fields : Glom spec of the fields to be extracted from the result.
@@ -78,7 +78,7 @@ def ebi_rest(
         Read more about glom specs here:
         https://glom.readthedocs.io/en/latest/tutorial.html
 
-    Returns:
+    Returns
         A list of named tuples with the requested fields.
     """
 

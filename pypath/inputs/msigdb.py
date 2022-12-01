@@ -32,34 +32,36 @@ import pypath.resources.urls as urls
 import pypath.share.settings as settings
 import pypath.share.session as session
 import pypath.utils.mapping as mapping
+import pypath.utils.taxonomy as taxonomy
 
 _logger = session.Logger(name = 'msigdb_input')
 _log = _logger._log
 
 
 ALL_COLLECTIONS = {
-    'hallmark': 'h.all',
-    'positional': 'c1.all',
-    'chemical_and_genetic_perturbations': 'c2.cgp',
-    'biocarta_pathways': 'c2.cp.biocarta',
-    'kegg_pathways': 'c2.cp.kegg',
-    'pid_pathways': 'c2.cp.pid',
-    'reactome_pathways': 'c2.cp.reactome',
-    'wikipathways': 'c2.cp.wikipathways',
-    'mirna_targets_mirdb': 'c3.mir.mirdb',
-    'mirna_targets_legacy': 'c3.mir.mir_legacy',
-    'tf_targets_gtrf': 'c3.tft.gtrd',
-    'tf_targets_legacy': 'c3.tft.tft_legacy',
-    'cancer_gene_neighborhoods': 'c4.cgn',
-    'cancer_modules': 'c4.cm',
-    'go_biological_process': 'c5.bp',
-    'go_molecular_function': 'c5.mf',
-    'go_cellular_component': 'c5.cc',
-    'human_protein_ontology': 'c5.hpo',
-    'oncogenic_signatures': 'c6.all',
-    'immunesigdb': 'c7.immunesigdb',
-    'vaccine_response': 'c7.vax',
-    'cell_type_signatures': 'c8.all',
+    'hallmark': ('h.all', 'mh.all'),
+    'positional': ('c1.all', 'm1.all'),
+    'chemical_and_genetic_perturbations': ('m2.cgp', 'm2.cgp'),
+    'biocarta_pathways': ('c2.cp.biocarta', 'm2.cp.biocarta'),
+    'kegg_pathways': ('c2.cp.kegg', None),
+    'pid_pathways': ('c2.cp.pid', None),
+    'reactome_pathways': ('c2.cp.reactome', 'm2.cp.reactome'),
+    'wikipathways': ('c2.cp.wikipathways', 'm2.cp.wikipathways'),
+    'mirna_targets_mirdb': ('c3.mir.mirdb', 'm3.mirdb'),
+    'mirna_targets_legacy': ('c3.mir.mir_legacy', None),
+    'tf_targets_gtrf': ('c3.tft.gtrd', 'm3.gtrd'),
+    'tf_targets_legacy': ('c3.tft.tft_legacy', None),
+    'cancer_gene_neighborhoods': ('c4.cgn', None),
+    'cancer_modules': ('c4.cm', None),
+    'go_biological_process': ('c5.bp', 'm5.bp'),
+    'go_molecular_function': ('c5.mf', 'm5.mf'),
+    'go_cellular_component': ('c5.cc', 'm5.cc'),
+    'human_phenotype_ontology': ('c5.hpo', None),
+    'mouse_phenotype_ontology': (None, 'm5.mpt'),
+    'oncogenic_signatures': ('c6.all', None),
+    'immunesigdb': ('c7.immunesigdb', None),
+    'vaccine_response': ('c7.vax', None),
+    'cell_type_signatures': ('c8.all', 'm8.all'),
 }
 
 
@@ -68,6 +70,8 @@ def msigdb_download(
         collection = 'msigdb',
         id_type = 'symbols',
         force_download = False,
+        organism = 'human',
+        version = None,
     ):
     """
     Downloads and preprocesses a collection of gmt format gene sets from
@@ -94,6 +98,7 @@ def msigdb_download(
     registered_email = registered_email or settings.get('msigdb_email')
 
     if not registered_email:
+
         _log(
             'To download MSigDB you must provide an email address '
             'you have previously registered at '
@@ -103,13 +108,31 @@ def msigdb_download(
 
         return {}
 
+    organisms = {9606: 'Hs', 10090: 'Mm'}
+    ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism)
+    msigdb_org = organisms.get(ncbi_tax_id, None)
+
+    if not ncbi_tax_id:
+
+        _log(f'Could not recognize organism: `{organism}`.')
+
+        return {}
+
+    version = version or settings.get('msigdb_version')
+
     url = urls.urls['msigdb']['url'] % (
+        version,
+        msigdb_org,
         collection,
+        version,
+        msigdb_org,
         id_type,
     )
 
-    req_headers_1 = []
+    req_headers = []
 
+    # we shouldn't need this cookie game any more as all files are available
+    # without any login or cookie from data.broadinstitute.org
     c_nocall = curl.Curl(
         url,
         call = False,
@@ -122,78 +145,55 @@ def msigdb_download(
         os.path.getsize(c_nocall.cache_file_name) == 0 or
         force_download
     ):
+
         c_login_1 = curl.Curl(
             urls.urls['msigdb']['login1'],
             cache = False,
             write_cache = False,
             process = False,
-            large = False,
+            large = True,
             silent = True,
+            post = {
+                'username': registered_email,
+                'password': 'password',
+            },
+            empty_attempt_again = False,
+            follow = False,
         )
 
-        jsessionid = ''
+        cookies = {}
 
         if hasattr(c_login_1, 'resp_headers'):
+
             for hdr in c_login_1.resp_headers:
+
                 if hdr.lower().startswith(b'set-cookie'):
-                    jsessionid = hdr.split(b':')[1].split(b';')[0].strip()
-                    jsessionid = jsessionid.decode('ascii')
-                    _log('msigdb cookie obtained: `%s`.' % jsessionid)
 
-                    break
+                    cookie = hdr.decode('ascii')
+                    cookie = cookie.split(':', maxsplit = 1)[1].strip()
+                    cookie = cookie.split(';', maxsplit = 1)[0].strip()
+                    cookie = tuple(cookie.split('=', maxsplit = 1))
+                    _log('msigdb cookie: `%s=%s`.' % cookie)
+                    cookies[cookie[0]] = cookie[1]
 
-        if not jsessionid:
+        if not cookies:
+
             _log('msigdb: could not get cookie, returning empty list.')
 
             return {}
 
-        req_headers = ['Cookie: %s' % jsessionid]
-
-        c_login_2 = curl.Curl(
-            urls.urls['msigdb']['login2'],
-            cache = False,
-            write_cache = False,
-            large = False,
-            silent = True,
-            req_headers = req_headers,
-            post = {
-                'j_username': registered_email,
-                'j_password': 'password',
-            },
-            process = False,
-            empty_attempt_again = False,
-        )
-
-        jsessionid_1 = ''
-
-        if hasattr(c_login_2, 'resp_headers'):
-            for hdr in c_login_2.resp_headers:
-                if hdr.lower().startswith(b'set-cookie'):
-
-                    jsessionid_1 = hdr.split(b':')[1].split(b';')[0].strip()
-                    jsessionid_1 = jsessionid_1.decode('ascii')
-
-            _log(
-                'msigdb: logged in with email `%s`, '
-                'new cookie obtained: `%s`.' % (
-                    registered_email,
-                    jsessionid_1
-                )
+        req_headers = [
+            'Cookie: %s' % ';'.join(
+                '%s=%s' % cookie
+                for cookie in cookies.items()
             )
+        ]
 
-        if not jsessionid_1:
-            _log(
-                'msigdb: could not log in with email `%s`, '
-                'returning empty dict.' % registered_email
-            )
-
-            return {}
-
-        req_headers_1 = ['Cookie: %s' % jsessionid_1]
+        _log('msigdb cookies for upcoming request: %s' % req_headers[0])
 
     c = curl.Curl(
         url,
-        req_headers = req_headers_1,
+        req_headers = req_headers,
         silent = False,
         large = True,
         bypass_url_encoding = True,
@@ -203,6 +203,7 @@ def msigdb_download(
     result = {}
 
     for gset in c.result:
+
         gset = gset.strip().split('\t')
 
         result[gset[0]] = set(gset[2:])
@@ -213,8 +214,10 @@ def msigdb_download(
 def msigdb_download_collections(
         registered_email = None,
         only_collections = None,
-        exclude = ('c5',),
+        exclude = ('c5', 'm5'),
         id_type = 'symbols',
+        organism = 'human',
+        version = None,
     ):
     """
     Downloads all or some MSigDB gene set collections.
@@ -243,8 +246,16 @@ def msigdb_download_collections(
 
     collection_data = {}
 
-    for collection, label in iteritems(ALL_COLLECTIONS):
+    organisms = {9606: 0, 10090: 1}
+    ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism)
+    idx = organisms.get(ncbi_tax_id, None)
+
+    for collection, labels in iteritems(ALL_COLLECTIONS):
+
+        label = labels[idx]
+
         if (
+            not label or
             (
                 only_collections and
                 label not in only_collections
@@ -263,6 +274,8 @@ def msigdb_download_collections(
                 registered_email = registered_email,
                 collection = label,
                 id_type = id_type,
+                organism = organism,
+                version = version,
             )
         )
 
@@ -272,7 +285,9 @@ def msigdb_download_collections(
 def msigdb_annotations(
         registered_email = None,
         only_collections = None,
-        exclude = ('c5',),
+        exclude = ('c5', 'm5'),
+        organism = 'human',
+        version = None,
     ):
     """
     Downloads all or some MSigDB gene set collections and processes them
@@ -306,7 +321,11 @@ def msigdb_annotations(
         registered_email = registered_email,
         only_collections = only_collections,
         exclude = exclude,
+        organism = organism,
+        version = version,
     )
+
+    ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism)
 
     for (collection, label), genesets in iteritems(collection_data):
 
@@ -321,7 +340,9 @@ def msigdb_annotations(
                 genesymbols,
                 'genesymbol',
                 'uniprot',
+                ncbi_tax_id = ncbi_tax_id,
             ):
+
                 annotations[uniprot].add(this_annot)
 
     return dict(annotations)

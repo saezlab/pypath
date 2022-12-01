@@ -31,17 +31,23 @@ import sys
 try:
     import cairo
 except:
-    sys.stdout.write('No module `cairo` available.'
+    sys.stdout.write('Module `cairo` is not available.'
                      '\nSome plotting functionalities won\'t be accessible.\n')
 
 import math
-import igraph
 import time
 
 from pypath.share.common import *
 import pypath.share.session as session_mod
 
 __all__ = ['Plot', 'InterSet']
+
+try:
+    import igraph
+
+except ModuleNotFoundError:
+    sys.stdout.write('Module `igraph` is not available.'
+                     '\nSome plotting functionalities won\'t be accessible.\n')
 
 
 class Plot(session_mod.Logger):

@@ -45,7 +45,7 @@ def cache_item(key):
     For a key of a cache item returns its path. It does not mean the file
     actually exists.
 
-    Args:
+    Args
         key (str): A label for a named cache item. These are typically
             processed data dumped by the processing function for a quicker
             loading at next use.

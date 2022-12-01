@@ -1,9 +1,6 @@
 Webservice
 ==========
 
-**New webservice** from 14 June 2018: the queries slightly changed, have been
-largely extended. See the examples below.
-
 The webservice implements a very simple REST style API, you can make requests
 by the HTTP protocol (browser, wget, curl or whatever). After defining the
 query type and optionally a set of molecular entities (proteins) you can
@@ -177,15 +174,16 @@ roles in inter-cellular signaling. E.g. if a protein is a ligand, a receptor,
 an extracellular matrix (ECM) component, etc. The proteins and protein
 complexes are classified into categories. The categories are defined by a
 number of attributes:
-    * `aspect`: funtional (e.g. ion channel) or locational (e.g. plasma
-      membrane transmembrane).
-    * `scope`: generic (e.g. ligand) or specific (e.g. interleukin)
-    * `source`: resource specific (from one resource) or composite (combined
-      from more resources)
-    * `causality`: transmitter (delivering signal from the expressing cell)
-      or receiver (receiving signal into the expressing cell) or both
-    * `topology`: major localization categories derived from the locational
-      categories: plasma membrane transmembrane or peripheral or secreted
+
+* `aspect`: funtional (e.g. ion channel) or locational (e.g. plasma
+  membrane transmembrane).
+* `scope`: generic (e.g. ligand) or specific (e.g. interleukin)
+* `source`: resource specific (from one resource) or composite (combined
+  from more resources)
+* `causality`: transmitter (delivering signal from the expressing cell)
+  or receiver (receiving signal into the expressing cell) or both
+* `topology`: major localization categories derived from the locational
+  categories: plasma membrane transmembrane or peripheral or secreted
 
 The `intercell` database defines 25 functional and 10 locational generic,
 composite categories. The number of specific categories is above 1,000.

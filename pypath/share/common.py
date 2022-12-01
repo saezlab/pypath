@@ -1093,12 +1093,12 @@ def swap_dict(d, force_sets = False):
     will be a key and values sets of the original keys of *d* (see
     example below).
 
-    Args:
+    Args
         d (dict): Original dictionary to be swapped.
         force_sets (bool): The values of the swapped dict should be sets
             even if all of them have only one item.
 
-    Returns:
+    Returns
         (dict): The swapped dictionary.
 
     Examples:
@@ -2358,11 +2358,11 @@ def get(obj, field):
     """
     Extracts elements from lists, dicts and tuples in a uniform way.
 
-    Args:
+    Args
         obj (iterable): An iterable of (named) tuples or lists or dicts.
         field (int, str): The key or index of the field.
 
-    Returns:
+    Returns
         The extracted value, or `PYPATH_NO_VALUE` if the field does not
         exist.
     """
@@ -2389,11 +2389,11 @@ def values(obj, field):
     """
     All values of a field.
 
-    Args:
+    Args
         obj (iterable): An iterable of (named) tuples or lists or dicts.
         field (int, str): The key or index of the field.
 
-    Returns:
+    Returns
         set: All possible unique values of the field. Unhashable values
             will be ignored.
     """
@@ -2415,14 +2415,14 @@ def match(obj, condition):
     """
     Tests a condition on an object.
 
-    Args:
+    Args
         obj: An object to test against.
         condition: A simple value, a set of values or a callable. In the
             latter case the object will be passed to the callable, otherwise
             the ``eq`` function, defined here, will be used to match the
             object against the condition.
 
-    Returns:
+    Returns
         bool: The outcome of the test.
     """
 
@@ -2437,7 +2437,7 @@ def filtr(obj, *args, and_or = 'AND', **kwargs):
     """
     Filters an iterable by simple conditions on one or more fields.
 
-    Args:
+    Args
         obj (iterable): An iterable of lists, (named) tuples, dicts or
             other objects.
         and_or (str):
@@ -2489,12 +2489,12 @@ def negate(value, neg = True):
     """
     Negates a value.
 
-    Args:
+    Args
         value: Anything that can be casted to bool.
         neg (bool): Whether to negate or not. If False, the value won't be
             negated.
 
-    Returns:
+    Returns
         bool: The value casted to bool and optionally negated.
     """
 
@@ -2545,13 +2545,13 @@ def decode(string, *args, **kwargs):
     """
     Decodes a string if it is a byte string, otherwise returns it unchanged.
 
-    Args:
+    Args
         string (str,bytes): A string, either a byte string or a decoded
             string.
         args, kwargs: Passed to `bytes.decode`, it accepts two arguments:
             `encoding` and `errors`.
 
-    Returns:
+    Returns
         A decoded string.
     """
 

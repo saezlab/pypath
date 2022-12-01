@@ -231,7 +231,7 @@ class NetworkResourceKey(
     @property
     def label(self):
         """
-        Returns:
+        Returns
             (str): A label containing the resource name, and if it's a
                 secondary resource, the name of the primary resource
                 separated by an underscore.
@@ -243,7 +243,7 @@ class NetworkResourceKey(
     @property
     def last(self):
         """
-        Returns:
+        Returns
             (str): The name of the resource where the data directly came from
                 ignoring the primary resource.
         """

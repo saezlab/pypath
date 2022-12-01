@@ -28,11 +28,13 @@ Package metadata (version, authors, etc).
 
 __all__ = ['get_metadata']
 
-import importlib.metadata
 import os
 import pathlib
+import importlib.metadata
 
 import toml
+
+_VERSION = '0.14.30'
 
 
 def get_metadata():
@@ -47,7 +49,7 @@ def get_metadata():
     pyproj_toml = 'pyproject.toml'
     meta = {}
 
-    for project_dir in (here, here.parent):
+    for project_dir in (here, here.parent, here.parent.parent):
 
         toml_path = str(project_dir.joinpath(pyproj_toml).absolute())
 
@@ -69,11 +71,16 @@ def get_metadata():
 
         try:
 
-            meta = dict(importlib.metadata.metadata(here.name).items())
+            meta = {
+                k.lower(): v for k, v in
+                importlib.metadata.metadata(here.name).items()
+            }
 
         except importlib.metadata.PackageNotFoundError:
 
-            meta = {}
+            pass
+
+    meta['version'] = meta.get('version', None) or _VERSION
 
     return meta
 

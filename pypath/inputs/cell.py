@@ -34,16 +34,17 @@ _logger = session.Logger(name = 'cell_input')
 _log = _logger._log
 
 
-def cell_supplementary(supp_url, article_url):
+def cell_supplementary(supp_url: str, article_url: str) -> str:
     """
     Downloads a supplementary material from the Cell journal webpage.
 
-    :param str supp_url:
-        URL of the supplementary material.
-    :param str article_url:
-        URL of the article page.
+    Args
+        supp_url:
+            URL of the supplementary material.
+        article_url:
+            URL of the article page.
 
-    :return:
+    Return
         The path of the downloaded file.
     """
 

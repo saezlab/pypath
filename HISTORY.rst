@@ -1,12 +1,13 @@
-Release History
-------------------
+Release history
+===============
+
 This is a summary of the changelog.
 
-0.1.0:
+0.1.0
 ^^^^^^^^^^^
 * First release of PyPath, for initial testing.
 
-0.2.0:
+0.2.0
 ^^^^^^^^^^^
 * Lots of small improvements in almost every module
 * Networks can be read from local files, remote files, lists or provided
@@ -14,30 +15,30 @@ This is a summary of the changelog.
 * Almost all redistributed data have been removed, every source downloaded
   from the original provider.
 
-0.3.0:
+0.3.0
 ^^^^^^^^^^^
 * First version with partial Python 3 support.
 
-0.4.0:
+0.4.0
 ^^^^^^^^^^^
 * **pyreact** module with **BioPaxReader** and **PyReact** classes
 * Process description databases, BioPax and PathwayCommons SIF conversion
   rules are supported
 * Format definitions for 6 process description databases included.
 
-0.5.0:
+0.5.0
 ^^^^^^^^^^^
 * Many new classes in the **plot** module
 * All figures and tables in the manuscript can be generated automatically
 * This is supported by a new module, **analysis**, which implements a
   generic workflow in its **Workflow** class.
 
-0.5.32:
+0.5.32
 ^^^^^^^^^^^
 * `chembl`, `unichem`, `mysql` and `mysql_connect` modules are Python3
   compatible
 
-0.6.31:
+0.6.31
 ^^^^^^^^^^^
 * Orthology translation of network
 * Homologene UniProt dict to translate between different organisms
@@ -102,8 +103,29 @@ This is a summary of the changelog.
 * A complete redesign of the intercellular communication database
 * License support
 
-Upcoming:
+0.12.0
+^^^^^^^^^^
+
+* Reorganization of the `inputs` module: each resource has its own submodule
+
+0.13.0
+^^^^^^^^^^
+
+* A large part of the input methods has been tested and updated
+
+0.14.0
+^^^^^^^^^
+
+* Reorganized repository tree: the contents of the former `src` directory
+  have been moved to the root
+* Settings are stored in a YML file
+
+Upcoming
 ^^^^^^^^^^^
-* New, more flexible network reader class
-* Full support for multi-species molecular interaction networks (e.g. pathogene-host)
-* Better support for not protein only molecular interaction networks (metabolites, drug compounds, RNA)
+
+* Full support for multi-species molecular interaction networks (e.g.
+  pathogene-host)
+* Better support for not protein only molecular interaction networks
+  (metabolites, drug compounds, RNA)
+* Graph database (Neo4j) backend (biocypher)
+* Split into separate modules (core, inputs, utils, dlmanager, etc)

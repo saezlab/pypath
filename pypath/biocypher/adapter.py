@@ -40,59 +40,84 @@ import neo4j_utils
 import yaml
 
 import pypath
-import pypath.core.network as pypath_network
+import pypath.core.network as network_mod
 import pypath.omnipath as op
-import pypath.resources.network as pypath_netres
+import pypath.resources.network as netres
 import pypath.share.session as _session
 from pypath.core import annot
 from pypath.core import complex as cmplx
 
+__all__ = ['Adapter']
 
-class BiocypherAdapter(_session.Logger):
+
+class Adapter(_session.Logger):
     """
-    Load pypath database obejcts into biocypher (Neo4j).
+    Channel OmniPath database contents into BioCypher.
 
-    Args:
-        driver:
-            A ``neo4j.Driver`` instance, created by, for example,
-            ``neo4j.GraphDatabase.driver``.
-        db_name:
-            Name of the database (Neo4j graph) to use.
-        db_uri:
-            Protocol, host and port to access the Neo4j server.
-        db_user:
-            Neo4j user name.
-        db_passwd:
-            Password of the Neo4j user.
-        network:
-            A network database object.
-        wipe:
-            Wipe the database after connection, ensuring the data
-            is loaded into an empty database.
-        kwargs:
-            Passed to ``biocypher.Driver``, and ultimately to
-            ``neo4j_utils.Driver``.
-
-    Details:
-        The connection can be defined in three ways:
-         * Providing a ready ``neo4j.Driver`` instance
-         * By URI and authentication data
-         * By a YML config file
+    Here we implement a temporary solution for writing OmniPath data into
+    BioCypher. It will be replaced by methods integrated into fundamental
+    pypath object, especially Resource objects.
     """
+
+    _network_param = {
+        'name': 'dummy',
+        'module': 'network',
+        'args': {
+            'resources': (
+                netres.pathway['signor'],
+                netres.pathway['signalink3'],
+                netres.pathway['ca1'],
+                netres.transcription['signor'],
+                netres.transcription['oreganno'],
+                netres.mirna_target['signor'],
+                netres.mirna_target['ncrdeath'],
+            ),
+        },
+    }
 
 
     def __init__(
             self,
-            driver: Optional[neo4j_utils.Driver] = None,
-            db_name: Optional[str] = None,
-            db_uri: Optional[str] = None,
-            db_user: Optional[str] = None,
-            db_passwd: Optional[str] = None,
+            driver: neo4j_utils.Driver | None = None,
+            db_name: str | None = None,
+            db_uri: str | None = None,
+            db_user: str | None = None,
+            db_passwd: str | None = None,
             wipe: bool = False,
             offline: bool = False,
-            network: Optional[pypath.core.network.Network] = None,
+            network: pypath_network.Network | None = None,
             **kwargs
         ):
+        """
+        Load pypath database obejcts into biocypher (Neo4j).
+
+        Args
+            driver:
+                A ``neo4j.Driver`` instance, created by, for example,
+                ``neo4j.GraphDatabase.driver``.
+            db_name:
+                Name of the database (Neo4j graph) to use.
+            db_uri:
+                Protocol, host and port to access the Neo4j server.
+            db_user:
+                Neo4j user name.
+            db_passwd:
+                Password of the Neo4j user.
+            network:
+                A network database object.
+            wipe:
+                Wipe the database after connection, ensuring the data
+                is loaded into an empty database.
+            kwargs:
+                Passed to ``biocypher.Driver``, and ultimately to
+                ``neo4j_utils.Driver``.
+
+        Details:
+            The connection can be defined in three ways:
+            * Providing a ready ``neo4j.Driver`` instance
+            * By URI and authentication data
+            * By a YML config file
+        """
 
         _session.Logger.__init__(self, name = 'bcy_adapter')
 
@@ -121,7 +146,7 @@ class BiocypherAdapter(_session.Logger):
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
-        setattr(self, '__class__', new)
+        self.__class__ = new
 
 
     def set_network(self, network):
@@ -130,83 +155,39 @@ class BiocypherAdapter(_session.Logger):
         self.network = network
 
 
-    # this might be good for development, but should be removed later
-    def build_python_object(self):
+    def dummy_network(self):
         """
-        Builds a network database with two datasets: 'pathway' and
-        'mirna_target'. Intended to be an example. The dataset is preloaded
-        to avoid waiting time when applying multiple database tests.
-        The resulting network database is stored under the :py:attr:`network`
-        attribute.
+        Obtain a small network just to play with.
+
+        For development, to be removed later.
         """
 
-        ### network
-        n = pypath_network.Network()
-        # exclude = {'TRIP', 'CellChatDB', 'ncRDeathDB', 'DIP', 'Wojtowicz2020'}
-        networks_literal = [
-            "pathway", # standard activity flow
-            "pathway_noref", # above without literature references
-            "interaction", # large undirected databases such as intact
-            "ptm", # == "enzyme_substrate" 
-            "ptm_noref", # enzyme_substrate without literature references
-            "transcription_onebyone", # direct literature curated TF-target interaction
-            "dorothea",
-            "mirna_target", # direct literature curated miRNA-target interaction
-            "tf_mirna", # direct literature curated TF-miRNA interaction
-            "lncrna_target", # direct literature curated lncRNA-target interaction
-            "ligand_receptor", # all ligand receptor interactions, with and without literature references
-            "small_molecule_protein", # all small molecule-protein interactions, with and without literature references 
-        ]
-        for net in networks_literal:
-            n.load(getattr(pypath_netres, net))
-
-            # for each net, build biocypher graph
+        op.db.define_dataset(**self._network_param)
+        netw = op.db.get_db(*self._network_param['name'])
+        self.set_network(netw)
 
 
-        ### complexes
-        for cls in cmplx.complex_resources:
-            # each resource annotates complexes
-            complex_db = getattr(complex, cls)()
-
-
-        ### annotations
-        # annot = op.db.get_db("annotations") # get everything at once
-        for cls in annot.protein_sources_default:
-            # each resource annotates proteins or genes
-            annot_db = getattr(annot, cls)()
-        
-        for cls in annot.complex_sources_default:
-            # each resource annotates complexes
-            annot_db = getattr(annot, cls)()
-
-
-        ### cell-cell
-        cell_db = op.db.get_db("intercell") # get everything at once
-        for role, participants in cell_db.classes.items():
-            # import into biocypher for each resource separately
-            pass
-
-
-        ### enzyme-substrate
-        enz_db = op.db.get_db("enz_sub") # get everything at once
-        for (enz, sub), ptms in enz_db.items():
-            # import individual interactions into biocypher 
-            pass
-
-        self.set_network(n)
-
-
-    def translate_python_object_to_neo4j(
+    def translate(
             self,
-            network: Optional[pypath.core.network.Network] = None,
+            network: Optional[pypath_network.Network] = None,
+            export_csv: bool = False,
+            db_name: Optional[str] = None,
         ) -> Generator[tuple, None, None]:
         """
         Loads a pypath network into the biocypher (Neo4j) backend.
 
-        Args:
-            - network (pypath.core.network.Network): A network database
-              object. If `None`, the value of :py:attr:`network` will be
-              used.
+        Args
+            network:
+                A network database object. If `None`, the value of
+                :py:attr:`network` will be used.
+            export_csv:
+                Write the data into CSV files that can be imported by the
+                *neo4j-admin* tool. The default behaviour is to connect to
+                the server and insert the data into the database.
+            db_name:
+                In case of writing CSV files, a CLI call of *neo4j-admin*
+                will also be created. The name of the target database is
+                part of this call.
         """
 
         network = network or self.network
@@ -225,11 +206,18 @@ class BiocypherAdapter(_session.Logger):
 
                 _id = self._process_id(n.identifier)
                 _type = n.entity_type
-                _props = {"taxon": n.taxon}
-                yield (_id, _type, _props)
+                props = {'taxon': n.taxon, 'label': n.label}
+                yield (_id, _type, props)
 
-        id_type_tuples = gen_nodes(network.nodes.values())
-        self.bcy.add_nodes(id_type_tuples)
+        nodes = gen_nodes(network.nodes.values())
+
+        if export_csv:
+
+            self.bcy.write_nodes(nodes, db_name = db_name)
+
+        else:
+
+            self.bcy.add_nodes(nodes = nodes)
 
         # create id-type tuples for edges
         # to enable translation between pypath and biocypher notation
@@ -238,73 +226,28 @@ class BiocypherAdapter(_session.Logger):
 
             for e in edges:
 
-                _src = self._process_id(e.id_a)
-                _tar = self._process_id(e.id_b)
+                src = self._process_id(e.id_a)
+                tar = self._process_id(e.id_b)
                 _type = e.type
+                props = {
+                    'directed': e.directed,
+                    'resources': e.sources,
+                    'references': e.references,
+                    'effect': e.effect,
+                }
 
-                yield (_src, _tar, _type)
+                yield (src, tar, _type, props)
 
-        src_tar_type_tuples = gen_edges(network.generate_df_records())
-        self.bcy.add_edges(src_tar_type_tuples)
+        edges = gen_edges(network.generate_df_records(with_references = True))
 
+        if export_csv:
 
-    def write_to_csv_for_admin_import(
-            self,
-            network: Optional[pypath.core.network.Network] = None,
-            db_name: Optional[str] = None,
-        ):
-        """
-        Loads a pypath network into the biocypher (Neo4j) backend using
-        the fast Admin Import function, which requires text files that
-        need to be properly formatted since it turns off safety measures
-        at import.
+            self.bcy.write_edges(edges, db_name = db_name)
+            self.bcy.write_import_call()
 
-        Args:
-            network:
-                A network database object. If `None`, the value of
-                :py:attr:`network` will be used.
-        """
+        else:
 
-        network = network or self.network
-
-        if not network:
-
-            self._log("No network provided.")
-
-            return
-
-        # write nodes
-        def gen_nodes(nodes):
-
-            for n in nodes:
-
-                _id = self._process_id(n.identifier)
-                _type = n.entity_type
-                _props = {"taxon": n.taxon, "label": n.label}
-
-                yield (_id, _type, _props)
-
-        id_type_tuples = gen_nodes(network.nodes.values())
-
-        self.bcy.write_nodes(id_type_tuples, db_name=db_name)
-
-        # write edges
-        def gen_edges(edges):
-
-            for e in edges:
-
-                _src = self._process_id(e.id_a)
-                _tar = self._process_id(e.id_b)
-                _type = e.type
-                _props = {"effect": e.effect, "directed": e.directed}
-
-                yield (_src, _tar, _type, _props)
-
-        src_tar_type_tuples = gen_edges(network.generate_df_records())
-
-        self.bcy.write_edges(src_tar_type_tuples, db_name=db_name)
-
-        self.bcy.write_import_call()
+            self.bcy.add_edges(edges = edges)
 
 
     def _process_id(self, identifier: str) -> str:
@@ -320,7 +263,7 @@ class BiocypherAdapter(_session.Logger):
         """
         Loads any compatible object into the biocypher (Neo4j) database.
 
-        Args:
+        Args
             obj:
                 An object from this module compatible with the current
                 adapter. Currently the following database objects are

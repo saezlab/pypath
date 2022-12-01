@@ -41,7 +41,7 @@ def ontology(
     """
     Downloads an ontology using the EBI Ontology Lookup Service.
 
-    Args:
+    Args
         ontology: The ID of an ontology available in EBI OLS. For a
             full list, call ``listof_ontologies``.
         fields: Additional fields to include, apart from the default
@@ -96,12 +96,12 @@ def listof_ontologies(
     """
     Returns a list of available ontologies in the EBI Ontology Lookup Service.
 
-    Args:
+    Args
         fields: Additional field(s) to include, apart from the default
             ones.
         full_config: Keep the full config dict.
 
-    Return:
+    Return
         If no extra fields and no full config are requested: a dict with
         ontology abbreviations as keys and ontology names as values.
         Otherwise a list of named tuples, each representing an ontology

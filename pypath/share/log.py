@@ -116,7 +116,7 @@ class Logger(object):
             break_long_words = False,
         )
         self.logdir = self.get_logdir(logdir)
-        self.fname  = os.path.join(self.logdir, fname)
+        self.fname  = os.path.join(self.logdir, fname) if fname else os.devnull
         self.verbosity = (
             verbosity
                 if verbosity is not None else

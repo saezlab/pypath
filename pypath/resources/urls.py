@@ -30,12 +30,13 @@ import pypath.share.settings as settings
 urls = {
     'uniprot_pdb': {
         'label': 'Getting PDB IDs of 3D structures for UniProtIDs',
-        'url': 'https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/docs/pdbtosp.txt'
+        'url': 'https://ftp.uniprot.org/pub/databases/uniprot/'
+            'current_release/knowledgebase/complete/docs/pdbtosp.txt'
     },
     'uniprot_basic': {
         'label': 'URL for UniProt queries',
         'url': 'https://legacy.uniprot.org/uniprot/',
-        'lists': 'https://www.uniprot.org/uploadlists/',
+        'lists': 'https://legacy.uniprot.org/uploadlists/',
         'datasheet': 'https://legacy.uniprot.org/uniprot/%s.txt',
         'history': 'https://legacy.uniprot.org/uniprot/%s.tab?version=*',
         'deleted_sp': 'ftp://ftp.expasy.org/databases/uniprot/'
@@ -48,7 +49,8 @@ urls = {
             'knowledgebase/complete/docs/speindex.txt',
         'taxids': 'https://www.uniprot.org/taxonomy/?query='
             '*&format=tab&force=true&columns=id&compress=yes',
-        'speclist': 'https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/docs/speclist.txt',
+        'speclist': 'https://ftp.uniprot.org/pub/databases/uniprot/'
+            'current_release/knowledgebase/complete/docs/speclist.txt',
     },
     'corum': {
         'label':
@@ -654,11 +656,11 @@ urls = {
     },
     'msigdb': {
         'label': 'Molecular Signatures Database',
-        'login1': 'https://www.gsea-msigdb.org/gsea/login.jsp',
+        'login1': 'https://www.gsea-msigdb.org/gsea/login',
         'login2': 'https://www.gsea-msigdb.org/gsea/j_spring_security_check',
         'url': 'https://www.gsea-msigdb.org/gsea/msigdb/'
             'download_file.jsp?filePath=/msigdb/release/'
-            '7.5.1/%s.v7.5.1.%s.gmt',
+            '%s.%s/%s.v%s.%s.%s.gmt',
         'coll': 'https://www.gsea-msigdb.org/gsea/msigdb/collections.jsp',
         'url_stem': 'https://www.gsea-msigdb.org/gsea/%s',
         'one_set': 'hhttps://www.gsea-msigdb.org/gsea/msigdb/'
@@ -947,7 +949,8 @@ urls = {
         'links': 'https://stringdb-static.org/download/protein.links.detailed.v11.5/%u'
             '.protein.links.detailed.v11.5.txt.gz',
         'physical_links': 'https://stringdb-static.org/download/protein.physical.links.detailed.v11.5/%u'
-            '.protein.physical.links.detailed.v11.5.txt.gz'
+            '.protein.physical.links.detailed.v11.5.txt.gz',
+        'species': 'https://stringdb-static.org/download/species.v11.5.txt'
     },
     'wikipw': {
         'label': 'WikiPathways human biopax',
@@ -1530,14 +1533,49 @@ urls = {
     },
     'interpro': {
         'label': 'Protein families, domains and functional sites',
-        'entries': 'https://ftp.ebi.ac.uk/pub/databases/interpro/interpro.xml.gz',
-        'annotations': 'https://www.ebi.ac.uk/interpro/api/entry/InterPro/protein/'
-            '%s/taxonomy/uniprot/%u?page_size=%u',
+        'entries': 'https://ftp.ebi.ac.uk/pub/databases/'
+            'interpro/current_release/interpro.xml.gz',
+        'annotations': 'https://www.ebi.ac.uk/interpro/api/entry/InterPro/'
+            'protein/%s/taxonomy/uniprot/%s?page_size=%u',
+        'interpro2go': 'http://www.geneontology.org/external2go/interpro2go',
     },
     'drugcentral': {
         'label': 'Drug-target interactions',
-        'interactions': 'https://unmtid-shinyapps.net/download/DrugCentral/2021_09_01/drug.target.interaction.tsv.gz',
-        'SMILES_InChI' : 'https://unmtid-shinyapps.net/download/DrugCentral/2021_09_01/structures.smiles.tsv',
+        'interactions': 'https://unmtid-shinyapps.net/download/DrugCentral'
+            '/2021_09_01/drug.target.interaction.tsv.gz',
+        'SMILES_InChI' : 'https://unmtid-shinyapps.net/download/DrugCentral'
+            '/2021_09_01/structures.smiles.tsv',
+    },
+    'drugbank': {
+        'label': 'DrugBank database',
+        'all_structures': 'https://go.drugbank.com/releases/5-1-9/'
+            'downloads/all-structure-links',
+        'all_drugs': 'https://go.drugbank.com/releases/5-1-9/downloads/'
+            'all-drug-links',
+        'drug_target_identifiers' : 'https://go.drugbank.com/releases/'
+            '5-1-9/downloads/target-all-polypeptide-ids',
+        'drug_enzyme_identifiers' : 'https://go.drugbank.com/releases/5-1-9/'
+            'downloads/enzyme-all-polypeptide-ids',
+        'drug_carrier_identifiers' : 'https://go.drugbank.com/releases/5-1-9/'
+            'downloads/carrier-all-polypeptide-ids',
+        'drug_transporter_identifiers' : 'https://go.drugbank.com/releases/'
+            '5-1-9/downloads/transporter-all-polypeptide-ids',
+    }, 
+    'chembl': {
+        'label': 'ChEMBL database',
+        'url': 'https://www.ebi.ac.uk',
+        'target': '/chembl/api/data/target.json?limit=1000',
+        'assay' : '/chembl/api/data/assay.json?limit=1000',
+        'activity' : '/chembl/api/data/activity.json?limit=1000',
+        'molecule' : '/chembl/api/data/molecule.json?limit=1000',
+    },
+    'hpo': {
+        'label': 'HPO database',
+        'ontology': 'https://raw.githubusercontent.com/obophenotype/'
+            'human-phenotype-ontology/master/hp.obo',
+        'disease' : 'http://purl.obolibrary.org/obo/hp/hpoa/phenotype.hpoa',
+        'gene' : 'http://purl.obolibrary.org/obo/hp/hpoa/'
+            'genes_to_phenotype.txt',
     },
 }
 

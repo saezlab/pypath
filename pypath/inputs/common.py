@@ -302,7 +302,7 @@ def json_extract(
     """
     Extracts fields of arbitrary depth from JSON data into a list of dicts.
 
-    Args:
+    Args
         data: JSON as a string or a file-like object.
         spec: Dict of glom field specifications.
     """

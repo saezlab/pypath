@@ -4616,5 +4616,39 @@
         "https://academic.oup.com/nar/article/49/D1/D1160/5957163?login=false"
       ]
     }
+  },
+  "DrugBank": {
+    "license": "CC BY-NC 4.0",
+    "urls": {
+      "webpages": ["https://go.drugbank.com/"],
+      "articles": [
+        "https://pubmed.ncbi.nlm.nih.gov/29126136/",
+        "https://pubmed.ncbi.nlm.nih.gov/24203711/",
+        "https://pubmed.ncbi.nlm.nih.gov/21059682/",
+        "https://pubmed.ncbi.nlm.nih.gov/18048412/",
+        "https://pubmed.ncbi.nlm.nih.gov/16381955/"
+      ]
+    }
+  },
+  "ChEMBL": {
+    "license": "CC BY-SA 3.0",
+    "urls": {
+      "webpages": ["https://www.ebi.ac.uk/chembl/"],
+      "articles": [
+        "http://europepmc.org/article/PMC/5210557",
+        "http://europepmc.org/article/PMC/4489243",
+        "http://europepmc.org/article/MED/24413672"
+      ]
+    }
+  },
+  "HPO": {
+    "full_name": "The Human Phenotype Ontology",
+    "license": "HPO",
+    "urls": {
+      "webpages": ["https://hpo.jax.org/app/"],
+      "articles": [
+        "https://pubmed.ncbi.nlm.nih.gov/33264411/"
+      ]
+    }
   }
 }

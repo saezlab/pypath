@@ -155,7 +155,7 @@ class Unichem(object):
         """
         Print information about one source.
 
-        Args:
+        Args
             source (int,str): The numeric or string ID of one source.
         """
 
@@ -168,14 +168,14 @@ class Unichem(object):
         using the UniChem web service. For an up to date list of identifier
         types see https://www.ebi.ac.uk/unichem/ucquery/listSources.
 
-        Args:
+        Args
             source (str,int): The source ID type, either as a string label
                 or as a number, as used in UniChem.
             target (str,int): The target ID type, either as a string label
                 or as a number, as used in UniChem.
             lst (str,set): One or more identifiers to translate.
 
-        Returns:
+        Returns
             Returns None, the results are stored in the `result` attribute
             of this object.
         """
@@ -235,12 +235,12 @@ class Unichem(object):
         Translate InChi keys to another identifier type using the ChEMBL
         web service.
 
-        Args:
+        Args
             target (str,int): The target ID type, either as a string label
                 or as a number, as used in UniChem.
             lst (str,set): One or more InChi keys.
 
-        Returns:
+        Returns
             Returns None, the results are stored in the `result` attribute
             of this object.
         """
@@ -282,10 +282,10 @@ class Unichem(object):
         """
         Translate SMILES to ChEMBL ID using the ChEMBL web service.
 
-        Args:
+        Args
             smiles (str,list): One or more SMILES.
 
-        Returns:
+        Returns
             Returns None, the results are stored in the `result` attribute
             of this object.
         """
@@ -348,7 +348,7 @@ class Unichem(object):
         cheminformatics similarity metrics. Read more at
         https://www.ebi.ac.uk/unichem/info/widesearchInfo.
 
-        Args:
+        Args
             id_list (str,set): One or more identifiers to query.
             id_type (str,int): Type of the identifiers, either as a string
                 label or a number as used by UniChem. SMILES is not
@@ -356,7 +356,7 @@ class Unichem(object):
             parameters (list): A list of parameters A-H as described in
                 https://www.ebi.ac.uk/unichem/info/widesearchInfo.
 
-        Returns:
+        Returns
             Returns None, the results are stored in the `result` attribute
             of this object.
         """

@@ -38,10 +38,10 @@ def cytosig_df(long: bool = False) -> Union[pd.DataFrame, pd.Series]:
     CytoSig core data is a matrix of cytokines vs. targets. Here this matrix
     is returned as a pandas data frame, either in a wide or long format.
 
-    Args:
+    Args
         long: Convert the data frame to long format.
 
-    Returns:
+    Returns
         The original matrix format data frame (rows are signature genes,
         columns are cytokines) by default; if `long` is `True`, a series
         with multi index is returned.
@@ -68,7 +68,7 @@ def cytosig_annotations() -> dict:
     CytoSig is a compendium of expression signatures from cytokine
     perturbation experiments.
 
-    Returns:
+    Returns
         Dict of sets of annotations.
     """
 

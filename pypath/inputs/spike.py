@@ -37,7 +37,7 @@ import pypath.internals.intera as intera
 
 def spike_interactions(min_confidence: int = 2) -> List[tuple]:
     """
-    Args:
+    Args
         min_confidence:
             Confidence (integrity) levels in SPIKE span from 1 to 4, 1
             being the highest confidence.

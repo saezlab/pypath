@@ -34,7 +34,7 @@ def pubchem_mapping(target, source = 'cid'):
     """
     Identifier translation data from PubChem.
 
-    Args:
+    Args
         target (str): The target ID type, either as it is used in the file
             names in the PubChem FTP service or as simpler, all lowercase
             strings used in this module. Possible values are parent-cid,
@@ -42,7 +42,7 @@ def pubchem_mapping(target, source = 'cid'):
             synonym.
         source (str): The source ID type. Either sid or cid.
 
-    Returns:
+    Returns
         (dict): A dict of sets with the source identifiers as keys and sets
             of target identifiers as values.
     """

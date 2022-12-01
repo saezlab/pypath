@@ -31,6 +31,8 @@ of operations are available on evidences and their collections, for
 example they can be combined or filtered.
 """
 
+from __future__ import annotations
+
 from future.utils import iteritems
 
 import importlib as imp
@@ -796,7 +798,7 @@ class Evidences(object):
 
     def keys(self):
         """
-        Returns:
+        Returns
             (dict_keys): The keys of this dictionary are
                 :py:class:`pypath.internals.resource.NetworkResourceKey`
                 objects.
@@ -807,7 +809,7 @@ class Evidences(object):
 
     def items(self):
         """
-        Returns:
+        Returns
             (dict_items): The evidences as a mapping, with
                 :py:class:`pypath.internals.resource.NetworkResourceKey`
                 objects as keys and :py:class:`pypath.core.evidence.Evidence`
@@ -818,11 +820,10 @@ class Evidences(object):
 
 
     @property
-    def simple_dict(self):
+    def simple_dict(self) -> dict[str, evidence.Evidence]:
         """
-        Returns:
-            (dict): Keys are resource labels, values are
-                :py:class:`pypath.core.evidence.Evidence` objects.
+        Returns
+            Keys are resource labels, values are ``Evidence`` objects.
         """
 
         return dict(
@@ -831,13 +832,12 @@ class Evidences(object):
         )
 
 
-    def serialize_attrs(self, top_key_prefix = True):
+    def serialize_attrs(self, top_key_prefix: bool = True) -> str:
         """
         Serialize the extra attributes of the evidences as a JSON string.
 
-        Returns:
-            (str): A JSON serialized string with the evidences from each
-                resource.
+        Returns
+            A JSON serialized string with the evidences from each resource.
         """
 
         return attrs_mod.AttributeHandler._serialize(

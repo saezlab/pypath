@@ -120,7 +120,7 @@ class AttributeHandler(object):
         Generates a JSON string with the full contents of the attributes,
         without any whitespace or line break.
 
-        Returns:
+        Returns
             (str): The attributes JSON serialized.
         """
 

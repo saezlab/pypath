@@ -60,7 +60,7 @@ class Settings(object):
     """
     Class to provide settings to other modules.
 
-    Args:
+    Args
         **kwargs: key-value pairs to be included in the settings dict
     """
 
@@ -177,13 +177,13 @@ class Settings(object):
         """
         Set the values of various parameters in the settings.
 
-        Args:
+        Args
             _dict: A `dict` of parameters, keys are the option names, values
                 are the values to be set.
             kwargs: Alternative way to provide parameters, argument names
                 are the option names, values are the corresponding values.
 
-        Returns:
+        Returns
             None
         """
 
@@ -227,10 +227,10 @@ class Settings(object):
         Returns the default value of a parameter. If no default value is
         defined for the parameter, None will be returned.
 
-        Args:
+        Args
             param (str): The name of the parameter.
 
-        Returns:
+        Returns
             The default value of the parameter or None.
         """
 
@@ -267,7 +267,7 @@ class Settings(object):
         context, the original values will be restored. Multiple contexts
         can be nested within each other.
 
-        Args:
+        Args
             _dict: A `dict` of parameters, keys are the option names, values
                 are their values.
             kwargs: Alternative way to provide parameters, argument names
@@ -301,10 +301,10 @@ class Settings(object):
         """
         Reset the parameters to their default values.
 
-        Args:
+        Args
             param: The name of the parameter to be reset.
 
-        Returns:
+        Returns
             None
         """
 
@@ -377,7 +377,7 @@ def get(param, override = None):
     """
     The current value of a settings parameter.
 
-    Args:
+    Args
         param (str): Name of a parameter.
         override: Override the currently valid settings,
             return this value instead.
@@ -393,13 +393,13 @@ def setup(_dict = None, **kwargs):
     """
     Set the values of various parameters in the settings.
 
-    Args:
+    Args
         _dict: A `dict` of parameters, keys are the option names, values
             are the values to be set.
         kwargs: Alternative way to provide parameters, argument names
             are the option names, values are the corresponding values.
 
-    Returns:
+    Returns
         None
     """
 

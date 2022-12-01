@@ -44,10 +44,10 @@ def cancerdrugsdb_download():
     From https://www.anticancerfund.org/en/cancerdrugs-db.
     This function downloads a single dataset.
 
-    Args:
+    Args
         None.
 
-    Returns:
+    Returns
         A list of dicts, each is a record as it provided by the database.
     """
 
@@ -63,10 +63,10 @@ def cancerdrugsdb_interactions():
     Returns drug-gene interactions from Cancer Drugs Database
     (https://www.anticancerfund.org/en/cancerdrugs-db).
 
-    Args:
+    Args
         None.
 
-    Returns:
+    Returns
         List of named tuples, each describing a drug-gene interaction.
         Identifiers of type PubChem and UniProt.
     """
@@ -179,10 +179,10 @@ def cancerdrugsdb_annotations():
     """
     Returns drug annotations from CancerDrugs_DB.
 
-    Args:
+    Args
         None.
 
-    Returns:
+    Returns
         (dict): Keys are PubChem IDs, values are sets of annotations.
     """
 

@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "pypath-omnipath"
-version = "0.14.15"
+version = "0.14.30"
 description = "Molecular signaling prior knowledge processing"
 license = "GPL-3.0-only"
 authors = [
@@ -47,7 +47,7 @@ keywords = [
 "Bug Tracker" = "https://github.com/saezlab/pypath/issues"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 beautifulsoup4 = "*"
 dill = "*"
 future = "*"
@@ -59,6 +59,7 @@ openpyxl = "*"
 pandas = "*"
 pycurl = "*"
 pyreadr = "*"
+PyYAML = "*"
 rdata = "*"
 requests = "*"
 scipy = "*"
@@ -85,9 +86,10 @@ graph = [
 [tool.poetry.dev-dependencies]
 bump2version = "*"
 sphinx = ">=5.0.0"
-sphinx-rtd-theme = ">=1.0.0"
+insipid-sphinx-theme = ">=0.3.6"
 sphinx-last-updated-by-git = ">=0.3"
 sphinx-autodoc-typehints = ">=1.18.0"
+sphinxcontrib-fulltoc = ">=1.2.0"
 
 [tool.poetry.scripts]
 bio2bel_omnipath = "pypath.omnipath.bel:main"

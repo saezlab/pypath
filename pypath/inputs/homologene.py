@@ -60,13 +60,13 @@ def homologene_dict(source, target, id_type):
     Returns orthology translation table as dict, obtained
     from NCBI HomoloGene data.
 
-    Args:
+    Args
         source (int): NCBI Taxonomy ID of the source species (keys).
         target (int): NCBI Taxonomy ID of the target species (values).
         id_type (str): ID type to be used in the dict. Possible values:
             'RefSeq', 'Entrez', 'GI', 'GeneSymbol'.
 
-    Returns:
+    Returns
         Dict of sets: keys are IDs of the source organism, values are sets
         of IDs of the target organism.
     """
@@ -128,12 +128,12 @@ def homologene_uniprot_dict(source, target, only_swissprot = True):
     obtained from NCBI HomoloGene data. Uses RefSeq and Entrez IDs for
     translation.
 
-    Args:
+    Args
         source (int): NCBI Taxonomy ID of the source species (keys).
         target(int): NCBI Taxonomy ID of the target species (values).
         only_swissprot (bool): Use only SwissProt IDs.
 
-    Returns:
+    Returns
         Dict of sets: keys are UniProt IDs of the source organism, values
         are sets of UniProt IDs of the target organism.
     """

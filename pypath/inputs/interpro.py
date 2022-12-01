@@ -23,6 +23,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 from typing import List, Dict, Union, Literal
 
 import collections
@@ -44,7 +46,7 @@ def interpro_entries() -> List[tuple]:
     """
     Downloads detailed InterPro entry information.
 
-    Returns:
+    Returns
         A list of named tuples, each representing information about
         one InterPro entry. 
     """
@@ -153,10 +155,10 @@ def interpro_xrefs(
     """
     Downloads cross-references for each InterPro entry.
 
-    Args:
+    Args
         db_type: Type of the cross-reference databases.
 
-    Returns:
+    Returns
         A dictionary; keys are InterPro IDs.
             If 'db_type' is 'go', values are list of GO terms related to the InterPro entry.
             Otherwise values are dictionaries, where keys are database names 
@@ -223,17 +225,17 @@ def interpro_xrefs(
 def interpro_annotations(
         page_size: int = 200, 
         reviewed: bool = True, 
-        tax_id: int = 9606
+        tax_id: str | int = 9606,
     ) ->  dict:
     """
     Downloads UniProtKB proteins and the InterPro entries they match.
 
-    Args:
+    Args
         page_size: Number of results returned at a time.
         reviewed: Downloads only reviewed UniprotKB proteins if True,
             Downloads all UniprotKB proteins otherwise.
 
-    Returns:
+    Returns
         A dictionary. Keys are Uniprot IDs, values are sets of annotations.
     """
 
@@ -241,7 +243,7 @@ def interpro_annotations(
     InterproAnnotation = collections.namedtuple(
         'InterproAnnotation',
         (
-            'interpro_acc',
+            'interpro_id',
             'organism',
             'locations',
         ),
@@ -295,7 +297,7 @@ def interpro_annotations(
                 uniprot_id = protein['accession'].upper()
                 annotations[uniprot_id].add(
                         InterproAnnotation(
-                            interpro_acc = entry_info['accession'],
+                            interpro_id = entry_info['accession'],
                             organism = protein['organism'],
                             locations = tuple(start_end_list),
                         )
@@ -310,4 +312,44 @@ def interpro_annotations(
 
             next = None
 
+    return annotations
+
+
+def interpro2go_annotations() -> dict[str, set[tuple]]:
+    """
+    Downloads GO term annotations for InterPro entries.
+
+    Returns
+        Dict of InterPro entries as keys and sets of GO terms as values.
+    """
+
+    url = urls.urls['interpro']['interpro2go']
+    c = curl.Curl(url, large = True, silent = False)
+
+    Interpro2GOAnnotation = collections.namedtuple(
+        'Interpro2GOAnnotation',
+        (
+            'go_term_id',
+            'go_term_name',
+        ),
+    )
+
+    annotations = collections.defaultdict(set)
+
+    for r in c.result:
+
+        if not r.startswith('!'):
+
+            r = r.strip()
+            interpro_id = r.split('InterPro:')[1].split(' ')[0]
+            go_term_name = r.split('> GO:')[1].split(' ; ')[0]
+            go_term_id = r.split('> GO:')[1].split(' ; ')[1]
+
+            annotations[interpro_id].add(
+                Interpro2GOAnnotation(
+                    go_term_id = go_term_id,
+                    go_term_name = go_term_name
+                    )
+                )
+    
     return annotations

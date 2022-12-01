@@ -47,6 +47,7 @@ import argparse
 import weakref
 import types
 import csv
+import subprocess as sproc
 
 import bs4
 
@@ -69,6 +70,8 @@ EXCLUDE = {
     'trembl_deleted',
     'uniprot_ncbi_taxids', # takes too long
     'get_all_models', # infinite loop bug
+    'chembl_assays', # takes about 1 hour
+    'chembl_molecules', # takes about 4 hours
 }
 
 ARGS = {}
@@ -230,6 +233,16 @@ MAINDIR_PREFIX = 'pypath_inputs_status'
 
 RESULT_JSON_PATH = ('report', 'result.json')
 
+SCRIPT_PATH = os.path.abspath(__file__)
+
+BIN_PATHS = (
+    os.path.expanduser(os.path.join('~', '.local', 'bin')),
+    os.path.join(os.sep, 'sbin'),
+    os.path.join(os.sep, 'snap', 'sbin'),
+    os.path.join(os.sep, 'usr', 'local', 'bin'),
+    os.path.join(os.sep, 'usr', 'local', 'sbin'),
+)
+
 
 def _log(*args, **kwargs):
     """
@@ -243,7 +256,7 @@ def _log(*args, **kwargs):
 
     elif args:
 
-        sys.stdout.write(str(args[0]))
+        sys.stdout.write(f'[{StatusReport.strftime()}] {str(args[0])}\n')
         sys.stdout.flush()
 
 
@@ -268,6 +281,7 @@ class StatusReport(object):
             from_git = None,
             nobuild = None,
             prev_run = None,
+            poetry = None,
         ):
 
         self.parse_args()
@@ -278,6 +292,7 @@ class StatusReport(object):
         self.first = first or self.clargs.first
         self.nobuild = nobuild or self.clargs.nobuild
         self.prev_dir = prev_run or self.clargs.prev_run
+        self.poetry = poetry or self.clargs.poetry
         self.from_git = (
             from_git
                 if from_git is not None else
@@ -351,6 +366,13 @@ class StatusReport(object):
                 '"none" to this argument.',
             type = str,
         )
+        self.clargs.add_argument(
+            '-y', '--poetry',
+            help = 'Running inside a poetry environment where pypath has '
+                'already been installed. Do not try to find or install '
+                'pypath but simply import it and run.',
+            action = 'store_true',
+        )
         self.clargs = self.clargs.parse_args()
 
     def start(self):
@@ -358,6 +380,7 @@ class StatusReport(object):
         self.reset_result()
         self.reset_counters()
         self.set_timestamp()
+        self.set_bin_paths()
         self.set_dirs() # calls init_pypath
         self.read_prev_result()
         _log('Started generating pypath inputs status report.')
@@ -496,6 +519,16 @@ class StatusReport(object):
             '%s_time' % ('end' if end else 'start'),
             time.localtime(),
         )
+
+
+    @staticmethod
+    def set_bin_paths():
+
+        for path in reversed(BIN_PATHS):
+
+            if os.path.exists(path):
+
+                os.environ['PATH'] = f'{path}:{os.environ["PATH"]}'
 
 
     def set_dirs(self):
@@ -657,17 +690,43 @@ class StatusReport(object):
         according to the settings. Then imports the required pypath modules.
         """
 
-        self.pypath_from = 'from system directory'
+        self.pypath_from = 'system directory'
 
-        if self.from_git:
+        if self.poetry:
+
+            self.pypath_from = 'git, installed by poetry'
+            sys.path = [p for p in sys.path if p and p != os.getcwd()]
+
+        elif self.from_git:
 
             os.system('git clone --depth 1 %s pypath_git' % PYPATH_GIT_URL)
 
-            os.symlink(
-                os.path.join('pypath_git', 'pypath'),
-                'pypath',
-                target_is_directory = True,
-            )
+            poetry_available = bool(shutil.which('poetry'))
+            _log(f'Poetry is available: {poetry_available}.')
+            _log(f'Path: {os.environ["PATH"]}')
+
+            if poetry_available:
+
+                _log('Entering directory `pypath_git`.')
+                os.chdir('pypath_git')
+                _log('Running `poetry install`.')
+                os.system('poetry install')
+
+                poetry_run = f'poetry run {self.spawn_cmd} --poetry'
+
+                _log(f'Running by poetry: {poetry_run}')
+                os.system(poetry_run)
+                _log(f'Spawn process has finished. Parent is exiting.')
+                self.finished = True
+                sys.exit(0)
+
+            else:
+
+                os.symlink(
+                    os.path.join('pypath_git', 'pypath'),
+                    'pypath',
+                    target_is_directory = True,
+                )
 
             self.pypath_from = 'git'
 
@@ -690,7 +749,9 @@ class StatusReport(object):
 
                 self.pypath_from = 'local directory'
 
-        sys.path.insert(0, os.getcwd())
+        if not self.poetry:
+
+            sys.path.insert(0, os.getcwd())
 
         import pypath.inputs as inputs
         import pypath.share.session as session
@@ -714,6 +775,21 @@ class StatusReport(object):
         _log('Reporting directory: `%s`.' % self.reportdir)
         _log('Pypath from git: `%s`.' % self.from_git)
         _log('Pypath local path: `%s`.' % os.path.dirname(inputs.__path__[0]))
+
+
+    @property
+    def spawn_cmd(self):
+
+        return (
+            f'python {SCRIPT_PATH} '
+            f'--dir {self.maindir} '
+            f'--cache {self.cachedir} '
+            f'--pickle_dir {self.pickle_dir} '
+            f'--build_dir {self.build_dir}'
+            f'{" --first " + str(self.first) if self.first else ""}'
+            f'{" --prev_run " + self.prev_dir if self.prev_dir else ""}'
+            f'{" --nobuild" if self.nobuild else ""}'
+        )
 
 
     @staticmethod
@@ -897,12 +973,12 @@ class StatusReport(object):
 
 
     @staticmethod
-    def strftime(t):
+    def strftime(t = None):
         """
         Converts time to string
         """
 
-        return time.strftime(REPORT_TIME_F, time.localtime(t))
+        return time.strftime(REPORT_TIME_F, time.localtime(t or time.time()))
 
 
     def save_results(self):
@@ -939,7 +1015,7 @@ class StatusReport(object):
                 'pypath version: %s (from %s%s' % (
                     time.strftime(REPORT_TIME_F, self.start_time),
                     time.strftime(REPORT_TIME_F, self.end_time),
-                    sys.modules['pypath']._version.__version__,
+                    sys.modules['pypath'].__version__,
                     self.pypath_from,
                     '; <a href="%s/tree/%s">%s</a>)' % (
                         PYPATH_GIT_URL,

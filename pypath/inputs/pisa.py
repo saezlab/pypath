@@ -107,7 +107,7 @@ def pisa_interfaces(pdbs, return_unmapped = False):
     To be refactored in the future. If you are interested in using this
     function, please contact the authors.
 
-    Args:
+    Args
         pdbs (set): A set of PDB IDs to query.
         return_unmapped (bool): Return also a list of unmapped residues.
         In this case, a tuple is returned, its first element is a dict of
@@ -115,7 +115,7 @@ def pisa_interfaces(pdbs, return_unmapped = False):
         residues (normally empty, if all residues could be mapped
         between PDB and UniProt sequences).
 
-    Returns:
+    Returns
         A dict of dicts with interfaces. The upper level keys are PDB
         structure IDs, the lower level keys are tuples of UniProt IDs,
         the values are ``pypath.internals.intera.Interface`` objects.

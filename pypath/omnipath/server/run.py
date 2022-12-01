@@ -41,8 +41,18 @@ try:
     import twisted.web.resource
     import twisted.web.server
     import twisted.internet
+    TwistedWebResource = twisted.web.resource.Resource
+    TwistedWebSite = Twisted.web.server.Site
+    TWISTED_NOT_DONE_YET = twisted.web.server.NOT_DONE_YET
+    twisted_listen_tcp = twisted.internet.reactor.listenTCP
+    twisted_run = twisted.internet.reactor.run
 except:
     _log('No module `twisted` available. Necessary to run HTTP server.', -1)
+    class TwistedWebResource: pass
+    class TwistedWebSite: pass
+    TWISTED_NOT_DONE_YET = None
+    twisted_listen_tcp = lambda: None
+    twisted_run = lambda: None
 
 import urllib
 import json
@@ -75,7 +85,7 @@ def stop_server():
     reactor.removeAll()
 
 
-class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
+class BaseServer(TwistedWebResource, session_mod.Logger):
 
 
     recomment = re.compile(b'<!--\s*Title:(.*?)-->')
@@ -102,7 +112,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         self._read_license_secret()
         self._res_ctrl = resources_mod.get_controller()
 
-        twisted.web.resource.Resource.__init__(self)
+        TwistedWebResource.__init__(self)
         self._log('Twisted resource initialized.')
 
 
@@ -216,7 +226,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
 
         request.finish()
 
-        return twisted.web.server.NOT_DONE_YET
+        return TWISTED_NOT_DONE_YET
 
 
     def render_POST(self, request):
@@ -2899,7 +2909,7 @@ class Rest(object):
         Runs a webserver serving a `PyPath` instance listening
         to a custom port.
 
-        Args:
+        Args
         -----
         :param int port:
             The port to listen to.
@@ -2921,8 +2931,8 @@ class Rest(object):
 
     def start(self):
 
-        self.site = twisted.web.server.Site(self.server)
+        self.site = TwistedWebSite(self.server)
         _log('Site created.')
-        twisted.internet.reactor.listenTCP(self.port, self.site)
+        twisted_listen_tcp(self.port, self.site)
         _log('Server going to listen on port %u from now.' % self.port)
-        twisted.internet.reactor.run()
+        twisted_run()

@@ -23,8 +23,9 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from typing import Container, List, Literal, Union
-from numbers import Number
+from __future__ import annotations
+
+from typing import Iterable, Literal
 
 import collections
 
@@ -43,11 +44,11 @@ CONFIDENCE_THRESHOLDS = {
 
 def string_effects(
         ncbi_tax_id: int = 9606,
-        stimulation: Union[str, Container] = 'activation',
-        inhibition: Union[str, Container] = 'inhibition',
-        exclude: Union[str, Container] = 'expression',
-        score_threshold: Number = 0,
-    ) -> List[tuple]:
+        stimulation: str | Iterable[str] = 'activation',
+        inhibition: str | Iterable[str] = 'inhibition',
+        exclude: str | Iterable[str] = 'expression',
+        score_threshold: int = 0,
+    ) -> list[tuple]:
 
     StringEffectsInteraction = collections.namedtuple(
         'StringEffectsInteraction',
@@ -106,24 +107,21 @@ def string_effects(
 
 def string_links_interactions(
         ncbi_tax_id: int = 9606,
-        score_threshold: Union[
-            Number,
-            Literal[
-                'highest_confidence',
-                'high_confidence',
-                'medium_confidence',
-                'low_confidence',
-            ]
-        ] = 'highest_confidence',
+        score_threshold: int | Literal[
+            'highest_confidence',
+            'high_confidence',
+            'medium_confidence',
+            'low_confidence',
+            ] = 'highest_confidence',
         physical_interaction_score: bool = True,
-    ) -> List[tuple]:
+    ) -> list[tuple]:
     """
     Downloads protein network data, including subscores per channel.
     The output contains both functional and physical protein associations.
     The combined physical interaction score is defined between the proteins
     for which we have evidence of their binding or forming a physical complex.
 
-    Args:
+    Args
         score_threshold: Minimum required interaction score. user can use
             pre-defined confidence limits or can define a custom value.
     """
@@ -198,32 +196,22 @@ def string_links_interactions(
 
 def string_physical_interactions(
         ncbi_tax_id: int = 9606,
-        score_threshold: Union[
-            Number,
-            Literal[
-                'highest_confidence',
-                'high_confidence',
-                'medium_confidence',
-                'low_confidence',
-            ]
+        score_threshold: int | Literal[
+            'highest_confidence',
+            'high_confidence',
+            'medium_confidence',
+            'low_confidence',
         ] = 'highest_confidence',
-    ) -> List[tuple]:
+    ) -> list[tuple]:
     """
     Downloads protein physical subnetwork data, including subscores per
     channel. The interactions indicate that the proteins are part of a
     physical complex.
 
-    Args:
+    Args
         score_threshold: Minimum required interaction score. user can use
             pre-defined confidence limits or can define a custom value.
     """
-
-    confidence= {
-        'highest_confidence': 900,
-        'high_confidence': 700,
-        'medium_confidence': 400,
-        'low_confidence': .150,
-    }
 
     StringPhysicalInteraction = collections.namedtuple(
         'StringPhysicalInteraction',
@@ -263,3 +251,28 @@ def string_physical_interactions(
             )
 
     return links
+
+
+def string_species() -> dict[int, str]:
+    """
+    Downloads list of organisms in STRING.
+
+    Returns
+        Dict of tax ids as keys and scientific names of organisms as values.
+    """
+
+    species = {}
+
+    url = urls.urls['string']['species']
+    c = curl.Curl(url, silent = False, large = True)
+    _ = next(c.result)
+
+    for l in c.result:
+
+        l = l.strip().split('\t')
+        tax_id = l[0]
+        official_name = l[3]
+
+        species[tax_id] = official_name
+
+    return species
