@@ -1115,13 +1115,13 @@ class Interaction(attrs_mod.AttributeHandler):
 
     def add_sign(
             self,
-            direction,
-            sign,
-            resource = None,
-            resource_name = None,
-            interaction_type = 'PPI',
-            data_model = None,
-            attrs = None,
+            direction: tuple,
+            sign: str,
+            resource: str | set[str] | None = None,
+            resource_name: str = None,
+            interaction_type: str = 'PPI',
+            data_model: str = None,
+            attrs: dict = None,
             **kwargs
         ):
         """
@@ -1132,21 +1132,22 @@ class Interaction(attrs_mod.AttributeHandler):
         also updated accordingly, which also modifies the attributes
         :py:attr:`dirs` and :py:attr:`sources`.
 
-        :arg tuple direction:
-            Pair of edge nodes specifying the direction from which the
-            information is to be set/updated.
-        :arg str sign:
-            Specifies the type of interaction. Either ``'positive'`` or
-            ``'negative'``.
-        :arg set resource:
-            Contains the name(s) of the source(s) from which the
-            information was obtained.
-        :arg attrs dict:
-            Custom (resource specific) edge attributes.
-        :arg **kwargs:
-            Passed to ``pypath.resource.NetworkResource`` if ``resource``
-            is not already a ``NetworkResource`` or ``Evidence``
-            instance.
+        Args
+            direction:
+                Pair of edge nodes specifying the direction from which the
+                information is to be set/updated.
+            sign:
+                Specifies the type of interaction. Either ``'positive'`` or
+                ``'negative'``.
+            resource:
+                Contains the name(s) of the source(s) from which the
+                information was obtained.
+            attrs:
+                Custom (resource specific) edge attributes.
+            kwargs:
+                Passed to ``pypath.resource.NetworkResource`` if ``resource``
+                is not already a ``NetworkResource`` or ``Evidence``
+                instance.
         """
 
         sign = self._effect_synonyms(sign)
@@ -1183,31 +1184,32 @@ class Interaction(attrs_mod.AttributeHandler):
 
     def get_sign(
             self,
-            direction,
-            sign = None,
-            evidences = False,
-            resources = False,
-            resource_names = False,
-            sources = False,
-        ):
+            direction: tuple,
+            sign: str = None,
+            evidences: bool = False,
+            resources: bool = False,
+            resource_names: bool = False,
+            sources: bool = False,
+        ) -> list[bool | str]:
         """
         Retrieves the sign information of the edge in the given
         diretion. If specified in *sign*, only that sign's information
         will be retrieved. If specified in *sources*, the sources of
         that information will be retrieved instead.
 
-        :arg tuple direction:
-            Contains the pair of nodes specifying the directionality of
-            the edge from which th information is to be retrieved.
-        :arg str sign:
-            Optional, ``None`` by default. Denotes whether to retrieve
-            the ``'positive'`` or ``'negative'`` specific information.
-        :arg bool resources:
-            Optional, ``False`` by default. Specifies whether to return
-            the resources instead of sign.
+        Args
+            direction:
+                Contains the pair of nodes specifying the directionality of
+                the edge from which th information is to be retrieved.
+            sign:
+                Optional, ``None`` by default. Denotes whether to retrieve
+                the ``'positive'`` or ``'negative'`` specific information.
+            resources:
+                Optional, ``False`` by default. Specifies whether to return
+                the resources instead of sign.
 
-        :return:
-            (*list*) -- If ``sign=None`` containing [bool] values
+        Returns
+            If ``sign=None`` containing [bool] values
             denoting the presence of positive and negative sign on that
             direction, if ``sources=True`` the [set] of sources for each
             of them will be returned instead. If *sign* is specified,
@@ -1253,7 +1255,7 @@ class Interaction(attrs_mod.AttributeHandler):
 
     def source(
             self,
-            undirected = False,
+            undirected: bool = False,
             resources = None,
             **kwargs
         ):
@@ -1261,10 +1263,11 @@ class Interaction(attrs_mod.AttributeHandler):
         Returns the name(s) of the source node(s) for each existing
         direction on the interaction.
 
-        :arg bool undirected:
-            Optional, ``False`` by default.
+        Args
+            undirected:
+                Optional, ``False`` by default.
 
-        :returns:
+        Returns
             (*list*) -- Contains the name(s) for the source node(s).
             This means if the interaction is bidirectional, the list
             will contain both identifiers on the edge. If the
@@ -1285,7 +1288,7 @@ class Interaction(attrs_mod.AttributeHandler):
 
     def target(
             self,
-            undirected = False,
+            undirected: bool = False,
             resources = None,
             **kwargs
         ):
@@ -1293,10 +1296,11 @@ class Interaction(attrs_mod.AttributeHandler):
         Returns the name(s) of the target node(s) for each existing
         direction on the interaction.
 
-        :arg bool undirected:
-            Optional, ``False`` by default.
+        Args
+            undirected:
+                Optional, ``False`` by default.
 
-        :returns:
+        Returns
             (*list*) -- Contains the name(s) for the target node(s).
             This means if the interaction is bidirectional, the list
             will contain both identifiers on the edge. If the
@@ -2513,7 +2517,9 @@ class Interaction(attrs_mod.AttributeHandler):
 
     def get_interactions_directed(self, **kwargs):
         """
-        **kwargs: see the docs of method ``get_interactions``.
+        Args
+            kwargs:
+                See the docs of method ``get_interactions``.
         """
 
         if 'direction' not in kwargs or kwargs['direction'] is None:
@@ -2531,7 +2537,9 @@ class Interaction(attrs_mod.AttributeHandler):
         the ``count_interactions_undirected`` method will return `1` in this
         case.
 
-        **kwargs: see the docs of method ``get_interactions``.
+        Args
+            kwargs:
+                See the docs of method ``get_interactions``.
         """
 
         kwargs['direction'] = False
@@ -2545,7 +2553,9 @@ class Interaction(attrs_mod.AttributeHandler):
         annotates this interaction as undirected the interacting pair as
         a sorted tuple will be returned inside a one element tuple.
 
-        **kwargs: see the docs of method ``get_interactions``.
+        Args
+            kwargs:
+                See the docs of method ``get_interactions``.
         """
 
         undir = self.get_interactions_undirected(**kwargs)
@@ -2561,7 +2571,9 @@ class Interaction(attrs_mod.AttributeHandler):
         the ``count_interactions_non_directed`` method will return `1` in
         this case.
 
-        **kwargs: see the docs of method ``get_interactions``.
+        Args
+            kwargs:
+                See the docs of method ``get_interactions``.
         """
 
         kwargs['direction'] = True
@@ -2580,7 +2592,9 @@ class Interaction(attrs_mod.AttributeHandler):
         interacting pair as a sorted tuple will be returned inside a one
         element tuple.
 
-        **kwargs: see the docs of method ``get_interactions``.
+        Args
+            kwargs:
+                See the docs of method ``get_interactions``.
         """
 
         nondir = self.get_interactions_non_directed(**kwargs)
@@ -2590,7 +2604,9 @@ class Interaction(attrs_mod.AttributeHandler):
 
     def get_interactions_signed(self, **kwargs):
         """
-        **kwargs: see the docs of method ``get_interactions``.
+        Args
+            kwargs:
+                See the docs of method ``get_interactions``.
         """
 
         if 'effect' not in kwargs or kwargs['effect'] is None:
@@ -2602,7 +2618,9 @@ class Interaction(attrs_mod.AttributeHandler):
 
     def get_interactions_positive(self, **kwargs):
         """
-        **kwargs: see the docs of method ``get_interactions``.
+        Args
+            kwargs:
+                See the docs of method ``get_interactions``.
         """
 
         kwargs['effect'] = 'positive'
@@ -2612,7 +2630,9 @@ class Interaction(attrs_mod.AttributeHandler):
 
     def get_interactions_negative(self, **kwargs):
         """
-        **kwargs: see the docs of method ``get_interactions``.
+        Args
+            kwargs:
+                See the docs of method ``get_interactions``.
         """
 
         kwargs['effect'] = 'negative'
@@ -2625,7 +2645,9 @@ class Interaction(attrs_mod.AttributeHandler):
         Note: undirected interactions does not count as mutual but only
         interactions with explicit direction information for both directions.
 
-        **kwargs: see the docs of method ``get_interactions``.
+        Args
+            kwargs:
+                See the docs of method ``get_interactions``.
         """
 
         if 'direction' not in kwargs or kwargs['direction'] is None:
@@ -2642,7 +2664,9 @@ class Interaction(attrs_mod.AttributeHandler):
         Note: undirected interactions does not count as mutual but only
         interactions with explicit direction information for both directions.
 
-        **kwargs: see the docs of method ``get_interactions``.
+        Args
+            kwargs:
+                See the docs of method ``get_interactions``.
         """
 
         return bool(self.get_interactions_mutual(**kwargs))
@@ -2653,7 +2677,9 @@ class Interaction(attrs_mod.AttributeHandler):
         Note: undirected interactions does not count as mutual but only
         interactions with explicit direction information for both directions.
 
-        **kwargs: see the docs of method ``get_interactions``.
+        Args
+            kwargs:
+                See the docs of method ``get_interactions``.
         """
 
         return int(self.is_mutual(**kwargs))
@@ -2664,7 +2690,9 @@ class Interaction(attrs_mod.AttributeHandler):
         Returns `True` if any resource annotates this interaction without
         direction.
 
-        **kwargs: see the docs of method ``get_interactions``.
+        Args
+            kwargs:
+                See the docs of method ``get_interactions``.
         """
 
         return bool(self.get_interactions_undirected(**kwargs))
@@ -2675,7 +2703,9 @@ class Interaction(attrs_mod.AttributeHandler):
         Returns `True` if any resource annotates this interaction without
         and no resource with direction.
 
-        **kwargs: see the docs of method ``get_interactions``.
+        Args
+            kwargs:
+                See the docs of method ``get_interactions``.
         """
 
         return bool(self.get_interactions_non_directed(**kwargs))
@@ -2683,7 +2713,7 @@ class Interaction(attrs_mod.AttributeHandler):
 
     def get_degrees(
             self,
-            mode,
+            mode: str,
             direction = None,
             effect = None,
             resources = None,
@@ -2698,14 +2728,15 @@ class Interaction(attrs_mod.AttributeHandler):
         degrees with positive effect and the matching evidences show A
         activates B, but not the other way around, only "B" will be returned.
 
-        :arg str mode:
-            The type of degrees to be considered. Three possible values are
-            ``'IN'``, `'OUT'`` and ``'ALL'`` for incoming, outgoing and all
-            connections, respectively. If the ``direction`` is ``False`` the
-            only possible mode is ``ALL``. If the ``direction`` is ``None``
-            and also directed evidence(s) match the criteria these will
-            overwrite the undirected evidences and only the directed result
-            will be returned.
+        Args
+            mode:
+                The type of degrees to be considered. Three possible values are
+                ``'IN'``, `'OUT'`` and ``'ALL'`` for incoming, outgoing and all
+                connections, respectively. If the ``direction`` is ``False``
+                the only possible mode is ``ALL``. If the ``direction`` is
+                ``None`` and also directed evidence(s) match the criteria these
+                will overwrite the undirected evidences and only the directed
+                result will be returned.
         """
 
         kwargs = locals()
@@ -3010,23 +3041,28 @@ class Interaction(attrs_mod.AttributeHandler):
         )
 
 
-    def generate_df_records(self, by_source = False, with_references = False):
+    def generate_df_records(
+            self,
+            by_source: bool = False,
+            with_references: bool = False,
+        ):
         """
         Yields interaction records. It is a generator because one edge can
         be represented by one or more records depending on the signs and
         directions and other parameters
 
-        :arg bool by_source:
-            Yield separate records by resources. This way the node pairs
-            will be redundant and you need to group later if you want
-            unique interacting pairs. By default is ``False`` because for
-            most applications unique interactions are preferred.
-            If ``False`` the *refrences* field will still be present
-            but with ``None`` values.
-        :arg bool with_references:
-            Include the literature references. By default is ``False``
-            because you rarely need these and they increase the data size
-            significantly.
+        Args
+            by_source:
+                Yield separate records by resources. This way the node pairs
+                will be redundant and you need to group later if you want
+                unique interacting pairs. By default is ``False`` because for
+                most applications unique interactions are preferred.
+                If ``False`` the *refrences* field will still be present
+                but with ``None`` values.
+            with_references:
+                Include the literature references. By default is ``False``
+                because you rarely need these and they increase the data size
+                significantly.
         """
 
         def source_add_via(source, via):
@@ -3201,7 +3237,7 @@ class Interaction(attrs_mod.AttributeHandler):
         Extracts the values of one specific attribute.
 
         Args
-            resource :
+            resource:
                 Name of the resource.
             key:
                 Name of the attribute.

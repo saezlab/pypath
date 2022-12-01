@@ -2913,15 +2913,16 @@ class Network(session_mod.Logger):
 
 
     @classmethod
-    def from_pickle(cls, pickle_file, **kwargs):
+    def from_pickle(cls, pickle_file: str, **kwargs):
         """
         Initializes a new ``Network`` object by loading it from a pickle
         file. Returns a ``Network`` object.
 
-        :arg str pickle_file:
-            Path to a pickle file.
-        **kwargs:
-            Passed to ``Network.__init__``.
+        Args
+            pickle_file:
+                Path to a pickle file.
+            kwargs:
+                Passed to ``Network.__init__``.
         """
 
         new = cls(
@@ -3445,7 +3446,9 @@ class Network(session_mod.Logger):
         Initializes a new ``Network`` object with loading a transcriptional
         regulation network from all databases by default.
 
-        **kwargs: passed to ``Network.__init__``.
+        Args
+            kwargs:
+                Passed to ``Network.__init__``.
         """
 
         load_args = locals()
@@ -3485,7 +3488,9 @@ class Network(session_mod.Logger):
         Initializes a new ``Network`` object with loading a miRNA-mRNA
         regulation network from all databases by default.
 
-        **kwargs: passed to ``Network.__init__``.
+        Args
+            kwargs:
+                Passed to ``Network.__init__``.
         """
 
         new = cls(ncbi_tax_id = ncbi_tax_id, **kwargs)
@@ -3877,8 +3882,10 @@ class Network(session_mod.Logger):
         Collects the values of an attribute over all interactions in the
         network.
 
-        **kwargs: passed to methods of
-        :py:class:`pypath.interaction.Interaction`.
+        Args
+            kwargs:
+                Passed to methods of
+                :py:class:`pypath.interaction.Interaction`.
         """
 
         result = set() if not by else collections.defaultdict(set)

@@ -22,6 +22,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 """
 Interface to UniProt protein datasheets.
 """
@@ -661,10 +663,11 @@ def features_table(
     check the docs for formatting options:
     https://github.com/astanin/python-tabulate
 
-    :param **kwargs:
-        Passed to ``tabulate.tabulate``.
+    Args
+        kwargs:
+            Passed to ``tabulate.tabulate``.
 
-    :return:
+    Returns
         The table as a string.
     """
 
@@ -699,11 +702,9 @@ def print_features(
     check the docs for formatting options:
     https://github.com/astanin/python-tabulate
 
-    :param **kwargs:
-        Passed to ``tabulate.tabulate``.
-
-    :return:
-        None.
+    Args
+        kwargs:
+            Passed to ``tabulate.tabulate``.
     """
 
     maxlen = maxlen or settings.get('uniprot_info_maxlen')
@@ -774,7 +775,7 @@ def info(
 def browse(groups, start = 0, fileobj = None, **kwargs):
     """
     Browses through a series of protein groups, printing an information table
-    for each group. **kwargs passed to ``info`` and then to print_features``.
+    for each group. ``kwargs`` passed to ``info`` and then to print_features``.
     Parameters for ``common.table_format`` can be provided.
     """
 

@@ -23,6 +23,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 from future.utils import iteritems
 
 import re
@@ -45,12 +47,12 @@ _attr_xml_template = '<Attribute name="%s" />'
 
 
 def biomart_query(
-        attrs,
-        filters = None,
-        transcript = False,
-        peptide = False,
-        gene = False,
-        dataset = 'hsapiens_gene_ensembl',
+        attrs: str | list[str],
+        filters: str | list = None,
+        transcript: bool = False,
+        peptide: bool = False,
+        gene: bool = False,
+        dataset: str = 'hsapiens_gene_ensembl',
     ):
     """
     Query the Ensembl Biomart web service.
@@ -58,12 +60,18 @@ def biomart_query(
     and dataset names.
 
     Args
-        attrs (str,list): One or more Ensembl attribute names.
-        filters (str,list): One or more Ensembl filter names.
-        transcript (bool): Include Ensembl transcript IDs in the result.
-        peptide (bool): Include Ensembl peptide IDs in the result.
-        gene (bool): Include Ensembl gene IDs in the result.
-        dataset (str): An Ensembl dataset name.
+        attrs:
+            One or more Ensembl attribute names.
+        filters:
+            One or more Ensembl filter names.
+        transcript:
+            Include Ensembl transcript IDs in the result.
+        peptide:
+            Include Ensembl peptide IDs in the result.
+        gene:
+            Include Ensembl gene IDs in the result.
+        dataset:
+            An Ensembl dataset name.
 
     Yields:
         Named tuples with the requested attributes for each record returned
@@ -213,12 +221,13 @@ def biomart_homology(
 
 
 
-def biomart_microarray_types(organism = 9606):
+def biomart_microarray_types(organism: int | str = 9606):
     """
     Retrieves a list of available microarray types for an organism.
 
     Args
-        organism (int,str): Name or ID of an organism.
+        organism:
+            Name or ID of an organism.
     """
 
     organism = taxonomy.ensure_ensembl_name(organism)
@@ -241,23 +250,28 @@ def biomart_microarray_types(organism = 9606):
 
 
 def biomart_microarray(
-        array_type,
-        gene = True,
-        transcript = False,
-        peptide = False,
-        organism = 9606
+        array_type: str,
+        gene: bool = True,
+        transcript: bool = False,
+        peptide: bool = False,
+        organism: int | str = 9606
     ):
     """
     Microarray probe identifier mappings.
 
     Args
-        array_type (str): The microarray model, as shown on the BioMart
+        array_type:
+            The microarray model, as shown on the BioMart
             webpage, or the corresponding code. For a full list of available
             identifiers see the ``biomart_microarray_types``.
-        gene (bool): Include the mapping to Ensembl gene IDs.
-        transcript (bool): Include the mapping to Ensembl transcript IDs.
-        peptide (bool): Include the mapping to Ensembl peptide IDs.
-        organism (int,str): Name or ID of an organism.
+        gene:
+            Include the mapping to Ensembl gene IDs.
+        transcript:
+            Include the mapping to Ensembl transcript IDs.
+        peptide:
+            Include the mapping to Ensembl peptide IDs.
+        organism:
+            Name or ID of an organism.
 
     Returns
         A dictionary with Ensembl gene, transcript and peptide IDs as keys
@@ -324,11 +338,11 @@ def biomart_microarray(
 
 
 def biomart_microarrays(
-        organism = 9606,
-        vendor = None,
-        gene = True,
-        transcript = False,
-        peptide = False
+        organism: int | str = 9606,
+        vendor: str | set[str] = None,
+        gene: bool = True,
+        transcript: bool = False,
+        peptide: bool = False
     ):
     """
     Microarray probe identifier mappings for multiple microarrays.
@@ -338,13 +352,18 @@ def biomart_microarrays(
     the data.
 
     Args
-        organism (int,str): Name or ID of an organism.
-        vendor (str,set): One or more vendors. None means all vendors. For
+        organism:
+            Name or ID of an organism.
+        vendor:
+            One or more vendors. None means all vendors. For
             human, possible values are AFFY, ILLUMINA, AGILENT, CODELINK
             and PHALANX.
-        gene (bool): Include the mapping to Ensembl gene IDs.
-        transcript (bool): Include the mapping to Ensembl transcript IDs.
-        peptide (bool): Include the mapping to Ensembl peptide IDs.
+        gene:
+            Include the mapping to Ensembl gene IDs.
+        transcript:
+            Include the mapping to Ensembl transcript IDs.
+        peptide:
+            Include the mapping to Ensembl peptide IDs.
 
     Returns
         A dictionary with Ensembl gene, transcript and peptide IDs as keys

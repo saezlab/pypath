@@ -58,23 +58,34 @@ def ebi_rest(
     Collects data from an EBI REST web service.
 
     Args
-        url: The URL of the web service.
-        qs: Query string parameters to be appended to the URL.
-        fields : Glom spec of the fields to be extracted from the result.
-        paginate: Retrieve all pages until the end (if False, only
+        url:
+            The URL of the web service.
+        qs:
+            Query string parameters to be appended to the URL.
+        fields:
+            Glom spec of the fields to be extracted from the result.
+        paginate:
+            Retrieve all pages until the end (if False, only
             one page will be downloaded).
-        page_length: Number of records on one page.
-        size_param: Query string key for number of records per page.
-        page_param: Query string key to request a specific page by.
-        by_page: The pagination works by page numbers (True) or item
+        page_length:
+            Number of records on one page.
+        size_param:
+            Query string key for number of records per page.
+        page_param:
+            Query string key to request a specific page by.
+        by_page:
+            The pagination works by page numbers (True) or item
             numbers (False).
-        page_field: Glom spec of the JSON field that contains the current
+        page_field:
+            Glom spec of the JSON field that contains the current
             page number.
-        total_field: Glom spec of the JSON field that contains the total
+        total_field:
+            Glom spec of the JSON field that contains the total
             number of pages.
-        record_name: Class name for the named tuples in the result.
+        record_name:
+            Class name for the named tuples in the result.
 
-    Details:
+    Details
         Read more about glom specs here:
         https://glom.readthedocs.io/en/latest/tutorial.html
 

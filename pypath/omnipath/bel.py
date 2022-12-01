@@ -54,6 +54,12 @@ try:
         del sys.modules['pybel']
         pybel = None
 
+    else:
+
+        import pybel.constants as pc
+        import pybel.dsl
+        from bio2bel.manager.bel_manager import BELManagerMixin
+
 except ModuleNotFoundError:
     
     _logger._log(
@@ -61,10 +67,6 @@ except ModuleNotFoundError:
         'You won\'t be able to read or write BEL models.'
     )
     pybel = None
-
-import pybel.constants as pc
-import pybel.dsl
-from bio2bel.manager.bel_manager import BELManagerMixin
 
 __all__ = [
     'Bel',

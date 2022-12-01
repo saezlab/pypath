@@ -22,6 +22,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 from future.utils import iteritems
 from past.builtins import xrange, range
 
@@ -339,9 +341,9 @@ class Unichem(object):
 
     def connectivity_search(
             self,
-            id_list,
-            id_type,
-            parameters=[1, 0, 0, 0, 0, 1, 0]
+            id_list: str | set,
+            id_type: str | int,
+            parameters: list[int] = [1, 0, 0, 0, 0, 1, 0]
         ):
         """
         Search for structurally and chemically similar compounds based on
@@ -349,11 +351,14 @@ class Unichem(object):
         https://www.ebi.ac.uk/unichem/info/widesearchInfo.
 
         Args
-            id_list (str,set): One or more identifiers to query.
-            id_type (str,int): Type of the identifiers, either as a string
+            id_list:
+                One or more identifiers to query.
+            id_type:
+                Type of the identifiers, either as a string
                 label or a number as used by UniChem. SMILES is not
                 available in this type of query.
-            parameters (list): A list of parameters A-H as described in
+            parameters:
+                A list of parameters A-H as described in
                 https://www.ebi.ac.uk/unichem/info/widesearchInfo.
 
         Returns
