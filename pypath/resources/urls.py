@@ -367,7 +367,7 @@ urls = {
             'Formylation',
             'Citrullination',
             'GPI-anchor',
-            'Nitration',.
+            'Nitration',
             'S-diacylglycerol',
             'Carboxylation',
             'Lipoylation',
