@@ -28,6 +28,7 @@ import re
 import itertools
 import collections
 import bs4
+import warnings
 
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
@@ -109,7 +110,12 @@ def kegg_interactions():
             req_headers = req_hdrs
         )
         kgml = c.result
-        kgmlsoup = bs4.BeautifulSoup(kgml, 'html.parser')
+
+        with warnings.catch_warnings():
+
+            warnings.simplefilter('ignore')
+            kgmlsoup = bs4.BeautifulSoup(kgml, 'html.parser')
+
         entries = {}
 
         for ent in kgmlsoup.find_all('entry'):
