@@ -39,6 +39,7 @@ import timeloop
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
 import pypath.share.common as common
+import pypath.share.constants as constants
 import pypath.share.session as session_mod
 import pypath.share.settings as settings
 import pypath.utils.taxonomy as taxonomy
@@ -460,7 +461,8 @@ def get_uniprot_sec(organism = 9606):
         NCBI Taxonomy ID of the organism.
     """
 
-    if organism is not None:
+    if organism not in (None, constants.NOT_ORGANISM_SPECIFIC):
+
         proteome = all_uniprots(organism=organism)
         proteome = set(proteome)
 
