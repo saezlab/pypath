@@ -72,6 +72,7 @@ pybel = { version = "*", optional = true }
 bio2bel = { version = "*", optional = true }
 click = { version = "*", optional = true }
 python-igraph = { version = "*", optional = true }
+pysftp = "^0.2.9"
 
 [tool.poetry.extras]
 bel = [
@@ -90,6 +91,8 @@ insipid-sphinx-theme = ">=0.3.6"
 sphinx-last-updated-by-git = ">=0.3"
 sphinx-autodoc-typehints = ">=1.18.0"
 sphinxcontrib-fulltoc = ">=1.2.0"
+jupyterlab = "*"
+jupyter_contrib_nbextensions = "*"
 
 [tool.poetry.scripts]
 bio2bel_omnipath = "pypath.omnipath.bel:main"
