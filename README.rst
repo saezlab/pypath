@@ -13,7 +13,7 @@ built from more than 150 original resources. If you use Python and don't
 need to build the database yourself, try our `Python client`_. Read more
 about the `web service here`_.
 
-.. _OmnipathR: https://saezlab.github.io/OmnipathR
+.. _OmnipathR: https://r.omnipathdb.org
 .. _`Python client`: https://github.com/saezlab/omnipath
 .. _`web service here`: https://pypath.omnipathdb.org/webservice.html
 
@@ -73,7 +73,7 @@ combining them into databases and providing a versatile interface in Python
 as well as exporting the data for access through other platforms such as
 R_, `web service`_, Cytoscape_ and BEL (Biological Expression Language).
 
-.. _R: https://github.com/saezlab/OmnipathR
+.. _R: https://r.omnipathdb.org/
 .. _`web service`: https://omnipathdb.org/
 .. _Cytoscape: https://apps.cytoscape.org/apps/omnipath
 
@@ -211,11 +211,11 @@ defined in our `pyproject.toml`_.
 similar services as pypath: `ID translation`_, `homology translation`_,
 `taxonomy support`_, `GO support`_, and many more.
 
-.. _`OmniPath's R client`: https://saezlab.github.io/OmnipathR
-.. _`ID translation`: https://saezlab.github.io/OmnipathR/reference/translate_ids.html
-.. _`homology translation`: https://saezlab.github.io/OmnipathR/reference/homologene_uniprot_orthology.html
-.. _`taxonomy support`: https://saezlab.github.io/OmnipathR/reference/ncbi_taxid.html
-.. _`GO support`: https://saezlab.github.io/OmnipathR/reference/go_annot_download.html
+.. _`OmniPath's R client`: https://r.omnipathdb.org
+.. _`ID translation`: https://r.omnipathdb.org/reference/translate_ids.html
+.. _`homology translation`: https://r.omnipathdb.org/reference/homologene_uniprot_orthology.html
+.. _`taxonomy support`: https://r.omnipathdb.org/reference/ncbi_taxid.html
+.. _`GO support`: https://r.omnipathdb.org/reference/go_annot_download.html
 
 `Questions about OmniPath`_
 
@@ -244,7 +244,7 @@ in the group of `Fabian Theis`_.
 .. _`Saez Lab`: https://saezlab.org/
 .. _`Volkan Atalay's group`: https://blog.metu.edu.tr/vatalay/
 .. _`Dénes Türei`: https://denes.omnipathdb.org/
-.. _`R package`: https://saezlab.github.io/OmnipathR
+.. _`R package`: https://r.omnipathdb.org
 .. _`Cytoscape app`: https://apps.cytoscape.org/apps/omnipath
 .. _`Fabian Theis`: https://www.helmholtz-munich.de/en/icb/research-groups/theis-lab
 
