@@ -104,6 +104,69 @@ def go_annotations_goa(
 go_annotations = go_annotations_goa
 
 
+def go_annotations_all(
+    organism='human',
+    queried_fields=None
+):
+
+    organism = (
+        taxonomy.taxids[organism]
+            if isinstance(organism, int) else
+        organism
+    )
+
+    fieldnames = (
+        'db',
+        'db_object_id',
+        'db_object_symbol',
+        'qualifier',
+        'go_id',
+        'reference',
+        'evidence_code',
+        'with_or_from',
+        'aspect',
+        'db_object_name',
+        'db_object_synonym',
+        'db_object_type',
+        'taxon_and_interacting_taxon',
+        'date',
+        'assigned_By',
+        'annotation_extension',
+        'gene_product_form_id'
+    )
+
+    queried_fields = queried_fields or fieldnames
+    queried_fields = set(queried_fields)
+
+    url = urls.urls['goa']['ebi_url'] % (organism.upper(), organism)
+    c = curl.Curl(url, silent = False, large = True)
+
+    result= dict()
+
+    for line in c.result:
+
+        line = line.strip().split('\t')
+
+        tmp_dict = dict()
+
+        primary_key = None
+        
+        for k, v in zip(fieldnames, line):
+
+            if k == 'db_object_id':
+                primary_key = v
+
+            elif k in queried_fields:
+                tmp_dict[k] = v if v != '' else None
+
+        try:
+            result[primary_key].append(tmp_dict)
+        except KeyError:
+            result[primary_key] = [tmp_dict]
+
+    return result
+
+
 def go_ancestors_goose(aspects = ('C','F','P')):
     """
     Queries the ancestors of GO terms by AmiGO goose.
