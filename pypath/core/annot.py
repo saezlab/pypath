@@ -918,7 +918,7 @@ class CustomAnnotation(session_mod.Logger):
 
         utils_uniprot.info(
             *self.select(
-                name = name,
+                definition = name,
                 parent = parent,
                 resource = resource,
                 entity_type = 'protein',
