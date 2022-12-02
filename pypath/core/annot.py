@@ -916,8 +916,6 @@ class CustomAnnotation(session_mod.Logger):
         information from the UniProt datasheets.
         """
 
-        table_param = table_param or {}
-
         utils_uniprot.info(
             *self.select(
                 name = name,
@@ -2532,7 +2530,7 @@ class CustomAnnotation(session_mod.Logger):
         classes = dict(
             (
                 cls.label,
-                cls.filter_entity_type(entity_type = entity_type)
+                cls.filter_entity_type(entity_type = 'protein')
             )
             for cls in self.iter_classes(**kwargs)
         )
