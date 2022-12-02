@@ -162,7 +162,6 @@ import pypath.visual.plot as plot
 import pypath.core.enz_sub
 import pypath.omnipath.export as export
 import pypath.share.common as common
-import pypath._metadata as _metadata
 from pypath.share.progress import *
 import pypath.share.settings as settings
 import pypath.core.entity as entity_mod
@@ -1805,7 +1804,7 @@ class PyPath(session_mod.Logger):
 
         session_mod.Logger.__init__(self, name = 'network')
 
-        self.__version__ = _metadata.__version__
+        self.__version__ = pypath.__version__
 
         self.cache_dir = cache_mod.get_cachedir(cachedir = cache_dir)
 
