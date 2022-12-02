@@ -59,9 +59,11 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx_last_updated_by_git',
     'sphinxcontrib.fulltoc',
+    'sphinx_remove_toctrees',
 ]
 
 autosummary_generate = True
+remove_from_toctrees = ['api/*']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -98,6 +100,9 @@ pygments_style = 'manni'
 #
 html_permalinks_icon = '§'
 html_theme = 'insipid'
+html_theme = 'pydata_sphinx_theme'
+html_logo = "_static/img/omnipath-logo.svg"
+html_favicon = "_static/img/omnipath-logo.svg"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -113,6 +118,36 @@ html_static_path = ['_static']
 html_css_files = [
     'css/pypathdocs.css',
 ]
+
+html_theme_options = {
+    'show_toc_level': 2,
+    'icon_links': [
+        {
+            'name': 'GitHub',
+            'url': 'https://github.com/saezlab/pypath',
+            'icon': 'fa-brands fa-square-github',
+            'type': 'fontawesome',
+        },
+        {
+            'name': 'Twitter',
+            'url': 'https://twitter.com/omnipathdb',
+            'icon': 'fa-brands fa-square-twitter',
+            'type': 'fontawesome',
+        },
+        {
+            'name': 'PyPI',
+            'url': 'https://pypi.org/project/pypath-omnipath',
+            'icon': 'fa-solid fa-box',
+        },
+    ],
+    'logo': '_static/img/omnipath-logo.svg',
+    'show_toc_level': 2,
+    'github_url': 'https://github.com/saezlab/pypath',
+    'twitter_url': 'https://twitter.com/omnipathdb',
+    'header_links_before_dropdown': 3,
+    'navbar_align': 'left',
+    'navbar_center': ['navbar-nav'],
+}
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
