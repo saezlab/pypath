@@ -2584,7 +2584,7 @@ class Mapper(session_mod.Logger):
         )
 
 
-    def primary_uniprot(self, uniprots):
+    def primary_uniprot(self, uniprots, ncbi_tax_id = None):
         """
         For an iterable of UniProt IDs returns a set with the secondary IDs
         changed to the corresponding primary IDs. Anything what is not a
@@ -2592,6 +2592,7 @@ class Mapper(session_mod.Logger):
         """
 
         primaries = set()
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
 
         for uniprot in uniprots:
 
@@ -2599,7 +2600,7 @@ class Mapper(session_mod.Logger):
                 name = uniprot,
                 id_type = 'uniprot-sec',
                 target_id_type = 'uniprot-pri',
-                ncbi_tax_id = 0,
+                ncbi_tax_id = ncbi_tax_id,
             )
 
             if primary:
