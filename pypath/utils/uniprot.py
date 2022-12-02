@@ -33,6 +33,7 @@ from future.utils import iteritems
 import os
 import sys
 import re
+import shutil
 import importlib as imp
 import collections
 import itertools
@@ -585,13 +586,16 @@ def query(*uniprot_ids):
     """
 
     if (
-        len(uniprot_ids) == 1 and
-        isinstance(uniprot_ids, common.list_like)
+        len(uniprot_ids) > 0 and
+        isinstance(uniprot_ids[0], common.list_like)
     ):
 
         uniprot_ids = uniprot_ids[0]
 
+    uniprot_ids = common.to_list(uniprot_ids)
     uniprot_ids = entity.Entity.only_proteins(uniprot_ids)
+
+    single_id = len(uniprot_ids) == 1
 
     result = [
         UniprotProtein(uniprot_id)
@@ -599,7 +603,7 @@ def query(*uniprot_ids):
     ]
     result = [u for u in result if u.raw]
 
-    return result[0] if len(result) == 1 else result
+    return common.first(result) if single_id else result
 
 
 def collect(uniprot_ids, *features):
@@ -632,7 +636,7 @@ def collect(uniprot_ids, *features):
 
     if 'ac' not in features:
 
-        features = ['ac'] + list(*features)
+        features = ['ac'] + list(features)
 
     table = collections.OrderedDict(
         (
@@ -709,7 +713,7 @@ def print_features(
 
     maxlen = maxlen or settings.get('uniprot_info_maxlen')
     features = features or default_features
-    term_width = (os.get_terminal_size().columns - 120) * 2 + 100
+    term_width = (shutil.get_terminal_size().columns - 60) * 2 + 40
     width = width or int(term_width / len(features)) if term_width else 40
     fileobj = fileobj or sys.stdout
 
