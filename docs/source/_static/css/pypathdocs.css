@@ -9,3 +9,7 @@ tbody tr td:first-child {
 .toc-item {
     border-left-width: 0px!important;
 }
+
+.skip-link {
+    display: none;
+}
