@@ -9,7 +9,7 @@ jobs:
         - name: Install dependencies
           run: |
             sudo apt-get update
-            sudo apt-get install -y libcurl4-openssl-dev
+            sudo apt-get install -y libcurl4-openssl-dev pandoc
         -   name: Check out main
             uses: actions/checkout@main
         -   name: Setup Python
@@ -38,11 +38,6 @@ jobs:
             run: poetry install --no-interaction --no-root
         -   name: Install library
             run: poetry install --no-interaction --with dev
-        -   name: Enable Jupyter extensions
-            run: |
-                poetry run jupyter nbextension enable execute_time/ExecuteTime
-                poetry run jupyter nbextension enable limit_output/main
-                poetry run jupyter nbextension enable toc2/main
         -   name: Build documentation
             run: poetry run make html --directory docs/
         -   name: Commit files
