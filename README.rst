@@ -51,13 +51,12 @@ Installation
 Docs
 ====
 
-Read the `reference documentation`_ or check out the tutorials_.
+Read the `reference documentation`_ or check out the tutorials_. The most
+comprehensive guide to *pypath* is `The Pypath Book`_.
 
 .. _`reference documentation`: https://pypath.omnipathdb.org/
 .. _tutorials: https://workflows.omnipathdb.org/
-
-The *Pypath guide*, the comprehensive tutorial for pypath is currently out
-of date, we are very sorry about that!
+.. _`The Pypath Book`: https://pypath.omnipathdb.org/notebooks/manual.html
 
 Get help
 ========
