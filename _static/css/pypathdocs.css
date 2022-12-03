@@ -5,3 +5,7 @@ tbody tr td:first-child {
     max-width: 70%;
     word-break: break-all;
 }
+
+.toc-item {
+    border-left-width: 0px!important;
+}
