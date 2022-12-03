@@ -93,9 +93,9 @@ sphinx-autodoc-typehints = ">=1.18.0"
 sphinxcontrib-fulltoc = ">=1.2.0"
 jupyterlab = "*"
 jupyter_contrib_nbextensions = "*"
-jupyter-sphinx = "*"
 pydata-sphinx-theme = "*"
 sphinx_remove_toctrees = "*"
+nbsphinx = "*"
 
 [tool.poetry.scripts]
 bio2bel_omnipath = "pypath.omnipath.bel:main"
