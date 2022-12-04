@@ -1,0 +1,806 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pypath.inputs.kegg_api &#8212; pypath 0.14.30 documentation</title>
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/insipid.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/pypathdocs.css" />
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script defer src="../../../_static/insipid.js"></script>
+    <script defer src="../../../_static/insipid-sidebar.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head><body>
+    <script type="text/javascript">
+        document.body.classList.add('js');
+    </script>
+    <input type="checkbox" id="sidebar-checkbox" style="display: none;">
+    <label id="overlay" for="sidebar-checkbox"></label>
+    <div class="sidebar-resize-handle"></div>
+    <script type="text/javascript">
+        try {
+            let sidebar = localStorage.getItem('sphinx-sidebar');
+            const sidebar_width = localStorage.getItem('sphinx-sidebar-width');
+            if (sidebar_width) {
+                document.documentElement.style.setProperty('--sidebar-width', sidebar_width);
+            }
+            // show sidebar on wide screen
+            if (!sidebar && window.matchMedia('(min-width: 100rem)').matches) {
+                sidebar = 'visible';
+                // NB: We don't store the value in localStorage!
+            }
+            if (sidebar === 'visible') {
+                document.getElementById('sidebar-checkbox').checked = true;
+            }
+        } catch(e) {
+            console.info(e);
+        }
+    </script>
+    <header id="topbar-placeholder">
+      <div id="topbar">
+        <div id="titlebar">
+          <div class="buttons">
+            <label for="sidebar-checkbox" id="sidebar-button" role="button" tabindex="0" aria-controls="sphinxsidebar" accesskey="M">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+            </label>
+          </div>
+          <div class="title">
+            <a class="parent" href="../inputs.html" accesskey="U">pypath.inputs</a>
+            <a class="top" href="#">pypath.inputs.kegg_api</a>
+          </div>
+          <div class="buttons">
+            <button id="fullscreen-button" type="button" aria-hidden="true">
+              <span class="enable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"/></svg>
+              </span>
+              <span class="disable">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M4.686 427.314L104 328l-32.922-31.029C55.958 281.851 66.666 256 88.048 256h112C213.303 256 224 266.745 224 280v112c0 21.382-25.803 32.09-40.922 16.971L152 376l-99.314 99.314c-6.248 6.248-16.379 6.248-22.627 0L4.686 449.941c-6.248-6.248-6.248-16.379 0-22.627zM443.314 84.686L344 184l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C234.697 256 224 245.255 224 232V120c0-21.382 25.803-32.09 40.922-16.971L296 136l99.314-99.314c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.248 6.248 6.248 16.379 0 22.627z"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <nav>
+    </nav>
+
+    <nav class="relbar">
+    </nav>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+<h1>Source code for pypath.inputs.kegg_api</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright</span>
+<span class="c1">#  2014-2022</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  Authors: Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#           Nicolàs Palacio</span>
+<span class="c1">#           Sebastian Lobentanzer</span>
+<span class="c1">#           Erva Ulusoy</span>
+<span class="c1">#           Olga Ivanova</span>
+<span class="c1">#           Ahmet Rifaioglu</span>
+<span class="c1">#           Melih Darcan</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.organism/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.organism/</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="kn">from</span> <span class="nn">concurrent.futures.thread</span> <span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Literal</span>
+
+<span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
+<span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
+<span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session</span>
+<span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
+
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">Logger</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;kegg_api&#39;</span><span class="p">)</span>
+<span class="n">_log</span> <span class="o">=</span> <span class="n">_logger</span><span class="o">.</span><span class="n">_log</span>
+
+<span class="n">_url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;kegg_api&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_generate_relation_functions</span><span class="p">():</span>
+
+    <span class="n">_entity_types</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;disease&#39;</span><span class="p">,</span> <span class="s1">&#39;drug&#39;</span><span class="p">,</span> <span class="s1">&#39;gene&#39;</span><span class="p">,</span> <span class="s1">&#39;pathway&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">etypes</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">_entity_types</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">args</span> <span class="ow">in</span> <span class="p">(</span><span class="n">etypes</span><span class="p">,</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">etypes</span><span class="p">)):</span>
+
+            <span class="n">args</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">_to_</span><span class="si">{</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">synopsis</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1"> relations from KEGG.&#39;</span>
+
+            <span class="k">def</span> <span class="nf">_relation_function</span><span class="p">(</span><span class="n">organism</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="s1">&#39;gene&#39;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+
+                    <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="o">+</span> <span class="p">(</span><span class="n">organism</span><span class="p">,)</span>
+
+                <span class="k">return</span> <span class="n">_kegg_relations</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+
+            <span class="n">_relation_function</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="n">_relation_function</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">synopsis</span>
+
+            <span class="k">if</span> <span class="s1">&#39;gene&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+
+                <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">_relation_function</span><span class="p">)</span>
+                <span class="n">sig</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">())</span>
+                <span class="n">_relation_function</span><span class="o">.</span><span class="n">__signature__</span> <span class="o">=</span> <span class="n">sig</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">_relation_function</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">Args</span><span class="se">\n</span><span class="s1">    organism:</span><span class="se">\n</span><span class="s1">        Name of the organism. &#39;</span>
+                    <span class="s1">&#39;Gene relations are organism specific.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+
+            <span class="nb">globals</span><span class="p">()[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_relation_function</span>
+
+
+<div class="viewcode-block" id="drug_to_drug"><a class="viewcode-back" href="../../../_autosummary/pypath.inputs.kegg_api.drug_to_drug.html#pypath.inputs.kegg_api.drug_to_drug">[docs]</a><span class="k">def</span> <span class="nf">drug_to_drug</span><span class="p">(</span>
+    <span class="n">drugs</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">join</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downloads drug-drug interaction data from KEGG database.</span>
+
+<span class="sd">    Args</span>
+<span class="sd">        drugs:</span>
+<span class="sd">            Drug IDs as a list or a tuple.</span>
+<span class="sd">        join:</span>
+<span class="sd">            If it&#39;s True, returns individual interactions of queried list.</span>
+<span class="sd">            Else, joins them together and returns mutual interactions.</span>
+<span class="sd">        asynchronous:</span>
+<span class="sd">            Yet to be implemented.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        A dict with disease IDs as keys and drug-drug interactions as values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">DrugToDrugInteraction</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;DrugToDrugInteraction&#39;</span><span class="p">,</span>
+        <span class="p">(</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;interactions&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">Interaction</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;Interaction&#39;</span><span class="p">,</span>
+        <span class="p">(</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;id&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;contraindication&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;precaution&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">entry_types</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;d&#39;</span><span class="p">:</span> <span class="s1">&#39;drug&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;compound&#39;</span><span class="p">}</span>
+    <span class="n">entry_dbs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;drug&#39;</span><span class="p">:</span> <span class="n">_Drug</span><span class="p">(),</span> <span class="s1">&#39;compound&#39;</span><span class="p">:</span> <span class="n">_Compound</span><span class="p">()}</span>
+    <span class="n">interactions</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span>
+        <span class="k">lambda</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;interactions&#39;</span><span class="p">:</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">),</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="n">join</span> <span class="o">=</span> <span class="n">join</span> <span class="ow">and</span> <span class="n">drugs</span>
+    <span class="n">asynchronous</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">drugs</span> <span class="ow">or</span> <span class="n">asynchronous</span>
+    <span class="n">drugs</span> <span class="o">=</span> <span class="n">drugs</span> <span class="ow">or</span> <span class="n">entry_dbs</span><span class="p">[</span><span class="s1">&#39;drug&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="n">entries</span> <span class="o">=</span> <span class="n">_kegg_ddi</span><span class="p">(</span><span class="n">drugs</span><span class="p">,</span> <span class="n">join</span> <span class="o">=</span> <span class="n">join</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
+
+        <span class="n">partners</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">role</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">entry_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="kc">None</span><span class="p">),</span>
+                    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">entry</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">entry_dbs</span><span class="p">[</span><span class="n">entry_type</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entry_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">role</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">((</span><span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">))</span>
+        <span class="p">)</span>
+
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="n">contraindication</span> <span class="o">=</span> <span class="s1">&#39;CI&#39;</span> <span class="ow">in</span> <span class="n">labels</span>
+        <span class="n">precaution</span> <span class="o">=</span> <span class="s1">&#39;P&#39;</span> <span class="ow">in</span> <span class="n">labels</span>
+
+        <span class="n">interaction</span> <span class="o">=</span> <span class="n">Interaction</span><span class="p">(</span>
+            <span class="nb">type</span> <span class="o">=</span> <span class="n">partners</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">],</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="n">partners</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">partners</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
+            <span class="n">contraindication</span> <span class="o">=</span> <span class="n">contraindication</span><span class="p">,</span>
+            <span class="n">precaution</span> <span class="o">=</span> <span class="n">precaution</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">disease_id</span> <span class="o">=</span> <span class="n">partners</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+        <span class="n">interactions</span><span class="p">[</span><span class="n">disease_id</span><span class="p">][</span><span class="s1">&#39;interactions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">interaction</span><span class="p">)</span>
+        <span class="n">interactions</span><span class="p">[</span><span class="n">disease_id</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">partners</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+        <span class="n">interactions</span><span class="p">[</span><span class="n">disease_id</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">partners</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+
+    <span class="n">interactions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">key</span><span class="p">,</span>
+            <span class="n">DrugToDrugInteraction</span><span class="p">(</span>
+                <span class="n">value</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span>
+                <span class="n">value</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
+                <span class="nb">tuple</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;interactions&#39;</span><span class="p">]),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">interactions</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">interactions</span></div>
+
+
+<span class="k">def</span> <span class="nf">_generate_conv_functions</span><span class="p">():</span>
+
+    <span class="n">_id_types</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s1">&#39;drug&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;chebi&#39;</span><span class="p">,)),</span>
+        <span class="p">(</span><span class="s1">&#39;gene&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;ncbi-geneid&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)),</span>
+    <span class="p">)</span>
+
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;chebi&#39;</span><span class="p">:</span> <span class="s1">&#39;ChEBI&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ncbi-geneid&#39;</span><span class="p">:</span> <span class="s1">&#39;NCBI Gene&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;uniprot&#39;</span><span class="p">:</span> <span class="s1">&#39;UniProt&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">entity</span><span class="p">,</span> <span class="n">id_types</span> <span class="ow">in</span> <span class="n">_id_types</span><span class="p">:</span>
+
+        <span class="k">for</span> <span class="n">id_type</span> <span class="ow">in</span> <span class="n">id_types</span><span class="p">:</span>
+
+            <span class="n">args_</span> <span class="o">=</span> <span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">id_type</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">args</span> <span class="ow">in</span> <span class="p">(</span><span class="n">args_</span><span class="p">,</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">args_</span><span class="p">)):</span>
+
+                <span class="n">synopsis</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s1">&#39;Translation dict between &#39;</span> <span class="o">+</span>
+                    <span class="s1">&#39; and &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">labels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;KEGG </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> IDs&#39;</span>
+                        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span>
+                    <span class="p">)</span> <span class="o">+</span>
+                    <span class="s1">&#39;.&#39;</span>
+                <span class="p">)</span>
+
+                <span class="k">def</span> <span class="nf">_conv_function</span><span class="p">(</span><span class="n">organism</span><span class="p">):</span>
+
+                    <span class="n">splits</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="o">!=</span> <span class="s1">&#39;gene&#39;</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
+                    <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">if</span> <span class="n">s</span> <span class="k">else</span> <span class="n">organism</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">splits</span><span class="p">,</span> <span class="n">args</span><span class="p">)]</span>
+
+                    <span class="k">return</span> <span class="n">_kegg_conv</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">*</span><span class="n">splits</span><span class="p">)</span>
+
+
+                <span class="n">name</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s1">&#39;_to_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;kegg_</span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="n">entity</span> <span class="k">else</span> <span class="n">a</span>
+                        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span>
+                    <span class="p">)</span><span class="o">.</span>
+                    <span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">_conv_function</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">name</span>
+                <span class="n">_conv_function</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">synopsis</span>
+
+                <span class="k">if</span> <span class="n">entity</span> <span class="o">!=</span> <span class="s1">&#39;gene&#39;</span><span class="p">:</span>
+
+                    <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">_conv_function</span><span class="p">)</span>
+                    <span class="n">sig</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">())</span>
+                    <span class="n">_conv_function</span><span class="o">.</span><span class="n">__signature__</span> <span class="o">=</span> <span class="n">sig</span>
+
+                <span class="k">else</span><span class="p">:</span>
+
+                    <span class="n">_conv_function</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+=</span> <span class="p">(</span>
+                        <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">Args</span><span class="se">\n</span><span class="s1">    organism:</span><span class="se">\n</span><span class="s1">        Name of the &#39;</span>
+                        <span class="s1">&#39;organism. Gene relations are organism specific.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="p">)</span>
+
+                <span class="nb">globals</span><span class="p">()[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_conv_function</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">_kegg_general</span><span class="p">(</span>
+    <span class="n">operation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">arguments</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">async_</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">_url</span> <span class="o">%</span> <span class="n">operation</span><span class="p">]</span> <span class="o">+</span> <span class="n">arguments</span><span class="p">)</span>
+    <span class="n">curl_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span> <span class="s1">&#39;silent&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;large&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">_async</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="k">await</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="o">**</span><span class="n">curl_args</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="o">**</span><span class="n">curl_args</span><span class="p">)</span>
+
+    <span class="n">lines</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="ow">or</span> <span class="p">[]</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span> <span class="n">line</span><span class="p">]</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">_kegg_general_async</span><span class="p">(</span>
+    <span class="n">operation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">arguments</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+
+    <span class="c1">#TODO Yet to be implemented</span>
+    <span class="c1"># This function doesn&#39;t work but it better</span>
+    <span class="c1"># stay so we can implement it without</span>
+    <span class="c1"># changing the structure of the module</span>
+
+    <span class="k">return</span> <span class="n">_kegg_general</span><span class="p">(</span><span class="n">operation</span><span class="p">,</span> <span class="o">*</span><span class="n">arguments</span><span class="p">,</span> <span class="n">async_</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_kegg_list</span><span class="p">(</span>
+    <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">option</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">organism</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">[</span><span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="n">database</span><span class="p">]</span> <span class="o">+</span>
+        <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">option</span><span class="p">)</span> <span class="k">if</span> <span class="n">database</span> <span class="o">==</span> <span class="s1">&#39;brite&#39;</span> <span class="k">else</span> <span class="p">[]</span> <span class="o">+</span>
+        <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">organism</span><span class="p">)</span> <span class="k">if</span> <span class="n">database</span> <span class="o">==</span> <span class="s1">&#39;pathway&#39;</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_kegg_general</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_kegg_conv</span><span class="p">(</span>
+    <span class="n">source_db</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">target_db</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">source_split</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">target_split</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">_kegg_general</span><span class="p">(</span><span class="s1">&#39;conv&#39;</span><span class="p">,</span> <span class="n">target_db</span><span class="p">,</span> <span class="n">source_db</span><span class="p">)</span>
+    <span class="n">conversion_table</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+
+        <span class="n">source</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">source_split</span> <span class="k">else</span> <span class="n">source</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">target_split</span> <span class="k">else</span> <span class="n">target</span>
+        <span class="n">conversion_table</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">conversion_table</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_kegg_link</span><span class="p">(</span><span class="n">source_db</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">target_db</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+
+    <span class="k">return</span> <span class="n">_kegg_general</span><span class="p">(</span><span class="s1">&#39;link&#39;</span><span class="p">,</span> <span class="n">target_db</span><span class="p">,</span> <span class="n">source_db</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_kegg_ddi</span><span class="p">(</span><span class="n">drug_ids</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">async_</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+
+    <span class="n">drug_ids</span> <span class="o">=</span> <span class="s1">&#39;+&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">drug_ids</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">async_</span><span class="p">:</span>
+
+        <span class="n">pool</span> <span class="o">=</span> <span class="n">ThreadPoolExecutor</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">pool</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="n">_kegg_ddi_async</span><span class="p">(</span><span class="n">drug_ids</span><span class="p">))</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">_kegg_ddi_sync</span><span class="p">(</span><span class="n">drug_ids</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_kegg_ddi_sync</span><span class="p">(</span><span class="n">drug_ids</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">(</span>
+        <span class="n">_kegg_general</span><span class="p">(</span><span class="s1">&#39;ddi&#39;</span><span class="p">,</span> <span class="n">drug_id</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">drug_id</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">drug_ids</span><span class="p">)</span>
+    <span class="p">)))</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">_kegg_ddi_async</span><span class="p">(</span><span class="n">drug_ids</span><span class="p">):</span>
+
+    <span class="c1">#TODO Yet to be implemented</span>
+    <span class="c1"># This function doesn&#39;t work but it better</span>
+    <span class="c1"># stay so we can implement it without</span>
+    <span class="c1"># changing the structure of the module</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">as_completed</span><span class="p">([</span>
+        <span class="n">_kegg_general_async</span><span class="p">(</span><span class="s1">&#39;ddi&#39;</span><span class="p">,</span> <span class="n">drug_id</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">drug_id</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">drug_ids</span><span class="p">)</span>
+    <span class="p">]):</span>
+        <span class="n">the_response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">the_response</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span> <span class="nf">_kegg_relations</span><span class="p">(</span>
+    <span class="n">source_db</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;gene&#39;</span><span class="p">,</span> <span class="s1">&#39;pathway&#39;</span><span class="p">,</span> <span class="s1">&#39;disease&#39;</span><span class="p">,</span> <span class="s1">&#39;drug&#39;</span><span class="p">],</span>
+    <span class="n">target_db</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;gene&#39;</span><span class="p">,</span> <span class="s1">&#39;pathway&#39;</span><span class="p">,</span> <span class="s1">&#39;disease&#39;</span><span class="p">,</span> <span class="s1">&#39;drug&#39;</span><span class="p">],</span>
+    <span class="c1"># should have human as a default, instead of triggering an error:</span>
+    <span class="n">organism</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+
+    <span class="n">l_organism</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">organism</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">record</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;KeggEntry&#39;</span><span class="p">,</span>
+        <span class="p">(</span>
+            <span class="s1">&#39;id&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ncbi_gene_ids&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;uniprot_ids&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;chebi_ids&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">cls_prefix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+
+            <span class="bp">cls</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;_</span><span class="si">{</span><span class="n">cls_prefix</span><span class="si">}{</span><span class="n">name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()[</span><span class="bp">cls</span><span class="p">](</span><span class="o">*</span><span class="n">l_organism</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">db</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">get_data</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">ids</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">get_data</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">cls_prefix</span> <span class="o">=</span> <span class="s1">&#39;KeggTo&#39;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">type_</span><span class="p">):</span>
+
+        <span class="n">id_</span> <span class="o">=</span> <span class="n">db</span><span class="p">(</span><span class="n">type_</span><span class="p">)</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">db</span><span class="p">(</span><span class="n">type_</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">ncbi</span> <span class="o">=</span> <span class="n">ids</span><span class="p">(</span><span class="s1">&#39;ncbi&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span> <span class="k">if</span> <span class="n">type_</span> <span class="o">==</span> <span class="s1">&#39;gene&#39;</span> <span class="k">else</span> <span class="p">()</span>
+        <span class="n">uniprot</span> <span class="o">=</span> <span class="n">ids</span><span class="p">(</span><span class="s1">&#39;uniprot&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span> <span class="k">if</span> <span class="n">type_</span> <span class="o">==</span> <span class="s1">&#39;gene&#39;</span> <span class="k">else</span> <span class="p">()</span>
+        <span class="n">chebi</span> <span class="o">=</span> <span class="n">ids</span><span class="p">(</span><span class="s1">&#39;chebi&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span> <span class="k">if</span> <span class="n">type_</span> <span class="o">==</span> <span class="s1">&#39;drug&#39;</span> <span class="k">else</span> <span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">record</span><span class="p">(</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="n">id_</span><span class="p">,</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span>
+            <span class="nb">type</span> <span class="o">=</span> <span class="n">type_</span><span class="p">,</span>
+            <span class="n">ncbi_gene_ids</span> <span class="o">=</span> <span class="n">ncbi</span><span class="p">,</span>
+            <span class="n">uniprot_ids</span> <span class="o">=</span> <span class="n">uniprot</span><span class="p">,</span>
+            <span class="n">chebi_ids</span> <span class="o">=</span> <span class="n">chebi</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+    <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">organism</span> <span class="k">if</span> <span class="n">db</span> <span class="o">==</span> <span class="s1">&#39;gene&#39;</span> <span class="k">else</span> <span class="n">db</span> <span class="k">for</span> <span class="n">db</span> <span class="ow">in</span> <span class="p">(</span><span class="n">source_db</span><span class="p">,</span> <span class="n">target_db</span><span class="p">)]</span>
+    <span class="n">entries</span> <span class="o">=</span> <span class="n">_kegg_link</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">interactions</span> <span class="o">=</span> <span class="p">[(</span><span class="n">process</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">process</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">interactions</span>
+
+
+<span class="k">class</span> <span class="nc">_KeggDatabase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+
+    <span class="n">_data</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_query_args</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">proc_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">entry</span>
+
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">proc_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">entry</span>
+
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+
+        <span class="n">entries</span> <span class="o">=</span> <span class="n">_kegg_list</span><span class="p">(</span><span class="o">*</span><span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_query_args</span><span class="p">),</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">proc_key</span><span class="p">(</span><span class="n">entry</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc_value</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span>
+        <span class="p">}</span>
+
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
+
+<span class="k">class</span> <span class="nc">_Organism</span><span class="p">(</span><span class="n">_KeggDatabase</span><span class="p">):</span>
+
+    <span class="n">_query_args</span> <span class="o">=</span> <span class="s1">&#39;organism&#39;</span>
+
+
+    <span class="k">def</span> <span class="nf">proc_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">entry</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+
+    <span class="k">def</span> <span class="nf">proc_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">entry</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">_Gene</span><span class="p">(</span><span class="n">_KeggDatabase</span><span class="p">):</span>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">organism</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">organism</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">proc_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="nf">proc_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">entry</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">maxsplit</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_Pathway</span><span class="p">(</span><span class="n">_KeggDatabase</span><span class="p">):</span>
+
+    <span class="n">_re_pathway</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\d+&#39;</span><span class="p">)</span>
+    <span class="n">_query_args</span> <span class="o">=</span> <span class="s1">&#39;pathway&#39;</span>
+
+
+    <span class="k">def</span> <span class="nf">proc_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">entry</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="nf">proc_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
+
+        <span class="n">pathway_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_re_pathway</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># is this correct?</span>
+        <span class="c1"># there are pathway prefixes in KEGG other than &quot;map&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;map</span><span class="si">{</span><span class="n">pathway_id</span><span class="o">.</span><span class="n">group</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">_SplitDatabase</span><span class="p">(</span><span class="n">_KeggDatabase</span><span class="p">):</span>
+
+
+    <span class="k">def</span> <span class="nf">proc_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+
+    <span class="k">def</span> <span class="nf">proc_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">entry</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">_Disease</span><span class="p">(</span><span class="n">_SplitDatabase</span><span class="p">):</span>
+
+    <span class="n">_query_args</span> <span class="o">=</span> <span class="s1">&#39;disease&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">_Drug</span><span class="p">(</span><span class="n">_SplitDatabase</span><span class="p">):</span>
+
+    <span class="n">_query_args</span> <span class="o">=</span> <span class="s1">&#39;drug&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">_Compound</span><span class="p">(</span><span class="n">_SplitDatabase</span><span class="p">):</span>
+
+    <span class="n">_query_args</span> <span class="o">=</span> <span class="s1">&#39;compound&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">_ConversionTable</span><span class="p">:</span>
+
+    <span class="n">_table</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">id_types</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">source_split</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">target_split</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_id_types</span> <span class="o">=</span> <span class="n">id_types</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_splits</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;source_split&#39;</span><span class="p">:</span> <span class="n">source_split</span><span class="p">,</span>
+            <span class="s1">&#39;target_split&#39;</span><span class="p">:</span> <span class="n">target_split</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_kegg_conv</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">id_types</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span>
+
+
+<span class="k">class</span> <span class="nc">_KeggToNcbi</span><span class="p">(</span><span class="n">_ConversionTable</span><span class="p">):</span>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">organism</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">organism</span><span class="p">,</span> <span class="s1">&#39;ncbi-geneid&#39;</span><span class="p">,</span> <span class="n">target_split</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_NcbiToKegg</span><span class="p">(</span><span class="n">_ConversionTable</span><span class="p">):</span>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">organism</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;ncbi-geneid&#39;</span><span class="p">,</span> <span class="n">organism</span><span class="p">,</span> <span class="n">source_split</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_KeggToUniprot</span><span class="p">(</span><span class="n">_ConversionTable</span><span class="p">):</span>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">organism</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">organism</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="n">target_split</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_UniprotToKegg</span><span class="p">(</span><span class="n">_ConversionTable</span><span class="p">):</span>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">organism</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="n">organism</span><span class="p">,</span> <span class="n">source_split</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_KeggToChebi</span><span class="p">(</span><span class="n">_ConversionTable</span><span class="p">):</span>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="s1">&#39;drug&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;chebi&#39;</span><span class="p">,</span>
+            <span class="n">source_split</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">target_split</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_ChebiToKegg</span><span class="p">(</span><span class="n">_ConversionTable</span><span class="p">):</span>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="s1">&#39;chebi&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;drug&#39;</span><span class="p">,</span>
+            <span class="n">source_split</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">target_split</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="n">_generate_relation_functions</span><span class="p">()</span>
+<span class="n">_generate_conv_functions</span><span class="p">()</span>
+</pre></div>
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+          <div class="sidebar-resize-handle"></div>
+
+  <div>
+    <h3><a href="../../../index.html">Table of Contents</a></h3>
+    <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html"><em>pypath:</em> A Python module for molecular signaling prior knowledge processing</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../webservice.html">Webservice</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../releasehistory.html">Release history</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/pypath.html">pypath</a></li>
+</ul>
+
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="ethical-ad-placement"></div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <nav class="relbar">
+    </nav>
+
+    <footer role="contentinfo">
+      &#169; Copyright 2022, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.
+      Created using <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      <a class="reference external" href="https://insipid-sphinx-theme.readthedocs.io/">Insipid Theme</a>.
+    </footer>
+  </body>
+</html>
