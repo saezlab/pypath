@@ -48,9 +48,9 @@ _log = _logger._log
 _url = urls.urls['kegg_api']['url']
 
 
-_entity_types = ('disease', 'drug', 'gene', 'pathway')
-
 def _generate_relation_functions():
+
+    _entity_types = ('disease', 'drug', 'gene', 'pathway')
 
     for etypes in itertools.combinations(_entity_types, 2):
 
@@ -188,34 +188,68 @@ def drug_to_drug(
     return interactions
 
 
-def kegg_gene_id_to_ncbi_gene_id(organism):
+def _generate_conv_functions():
 
-    return _kegg_conv(organism, 'ncbi-geneid', target_split=True)
+    _id_types = (
+        ('drug', ('chebi',)),
+        ('gene', ('ncbi-geneid', 'uniprot')),
+    )
+
+    labels = {
+        'chebi': 'ChEBI',
+        'ncbi-geneid': 'NCBI Gene',
+        'uniprot': 'UniProt',
+    }
+
+    for entity, id_types in _id_types:
+
+        for id_type in id_types:
+
+            args_ = (entity, id_type)
+
+            for args in (args_, reversed(args_)):
+
+                synopsis = (
+                    'Translation dict between ' +
+                    ' and '.join(
+                        f'{labels.get(a, f"KEGG {a}")} IDs'
+                        for a in args
+                    ) +
+                    '.'
+                )
+
+                def _conv_function(organism):
+
+                    splits = [a != 'gene' for a in args]
+                    args = [a if s else organism for s, a in zip(splits, args)]
+
+                    return _kegg_conv(*args, *splits)
 
 
-def ncbi_gene_id_to_kegg_gene_id(organism):
+                name = (
+                    '_to_'.join(
+                        f'kegg_{a}' if a == entity else a
+                        for a in args
+                    ).
+                    replace('-', '_')
+                )
+                _conv_function.__name__ = name
+                _conv_function.__doc__ = synopsis
 
-    return _kegg_conv('ncbi-geneid', organism, source_split=True)
+                if entity != 'gene':
 
+                    sig = inspect.signature(_conv_function)
+                    sig.replace(parameters = ())
+                    _conv_function.__signature__ = sig
 
-def kegg_gene_id_to_uniprot_id(organism):
+                else:
 
-    return _kegg_conv(organism, 'uniprot', target_split=True)
+                    _conv_function.__doc__ += (
+                        '\n\nArgs\n    organism:\n        Name of the '
+                        'organism. Gene relations are organism specific.\n'
+                    )
 
-
-def uniprot_id_to_kegg_gene_id(organism):
-
-    return _kegg_conv('uniprot', organism, source_split=True)
-
-
-def kegg_drug_id_to_chebi_id():
-
-    return _kegg_conv('drug', 'chebi', source_split=True, target_split=True)
-
-
-def chebi_id_to_kegg_drug_id():
-
-    return _kegg_conv('chebi', 'drug', source_split=True, target_split=True)
+                globals()[name] = _conv_function
 
 
 async def _kegg_general(
@@ -629,3 +663,4 @@ class _ChebiToKegg(_ConversionTable):
 
 
 _generate_relation_functions()
+_generate_conv_functions()
