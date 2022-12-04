@@ -26,6 +26,7 @@
 from __future__ import annotations
 
 import collections
+import itertools
 import csv
 import re
 import asyncio
@@ -33,7 +34,7 @@ import asyncio
 from concurrent.futures.thread import ThreadPoolExecutor
 
 from abc import ABC, abstractmethod
-from collections.abc import Iterable
+from typing import Iterable
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
@@ -307,13 +308,11 @@ def _kegg_link(source_db: str, target_db: str) -> list[list[str]]:
     return _kegg_general('link', target_db, source_db)
 
 
-def _kegg_ddi(drug_ids, join=True, asynchronous=False):
+def _kegg_ddi(drug_ids: str | Iterable[str], async_: bool = False):
 
-    if join and not isinstance(drug_ids, str):
+    drug_ids = '+'.join(common.to_list(drug_ids))
 
-        drug_ids = ['+'.join(drug_ids)]
-
-    if asynchronous:
+    if async_:
 
         pool = ThreadPoolExecutor()
 
@@ -322,17 +321,12 @@ def _kegg_ddi(drug_ids, join=True, asynchronous=False):
     return _kegg_ddi_sync(drug_ids)
 
 
-def _kegg_ddi_sync(drug_ids):
+def _kegg_ddi_sync(drug_ids: str | Iterable[str]):
 
-    result = list()
-
-    if isinstance(drug_ids, Iterable):
-
-        for drug_id in drug_ids:
-
-            result.extend(_kegg_general('ddi', drug_id))
-
-        return result
+    return list(itertools.chain(*(
+        _kegg_general('ddi', drug_id)
+        for drug_id in common.to_list(drug_ids)
+    )))
 
 
 async def _kegg_ddi_async(drug_ids):
@@ -344,14 +338,12 @@ async def _kegg_ddi_async(drug_ids):
 
     result = []
 
-    if isinstance(drug_ids, common.LIST_LIKE):
-
-        for response in asyncio.as_completed([
-            _kegg_general_async('ddi', drug_id)
-            for drug_id in drug_ids
-        ]):
-            the_response = await response
-            result.extend(common.to_list(the_response))
+    for response in asyncio.as_completed([
+        _kegg_general_async('ddi', drug_id)
+        for drug_id in common.to_list(drug_ids)
+    ]):
+        the_response = await response
+        result.extend(common.to_list(the_response))
 
     return result
 
