@@ -65,10 +65,12 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.mathjax',
+    'sphinx_copybutton',
     'sphinx_last_updated_by_git',
     'sphinxcontrib.fulltoc',
     'sphinx_remove_toctrees',
     'nbsphinx',
+    'IPython.sphinxext.ipython_console_highlighting',
 ]
 
 autosummary_generate = True
