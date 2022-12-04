@@ -395,6 +395,10 @@ urls = {
         'pw_annot': 'https://www.pathwaycommons.org/archives/PC2/v12/'
             'PathwayCommons12.kegg.uniprot.gmt.gz',
     },
+    'kegg_api': {
+        'label': 'KEGG API',
+        'url': 'https://rest.kegg.jp/%s'
+    },
     'pathbank': {
         'label': 'A functional annotation and process description network '
             'database.',
@@ -686,10 +690,13 @@ urls = {
             'msigdb_v7.0_files_to_download_locally.zip',
     },
     'disgenet': {
-        'label': 'Disease-gene associations',
-        'url': 'http://www.disgenet.org/static/disgenet_ap1/files/'\
+        'api_url': 'https://www.disgenet.org/api',
+        'disease_id_mappings': 'https://www.disgenet.org/static/disgenet_ap1/files/downloads/disease_mappings.tsv.gz',
+        'variant_gene_mappings': 'https://www.disgenet.org/static/disgenet_ap1/files/downloads/variant_to_gene_mappings.tsv.gz',
+        'annotation_label': 'Disease-gene associations',
+        'annotations': 'http://www.disgenet.org/static/disgenet_ap1/files/'\
             'downloads/%s_gene_disease_associations.tsv.gz',
-        'datasets': ['curated', 'literature', 'befree', 'all'],
+        'annotation_datasets': ['curated', 'literature', 'befree', 'all'],
     },
     'hsn': {
         'label': 'The Wang Human Signaling Network',
