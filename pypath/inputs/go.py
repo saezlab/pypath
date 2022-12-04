@@ -22,6 +22,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 from past.builtins import xrange, range
 from future.utils import iteritems
 
@@ -73,11 +75,7 @@ def go_annotations_goa(
     Downloads GO annotation from UniProt GOA.
     """
 
-    organism = (
-        taxonomy.taxids[organism]
-            if isinstance(organism, int) else
-        organism
-    )
+    organism = taxonomy.ensure_common_name(organism)
 
     annot = dict(
         (asp, collections.defaultdict(set))
@@ -102,6 +100,53 @@ def go_annotations_goa(
 
 # synonym for the default method
 go_annotations = go_annotations_goa
+
+
+def go_annotations_all(
+        organism int | str = 'human',
+        fields: str | list[str] | None = None
+    ) -> dict[str, set[tuple[str]]]:
+
+    organism = taxonomy.ensure_common_name(organism)
+
+    all_fields = (
+        'db',
+        'db_object_id',
+        'db_object_symbol',
+        'qualifier',
+        'go_id',
+        'reference',
+        'evidence_code',
+        'with_or_from',
+        'aspect',
+        'db_object_name',
+        'db_object_synonym',
+        'db_object_type',
+        'taxon_and_interacting_taxon',
+        'date',
+        'assigned_By',
+        'annotation_extension',
+        'gene_product_form_id'
+    )
+
+    fields = fields or all_fields
+    fields = common.to_list(fields)
+
+    url = urls.urls['goa']['ebi_url'] % (organism.upper(), organism)
+    c = curl.Curl(url, silent = False, large = True)
+
+    result = collections.defaultdict(set)
+    record = collections.namedtuple('GoAnnotation', fields)
+
+    for line in c.result:
+
+        line = dict(zip(all_fields, line.strip().split('\t')))
+
+        result[line['db_object_id']].add(
+            record(**dict(zip(fields, (line.get(f, None) for f in fields))))
+        )
+
+    return dict(result)
 
 
 def go_ancestors_goose(aspects = ('C','F','P')):

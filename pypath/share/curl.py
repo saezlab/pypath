@@ -1094,16 +1094,23 @@ class Curl(FileOpener):
 
         if self.get is not None:
 
-            self.qs = '&'.join(
-                map(lambda param: '%s=%s' % (param[0], param[1]),
-                    map(lambda param: (
-                            urllib.quote_plus(param[0]),
-                            urllib.quote_plus(param[1])
-                        ),
-                        iteritems(self.get)
+            if isinstance(self.get, dict):
+                self.qs = '&'.join(
+                    map(lambda param: '%s=%s' % (param[0], param[1]),
+                        map(lambda param: (
+                                urllib.quote_plus(param[0]),
+                                urllib.quote_plus(param[1])
+                            ),
+                            iteritems(self.get)
+                        )
                     )
                 )
-            )
+
+            elif isinstance(self.get, list):
+                self.qs = '&'.join(['='.join(param) for param in
+                [[urllib.quote_plus(arg1), urllib.quote_plus(arg2)] for arg1, arg2 in
+                [item.split('=') for item in self.get]]])
+
             self.url = '%s%s%s' % (
                 self.url,
                 '&' if '?' in self.url else '?',

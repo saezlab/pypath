@@ -29,6 +29,16 @@
 from future.utils import iteritems
 from past.builtins import xrange, range, reduce
 
+from typing import (
+    Any,
+    Mapping,
+    Iterator,
+    KeysView,
+    Generator,
+    ItemsView,
+    ValuesView,
+)
+
 import os
 import sys
 import re
@@ -53,7 +63,7 @@ from pypath.share.constants import *
 __all__ = [
     'ROOT',
     'aacodes', 'aaletters',
-    'simple_types', 'numeric_types', 'list_like',
+    'simple_types', 'numeric_types', 'list_like', 'LIST_LIKE',
     'uniq_list', 'add_to_list', 'add_to_set', 'gen_session_id',
     'sorensen_index', 'simpson_index', 'simpson_index_counts',
     'jaccard_index', 'console', 'wcl', 'flat_list', 'char_types',
@@ -82,6 +92,17 @@ except NameError:
 
 non_digit = re.compile(r'[^\d.-]+')
 
+LIST_LIKE = (
+    list,
+    set,
+    tuple,
+    Generator,
+    ItemsView,
+    Iterator,
+    KeysView,
+    Mapping,
+    ValuesView,
+)
 
 default_name_type = {"protein": "uniprot",
                      "mirna": "mirbase",
