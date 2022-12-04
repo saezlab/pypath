@@ -1571,9 +1571,10 @@ urls = {
             'genes_to_phenotype.txt',
     },
     'oma': {
-        'label': 'A database for the inference of orthologs among complete genomes',
-        'url': 'https://omabrowser.org/api/pairs/'
-    }
+        'label': 'A database for the inference of orthologs among '
+            'complete genomes',
+        'url': 'https://omabrowser.org/api/pairs/',
+    },
 }
 
 

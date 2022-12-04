@@ -1,76 +1,110 @@
-from typing import Optional, Union, Literal
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-from collections import namedtuple
-import urllib
-from math import ceil
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright
+#  2014-2022
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Sebastian Lobentanzer
+#           Erva Ulusoy
+#           Olga Ivanova
+#           Ahmet Rifaioglu
+#           Ömer Kaan Vural
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
+
+from __future__ import annotations
+
+from typing import Literal
+import collections
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+import pypath.share.common as common
 import pypath.inputs.common as inputs_common
+import pypath.utils.taxonomy as taxonomy
 
 
-def oma_pairs(
-        genome_id_a: Union[str, int],
-        genome_id_b: Union[str, int],
-        rel_type: Optional[Literal['1:1', '1:n', 'm:1', 'm:n']] = None,
-        score: int = None
+def oma_orthologs(
+        organism_a: str | int,
+        organism_b: str | int,
+        rel_type: set[Literal['1:1', '1:n', 'm:1', 'm:n']] | None = None,
+        score: float = None
     ) -> list[tuple]:
     """
-    Downloads Oma data -> pairwise relations among two genomes
+    Retrieves pairwise relations between two genomes from the OMA
+    (Orthologous Matrix) database (https://omabrowser.org/oma/home/).
 
     Args:
-        genome_id_a: NCBI taxon id of the first genome
-        genome_id_b: NCBI taxon id of the second genome
-        rel_type: limit relations to a certain type of relations (1:1, 1:n, m:1 or m:n)
-        score: resemblance metric
+        genome_id_a:
+            Name or NCBI Taxonomy ID of the first organism.
+        genome_id_b:
+            Name or NCBI Taxonomy ID of the second organism.
+        rel_type:
+            Restrict relations to certain types.
+        score:
+            Resemblance metric.
 
     Returns:
-        A list with tuples. tuples are pairing genomes
+        A list with tuples of pairwise orthologous relationships.
     """
 
-    result = set() # first decleration is set to prevent recurrency. But at the end it will return as a list 
-    OmaPairs = namedtuple(
-            'OmaPairs',
-            [
+    OmaOrthologs = collections.namedtuple(
+            'OmaOrthologs',
+            (
                 'id_a',
                 'id_b',
-                'taxon_id_a',
-                'taxon_id_b',
                 'rel_type',
-                'score'
-            ],
-            defaults = None
+                'score',
+            ),
         )
-    
+
+    organism_a = taxonomy.ensure_ncbi_tax_id(organism_a)
+    organism_b = taxonomy.ensure_ncbi_tax_id(organism_b)
+    rel_type = common.to_set(rel_type)
     url = urls.urls['oma']['url']
-    page_url = '%s%s/%s/' % (url,genome_id_a, genome_id_b) # first page url for finding 
-    page_size = ceil(float(urllib.request.urlopen(page_url).headers['X-total-count']) / 100) # sample size / 100(each page has)
+    page = 1
+    n_pages = 1e6
+    # first decleration is set to prevent recurrency.
+    # But at the end it will return as a list
+    result = set()
 
-    for i in range(1, page_size + 1):
+    while True:
 
-        page_url = '%s%s/%s/?page=%u' % (url,genome_id_a, genome_id_b, i)
+        page_url = f'{url}{organism_a}/{organism_b}/?page={page}&per_page=1000'
         c = curl.Curl(page_url, silent = False)
+
+        if not c.result: break
+
+        c.get_headers()
+        n_pages = float(c.resp_headers_dict.get('x-total-count', 1e8)) / 100
+        page += 1
         data = inputs_common.json_read(c.result)
 
-        if score != None:
-
-            data = filter(lambda x: x['score'] >= score != 0, data)
-
-        if rel_type != None:
-
-            data = filter(lambda x: x['rel_type'] == rel_type, data)
-            
-        for i in data:
-
-            oma_pair = OmaPairs(
+        result.update({
+            OmaOrthologs(
                 id_a = i['entry_1']['canonicalid'],
                 id_b = i['entry_2']['canonicalid'],
-                taxon_id_a = i['entry_1']['species']['taxon_id'],
-                taxon_id_b = i['entry_2']['species']['taxon_id'],
                 rel_type = i['rel_type'],
-                score = round(i['score'],2)
+                score = float(i['score']),
             )
+            for i in data
+            if (
+                (not score or i['score'] >= score) and
+                (not rel_type or i['rel_type'] in rel_type)
+            )
+        })
 
-            result.add(oma_pair)
+        if page >= n_pages: break
 
     return list(result)
