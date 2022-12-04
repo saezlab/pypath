@@ -34,7 +34,7 @@ import asyncio
 from concurrent.futures.thread import ThreadPoolExecutor
 
 from abc import ABC, abstractmethod
-from typing import Iterable
+from typing import Iterable, Literal
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
@@ -49,62 +49,62 @@ _url = urls.urls['kegg_api']['url']
 
 def gene_to_pathway(organism):
 
-    return _kegg_from_source_to_target('gene', 'pathway', organism)
+    return _kegg_relations('gene', 'pathway', organism)
 
 
 def pathway_to_gene(organism):
 
-    return _kegg_from_source_to_target('pathway', 'gene', organism)
+    return _kegg_relations('pathway', 'gene', organism)
 
 
 def gene_to_drug(organism):
 
-    return _kegg_from_source_to_target('gene', 'drug', organism)
+    return _kegg_relations('gene', 'drug', organism)
 
 
 def drug_to_gene(organism):
 
-    return _kegg_from_source_to_target('drug', 'gene', organism)
+    return _kegg_relations('drug', 'gene', organism)
 
 
 def gene_to_disease(organism):
 
-    return _kegg_from_source_to_target('gene', 'disease', organism)
+    return _kegg_relations('gene', 'disease', organism)
 
 
 def disease_to_gene(organism):
 
-    return _kegg_from_source_to_target('disease', 'gene', organism)
+    return _kegg_relations('disease', 'gene', organism)
 
 
 def pathway_to_drug():
 
-    return _kegg_from_source_to_target('pathway', 'drug')
+    return _kegg_relations('pathway', 'drug')
 
 
 def drug_to_pathway():
 
-    return _kegg_from_source_to_target('drug', 'pathway')
+    return _kegg_relations('drug', 'pathway')
 
 
 def pathway_to_disease():
 
-    return _kegg_from_source_to_target('pathway', 'disease')
+    return _kegg_relations('pathway', 'disease')
 
 
 def disease_to_pathway():
 
-    return _kegg_from_source_to_target('disease', 'pathway')
+    return _kegg_relations('disease', 'pathway')
 
 
 def disease_to_drug():
 
-    return _kegg_from_source_to_target('disease', 'drug')
+    return _kegg_relations('disease', 'drug')
 
 
 def drug_to_disease():
 
-    return _kegg_from_source_to_target('drug', 'disease')
+    return _kegg_relations('drug', 'disease')
 
 
 def drug_to_drug(
@@ -348,204 +348,69 @@ async def _kegg_ddi_async(drug_ids):
     return result
 
 
-def _kegg_from_source_to_target(source_db, target_db, organism=None) -> tuple:
+def _kegg_relations(
+    source_db: Literal['gene', 'pathway', 'disease', 'drug'],
+    target_db: Literal['gene', 'pathway', 'disease', 'drug'],
+    # should have human as a default, instead of triggering an error:
+    organism: str | None = None,
+) -> tuple:
 
-    db_name_list = [source_db, target_db]
-    db_list = list()
+    l_organism = common.to_list(organism)
+    data = {}
 
-    for db in db_name_list:
-
-        if db == 'gene' and organism is not None:
-
-            db_list.append(_Gene(organism))
-
-            kegg_to_ncbi = _KeggToNcbi(organism)
-            kegg_to_uniprot = _KeggToUniprot(organism)
-
-        elif db == 'pathway':
-
-            db_list.append(_Pathway())
-
-        elif db == 'disease':
-
-            db_list.append(_Disease())
-
-        elif db == 'drug':
-
-            db_list.append(_Drug())
-
-            kegg_to_chebi = _KeggToChebi()
-
-        else:
-            print('Problem in function call. Check arguments.')
-            exit()
-
-    if target_db == 'gene':
-        TargetDbEntry = collections.namedtuple(
-            f'{target_db.capitalize()}Entry',
-            [
-                f'{target_db}_id',
-                f'{target_db}_name',
-                'ncbi_gene_id',
-                'uniprot_ids'
-            ]
+    record = collections.namedtuple(
+        'KeggEntry',
+        (
+            'id',
+            'name',
+            'type',
+            'ncbi_gene_ids',
+            'uniprot_ids',
+            'chebi_ids',
         )
-
-    elif target_db == 'drug':
-        TargetDbEntry = collections.namedtuple(
-            f'{target_db.capitalize()}Entry',
-            [
-                f'{target_db}_id',
-                f'{target_db}_name',
-                'chebi_id',
-            ]
-        )
-
-    else:
-        TargetDbEntry = collections.namedtuple(
-            f'{target_db.capitalize()}Entry',
-            [
-                f'{target_db}_id',
-                f'{target_db}_name',
-            ]
-        )
-
-
-    if source_db == 'gene':
-        Interaction = collections.namedtuple(
-            f'{source_db.capitalize()}To{target_db.capitalize()}Interaction',
-            [
-                f'{source_db}_name',
-                f'{target_db.capitalize()}Entries',
-                'ncbi_gene_id',
-                'uniprot_ids'
-            ]
-        )
-
-    elif source_db == 'drug':
-        Interaction = collections.namedtuple(
-            f'{source_db.capitalize()}To{target_db.capitalize()}Interaction',
-            [
-                f'{source_db}_name',
-                f'{target_db.capitalize()}Entries',
-                'chebi_id'
-            ]
-        )
-
-    else:
-        Interaction = collections.namedtuple(
-            f'{source_db.capitalize()}To{target_db.capitalize()}Interaction',
-            [
-                f'{source_db}_name',
-                f'{target_db.capitalize()}Entries',
-            ]
-        )
-
-    source = db_list[0]
-    target = db_list[1]
-
-    source_url = source_db if source_db != 'gene' else org
-    target_url = target_db if target_db != 'gene' else org
-
-    entries = _kegg_link(source_url, target_url)
-    interactions = collections.defaultdict(
-        lambda: collections.defaultdict(list)
     )
 
-    for entry in entries:
 
-        source_id = source.handle(entry[0])
-        target_id = target.handle(entry[1])
+    def get_data(name, cls_prefix = ''):
 
-        source_name = source.get(source_id, None)
-        target_name = target.get(target_id, None)
+        if name not in data:
 
-        if target_db == 'gene':
+            cls = f'_{cls_prefix}{name.capitalize()}'
+            data[name] = locals()[cls](*l_organism)
 
-            ncbi_gene_id = kegg_to_ncbi.get(target_id)
-            uniprot_ids = kegg_to_uniprot.get(target_id)
+        return data[name]
 
-            if isinstance(ncbi_gene_id, list):
-                ncbi_gene_id = tuple(ncbi_gene_id)
+    def db(name):
 
-            if isinstance(uniprot_ids, list):
-                uniprot_ids = tuple(uniprot_ids)
+        return get_data(name)
 
-            target_db_entry = TargetDbEntry(
-                target_id,
-                target_name,
-                ncbi_gene_id,
-                uniprot_ids
-            )
 
-        elif target_db == 'drug':
+    def ids(name):
 
-            chebi_id = kegg_to_chebi.get(target_id)
+        return get_data(name, cls_prefix = 'KeggTo')
 
-            if isinstance(chebi_id, list):
-                chebi_id = tuple(chebi_id)
 
-            target_db_entry = TargetDbEntry(
-                target_id,
-                target_name,
-                chebi_id
-            )
+    def process(entry, type_):
 
-        else:
+        id_ = db(type_).handle(entry)
+        name = db(type_).get(id_, None)
+        ncbi = ids('ncbi').get(id_) if type_ == 'gene' else ()
+        uniprot = ids('uniprot').get(id_) if type_ == 'gene' else ()
+        chebi = ids('chebi').get(id_) if type_ == 'drug' else ()
 
-            target_db_entry = TargetDbEntry(
-                target_id,
-                target_name,
-            )
+        return record(
+            id = id_,
+            name = name,
+            type = type_,
+            ncbi_gene_ids = ncbi,
+            uniprot_ids = uniprot,
+            chebi_ids = chebi,
+        )
 
-        interactions[source_id][f'{target_db}_entries'].append(target_db_entry)
-        interactions[source_id][f'{source_db}_name'] = source_name
 
-        if source_db == 'gene':
-
-            interactions[source_id]['ncbi_gene_id'] = (
-                kegg_to_ncbi.get(source_id)
-            )
-            interactions[source_id]['uniprot_ids'] = (
-                kegg_to_uniprot.get(source_id)
-            )
-
-        elif source_db == 'drug':
-
-            interactions[source_id]['chebi_id'] = (
-                kegg_to_chebi.get(source_id)
-            )
-
-    for key, value in interactions.items():
-
-        if source_db == 'gene':
-            interaction = Interaction (
-                value[f'{source_db}_name'],
-                tuple(value[f'{target_db}_entries']),
-                value['ncbi_gene_id'],
-                value['uniprot_ids']
-            )
-
-        elif source_db == 'drug':
-            interaction = Interaction (
-                value[f'{source_db}_name'],
-                tuple(value[f'{target_db}_entries']),
-                value['chebi_id'],
-            )
-
-        else:
-            interaction = Interaction (
-                value[f'{source_db}_name'],
-                tuple(value[f'{target_db}_entries'])
-            )
-
-        interactions[key] = interaction
-
-    if organism is not None:
-        organism = _Organism()
-        org_id, org_name = organism.get(organism)
-        interactions['org_id'] = org_id
-        interactions['org_name'] = org_name
+    args = [organism if db == 'gene' else db for db in (source_db, target_db)]
+    entries = _kegg_link(*args)
+    interactions = [(process(e[0]), process(e[1])) for e in entries]
 
     return interactions
 
