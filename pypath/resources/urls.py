@@ -754,8 +754,7 @@ urls = {
             'MskImpact,RussLampel,dGene',
         'categories': 'https://www.dgidb.org/data/monthly_tsvs/'
             '2021-Jan/categories.tsv',
-        'interactions': 'https://www.dgidb.org/data/monthly_tsvs/'
-            '2021-Jan/interactions.tsv',
+        'interactions': 'https://www.dgidb.org/data/monthly_tsvs/2022-Feb/interactions.tsv',
     },
     'reactome': {
         'label': 'The Reactome reaction network database',
@@ -1574,6 +1573,17 @@ urls = {
         'label': 'A database for the inference of orthologs among '
             'complete genomes',
         'url': 'https://omabrowser.org/api/pairs/',
+    },
+    'pathophenodb': {
+        'label': 'A database of pathogens and their phenotypes '
+            'for diagnostic support in infections.',
+        'url': 'http://patho.phenomebrowser.net/sparql/',
+    },
+    'clinvar': {
+        'label': 'A database archiving submissions that interpret '
+            'the effect of a single variant or set of variants on phenotype.',
+        'url': 'https://ftp.ncbi.nlm.nih.gov/pub/clinvar/'
+            'tab_delimited/variant_summary.txt.gz',
     },
 }
 

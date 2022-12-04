@@ -32,6 +32,55 @@ import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 
 
+def dgidb_interactions():
+    """
+    Downloads drug gene interactions
+
+    Returns:
+        A list with tuples. Tuples are dgidb interactons
+    """
+
+    result = set()
+
+    DgidbInteraction = collections.namedtuple(
+        'DgidbInteraction',
+        [
+            'gene_name',
+            'entrez_id',
+            'interaction_claim_source',
+            'interaction_type',
+            'drug_claim_primary_name',
+            'drug_concept_id',
+            'interaction_group_score',
+            'PMID'
+        ],
+        defaults=None
+    )
+
+    url = urls.urls['dgidb']['interactions']
+    c = curl.Curl(url = url, silent = False, large = True)
+    interactions = csv.DictReader(c.result, delimiter = '\t')
+
+    for interaction in interactions:
+        
+        interaction = { k: None if not v else v for k, v in interaction.items() }
+
+        dgidb_interaction = DgidbInteraction(
+            gene_name = interaction['gene_name'],
+            entrez_id = interaction['entrez_id'],
+            interaction_claim_source = interaction['interaction_claim_source'],
+            interaction_type = interaction['interaction_types'],
+            drug_claim_primary_name = interaction['drug_claim_primary_name'],
+            drug_concept_id = interaction['drug_concept_id'],
+            interaction_group_score = interaction['interaction_group_score'],
+            PMID = interaction['PMIDs'] 
+        )
+
+        result.add(dgidb_interaction)
+
+    return list(result)
+
+
 def dgidb_annotations():
     """
     Downloads druggable protein annotations from DGIdb.
