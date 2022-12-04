@@ -418,126 +418,133 @@ def _kegg_relations(
 class _KeggDatabase(ABC):
 
     _data = None
+    _query_args = None
 
 
     @abstractmethod
-    def __init__(self):
-        pass
+    def __init__(self, *args):
+
+        self.load(*args)
 
 
     @abstractmethod
-    def handle(self):
-        pass
+    def proc_key(self, entry):
+
+        return entry
 
 
     @abstractmethod
-    def download_data(self):
-        pass
+    def proc_value(self, entry):
+
+        return entry
 
 
-    def get(self, index):
-        return self._data[index]
+    @abstractmethod
+    def load(self, *args):
+
+        entries = _kegg_list(*common.to_list(self._query_args), *args)
+
+        self._data = {
+            self.proc_key(entry): self.proc_value(entry)
+            for entry in entries
+        }
 
 
-    def get_data(self):
+    def get(self, index, default = None):
+
+        return self._data.get(index, default)
+
+
+    def __getitem__(self, index):
+
+        return self.get(index)
+
+
+    @property
+    def data(self):
+
         return self._data
 
 
 class _Organism(_KeggDatabase):
 
-    def __init__(self):
-        self.download_data()
+    _query_args = 'organism'
 
 
-    def download_data(self):
-        entries = _kegg_list('organism')
-        self._data = {self.handle(organism) : [org_id, org_name] for (org_id, organism, org_name, _) in entries}
+    def proc_value(self, entry):
+
+        return (entry[0], entry[2])
 
 
-    def handle(self, organism):
-        return org
+    def proc_key(self, entry):
+
+        return entry[1]
 
 
 class _Gene(_KeggDatabase):
 
+
     def __init__(self, organism):
-        self.download_data(organism)
+
+        super().__init__(organism)
 
 
-    def download_data(self, organism):
+    def proc_key(self, entry):
 
-        entries = _kegg_list(organism)
-
-        gene_slice = [row[0] for row in entries]
-
-        name_slice = [row[-1] for row in entries]
-        name_slice = [name.split(';')[-1] for name in name_slice]
-        name_slice = [name.strip(' ') for name in name_slice]
-
-        entries = zip(gene_slice, name_slice)
-        self._data = {self.handle(gene) : gene_name for (gene, gene_name) in entries}
+        return entry[0]
 
 
-    def handle(self, gene):
+    def proc_value(self, entry):
 
-        return gene
+        return entry[-1].rsplit(';', maxsplit = 1)[-1].strip(' ')
 
 
 class _Pathway(_KeggDatabase):
 
-    def __init__(self, organism=None):
-        self.download_data()
+    _re_pathway = re.compile(r'\d+')
+    _query_args = 'pathway'
 
-    def download_data(self, organism=None):
 
-        if organism is not None:
+    def proc_value(self, entry):
 
-            entries = _kegg_list('pathway', organism)
+        return entry[1]
 
-        else:
 
-            entries = _kegg_list('pathway')
+    def proc_key(self, entry):
 
-        self._data = {self.handle(pathway) : pathway_name for (pathway, pathway_name) in entries}
+        pathway_id = self._re_pathway.search(entry[0])
 
-    def handle(self, pathway):
-
-        pathway_re = re.compile(r'\d+')
-        pathway_id = pathway_re.search(pathway)
-
-        return 'map' + pathway_id.group()
+        # is this correct?
+        # there are pathway prefixes in KEGG other than "map"
+        return f'map{pathway_id.group()}'
 
 
 class _SplitDatabase(_KeggDatabase):
-    def __init__(self, entry_url):
-        self.download_data(entry_url)
 
 
-    def download_data(self, entry_url):
-        entries = _kegg_list(entry_url)
-        self._data = {self.handle(entry) : entry_name for (entry, entry_name) in entries}
+    def proc_key(self, entry):
+
+        return entry[0].split(':')[1]
 
 
-    def handle(self, entry):
-        return entry.split(':')[1]
+    def proc_value(self, entry):
+
+        return entry[1]
 
 
 class _Disease(_SplitDatabase):
 
-    def __init__(self):
-        super().__init__('disease')
+    _query_args = 'disease'
 
 
 class _Drug(_SplitDatabase):
 
-    def __init__(self):
-        super().__init__('drug')
+    _query_args = 'drug'
 
 
 class _Compound(_SplitDatabase):
 
-    def __init__(self):
-        super().__init__('compound')
+    _query_args = 'compound'
 
 
 class _ConversionTable:
