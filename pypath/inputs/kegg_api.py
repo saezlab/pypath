@@ -30,6 +30,7 @@ import itertools
 import csv
 import re
 import asyncio
+import inspect
 
 from concurrent.futures.thread import ThreadPoolExecutor
 
@@ -47,64 +48,44 @@ _log = _logger._log
 _url = urls.urls['kegg_api']['url']
 
 
-def gene_to_pathway(organism):
+_entity_types = ('disease', 'drug', 'gene', 'pathway')
 
-    return _kegg_relations('gene', 'pathway', organism)
+def _generate_relation_functions():
 
+    for etypes in itertools.combinations(_entity_types, 2):
 
-def pathway_to_gene(organism):
+        for args in (etypes, reversed(etypes)):
 
-    return _kegg_relations('pathway', 'gene', organism)
+            args = tuple(args)
+            name = f'{args[0]}_to_{args[1]}'
+            synopsis = f'{args[0].capitalize()}-{args[1]} relations from KEGG.'
 
+            def _relation_function(organism):
 
-def gene_to_drug(organism):
+                if 'gene' in args:
 
-    return _kegg_relations('gene', 'drug', organism)
+                    args = args + (organism,)
 
-
-def drug_to_gene(organism):
-
-    return _kegg_relations('drug', 'gene', organism)
-
-
-def gene_to_disease(organism):
-
-    return _kegg_relations('gene', 'disease', organism)
+                return _kegg_relations(*args)
 
 
-def disease_to_gene(organism):
+            _relation_function.__name__ = name
+            _relation_function.__doc__ = synopsis
 
-    return _kegg_relations('disease', 'gene', organism)
+            if 'gene' not in args:
 
+                sig = inspect.signature(_relation_function)
+                sig.replace(parameters = ())
+                _relation_function.__signature__ = sig
 
-def pathway_to_drug():
+            else:
 
-    return _kegg_relations('pathway', 'drug')
+                _relation_function.__doc__ += (
+                    '\n\nArgs\n    organism:\n        Name of the organism. '
+                    'Gene relations are organism specific.\n'
+                )
 
-
-def drug_to_pathway():
-
-    return _kegg_relations('drug', 'pathway')
-
-
-def pathway_to_disease():
-
-    return _kegg_relations('pathway', 'disease')
-
-
-def disease_to_pathway():
-
-    return _kegg_relations('disease', 'pathway')
-
-
-def disease_to_drug():
-
-    return _kegg_relations('disease', 'drug')
-
-
-def drug_to_disease():
-
-    return _kegg_relations('drug', 'disease')
+            globals()[name] = _relation_function
 
 
 def drug_to_drug(
@@ -645,3 +626,6 @@ class _ChebiToKegg(_ConversionTable):
             source_split = True,
             target_split = True,
         )
+
+
+_generate_relation_functions()
