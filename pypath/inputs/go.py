@@ -22,6 +22,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 from past.builtins import xrange, range
 from future.utils import iteritems
 
@@ -73,11 +75,7 @@ def go_annotations_goa(
     Downloads GO annotation from UniProt GOA.
     """
 
-    organism = (
-        taxonomy.taxids[organism]
-            if isinstance(organism, int) else
-        organism
-    )
+    organism = taxonomy.ensure_common_name(organism)
 
     annot = dict(
         (asp, collections.defaultdict(set))
@@ -105,17 +103,13 @@ go_annotations = go_annotations_goa
 
 
 def go_annotations_all(
-    organism='human',
-    queried_fields=None
-):
+        organism int | str = 'human',
+        fields: str | list[str] | None = None
+    ) -> dict[str, set[tuple[str]]]:
 
-    organism = (
-        taxonomy.taxids[organism]
-            if isinstance(organism, int) else
-        organism
-    )
+    organism = taxonomy.ensure_common_name(organism)
 
-    fieldnames = (
+    all_fields = (
         'db',
         'db_object_id',
         'db_object_symbol',
@@ -135,36 +129,24 @@ def go_annotations_all(
         'gene_product_form_id'
     )
 
-    queried_fields = queried_fields or fieldnames
-    queried_fields = set(queried_fields)
+    fields = fields or all_fields
+    fields = common.to_list(fields)
 
     url = urls.urls['goa']['ebi_url'] % (organism.upper(), organism)
     c = curl.Curl(url, silent = False, large = True)
 
-    result= dict()
+    result = collections.defaultdict(set)
+    record = collections.namedtuple('GoAnnotation', fields)
 
     for line in c.result:
 
-        line = line.strip().split('\t')
+        line = dict(zip(all_fields, line.strip().split('\t')))
 
-        tmp_dict = dict()
+        result[line['db_object_id']].add(
+            record(**dict(zip(fields, (line.get(f, None) for f in fields))))
+        )
 
-        primary_key = None
-        
-        for k, v in zip(fieldnames, line):
-
-            if k == 'db_object_id':
-                primary_key = v
-
-            elif k in queried_fields:
-                tmp_dict[k] = v if v != '' else None
-
-        try:
-            result[primary_key].append(tmp_dict)
-        except KeyError:
-            result[primary_key] = [tmp_dict]
-
-    return result
+    return dict(result)
 
 
 def go_ancestors_goose(aspects = ('C','F','P')):
