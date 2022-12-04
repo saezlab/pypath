@@ -105,6 +105,6 @@ def oma_orthologs(
             )
         })
 
-        if page >= n_pages: break
+        if page > n_pages: break
 
     return list(result)

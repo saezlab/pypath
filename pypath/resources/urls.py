@@ -754,7 +754,8 @@ urls = {
             'MskImpact,RussLampel,dGene',
         'categories': 'https://www.dgidb.org/data/monthly_tsvs/'
             '2021-Jan/categories.tsv',
-        'interactions': 'https://www.dgidb.org/data/monthly_tsvs/2022-Feb/interactions.tsv',
+        'interactions': 'https://www.dgidb.org/data/monthly_tsvs/'
+            '2022-Feb/interactions.tsv',
     },
     'reactome': {
         'label': 'The Reactome reaction network database',

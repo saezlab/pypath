@@ -14,6 +14,7 @@
 #           Erva Ulusoy
 #           Olga Ivanova
 #           Ahmet Rifaioglu
+#           Ömer Kaan Vural
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -21,6 +22,8 @@
 #
 #  Website: http://pypath.omnipathdb.org/
 #
+
+from __future__ import annotations
 
 import csv
 import collections
@@ -32,9 +35,9 @@ import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
 
 
-def dgidb_interactions():
+def dgidb_interactions() -> list[tuple]:
     """
-    Downloads drug gene interactions
+    Retrieves drug-gene interactions from DGIdb.
 
     Returns:
         A list with tuples. Tuples are dgidb interactons
@@ -45,16 +48,15 @@ def dgidb_interactions():
     DgidbInteraction = collections.namedtuple(
         'DgidbInteraction',
         [
-            'gene_name',
-            'entrez_id',
-            'interaction_claim_source',
-            'interaction_type',
-            'drug_claim_primary_name',
-            'drug_concept_id',
-            'interaction_group_score',
-            'PMID'
+            'genesymbol',
+            'entrez',
+            'resource',
+            'type',
+            'drug_name',
+            'drug_chembl',
+            'score',
+            'pmid'
         ],
-        defaults=None
     )
 
     url = urls.urls['dgidb']['interactions']
@@ -62,18 +64,18 @@ def dgidb_interactions():
     interactions = csv.DictReader(c.result, delimiter = '\t')
 
     for interaction in interactions:
-        
-        interaction = { k: None if not v else v for k, v in interaction.items() }
+
+        interaction = {k: v or None for k, v in interaction.items()}
 
         dgidb_interaction = DgidbInteraction(
-            gene_name = interaction['gene_name'],
-            entrez_id = interaction['entrez_id'],
-            interaction_claim_source = interaction['interaction_claim_source'],
-            interaction_type = interaction['interaction_types'],
-            drug_claim_primary_name = interaction['drug_claim_primary_name'],
-            drug_concept_id = interaction['drug_concept_id'],
-            interaction_group_score = interaction['interaction_group_score'],
-            PMID = interaction['PMIDs'] 
+            genesymbol = interaction['gene_name'],
+            entrez = interaction['entrez_id'],
+            resource = interaction['interaction_claim_source'],
+            type = interaction['interaction_types'],
+            drug_name = interaction['drug_claim_primary_name'],
+            drug_chembl = interaction['drug_concept_id'],
+            score = interaction['interaction_group_score'],
+            pmid = interaction['PMIDs'],
         )
 
         result.add(dgidb_interaction)
