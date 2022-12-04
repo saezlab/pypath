@@ -9,7 +9,7 @@ jobs:
         - name: Install dependencies
           run: |
             sudo apt-get update
-            sudo apt-get install -y libcurl4-openssl-dev pandoc
+            sudo apt-get install -y libcurl4-openssl-dev pandoc tidy
         -   name: Check out main
             uses: actions/checkout@main
         -   name: Setup Python
@@ -40,6 +40,14 @@ jobs:
             run: poetry install --no-interaction --with dev
         -   name: Build documentation
             run: poetry run make html --directory docs/
+        -   name: Clean HTML files
+            run: |
+                tidy -i -m -w 120 -utf8 -ashtml docs/_build/html/notebooks/manual.html
+                tidy -i -m -w 120 -utf8 -ashtml docs/_build/html/index.html
+                tidy -i -m -w 120 -utf8 -ashtml docs/_build/html/webservice.html
+                tidy -i -m -w 120 -utf8 -ashtml docs/_build/html/releasehistory.html
+                tidy -i -m -w 120 -utf8 -ashtml docs/_build/html/contents.html
+                tidy -i -m -w 120 -utf8 -ashtml docs/_build/html/reference.html
         -   name: Commit files
             run: |
                 git config --local user.email "action@github.com"
