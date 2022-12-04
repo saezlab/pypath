@@ -1,0 +1,1106 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>pypath.utils.mapping.Mapper &#8212; pypath 0.14.32 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/pypathdocs.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.utils.mapping.Mapper';</script>
+    <link rel="shortcut icon" href="../_static/omnipath-logo.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pypath.utils.mapping.MappingTable" href="pypath.utils.mapping.MappingTable.html" />
+    <link rel="prev" title="pypath.utils.mapping.MapReader" href="pypath.utils.mapping.MapReader.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../contents.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../_static/img/omnipath-logo.svg" class="logo__image only-light" alt="Pypath">
+    <img src="../_static/img/omnipath-logo.svg" class="logo__image only-dark" alt="Pypath">
+  
+  
+    <p class="title logo__title">Pypath</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class=" navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Welcome to pypath!
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../webservice.html">
+                        Webservice
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../releasehistory.html">
+                        Release history
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../reference.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../notebooks/manual.html">
+                        The pypath book
+                      </a>
+                    </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/saezlab/pypath" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/omnipathdb" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-square-twitter"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/pypath-omnipath" title="PyPI" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-box"></i></span>
+            <label class="sr-only">PyPI</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://omnipathdb.org/" title="OmniPath" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-university"></i></span>
+            <label class="sr-only">OmniPath</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://saezlab.org/" title="Saez Lab" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-solid fa-users"></i></span>
+            <label class="sr-only">Saez Lab</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="pypath-utils-mapping-mapper">
+<h1>pypath.utils.mapping.Mapper<a class="headerlink" href="#pypath-utils-mapping-mapper" title="Permalink to this heading">§</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.utils.mapping.</span></span><span class="sig-name descname"><span class="pre">Mapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cleanup_period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lifetime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translate_deleted_uniprot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_invalid_uniprot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trembl_swissprot_by_genesymbol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper" title="Permalink to this definition">§</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pypath.share.session.Logger.html#pypath.share.session.Logger" title="pypath.share.session.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cleanup_period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lifetime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translate_deleted_uniprot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_invalid_uniprot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trembl_swissprot_by_genesymbol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.__init__" title="Permalink to this definition">§</a></dt>
+<dd><dl class="simple">
+<dt>cleanup_period<span class="classifier">int</span></dt><dd><p>Periodically check and remove unused mapping data.
+Time in seconds. If <cite>None</cite> tables kept forever.</p>
+</dd>
+<dt>lifetime<span class="classifier">int</span></dt><dd><p>If a table has not been used for longer than this preiod it is
+to be removed at next cleanup.</p>
+</dd>
+<dt>translate_deleted_uniprot<span class="classifier">bool</span></dt><dd><p>Do an extra attempt to translate deleted or obsolete UniProt IDs
+by retrieving their archived datasheet and use the gene symbol
+to find the corresponding valid UniProt ID?</p>
+</dd>
+<dt>keep_invalid_uniprot<span class="classifier">bool</span></dt><dd><p>If the target ID is UniProt, keep the results if they fit the
+format for UniProt IDs (we won’t check if they are deleted or
+from a different taxon). The alternative is to keep only those
+which are in the list of all UniProt IDs for the given organism.</p>
+</dd>
+<dt>trembl_swissprot_by_genesymbol<span class="classifier">bool</span></dt><dd><p>Attempt to translate TrEMBL IDs to SwissProt by translating to
+gene symbols and then to SwissProt.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.__init__" title="pypath.utils.mapping.Mapper.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([ncbi_tax_id, cleanup_period, ...])</p></td>
+<td><p>cleanup_period : int</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.chain_map" title="pypath.utils.mapping.Mapper.chain_map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chain_map</span></code></a>(name, id_type, by_id_type, ...[, ...])</p></td>
+<td><p>Translate IDs which can not be directly translated in two steps: from <cite>id_type</cite> to <cite>via_id_type</cite> and from there to <cite>target_id_type</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.create_reverse" title="pypath.utils.mapping.Mapper.create_reverse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_reverse</span></code></a>(key)</p></td>
+<td><p>Creates a mapping table with <code class="docutils literal notranslate"><span class="pre">id_type</span></code> and <code class="docutils literal notranslate"><span class="pre">target_id_type</span></code> (i.e.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">deleted_uniprot_genesymbol</span></code>(uniprot)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.get_table_key" title="pypath.utils.mapping.Mapper.get_table_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_table_key</span></code></a>(id_type, target_id_type[, ...])</p></td>
+<td><p>Returns a tuple unambigously identifying a mapping table.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.guess_type" title="pypath.utils.mapping.Mapper.guess_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">guess_type</span></code></a>(name[, entity_type])</p></td>
+<td><p>From a string, tries to guess the ID type and optionally the entity type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.has_mapping_table" title="pypath.utils.mapping.Mapper.has_mapping_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_mapping_table</span></code></a>(id_type, target_id_type[, ...])</p></td>
+<td><p>Tells if a mapping table is loaded.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">id_from_label</span></code>(label[, label_id_type, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">id_from_label0</span></code>(label[, label_id_type, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.id_types" title="pypath.utils.mapping.Mapper.id_types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">id_types</span></code></a>()</p></td>
+<td><p>A list of all identifier types that can be handled by any of the resources.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.identifier" title="pypath.utils.mapping.Mapper.identifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">identifier</span></code></a>(label[, ncbi_tax_id, id_type, ...])</p></td>
+<td><p>For a label returns the corresponding primary identifier.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">identifier0</span></code>(label[, ncbi_tax_id, id_type, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.label" title="pypath.utils.mapping.Mapper.label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">label</span></code></a>(name[, entity_type, id_type, ncbi_tax_id])</p></td>
+<td><p>For any kind of entity, either protein, miRNA or protein complex, returns the preferred human readable label.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.load_genesymbol5" title="pypath.utils.mapping.Mapper.load_genesymbol5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_genesymbol5</span></code></a>([ncbi_tax_id])</p></td>
+<td><p>Creates a Gene Symbol to UniProt mapping table with the first 5 characters of each Gene Symbol.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.load_mapping" title="pypath.utils.mapping.Mapper.load_mapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_mapping</span></code></a>(resource, **kwargs)</p></td>
+<td><p>Loads a single mapping table based on input definition in <code class="docutils literal notranslate"><span class="pre">resource</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.load_uniprot_static" title="pypath.utils.mapping.Mapper.load_uniprot_static"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_uniprot_static</span></code></a>(keys[, ncbi_tax_id])</p></td>
+<td><p>Loads mapping tables from the huge static mapping file from UniProt.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.map_name" title="pypath.utils.mapping.Mapper.map_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_name</span></code></a>(name[, id_type, target_id_type, ...])</p></td>
+<td><p>Translates one instance of one ID type to a different one.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.map_name0" title="pypath.utils.mapping.Mapper.map_name0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_name0</span></code></a>(name[, id_type, target_id_type, ...])</p></td>
+<td><p>Translates the name and returns only one of the resulted IDs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.map_names" title="pypath.utils.mapping.Mapper.map_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_names</span></code></a>(names[, id_type, target_id_type, ...])</p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">map_name</span></code> but translates multiple IDs at once.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.mapping_tables" title="pypath.utils.mapping.Mapper.mapping_tables"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mapping_tables</span></code></a>()</p></td>
+<td><p>List of mapping tables available to load.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.only_uniprot_ac" title="pypath.utils.mapping.Mapper.only_uniprot_ac"><code class="xref py py-obj docutils literal notranslate"><span class="pre">only_uniprot_ac</span></code></a>(uniprots)</p></td>
+<td><p>For one or more strings returns only those which match the format of UniProt accession numbers.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">only_valid_uniprots</span></code>(uniprots[, ncbi_tax_id])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.other_organism_uniprot" title="pypath.utils.mapping.Mapper.other_organism_uniprot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">other_organism_uniprot</span></code></a>(uniprot[, ncbi_tax_id])</p></td>
+<td><p>Tells if <code class="docutils literal notranslate"><span class="pre">uniprot</span></code> is an UniProt ID from some other organism than <code class="docutils literal notranslate"><span class="pre">ncbi_tax_id</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.primary_uniprot" title="pypath.utils.mapping.Mapper.primary_uniprot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">primary_uniprot</span></code></a>(uniprots[, ncbi_tax_id])</p></td>
+<td><p>For an iterable of UniProt IDs returns a set with the secondary IDs changed to the corresponding primary IDs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.reload" title="pypath.utils.mapping.Mapper.reload"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reload</span></code></a>()</p></td>
+<td><p>Reload the class from the module level.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.remove_expired" title="pypath.utils.mapping.Mapper.remove_expired"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_expired</span></code></a>()</p></td>
+<td><p>Removes tables last used a longer time ago than their lifetime.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.remove_key" title="pypath.utils.mapping.Mapper.remove_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_key</span></code></a>(key)</p></td>
+<td><p>Removes the table with key <code class="docutils literal notranslate"><span class="pre">key</span></code> if exists.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.remove_table" title="pypath.utils.mapping.Mapper.remove_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_table</span></code></a>(id_type, target_id_type, ...)</p></td>
+<td><p>Removes the table defined by the ID types and organism.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.reverse_key" title="pypath.utils.mapping.Mapper.reverse_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reverse_key</span></code></a>(key)</p></td>
+<td><p>For a mapping table key returns a new key with the identifiers reversed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.reverse_mapping" title="pypath.utils.mapping.Mapper.reverse_mapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reverse_mapping</span></code></a>(mapping_table)</p></td>
+<td><p>Creates an opposite direction <cite>MappingTable</cite> by swapping the dictionary inside an existing <cite>MappingTable</cite> object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.swissprots" title="pypath.utils.mapping.Mapper.swissprots"><code class="xref py py-obj docutils literal notranslate"><span class="pre">swissprots</span></code></a>(uniprots[, ncbi_tax_id])</p></td>
+<td><p>Creates a dict translating a set of potentially secondary and non-reviewed UniProt IDs to primary SwissProt IDs (whenever is possible).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.translate_deleted_uniprot_by_genesymbol" title="pypath.utils.mapping.Mapper.translate_deleted_uniprot_by_genesymbol"><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_deleted_uniprot_by_genesymbol</span></code></a>(uniprot)</p></td>
+<td><p>Due to potentially ambiguous translation always returns set.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_deleted_uniprots_by_genesymbol</span></code>(...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.trembl_swissprot" title="pypath.utils.mapping.Mapper.trembl_swissprot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trembl_swissprot</span></code></a>(uniprots[, ncbi_tax_id])</p></td>
+<td><p>For an iterable of TrEMBL and SwissProt IDs, returns a set with only SwissProt, mapping from TrEMBL to gene symbols, and then back to SwissProt.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.uniprot_cleanup" title="pypath.utils.mapping.Mapper.uniprot_cleanup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniprot_cleanup</span></code></a>(uniprots[, ncbi_tax_id])</p></td>
+<td><p>We use this function as a standard callback when the target ID type is UniProt.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.valid_uniprot" title="pypath.utils.mapping.Mapper.valid_uniprot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">valid_uniprot</span></code></a>(uniprot[, ncbi_tax_id])</p></td>
+<td><p>If the UniProt ID <code class="docutils literal notranslate"><span class="pre">uniprot</span></code> exist in the proteome of the organism <code class="docutils literal notranslate"><span class="pre">ncbi_tax_id</span></code> returns the ID, otherwise returns None.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.utils.mapping.Mapper.which_table" title="pypath.utils.mapping.Mapper.which_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">which_table</span></code></a>(id_type, target_id_type[, load, ...])</p></td>
+<td><p>Returns the table which is suitable to convert an ID of id_type to target_id_type.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_label_types</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_name_types</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">label_type_to_id_type</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.chain_map">
+<span class="sig-name descname"><span class="pre">chain_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_id_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.chain_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.chain_map" title="Permalink to this definition">§</a></dt>
+<dd><p>Translate IDs which can not be directly translated in two steps:
+from <cite>id_type</cite> to <cite>via_id_type</cite> and from there to <cite>target_id_type</cite>.</p>
+<dl>
+<dt>Args</dt><dd><p>name (str): The original name to be converted.
+id_type (str): The type of the name.
+by_id_type (str): The intermediate name type.
+target_id_type (str): The name type to translate to, more or</p>
+<blockquote>
+<div><p>less the same values are available as for <code class="docutils literal notranslate"><span class="pre">id_type</span></code>.</p>
+</div></blockquote>
+<p>ncbi_tax_id (int): The NCBI Taxonomy identifier of the organism.
+kwargs: Passed to <cite>map_name</cite>.</p>
+</dd>
+<dt>Returns</dt><dd><p>Set of IDs of type <cite>target_id_type</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.create_reverse">
+<span class="sig-name descname"><span class="pre">create_reverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.create_reverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.create_reverse" title="Permalink to this definition">§</a></dt>
+<dd><p>Creates a mapping table with <code class="docutils literal notranslate"><span class="pre">id_type</span></code> and <code class="docutils literal notranslate"><span class="pre">target_id_type</span></code>
+(i.e. direction of the ID translation) swapped.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.get_table_key">
+<span class="sig-name descname"><span class="pre">get_table_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.get_table_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.get_table_key" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns a tuple unambigously identifying a mapping table.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.guess_type">
+<span class="sig-name descname"><span class="pre">guess_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.guess_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.guess_type" title="Permalink to this definition">§</a></dt>
+<dd><p>From a string, tries to guess the ID type and optionally the entity
+type. Returns a tuple of strings: ID type and entity type.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.has_mapping_table">
+<span class="sig-name descname"><span class="pre">has_mapping_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.has_mapping_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.has_mapping_table" title="Permalink to this definition">§</a></dt>
+<dd><p>Tells if a mapping table is loaded. If it’s loaded, it resets the
+expiry timer so the table remains loaded.</p>
+<dl class="simple">
+<dt>Returns</dt><dd><p>(bool): True if the mapping table is loaded.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.id_types">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id_types</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.id_types"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.id_types" title="Permalink to this definition">§</a></dt>
+<dd><p>A list of all identifier types that can be handled by any of the
+resources.</p>
+<dl class="simple">
+<dt>Returns</dt><dd><dl class="simple">
+<dt>(list): A list of tuples with the identifier type labels used</dt><dd><p>in pypath and in the original resource. If the latter is
+None, typically the ID type has no name in the original
+resource.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.identifier">
+<span class="sig-name descname"><span class="pre">identifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'drug'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lncrna'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'mirna'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'protein'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'small_molecule'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.identifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.identifier" title="Permalink to this definition">§</a></dt>
+<dd><p>For a label returns the corresponding primary identifier. The type
+of default identifiers is determined by the settings module. Note,
+this kind of translation is not always unambigous, one gene symbol
+might correspond to multiple UniProt IDs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.label">
+<span class="sig-name descname"><span class="pre">label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.label" title="Permalink to this definition">§</a></dt>
+<dd><p>For any kind of entity, either protein, miRNA or protein complex,
+returns the preferred human readable label. For proteins this means
+Gene Symbols, for miRNAs miRNA names, for complexes a series of
+Gene Symbols.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.load_genesymbol5">
+<span class="sig-name descname"><span class="pre">load_genesymbol5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.load_genesymbol5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.load_genesymbol5" title="Permalink to this definition">§</a></dt>
+<dd><p>Creates a Gene Symbol to UniProt mapping table with the first
+5 characters of each Gene Symbol.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.load_mapping">
+<span class="sig-name descname"><span class="pre">load_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.load_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.load_mapping" title="Permalink to this definition">§</a></dt>
+<dd><p>Loads a single mapping table based on input definition in
+<code class="docutils literal notranslate"><span class="pre">resource</span></code>. <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> passed to <code class="docutils literal notranslate"><span class="pre">MapReader</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.load_uniprot_static">
+<span class="sig-name descname"><span class="pre">load_uniprot_static</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.load_uniprot_static"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.load_uniprot_static" title="Permalink to this definition">§</a></dt>
+<dd><p>Loads mapping tables from the huge static mapping file from UniProt.
+Takes long to download and process, also requires more memory. This
+is the last thing we try if everything else failed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.map_name">
+<span class="sig-name descname"><span class="pre">map_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expand_complexes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uniprot_cleanup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.map_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.map_name" title="Permalink to this definition">§</a></dt>
+<dd><p>Translates one instance of one ID type to a different one.
+Returns set of the target ID type.</p>
+<p>This function should be used to convert individual IDs.
+It takes care about everything and ideally you don’t need to
+think on the details.</p>
+<p>How does it work: looks up dictionaries between the original
+and target ID type, if doesn’t find, attempts to load from the
+predefined inputs.
+If the original name is genesymbol, first it looks up among the
+preferred gene names from UniProt, if not found, it takes an
+attempt with the alternative gene names. If the gene symbol
+still couldn’t be found, and strict = False, the last attempt
+only the first 5 characters of the gene symbol matched. If the
+target name type is uniprot, then it converts all the ACs to
+primary. Then, for the Trembl IDs it looks up the preferred gene
+names, and find Swissprot IDs with the same preferred gene name.</p>
+<dl>
+<dt>Args</dt><dd><p>name (str): The original name to be converted.
+id_type (str): The type of the name. Available by default:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>genesymbol (gene name)</p></li>
+<li><p>entrez (Entrez Gene ID [#])</p></li>
+<li><p>refseqp (NCBI RefSeq Protein ID [NP_*|XP_*])</p></li>
+<li><p>ensp (Ensembl protein ID [ENSP*])</p></li>
+<li><p>enst (Ensembl transcript ID [ENST*])</p></li>
+<li><p>ensg (Ensembl genomic DNA ID [ENSG*])</p></li>
+<li><p>hgnc (HGNC ID [HGNC:#])</p></li>
+<li><p>gi (GI number [#])</p></li>
+<li><p>embl (DDBJ/EMBL/GeneBank CDS accession)</p></li>
+<li><p>embl_id (DDBJ/EMBL/GeneBank accession)</p></li>
+</ul>
+<p>And many more, see the code of
+<code class="docutils literal notranslate"><span class="pre">pypath.internals.input_formats</span></code></p>
+</div></blockquote>
+<dl class="simple">
+<dt>target_id_type (str): The name type to translate to, more or</dt><dd><p>less the same values are available as for <code class="docutils literal notranslate"><span class="pre">id_type</span></code>.</p>
+</dd>
+</dl>
+<p>ncbi_tax_id (int): NCBI Taxonomy ID of the organism.
+strict (bool): In case a Gene Symbol can not be translated,</p>
+<blockquote>
+<div><p>try to add number “1” to the end, or try to match only
+its first five characters. This option is rarely used,
+but it makes possible to translate some non-standard
+gene names typically found in old, unmaintained resources.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>expand_complexes (bool): When encountering complexes,</dt><dd><p>translated the IDs of its components and return a set
+of IDs. The alternative behaviour is to return the
+<cite>Complex</cite> objects.</p>
+</dd>
+<dt>uniprot_cleanup (bool): When the <cite>target_id_type</cite> is UniProt</dt><dd><p>ID, call the <cite>uniprot_cleanup</cite> function at the end.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.map_name0">
+<span class="sig-name descname"><span class="pre">map_name0</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expand_complexes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uniprot_cleanup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.map_name0"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.map_name0" title="Permalink to this definition">§</a></dt>
+<dd><p>Translates the name and returns only one of the resulted IDs. It
+means in case of ambiguous ID translation, a random one of them
+will be picked and returned. Recommended to use only if the
+translation between the given ID types is mostly unambigous and
+the loss of information can be ignored. See more details at
+<cite>map_name</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.map_names">
+<span class="sig-name descname"><span class="pre">map_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expand_complexes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uniprot_cleanup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.map_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.map_names" title="Permalink to this definition">§</a></dt>
+<dd><p>Same as <code class="docutils literal notranslate"><span class="pre">map_name</span></code> but translates multiple IDs at once. These two
+functions could be seamlessly implemented as one, still I created
+separate functions to always make it explicit if a set of translated
+IDs come from multiple original IDs.</p>
+<dl>
+<dt>Args</dt><dd><p>name (str): The original name to be converted.
+id_type (str): The type of the name. Available by default:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>genesymbol (gene name)</p></li>
+<li><p>entrez (Entrez Gene ID [#])</p></li>
+<li><p>refseqp (NCBI RefSeq Protein ID [NP_*|XP_*])</p></li>
+<li><p>ensp (Ensembl protein ID [ENSP*])</p></li>
+<li><p>enst (Ensembl transcript ID [ENST*])</p></li>
+<li><p>ensg (Ensembl genomic DNA ID [ENSG*])</p></li>
+<li><p>hgnc (HGNC ID [HGNC:#])</p></li>
+<li><p>gi (GI number [#])</p></li>
+<li><p>embl (DDBJ/EMBL/GeneBank CDS accession)</p></li>
+<li><p>embl_id (DDBJ/EMBL/GeneBank accession)</p></li>
+</ul>
+<p>And many more, see the code of
+<code class="docutils literal notranslate"><span class="pre">pypath.internals.input_formats</span></code></p>
+</div></blockquote>
+<dl class="simple">
+<dt>target_id_type (str): The name type to translate to, more or</dt><dd><p>less the same values are available as for <code class="docutils literal notranslate"><span class="pre">id_type</span></code>.</p>
+</dd>
+</dl>
+<p>ncbi_tax_id (int): NCBI Taxonomy ID of the organism.
+strict (bool): In case a Gene Symbol can not be translated,</p>
+<blockquote>
+<div><p>try to add number “1” to the end, or try to match only
+its first five characters. This option is rarely used,
+but it makes possible to translate some non-standard
+gene names typically found in old, unmaintained resources.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>expand_complexes (bool): When encountering complexes,</dt><dd><p>translated the IDs of its components and return a set
+of IDs. The alternative behaviour is to return the
+<cite>Complex</cite> objects.</p>
+</dd>
+<dt>uniprot_cleanup (bool): When the <cite>target_id_type</cite> is UniProt</dt><dd><p>ID, call the <cite>uniprot_cleanup</cite> function at the end.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.mapping_tables">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mapping_tables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.mapping_tables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.mapping_tables" title="Permalink to this definition">§</a></dt>
+<dd><p>List of mapping tables available to load.</p>
+<dl class="simple">
+<dt>Returns</dt><dd><dl class="simple">
+<dt>(list): A list of tuples, each representing an ID translation</dt><dd><p>table, with the ID types, the data source and the loader
+class.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.only_uniprot_ac">
+<span class="sig-name descname"><span class="pre">only_uniprot_ac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uniprots</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.only_uniprot_ac"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.only_uniprot_ac" title="Permalink to this definition">§</a></dt>
+<dd><p>For one or more strings returns only those which match the format
+of UniProt accession numbers.
+The format is defined here:
+<a class="reference external" href="https://www.uniprot.org/help/accession_numbers">https://www.uniprot.org/help/accession_numbers</a></p>
+<p>If string provided, returns string or None.
+If iterable provided, returns set (potentially empty if none of the
+strings are valid).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.other_organism_uniprot">
+<span class="sig-name descname"><span class="pre">other_organism_uniprot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uniprot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.other_organism_uniprot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.other_organism_uniprot" title="Permalink to this definition">§</a></dt>
+<dd><p>Tells if <code class="docutils literal notranslate"><span class="pre">uniprot</span></code> is an UniProt ID from some other organism than
+<code class="docutils literal notranslate"><span class="pre">ncbi_tax_id</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.primary_uniprot">
+<span class="sig-name descname"><span class="pre">primary_uniprot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uniprots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.primary_uniprot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.primary_uniprot" title="Permalink to this definition">§</a></dt>
+<dd><p>For an iterable of UniProt IDs returns a set with the secondary IDs
+changed to the corresponding primary IDs. Anything what is not a
+secondary UniProt ID left intact.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.reload">
+<span class="sig-name descname"><span class="pre">reload</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.reload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.reload" title="Permalink to this definition">§</a></dt>
+<dd><p>Reload the class from the module level.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.remove_expired">
+<span class="sig-name descname"><span class="pre">remove_expired</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.remove_expired"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.remove_expired" title="Permalink to this definition">§</a></dt>
+<dd><p>Removes tables last used a longer time ago than their lifetime.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.remove_key">
+<span class="sig-name descname"><span class="pre">remove_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.remove_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.remove_key" title="Permalink to this definition">§</a></dt>
+<dd><p>Removes the table with key <code class="docutils literal notranslate"><span class="pre">key</span></code> if exists.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.remove_table">
+<span class="sig-name descname"><span class="pre">remove_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.remove_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.remove_table" title="Permalink to this definition">§</a></dt>
+<dd><p>Removes the table defined by the ID types and organism.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.reverse_key">
+<span class="sig-name descname"><span class="pre">reverse_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.reverse_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.reverse_key" title="Permalink to this definition">§</a></dt>
+<dd><p>For a mapping table key returns a new key with the identifiers
+reversed.</p>
+<dl class="simple">
+<dt>Args</dt><dd><p>key (tuple): A mapping table key.</p>
+</dd>
+<dt>Returns</dt><dd><p>A tuple representing a mapping table key, identifiers swapped.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.reverse_mapping">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reverse_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapping_table</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.reverse_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.reverse_mapping" title="Permalink to this definition">§</a></dt>
+<dd><p>Creates an opposite direction <cite>MappingTable</cite> by swapping the
+dictionary inside an existing <cite>MappingTable</cite> object.</p>
+<dl class="simple">
+<dt>Args</dt><dd><p>mapping_table (MappingTable): A <cite>MappingTable</cite> object.</p>
+</dd>
+<dt>Returns</dt><dd><p>A new <cite>MappingTable</cite> object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.swissprots">
+<span class="sig-name descname"><span class="pre">swissprots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uniprots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.swissprots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.swissprots" title="Permalink to this definition">§</a></dt>
+<dd><p>Creates a dict translating a set of potentially secondary and
+non-reviewed UniProt IDs to primary SwissProt IDs (whenever
+is possible).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.translate_deleted_uniprot_by_genesymbol">
+<span class="sig-name descname"><span class="pre">translate_deleted_uniprot_by_genesymbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uniprot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.translate_deleted_uniprot_by_genesymbol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.translate_deleted_uniprot_by_genesymbol" title="Permalink to this definition">§</a></dt>
+<dd><p>Due to potentially ambiguous translation always returns set.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.trembl_swissprot">
+<span class="sig-name descname"><span class="pre">trembl_swissprot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uniprots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.trembl_swissprot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.trembl_swissprot" title="Permalink to this definition">§</a></dt>
+<dd><p>For an iterable of TrEMBL and SwissProt IDs, returns a set with
+only SwissProt, mapping from TrEMBL to gene symbols, and
+then back to SwissProt. If this kind of translation is not successful
+for any of the IDs it will be kept in the result, no matter if it’s
+not a SwissProt ID. If the</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.uniprot_cleanup">
+<span class="sig-name descname"><span class="pre">uniprot_cleanup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uniprots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.uniprot_cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.uniprot_cleanup" title="Permalink to this definition">§</a></dt>
+<dd><p>We use this function as a standard callback when the target ID
+type is UniProt. It checks if the format of the IDs are correct,
+if they are part of the organism proteome, attempts to translate
+secondary and deleted IDs to their primary, recent counterparts.</p>
+<dl class="simple">
+<dt>Args</dt><dd><p>uniprots (str,set): One or more UniProt IDs.
+ncbi_tax_id (int): The NCBI Taxonomy identifier of the organism.</p>
+</dd>
+<dt>Returns</dt><dd><p>Set of checked and potentially translated UniProt iDs. Elements
+which do not fit the criteria will be discarded.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.valid_uniprot">
+<span class="sig-name descname"><span class="pre">valid_uniprot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uniprot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.valid_uniprot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.valid_uniprot" title="Permalink to this definition">§</a></dt>
+<dd><p>If the UniProt ID <code class="docutils literal notranslate"><span class="pre">uniprot</span></code> exist in the proteome of the organism
+<code class="docutils literal notranslate"><span class="pre">ncbi_tax_id</span></code> returns the ID, otherwise returns None.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.utils.mapping.Mapper.which_table">
+<span class="sig-name descname"><span class="pre">which_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncbi_tax_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/utils/mapping.html#Mapper.which_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.utils.mapping.Mapper.which_table" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns the table which is suitable to convert an ID of
+id_type to target_id_type. If no such table have been loaded
+yet, it attempts to load from UniProt. If all attempts failed
+returns <cite>None</cite>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="pypath.utils.mapping.MapReader.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">pypath.utils.mapping.MapReader</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="pypath.utils.mapping.MappingTable.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">pypath.utils.mapping.MappingTable</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../index.html">
+   Welcome to pypath!
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../webservice.html">
+   Webservice
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../releasehistory.html">
+   Release history
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../reference.html">
+   Reference
+  </a>
+ </li>
+ <li class="toctree-l1 toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="../notebooks/manual.html">
+   The pypath book
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2022, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Erva Ulusoy, Ahmet Rifaioglu, Charles Tapley Hoyt.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>
