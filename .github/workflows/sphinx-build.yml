@@ -41,6 +41,7 @@ jobs:
         -   name: Build documentation
             run: poetry run make html --directory docs/
         -   name: Clean HTML files
+            continue-on-error: true
             run: |
                 tidy -i -m -w 120 -utf8 -ashtml docs/_build/html/notebooks/manual.html
                 tidy -i -m -w 120 -utf8 -ashtml docs/_build/html/index.html
