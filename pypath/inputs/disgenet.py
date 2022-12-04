@@ -14,6 +14,7 @@
 #           Erva Ulusoy
 #           Olga Ivanova
 #           Ahmet Rifaioglu
+#           Melih Darcan
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
