@@ -18,10 +18,12 @@
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
-#      http://www.gnu.org/licenses/gpl-3.0.html
+#      http://www.gnu.organism/licenses/gpl-3.0.html
 #
-#  Website: http://pypath.omnipathdb.org/
+#  Website: http://pypath.omnipathdb.organism/
 #
+
+from __future__ import annotations
 
 import collections
 import csv
@@ -34,8 +36,9 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterable
 
 import pypath.resources.urls as urls
-from pypath.share import curl
+import pypath.share.curl as curl
 import pypath.share.session as session
+import pypath.share.common as common
 
 _logger = session.Logger(name = 'kegg_api')
 _log = _logger._log
@@ -43,34 +46,34 @@ _log = _logger._log
 _url = urls.urls['kegg_api']['url']
 
 
-def gene_to_pathway(org):
+def gene_to_pathway(organism):
 
-    return _kegg_from_source_to_target('gene', 'pathway', org)
-
-
-def pathway_to_gene(org):
-
-    return _kegg_from_source_to_target('pathway', 'gene', org)
+    return _kegg_from_source_to_target('gene', 'pathway', organism)
 
 
-def gene_to_drug(org):
+def pathway_to_gene(organism):
 
-    return _kegg_from_source_to_target('gene', 'drug', org)
-
-
-def drug_to_gene(org):
-
-    return _kegg_from_source_to_target('drug', 'gene', org)
+    return _kegg_from_source_to_target('pathway', 'gene', organism)
 
 
-def gene_to_disease(org):
+def gene_to_drug(organism):
 
-    return _kegg_from_source_to_target('gene', 'disease', org)
+    return _kegg_from_source_to_target('gene', 'drug', organism)
 
 
-def disease_to_gene(org):
+def drug_to_gene(organism):
 
-    return _kegg_from_source_to_target('disease', 'gene', org)
+    return _kegg_from_source_to_target('drug', 'gene', organism)
+
+
+def gene_to_disease(organism):
+
+    return _kegg_from_source_to_target('gene', 'disease', organism)
+
+
+def disease_to_gene(organism):
+
+    return _kegg_from_source_to_target('disease', 'gene', organism)
 
 
 def pathway_to_drug():
@@ -104,10 +107,10 @@ def drug_to_disease():
 
 
 def drug_to_drug(
-    drugs: list | tuple =None,
-    join: bool=True,
-    asynchronous: bool=False
-) -> tuple:
+    drugs: list | tuple | None = None,
+    join: bool = True,
+    asynchronous: bool = False
+) -> dict[str, tuple]:
     """
     Downloads drug-drug interaction data from KEGG database.
 
@@ -119,6 +122,9 @@ def drug_to_drug(
             Else, joins them together and returns mutual interactions.
         asynchronous:
             Yet to be implemented.
+
+    Returns
+        A dict with disease IDs as keys and drug-drug interactions as values.
     """
 
     DrugToDrugInteraction = collections.namedtuple(
@@ -141,14 +147,6 @@ def drug_to_drug(
         )
     )
 
-    if drugs != None:
-
-        entries = _kegg_ddi(drugs, join=join, asynchronous=asynchronous)
-
-    else:
-        drug_ids = drug.get_data().keys()
-        entries = _kegg_ddi(drugIds, join=False, asynchronous=True)
-
     entry_types = {'d': 'drug', 'c': 'compound'}
     entry_dbs = {'drug': _Drug(), 'compound': _Compound()}
     interactions = collections.defaultdict(
@@ -156,6 +154,11 @@ def drug_to_drug(
             'interactions': collections.defaultdict(list),
         }
     )
+
+    join = join and drugs
+    asynchronous = not drugs or asynchronous
+    drugs = drugs or entry_dbs['drug'].get_data().keys()
+    entries = _kegg_ddi(drugs, join = join, asynchronous=asynchronous)
 
     for entry in entries:
 
@@ -203,24 +206,24 @@ def drug_to_drug(
     return interactions
 
 
-def kegg_gene_id_to_ncbi_gene_id(org):
+def kegg_gene_id_to_ncbi_gene_id(organism):
 
-    return _kegg_conv(org, 'ncbi-geneid', target_split=True)
-
-
-def ncbi_gene_id_to_kegg_gene_id(org):
-
-    return _kegg_conv('ncbi-geneid', org, source_split=True)
+    return _kegg_conv(organism, 'ncbi-geneid', target_split=True)
 
 
-def kegg_gene_id_to_uniprot_id(org):
+def ncbi_gene_id_to_kegg_gene_id(organism):
 
-    return _kegg_conv(org, 'uniprot', target_split=True)
+    return _kegg_conv('ncbi-geneid', organism, source_split=True)
 
 
-def uniprot_id_to_kegg_gene_id(org):
+def kegg_gene_id_to_uniprot_id(organism):
 
-    return _kegg_conv('uniprot', org, source_split=True)
+    return _kegg_conv(organism, 'uniprot', target_split=True)
+
+
+def uniprot_id_to_kegg_gene_id(organism):
+
+    return _kegg_conv('uniprot', organism, source_split=True)
 
 
 def kegg_drug_id_to_chebi_id():
@@ -233,162 +236,139 @@ def chebi_id_to_kegg_drug_id():
     return _kegg_conv('chebi', 'drug', source_split=True, target_split=True)
 
 
-def _kegg_general(operation, *arguments):
+async def _kegg_general(
+    operation: str,
+    *arguments: str,
+    async_: bool = False,
+) -> list[list[str]]:
 
-    url = _url % operation
+    url = '/'.join([_url % operation] + arguments)
+    curl_args = {'url': url, 'silent': True, 'large': False}
 
-    for argument in arguments:
+    if _async:
+        c = await curl.Curl(**curl_args)
+    else:
+        c = curl.Curl(**curl_args)
 
-        url += f'/{argument}'
+    lines = getattr(c, 'result', []) or []
 
-    c = curl.Curl(url, silent = True, large = False)
-
-    try:
-        return [
-            line.split('\t')
-            for line in c.result.split('\n')
-            if line
-        ]
-    except AttributeError:
-        return []
+    return [line.split('\t') for line in lines if line]
 
 
-async def _kegg_general_async(operation, *arguments):
+async def _kegg_general_async(
+    operation: str,
+    *arguments: str,
+) -> list[list[str]]:
 
     #TODO Yet to be implemented
     # This function doesn't work but it better
     # stay so we can implement it without
     # changing the structure of the module
 
-    return None
-
-    url = _url % operation
-
-    for argument in arguments:
-
-        url += f'/{argument}'
-
-    c = await curl.Curl(url, silent = True, large = False)
-
-    try:
-        return [
-            line.split('\t')
-            for line in c.result.split('\n')
-            if line
-        ]
-    except AttributeError:
-        return []
+    return _kegg_general(operation, *arguments, async_ = False)
 
 
-def _kegg_list(database, option=None, org=None):
+def _kegg_list(
+    database: str,
+    option: str | None = None,
+    organism: str | int | None = None,
+) -> list[list[str]]:
 
-    if database == 'brite' and option != None:
+    args = (
+        ['list', database] +
+        common.to_list(option) if database == 'brite' else [] +
+        common.to_list(organism) if database == 'pathway' else []
+    )
 
-        return _kegg_general('list', database, option)
-
-    if database == 'pathway' and org != None:
-
-        return _kegg_general('list', database, org)
-
-    return _kegg_general('list', database)
+    return _kegg_general(*args)
 
 
-def _kegg_conv(source_db, target_db, source_split=False, target_split=False):
+def _kegg_conv(
+    source_db: str,
+    target_db: str,
+    source_split: bool = False,
+    target_split: bool = False,
+) -> dict[str, set[str]]:
 
     result = _kegg_general('conv', target_db, source_db)
-    conversion_table = dict()
-    keys = set()
+    conversion_table = collections.defaultdict(set)
 
-    for index, entry in enumerate(result):
+    for source, target in result:
 
-        source = entry[0]
-        target = entry[1]
+        source = source.split(':')[1] if source_split else source
+        target = target.split(':')[1] if target_split else target
+        conversion_table[source].add(target)
 
-        if source_split:
-            source = source.split(':')[1]
-
-        if target_split:
-            target = target.split(':')[1]
-
-        if source in keys:
-            try:
-                conversion_table[source].append(target)
-            except AttributeError:
-                conversion_table[source] = [conversion_table[source]]
-                conversion_table[source].append(target)
-        else:
-            conversion_table[source] = target
-
-        keys.add(source)
-
-    return conversion_table
+    return dict(conversion_table)
 
 
-def _kegg_link(source_db, target_db):
+def _kegg_link(source_db: str, target_db: str) -> list[list[str]]:
 
     return _kegg_general('link', target_db, source_db)
 
 
-def _kegg_ddi(drugIds, join=True, asynchronous=False):
+def _kegg_ddi(drug_ids, join=True, asynchronous=False):
 
-    if join and not isinstance(drugIds, str):
+    if join and not isinstance(drug_ids, str):
 
-        drugIds = ['+'.join(drugIds)]
+        drug_ids = ['+'.join(drug_ids)]
 
     if asynchronous:
 
         pool = ThreadPoolExecutor()
 
-        return pool.submit(asyncio.run, _kegg_ddi_async(drugIds)).result()
+        return pool.submit(asyncio.run, _kegg_ddi_async(drug_ids)).result()
 
-    return _kegg_ddi_sync(drugIds)
+    return _kegg_ddi_sync(drug_ids)
 
 
-def _kegg_ddi_sync(drugIds):
+def _kegg_ddi_sync(drug_ids):
 
     result = list()
 
-    if isinstance(drugIds, Iterable):
+    if isinstance(drug_ids, Iterable):
 
-        for drugId in drugIds:
+        for drug_id in drug_ids:
 
-            result.extend(_kegg_general('ddi', drugId))
+            result.extend(_kegg_general('ddi', drug_id))
 
         return result
 
 
-async def _kegg_ddi_async(drugIds):
+async def _kegg_ddi_async(drug_ids):
 
     #TODO Yet to be implemented
     # This function doesn't work but it better
     # stay so we can implement it without
     # changing the structure of the module
 
-    result = list()
+    result = []
 
-    if isinstance(drugIds, Iterable):
+    if isinstance(drug_ids, common.LIST_LIKE):
 
-        for response in asyncio.as_completed([_kegg_general_async('ddi', drugId) for drugId in drugIds]):
-            to_print = await response
-            print(to_print)
-            result.extend(to_print)
+        for response in asyncio.as_completed([
+            _kegg_general_async('ddi', drug_id)
+            for drug_id in drug_ids
+        ]):
+            the_response = await response
+            result.extend(common.to_list(the_response))
 
-        return result
+    return result
 
 
-def _kegg_from_source_to_target(source_db, target_db, org=None) -> tuple:
+def _kegg_from_source_to_target(source_db, target_db, organism=None) -> tuple:
 
     db_name_list = [source_db, target_db]
     db_list = list()
 
     for db in db_name_list:
 
-        if db == 'gene' and org != None:
+        if db == 'gene' and organism is not None:
 
-            db_list.append(_Gene(org))
+            db_list.append(_Gene(organism))
 
-            kegg_to_ncbi = _KeggToNcbi(org)
-            kegg_to_uniprot = _KeggToUniprot(org)
+            kegg_to_ncbi = _KeggToNcbi(organism)
+            kegg_to_uniprot = _KeggToUniprot(organism)
 
         elif db == 'pathway':
 
@@ -529,20 +509,20 @@ def _kegg_from_source_to_target(source_db, target_db, org=None) -> tuple:
         interactions[source_id][f'{target_db}_entries'].append(target_db_entry)
         interactions[source_id][f'{source_db}_name'] = source_name
 
-            if source_db == 'gene':
+        if source_db == 'gene':
 
-                interactions[source_id]['ncbi_gene_id'] = (
-                    kegg_to_ncbi.get(source_id)
-                )
-                interactions[source_id]['uniprot_ids'] = (
-                    kegg_to_uniprot.get(source_id)
-                )
+            interactions[source_id]['ncbi_gene_id'] = (
+                kegg_to_ncbi.get(source_id)
+            )
+            interactions[source_id]['uniprot_ids'] = (
+                kegg_to_uniprot.get(source_id)
+            )
 
-            elif source_db == 'drug':
+        elif source_db == 'drug':
 
-                interactions[source_id]['chebi_id'] = (
-                    kegg_to_chebi.get(source_id)
-                )
+            interactions[source_id]['chebi_id'] = (
+                kegg_to_chebi.get(source_id)
+            )
 
     for key, value in interactions.items():
 
@@ -569,9 +549,9 @@ def _kegg_from_source_to_target(source_db, target_db, org=None) -> tuple:
 
         interactions[key] = interaction
 
-    if org != None:
+    if organism is not None:
         organism = _Organism()
-        org_id, org_name = organism.get(org)
+        org_id, org_name = organism.get(organism)
         interactions['org_id'] = org_id
         interactions['org_name'] = org_name
 
@@ -614,22 +594,22 @@ class _Organism(_KeggDatabase):
 
     def download_data(self):
         entries = _kegg_list('organism')
-        self._data = {self.handle(org) : [org_id, org_name] for (org_id, org, org_name, _) in entries}
+        self._data = {self.handle(organism) : [org_id, org_name] for (org_id, organism, org_name, _) in entries}
 
 
-    def handle(self, org):
+    def handle(self, organism):
         return org
 
 
 class _Gene(_KeggDatabase):
 
-    def __init__(self, org):
-        self.download_data(org)
+    def __init__(self, organism):
+        self.download_data(organism)
 
 
-    def download_data(self, org):
+    def download_data(self, organism):
 
-        entries = _kegg_list(org)
+        entries = _kegg_list(organism)
 
         gene_slice = [row[0] for row in entries]
 
@@ -648,14 +628,14 @@ class _Gene(_KeggDatabase):
 
 class _Pathway(_KeggDatabase):
 
-    def __init__(self, org=None):
+    def __init__(self, organism=None):
         self.download_data()
 
-    def download_data(self, org=None):
+    def download_data(self, organism=None):
 
-        if org != None:
+        if organism is not None:
 
-            entries = _kegg_list('pathway', org)
+            entries = _kegg_list('pathway', organism)
 
         else:
 
@@ -729,36 +709,36 @@ class _ConversionTable:
 
 class _OrgTable(_ConversionTable):
 
-    def __init__(self, org=None):
-        if org != None:
-            self.download_table(org)
+    def __init__(self, organism=None):
+        if organism is not None:
+            self.download_table(organism)
 
 
 class _KeggToNcbi(_OrgTable):
 
-    def download_table(self, org):
-        table = _kegg_conv(org, 'ncbi-geneid', target_split=True)
+    def download_table(self, organism):
+        table = _kegg_conv(organism, 'ncbi-geneid', target_split=True)
         self._table.update(table)
 
 
 class _NcbiToKegg(_OrgTable):
 
-    def download_table(self, org):
-        table = _kegg_conv('ncbi-geneid', org, source_split=True)
+    def download_table(self, organism):
+        table = _kegg_conv('ncbi-geneid', organism, source_split=True)
         self._table.update(table)
 
 
 class _KeggToUniprot(_OrgTable):
 
-    def download_table(self, org):
-        table = _kegg_conv(org, 'uniprot', target_split=True)
+    def download_table(self, organism):
+        table = _kegg_conv(organism, 'uniprot', target_split=True)
         self._table.update(table)
 
 
 class _UniprotToKegg(_OrgTable):
 
-    def download_table(self, org):
-        table = _kegg_conv('uniprot', org, source_split=True)
+    def download_table(self, organism):
+        table = _kegg_conv('uniprot', organism, source_split=True)
         self._table.update(table)
 
 
