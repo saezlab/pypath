@@ -549,72 +549,99 @@ class _Compound(_SplitDatabase):
 
 class _ConversionTable:
 
-    _table = dict()
+    _table = {}
 
-    def __init__(self):
-        self.download_table()
+
+    def __init__(
+        self,
+        *id_types: str,
+        source_split: bool = False,
+        target_split: bool = False,
+    ):
+
+        self._id_types = id_types
+        self._splits = {
+            'source_split': source_split,
+            'target_split': target_split,
+        }
+        self.load()
 
 
     @abstractmethod
-    def download_table(self):
-        pass
+    def load(self):
+
+        self._table.update(_kegg_conv(*self.id_types, **self.splits))
 
 
-    def get(self, index):
-        try:
-            return self._table[index]
-        except KeyError:
-            return None
+    def get(self, index, default = None):
+
+        return self._table.get(index, default)
 
 
-    def get_table(self):
+    def __getitem__(self, index):
+
+        return self._table.get(index, None)
+
+
+    @property
+    def table(self):
+
         return self._table
 
 
-class _OrgTable(_ConversionTable):
-
-    def __init__(self, organism=None):
-        if organism is not None:
-            self.download_table(organism)
+class _KeggToNcbi(_ConversionTable):
 
 
-class _KeggToNcbi(_OrgTable):
+    def __init__(self, organism):
 
-    def download_table(self, organism):
-        table = _kegg_conv(organism, 'ncbi-geneid', target_split=True)
-        self._table.update(table)
+        super().__init__(organism, 'ncbi-geneid', target_split = True)
 
 
-class _NcbiToKegg(_OrgTable):
-
-    def download_table(self, organism):
-        table = _kegg_conv('ncbi-geneid', organism, source_split=True)
-        self._table.update(table)
+class _NcbiToKegg(_ConversionTable):
 
 
-class _KeggToUniprot(_OrgTable):
+    def __init__(self, organism):
 
-    def download_table(self, organism):
-        table = _kegg_conv(organism, 'uniprot', target_split=True)
-        self._table.update(table)
+        super().__init__('ncbi-geneid', organism, source_split = True)
 
 
-class _UniprotToKegg(_OrgTable):
+class _KeggToUniprot(_ConversionTable):
 
-    def download_table(self, organism):
-        table = _kegg_conv('uniprot', organism, source_split=True)
-        self._table.update(table)
+
+    def __init__(self, organism):
+
+        super().__init__(organism, 'uniprot', target_split = True)
+
+
+class _UniprotToKegg(_ConversionTable):
+
+
+    def __init__(self, organism):
+
+        super().__init__('uniprot', organism, source_split = True)
 
 
 class _KeggToChebi(_ConversionTable):
 
-    def download_table(self):
-        table = _kegg_conv('drug', 'chebi', source_split=True, target_split=True)
-        self._table = table
+
+    def __init__(self):
+
+        super().__init__(
+            'drug',
+            'chebi',
+            source_split = True,
+            target_split = True,
+        )
 
 
 class _ChebiToKegg(_ConversionTable):
 
-    def download_table(self):
-        table = _kegg_conv('chebi', 'drug', source_split=True, target_split=True)
-        self._table = table
+
+    def __init__(self):
+
+        super().__init__(
+            'chebi',
+            'drug',
+            source_split = True,
+            target_split = True,
+        )
