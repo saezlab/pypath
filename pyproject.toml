@@ -91,11 +91,12 @@ insipid-sphinx-theme = ">=0.3.6"
 sphinx-last-updated-by-git = ">=0.3"
 sphinx-autodoc-typehints = ">=1.18.0"
 sphinxcontrib-fulltoc = ">=1.2.0"
+sphinx_copybutton = "*"
 jupyterlab = "*"
-jupyter_contrib_nbextensions = "*"
 pydata-sphinx-theme = "*"
 sphinx_remove_toctrees = "*"
-nbsphinx = "*"
+jupyter-contrib-nbextensions = { git = "https://github.com/deeenes/jupyter_contrib_nbextensions.git", branch = "master" }
+nbsphinx = { git = "https://github.com/deeenes/nbsphinx.git", branch = "timings" }
 
 [tool.poetry.scripts]
 bio2bel_omnipath = "pypath.omnipath.bel:main"
