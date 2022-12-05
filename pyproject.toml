@@ -82,6 +82,9 @@ bel = [
 graph = [
     "python-igraph",
 ]
+pathophenodb = [
+    "sparqlwrapper",
+]
 
 [tool.poetry.dev-dependencies]
 bump2version = "*"
