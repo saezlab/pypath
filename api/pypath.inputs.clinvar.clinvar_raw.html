@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.inputs.msigdb.msigdb_download_collections &#8212; pypath 0.14.32 documentation</title>
+    <title>pypath.inputs.clinvar.clinvar_raw &#8212; pypath 0.14.33 documentation</title>
   
   
   
@@ -43,12 +43,12 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.msigdb.msigdb_download_collections';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.clinvar.clinvar_raw';</script>
     <link rel="shortcut icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.inputs.ncrdeathdb" href="pypath.inputs.ncrdeathdb.html" />
-    <link rel="prev" title="pypath.inputs.msigdb.msigdb_download" href="pypath.inputs.msigdb.msigdb_download.html" />
+    <link rel="next" title="pypath.inputs.common" href="pypath.inputs.common.html" />
+    <link rel="prev" title="pypath.inputs.clinvar" href="pypath.inputs.clinvar.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -425,25 +425,15 @@
             
             <article class="bd-article" role="main">
               
-  <section id="pypath-inputs-msigdb-msigdb-download-collections">
-<h1>pypath.inputs.msigdb.msigdb_download_collections<a class="headerlink" href="#pypath-inputs-msigdb-msigdb-download-collections" title="Permalink to this heading">§</a></h1>
+  <section id="pypath-inputs-clinvar-clinvar-raw">
+<h1>pypath.inputs.clinvar.clinvar_raw<a class="headerlink" href="#pypath-inputs-clinvar-clinvar-raw" title="Permalink to this heading">§</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="pypath.inputs.msigdb.msigdb_download_collections">
-<span class="sig-prename descclassname"><span class="pre">pypath.inputs.msigdb.</span></span><span class="sig-name descname"><span class="pre">msigdb_download_collections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registered_email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_collections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('c5',</span> <span class="pre">'m5')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'symbols'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">organism</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'human'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/inputs/msigdb.html#msigdb_download_collections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.msigdb.msigdb_download_collections" title="Permalink to this definition">§</a></dt>
-<dd><p>Downloads all or some MSigDB gene set collections.
-Returns a dict of dicts where upper level keys are collections while
-lower level keys are geneset names and values are molecular identifiers.</p>
+<dt class="sig sig-object py" id="pypath.inputs.clinvar.clinvar_raw">
+<span class="sig-prename descclassname"><span class="pre">pypath.inputs.clinvar.</span></span><span class="sig-name descname"><span class="pre">clinvar_raw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pypath/inputs/clinvar.html#clinvar_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.clinvar.clinvar_raw" title="Permalink to this definition">§</a></dt>
+<dd><p>Retrieves variant data from the Clinvar database.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>registered_email</strong> (<em>str</em><em>,</em><em>NoneType</em>) – An email address registered at MSigDB. If <cite>None</cite> the <cite>msigdb_email</cite>
-from <code class="docutils literal notranslate"><span class="pre">pypath.settings</span></code> will be used.</p></li>
-<li><p><strong>only_collections</strong> (<em>set</em><em>,</em><em>NoneType</em>) – Limit the annotations only to these collections. For available
-collections e.g. <code class="docutils literal notranslate"><span class="pre">{'h.all',</span> <span class="pre">'c2cgp'}</span></code> refer to the MSigDB webpage:
-<a class="reference external" href="http://software.broadinstitute.org/gsea/downloads.jsp#msigdb">http://software.broadinstitute.org/gsea/downloads.jsp#msigdb</a></p></li>
-<li><p><strong>exclude</strong> (<em>tuple</em>) – Exclude the collections having their name starting with any of the
-strings in this tuple. By default <cite>c5</cite> (Gene Ontology) is excluded.</p></li>
-</ul>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Variants as a list of named tuples.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -458,17 +448,17 @@ strings in this tuple. By default <cite>c5</cite> (Gene Ontology) is excluded.</
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="pypath.inputs.msigdb.msigdb_download.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="pypath.inputs.clinvar.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">pypath.inputs.msigdb.msigdb_download</p>
+          <p class="prev-next-title">pypath.inputs.clinvar</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="pypath.inputs.ncrdeathdb.html" title="next page">
+  <a class='right-next' id="next-link" href="pypath.inputs.common.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">pypath.inputs.ncrdeathdb</p>
+      <p class="prev-next-title">pypath.inputs.common</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>

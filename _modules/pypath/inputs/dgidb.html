@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pypath.inputs.dgidb &#8212; pypath 0.14.32 documentation</title>
+    <title>pypath.inputs.dgidb &#8212; pypath 0.14.33 documentation</title>
   
   
   
@@ -439,6 +439,7 @@
 <span class="c1">#           Erva Ulusoy</span>
 <span class="c1">#           Olga Ivanova</span>
 <span class="c1">#           Ahmet Rifaioglu</span>
+<span class="c1">#           Ömer Kaan Vural</span>
 <span class="c1">#</span>
 <span class="c1">#  Distributed under the GPLv3 License.</span>
 <span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
@@ -446,6 +447,8 @@
 <span class="c1">#</span>
 <span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
 <span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span> <span class="nn">csv</span>
 <span class="kn">import</span> <span class="nn">collections</span>
@@ -455,6 +458,54 @@
 <span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
 <span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
 <span class="kn">import</span> <span class="nn">pypath.utils.mapping</span> <span class="k">as</span> <span class="nn">mapping</span>
+
+
+<div class="viewcode-block" id="dgidb_interactions"><a class="viewcode-back" href="../../../api/pypath.inputs.dgidb.dgidb_interactions.html#pypath.inputs.dgidb.dgidb_interactions">[docs]</a><span class="k">def</span> <span class="nf">dgidb_interactions</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves drug-gene interactions from DGIdb.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A list with tuples. Tuples are dgidb interactons</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="n">DgidbInteraction</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;DgidbInteraction&#39;</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;entrez&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;resource&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;drug_name&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;drug_chembl&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;score&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pmid&#39;</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;dgidb&#39;</span><span class="p">][</span><span class="s1">&#39;interactions&#39;</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">interactions</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">,</span> <span class="n">delimiter</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">interaction</span> <span class="ow">in</span> <span class="n">interactions</span><span class="p">:</span>
+
+        <span class="n">interaction</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="ow">or</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">interaction</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="n">dgidb_interaction</span> <span class="o">=</span> <span class="n">DgidbInteraction</span><span class="p">(</span>
+            <span class="n">genesymbol</span> <span class="o">=</span> <span class="n">interaction</span><span class="p">[</span><span class="s1">&#39;gene_name&#39;</span><span class="p">],</span>
+            <span class="n">entrez</span> <span class="o">=</span> <span class="n">interaction</span><span class="p">[</span><span class="s1">&#39;entrez_id&#39;</span><span class="p">],</span>
+            <span class="n">resource</span> <span class="o">=</span> <span class="n">interaction</span><span class="p">[</span><span class="s1">&#39;interaction_claim_source&#39;</span><span class="p">],</span>
+            <span class="nb">type</span> <span class="o">=</span> <span class="n">interaction</span><span class="p">[</span><span class="s1">&#39;interaction_types&#39;</span><span class="p">],</span>
+            <span class="n">drug_name</span> <span class="o">=</span> <span class="n">interaction</span><span class="p">[</span><span class="s1">&#39;drug_claim_primary_name&#39;</span><span class="p">],</span>
+            <span class="n">drug_chembl</span> <span class="o">=</span> <span class="n">interaction</span><span class="p">[</span><span class="s1">&#39;drug_concept_id&#39;</span><span class="p">],</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="n">interaction</span><span class="p">[</span><span class="s1">&#39;interaction_group_score&#39;</span><span class="p">],</span>
+            <span class="n">pmid</span> <span class="o">=</span> <span class="n">interaction</span><span class="p">[</span><span class="s1">&#39;PMIDs&#39;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dgidb_interaction</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="dgidb_annotations"><a class="viewcode-back" href="../../../api/pypath.inputs.dgidb.dgidb_annotations.html#pypath.inputs.dgidb.dgidb_annotations">[docs]</a><span class="k">def</span> <span class="nf">dgidb_annotations</span><span class="p">():</span>

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.inputs.msigdb.msigdb_download &#8212; pypath 0.14.32 documentation</title>
+    <title>pypath.inputs.pathophenodb.disease_pathogen_interactions &#8212; pypath 0.14.33 documentation</title>
   
   
   
@@ -43,12 +43,12 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.msigdb.msigdb_download';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.pathophenodb.disease_pathogen_interactions';</script>
     <link rel="shortcut icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.inputs.msigdb.msigdb_download_collections" href="pypath.inputs.msigdb.msigdb_download_collections.html" />
-    <link rel="prev" title="pypath.inputs.msigdb.msigdb_annotations" href="pypath.inputs.msigdb.msigdb_annotations.html" />
+    <link rel="next" title="pypath.inputs.pathophenodb.DiseasePathogen" href="pypath.inputs.pathophenodb.DiseasePathogen.html" />
+    <link rel="prev" title="pypath.inputs.pathophenodb" href="pypath.inputs.pathophenodb.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -425,29 +425,15 @@
             
             <article class="bd-article" role="main">
               
-  <section id="pypath-inputs-msigdb-msigdb-download">
-<h1>pypath.inputs.msigdb.msigdb_download<a class="headerlink" href="#pypath-inputs-msigdb-msigdb-download" title="Permalink to this heading">§</a></h1>
+  <section id="pypath-inputs-pathophenodb-disease-pathogen-interactions">
+<h1>pypath.inputs.pathophenodb.disease_pathogen_interactions<a class="headerlink" href="#pypath-inputs-pathophenodb-disease-pathogen-interactions" title="Permalink to this heading">§</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="pypath.inputs.msigdb.msigdb_download">
-<span class="sig-prename descclassname"><span class="pre">pypath.inputs.msigdb.</span></span><span class="sig-name descname"><span class="pre">msigdb_download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registered_email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'msigdb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'symbols'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">organism</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'human'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/inputs/msigdb.html#msigdb_download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.msigdb.msigdb_download" title="Permalink to this definition">§</a></dt>
-<dd><p>Downloads and preprocesses a collection of gmt format gene sets from
-MSigDB. Returns dict of sets with gene set names as keys and molecular
-identifiers as values.</p>
+<dt class="sig sig-object py" id="pypath.inputs.pathophenodb.disease_pathogen_interactions">
+<span class="sig-prename descclassname"><span class="pre">pypath.inputs.pathophenodb.</span></span><span class="sig-name descname"><span class="pre">disease_pathogen_interactions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/inputs/pathophenodb.html#disease_pathogen_interactions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.pathophenodb.disease_pathogen_interactions" title="Permalink to this definition">§</a></dt>
+<dd><p>Retrieves disease pathogen relationships from PathoPhenoDb.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>registered_email</strong> (<em>str</em><em>,</em><em>NoneType</em>) – An email address registered at MSigDB. If <cite>None</cite> the <cite>msigdb_email</cite>
-from <code class="docutils literal notranslate"><span class="pre">pypath.settings</span></code> will be used.</p></li>
-<li><p><strong>collection</strong> (<em>str</em>) – The name of the gene set collection. For available collections (e.g.
-<cite>h.all</cite> or <cite>c2.cpg</cite>) refer to the MSigDB website:
-<a class="reference external" href="http://software.broadinstitute.org/gsea/downloads.jsp#msigdb">http://software.broadinstitute.org/gsea/downloads.jsp#msigdb</a>
-The default value <cite>msigdb</cite> contains all the genesets however you
-won’t be able to distinguish which geneset comes from which
-collection. For this you need to download the collections one by one.</p></li>
-<li><p><strong>id_type</strong> (<em>str</em>) – MSigDB provides Gene Symbols (<cite>symbols</cite>) and Entrez Gene IDs
-(<cite>entrez</cite>).</p></li>
-<li><p><strong>force_download</strong> (<em>bool</em>) – Download even if cache content is available.</p></li>
-</ul>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Disease-pathogen relationships as a list of tuples.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -462,17 +448,17 @@ collection. For this you need to download the collections one by one.</p></li>
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="pypath.inputs.msigdb.msigdb_annotations.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="pypath.inputs.pathophenodb.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">pypath.inputs.msigdb.msigdb_annotations</p>
+          <p class="prev-next-title">pypath.inputs.pathophenodb</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="pypath.inputs.msigdb.msigdb_download_collections.html" title="next page">
+  <a class='right-next' id="next-link" href="pypath.inputs.pathophenodb.DiseasePathogen.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">pypath.inputs.msigdb.msigdb_download_collections</p>
+      <p class="prev-next-title">pypath.inputs.pathophenodb.DiseasePathogen</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>
