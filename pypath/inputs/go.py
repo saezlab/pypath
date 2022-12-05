@@ -104,11 +104,12 @@ go_annotations = go_annotations_goa
 
 
 def go_annotations_all(
-        organism int | str = 'human',
+        organism: int | str = 'human',
         fields: str | list[str] | None = None
     ) -> dict[str, set[tuple[str]]]:
 
-    organism = taxonomy.ensure_common_name(organism)
+    if organism != '*':
+        organism = taxonomy.ensure_common_name(organism)
 
     all_fields = (
         'db',
@@ -133,7 +134,11 @@ def go_annotations_all(
     fields = fields or all_fields
     fields = common.to_list(fields)
 
-    url = urls.urls['goa']['ebi_url'] % (organism.upper(), organism)
+    if organism in ('*', None):
+        url = urls.urls['goa']['ebi_url'] % ('UNIPROT', 'uniprot_gcrp')
+    else:
+        url = urls.urls['goa']['ebi_url'] % (organism.upper(), organism.lower())
+
     c = curl.Curl(url, silent = False, large = True)
 
     result = collections.defaultdict(set)
@@ -141,8 +146,10 @@ def go_annotations_all(
 
     for line in c.result:
 
-        line = dict(zip(all_fields, line.strip().split('\t')))
+        if not line or line[0] == '!':
+            continue
 
+        line = dict(zip(all_fields, line.strip().split('\t')))
         result[line['db_object_id']].add(
             record(**dict(zip(fields, (line.get(f, None) for f in fields))))
         )
