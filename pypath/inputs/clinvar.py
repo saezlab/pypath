@@ -1,61 +1,100 @@
-from collections import namedtuple
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-import pandas as pd
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright
+#  2014-2022
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Sebastian Lobentanzer
+#           Erva Ulusoy
+#           Olga Ivanova
+#           Ahmet Rifaioglu
+#           Tennur Kılıç
+#           Ömer Kaan Vural
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
 
+"""
+Variant data from the Clinvar database.
+"""
+
+from __future__ import annotations
+
+import io
+import csv
+import sys
+import collections
+
+import pypath.share.curl as curl
 import pypath.resources.urls as urls
 
-def get_clinvar():
-    '''
-    Downloads Clinvar data -> variant summaries
-    Returns list of namedtuple variants
-    '''
+csv.field_size_limit(sys.maxsize)
 
-    result = set() # first decleration is set to prevent recurrency. But at the end it will return as a list 
-    Variant = namedtuple(
+
+def clinvar_raw() -> list[tuple]:
+    """
+    Retrieves variant data from the Clinvar database.
+
+    Returns:
+        Variants as a list of named tuples.
+    """
+
+    Variant = collections.namedtuple(
             'Variant',
             [
-                'allele_id',
-                'variant_type',
-                'name',
-                'gene_id',
-                'gene_symbol',
+                'allele',
+                'type',
+                'variant',
+                'entrez',
+                'genesymbol',
                 'clinical_significance',
-                "rs",
-                "phenotype_ids",
-                "phenotype_list",
-                "origin_simple",
-                "variation_id"
+                'rs',
+                'phenotype_ids',
+                'phenotypes',
+                'origin',
+                'variation_id',
             ],
             defaults = None
         )
 
     url = urls.urls['clinvar']['url']
-    variants = pd.read_csv(url, compression='gzip', header=0, sep="\t", quotechar='"', low_memory=False)
-  
-    for _, sample in variants.iterrows():
+    c = curl.Curl(url, large = True, silent = False)
+    c.gzfile.seek(1) # get rid of a stray `#` character
 
-        pi = sample['PhenotypeIDS'].replace("|", ";").split(";")
-        pl = sample['PhenotypeList'].replace("|", ";").split(";")
+    response = csv.DictReader(
+        io.TextIOWrapper(c.gzfile),
+        dialect = 'excel-tab',
+    )
 
-        zipped = list(set(zip(pl, pi)))
-        res = list(zip(*zipped))
+    result = set()
 
-        # phenotype list and phenotype ids are matched by their index
-        phenotype_list_adj = res[0]
-        phenotype_ids_adj = res[1]
+    for row in response:
+
+        phenotype_ids = tuple(row['PhenotypeIDS'].replace('|', ';').split(';'))
+        phenotypes = tuple(row['PhenotypeList'].replace('|', ';').split(';'))
 
         variant = Variant(
-            allele_id = sample['#AlleleID'],
-            variant_type = sample['Type'],
-            name = sample['Name'],
-            gene_id = sample['GeneID'],
-            gene_symbol = sample['GeneSymbol'],
-            clinical_significance = sample['ClinicalSignificance'],
-            rs = sample['RS# (dbSNP)'],
-            phenotype_ids = phenotype_ids_adj,
-            phenotype_list = phenotype_list_adj,
-            origin_simple = sample['OriginSimple'],
-            variation_id = sample['VariationID']
+            allele = row['AlleleID'],
+            type = row['Type'],
+            variant = row['Name'],
+            entrez = row['GeneID'],
+            genesymbol = row['GeneSymbol'],
+            clinical_significance = row['ClinicalSignificance'],
+            rs = row['RS# (dbSNP)'],
+            phenotype_ids = phenotype_ids,
+            phenotypes = phenotypes,
+            origin = row['OriginSimple'],
+            variation_id = row['VariationID']
         )
         result.add(variant)
 
