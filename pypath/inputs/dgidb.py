@@ -14,6 +14,7 @@
 #           Erva Ulusoy
 #           Olga Ivanova
 #           Ahmet Rifaioglu
+#           Ömer Kaan Vural
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -21,6 +22,8 @@
 #
 #  Website: http://pypath.omnipathdb.org/
 #
+
+from __future__ import annotations
 
 import csv
 import collections
@@ -30,6 +33,54 @@ import bs4
 import pypath.share.curl as curl
 import pypath.resources.urls as urls
 import pypath.utils.mapping as mapping
+
+
+def dgidb_interactions() -> list[tuple]:
+    """
+    Retrieves drug-gene interactions from DGIdb.
+
+    Returns:
+        A list with tuples. Tuples are dgidb interactons
+    """
+
+    result = set()
+
+    DgidbInteraction = collections.namedtuple(
+        'DgidbInteraction',
+        [
+            'genesymbol',
+            'entrez',
+            'resource',
+            'type',
+            'drug_name',
+            'drug_chembl',
+            'score',
+            'pmid'
+        ],
+    )
+
+    url = urls.urls['dgidb']['interactions']
+    c = curl.Curl(url = url, silent = False, large = True)
+    interactions = csv.DictReader(c.result, delimiter = '\t')
+
+    for interaction in interactions:
+
+        interaction = {k: v or None for k, v in interaction.items()}
+
+        dgidb_interaction = DgidbInteraction(
+            genesymbol = interaction['gene_name'],
+            entrez = interaction['entrez_id'],
+            resource = interaction['interaction_claim_source'],
+            type = interaction['interaction_types'],
+            drug_name = interaction['drug_claim_primary_name'],
+            drug_chembl = interaction['drug_concept_id'],
+            score = interaction['interaction_group_score'],
+            pmid = interaction['PMIDs'],
+        )
+
+        result.add(dgidb_interaction)
+
+    return list(result)
 
 
 def dgidb_annotations():

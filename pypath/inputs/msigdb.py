@@ -120,6 +120,12 @@ def msigdb_download(
 
     version = version or settings.get('msigdb_version')
 
+<<<<<<< HEAD
+=======
+    #http://www.gsea-msigdb.org/gsea/msigdb/download_file.jsp?filePath=/msigdb/release/2022.1.Mm/mh.all.v2022.1.Mm.symbols.gmt
+    #http://www.gsea-msigdb.org/gsea/msigdb/download_file.jsp?filePath=/msigdb/release/2022.1.Hs/h.all.v2022.1.Hs.symbols.gmt
+
+>>>>>>> pr198
     url = urls.urls['msigdb']['url'] % (
         version,
         msigdb_org,
@@ -186,8 +192,40 @@ def msigdb_download(
             'Cookie: %s' % ';'.join(
                 '%s=%s' % cookie
                 for cookie in cookies.items()
-            )
-        ]
+
+
+        c_login_2 = curl.Curl(
+            urls.urls['msigdb']['login2'],
+            cache = False,
+            write_cache = False,
+            large = False,
+            silent = True,
+            req_headers = req_headers,
+            post = {
+                'j_username': registered_email,
+                'j_password': 'password',
+            },
+            process = False,
+            empty_attempt_again = False,
+        )
+
+        jsessionid_1 = ''
+
+        if hasattr(c_login_2, 'resp_headers'):
+
+            for hdr in c_login_2.resp_headers:
+
+                if hdr.lower().startswith(b'set-cookie'):
+
+                    jsessionid_1 = hdr.split(b':')[1].split(b';')[0].strip()
+                    jsessionid_1 = jsessionid_1.decode('ascii')
+
+            _log(
+                'msigdb: logged in with email `%s`, '
+                'new cookie obtained: `%s`.' % (
+                    registered_email,
+                    jsessionid_1
+                )
 
         _log('msigdb cookies for upcoming request: %s' % req_headers[0])
 
