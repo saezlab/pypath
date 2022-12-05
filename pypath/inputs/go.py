@@ -146,7 +146,7 @@ def go_annotations_all(
 
     for line in c.result:
 
-        if not line or line[0] == '!':
+        if not line.strip() or line[0] == '!':
             continue
 
         line = dict(zip(all_fields, line.strip().split('\t')))
