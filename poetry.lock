@@ -319,7 +319,7 @@ test = ["birch", "collective.checkdocs", "coverage", "dnspython", "pandas", "pyg
 
 [[package]]
 name = "certifi"
-version = "2022.9.24"
+version = "2022.12.7"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "main"
 optional = false
@@ -2629,11 +2629,12 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [extras]
 bel = ["pybel", "bio2bel", "click"]
 graph = ["python-igraph"]
+pathophenodb = []
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "f059d39e5afa02363f6fa9614f6c2d2f58e8493661c0d7f1199130f3b630a84a"
+content-hash = "746567c4bce6d81f07b4f364ea944adff8f1a079a50471892db64ea24c9ad499"
 
 [metadata.files]
 alabaster = [
@@ -2759,8 +2760,8 @@ cachier = [
     {file = "cachier-1.5.4.tar.gz", hash = "sha256:368ef452605e1d96e9909f2c51816f30ca4c91ffb0cdfef38610af8da7359296"},
 ]
 certifi = [
-    {file = "certifi-2022.9.24-py3-none-any.whl", hash = "sha256:90c1a32f1d68f940488354e36370f6cca89f0f106db09518524c88d6ed83f382"},
-    {file = "certifi-2022.9.24.tar.gz", hash = "sha256:0d9c601124e5a6ba9712dbc60d9c53c21e34f5f641fe83002317394311bdce14"},
+    {file = "certifi-2022.12.7-py3-none-any.whl", hash = "sha256:4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18"},
+    {file = "certifi-2022.12.7.tar.gz", hash = "sha256:35824b4c3a97115964b408844d64aa14db1cc518f6562e8d7261699d1350a9e3"},
 ]
 cffi = [
     {file = "cffi-1.15.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:a66d3508133af6e8548451b25058d5812812ec3798c886bf38ed24a98216fab2"},
