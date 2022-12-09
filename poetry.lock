@@ -177,7 +177,7 @@ web = ["flask", "flask-admin", "flask-bootstrap"]
 
 [[package]]
 name = "bioregistry"
-version = "0.6.31"
+version = "0.6.32"
 description = "Integrated registry of biological databases and nomenclatures"
 category = "main"
 optional = true
@@ -933,9 +933,9 @@ traitlets = "*"
 testing-utils = ["mock", "nose"]
 
 [[package]]
-name = "jupyter_contrib_nbextensions"
+name = "jupyter-contrib-nbextensions"
 version = "0.7.0"
-description = ""
+description = "A collection of Jupyter nbextensions."
 category = "dev"
 optional = false
 python-versions = "*"
@@ -1327,8 +1327,8 @@ test = ["check-manifest", "pep440", "pre-commit", "pytest", "testpath"]
 
 [[package]]
 name = "nbsphinx"
-version = "0.8.11"
-description = ""
+version = "0.8.10"
+description = "Jupyter Notebook Tools for Sphinx"
 category = "dev"
 optional = false
 python-versions = ">=3.6"
@@ -2629,11 +2629,12 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [extras]
 bel = ["pybel", "bio2bel", "click"]
 graph = ["python-igraph"]
+pathophenodb = []
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "f059d39e5afa02363f6fa9614f6c2d2f58e8493661c0d7f1199130f3b630a84a"
+content-hash = "746567c4bce6d81f07b4f364ea944adff8f1a079a50471892db64ea24c9ad499"
 
 [metadata.files]
 alabaster = [
@@ -2727,8 +2728,8 @@ bio2bel = [
     {file = "bio2bel-0.4.2.tar.gz", hash = "sha256:26b275224b1cf398af28d012290099998dd9a87e0e3d0f496535c993f3ea60de"},
 ]
 bioregistry = [
-    {file = "bioregistry-0.6.31-py3-none-any.whl", hash = "sha256:6ce05b8c22b006208e3af41d55f6221334176ac01027fc2d432dd672e2dfb0de"},
-    {file = "bioregistry-0.6.31.tar.gz", hash = "sha256:8fd8104dfc6fdc160f10872f2847c39661d44e190793a70b77c3e783aa8d8220"},
+    {file = "bioregistry-0.6.32-py3-none-any.whl", hash = "sha256:f3ef499e4107235dac74508fbf5890314bad8fcdc0c2f292cef179e8a1531d18"},
+    {file = "bioregistry-0.6.32.tar.gz", hash = "sha256:e91797a83e7da4300c45f61986676c0703b963d508717c3a59298be1b4b121a2"},
 ]
 bioversions = [
     {file = "bioversions-0.5.79-py3-none-any.whl", hash = "sha256:a06659270e8e37c2aea6f2227d073184f26f325a21258b4ed395db6551482364"},
@@ -3209,7 +3210,7 @@ jupyter-client = [
 jupyter-contrib-core = [
     {file = "jupyter_contrib_core-0.4.2.tar.gz", hash = "sha256:1887212f3ca9d4487d624c0705c20dfdf03d5a0b9ea2557d3aaeeb4c38bdcabb"},
 ]
-jupyter_contrib_nbextensions = []
+jupyter-contrib-nbextensions = []
 jupyter-core = [
     {file = "jupyter_core-5.1.0-py3-none-any.whl", hash = "sha256:f5740d99606958544396914b08e67b668f45e7eff99ab47a7f4bcead419c02f4"},
     {file = "jupyter_core-5.1.0.tar.gz", hash = "sha256:a5ae7c09c55c0b26f692ec69323ba2b62e8d7295354d20f6cd57b749de4a05bf"},

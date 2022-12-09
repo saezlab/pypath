@@ -232,13 +232,13 @@ Impressum
 =========
 
 ``pypath`` is developed in the `Saez Lab`_ by `Dénes Türei`_, Sebastian
-Lobentanzer and Ahmet Rifaioglu, and Erva Ulusoy and Tennur Kılıç in
-`Volkan Atalay's group`_. Olga Ivanova and Nicolàs Palacio also
-contributed in the past. The `R package`_ and the `Cytoscape app`_ are
-developed and maintained by Francesco Ceccarelli, Attila Gábor, Alberto
-Valdeolivas, Dénes Türei and Nicolàs Palacio. The `Python client`_ for the
-OmniPath web service has been developed and is maintained by Michael Klein
-in the group of `Fabian Theis`_.
+Lobentanzer and Ahmet Rifaioglu, and Melih Darcan, Erva Ulusoy, Tennur Kılıç
+and Ömer Kaan Vural in `Volkan Atalay's group`_.
+Olga Ivanova and Nicolàs Palacio also contributed in the past.
+The `R package`_ and the `Cytoscape app`_ are developed and maintained by
+Francesco Ceccarelli, Attila Gábor, Alberto Valdeolivas, Dénes Türei and
+Nicolàs Palacio. The `Python client`_ for the OmniPath web service has been
+developed and is maintained by Michael Klein in the group of `Fabian Theis`_.
 
 .. _`Saez Lab`: https://saezlab.org/
 .. _`Volkan Atalay's group`: https://blog.metu.edu.tr/vatalay/
