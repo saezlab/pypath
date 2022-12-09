@@ -474,7 +474,7 @@ class DrugbankFull:
     ):
 
         path = _drugbank_download(
-            url = 'https://go.drugbank.com/releases/5-1-9/downloads/all-full-database',
+            url = urls.urls['drugbank']['full_database'],
             user = user,
             passwd = passwd,
             credentials_fname = credentials_fname,

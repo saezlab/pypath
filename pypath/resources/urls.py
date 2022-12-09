@@ -1564,6 +1564,8 @@ urls = {
             'downloads/carrier-all-polypeptide-ids',
         'drug_transporter_identifiers' : 'https://go.drugbank.com/releases/'
             '5-1-9/downloads/transporter-all-polypeptide-ids',
+        'full_database': 'https://go.drugbank.com/releases/5-1-9'
+            '/downloads/all-full-database',
     }, 
     'chembl': {
         'label': 'ChEMBL database',
