@@ -448,15 +448,21 @@
 <span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
 <span class="c1">#</span>
 
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">csv</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">from</span> <span class="nn">lxml</span> <span class="kn">import</span> <span class="n">etree</span>
+<span class="kn">from</span> <span class="nn">zipfile</span> <span class="kn">import</span> <span class="n">ZipFile</span>
 
 <span class="kn">import</span> <span class="nn">pypath.resources.urls</span> <span class="k">as</span> <span class="nn">urls</span>
 <span class="kn">import</span> <span class="nn">pypath.share.curl</span> <span class="k">as</span> <span class="nn">curl</span>
+<span class="kn">import</span> <span class="nn">pypath.share.common</span> <span class="k">as</span> <span class="nn">common</span>
 <span class="kn">import</span> <span class="nn">pypath.share.session</span> <span class="k">as</span> <span class="nn">session</span>
 <span class="kn">import</span> <span class="nn">pypath.share.settings</span> <span class="k">as</span> <span class="nn">settings</span>
 <span class="kn">import</span> <span class="nn">pypath.inputs.credentials</span> <span class="k">as</span> <span class="nn">credentials</span>
@@ -868,6 +874,222 @@
             <span class="n">result</span><span class="p">[</span><span class="n">the_id</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">target_id</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DrugbankFull"><a class="viewcode-back" href="../../../api/pypath.inputs.drugbank.DrugbankFull.html#pypath.inputs.drugbank.DrugbankFull">[docs]</a><span class="k">class</span> <span class="nc">DrugbankFull</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a wrapper around the Drugbank full database XML file.</span>
+<span class="sd">    Provides access to the full Drugbank database.</span>
+<span class="sd">    The class provides two methods: drugbank_drugs_full and drugbank_targets_full.</span>
+<span class="sd">    The first method returns a list of namedtuples, each of which represents a drug.</span>
+<span class="sd">    The second method returns a list of namedtuples, each of which represents a drug&#39;s target.</span>
+
+<span class="sd">    Args</span>
+<span class="sd">        user:</span>
+<span class="sd">            E-mail address with registered DrugBank account.</span>
+<span class="sd">        passwd:</span>
+<span class="sd">            Password for the DrugBank account.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DrugbankFull.__init__"><a class="viewcode-back" href="../../../api/pypath.inputs.drugbank.DrugbankFull.html#pypath.inputs.drugbank.DrugbankFull.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">user</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">passwd</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">credentials_fname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="n">_drugbank_download</span><span class="p">(</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://go.drugbank.com/releases/5-1-9/downloads/all-full-database&#39;</span><span class="p">,</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">user</span><span class="p">,</span>
+            <span class="n">passwd</span> <span class="o">=</span> <span class="n">passwd</span><span class="p">,</span>
+            <span class="n">credentials_fname</span> <span class="o">=</span> <span class="n">credentials_fname</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="k">with</span> <span class="n">ZipFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
+            <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+        <span class="n">file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="s1">&#39;full database.xml&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">ElementTree</span><span class="p">(</span><span class="n">file</span> <span class="o">=</span> <span class="n">file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span><span class="o">.</span><span class="n">nsmap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">[</span><span class="s1">&#39;db&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">drugs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;db:drug&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DrugbankFull.drugbank_drugs_full"><a class="viewcode-back" href="../../../api/pypath.inputs.drugbank.DrugbankFull.html#pypath.inputs.drugbank.DrugbankFull.drugbank_drugs_full">[docs]</a>    <span class="k">def</span> <span class="nf">drugbank_drugs_full</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">fields</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of namedtuples containing detailed information about drugs.</span>
+
+<span class="sd">        Args</span>
+<span class="sd">        fields:</span>
+<span class="sd">            The fields to return. If None, all XML fields are returned.</span>
+<span class="sd">            Default: None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">            A list of namedtuples containing information about drugs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">basic_fields</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;drugbank_id&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="s1">&#39;cas_number&#39;</span><span class="p">,</span> <span class="s1">&#39;unii&#39;</span><span class="p">,</span> <span class="s1">&#39;average_mass&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;monoisotopic_mass&#39;</span><span class="p">,</span> <span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;synthesis_reference&#39;</span><span class="p">,</span> <span class="s1">&#39;indication&#39;</span><span class="p">,</span> <span class="s1">&#39;pharmacodynamics&#39;</span><span class="p">,</span> 
+            <span class="s1">&#39;mechanism_of_action&#39;</span><span class="p">,</span> <span class="s1">&#39;toxicity&#39;</span><span class="p">,</span> <span class="s1">&#39;metabolism&#39;</span><span class="p">,</span> <span class="s1">&#39;absorption&#39;</span><span class="p">,</span> <span class="s1">&#39;half_life&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;protein_binding&#39;</span><span class="p">,</span> <span class="s1">&#39;route_of_elimination&#39;</span><span class="p">,</span> <span class="s1">&#39;volume_of_distribution&#39;</span><span class="p">,</span> <span class="s1">&#39;clearance&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;synthesis_reference&#39;</span><span class="p">,</span> <span class="s1">&#39;indication&#39;</span><span class="p">,</span> <span class="s1">&#39;pharmacodynamics&#39;</span><span class="p">,</span> <span class="s1">&#39;mechanism_of_action&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;toxicity&#39;</span><span class="p">,</span> <span class="s1">&#39;metabolism&#39;</span><span class="p">,</span> <span class="s1">&#39;absorption&#39;</span><span class="p">,</span> <span class="s1">&#39;half_life&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_binding&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;route_of_elimination&#39;</span><span class="p">,</span> <span class="s1">&#39;volume_of_distribution&#39;</span><span class="p">,</span> <span class="s1">&#39;clearance&#39;</span><span class="p">,</span> <span class="s1">&#39;fda_label&#39;</span><span class="p">,</span> <span class="s1">&#39;msds&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="n">fields_w_subfields</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;groups&#39;</span><span class="p">:</span>  <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:group&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;general_references&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:articles/db:article/db:pubmed-id&#39;</span><span class="p">},</span> 
+            <span class="s1">&#39;classification&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:class&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;synonyms&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:synonym&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;products&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:product/db:name&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;international_brands&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:international-brand/db:name&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;mixtures&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:mixture/db:name&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;packagers&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:packager/db:name&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;manufacturers&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:manufacturer/db:name&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;categories&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:category/db:mesh-id&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;affected_organisms&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:affected-organism&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;atc_codes&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:atc-code&#39;</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;code&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;ahfs_codes&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:ahfs-code&#39;</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;code&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;pdb_entries&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:pdb-entry&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;patents&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:patent/db:number&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;food_interactions&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:food-interaction&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;drug_interactions&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:drug-interaction/db:drugbank-id&#39;</span><span class="p">},</span>
+            <span class="s1">&#39;pathways&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="s1">&#39;/db:pathway/db:smpdb-id&#39;</span><span class="p">},</span>
+        <span class="p">}</span>
+
+        <span class="c1"># TODO: later process and engage fields below</span>
+        <span class="c1"># future_fields: &#39;salts&#39;, &#39;prices&#39;, &#39;dosages&#39;, &#39;sequences&#39;, &#39;calculated_properties&#39;,</span>
+        <span class="c1">#               &#39;experimental_properties&#39;, &#39;external_identifiers&#39;, &#39;external_links&#39;,</span>
+        <span class="c1">#               &#39;reactions&#39;, &#39;snp_effects&#39;, &#39;snp_adverse_drug_reactions&#39;</span>
+            
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">fields</span> <span class="ow">or</span> <span class="n">basic_fields</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">fields_w_subfields</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;drugbank_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="n">fields</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;drugbank_id&#39;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">record</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;DrugbankDrug&#39;</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">drug</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">drugs</span><span class="p">:</span>
+
+            <span class="n">field_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+                
+                <span class="k">if</span> <span class="n">field</span> <span class="o">==</span> <span class="s1">&#39;drugbank_id&#39;</span><span class="p">:</span>
+                    <span class="n">field_dict</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">drug</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;db:drugbank-id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;primary&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+
+                <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span>
+                    <span class="n">field_dict</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">drug</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields_w_subfields</span><span class="p">:</span>
+                        <span class="n">path_to_field</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;db:</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="si">}{</span><span class="n">fields_w_subfields</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+
+                        <span class="k">if</span> <span class="s1">&#39;key&#39;</span> <span class="ow">in</span> <span class="n">fields_w_subfields</span><span class="p">[</span><span class="n">field</span><span class="p">]:</span>                    
+                            <span class="n">field_dict</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fields_w_subfields</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="s1">&#39;key&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">drug</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="n">path_to_field</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">)}</span>
+                        
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">field_dict</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">drug</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="n">path_to_field</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">)}</span>
+
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">path_to_field</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;db:</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="n">field_dict</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">drug</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="n">path_to_field</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">)}</span>
+                
+                
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">field_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+                <span class="k">if</span> <span class="n">v</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
+                    <span class="n">field_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">elem</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">v</span> <span class="k">if</span> <span class="n">elem</span><span class="p">]</span>
+
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">field_dict</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">field_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">field_dict</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">field_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
+                    <span class="n">field_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">(</span><span class="o">**</span><span class="n">field_dict</span><span class="p">))</span>
+        
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="DrugbankFull.drugbank_targets_full"><a class="viewcode-back" href="../../../api/pypath.inputs.drugbank.DrugbankFull.html#pypath.inputs.drugbank.DrugbankFull.drugbank_targets_full">[docs]</a>    <span class="k">def</span> <span class="nf">drugbank_targets_full</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">fields</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of namedtuples containing detailed information about drug-target interactions.</span>
+
+<span class="sd">        Args</span>
+<span class="sd">            fields:</span>
+<span class="sd">                The fields to return.</span>
+<span class="sd">                Default: None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">            A list of namedtuples containing information about the target of drugs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">all_fields</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;drugbank_id&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;id&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;organism&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;actions&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;references&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;known_action&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;polypeptide&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+        
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">fields</span> <span class="ow">or</span> <span class="n">all_fields</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">to_list</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+
+        <span class="n">record</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;DrugbankTarget&#39;</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
+
+        
+        <span class="k">for</span> <span class="n">drug</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">drugs</span><span class="p">:</span>
+
+            <span class="n">db_id</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">drug</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;db:drugbank-id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;primary&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+
+            <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">drug</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;db:targets/db:target&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">):</span>
+
+                <span class="n">target_dict</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">target_dict</span><span class="p">[</span><span class="s1">&#39;drugbank_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">db_id</span>
+                <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;organism&#39;</span><span class="p">,</span> <span class="s1">&#39;known_action&#39;</span><span class="p">]:</span>
+                        <span class="n">target_dict</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;db:</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">)]</span>
+
+                    <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s1">&#39;actions&#39;</span><span class="p">:</span>
+                        <span class="n">target_dict</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span>  <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;db:actions/db:action&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">)]</span>
+
+                    <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s1">&#39;references&#39;</span><span class="p">:</span>
+                        <span class="n">target_dict</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span>  <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;db:references/db:articles/db:article/db:pubmed-id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">)]</span>
+                    
+                    <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s1">&#39;polypeptide&#39;</span><span class="p">:</span>
+                        <span class="n">target_dict</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">),</span> <span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;source&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;db:polypeptide&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">)]</span>
+
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">target_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+                    <span class="k">if</span> <span class="n">v</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">target_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>
+                        <span class="n">target_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">(</span><span class="o">**</span><span class="n">target_dict</span><span class="p">))</span>
+ 
+        <span class="k">return</span> <span class="n">result</span></div></div>
 </pre></div>
 
             </article>

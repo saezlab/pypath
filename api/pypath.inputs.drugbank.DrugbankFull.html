@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.inputs.drugbank.drugbank_raw_interactions &#8212; pypath 0.14.33 documentation</title>
+    <title>pypath.inputs.drugbank.DrugbankFull &#8212; pypath 0.14.33 documentation</title>
   
   
   
@@ -43,12 +43,12 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.drugbank.drugbank_raw_interactions';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.drugbank.DrugbankFull';</script>
     <link rel="shortcut icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.inputs.drugbank.DrugbankFull" href="pypath.inputs.drugbank.DrugbankFull.html" />
-    <link rel="prev" title="pypath.inputs.drugbank.drugbank_mapping" href="pypath.inputs.drugbank.drugbank_mapping.html" />
+    <link rel="next" title="pypath.inputs.drugcentral" href="pypath.inputs.drugcentral.html" />
+    <link rel="prev" title="pypath.inputs.drugbank.drugbank_raw_interactions" href="pypath.inputs.drugbank.drugbank_raw_interactions.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -425,25 +425,77 @@
             
             <article class="bd-article" role="main">
               
-  <section id="pypath-inputs-drugbank-drugbank-raw-interactions">
-<h1>pypath.inputs.drugbank.drugbank_raw_interactions<a class="headerlink" href="#pypath-inputs-drugbank-drugbank-raw-interactions" title="Permalink to this heading">§</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="pypath.inputs.drugbank.drugbank_raw_interactions">
-<span class="sig-prename descclassname"><span class="pre">pypath.inputs.drugbank.</span></span><span class="sig-name descname"><span class="pre">drugbank_raw_interactions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">passwd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credentials_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pharma_active</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pypath/inputs/drugbank.html#drugbank_raw_interactions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.drugbank.drugbank_raw_interactions" title="Permalink to this definition">§</a></dt>
-<dd><p>Retrieves protein identifiers from Drugbank.</p>
+  <section id="pypath-inputs-drugbank-drugbankfull">
+<h1>pypath.inputs.drugbank.DrugbankFull<a class="headerlink" href="#pypath-inputs-drugbank-drugbankfull" title="Permalink to this heading">§</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pypath.inputs.drugbank.DrugbankFull">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.inputs.drugbank.</span></span><span class="sig-name descname"><span class="pre">DrugbankFull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">passwd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credentials_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/inputs/drugbank.html#DrugbankFull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.drugbank.DrugbankFull" title="Permalink to this definition">§</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is a wrapper around the Drugbank full database XML file.
+Provides access to the full Drugbank database.
+The class provides two methods: drugbank_drugs_full and drugbank_targets_full.
+The first method returns a list of namedtuples, each of which represents a drug.
+The second method returns a list of namedtuples, each of which represents a drug’s target.</p>
 <dl class="simple">
 <dt>Args</dt><dd><dl class="simple">
 <dt>user:</dt><dd><p>E-mail address with registered DrugBank account.</p>
 </dd>
 <dt>passwd:</dt><dd><p>Password for the DrugBank account.</p>
 </dd>
-<dt>pharma_active:</dt><dd><p>Only pharmacologically active relations.</p>
+</dl>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.inputs.drugbank.DrugbankFull.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">passwd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credentials_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/inputs/drugbank.html#DrugbankFull.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.drugbank.DrugbankFull.__init__" title="Permalink to this definition">§</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.inputs.drugbank.DrugbankFull.__init__" title="pypath.inputs.drugbank.DrugbankFull.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([user, passwd, credentials_fname])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.inputs.drugbank.DrugbankFull.drugbank_drugs_full" title="pypath.inputs.drugbank.DrugbankFull.drugbank_drugs_full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drugbank_drugs_full</span></code></a>([fields])</p></td>
+<td><p>Returns a list of namedtuples containing detailed information about drugs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.inputs.drugbank.DrugbankFull.drugbank_targets_full" title="pypath.inputs.drugbank.DrugbankFull.drugbank_targets_full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drugbank_targets_full</span></code></a>([fields])</p></td>
+<td><p>Returns a list of namedtuples containing detailed information about drug-target interactions.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.inputs.drugbank.DrugbankFull.drugbank_drugs_full">
+<span class="sig-name descname"><span class="pre">drugbank_drugs_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pypath/inputs/drugbank.html#DrugbankFull.drugbank_drugs_full"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.drugbank.DrugbankFull.drugbank_drugs_full" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns a list of namedtuples containing detailed information about drugs.</p>
+<p>Args
+fields:</p>
+<blockquote>
+<div><p>The fields to return. If None, all XML fields are returned.
+Default: None</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Returns</dt><dd><p>A list of namedtuples containing information about drugs.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.inputs.drugbank.DrugbankFull.drugbank_targets_full">
+<span class="sig-name descname"><span class="pre">drugbank_targets_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pypath/inputs/drugbank.html#DrugbankFull.drugbank_targets_full"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.drugbank.DrugbankFull.drugbank_targets_full" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns a list of namedtuples containing detailed information about drug-target interactions.</p>
+<dl class="simple">
+<dt>Args</dt><dd><dl class="simple">
+<dt>fields:</dt><dd><p>The fields to return.
+Default: None</p>
 </dd>
 </dl>
 </dd>
-<dt>Returns</dt><dd><p>List of drug-protein relations.</p>
+<dt>Returns</dt><dd><p>A list of namedtuples containing information about the target of drugs.</p>
 </dd>
 </dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -456,17 +508,17 @@
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="pypath.inputs.drugbank.drugbank_mapping.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="pypath.inputs.drugbank.drugbank_raw_interactions.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">pypath.inputs.drugbank.drugbank_mapping</p>
+          <p class="prev-next-title">pypath.inputs.drugbank.drugbank_raw_interactions</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="pypath.inputs.drugbank.DrugbankFull.html" title="next page">
+  <a class='right-next' id="next-link" href="pypath.inputs.drugcentral.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">pypath.inputs.drugbank.DrugbankFull</p>
+      <p class="prev-next-title">pypath.inputs.drugcentral</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>
