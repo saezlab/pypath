@@ -628,6 +628,8 @@ class DrugbankFull:
         
         fields = fields or all_fields
         fields = common.to_list(fields)
+        if 'drugbank_id' not in fields:
+            fields.insert(0, 'drugbank_id')
 
         record = collections.namedtuple('DrugbankTarget', fields)
 
