@@ -23,15 +23,21 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future__ import annotations
+
 from typing import Optional
 
+import os
 import re
 import csv
 import collections
 import base64
+from lxml import etree
+from zipfile import ZipFile
 
 import pypath.resources.urls as urls
 import pypath.share.curl as curl
+import pypath.share.common as common
 import pypath.share.session as session
 import pypath.share.settings as settings
 import pypath.inputs.credentials as credentials
@@ -443,3 +449,219 @@ def drugbank_mapping(
             result[the_id].add(target_id)
 
     return dict(result)
+
+
+class DrugbankFull:
+    """
+    This is a wrapper around the Drugbank full database XML file.
+    Provides access to the full Drugbank database.
+    The class provides two methods: drugbank_drugs_full and drugbank_targets_full.
+    The first method returns a list of namedtuples, each of which represents a drug.
+    The second method returns a list of namedtuples, each of which represents a drug's target.
+
+    Args
+        user:
+            E-mail address with registered DrugBank account.
+        passwd:
+            Password for the DrugBank account.
+    """
+
+    def __init__(
+        self, 
+        user: Optional[str] = None,
+        passwd: Optional[str] = None,
+        credentials_fname: Optional[str] = None,
+    ):
+
+        path = _drugbank_download(
+            url = 'https://go.drugbank.com/releases/5-1-9/downloads/all-full-database',
+            user = user,
+            passwd = passwd,
+            credentials_fname = credentials_fname,
+            ).fileobj.name
+
+        with ZipFile(path, 'r') as zip_ref:
+            zip_ref.extractall(os.path.dirname(path))
+
+        file = os.path.join(os.path.dirname(path), 'full database.xml')
+
+        self.tree = etree.ElementTree(file = file)
+        self.ns = self.tree.getroot().nsmap
+        self.ns['db'] = self.ns[None]
+        del self.ns[None]
+
+        self.drugs = self.tree.xpath('db:drug', namespaces=self.ns)
+
+
+    def drugbank_drugs_full(
+            self,
+            fields: str | list[str] | None = None,
+        ) -> list[tuple]:
+        """
+        Returns a list of namedtuples containing detailed information about drugs.
+
+        Args
+        fields:
+            The fields to return. If None, all XML fields are returned.
+            Default: None
+
+        Returns
+            A list of namedtuples containing information about drugs.
+        """
+
+        basic_fields = [
+            'drugbank_id', 'type', 'name', 'description', 'cas_number', 'unii', 'average_mass',
+            'monoisotopic_mass', 'state', 'synthesis_reference', 'indication', 'pharmacodynamics', 
+            'mechanism_of_action', 'toxicity', 'metabolism', 'absorption', 'half_life',
+            'protein_binding', 'route_of_elimination', 'volume_of_distribution', 'clearance',
+            'synthesis_reference', 'indication', 'pharmacodynamics', 'mechanism_of_action',
+            'toxicity', 'metabolism', 'absorption', 'half_life', 'protein_binding',
+            'route_of_elimination', 'volume_of_distribution', 'clearance', 'fda_label', 'msds',
+        ]
+
+        fields_w_subfields = {
+            'groups':  {'path': '/db:group'},
+            'general_references': {'path': '/db:articles/db:article/db:pubmed-id'}, 
+            'classification': {'path': '/db:class'},
+            'synonyms': {'path': '/db:synonym'},
+            'products': {'path': '/db:product/db:name'},
+            'international_brands': {'path': '/db:international-brand/db:name'},
+            'mixtures': {'path': '/db:mixture/db:name'},
+            'packagers': {'path': '/db:packager/db:name'},
+            'manufacturers': {'path': '/db:manufacturer/db:name'},
+            'categories': {'path': '/db:category/db:mesh-id'},
+            'affected_organisms': {'path': '/db:affected-organism'},
+            'atc_codes': {'path': '/db:atc-code', 'key': 'code'},
+            'ahfs_codes': {'path': '/db:ahfs-code', 'key': 'code'},
+            'pdb_entries': {'path': '/db:pdb-entry'},
+            'patents': {'path': '/db:patent/db:number'},
+            'food_interactions': {'path': '/db:food-interaction'},
+            'drug_interactions': {'path': '/db:drug-interaction/db:drugbank-id'},
+            'pathways': {'path': '/db:pathway/db:smpdb-id'},
+        }
+
+        # TODO: later process and engage fields below
+        # future_fields: 'salts', 'prices', 'dosages', 'sequences', 'calculated_properties',
+        #               'experimental_properties', 'external_identifiers', 'external_links',
+        #               'reactions', 'snp_effects', 'snp_adverse_drug_reactions'
+            
+        fields = fields or basic_fields + list(fields_w_subfields.keys())
+        fields = common.to_list(fields)
+        if 'drugbank_id' not in fields:
+            fields.insert(0, 'drugbank_id')
+
+        result = []
+
+        record = collections.namedtuple('DrugbankDrug', fields)
+
+        for drug in self.drugs:
+
+            field_dict = {}
+
+            for field in fields:
+                
+                if field == 'drugbank_id':
+                    field_dict[field] = [i for i in drug.xpath('db:drugbank-id', namespaces=self.ns) if i.attrib.get('primary') == 'true'][0].text
+
+                elif field == 'type':
+                    field_dict[field] = drug.get('type')
+
+                else:
+                    if field in fields_w_subfields:
+                        path_to_field = f"db:{field.replace('_', '-')}{fields_w_subfields[field]['path']}"
+
+                        if 'key' in fields_w_subfields[field]:                    
+                            field_dict[field] = {f.get(fields_w_subfields[field]['key']) for f in drug.xpath(path_to_field, namespaces=self.ns)}
+                        
+                        else:
+                            field_dict[field] = {f.text for f in drug.xpath(path_to_field, namespaces=self.ns)}
+
+                    else:
+                        path_to_field = f"db:{field.replace('_', '-')}"
+                        field_dict[field] = {f.text for f in drug.xpath(path_to_field, namespaces=self.ns)}
+                
+                
+            for k, v in field_dict.items():
+
+                if v and type(v) != str:
+                    field_dict[k] = [elem.replace('\r\n', ' ') for elem in v if elem]
+
+                    if len(field_dict[k]) == 1:
+                        field_dict[k] = field_dict[k][0]
+
+                if not field_dict[k]:
+                    field_dict[k] = None
+
+            result.append(record(**field_dict))
+        
+        return result
+
+
+    def drugbank_targets_full(
+            self,
+            fields: str | list[str] | None = None,
+        ) -> list[tuple]:
+        """
+        Returns a list of namedtuples containing detailed information about drug-target interactions.
+
+        Args
+            fields:
+                The fields to return.
+                Default: None
+
+        Returns
+            A list of namedtuples containing information about the target of drugs.
+        """
+
+        result = []
+
+        all_fields = [
+            'drugbank_id',
+            'id',
+            'name',
+            'organism',
+            'actions',
+            'references',
+            'known_action',
+            'polypeptide',
+        ]
+        
+        fields = fields or all_fields
+        fields = common.to_list(fields)
+
+        record = collections.namedtuple('DrugbankTarget', fields)
+
+        
+        for drug in self.drugs:
+
+            db_id = [i for i in drug.xpath('db:drugbank-id', namespaces=self.ns) if i.attrib.get('primary') == 'true'][0].text
+
+            for target in drug.xpath('db:targets/db:target', namespaces=self.ns):
+
+                target_dict = {}
+                target_dict['drugbank_id'] = db_id
+                for field in fields:
+
+                    if field in ['id', 'name', 'organism', 'known_action']:
+                        target_dict[field] = [f.text for f in target.xpath(f"db:{field.replace('_', '-')}", namespaces=self.ns)]
+
+                    elif field == 'actions':
+                        target_dict[field] =  [f.text for f in target.xpath('db:actions/db:action', namespaces=self.ns)]
+
+                    elif field == 'references':
+                        target_dict[field] =  [f.text for f in target.xpath('db:references/db:articles/db:article/db:pubmed-id', namespaces=self.ns)]
+                    
+                    elif field == 'polypeptide':
+                        target_dict[field] = [(f.get('id'), f.get('source')) for f in target.xpath('db:polypeptide', namespaces=self.ns)]
+
+                for k, v in target_dict.items():
+
+                    if v and len(v) == 1:
+                        target_dict[k] = v[0]
+                    
+                    if not v:
+                        target_dict[k] = None
+
+                result.append(record(**target_dict))
+ 
+        return result
