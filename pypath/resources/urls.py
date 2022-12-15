@@ -1,4663 +1,1620 @@
-{
-  "HuRI": {
-    "yearUsedRelease": 2020,
-    "releases": [
-      2012,
-      2014,
-      2016
-    ],
-    "recommend": "very large, quality controlled, unbiased yeast-2-hybrid screening",
-    "label": "HuRI HI-III",
-    "full_name": "Human Reference Interactome",
-    "urls": {
-      "articles": ["http://www.cell.com/cell/abstract/S0092-8674(14)01422-6"],
-      "webpages": ["http://interactome.dfci.harvard.edu/H_sapiens/",
-                  "http://www.interactome-atlas.org/"]
-    },
-    "pubmeds": [25416956],
-    "emails": [
-      "Michael_Calderwood@dfci.harvard.edu",
-      "Michael Calderwood"
-    ],
-    "type": "high-throughput",
-    "subtype": "yeast 2 hybrid",
-    "omnipath": false,
-    "license": "CC BY 4.0",
-    "dateUpdated": "Apr 2020",
-    "inputs": {
-        "network": null
-    }
-  },
-  "HuRI Lit-BM": {
-    "synonyms": [
-      "Lit-BM-17",
-      "Lit-BM-13",
-      "HI-II",
-      "HI-III",
-      "HU-union",
-      "Yu2011",
-      "Yang2016"
-    ],
-    "yearUsedRelease": 2017,
-    "releases": [2013, 2017],
-    "label": "HuRI Lit-BM-17",
-    "full_name": "Human Reference Interactome Literature Benchmark",
-    "urls": {
-      "articles": ["http://www.cell.com/cell/abstract/S0092-8674(14)01422-6"],
-      "webpages": ["http://interactome.dfci.harvard.edu/H_sapiens/",
-                   "http://www.interactome-atlas.org/"]
-    },
-    "authors": ["CCSB"],
-    "pubmeds": [25416956],
-    "descriptions": [
-      "High-quality non-systematic Literature dataset. In 2013,",
-      "we extracted interaction data from BIND, BioGRID, DIP, HPRD,",
-      "MINT, IntAct, and PDB to generate a high-quality binary",
-      "literature dataset comprising ~11,000 protein-protein interactions",
-      "that are binary and supported by at least two traceable pieces",
-      "of evidence (publications and/or methods) (Rolland et al Cell",
-      "2014). Although this dataset does not result from a systematic",
-      "investigation of the interactome search space and should thus be used",
-      "with caution for any network topology analyses, it represents",
-      "valuable interactions for targeted studies and is freely available",
-      "to the research community through the search engine or via",
-      "download."],
-    "emails": [
-    "Michael_Calderwood@dfci.harvard.edu", "Michael Calderwood"
-    ],
-    "type": "high-throughput",
-    "subtype": "yeast 2 hybrid",
-    "omnipath": false,
-    "pypath": {
-      "get": ["pypath.dataio.get_lit_bm_13()"],
-      "data": ["pypath.urls.urls[\"hid\"][\"lit-bm-13\"]"],
-      "input": ["pypath.data_formats.interaction_misc[\"lit13\"]"]
-    },
-    "license": "CC BY 4.0",
-    "dateUpdated":"Nov 2016"
-  },
-  "ELM": {
-    "full_name": "Eukaryotic Linear Motif resource",
-    "yearUsedRelease": 2014,
-    "releases": [
-      2003,
-      2008,
-      2009,
-      2012,
-      2013,
-      2014,
-      2016
-    ],
-    "authors": ["ELM Consortium"],
-    "label": "ELM",
-    "urls": {
-      "webpages": ["http://elm.eu.org/"],
-      "articles": [
-        "http://nar.oxfordjournals.org/content/40/D1/D242.long",
-        "http://nar.oxfordjournals.org/content/42/D1/D259.long",
-        "http://nar.oxfordjournals.org/content/44/D1/D294.long"
-      ],
-      "omictools": ["http://omictools.com/eukaryotic-linear-motif-resource-tool"]
-    },
-    "annot": [
-      "domain",
-      "residue"
-    ],
-    "recommend": "structural details: domain-motif relationships; very high confidence",
-    "pubmeds": [
-      22110040,
-      24214962,
-      26615199
-    ],
-    "emails": [
-      "feedback@elm.eu.org",
-      "ELM Team",
-      "gibson@embl.de",
-      "Toby Gibson"
-    ],
-    "type": "literature curated",
-    "subtype": "post-translational modifications",
-    "data_integration": "dynamic",
-    "description": [
-      "Ideally, each motif class has multiple example instances",
-      "of this motif annotated, whereby an instance is described as",
-      "a match to the regular expression pattern of the ELM motif",
-      "class in a protein sequence. For each instance entry, ideally,",
-      "multiple sources of experimental evidence are recorded (identifying",
-      "participant, detecting motif presence and detecting interaction), and,",
-      "following annotation best practices, a reliability score is given by",
-      "the annotator."
-    ],
-    "omnipath": true,
-    "license": "ELM",
-    "pypath": {
-      "data": [
-        "pypath.urls.urls[\"ielm_domains\"][\"url\"]",
-        "pypath.urls.urls[\"elm_class\"][\"url\"]",
-        "pypath.urls.urls[\"elm_inst\"][\"url\"]",
-        "urls.urls[\"elm_int\"][\"url\"]"
-      ],
-      "format": [
-        "pypath.data_formats.ptm[\"elm\"]",
-        "pypath.data_formats.omnipath[\"elm\"]"
-      ],
-      "input": [
-        "pypath.dataio.get_elm_domains()",
-        "pypath.dataio.get_elm_classes()",
-        "pypath.dataio.get_elm_instances()"
-      ],
-      "intr": ["pypath.dataio.get_elm_interactions()"],
-      "dmi": ["pypath.pypath.PyPath.load_elm()"]
-    },
-    "dateUpdated":"Nov 2016"
-  },
-  "LMPID": {
-    "yearUsedRelease": 2015,
-    "releases": [2015],
-    "authors": ["Bose Institute"],
-    "label": "LMPID",
-    "urls": {
-      "webpages": ["http://bicresources.jcbose.ac.in/ssaha4/lmpid/index.php"],
-      "articles": ["http://database.oxfordjournals.org/content/2015/bav014.long"],
-      "omictools": [
-        "http://omictools.com/linear-motif-mediated-protein-interaction-database-tool"
-      ]
-    },
-    "pubmeds": [25776024],
-    "emails": [
-      "ssaha4@jcbose.ac.in",
-      "Sudipto Saha"
-    ],
-    "type": "literature curated",
-    "subtype": "post-translational modifications",
-    "recommend": "structural details: domain-motif relationships; similar to ELM, but more recent and larger",
-    "annot": [
-      "domain",
-      "mechanism"
-    ],
-    "descriptions": [
-      "LMPID (Linear Motif mediated Protein Interaction",
-      "Database) is a manually curated database which provides",
-      "comprehensive experimentally validated information about the LMs",
-      "mediating PPIs from all organisms on a single platform. About 2200",
-      "entries have been compiled by detailed manual curation of PubMed",
-      "abstracts, of which about 1000 LM entries were being annotated for",
-      "the first time, as compared with the Eukaryotic LM resource."
-    ],
-    "omnipath": true,
-    "pypath": {
-      "input": ["pypath.dataio.load_lmpid()"],
-      "intr": ["pypath.dataio.lmpid_interactions()"],
-      "data": ["pypath.data/LMPID_DATA_pubmed_ref.xml"],
-      "format": [
-        "pypath.data_formats.ptm[\"lmpid\"]",
-        "pypath.data_formats.omnipath[\"lmpid\"]"
-      ],
-      "dmi": [
-        "pypath.dataio.lmpid_dmi()",
-        "pypath.pypath.PyPath().process_dmi(source = \"LMPID\")"
-      ]
-    },
-    "license": "CC BY-NC 2.0",
-    "dateUpdated":"Nov 2016"
-  },
-  "PDZBase": {
-    "yearUsedRelease": 2004,
-    "releases": [2004],
-    "authors": ["Weinstein Group"],
-    "urls": {
-      "webpages": ["http://abc.med.cornell.edu/pdzbase"],
-      "articles": [
-        "http://bioinformatics.oxfordjournals.org/content/21/6/827.long"
-      ],
-      "omictools": ["http://omictools.com/pdzbase-tool"]
-    },
-    "pubmeds": [15513994],
-    "taxons": ["human"],
-    "label": "PDZBase",
-    "annot": ["domain"],
-    "recommend": "a handful specific interactions for proteins with PDZ domain",
-    "descriptions": [
-      "PDZBase is a database that aims to contain all known",
-      "PDZ-domain-mediated protein-protein interactions. Currently, PDZBase contains",
-      "approximately 300 such interactions, which have been manually extracted",
-      "from &gt;200 articles.  ",
-      "PDZBase currently contains ∼300",
-      "interactions, all of which have been manually extracted from the",
-      "literature, and have been independently verified by two curators. The",
-      "extracted information comes from in vivo (co-immunoprecipitation) or",
-      "in vitro experiments (GST-fusion or related pull-down",
-      "experiments). Interactions identified solely from high throughput",
-      "methods (e.g. yeast two-hybrid or mass spectrometry) were not",
-      "included in PDZBase. Other prerequisites for inclusion in the",
-      "database are: that knowledge of the binding sites on both",
-      "interacting proteins must be available (for instance through a",
-      "truncation or mutagenesis experiment); that interactions must be",
-      "mediated directly by the PDZ-domain, and not by any other possible",
-      "domain within the protein."
-    ],
-    "emails": [
-    "haw2002@med.cornell.edu",
-    "Harel Weinstein",
-    "pdzbase@med.cornell.edu",
-    "PDZBase Team"
-  ],
-    "type": "literature curated",
-    "subtype": "activity flow",
-    "omnipath": true,
-    "pypath": {
-      "intr": ["pypath.dataio.get_pdzbase()"],
-      "data": [
-        "pypath.urls.urls[\"pdzbase\"]",
-        "pypath.urls.urls[\"pdz_details\"]"
-      ],
-      "format": [
-        "pypath.data_formats.pathway[\"pdz\"]",
-        "pypath.data_formats.omnipath[\"pdz\"]"
-      ]
-    },
-    "license": "No license",
-    "pathguide": 160,
-    "dateUpdated":"Nov 2016"
-  },
-  "Guide2Pharma": {
-    "synonyms": [
-      "guidetopharmacology",
-      "Guide to Pharmacology",
-      "GuideToPharmacology"
-    ],
-    "yearUsedRelease": 2015,
-    "releases": [
-      2007,
-      2008,
-      2009,
-      2011,
-      2013,
-      2014,
-      2015,
-      2016
-    ],
-    "label": "Guide to Pharmacology",
-    "full_name": "Guide to Pharmacology",
-    "pubmeds": [24234439],
-    "urls": {
-      "webpages": ["http://www.guidetopharmacology.org/"],
-      "articles": [
-        "http://nar.oxfordjournals.org/content/42/D1/D1098.long",
-        "http://onlinelibrary.wiley.com/doi/10.1111/j.1476-5381.2011.01649_1.x/full",
-        "https://academic.oup.com/nar/article/48/D1/D1006/5613677"
-      ],
-      "omictools": [
-        "http://omictools.com/international-union-of-basic-and-clinical-pharmacology-british-pharmacological-society-guide-to-pharmacology-tool"
-      ]
-    },
-    "recommend": [
-      "a well curated ligand-receptor resource including many small molecule compounds"
-    ],
-    "descriptions": [
-      "Presently, the resource describes the interactions between target proteins",
-      "and 6064 distinct ligand entities (Table 1). Ligands are listed against targets by",
-      "their action (e.g. activator, inhibitor), and also classified according to substance",
-      "types and their status as approved drugs. Classes include metabolites (a general",
-      "category for all biogenic, non-peptide, organic molecules including lipids, hormones",
-      "and neurotransmitters), synthetic organic chemicals (e.g. small molecule drugs),",
-      "natural products, mammalian endogenous peptides, synthetic and other peptides",
-      "including toxins from non-mammalian organisms, antibodies, inorganic substances and",
-      "other, not readily classifiable compounds.",
-      "\nThe new database was constructed by integrating data from IUPHAR-DB and the",
-      "published GRAC compendium. An overview of the curation process is depicted as an",
-      "organizational flow chart in Figure 2. New information was added to the existing relational",
-      "database behind IUPHAR-DB and new webpages were created to display the integrated",
-      "information. For each new target, information on human, mouse and rat genes and proteins,",
-      "including gene symbol, full name, location, gene ID, UniProt and Ensembl IDs was",
-      "manually curated from HGNC, the Mouse Genome Database (MGD) at Mouse Genome Informatics",
-      "(MGI), the Rat Genome Database (RGD), UniProt and Ensembl, respectively. In addition,",
-      "‘Other names’, target-specific fields such as ‘Principal transduction’, text from the",
-      "‘Overview’ and ‘Comments’ sections and reference citations (downloaded from PubMed;",
-      "http://www.ncbi.nlm.nih.gov/pubmed) were captured from GRAC and uploaded into the database",
-      "against a unique Object ID.",
-      "The selection of content for curation was supported through the ",
-      "identification of key articles and literature reviews by NC-IUPHAR ",
-      "subcommittees. The focus was on immunology and inflammation ",
-      "literature that identified lead compounds, their molecular targets ",
-      "and contained evidence of pharmacological modulation and relevance ",
-      "to human disease. Other useful resources include pharmaceutical ",
-      "companies’ declared development programmes, key papers circulated ",
-      "on Twitter and analysis of patents to identify pharmacological data ",
-      "beyond peer-reviewed publications. We also review clinical trial ",
-      "registries and applications to the WHO for new INNs (International ",
-      "Nonproprietary Name) (which provides an indication of developments ",
-      "in the immunity/inflammation/immuno-oncology fields), and monitor ",
-      "new drug approvals."
-    ],
-    "emails": [
-      "enquiries@guidetopharmacology.org",
-      "Guide to Pharmacology Team",
-      "cdsouthan@hotmail.com",
-      "Cristopher Southan"
-  ],
-    "type": "literature curated",
-    "subtype": ["activity flow", "complexes"],
-    "omnipath": true,
-    "license": "CC BY-SA 3.0",
-    "pypath": {
-      "data": ["pypath.data_formats"],
-      "format": [
-        "pypath.data_formats.pathway[\"guide2pharma\"]",
-        "pypath.data_formats.omnipath[\"guide2pharma\"]"
-      ]
-    },
-    "pathguide": 345,
-    "dateUpdated":"Nov 2016"
-  },
-  "phosphoELM": {
-    "synonyms": ["phospho.ELM"],
-    "yearUsedRelease": 2010,
-    "releases": [
-      2004,
-      2007,
-      2010
-    ],
-    "urls": {
-      "webpages": ["http://phospho.elm.eu.org/"],
-      "articles": [
-        "http://www.biomedcentral.com/1471-2105/5/79",
-        "http://nar.oxfordjournals.org/content/36/suppl_1/D240.full",
-        "http://nar.oxfordjournals.org/content/39/suppl_1/D261"
-      ],
-      "omictools": ["http://omictools.com/phospho-elm-tool"]
-    },
-    "pubmeds": [
-      15212693,
-      17962309,
-      21062810
-    ],
-    "annot": [
-      "mechanism",
-      "residue"
-    ],
-    "recommend": [
-      "one of the largest kinase-substrate databases; substantial number of specific",
-      "proteins and interactions, with more receptors than PhosphoSite"
-    ],
-    "descriptions": [
-      "Phospho.ELM http://phospho.elm.eu.org is a new resource containing",
-      "experimentally verified phosphorylation sites manually curated from the literature and is",
-      "developed as part of the ELM (Eukaryotic Linear Motif) resource. Phospho.ELM constitutes",
-      "the largest searchable collection of phosphorylation sites available to the",
-      "research community. The Phospho.ELM entries store information about substrate proteins",
-      "with the exact positions of residues known to be phosphorylated by cellular",
-      "kinases. Additional annotation includes literature references, subcellular compartment,",
-      "tissue distribution, and information about the signaling pathways involved as well as",
-      "links to the molecular interaction database MINT. Phospho.ELM version 2.0 contains",
-      "1,703 phosphorylation site instances for 556 phosphorylated proteins. (Diella 2004)",
-      "\n Phospho.ELM is a manually curated database of eukaryotic phosphorylation",
-      "sites. The resource includes data collected from published literature as well as",
-      "high-throughput data sets. The current release of the Phospho.ELM data set (version 7.0, July",
-      "2007) contains 4078 phospho-protein sequences covering 12,025 phospho-serine, 2,362",
-      "phospho-threonine and 2,083 phospho-tyrosine sites with a total of 16,470 sites. For",
-      "each phospho-site we report if the phosphorylation evidence has been identified by",
-      "small-scale analysis (low throughput; LTP) that typically focus on one or a few proteins",
-      "at a time or by large-scale experiments (high throughput; HTP), which mainly",
-      "apply MS techniques. It is noteworthy that in our data set there is a small overlap",
-      "between instances identified by LTP and HTP experiments. (Diella 2007)",
-      "\n The current release of the Phospho.ELM data set (version 9.0) contains more",
-      "than 42,500 non-redundant instances of phosphorylated residues in more than 11,000",
-      "different protein sequences (3370 tyrosine, 31 754 serine and 7449 threonine residues).",
-      "For each phosphosite we report whether the phosphorylation evidence has been",
-      "identified by small-scale analyses (low-throughput, LTP) and/or by large-scale",
-      "experiments (high-throughput, HTP), which mainly apply MS techniques. The majority of the",
-      "protein instances from Phospho. ELM are vertebrate (mostly Homo sapiens (62%) and Mus",
-      "musculus (16%)) though 22% are from other species, mainly Drosophila melanogaster (13%)",
-      "and Caenorhabditis elegans (7%). In total, more than 300 different kinases have",
-      "been annotated and a document providing additional information about all kinases",
-      "annotated in Phospho.ELM can be found at http://phospho.elm.eu.org/kinases.html. (Dinkel",
-      "2010)"
-    ],
-    "emails": [
-      "toby.gibson@embl.de",
-      "Toby Gibson"
-    ],
-    "type": "Literature curated",
-    "data_integration": "dynamic",
-    "subtype": "PTM",
-    "label": "phospho.ELM",
-    "omnipath": true,
-    "license": "ELM",
-    "pypath": {
-      "format": [
-        "pypath.data_formats.ptm[\"phelm\"]",
-        "pypath.data_formats.omnipath[\"phelm\"]"
-      ],
-      "data": [
-        "pypath.urls.urls[\"p_elm\"][\"psites\"]",
-        "urls.urls[\"p_elm_kin\"][\"url\"]"
-      ],
-      "intr": ["pypath.dataio.phelm_interactions()"],
-      "input": [
-        "pypath.dataio.get_phosphoelm()",
-        "pypath.dataio.get_phelm_kinases()",
-        "pypath.dataio.phelm_psites()"
-      ],
-      "ptm": ["pypath.pypath.PyPath().load_phosphoelm()"]
-    },
-    "pathguide": 138,
-    "dateUpdated": "Nov 2016",
-    "inputs": {
-      "enzyme_substrate": {
-        "id_type_enzyme": "uniprot",
-        "id_type_substrate": "uniprot",
-        "input_method": "phosphoelm.phosphoelm_enzyme_substrate",
-        "organisms": null,
-        "organisms_supported": true,
-        "extra_attrs": {}
-      }
-    }
-  },
-  "DOMINO": {
-    "yearUsedRelease": 2006,
-    "releases": [2006],
-    "authors": ["Cesareni Group"],
-    "urls": {
-      "webpages": ["http://mint.bio.uniroma2.it/domino/search/searchWelcome.do"],
-      "articles": ["http://nar.oxfordjournals.org/content/35/suppl_1/D557.long"],
-      "omictools": ["http://omictools.com/domino-tool"]
-    },
-    "pubmeds": [17135199],
-    "taxons": [
-      "human",
-      "yeast",
-      "C. elegans",
-      "mouse",
-      "rat",
-      "HIV",
-      "D. melanogaster",
-      "A. thaliana",
-      "X. laevis",
-      "B. taurus",
-      "G. gallus",
-      "O. cuniculus",
-      "Plasmodium falciparum"
-    ],
-    "annot": ["experiment"],
-    "recommend": [
-      "rich details and many specific information; discontinued",
-      "SIGNOR from the same lab is larger and newer, and contains most of its data"
-    ],
-    "descriptions": [
-      "DOMINO aims at annotating all the available information about domain-peptide",
-      "and domain–domain interactions. The core of DOMINO, of July 24, 2006 consists of",
-      "more than 3900 interactions extracted from peer-reviewed articles and annotated by",
-      "expert biologists. A total of 717 manuscripts have been processed, thus covering a",
-      "large fraction of the published information about domain–peptide interactions. The",
-      "curation effort has focused on the following domains: SH3, SH2, 14-3-3, PDZ, PTB, WW,",
-      "EVH, VHS, FHA, EH, FF, BRCT, Bromo, Chromo and GYF. However, interactions mediated",
-      "by as many as 150 different domain families are stored in DOMINO.",
-      "\n DOMINO is an open-access database comprising more than 3900 annotated",
-      "experiments describing interactions mediated by protein-interaction domains. The curation",
-      "effort aims at covering the interactions mediated by the following domains (SH3, SH2,",
-      "14-3-3, PDZ, PTB, WW, EVH, VHS, FHA, EH, FF, BRCT, Bromo, Chromo, GYF). However,",
-      "interactions mediated by as many as 150 different domain families are stored in DOMINO.",
-      "\nThe curation process follows the PSI-MI 2.5 standard but with special emphasis",
-      "on the mapping of the interaction to specific protein domains of both",
-      "participating proteins. This is achieved by paying special attention to the shortest protein",
-      "fragment that was experimentally verified as sufficient for the interaction. Whenever",
-      "the authors report only the name of the domain mediating the interaction (i.e.",
-      "SH3, SH2 ...), without stating the coordinates of the experimental binding range,",
-      "the curator may choose to enter the coordinates of the Pfam domain match in the",
-      "protein sequence. Finally whenever the information is available, any mutation or",
-      "posttranslational modification affecting the interaction affinity is noted in the database."
-    ],
-    "emails": [
-      "giovanni.cesareni@uniroma2.it",
-      "Gianni Cesareni"
-    ],
-    "type": "Literature curated",
-    "subtype": "PTM",
-    "omnipath": true,
-    "license": "CC BY 2.5",
-    "pypath": {
-      "data": ["pypath.urls.urls[\"domino\"][\"url\"]"],
-      "input": [
-        "pypath.dataio.get_domino()",
-        "pypath.dataio.get_domino_ddi()"
-      ],
-      "format": [
-        "pypath.data_formats.ptm[\"domino\"]",
-        "pypath.data_formats.omnipath[\"domino\"]"
-      ],
-      "intr": ["pypath.dataio.domino_interactions()"],
-      "ptm": ["pypath.dataio.get_domino_ptms()"],
-      "dmi": [
-        "pypath.dataio.get_domino_dmi()",
-        "pypath.pypath.PyPath().load_domino_dmi()"
-      ],
-      "ddi": ["pypath.dataio.get_domino_ddi()"]
-    },
-    "pathguide": 239,
-    "dateUpdated": "Nov 2016"
-  },
-  "dbPTM": {
-    "yearUsedRelease": 2015,
-    "releases": [
-      2005,
-      2009,
-      2012,
-      2015
-    ],
-    "authors": ["ISBLab"],
-    "urls": {
-      "webpages": ["http://dbptm.mbc.nctu.edu.tw/"],
-      "articles": [
-        "http://nar.oxfordjournals.org/content/41/D1/D295.long",
-        "http://www.biomedcentral.com/1756-0500/2/111",
-        "http://nar.oxfordjournals.org/content/34/suppl_1/D622.long",
-        "http://nar.oxfordjournals.org/content/44/D1/D435.long"
-      ],
-      "omictools": ["http://omictools.com/dbptm-tool"]
-    },
-    "pubmeds": [
-      16381945,
-      19549291,
-      23193290,
-      26578568
-    ],
-    "taxons": [
-      "human",
-      "Metazoa",
-      "Bacteria",
-      "plants",
-      "yeast"
-    ],
-    "annot": [
-      "mechanism",
-      "residue"
-    ],
-    "recommend": [
-      "integrates many small efforts; beside phosphorylations provides all types of",
-      "PTMs and enzyme-substrate relationships"
-    ],
-    "descriptions": [
-      "Due to the inaccessibility of database contents in several online PTM",
-      "resources, a total 11 biological databases related to PTMs are integrated in dbPTM,",
-      "including UniProtKB/SwissProt, version 9.0 of Phospho.ELM, PhosphoSitePlus, PHOSIDA,",
-      "version 6.0 of O-GLYCBASE, dbOGAP, dbSNO, version 1.0 of UbiProt, PupDB, version 1.1",
-      "of SysPTM and release 9.0 of HPRD. ",
-      "\n With the high throughput of MS-based methods",
-      "in post-translational proteomics, this update also includes manually curated",
-      "MS/MS-identified peptides associated with PTMs from research articles through a literature",
-      "survey. First, a table list of PTM-related keywords is constructed by referring to the",
-      "UniProtKB/SwissProt PTM list (http://www.uniprot.org/docs/ptmlist.txt) and the annotations of",
-      "RESID (28). Then, all fields in the PubMed database are searched based on the",
-      "keywords of the constructed table list. This is then followed by downloading the full",
-      "text of the research articles. For the various experiments of proteomic",
-      "identification, a text-mining system is developed to survey full-text literature that",
-      "potentially describes the site-specific identification of modified sites. Approximately",
-      "800 original and review articles associated with MS/MS proteomics and protein",
-      "modifications are retrieved from PubMed (July 2012). Next, the full-length articles are",
-      "manually reviewed for precisely extracting the MS/MS peptides along with the modified",
-      "sites. Furthermore, in order to determine the locations of PTMs on a full-length",
-      "protein sequence, the experimentally verified MS/MS peptides are then mapped to",
-      "UniProtKB protein entries based on its database identifier (ID) and sequence identity.",
-      "In the process of data mapping, MS/MS peptides that cannot align exactly to a",
-      "protein sequence are discarded. Finally, each mapped PTM site is attributed with a",
-      "corresponding literature (PubMed ID).",
-      "\n dbPTM was developed as a comprehensive database of experimentally verified",
-      "PTMs from several databases with annotations of potential PTMs for all UniProtKB",
-      "protein entries. For this tenth anniversary of dbPTM, the updated resource includes",
-      "not only a comprehensive dataset of experimentally verified PTMs, supported by the",
-      "literature, but also an integrative interface for accessing all available databases and",
-      "tools that are associated with PTM analysis. As well as collecting experimental PTM",
-      "data from 14 public databases, this update manually curates over 12,000 modified",
-      "peptides, including the emerging S-nitrosylation, S-glutathionylation and succinylation,",
-      "from approximately 500 research articles, which were retrieved by text mining."
-    ],
-    "emails": [
-      "francis@saturn.yzu.edu.tw",
-      "Hsien-Da Huang",
-      "bryan@mail.nctu.edu.tw",
-      "Hsien-Da Huang"
-    ],
-    "type": "Literature curated",
-    "subtype": "PTM",
-    "omnipath": true,
-    "data_integration": "dynamic",
-    "license": "NAR Open Access",
-    "pypath": {
-      "format": [
-        "pypath.data_formats.ptm[\"dbptm\"]",
-        "pypath.data_formats.omnipath[\"dbptm\"]"
-      ],
-      "data": [
-        "pypath.urls.urls[\"dbptm_benchmark\"][\"urls\"]",
-        "pypath.urls.urls[\"dbptm\"][\"urls\"]"
-      ],
-      "input": ["pypath.dataio.get_dbptm()"],
-      "intr": ["pypath.dataio.dbptm_interactions()"],
-      "ptm": ["pypath.pypath.PyPath().load_dbptm()"]
-    },
-    "dateUpdated": "Nov 2016",
-    "inputs": {
-      "enzyme_substrate": {
-        "id_type_enzyme": "genesymbol",
-        "id_type_substrate": "uniprot",
-        "input_method": "dbptm.dbptm_enzyme_substrate",
-        "organisms": null,
-        "organisms_supported": true,
-        "extra_attrs": {}
-      }
-    }
-  },
-  "SIGNOR": {
-    "synonyms": ["Signor"],
-    "yearUsedRelease": 2020,
-    "releases": [2015],
-    "urls": {
-      "webpages": ["http://signor.uniroma2.it/"],
-      "articles": [
-        "http://nar.oxfordjournals.org/content/44/D1/D548",
-        "http://f1000research.com/posters/1098359",
-        "https://academic.oup.com/nar/article/48/D1/D504/5608992"
-      ],
-      "omictools": ["http://omictools.com/signaling-network-open-resource-tool"]
-    },
-    "full_name": "Signaling Network Open Resource",
-    "pubmeds": [26467481],
-    "annot": [
-      "mechanism",
-      "pathway"
-    ],
-    "recommend": [
-      "provides effect sign for an unprecedented number of interactions; large and",
-      "recent curation effort; many specific entities; PTMs with enzymes"
-    ],
-    "descriptions": [
-      "SIGNOR, the SIGnaling Network Open Resource, organizes and stores in a",
-      "structured format signaling information published in the scientific literature. The",
-      "captured information is stored as binary causative relationships between biological",
-      "entities and can be represented graphically as activity flow. The entire network can be",
-      "freely downloaded and used to support logic modeling or to interpret high content",
-      "datasets. The core of this project is a collection of more than 11000 manually-annotated",
-      "causal relationships between proteins that participate in signal transduction. Each",
-      "relationship is linked to the literature reporting the experimental evidence. In addition",
-      "each node is annotated with the chemical inhibitors that modulate its activity. The",
-      "signaling information is mapped to the human proteome even if the experimental evidence",
-      "is based on experiments on mammalian model organisms.",
-      "SIGNOR 2.0 now stores almost 23 000 manually-annotated causal ",
-      "relationships between proteins and other biologically relevant ",
-      "entities: chemicals, phenotypes, complexes, etc."
-    ],
-    "authors": ["Cesareni Group"],
-    "label": "SIGNOR",
-    "data_import": [
-      "SignaLink3",
-      "PhosphoSite"
-    ],
-    "type": "literature curated",
-    "subtype": ["activity flow", "complexes"],
-    "omnipath": true,
-    "emails": [
-      "perfetto@live.it",
-      "Livia Perfetto"
-    ],
-    "license": "CC BY-SA 4.0",
-    "pypath": {
-      "data": ["pypath.urls.urls[\"signor\"][\"all_url\"]"],
-      "format": ["pypath.data_formats.pathway[\"signor\"]"],
-      "intr": ["pypath.dataio.signor_interactions()"],
-      "ptm": [
-        "pypath.dataio.load_signor_ptms()",
-        "pypath.pypath.PyPath().load_signor_ptms()"
-      ]
-    },
-    "dateUpdated": "Nov 2016",
-    "inputs": {
-      "enzyme_substrate": {
-        "id_type_enzyme": "uniprot",
-        "id_type_substrate": "uniprot",
-        "input_method": "signor.signor_enzyme_substrate",
-        "organisms": [
-          9606,
-          10090,
-          10116
-        ],
-        "organisms_supported": true,
-        "extra_attrs": {}
-      }
-    }
-  },
-  "HuPho": {
-    "yearUsedRelease": 2015,
-    "releases": [
-      2012,
-      2015
-    ],
-    "urls": {
-      "webpages": ["http://hupho.uniroma2.it/"],
-      "articles": [
-        "http://onlinelibrary.wiley.com/doi/10.1111/j.1742-4658.2012.08712.x/full"
-      ],
-      "omictools": ["http://omictools.com/human-phosphatase-portal-tool"]
-    },
-    "pubmeds": [22804825],
-    "descriptions": [
-      "In order to offer a proteome-wide perspective of the phosphatase interactome,",
-      "we have embarked on an extensive text-mining-assisted literature curation effort",
-      "to extend phosphatase interaction information that was not yet covered by",
-      "protein–protein interaction (PPI) databases. Interaction evidence captured by expert curators",
-      "was annotated in the protein interaction database MINT according to the rapid",
-      "curation standard. This data set was next integrated with protein interaction",
-      "information from three additional major PPI databases, IntAct, BioGRID and DIP. These",
-      "databases are part of the PSIMEx consortium and adopt a common data model and common",
-      "controlled vocabularies, thus facilitating data integration. Duplicated entries were",
-      "merged and redundant interactions have been removed. ",
-      "\n As a result, from the HuPho",
-      "website it is possible to explore experimental evidence from 718 scientific articles",
-      "reporting 4600 experiments supporting protein interactions where at least one of the",
-      "partners is a phosphatase. Since some interactions are supported by more than one piece",
-      "of evidence, the actual number of non-redundant interactions is smaller, 2500 at",
-      "the time of writing this paper. Moreover, 199 phosphatases have at least one",
-      "reported ligand, while 53 have none. Interaction evidence is fairly evenly distributed",
-      "in the four PSIMEx resources suggesting a substantial lack of overlap among the",
-      "data curated by each database."
-    ],
-    "notes": [
-      "The database is dynamically updated, so is up to date at any given time.",
-      "That's why it is marked as up to date in 2015, despite it has no new release after",
-      "2012."
-    ],
-    "authors": ["Cesareni Group"],
-    "label": "HuPho",
-    "full_name": "Human Phosphatase Portal",
-    "type": "high throughput and literature curated",
-    "subtype": "post-translational modification",
-    "omnipath": false,
-    "emails": [
-      "perfetto@live.it",
-      "Livia Perfetto"
-    ],
-    "license": "No license",
-    "dateUpdated": "Nov 2016"
-  },
-  "SignaLink3": {
-    "synonyms": ["SignaLink", "SignaLink2", "TCRcuration"],
-    "yearUsedRelease": 2021,
-    "releases": [
-      2010,
-      2012,
-      2016,
-      2021
-    ],
-    "authors": ["Korcsmaros Group"],
-    "label": "SignaLink",
-    "pubmeds": [
-      20542890,
-      23331499
-    ],
-    "urls": {
-      "webpages": ["http://signalink.org/"],
-      "articles": [
-        "http://bioinformatics.oxfordjournals.org/content/26/16/2042.long",
-        "http://www.biomedcentral.com/1752-0509/7/7",
-        "https://academic.oup.com/nar/article/50/D1/D701/6389625"
-      ],
-      "omictools": ["http://omictools.com/signalink-tool"]
-    },
-    "taxons": [
-      "human",
-      "D. melanogaster",
-      "C. elegans"
-    ],
-    "annot": ["pathway"],
-    "recommend": [
-      "one of the largest resources with effect sign; due to its specific,",
-      "biochemically defined pathways suitable for cross-talk analysis"
-    ],
-    "descriptions": [
-      "In each of the three organisms, we first listed signaling proteins and",
-      "interactions from reviews (and from WormBook in C.elegans) and then added further signaling",
-      "interactions of the listed proteins. To identify additional interactions in C.elegans, we",
-      "examined all interactions (except for transcription regulation) of the signaling",
-      "proteins listed in WormBase and added only those to SignaLink that we could manually",
-      "identify in the literature as an experimentally verified signaling interaction. For",
-      "D.melanogaster, we added to SignaLink those genetic interactions from FlyBase that were also",
-      "reported in at least one yeast-2-hybrid experiment. For humans, we manually checked the",
-      "reliability and directions for the PPIs found with the search engines iHop and Chilibot.",
-      "\n SignaLink assigns proteins to signaling pathways using the full texts of",
-      "pathway reviews (written by pathway experts). While most signaling resources consider",
-      "5–15 reviews per pathway, SignaLink uses a total of 170 review papers, i.e. more",
-      "than 20 per pathway on average. Interactions were curated from a total of 941",
-      "articles (PubMed IDs are available at the website). We added a small number of proteins",
-      "based on InParanoid ortholog clusters. For curation, we used a self-developed",
-      "graphical tool and Perl/Python scripts. The current version of SignaLink was completed",
-      "in May 2008 based on WormBase (version 191), FlyBase (2008.6), Ensembl, UniProt",
-      "and the publications listed on the website. ",
-      "\n The curation protocol of SignaLink",
-      "(Fig. 1A) contains several steps aimed specifically at reducing data and curation",
-      "errors. We used reviews as a starting point, manually looked up interactions three",
-      "times, and manually searched for interactions of known signaling proteins with no",
-      "signaling interactions so far in the database."
-    ],
-    "notes": [
-      "For OmniPath we used the literature curated part of version 3 of SignaLink,",
-      "which is unpublished yet. Version 2 is publicly available, and format definitions in",
-      "pypath exist to load the version 2 alternatively."
-    ],
-    "emails": [
-      "t.korcsmaros@imperial.ac.uk",
-      "Tamas Korcsmaros"
-    ],
-    "type": "literature curated",
-    "subtype": "activity flow",
-    "omnipath": true,
-    "license": "CC BY-SA 3.0",
-    "pathguide": 320,
-    "dateUpdated": "Oct 2021"
-  },
-  "NRF2ome": {
-    "yearUsedRelease": 2013,
-    "releases": [2013],
-    "authors": ["Korcsmaros Group"],
-    "label": "NRF2ome",
-    "urls": {
-      "webpages": ["http://nrf2.elte.hu/"],
-      "articles": [
-        "http://www.hindawi.com/journals/omcl/2013/737591/",
-        "http://www.sciencedirect.com/science/article/pii/S0014579312003912"
-      ]
-    },
-    "pubmeds": [
-      22641035,
-      23710289
-    ],
-    "taxons": ["human"],
-    "recommend": [
-      "specific details about NRF2 related oxidative stress signaling; connections to",
-      "transcription factors"
-    ],
-    "descriptions": [
-      "From Korcsmaros 2010: ... we first listed signaling proteins and interactions",
-      "from reviews and then added further signaling interactions of the listed proteins.",
-      "We used reviews as a starting point, manually looked up interactions three times,",
-      "and manually searched for interactions of known signaling proteins with no",
-      "signaling interactions so far in the database."
-    ],
-    "emails": [
-      "t.korcsmaros@imperial.ac.uk>",
-      "Tamas Korcsmaros"
-    ],
-    "type": "literature curated",
-    "subtype": "activity flow",
-    "omnipath": true,
-    "license": "CC BY-SA 3.0",
-    "dateUpdated": "Nov 2016"
-  },
-  "ARN": {
-    "full_name": "Autophagy Regulatory Network",
-    "yearUsedRelease": 2014,
-    "releases": [2014],
-    "authors": ["Korcsmaros Group"],
-    "label": "ARN",
-    "pubmeds": [25635527],
-    "urls": {
-      "webpages": ["http://autophagyregulation.org/"],
-      "articles": [
-        "http://www.tandfonline.com/doi/full/10.4161/15548627.2014.994346"
-      ]
-    },
-    "taxons": ["human"],
-    "annot": ["pathway"],
-    "recommend": [
-      "well curated essential interactions in autophagy regulation; connections to",
-      "transcription factors"
-    ],
-    "descriptions": [
-      "From Korcsmaros 2010: ... we first listed signaling proteins and interactions",
-      "from reviews and then added further signaling interactions of the listed proteins.",
-      "We used reviews as a starting point, manually looked up interactions three times,",
-      "and manually searched for interactions of known signaling proteins with no",
-      "signaling interactions so far in the database."
-    ],
-    "emails": [
-      "t.korcsmaros@imperial.ac.uk>",
-      "Tamas Korcsmaros"
-    ],
-    "type": "literature curated",
-    "subtype": "activity flow",
-    "omnipath": true,
-    "license": "CC BY-SA 3.0",
-    "dateUpdated": "Nov 2016"
-  },
-  "HPRD": {
-    "synonyms": ["HPRD-phos"],
-    "yearUsedRelease": 2010,
-    "releases": [
-      2002,
-      2005,
-      2009,
-      2010
-    ],
-    "urls": {
-      "webpages": ["http://www.hprd.org/"],
-      "articles": [
-        "http://genome.cshlp.org/content/13/10/2363.long",
-        "http://nar.oxfordjournals.org/content/34/suppl_1/D411.long",
-        "http://nar.oxfordjournals.org/content/37/suppl_1/D767.long"
-      ],
-      "omictools": ["http://omictools.com/human-protein-reference-database-tool"]
-    },
-    "annot": ["mechanism"],
-    "recommend": [
-      "one of the largest kinase-substrate resources; provides large amount of",
-      "specific information; discontinued"
-    ],
-    "pubmeds": [
-      14525934,
-      16381900,
-      18988627
-    ],
-    "descriptions": [
-      "The information about protein-protein interactions was cataloged after a",
-      "critical reading of the published literature. Exhaustive searches were done based on",
-      "keywords and medical subject headings (MeSH) by using Entrez. The type of experiments",
-      "that served as the basis for establishing protein-protein interactions was also",
-      "annotated. Experiments such as coimmunoprecipitation were designated in vivo, GST fusion",
-      "and similar “pull-down” type of experiments were designated in vitro, and those",
-      "identified by yeast two-hybrid were annotated as yeast two-hybrid. ",
-      "\n Posttranslational",
-      "modifications were annotated based on the type of modification, site of modification, and",
-      "the modified residue. In addition, the upstream enzymes that are responsible for",
-      "modifications of these proteins were reported if described in the articles. The most",
-      "commonly known and the alternative subcellular localization of the protein were based",
-      "on the literature. The sites of expression of protein and/or mRNA were annotated",
-      "based on published studies."
-    ],
-    "full_name": "Human Protein Reference Database",
-    "emails": [
-      "pandey@jhmi.edu",
-      "Akhilesh Pandey"
-    ],
-    "type": "literature curated",
-    "subtype": "post-translational modification",
-    "omnipath": true,
-    "license": "HPRD",
-    "pypath": {
-      "data": [
-        "urls.urls[\"hprd_all\"][\"url\"]",
-        "urls.urls[\"hprd_all\"][\"ptm_file\"]"
-      ],
-      "input": ["pypath.dataio.get_hprd()"],
-      "intr": ["pypath.dataio.hprd_interactions()"],
-      "format": [
-        "pypath.data_formats.ptm[\"hprd\"]",
-        "pypath.data_formats.omnipath[\"hprd\"]"
-      ],
-      "ptm": ["pypath.dataio.get_hprd_ptms()"]
-    },
-    "pathguide": 14,
-    "dateUpdated": "Nov 2016",
-    "inputs": {
-      "enzyme_substrate": {
-        "id_type_enzyme": "genesymbol",
-        "id_type_substrate": [
-          [
-            "refseqp",
-            "substrate_refseqp"
-          ]
-        ],
-        "input_method": "hprd.hprd_enzyme_substrate",
-        "organisms": [
-          9606
-        ],
-        "organisms_supported": false,
-        "extra_attrs": {}
-      }
-    }
-  },
-  "ACSN": {
-    "yearUsedRelease": 2015,
-    "releases": [
-      2008,
-      2014,
-      2015,
-      2016
-    ],
-    "authors": ["Curie"],
-    "urls": {
-      "webpages": ["https://acsn.curie.fr"],
-      "articles": [
-        "http://www.nature.com/oncsis/journal/v4/n7/full/oncsis201519a.html",
-        "http://msb.embopress.org/content/4/1/0174.long"
-      ]
-    },
-    "pubmeds": [
-      26192618,
-      18319725
-    ],
-    "taxons": ["human"],
-    "recommend": [
-      "the third largest process description resource; focused on signaling pathways;",
-      "relationships mapped into a topological space"
-    ],
-    "descriptions": [
-      "The map curator studies the body of literature dedicated to the biological",
-      "process or molecular mechanism of interest. The initial sources of information are the",
-      "major review articles from high-impact journals that represent the consensus view on",
-      "the studied topic and also provide a list of original references. The map curator",
-      "extracts information from review papers and represents it in the form of biochemical",
-      "reactions in CellDesigner. This level of details reflects the ‘canonical’ mechanisms.",
-      "Afterwards, the curator extends the search and analyses original papers from the list",
-      "provided in the review articles and beyond. This information is used to enrich the map",
-      "with details from the recent discoveries in the field. The rule for confident",
-      "acceptance and inclusion of a biochemical reaction or a process is the presence of",
-      "sufficient evidences from more than two studies, preferably from different scientific",
-      "groups. The content of ACSN is also verified and compared with publicly available",
-      "databases such as REACTOME, KEGG, WikiPathways, BioCarta, Cell Signalling and others to",
-      "ensure comprehensive representation of consensus pathways and links on PMIDs of",
-      "original articles confirmed annotated molecular interactions.",
-      "\n CellDesigner 3.5 version was used to enter biological facts from a carefully",
-      "studied selection of papers (see the whole bibliography on the web site with",
-      "Supplementary information). Whenever the details of a biological fact could not be naturally",
-      "expressed with CellDesigner standard notations, it was fixed and some solution was",
-      "proposed. For example, we added a notation (co‐factor) to describe all the components",
-      "intervening in the transcription of genes mediated by the E2F family proteins."
-    ],
-    "emails": [
-      "andrei.zinovyev@curie.fr",
-      "Andrei Zinovyev"
-    ],
-    "type": "literature curated",
-    "subtype": "reaction",
-    "full_name": "Atlas of Cancer Signalling Networks",
-    "omnipath": false,
-    "license": "CC BY 4.0",
-    "pypath": {
-      "data": [
-        "pypath.urls.urls[\"acsn\"][\"url\"]",
-        "pypath.data_formats.files[\"acsn\"][\"ppi\"]",
-        "pypath.data_formats.files[\"acsn\"][\"names\"]",
-        "pypath.urls.urls[\"acsn\"][\"biopax_l3\"]"
-      ],
-      "input": [
-        "pypath.dataio.get_acsn()",
-        "pypath.dataio.get_acsn_effects()",
-        "pypath.dataio.acsn_biopax()",
-        "pypath.pypath.PyPath().acsn_effects()"
-      ],
-      "intr": ["pypath.dataio.acsn_ppi()"],
-      "format": [
-        "pypath.data_formats.reaction[\"acsn\"]",
-        "pypath.data_formats.reaction_misc[\"acsn\"]"
-      ]
-    },
-    "dateUpdated": "Nov 2016"
-  },
-  "DeathDomain": {
-    "yearUsedRelease": 2012,
-    "releases": [
-      2011,
-      2012
-    ],
-    "authors": ["Myoungji University"],
-    "label": "DeathDomain",
-    "taxons": ["human"],
-    "pubmeds": [22135292],
-    "urls": {
-      "articles": ["http://nar.oxfordjournals.org/content/40/D1/D331"],
-      "webpages": ["http://deathdomain.org/"]
-    },
-    "license": {
-      "name": "No license.",
-      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense",
-      "commercial_use": false,
-      "comment": ["Please cite the following paper when you use Death Domain",
-        "database in your publications, which is very important to sustain our service: Kwon et",
-        "al. 2012."]
-    },
-    "emails": [
-      "hyunho@ynu.ac.kr",
-      "Hyun Ho Park"
-    ],
-    "files": {
-      "articles": ["DeathDomain_Kwon2011.pdf"],
-      "data": {
-        "raw": ["deathdomain.tsv"],
-        "processed": ["deathdomain.sif"]
-      }
-    },
-    "taxons": ["human"],
-    "size": {
-      "nodes": 99,
-      "edges": 175
-    },
-    "identifiers": ["GeneSymbol"],
-    "annot": ["experiment"],
-    "recommend": "focused deep curation effort on death domain superfamily proteins; many specific relationships",
-    "descriptions": [
-      "The PubMed database was used as the primary source for collecting information",
-      "and constructing the DD database. After finding synonyms for each of the 99 DD",
-      "superfamily proteins using UniProtKB and Entrez Gene, we obtained a list of articles using",
-      "each name of the proteins and its synonyms on a PubMed search, and we selected the",
-      "articles that contained evidence for physical binding among the proteins denoted. We",
-      "also manually screened information that was in other databases, such as DIP,",
-      "IntAct, MINT, STRING and Entrez Gene. All of the 295 articles used for database",
-      "construction are listed on our database website."
-    ],
-    "notes": [
-      "Detailful dataset with many references. Sadly the data can be extracted only",
-      "by parsing HTML. It doesn't mean more difficulty than parsing XML formats, just",
-      "these are not intended to use for this purpose."
-    ],
-    "type": "literature curated",
-    "subtype": "activity flow",
-    "omnipath": true,
-    "data_integration": "static",
-    "license": "NAR Open Access",
-    "pypath": {
-      "data": ["pypath.data/dd_refs.csv"],
-      "format": [
-        "pypath.data_formats.pathway[\"death\"]",
-        "pypath.data_formats.omnipath[\"death\"]"
-      ]
-    },
-    "pathguide": 442,
-    "dateUpdated": "Nov 2016"
-  },
-  "TRIP": {
-    "yearUsedRelease": 2014,
-    "releases": [
-      2010,
-      2012
-    ],
-    "urls": {
-      "articles": [
-        "http://www.plosone.org/article/info:doi/10.1371/journal.pone.0047165",
-        "http://nar.oxfordjournals.org/content/39/suppl_1/D356.full",
-        "http://link.springer.com/article/10.1007%2Fs00424-013-1292-2"
-      ],
-      "webpages": ["http://www.trpchannel.org"],
-      "omictools": [
-        "http://omictools.com/transient-receptor-potential-channel-interacting-protein-database-tool"
-      ]
-    },
-    "label": "TRIP",
-    "full_name": "Mammalian Transient Receptor Potential Channel-Interacting Protein Database",
-    "emails": [
-      "jhjeon2@snu.ac.kr",
-      "Ju-Hong Jeon"
-    ],
-    "size": {
-      "nodes": 468,
-      "edges": 744
-    },
-    "pubmeds": [
-      20851834,
-      23071747,
-      23677537
-    ],
-    "files": {
-      "articles": ["TRIP_Shin2012.pdf"],
-      "data": {
-        "raw": [],
-        "processed": ["trip.sif"]
-      }
-    },
-    "taxons": [
-      "human",
-      "mouse",
-      "rat"
-    ],
-    "identifiers": ["GeneSymbol"],
-    "recommend": "high number of specific interactions; focused on TRP channels",
-    "descriptions": [
-      "The literature on TRP channel PPIs found in the PubMed database serve as the",
-      "primary information source for constructing the TRIP Database. First, a list of",
-      "synonyms for the term ‘TRP channels’ was constructed from UniprotKB, Entrez Gene,",
-      "membrane protein databases (Supplementary Table S2) and published review papers for",
-      "nomenclature. Second, using these synonyms, a list of articles was obtained through a PubMed",
-      "search. Third, salient articles were collected through a survey of PubMed abstracts",
-      "and subsequently by search of full-text papers. Finally, we selected articles that",
-      "contain evidence for physical binding among the proteins denoted. To prevent omission",
-      "of relevant papers, we manually screened information in other databases, such as",
-      "DIP, IntAct, MINT, STRING, BioGRID, Entrez Gene, IUPHAR-DB and ISI Web of Knowledge",
-      "(from Thomson Reuters). All 277 articles used for database construction are listed",
-      "in our database website. "
-    ],
-    "notes": [
-      "Good manually curated dataset focusing on TRP channel proteins, with ~800",
-      "binary interactions. The provided formats are not well suitable for bioinformatics",
-      "use because of the non standard protein names, with greek letters and only human",
-      "understandable formulas. Using HTML processing from 5-6 different tables, with couple",
-      "hundreds lines of code, one have a chance to compile a usable table."
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-    ],
-    "type": "literature curated",
-    "subtype": "activity flow",
-    "omnipath": true,
-    "pypath": {
-      "input": [
-        "pypath.dataio.trip_process()",
-        "pypath.dataio.take_a_trip()",
-        "pypath.dataio.trip_process_table()",
-        "pypath.dataio.trip_get_uniprot()",
-        "pypath.dataio.trip_find_uniprot()"
-      ],
-      "intr": ["pypath.dataio.trip_interactions()"],
-      "data": [
-        "pypath.urls.urls[\"trip\"][\"intr\"]",
-        "pypath.urls.urls[\"trip\"][\"show\"]",
-        "pypath.urls.urls[\"trip\"][\"json\"]"
-      ],
-      "format": [
-        "pypath.data_formats.pathway[\"trip\"]",
-        "pypath.data_formats.omnipath[\"trip\"]"
-      ]
-    },
-    "license": "CC BY-NC-SA 3.0",
-    "pathguide": 409,
-    "dateUpdated":"Nov 2016"
-  },
-  "Awan2007": {
-    "yearUsedRelease": 2007,
-    "authors": ["Wang Group"],
-    "label": "Awan 2007",
-    "data_import": [
-      "BioCarta",
-      "CA1"
-    ],
-    "contains": [
-      "BioCarta",
-      "CA1"
-    ],
-    "urls": {
-      "articles": ["http://www.cancer-systemsbiology.org/Papers/iet-sb2007.pdf"]
-    },
-    "emails": [
-      "Edwin.Wang@cnrc-nrc.gc.ca",
-      "Edwin Wang"
-    ],
-    "pubmeds": [17907678],
-    "descriptions": [
-      "To construct the human cellular signalling network, we manually curated",
-      "signalling pathways from literature. The signalling data source for our pathways is the",
-      "BioCarta database (http://www.biocarta.com/genes/allpathways.asp), which, so far, is",
-      "the most comprehensive database for human cellular signalling pathways. Our",
-      "curated pathway database recorded gene names and functions, cellular locations of each",
-      "gene and relationships between genes such as activation, inhibition, translocation,",
-      "enzyme digestion, gene transcription and translation, signal stimulation and so on.",
-      "To ensure the accuracy and the consistency of the database, each referenced",
-      "pathway was cross-checked by different researchers and finally all the documented",
-      "pathways were checked by one researcher. In total, 164 signalling pathways were",
-      "documented (supplementary Table 2). Furthermore, we merged the curated data with another",
-      "literature-mined human cellular signalling network. As a result, the merged network contains",
-      "nearly 1100 proteins (SupplementaryNetworkFile). To construct a signalling network,",
-      "we considered relationships of proteins as links (activation or inactivation as",
-      "directed links and physical interactions in protein complexes as neutral links) and",
-      "proteins as nodes."
-    ],
-    "type": "literature curated",
-    "subtype": "activity flow",
-    "omnipath": false,
-    "license": "CC BY 4.0",
-    "dateUpdated":"Nov 2016"
-  },
-  "Cui2007": {
-    "yearUsedRelease": 2007,
-    "authors": ["Wang Group"],
-    "label": "Cui 2007",
-    "data_import": [
-      "Awan2007",
-      "CancerCellMap"
-    ],
-    "pubmeds": [18091723],
-    "contains": [
-      "Awan2007",
-      "CancerCellMap",
-      "CA1",
-      "BioCarta"
-    ],
-    "urls": {
-      "articles": ["http://msb.embopress.org/content/3/1/152"]
-    },
-    "emails": [
-      "Edwin.Wang@cnrc-nrc.gc.ca",
-      "Edwin Wang"
-    ],
-    "files": {
-      "articles": ["Cui2007.pdf"],
-      "data": {
-        "raw": ["cui-network.xls"],
-        "processed": ["cui.sif"]
-      }
-    },
-    "identifiers": ["EntrezGene"],
-    "size": {
-      "edges": 4249,
-      "nodes": 1528
-    },
-    "taxons": ["human"],
-    "descriptions": [
-      "To build up the human signaling network, we manually curated the signaling",
-      "molecules (most of them are proteins) and the interactions between these molecules from",
-      "the most comprehensive signaling pathway database, BioCarta",
-      "(http://www.biocarta.com/). The pathways in the database are illustrated as diagrams. We manually recorded",
-      "the names, functions, cellular locations, biochemical classifications and the",
-      "regulatory (including activating and inhibitory) and interaction relations of the",
-      "signaling molecules for each signaling pathway. To ensure the accuracy of the curation,",
-      "all the data have been crosschecked four times by different researchers. After",
-      "combining the curated information with another literature‐mined signaling network that",
-      "contains ∼500 signaling molecules (Ma'ayan et al, 2005)[this is the CA1], we obtained a",
-      "signaling network containing ∼1100 proteins (Awan et al, 2007). We further extended this",
-      "network by extracting and adding the signaling molecules and their relations from the",
-      "Cancer Cell Map (http://cancer.cellmap.org/cellmap/), a database that contains 10",
-      "manually curated signaling pathways for cancer. As a result, the network contains 1634",
-      "nodes and 5089 links that include 2403 activation links (positive links), 741",
-      "inhibitory links (negative links), 1915 physical links (neutral links) and 30 links whose",
-      "types are unknown (Supplementary Table 9). To our knowledge, this network is the",
-      "biggest cellular signaling network at present.",
-      "\n From Awan 2007: To construct the human cellular signalling network, we",
-      "manually curated signalling pathways from literature. The signalling data source for",
-      "our pathways is the BioCarta database",
-      "(http://www.biocarta.com/genes/allpathways.asp), which, so far, is the most comprehensive database for human cellular",
-      "signalling pathways. Our curated pathway database recorded gene names and functions,",
-      "cellular locations of each gene and relationships between genes such as activation,",
-      "inhibition, translocation, enzyme digestion, gene transcription and translation, signal",
-      "stimulation and so on. To ensure the accuracy and the consistency of the database, each",
-      "referenced pathway was cross-checked by different researchers and finally all the",
-      "documented pathways were checked by one researcher."
-    ],
-    "notes": [
-      "Excellent signaling network with good topology for all those who doesn't mind",
-      "to use data of unknown origin. Supposedly a manually curated network, but data",
-      "files doesn't include article references. Merging CA1 network with CancerCellMap and",
-      "BioCarta (also without references) makes the origin of the data untraceable."
-    ],
-    "type": "literature curated",
-    "subtype": "activity flow",
-    "omnipath": false,
-    "license": "CC BY 4.0",
-    "dateUpdated":"Nov 2016"
-  },
-  "BioCarta": {
-    "synonyms": ["Biocarta"],
-    "yearUsedRelease": 2006,
-    "releases": [2006],
-    "authors": ["Community"],
-    "label": "BioCarta",
-    "urls": {
-      "webpages": [
-        "http://www.biocarta.com/",
-        "http://cgap.nci.nih.gov/Pathways/BioCarta_Pathways"
-      ]
-    },
-    "emails": [
-      "info@biocarta.com",
-      "BioCarta Scientific Advisory Board"
-    ],
-    "taxons": ["human"],
-    "descriptions": [
-      "Community built pathway database based on expert curation."
-    ],
-    "notes": [
-      "This resource includes a huge number of pathways, each curated by experts from",
-      "a few reviews. The data is not available for download from the original webpage,",
-      "only from second hand, for example from NCI-PID, in NCI-XML format. However, these",
-      "files doesn't contain any references, which makes problematic the use of the",
-      "BioCarta dataset. Also, some pathways are reviewed long time ago, possibly outdated.",
-      "The Company and the website looks like it was abandoned around 2003-2006."
-    ],
-    "type": "literature curated",
-    "subtype": "activity flow",
-    "omnipath": false,
-    "license": "BioCarta",
-    "dateUpdated":"Nov 2016"
-  },
-  "TLR": {
-    "urls": {
-      "articles": ["https://www.embopress.org/doi/10.1038/msb4100057"]
-    },
-    "type": "literature curated",
-    "subtype": "model",
-    "omnipath": false,
-    "license": "No license",
-    "dateUpdated":"Nov 2016"
-  },
-  "CA1": {
-    "yearUsedRelease": 2005,
-    "releases": [2005],
-    "size": {
-      "nodes": 545,
-      "edges": 1259
-    },
-    "authors": ["Iyengar Lab"],
-    "label": "Ma'ayan 2005",
-    "full_name": "Human Hippocampal CA1 Region Neurons Signaling Network",
-    "pubmeds": [16099987],
-    "urls": {
-      "articles": ["http://www.sciencemag.org/content/309/5737/1078.full"],
-      "webpages": []
-    },
-    "emails": [
-      "ravi.iyengar@mssm.edu",
-      "Ravi Iyengar"
-    ],
-    "taxons": [
-      "human",
-      "mouse"
-    ],
-    "annot": [
-      "localization",
-      "mechanism"
-    ],
-    "recommend": ["among the largest resources providing effect signs; more than a decade old",
-      "dataset, used in many studies"],
-    "descriptions": [
-      "We used published research literature to identify the key components of",
-      "signaling pathways and cellular machines, and their binary interactions. Most components",
-      "(~80%) have been described in hippocampal neurons or related neuronal cells. Other",
-      "components are from other cells, but are included because they are key components in",
-      "processes known to occur in hippocampal neurons, such as translation. We then",
-      "established that these interactions were both direct and functionally relevant. All of the",
-      "connections were individually verified by at least one of the authors of this paper by",
-      "reading the relevant primary paper(s). We developed a system made of 545 components",
-      "(nodes) and 1259 links (connections). We used arbitrary but consistent rules to sort",
-      "components into various groups. For instance, transcription factors are considered a as",
-      "part of the transcriptional machinery, although it may also be equally valid to",
-      "consider them as the most downstream component of the central signaling network.",
-      "Similarly the AMPA receptor-channel (AMPAR) is considered part of the ion channels in",
-      "the electrical response system since its activity is essential to defining the",
-      "postsynaptic response, although it binds to and is activated by glutamate, and hence can be",
-      "also considered a ligand gated receptor-channel in the plasma membrane. The links",
-      "were specified by two criteria: function and biochemical mechanism. Three types of",
-      "functional links were specified. This follows the rules used for representation of",
-      "pathways in Science’s STKE (S1). Links may be activating, inhibitory or neutral.",
-      "Neutral links do not specify directionality between components, and are mostly used to",
-      "represent scaffolding and anchoring undirected or bidirectional interactions. The",
-      "biochemical specification includes defining the reactions as non-covalent binding",
-      "interactions or enzymatic reactions. Within the enzymatic category, reactions were further",
-      "specified as phosphorylation, dephosphorylation, hydrolysis, etc. These two criteria for",
-      "specification are independent and were defined for all interactions. For the analyses in",
-      "this study we only used the functional criteria: activating, inhibitory or neutral",
-      "specifications. We chose papers that demonstrated direct interactions that were supported by",
-      "either biochemical or physiological effects of the interactions. From these papers we",
-      "identified the components and interactions that make up the system we analyzed. During",
-      "this specification process we did not consider whether these interactions would",
-      "come together to form higher order organizational units. Each component and",
-      "interaction was validated by a reference from the primary literature (1202 papers were",
-      "used). A list of authors who read the papers to validate the components and",
-      "interactions is provided under authors contributions."
-    ],
-    "notes": [
-      "One of the earliest manually curated networks, available in easily accessible",
-      "tabular format, including UniProt IDs and PubMed references."
-    ],
-    "type": "literature curated",
-    "subtype": "activity flow",
-    "omnipath": true,
-    "data_integration": "dynamic",
-    "pypath": {
-      "intr": ["pypath.urls.urls[\"ca1\"][\"url\"]"],
-      "data": ["pypath.dataio.get_ca1()"],
-      "format": [
-        "pypath.data_formats.pathway[\"ca1\"]",
-        "pypath.data_formats.omnipath[\"ca1\"]"
-      ]
-    },
-    "license": "CC BY 4.0",
-    "dateUpdated":"Nov 2016"
-  },
-  "CancerCellMap": {
-    "yearUsedRelease": 2006,
-    "relases": [
-      2004,
-      2006
-    ],
-    "urls": {
-      "articles": [],
-      "webpages": [
-        "http://www.pathwaycommons.org/archives/PC1/last_release-2011/tab_delim_network/by_source/",
-        "http://web.archive.org/web/20130729025707/http://cancer.cellmap.org/cellmap/home.do"
-      ]
-    },
-    "authors": ["Bader Lab"],
-    "emails": [
-      "gary.bader@utoronto.ca",
-      "Gary Bader"
-    ],
-    "descriptions": [
-      "Manually curated data, unpublished. A team of M.Sc. and Ph.D. biologists at",
-      "the Institute of Bioinformatics in Bangalore, India read original research papers",
-      "and hand-entered the pathway data into our database. The quality of the Cancer",
-      "Cell Map pathways is very high. Half of the pathways were reviewed by experts at",
-      "Memorial Sloan-Kettering Cancer Center and were found to contain only a few errors,",
-      "which were subsequently fixed. A pathway is a collection of all genes/proteins that",
-      "have been described as pathway members in any publication and all the interactions",
-      "between them that can be found described in the literature."
-    ],
-    "notes": [
-      "One of the earliest manually curated datasets, now only available from second",
-      "hand, e.g. from PathwayCommons. Included in many other resources. Contains binary",
-      "interactions with PubMed references."
-    ],
-    "taxons": [
-      "human",
-      "mouse",
-      "rat"
-    ],
-    "annot": ["localization"],
-    "recommend": "old literature curated resource; effect signs for some interactions",
-    "type": "literature curated",
-    "subtype": "interaction",
-    "omnipath": true,
-    "pypath": {
-      "intr": ["pypath.dataio.get_ccmap()"],
-      "data": [
-        "pypath.urls.urls[\"ccmap\"][\"nodes\"]",
-        "pypath.urls.urls[\"ccmap\"][\"edges\"]"
-      ],
-      "format": [
-        "pypath.data_formats.interaction[\"ccmap\"]",
-        "pypath.data_formats.omnipath[\"ccmap\"]"
-      ]
-    },
-    "data_integration": "dynamic",
-    "license": "CC BY 2.5",
-    "pathguide": 223,
-    "dateUpdated":"Nov 2016"
-  },
-  "CARFMAP": {
-    "yearUsedRelease": 2015,
-    "urls": {
-      "articles": [
-        "http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0143274"
-      ],
-      "webpages": ["http://visionet.erc.monash.edu.au/CARFMAP/"]
-    },
-    "pubmeds": [26673252],
-    "emails": [
-      "hieu.nim@monash.edu",
-      "Hieu T Nim",
-      "sarah.boyd@monash.edu",
-      "Sarah E Boyd"
-    ],
-    "license": "CC BY 4.0",
-    "omnipath": false,
-    "type": "Literature curated",
-    "subtype": "Pathway",
-    "dateUpdated":"Nov 2016"
-  },
-  "Wang": {
-    "yearUsedRelease": 2014,
-    "releases": [
-      2009,
-      2010,
-      2011,
-      2012,
-      2013,
-      2014
-    ],
-    "nodes": 6300,
-    "edges": 63000,
-    "authors": ["Wang Group"],
-    "full_name": "Human Signaling Network version 6",
-    "label": "HumanSignalingNetwork",
-    "data_import": [
-      "Cui2007",
-      "BioCarta",
-      "CST",
-      "NCI-PID",
-      "iHOP"
-    ],
-    "urls": {
-      "webpages": [
-        "http://www.cancer-systemsbiology.org/dataandsoftware.htm",
-        "http://www.bri.nrc.ca/wang/"
-      ]
-    },
-    "emails": [
-      "Edwin.Wang@cnrc-nrc.gc.ca",
-      "Edwin Wang"
-    ],
-    "taxons": [
-      "human",
-      "mouse",
-      "rat"
-    ],
-    "contains": [
-      "Cui2007",
-      "CancerCellMap",
-      "Awan2007",
-      "NetPath",
-      "CA1",
-      "NCI-PID",
-      "BioCarta",
-      "CST",
-      "iHOP"
-    ],
-    "descriptions": [
-      "Composed from multiple manually curated datasets, and contains own manual",
-      "cuartion effort. Methods are unclear, and the dataset has not been published in",
-      "reviewed paper. Based on the Cui et al 2007.",
-      "\n Wang Lab has manually curated human signaling data from literature since 2005.",
-      "The data sources include BioCarta, CST Signaling pathways, NCI Pathway Interaction",
-      "Database, iHOP, and many review papers. The contents are updated every year.",
-      "\n iHOP is not literature curated, but is a literature mining platform."
-    ],
-    "notes": [
-      "This network aims to merge multiple manually curated networks. Unfortunately a",
-      "precise description of the sources and methods is missing. Also, the dataset does not",
-      "include the references. Moreover, the data file misses header and key, so users can",
-      "only guess about the meaning of columns and values."
-    ],
-    "type": "literature curated",
-    "data_integration": "dynamic",
-    "subtype": "activity flow",
-    "omnipath": false,
-    "license": "CC BY-NC 3.0",
-    "pypath": {
-      "data": ["pypath.urls.urls[\"hsn\"]"],
-      "format": ["pypath.data_formats.interaction_misc[\"hsn\"]"],
-      "intr": ["pypath.dataio.get_hsn()"]
-    },
-    "dateUpdated":"Nov 2016"
-  },
-  "Ataxia": {
-    "yearUsedRelease": 2010,
-    "urls": {
-      "webpages": ["http://franklin.imgen.bcm.tmc.edu/ppi/tables.html"],
-      "articles": ["http://hmg.oxfordjournals.org/content/20/3/510.long"]
-    },
-    "taxons": ["human"],
-    "authors": ["Shaw Lab"],
-    "descriptions": [
-      "In order to expand the interaction dataset, we added relevant direct",
-      "protein–protein interactions from currently available human protein–protein interaction",
-      "networks (Rual et al., 2005; Stelzl et al., 2005). We also searched public databases,",
-      "including BIND (Bader et al., 2003), DIP (Xenarios et al., 2002), HPRD (Peri et al.,",
-      "2003), MINT (Zanzoni et al., 2002), and MIPS (Pagel et al., 2005), to identify",
-      "literature-based binary interactions involving the 54 ataxia-associated baits and the 561",
-      "interacting prey proteins. We identified 4796 binary protein–protein interactions for our",
-      "Y2H baits and prey proteins (Table S4) and incorporated them in the Y2H",
-      "protein–protein interaction map (Figures 4A–4C)."
-    ],
-    "notes": ["The Ataxia network doesn't contain original manual curation effort.",
-              "The integrated data are very old."],
-    "type": "high-throughput",
-    "subtype": "interaction",
-    "omnipath": false,
-    "emails": [
-      "Tong_Hao@dfci.harvard.edu",
-      "Tong Hao",
-      "barabasi@gmail.com",
-      "Albert-Laszlo Barabasi"
-    ],
-    "license": "CC BY 2.5",
-    "dateUpdated":"Nov 2016"
-  },
-  "Reactome": {
-    "yearUsedRelease": 2016,
-    "releases": [
-      2004,
-      2008,
-      2010,
-      2012,
-      2014,
-      2015,
-      2016
-    ],
-    "urls": {
-      "webpages": ["http://reactome.org/"],
-      "articles": [
-        "http://nar.oxfordjournals.org/content/33/suppl_1/D428.long",
-        "http://nar.oxfordjournals.org/content/37/suppl_1/D619.long",
-        "http://onlinelibrary.wiley.com/doi/10.1002/pmic.201100066/abstract",
-        "http://nar.oxfordjournals.org/content/39/suppl_1/D691.long",
-        "http://genomebiology.com/content/8/3/R39",
-        "http://nar.oxfordjournals.org/content/42/D1/D472.long",
-        "http://www.mdpi.com/2072-6694/4/4/1180/htm"
-      ],
-      "omictools": ["http://omictools.com/reactome-tool"]
-    },
-    "pubmeds": [
-      15608231,
-      18981052,
-      21751369,
-      21067998,
-      24213504,
-      24243840
-    ],
-    "annot": [
-      "localization",
-      "mechanism",
-      "pathway"
-    ],
-    "recommend": "the largest process description resource; peerless coverage; both signaling and metabolism",
-    "descriptions": [
-      "Once the content of the module is approved by the author and curation staff,",
-      "it is peer-reviewed on the development web-site, by one or more bench biologists",
-      "selected by the curator in consultation with the author. The peer review is open and",
-      "the reviewers are acknowledged in the database by name. Any issues raised in the",
-      "review are resolved, and the new module is scheduled for release."
-    ],
-    "notes": [
-      "No binary interactions can be exported programmatically from any format of the",
-      "Reactome dataset. Reactome's curation method doesn't cover binary interactions, the",
-      "inferred lists on the webpage are based on automatic expansion of complexes and",
-      "reactions, and thus are unreliable. In lack of information, references cannot be assigned",
-      "to interactions."
-    ],
-    "type": "literature curated",
-    "subtype": "process description",
-    "data_integration": "dynamic",
-    "omnipath": false,
-    "emails": [
-      "help@reactome.org",
-      "Reactome Team",
-      "hhe@ebi.ac.uk",
-      "Henning Hermjakob"
-    ],
-    "license": "CC0 1.0",
-    "pypath": {
-      "data": [
-        "pypath.urls.urls[\"reactome\"][\"sbml\"]",
-        "pypath.urls.urls[\"reactome\"][\"biopax_l2\"]",
-        "pypath.urls.urls[\"reactome\"][\"biopax_l3\"]"
-      ],
-      "format": ["pypath.data_formats.reaction_misc[\"reactome\"]"],
-      "intr": ["pypath.dataio.reactome_interactions()"],
-      "input": [
-        "pypath.dataio.reactome_sbml()",
-        "pypath.dataio.reactome_biopax()"
-      ]
-    },
-    "pathguide": 103,
-    "dateUpdated":"Nov 2016"
-  },
-  "Li2012": {
-    "yearUsedRelease": 2012,
-    "urls": {
-      "articles": ["http://genome.cshlp.org/content/22/7/1222"]
-    },
-    "pubmeds": [22194470],
-    "label": "Li 2012",
-    "authors": ["Wang Lab"],
-    "emails": [
-      "edwin.wang@cnrc-nrc.gc.ca",
-      "Edwin Wang"
-    ],
-    "taxons": ["human"],
-    "descriptions": [
-      "Human phosphotyrosine signaling network. We manually collected the",
-      "experimentally determined human TK–substrate interactions and substrate–SH2/PTB domain",
-      "interactions from the literature (see Supplemental Materials), as well as the Phospho.ELM",
-      "and PhosphoSitePlus databases. [71 references, 585 circuits]"
-    ],
-    "type": "high-throughput",
-    "data_integration": "static",
-    "subtype": "yeast 2 hybrid",
-    "omnipath": false,
-    "pypath": {
-      "input": ["pypath.dataio.get_li2012()"],
-      "data": [
-        "pypath.urls.urls[\"li2012\"][\"file\"]",
-        "pypath.data/li2012.csv"
-      ],
-      "intr": ["pypath.dataio.li2012_interactions()"],
-      "dmi": ["pypath.dataio.li2012_dmi()"],
-      "ptm": ["pypath.dataio.li2012_phospho()"],
-      "format": ["pypath.data_formats.ptm_misc[\"li2012\"]"]
-    },
-    "license": "CC BY-NC 3.0",
-    "dateUpdated":"Nov 2016"
-  },
-  "Zaman2013": {
-    "yearUsedRelease": 2013,
-    "urls": {
-      "articles": [
-        "http://www.sciencedirect.com/science/article/pii/S2211124713004695"
-      ]
-    },
-    "pubmeds": [24075989],
-    "label": "Zaman 2013",
-    "authors": ["Wang Lab"],
-    "emails": [
-      "edwin.wang@cnrc-nrc.gc.ca",
-      "Edwin Wang"
-    ],
-    "contains": [
-      "HumanSignalingNetwork",
-      "Cui2007",
-      "CA1",
-      "BioCarta",
-      "Awan2007",
-      "Li2012",
-      "NCI-PID"
-    ],
-    "descriptions": [
-      "The human signaling network (Version 4, containing more than 6,000 genes and",
-      "more than 50,000 relations) includes our previous data obtained from manually",
-      "curated signaling networks (Awan et al., 2007; Cui et al., 2007; Li et al., 2012) and",
-      "by PID (http://pid.nci.nih.gov/) and our recent manual curations using the iHOP",
-      "database (http://www.ihop-net.org/UniPub/iHOP/)."
-    ],
-    "type": "literature curated",
-    "subtype": "activity flow",
-    "omnipath": false,
-    "license": "CC BY 4.0",
-    "dateUpdated":"Nov 2016"
-  },
-  "AlzPathway": {
-    "yearUsedRelease": 2015,
-    "releases": [
-      2012,
-      2015
-    ],
-    "authors": ["Tokyo Bioinf"],
-    "label": "AlzPathway",
-    "urls": {
-      "articles": [
-        "http://www.biomedcentral.com/1752-0509/6/52",
-        "http://onlinelibrary.wiley.com/doi/10.1038/clpt.2013.37/epdf",
-        "http://link.springer.com/protocol/10.1007%2F978-1-4939-2627-5_25"
-      ],
-      "webpages": ["http://alzpathway.org/AlzPathway.html"]
-    },
-    "pubmeds": [
-      23511713,
-      22647208
-    ],
-    "emails": [
-      "ogishima@sysmedbio.org",
-      "Soichi Ogishima",
-      "info@alzpathway.org",
-      "Soichi Ogishima"
-    ],
-    "descriptions": [
-      "We collected 123 review articles related to AD accessible from PubMed. We then",
-      "manually curated these review articles, and have built an AD pathway map by using",
-      "CellDesigner. Molecules are distinguished by the following types: proteins, complexes,",
-      "simple molecules, genes, RNAs, ions, degraded products, and phenotypes. Gene symbols",
-      "are pursuant to the HGNC symbols. Reactions are also distinguished by the",
-      "following categories: state transition, transcription, translation, heterodimer",
-      "association, dissociation, transport, unknown transition, and omitted transition. All the",
-      "reactions have evidences to the references in PubMed ID using the MIRIAM scheme. All the",
-      "references used for constructing the AlzPathway are listed in the ‘References for",
-      "AlzPathway’. Cellular types are distinguished by the followings: neuron, astrocyte, and",
-      "microglial cells. Cellular compartments are also distinguished by the followings: brain",
-      "blood barrier, presynaptic, postsynaptic, and their inner cellular localizations."
-    ],
-    "notes": [
-      "References can be fetched only from XML formats, not from the SIF file. Among",
-      "approx. 150 protein-protein interactions, also contains interactions of many small",
-      "molecules, denoted by pubchem IDs."
-    ],
-    "type": "literature curated",
-    "data_integration": "static",
-    "subtype": "activity flow",
-    "omnipath": false,
-    "pypath": {
-      "data": ["pypath.data/alzpw-ppi.csv"],
-      "format": ["pypath.data_formats.interaction[\"alz\"]"]
-    },
-    "license": "CC BY 3.0",
-    "dateUpdated":"Nov 2016"
-  },
-  "MPPI": {
-    "yearUsedRelease": 2005,
-    "releases": [
-      2000,
-      2005
-    ],
-    "authors": ["MIPS Munich"],
-    "label": "MPPI",
-    "full_name": "The MIPS Mammalian Protein-Protein Interaction Database",
-    "urls": {
-      "articles": ["http://bioinformatics.oxfordjournals.org/content/21/6/832"],
-      "webpages": ["http://mips.helmholtz-muenchen.de/proj/ppi/"],
-      "omictools": [
-        "http://omictools.com/mips-mammalian-protein-protein-interaction-database-tool"
-      ]
-    },
-    "emails": [
-      "p.pagel@wzw.tum.de",
-      "Philipp Pagel",
-      "d.frishman@helmholtz-muenchen.de",
-      "Dmitrij Frishman"
-    ],
-    "pubmeds": [15531608],
-    "taxons": [
-      "human",
-      "mammalia"
-    ],
-    "data_integration": "static",
-    "recommend": "small, literature curated interaction dataset; complements well activity flow resources",
-    "descriptions": [
-      "The first and foremost principle of our MPPI database is to favor quality over",
-      "completeness. Therefore, we decided to include only published experimental evidence derived",
-      "from individual experiments as opposed to large-scale surveys. High-throughput data",
-      "may be integrated later, but will be marked to distinguish it from evidence",
-      "derived from individual experiments."
-    ],
-    "notes": [
-      "This database contains hundreds of interactions curated manually from original",
-      "papers. The format is perfect, with UniProt IDs, and PubMed references."
-    ],
-    "type": "literature curated",
-    "subtype": "interaction",
-    "omnipath": true,
-    "pypath": {
-      "data": ["pypath.data/mppi_human_rep.csv"],
-      "format": [
-        "pypath.data_formats.interaction[\"mppi\"]",
-        "pypath.data_formats.omnipath[\"mppi\"]"
-      ]
-    },
-    "license": "MPPI",
-    "pathguide": 319,
-    "dateUpdated":"Nov 2016"
-  },
-  "Negatome": {
-    "yearUsedRelease": 2013,
-    "relases": [2009],
-    "urls": {
-      "articles": [
-        "http://nar.oxfordjournals.org/content/38/suppl_1/D540.long",
-        "http://nar.oxfordjournals.org/content/42/D1/D396.long"
-      ],
-      "webpages": ["http://mips.helmholtz-muenchen.de/proj/ppi/negatome/"],
-      "omictools": ["http://omictools.com/negatome-tool"]
-    },
-    "pubmeds": [
-      24214996,
-      19920129
-    ],
-    "emails": [
-      "d.frishman@helmholtz-muenchen.de",
-      "Dmitrij Frishman"],
-    "descriptions": [
-      "Annotation of the manual dataset was performed analogous to the annotation of",
-      "protein–protein interactions and protein complexes in previous projects published by our",
-      "group. Information about NIPs was extracted from scientific literature using only",
-      "data from individual experiments but not from high-throughput experiments. Only",
-      "mammalian proteins were considered. Data from high-throughput experiments were omitted",
-      "in order to maintain the highest possible standard of reliability."
-    ],
-    "type": "literature curated",
-    "data_integration": "static",
-    "subtype": "negative",
-    "omnipath": true,
-    "pypath": {
-      "data": ["pypath.data/negatome_manual.csv"],
-      "format": ["pypath.data_formats.negative[\"negatome\"]"],
-      "misc": [
-        "pypath.pypath.PyPath().negative_report()",
-        "pypath.pypath.PyPath().apply_negative()"
-      ]
-    },
-    "license": "No license",
-    "pathguide": 444,
-    "dateUpdated":"Nov 2016"
-  },
-  "Macrophage": {
-    "yearUsedRelease": 2010,
-    "urls": {
-      "articles": ["http://www.biomedcentral.com/1752-0509/4/63"],
-      "webpages": ["http://www.macrophages.com/macrophage-pathways"],
-      "omictools": ["http://omictools.com/macrophage-pathway-knowledgebase-tool"]
-    },
-    "emails": [
-      "tom.freeman@roslin.ed.ac.uk",
-      "Tom Freeman"],
-    "pubmeds": [20470404],
-    "annot": [
-      "localization",
-      "mechanism"
-    ],
-    "recommend": ["medium size resource with effect signs; high ratio of specific interactions;",
-      "interactions confirmed in macrophages"],
-    "descriptions": [
-      "Ongoing analysis of macrophage-related datasets and an interest in",
-      "consolidating our knowledge of a number of signalling pathways directed our choice of",
-      "pathways to be mapped (see Figure 1). Public and propriety databases were initially",
-      "used as resources for data mining, but ultimately all molecular interaction data",
-      "was sourced from published literature. Manual curation of the literature was",
-      "performed to firstly evaluate the quality of the evidence supporting an interaction and",
-      "secondly, to extract the necessary and additional pieces of information required to",
-      "'understand' the pathway and construct an interaction diagram. We have drawn pathways based",
-      "on our desire to model pathways active in a human macrophage and therefore all",
-      "components have been depicted using standard human gene nomenclature (HGNC). However, our",
-      "understanding of the pathway components and the interactions between them, have been drawn",
-      "largely from a consensus view of literature knowledge. As such the pathways presented",
-      "here are based on data derived from a range of different cellular systems and",
-      "mammalian species (human and mouse)."
-    ],
-    "type": "literature curated",
-    "subtype": "activity flow",
-    "omnipath": true,
-    "license": "CC BY 4.0",
-    "data_integration": "static",
-    "pypath": {
-      "data": ["pypath.data/macrophage_strict.csv"],
-      "format": ["pypath.data_formats.pathway[\"macrophage\"]"]
-    },
-    "dateUpdated":"Nov 2016"
-  },
-  "NetPath": {
-    "yearUsedRelease": 2015,
-    "releases": [
-      2010,
-      2011,
-      2012,
-      2013,
-      2014,
-      2015
-    ],
-    "authors": [
-      "Pandey Lab",
-      "IOB Bangalore"
-    ],
-    "emails": [
-      "pandey@jhmi.edu",
-      "Akhilesh Pandey"
-    ],
-    "label": "NetPath",
-    "data_import": ["CancerCellMap"],
-    "includes": ["CancerCellMap"],
-    "annot": [
-      "experiment",
-      "mechanism",
-      "pathway"
-    ],
-    "urls": {
-      "articles": [
-        "http://genomebiology.com/content/11/1/R3",
-        "http://database.oxfordjournals.org/content/2011/bar032.long",
-        "http://database.oxfordjournals.org/content/2011/bar021.long",
-        "http://www.omicsonline.com/0974-276X/JPB-04-184.php",
-        "http://www.biomedcentral.com/1756-0500/4/408",
-        "http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3830942/",
-        "http://link.springer.com/article/10.1007/s12079-012-0168-0",
-        "http://www.hindawi.com/journals/jst/2012/376470/",
-        "http://link.springer.com/article/10.1007/s12079-012-0186-y",
-        "http://link.springer.com/article/10.1007/s12079-012-0181-3",
-        "http://link.springer.com/article/10.1007/s12079-013-0197-3",
-        "http://www.tandfonline.com/doi/full/10.3109/15419061.2013.791683",
-        "http://link.springer.com/article/10.1007/s12079-013-0200-z",
-        "http://database.oxfordjournals.org/content/2014/bau007.long",
-        "http://link.springer.com/article/10.1007/s12079-014-0224-z",
-        "http://www.hindawi.com/journals/jst/2014/962962/"
-      ],
-      "webpages": ["http://netpath.org/"]
-    },
-    "pubmeds": [
-      20067622,
-      21959865,
-      21742767,
-      21996254,
-      24255551,
-      22684822,
-      22649723,
-      23255051,
-      23161412,
-      23504413,
-      23631681,
-      23606317,
-      24573880,
-      24584707,
-      24829797
-    ],
-    "recommend": ["the smallest process description resource, but represents a high quality",
-      "literature curation effort; provides pathway annotations"],
-    "descriptions": [
-      "The initial annotation process of any signaling pathway involves gathering and",
-      "reading of review articles to achieve a brief overview of the pathway. This process is",
-      "followed by listing all the molecules that arereported to be involved in the pathway",
-      "under annotation. Information regarding potential pathway authorities are also",
-      "gathered at this initial stage. Pathway experts are involved in initial screening of",
-      "the molecules listed to check for any obvious omissions. In the second phase,",
-      "annotators manually perform extensive literature searches using search keys, which",
-      "include all the alter native names of the molecules involved, the name of the pathway,",
-      "the names of reactions, and so on. In addition, the iHOP resource is also used to",
-      "perform advanced PubMed-based literature searches to collect the reactions that were",
-      "reported to be implicated in a given pathway. The collected reactions are manually",
-      "entered using the PathBuilder annotation interface, which is subjected to an internal",
-      "review process involving PhD level scientists with expertise in the areas of",
-      "molecular biology, immunology and biochemistry. However, there are instances where a",
-      "molecule has been implicated in a pathway in a published report but the associated",
-      "experimental evidence is either weak or differs from experiments carried out by other",
-      "groups. For this purpose, we recruit several investigators as pathway authorities",
-      "based on their expertise in individual signaling pathways. The review by pathway",
-      "authorities occasionally leads to correction of errors or, more commonly, to inclusion of",
-      "additional information. Finally, the pathway authorities help in assessing whether the",
-      "work of all major laboratories has been incorporated for the given signaling",
-      "pathway."
-    ],
-    "notes": [
-      "Formats are unclear. The tab delimited format contains the pathway memberships",
-      "of genes, PubMed references, but not the interaction partners! The Excel file is",
-      "very weird, in fact it is not an excel table, and contains only a few rows from the",
-      "tab file. The PSI-MI XML is much better. By writing a simple parser, a lot of",
-      "details can be extracted."
-    ],
-    "type": "literature curated",
-    "subtype": "process description",
-    "data_integration": "dynamic",
-    "omnipath": false,
-    "license": "CC BY 2.5",
-    "pypath": {
-      "input": ["pypath.dataio.netpath_names()"],
-      "intr": ["pypath.dataio.netpath()"],
-      "data": [
-        "pypath.urls.urls[\"netpath_psimi\"]",
-        "pypath.urls.urls[\"netpath_names\"]"
-      ],
-      "format": ["pypath.data_formats.interaction[\"netpath\"]"]
-    },
-    "pathguide": 315,
-    "dateUpdated":"Nov 2016"
-  },
-  "InnateDB": {
-    "synonyms": ["InnateDB-All"],
-    "yearUsedRelease": 2015,
-    "urls": {
-      "articles": [
-        "http://msb.embopress.org/content/4/1/218.long",
-        "http://www.biomedcentral.com/1752-0509/4/117",
-        "http://nar.oxfordjournals.org/content/41/D1/D1228.long"
-      ],
-      "webpages": ["http://www.innatedb.com/"],
-      "omictools": ["http://omictools.com/innatedb-tool"]
-    },
-    "authors": [
-      "Brinkman Lab",
-      "Hancock Lab",
-      "Lynn Group"
-    ],
-    "emails": [
-      "innatedb-mail@sfu.ca",
-      "InnateDB Team",
-      "david.lynn@sahmri.com",
-      "David Lynn"
-    ],
-    "pubmeds": [
-      20727158,
-      23180781,
-      18766178
-    ],
-    "releases": [
-      2008,
-      2010,
-      2013,
-      2014,
-      2015
-    ],
-    "annot": [
-      "experiment",
-      "mechanism"
-    ],
-    "recommend": "middle size interaction resource; special focus on immune pathways",
-    "descriptions": [
-      "InnateDB (www.innatedb.com) is a database and integrated analysis platform",
-      "specifically designed to facilitate systems-level analyses of the mammalian innate immune",
-      "response (Lynn et al. 2008; 2010, 2013). To enrich our knowledge of innate immunity",
-      "networks and pathways, the InnateDB curation team has contextually annotated >25,000",
-      "human and mouse innate immunity-relevant molecular interactions through the review",
-      "of >5,000 biomedical articles. Curation adheres to the MIMIx guidelines and new",
-      "interactions are added weekly. Importantly, interactions are curated between molecules with",
-      "a documented role in an innate immunity relevant biological process or pathway",
-      "and all other interactors regardless of whether the interacting molecule has any",
-      "known role in innate immunity. This approach captures interactions between the",
-      "innate immune system and other systems.",
-      "InnateDB is not limited to data on the innate immune system. It is a",
-      "comprehensive database of human, mouse and bovine molecular interactions and pathways,",
-      "consisting of more than 300,000 molecular interactions and 3,000+ pathways, integrated",
-      "from major public molecular interaction and pathway databases. InnateDB is also an",
-      "analysis platform offering user-friendly bioinformatics tools, including pathway and",
-      "ontology analysis, network visualization and analysis and the ability to upload and",
-      "analyze user-supplied gene expression or other quantitative data in a network and/or",
-      "pathway context. The platform has a global profile and is utilised by >10,000 users",
-      "per annum and is widely cited. A mirror of the site hosted in Australia is also",
-      "available at innatedb.sahmri.com.",
-      "Note that new interactions and gene annotations are added to InnateDB on an",
-      "almost weekly database so the data is being continuously updated."
-    ],
-    "notes": [
-      "Probably the largest manually curated binary protein interaction dataset,",
-      "developed by a dedicated full time team of curators. Formats are clear and accessible,",
-      "comprising UniProt IDs, PubMed references, experimental evidences and mechanisms."
-    ],
-    "type": "literature curated",
-    "data_integration": "static",
-    "subtype": "interaction",
-    "omnipath": true,
-    "license": "DSL",
-    "pypath": {
-      "format": [
-        "pypath.data_formats.interaction[\"innatedb\"]",
-        "pypath.data_formats.omnipath[\"innatedb\"]"
-      ],
-      "data": ["pypath.data/innatedb.csv"]
-    },
-    "pathguide": 264,
-    "dateUpdated":"Nov 2016"
-  },
-  "CORUM": {
-    "yearUsedRelease": 2012,
-    "releases": [
-      2007,
-      2009
-    ],
-    "urls": {
-      "articles": [
-        "http://nar.oxfordjournals.org/content/36/suppl_1/D646.long",
-        "http://nar.oxfordjournals.org/content/38/suppl_1/D497.long",
-        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6323970/"
-      ],
-      "webpages": ["http://mips.helmholtz-muenchen.de/genre/proj/corum"],
-      "omictools": [
-        "http://omictools.com/comprehensive-resource-of-mammalian-protein-complexes-tool"
-      ]
-    },
-    "full_name": "Comprehensive Resource of Mammalian protein complexes",
-    "emails": [
-      "andreas.ruepp@helmholtz-muenchen.de",
-      "Andreas Ruepp"
-    ],
-    "pubmeds": [
-      19884131,
-      17965090
-    ],
-    "taxons": [
-      "human",
-      "mouse",
-      "rat"
-    ],
-    "descriptions": [
-      "The CORUM database is a collection of experimentally verified mammalian",
-      "protein complexes. Information is manually derived by critical reading of the",
-      "scientific literature from expert annotators. Information about protein complexes",
-      "includes protein complex names, subunits, literature references as well as the function",
-      "of the complexes.",
-      "In order to provide a high-quality dataset of mammalian protein complexes, all",
-      "entries are manually created. Only protein complexes which have been isolated and",
-      "characterized by reliable experimental evidence are included in CORUM. To be considered for",
-      "CORUM, a protein complex has to be isolated as one molecule and must not be a",
-      "construct derived from several experiments. Also, artificial constructs of subcomplexes",
-      "are not taken into account. Since information from high-throughput experiments",
-      "contains a significant fraction of false-positive results, this type of data is",
-      "excluded. References for relevant articles were mainly found in general review articles,",
-      "cross-references to related protein complexes within analysed literature and comments on",
-      "referenced articles in UniProt.",
-      "In order to obtain a high quality and reliability of the data, we ",
-      "only include protein complexes that have been isolated and ",
-      "characterized in individual experiments. [...] Experienced ",
-      "biocurators critically extract information from the scientific ",
-      "literature and transfer it into CORUM using established vocabularies ",
-      "and stable identifiers from well-known resources such as UniProt and ",
-      "Gene Ontology."
-    ],
-    "notes": [
-      "CORUM is not part of the OmniPath pathways network, because we did not applied",
-      "any complex expansion. It is part of the OmniPath protein complex database."
-    ],
-    "type": "literature curated",
-    "data_integration": "dynamic",
-    "subtype": "complexes",
-    "omnipath": true,
-    "license": "CC BY-NC 4.0",
-    "pypath": {
-      "data": ["pypath.urls.urls[\"corum\"][\"url\"]"],
-      "input": [
-        "pypath.dataio.get_corum()",
-        "pypath.pypath.PyPath().load_corum()"
-      ]
-    },
-    "pathguide": 322,
-    "dateUpdated":"Nov 2016"
-  },
-  "CST": {
-    "yearUsedRelease": 2015,
-    "releases": [
-      2005,
-      2015
-    ],
-    "authors": ["CST"],
-    "label": "CST Pathways",
-    "full_name": "Cell Signaling Technology Pathways",
-    "urls": {
-      "articles": [],
-      "webpages": [
-        "http://www.cellsignal.com/common/content/content.jsp?id=science-pathways"
-      ]
-    },
-    "emails": [
-      "info@cellsignal.com",
-      "Cell Signaling Technology"
-    ]
-  ,
-    "descriptions": [
-      "On these resource pages you can find signaling pathway diagrams, research",
-      "overviews, relevant antibody products, publications, and other research resources",
-      "organized by topic. The pathway diagrams associated with these topics have been",
-      "assembled by CST scientists and outside experts to provide succinct and current",
-      "overviews of selected signaling pathways."
-    ],
-    "notes": [
-      "The pathway diagrams are based on good quality, manually curated data,",
-      "probably from review articles. However, those are available only in graphical (PDF and",
-      "InDesign) formats. There is no programmatic way to obtain the interactions and",
-      "references, as it was confirmed by the authors, who I contacted by mail. Wang's",
-      "HumanSignalingNetwork includes the data from this resource, which probably has been entered",
-      "manually, but Wang's data doesn't have source annotations, despite it's compiled from",
-      "multiple sources. The date of the beginning of this project is estimated using the",
-      "Internet wayback machine."
-    ],
-    "type": "literature curated",
-    "subtype": "activity flow",
-    "omnipath": false,
-    "license": "No license",
-    "dateUpdated":"Nov 2016"
-  },
-  "DIP": {
-    "yearUsedRelease": 2016,
-    "releases": [
-      2000,
-      2001,
-      2002,
-      2003,
-      2004,
-      2005,
-      2006,
-      2007,
-      2008,
-      2009,
-      2010,
-      2011,
-      2012,
-      2013,
-      2014,
-      2015,
-      2016
-    ],
-    "authors": [
-      "UCLA",
-      "Eisenberg Group"
-    ],
-    "label": "DIP",
-    "full_name": "Database of Interacting Proteins",
-    "urls": {
-      "articles": [
-        "http://nar.oxfordjournals.org/content/28/1/289.long",
-        "http://nar.oxfordjournals.org/content/29/1/239.long",
-        "http://nar.oxfordjournals.org/content/30/1/303.long",
-        "http://nar.oxfordjournals.org/content/32/suppl_1/D449.full"
-      ],
-      "webpages": ["http://dip.doe-mbi.ucla.edu/dip/Main.cgi"],
-      "omictools": ["http://omictools.com/database-of-interacting-proteins-tool"]
-    },
-    "pubmeds": [
-      10592249,
-      11125102,
-      11752321,
-      14681454
-    ],
-    "annot": [
-      "mechanism",
-      "experiment"
-    ],
-    "recommend": "one of the earliest interaction databases; remarkable literature curation effort",
-    "descriptions": [
-      "In the beginning (near 2000), it was a entirely manually curated database: ",
-      "\n Currently protein–protein interactions are entered into the DIP only following",
-      "publication in peer-reviewed journals. Entry is done manually by the curator, followed by",
-      "automated tests that show the proteins and citations exist. Interactions are",
-      "double-checked by a second curator and flagged accordingly in the database. ",
-      "\n From 2001, it contains high-throughput interactions: ",
-      "\n Because the reliability of experimental",
-      "evidence varies widely, methods of quality assessment have been developed and utilized",
-      "to identify the most reliable subset of the interactions. This CORE set can be",
-      "used as a reference when evaluating the reliability of high-throughput",
-      "protein-protein interaction data sets, for development of prediction methods, as well as in",
-      "the studies of the properties of protein interaction networks."
-    ],
-    "notes": [
-      "The 'core' dataset contains manually curated interactions from small-scale",
-      "studies. Interactions are well annotated with PubMed IDs, evidences, and mechanism",
-      "(binding, chemical reaction, etc). The format is esily accessible (MITAB)."
-    ],
-    "type": "literature curated",
-    "subtype": "interaction",
-    "data_integration": "static",
-    "omnipath": true,
-    "emails": [
-      "david@mbi.ucla.edu",
-      "David Eisenberg"
-    ],
-    "license": "CC BY-ND 3.0",
-    "pypath": {
-      "format": [
-        "pypath.data_formats.interaction[\"dip\"]",
-        "pypath.data_formats.interaction[\"omnipath\"]"
-      ],
-      "data": ["pypath.data/dip_human_core_processed.csv"]
-    },
-    "pathguide": 3,
-    "dateUpdated":"Nov 2016"
-  },
-  "DEPOD": {
-    "yearUsedRelease": 2016,
-    "releases": [
-      2013,
-      2014,
-      2016
-    ],
-    "authors": ["EMBL & EMBL-EBI"],
-    "label": "DEPOD",
-    "full_name": "Human Dephosphorylation Database",
-    "urls": {
-      "articles": [
-        "http://stke.sciencemag.org/content/6/275/rs10.long",
-        "http://nar.oxfordjournals.org/content/43/D1/D531.long"
-      ],
-      "webpages": ["http://depod.bioss.uni-freiburg.de/"],
-      "omictools": ["http://omictools.com/dephosphorylation-database-tool"]
-    },
-    "pubmeds": [
-      23674824,
-      25332398
-    ],
-    "taxons": ["human"],
-    "annot": [
-      "residue",
-      "experiment"
-    ],
-    "recommend": ["the only resource focusing on dephosphorylation interactions; most of these",
-      "can not be found anywhere else"],
-    "descriptions": [
-      "DEPOD the human DEPhOsphorylation Database (version 1.0) is a manually curated",
-      "database collecting human active phosphatases, their experimentally verified protein",
-      "and non-protein substrates and dephosphorylation site information, and pathways in",
-      "which they are involved. It also provides links to popular kinase databases and",
-      "protein-protein interaction databases for these phosphatases and substrates. DEPOD aims to be",
-      "a valuable resource for studying human phosphatases and their substrate",
-      "specificities and molecular mechanisms; phosphatase-targeted drug discovery and development;",
-      "connecting phosphatases with kinases through their common substrates; completing the",
-      "human phosphorylation/dephosphorylation network."
-    ],
-    "notes": [
-      "Nice manually curated dataset with PubMed references, in easily accessible",
-      "MITAB format with UniProt IDs, comprises 832 dephosphorylation reactions on protein",
-      "substrates, and few hundreds on small molecules."
-    ],
-    "type": "literature curated",
-    "subtype": "post-translational modification",
-    "omnipath": true,
-    "emails": [
-      "koehn@embl.de",
-      "Maja Kohn"
-    ],
-    "license": "CC BY-NC 4.0",
-    "pypath": {
-      "format": [
-        "pypath.data_formats.ptm[\"depod\"]",
-        "pypath.data_formats.omnipath[\"depod\"]"
-      ],
-      "data": [
-        "pypath.data/depod-refs.csv",
-        "pypath.urls.urls[\"depod\"][\"url\"]"
-      ],
-      "input": ["pypath.dataio.get_depod()"],
-      "ptm": ["pypath.pypath.PyPath().load_depod_dmi()"]
-    },
-    "dateUpdated":"Nov 2016",
-    "inputs": {
-      "enzyme_substrate": {
-        "id_type_enzyme": "uniprot",
-        "id_type_substrate": "uniprot",
-        "input_method": "depod.depod_enzyme_substrate",
-        "organisms": null,
-        "organisms_supported": true,
-        "extra_attrs": {}
-      }
-    }
-  },
-  "PhosphoPoint": {
-    "yearUsedRelease": 2008,
-    "urls": {
-      "articles": [
-        "http://bioinformatics.oxfordjournals.org/content/24/16/i14.long"
-      ],
-      "webpages": [
-        "http://kinase.bioinformatics.tw/",
-        "http://web.archive.org/web/20140530070613/http://kinase.bioinformatics.tw/"
-      ],
-      "omictools": ["http://omictools.com/phosphopoint-tool"]
-    },
-    "taxons": ["human"],
-    "pubmeds": [18689816],
-    "descriptions": [
-      "We have integrated three existing databases, including Phospho.ELM (release",
-      "6.0, total 9236 phosphorylation sites), HPRD (release 6, total 8992 phosphorylation",
-      "sites), SwissProt (release 51.5, total 6529 phosphorylation sites), and our manually",
-      "curated 400 kinase–substrate pairs, which are primarily from review articles.",
-      "\n Among these phosphorylation sites, 7843 (6152+995+696) are from",
-      "high-throughput (HTP) screening, 6329 (3828+1152+1349) are from low-throughput (LTP) analysis,",
-      "and only 679 (420+97+162) are both from HTP and LTP screening. One special note is",
-      "that there are 887 phosphorylation sites, which do not have annotation from",
-      "literature in the SwissProt database and it is not possible distinguish whether these are",
-      "from HTP or LTP."
-    ],
-    "notes": [
-      "It contains 400 manually curated interactions and much more from HTP methods.",
-      "The manually curated set can not be distinguished in the data formats offered."
-    ],
-    "type": "literature curated and prediction",
-    "subtype": "post-translational modification",
-    "data_integration": "static",
-    "omnipath": false,
-    "emails": [
-      "cyhuang5@ym.edu.tw",
-      "Chi-Ying F. Huang",
-      "kmchao@csie.ntu.edu.tw",
-      "Kun-Mao Chao"
-    ]
-  ,
-    "license": "CC BY-SA 4.0",
-    "pypath": {
-      "format": ["pypath.data_formats.ptm_misc[\"ppoint\"]"],
-      "data": ["pypath.data/phosphopoint.csv"],
-      "misc": ["pypath.pypath.PyPath().phosphopoint_directions()"],
-      "input": ["pypath.dataio.phosphopoint_directions()"]
-    },
-    "pathguide": 252,
-    "dateUpdated":"Nov 2016"
-  },
-  "PANTHER": {
-    "yearUsedRelease": 2016,
-    "releases": [
-      2000,
-      2001,
-      2002,
-      2003,
-      2005,
-      2006,
-      2010,
-      2011,
-      2012,
-      2014,
-      2016
-    ],
-    "urls": {
-      "articles": [
-        "http://link.springer.com/protocol/10.1007%2F978-1-60761-175-2_7#section=82252&page=1",
-        "http://nar.oxfordjournals.org/content/35/suppl_1/D247.long"
-      ],
-      "webpages": ["http://www.pantherdb.org/"],
-      "omictools": [
-        "http://omictools.com/protein-analysis-through-evolutionary-relationships-tool"
-      ]
-    },
-    "full_name": "Pathway Analysis Through Evolutionary Relationships",
-    "pubmeds": [
-      17130144,
-      19597783
-    ],
-    "recommend": "",
-    "descriptions": [
-      "References are captured at three levels. First, each pathway as a whole",
-      "requires a reference. For signaling pathways, at least three references, usually review",
-      "papers, are required in order to provide a more objective view of the scope of the",
-      "pathway. For metabolic pathways, a textbook reference is usually sufficient. Second,",
-      "references are often associated to each molecule class in the pathway. Most of these",
-      "references are OMIM records or review papers. Third, references are provided to support",
-      "association of specific protein sequences with a particular molecule class, e.g., the",
-      "SWISS-PROT sequence P53_HUMAN annotated as an instance of the molecule class ‘‘P53’’",
-      "appearing in the pathway class ‘‘P53 pathway’’. These are usually research papers that",
-      "report the experimental evidence that a particular protein or gene participates in",
-      "the reactions represented in the pathway diagram.",
-      "\n There are three major properties that make this infrastructure differ from",
-      "other pathway curation systems, such as from Reactome and EcoCyc. First, the pathway",
-      "diagrams are drawn with CellDesigner software. There are two advantages to using",
-      "CellDesigner. First, controlled graphical notations are used to draw the pathway diagram,",
-      "and the software automatically creates a computational representation that is",
-      "compatible with the SBML standard. Second, a pathway diagram can be viewed with an exact,",
-      "one-to-one correspondence with the ontological representation of the pathways stored in",
-      "the back-end. The second property is that the scope of the pathway is defined",
-      "first based on literature, and pathway components (proteins, genes, RNAs) are",
-      "treated as ontology terms, or molecule classes, rather than specific instances. This",
-      "means that multiple proteins from the same organism or different organisms can",
-      "potentially play the same given role in a pathway. The advantage is that the work flow is",
-      "more similar to the thinking process of the biologists who are the users of our",
-      "curation software module. The third major property is that the curation software is",
-      "designed to be simple enough to be used directly by bench biologists after a brief",
-      "training course. All other pathway databases we are aware of employ highly trained",
-      "curators, who of course cannot be experts in all areas of biology. The current set of",
-      "PANTHER pathways has been curated by more than 40 different external experts from the",
-      "scientific community; they must only have demonstrated their expertise with publications",
-      "in the relevant field."
-    ],
-    "type": "literature curated",
-    "subtype": "process description",
-    "omnipath": false,
-    "emails": [
-      "feedback@pantherdb.org",
-      "Panther Team",
-      "paul.thomas@sri.com",
-      "Paul Thomas"
-    ],
-    "pathguide": 164,
-    "license": "GPLv2",
-    "pathguide": 164,
-    "dateUpdated":"Nov 2016"
-  },
-  "PhosphoSite": {
-    "yearUsedRelease": 2016,
-    "releases": [
-      2011,
-      2015,
-      2016
-    ],
-    "authors": ["CST"],
-    "label": "PhosphoSite",
-    "full_name": "PhosphoSitePlus",
-    "urls": {
-      "articles": [
-        "http://onlinelibrary.wiley.com/doi/10.1002/pmic.200300772/abstract",
-        "http://nar.oxfordjournals.org/content/40/D1/D261.long",
-        "http://nar.oxfordjournals.org/content/43/D1/D512.long"
-      ],
-      "webpages": ["http://www.phosphosite.org/homeAction.do"],
-      "omictools": ["http://omictools.com/phosphositeplus-tool"]
-    },
-    "pubmeds": [
-      15174125,
-      22135298,
-      25514926
-    ],
-    "taxons": [
-      "human",
-      "mouse",
-      "eubacteria",
-      "eukarya"
-    ],
-    "annot": [
-      "experiment",
-      "mechanism",
-      "resudue"
-    ],
-    "recommend": "the largest kinase-substrate database; huge amount of literature referenced",
-    "descriptions": [
-      "PSP integrates both low- and high-throughput (LTP and HTP) data sources into a",
-      "single reliable and comprehensive resource. Nearly 10,000 journal articles ,",
-      "including both LTP and HTP reports, have been manually curated by expert scientists from",
-      "over 480 different journals since 2001.",
-      "\n Information from nearly 13 000 papers and 600 different journals",
-      "characterizing modification sites with LTP methods has been curated into PSP.",
-      "\n Information is gathered from published literature and other sources. Published",
-      "literature is searched semi-automatically with multiple intelligent search algorithms to",
-      "identify reports that potentially identify phosphorylation sites in human, mouse or",
-      "other species. Each identified report is then scanned by our highly trained",
-      "curatorial staff (all with PhDs and extensive research experience in cell biology or",
-      "related disciplines) to select only those papers that either identify new",
-      "physiological phosphorylation sites or those that illuminate the biological function of the",
-      "phosphorylation event. Records that are selected for inclusion into PhosphoSite are placed in",
-      "the curatorial queue for processing. Note: while we gather records that describe",
-      "both in vitro and in vivo phosphorylation events, we only finally submit records",
-      "about in vitro sites when we have additional hard evidence that the site is also",
-      "phosphorylated in vivo."
-    ],
-    "type": "literature curated and high throughput",
-    "subtype": "post-translational modification",
-    "data_integration": "dynamic",
-    "omnipath": true,
-    "emails": [
-      "phornbeck@cellsignal.com",
-      "Peter V Hornbeck",
-      "EditorPhosphoSite@cellsignal.com",
-      "PhosphoSite Team"
-    ],
-    "license": "CC BY-NC-SA 3.0",
-    "pypath": {
-      "format": [
-        "pypath.data_formats.ptm[\"psite\"]",
-        "pypath.data_formats.omnipath[\"psite\"]",
-        "pypath.data_formats.ptm_misc[\"psite_noref\"]"
-      ],
-      "data": [
-        "pypath.urls.urls[\"psite_bp\"][\"url\"]",
-        "pypath.urls.urls[\"psite_kin\"][\"url\"]",
-        "pypath.urls.urls[\"psite_p\"][\"url\"]",
-        "pypath.urls.urls[\"psite_reg\"][\"url\"]",
-        "pypath.data_formats.files[\"phosphosite\"][\"curated\"]",
-        "pypath.data_formats.files[\"phosphosite\"][\"noref\"]"
-      ],
-      "input": [
-        "pypath.dataio.get_phosphosite()",
-        "pypath.dataio.phosphosite_directions()",
-        "pypath.dataio.get_psite_phos()",
-        "pypath.dataio.get_psite_p()",
-        "pypath.dataio.get_psite_reg()"
-      ],
-      "intr": [
-        "pypath.dataio.get_phosphosite_curated()",
-        "pypath.dataio.get_phosphosite_noref()"
-      ],
-      "misc": ["pypath.pypath.PyPath().phosphosite_directions()"],
-      "ptm": ["pypath.pypath.PyPath().load_psite_phos()"]
-    },
-    "pathguide": 82,
-    "dateUpdated":"Nov 2016",
-    "inputs": {
-      "enzyme_substrate": {
-        "id_type_enzyme": "uniprot",
-        "id_type_substrate": "uniprot",
-        "input_method": "phosphosite.phosphosite_enzyme_substrate",
-        "organisms": null,
-        "organisms_supported": true,
-        "extra_attrs": {}
-      }
-    }
-  },
-  "SPIKE": {
-    "yearUsedRelease": 2012,
-    "releases": [
-      2008,
-      2011,
-      2012
-    ],
-    "urls": {
-      "articles": [
-        "http://www.biomedcentral.com/1471-2105/9/110",
-        "http://nar.oxfordjournals.org/content/39/suppl_1/D793.full.html"
-      ],
-      "webpages": ["http://www.cs.tau.ac.il/~spike/"],
-      "omictools": [
-        "http://omictools.com/signaling-pathways-integrated-knowledge-engine-tool"
-      ]
-    },
-    "authors": [
-      "Shamir Group",
-      "Shiloh Group"
-    ],
-    "pubmeds": [
-      18289391,
-      21097778
-    ],
-    "full_name": "Signaling Pathway Integrated Knowledge Engine",
-    "annot": [
-      "experiment",
-      "mechanism"
-    ],
-    "recommend": ["one of the 3 large resources providing effect signs; combined with SIGNOR and",
-      "SignaLink gives the major part of the literature curated activity flow network"],
-    "descriptions": [
-      "SPIKE’s data on relationships between entities come from three sources: (i)",
-      "Highly curated data submitted directly to SPIKE database by SPIKE curators and",
-      "experts in various biomedical domains. (ii) Data imported from external signaling",
-      "pathway databaes. At present, SPIKE database imports such data from Reactome, KEGG,",
-      "NetPath and The Transcription Factor Encyclopedia",
-      "(http://www.cisreg.ca/cgi-bin/tfe/home.pl). (iii) Data on protein–protein interactions (PPIs) imported either directly",
-      "from wide-scale studies that recorded such interactions [to date,PPI data were",
-      "imported from Stelzl et al., Rual et al. and Lim et al.] or from external PPI databases",
-      "[IntAct and MINT]. Relationship data coming from these different sources vary greatly",
-      "in their quality and this is reflected by a quality level attribute, which is",
-      "attached to each relationship in SPIKE database (Supplementary Data). Each relationship",
-      "in SPIKE is linked to at least one PubMed reference that supports it.",
-      "\n As of August 2010, the SPIKE database contains 20 412 genes/proteins, 542",
-      "complexes (327 of high quality), 320 protein families (167 of high quality) and 39 small",
-      "molecules. These entities are linked by 34 338 interactions (of which 2400 are of high",
-      "quality) and 6074 regulations (4420 of high quality). These are associated with 5873",
-      "journal references in total.",
-      "\n Each of the maps is constructed by a domain expert; typically the same expert",
-      "will also be responsible later for keeping it up-to-date. The expert reads the",
-      "relevant literature and identifies those interactions and regulations that are",
-      "pertinent to the pathway.",
-      "\n The regulations and interactions in the database are assigned quality values",
-      "ranging from 1 to 4. In general, relationships (regulations and interactions) derived",
-      "from highly focused biochemical studies are assigned high quality (2 or 1) while",
-      "those derived from high-throughput experiments are assigned lower quality (4 or 3).",
-      "The curator uses best judgment to assign a quality level. For example,",
-      "relationships mentioned in two independent research reports, or cited repeatedly in reviews",
-      "written by leading authorities will get quality 1. Relationships with cited concrete",
-      "references and those imported en masse from external curated signaling DBs are initially",
-      "assigned quality 2 but later can be changed to the highest quality after the curator",
-      "has read and was convinced by the cited papers. Data imported from protein-protein",
-      "interaction DBs and datasets are assigned quality 3 or 4, depending on the experimental",
-      "technique."
-    ],
-    "type": "literature curated",
-    "subtype": "activity flow",
-    "data_integration": "static",
-    "omnipath": true,
-    "emails": [
-      "rshamir@tau.ac.il",
-      "Ron Shamir"
-    ],
-    "license": "CC BY 4.0",
-    "pypath": {
-      "format": [
-        "pypath.data_formats.pathway[\"spike\"]",
-        "pypath.data_formats.omnipath[\"spike\"]"
-      ]
-    },
-    "pathguide": 317,
-    "dateUpdated":"Nov 2016"
-  },
-  "NCI-PID": {
-    "yearUsedRelease": 2012,
-    "releases": [
-      2008,
-      2012
-    ],
-    "authors": ["NCI"],
-    "label": "NCI-PID",
-    "full_name": "NCI-Nature Pathway Interaction Database",
-    "urls": {
-      "webpages": [
-        "http://pid.nci.nih.gov/index.shtml",
-        "http://www.ndexbio.org/",
-        "http://web.archive.org/web/20150908030438/http://pid.nci.nih.gov/index.shtml"
-      ],
-      "articles": ["http://nar.oxfordjournals.org/content/37/suppl_1/D674.long"]
-    },
-    "pubmeds": [18832364],
-    "data_import": [
-      "BioCarta",
-      "Reactome"
-    ],
-    "contains": [
-      "BioCarta",
-      "Reactome"
-    ],
-    "taxons": ["human"],
-    "annot": [
-      "experiment",
-      "localization",
-      "mechanism",
-      "pathway"
-    ],
-    "recommend": "one of the largest process description resources; represents remarkable curation effort; discontinued",
-    "descriptions": [
-      "In curating, editors synthesize meaningful networks of events into defined",
-      "pathways and adhere to the PID data model for consistency in data representation:",
-      "molecules and biological processes are annotated with standardized names and unambiguous",
-      "identifiers; and signaling and regulatory events are annotated with evidence codes and",
-      "references. To ensure accurate data representation, editors assemble pathways from data",
-      "that is principally derived from primary research publications. The majority of",
-      "data in PID is human; however, if a finding discovered in another mammal is also",
-      "deemed to occur in humans, editors may decide to include this finding, but will also",
-      "record that the evidence was inferred from another species. Prior to publication, all",
-      "pathways are reviewed by one or more experts in a field for accuracy and completeness."
-    ],
-    "notes": [
-      "From the NCI-XML interactions with references, directions and signs can be",
-      "extracted. Complexes are ommited.",
-      "\n From the end of 2015, the original NCI-PID webpage is not accessible anymore,",
-      "and the data is available through the NDEx webserver and API."
-    ],
-    "type": "literature curated",
-    "subtype": "process description",
-    "omnipath": false,
-    "emails": [
-      "yanch@mail.nih.gov",
-      "Chunhua Yan"
-    ],
-    "license": "BSD",
-    "pypath": {
-      "data": ["pypath.urls.urls[\"nci-pid\"][\"biopax_l3\"]"],
-      "format": ["pypath.data_formats.reaction_misc[\"nci_pid\"]"],
-      "input": ["pypath.dataio.pid_biopax()"],
-      "intr": ["pypath.dataio.pid_interactions()"]
-    },
-    "pathguide": 119,
-    "dateUpdated":"Nov 2016"
-  },
-  "WikiPathways": {
-    "yearUsedRelease": 2016,
-    "releases": [
-      2009,
-      2010,
-      2011,
-      2012,
-      2013,
-      2014,
-      2015,
-      2016
-    ],
-    "urls": {
-      "webpages": ["http://www.wikipathways.org/index.php/WikiPathways"],
-      "articles": ["http://nar.oxfordjournals.org/content/40/D1/D1301"],
-      "omictools": ["http://omictools.com/wikipathways-tool"]
-    },
-    "recommend": ["process description resource developed in a community effort; high proportion",
-      "of specific proteins"],
-    "descriptions": [
-      "The goal of WikiPathways is to capture knowledge about biological pathways",
-      "(the elements, their interactions and layout) in a form that is both human readable",
-      "and amenable to computational analysis."
-    ],
-    "type": "literature curated",
-    "subtype": "process description",
-    "omnipath": false,
-    "emails": [
-      "thomaskelder@gmail.com",
-      "Thomas Kelder",
-      "apico@gladstone.ucsf.edu",
-      "Alex Pico"
-    ],
-    "license": "CC BY 3.0",
-    "pathguide": 237,
-    "dateUpdated":"Nov 2016"
-  },
-  "ConsensusPathDB": {
-    "yearUsedRelease": 2015,
-    "releases": [
-      2007,
-      2008,
-      2009,
-      2010,
-      2011,
-      2012,
-      2013,
-      2014,
-      2015
-    ],
-    "urls": {
-      "webpages": ["http://cpdb.molgen.mpg.de/CPDB"],
-      "articles": [
-        "http://nar.oxfordjournals.org/content/37/suppl_1/D623.long",
-        "http://nar.oxfordjournals.org/content/39/suppl_1/D712.long",
-        "http://nar.oxfordjournals.org/content/41/D1/D793.long"
-      ],
-      "omictools": ["http://omictools.com/consensuspathdb-tool"]
-    },
-    "taxons": [
-      "human",
-      "mouse",
-      "yeast"
-    ],
-    "pubmeds": [
-      18940869,
-      23143270,
-      21071422
-    ],
-    "descriptions": [
-      "Interaction data in ConsensusPathDB currently originates from 12 interaction",
-      "databases and comprises physical interactions, biochemical reactions and gene",
-      "regulations. Importantly, the source of physical entities and interactions is always",
-      "recorded, which allows linking to the original data in the source database.",
-      "\n In order to assess the content overlap of the source databases and to reduce",
-      "redundancy, we have applied a method to merge identical physical entities and identify",
-      "similar interactions. The method is straightforward and efficient for the integration",
-      "of networks from any single species. Simple physical entities of the same type",
-      "(genes, proteins, transcripts, metabolites) are compared on the basis of common",
-      "database identifiers like UniProt, Ensembl, Entrez, ChEBI, etc. Since different",
-      "databases tend to annotate physical entities with different identifier types (e.g. some",
-      "databases annotate proteins with UniProt identifiers, others with Ensembl identifiers),",
-      "we first translated the annotations to a uniform identifier type, which is a",
-      "UniProt entry name in case of proteins, Ensembl gene ID in case of genes and",
-      "transcripts, and KEGG/ChEBI ID in case of metabolites. Protein complexes are compared",
-      "according to their individual protein composition. Simple physical entities with the",
-      "same identifier, and complexes with the same composition, are merged in",
-      "ConsensusPathDB. Information provided by the according source databases for the merged entities",
-      "is stored in a complementary manner.",
-      "\n Functional interactions of physical entities are also compared with each",
-      "other. Here, we distinguish between primary and secondary interaction participants.",
-      "Primary participants are substrates and products in case of biochemical reactions,",
-      "interactors in case of physical interactions and target genes in case of gene regulation.",
-      "All other participants, e.g. enzymes and interaction modifiers, are secondary",
-      "participants. If the primary participants of two or more interactions match, these",
-      "interactions are considered similar. Two similar interactions may have different",
-      "stoichiometry, modification and/or localization of the participants. To allow for",
-      "flexibility, similar interactions are marked as such in the database, but the decision",
-      "whether they should be considered identical despite mismatching details is left to the",
-      "user and depends on his specific problem. Moreover, ConsensusPathDB does not",
-      "provide any additional quality control filters. All interactions provided by the",
-      "different database sources are treated in the same way."
-    ],
-    "notes": [
-      "ConsensusPathDB comprises data from 32 resources. The format is easy to use,",
-      "tab delimited text file, with UniProtKB names and PubMed IDs. However, the dataset",
-      "is extremely huge, and several databases containing HTP data is included."
-    ],
-    "type": "literature curated",
-    "subtype": "activity flow",
-    "emails": [
-      "kamburov@molgen.mpg.de",
-      "Atanas Kamburov"
-    ],
-    "license": "Composite",
-    "pathguide": 275,
-    "dateUpdated":"Nov 2016"
-  },
-  "KEGG": {
-    "yearUsedRelease": 2016,
-    "releases": [
-      2000,
-      2006,
-      2007,
-      2008,
-      2009,
-      2010,
-      2011,
-      2012,
-      2013,
-      2014,
-      2015,
-      2016
-    ],
-    "urls": {
-      "webpages": ["http://www.genome.jp/kegg/"],
-      "articles": ["http://nar.oxfordjournals.org/content/28/1/27.long"],
-      "omictools": ["http://omictools.com/kegg-tool"]
-    },
-    "full_name": "Kyoto Encyclopedia of Genes and Genomes",
-    "notes": [
-      "From 2011, KEGG data is not freely available. The downloadable KGML files",
-      "contain binary interactions, most of them between large complexes. No references",
-      "available."
-    ],
-    "type": "literature curated",
-    "subtype": "process description",
-    "omnipath": false,
-    "emails": [
-      "kanehisa@kuicr.kyoto-u.ac.jp",
-      "Minoru Kaneshia"
-    ],
-    "license": "KEGG",
-    "pathguide": 16,
-    "pypath": {
-      "data": [
-        "pypath.urls.urls[\"kegg_pws\"][\"kgml_url\"]",
-        "pypath.urls.urls[\"kegg_pws\"][\"list_url\"]"
-      ],
-      "input": ["pypath.dataio.kegg_pathways()"],
-      "misc": ["pypath.pypath.kegg_directions()"]
-    },
-    "dateUpdated":"Nov 2016"
-  },
-  "KEGG-MEDICUS": {
-    "yearUsedRelease": 2020,
-    "releases": [
-      2017,
-      2018,
-      2019
-    ],
-    "urls": {
-      "webpages": ["ftp://ftp.genome.jp/pub/kegg/medicus/"]
-    },
-    "license": "CC BY-SA 4.0",
-    "type": "literature curated",
-    "subtype": ["activity flow", "complexes"],
-    "omnipath": true
-  },
-  "BioGRID": {
-    "yearUsedRelease": 2020,
-    "releases": [
-      2003,
-      2006,
-      2007,
-      2008,
-      2009,
-      2010,
-      2011,
-      2012,
-      2013,
-      2014,
-      2015,
-      2016,
-      2017,
-      2018,
-      2019
-    ],
-    "label": "BioGRID",
-    "authors": ["Tyers Lab"],
-    "urls": {
-      "webpages": ["http://thebiogrid.org/"],
-      "articles": [
-        "http://genomebiology.biomedcentral.com/articles/10.1186/gb-2003-4-3-r23",
-        "http://nar.oxfordjournals.org/content/34/suppl_1/D535.long",
-        "http://nar.oxfordjournals.org/content/36/suppl_1/D637.long",
-        "http://nar.oxfordjournals.org/content/39/suppl_1/D698.long",
-        "http://nar.oxfordjournals.org/content/41/D1/D816.long",
-        "http://nar.oxfordjournals.org/content/43/D1/D470.long",
-        "https://academic.oup.com/nar/article/47/D1/D529/5204333"
-      ],
-      "omictools": [
-        "http://omictools.com/biological-general-repository-for-interaction-datasets-tool"
-      ]
-    },
-    "pubmeds": [
-      25428363,
-      23203989,
-      21071413,
-      18000002,
-      16381927,
-      12620108
-    ],
-    "type": "high throughput",
-    "subtype": "interaction",
-    "recommend": "one of the largest interaction resources; contains both HTP and literature curated interactions",
-    "full_name": "Biological General Repository for Interaction Datasets",
-    "omnipath": true,
-    "emails": [
-      "biogridadmin@gmail.com",
-      "BioGRID Team",
-      "md.tyers@umontreal.ca",
-      "Michael Tyers"
-    ],
-    "license": "MIT",
-    "pypath": {
-      "format": [
-        "pypath.data_formats.interaction[\"biogrid\"]",
-        "pypath.data_formats.omnipath[\"biogrid\"]"
-      ],
-      "data": ["pypath.urls.urls[\"biogrid\"]"],
-      "intr": ["pypath.dataio.biogrid_interactions()"]
-    },
-    "pathguide": 7,
-    "dateUpdated":"Nov 2016"
-  },
-  "STRING": {
-    "yearUsedRelease": 2016,
-    "releases": [
-      2016,
-      2015,
-      2013,
-      2011,
-      2009,
-      2007,
-      2005,
-      2003,
-      2000
-    ],
-    "urls": {
-      "webpages": ["http://string-db.org/"],
-      "articles": [
-        "http://nar.oxfordjournals.org/content/43/D1/D447.long",
-        "http://nar.oxfordjournals.org/content/41/D1/D808.long",
-        "http://nar.oxfordjournals.org/content/39/suppl_1/D561.long",
-        "http://nar.oxfordjournals.org/content/37/suppl_1/D412.long",
-        "http://nar.oxfordjournals.org/content/35/suppl_1/D358.long",
-        "http://nar.oxfordjournals.org/content/33/suppl_1/D433.long",
-        "http://nar.oxfordjournals.org/content/31/1/258.long",
-        "http://nar.oxfordjournals.org/content/28/18/3442.long"
-      ],
-      "omictools": ["http://omictools.com/string-tool"]
-    },
-    "pubmeds": [
-      25352553,
-      23203871,
-      21045058,
-      18940858,
-      17098935,
-      15608232,
-      12519996,
-      10982861
-    ],
-    "authors": ["Bork Lab"],
-    "label": "STRING",
-    "type": "high-throughput and prediction",
-    "subtype": "interaction",
-    "omnipath": false,
-    "emails": [
-      "bork@embl.de",
-      "Peer Bork",
-      "lars.juhl.jensen@cpr.ku.dk",
-      "Lars Juhl Jensen",
-      "mering@imls.uzh.ch",
-      "Christian von Mering"
-    ],
-    "license": "CC BY 4.0",
-    "pathguide": 93,
-    "dateUpdated":"Nov 2016"
-  },
-  "MINT": {
-    "yearUsedRelease": 2015,
-    "releases": [
-      2007,
-      2008,
-      2009,
-      2010,
-      2011,
-      2012,
-      2013,
-      2014,
-      2015
-    ],
-    "label": "MINT",
-    "urls": {
-      "webpages": ["http://mint.bio.uniroma2.it/mint/Welcome.do"],
-      "articles": ["http://www.ncbi.nlm.nih.gov/pmc/articles/PMC1751541/"]
-    },
-    "type": "literature curated and high-throughput",
-    "subtype": "interaction",
-    "full_name": "Molecular Interaction Database",
-    "omnipath": false,
-    "emails": [
-      "livia.perfetto@live.it",
-      "Livia Perfetto"
-    ],
-    "license": "CC BY 4.0",
-    "pathguide": 17,
-    "dateUpdated":"Nov 2016"
-  },
-  "IntAct": {
-    "yearUsedRelease": 2020,
-    "releases": [
-      2003,
-      2006,
-      2008,
-      2009,
-      2010,
-      2011,
-      2012,
-      2013,
-      2014,
-      2015,
-      2016,
-      2017,
-      2018,
-      2019
-    ],
-    "authors": ["EBI"],
-    "label": "IntAct",
-    "full_name": "IntAct Molecular Interaction Database",
-    "data_import": [
-      "InnateDB",
-      "MINT"
-    ],
-    "urls": {
-      "articles": [
-        "http://nar.oxfordjournals.org/content/42/D1/D358.long",
-        "http://nar.oxfordjournals.org/content/40/D1/D841.long",
-        "http://nar.oxfordjournals.org/content/38/suppl_1/D525.long",
-        "http://nar.oxfordjournals.org/content/35/suppl_1/D561.long",
-        "http://nar.oxfordjournals.org/content/32/suppl_1/D452.long"
-      ],
-      "webpages": ["http://www.ebi.ac.uk/intact/"],
-      "omictools": ["http://omictools.com/intact-tool"]
-    },
-    "pubmeds": [
-      14681455,
-      17145710,
-      19850723,
-      22121220,
-      24234451
-    ],
-    "annot": [
-      "experiment",
-      "mechanism"
-    ],
-    "recommend": ["the largest interaction resource; highest coverage on the human proteome;",
-      "miscore confidence score"],
-    "descriptions": [
-      "The information within the IntAct database primarily consists of",
-      "protein–protein interaction (PPI) data. The majority of the PPI data within the database is",
-      "annotated to IMEx standards, as agreed by the IMEx consortium. All such records contain",
-      "a full description of the experimental conditions in which the interaction was",
-      "observed. This includes full details of the constructs used in each experiment, such as",
-      "the presence and position of tags, the minimal binding region defined by deletion",
-      "mutants and the effect of any point mutations, referenced to UniProtKB, the underlying",
-      "protein sequence database. Protein interactions can be described down to the isoform",
-      "level, or indeed to the post-translationally cleaved mature peptide level if such",
-      "information is available in the publication, using the appropriate UniProtKB identifiers.",
-      "\n Each entry in IntAct is peer reviewed by a senior curator, and not released",
-      "until accepted by that curator. Additional rule-based checks are run at the database",
-      "level, and manually fixed when necessary. Finally, on release of the data, the",
-      "original author of each publication is contacted and asked to comment on the",
-      "representation of their data; again manual updates are made to the entry should the author",
-      "highlight any errors.",
-      "\n All binary interactions evidences in the IntAct database, including those",
-      "generated by Spoke expansion of co-complex data, are clustered to produce a",
-      "non-redundant set of protein pairs (R. C. Jimenez et al., manuscript in preparation). Each",
-      "binary pair is then scored, using a simple addition of the cumulated value of a",
-      "weighted score for the interaction detection method and the interaction type for each",
-      "interaction evidence associated with that binary pair, as described using the PSI-MI CV",
-      "terms. The scores are given in Table 1, all children of each given parent receives",
-      "that score. Only experimental data is scored, inferred interactions, for example,",
-      "would be excluded. Any low confidence data or data manually tagged by a curator for",
-      "exclusion from the process, would not be scored. Isoforms and post-processed protein",
-      "chains are regarded as distinct proteins for scoring purposes."
-    ],
-    "notes": [
-      "\n We can not draw a sharp distinction between low and high throughput methods,",
-      "and I can agree, that this is not the only and best measure of quality considering",
-      "experimental data. I see that IntAct came up with a good solution to estimate the",
-      "confidence of interactions. The mi-score system gives a comprehensive way to synthetize",
-      "information from multiple experiments, and weight interactions according to experimental",
-      "methods, interaction type, and number of evidences."
-    ],
-    "type": "literature curated and high-throughput",
-    "subtype": "interaction",
-    "omnipath": true,
-    "emails": [
-      "orchard@ebi.ac.uk",
-      "Sandra Orchard",
-      "hhe@ebi.ac.uk",
-      "Henning Hermjakob"
-    ],
-    "license": "CC BY 4.0",
-    "pathguide": 111,
-    "pypath": {
-      "data": ["pypath.data/intact_filtered.csv"],
-      "format": ["pypath.data_formats.interaction_misc[\"intact\"]"]
-    },
-    "dateUpdated":"Nov 2016"
-  },
-  "MatrixDB": {
-    "yearUsedRelease": 2015,
-    "releases": [
-      2009,
-      2011,
-      2015
-    ],
-    "urls": {
-      "articles": [
-        "http://bioinformatics.oxfordjournals.org/content/25/5/690.long",
-        "http://nar.oxfordjournals.org/content/43/D1/D321.long",
-        "http://nar.oxfordjournals.org/content/39/suppl_1/D235.long"
-      ],
-      "webpages": ["http://matrixdb.univ-lyon1.fr/"],
-      "omictools": ["http://omictools.com/matrixdb-tool"]
-    },
-    "pubmeds": [
-      19147664,
-      20852260,
-      25378329
-    ],
-    "taxons": ["mammalia"],
-    "annot": ["experiment"],
-    "recommend": ["small, literature curated interaction resource; many interactions for",
-      "receptors and extracellular proteins"],
-    "descriptions": [
-      "Protein data were imported from the UniProtKB/Swiss-Prot database (Bairoch et",
-      "al., 2005) and identified by UniProtKB/SwissProt accession numbers. In order to",
-      "list all the partners of a protein, interactions are associated by default to the",
-      "accession number of the human protein. The actual source species used in experiments is",
-      "indicated in the page reporting interaction data. Intracellular and membrane proteins",
-      "were included to obtain a comprehensive network of the partners of extracellular",
-      "molecules. Indeed, ECM proteins and GAGs bind to a number of membrane proteins or",
-      "cell-associated proteoglycans and some of them interact with intracellular partners upon",
-      "internalization (Dixelius et al., 2000). ECM proteins were identified by the",
-      "UniProtKB/Swiss-Prot keyword ‘extracellular matrix’ and by the GO terms ‘extracellular matrix’,",
-      "‘proteinaceous extracellular matrix’ and their child terms. The proteins annotated with the",
-      "GO terms ‘extracellular region’ and ‘extracellular space’, which are used for",
-      "proteins found in biological fluids, were not included because circulating molecules do",
-      "not directly contribute to the extracellular scaffold. Additionally, 96 proteins",
-      "were manually (re-)annotated through literature curation. MatrixDB integrates 1378",
-      "interactions from the Human Protein Reference Database (HPRD, Prasad et al., 2009), 211",
-      "interactions from the Molecular INTeraction database (MINT, Chatr-Aryamontri et al., 2007),",
-      "46 interactions from the Database of Interacting Proteins (DIP, Salwinski et al.,",
-      "2004), 232 interactions from IntAct (Kerrien et al., 2007a) and 839 from BioGRID",
-      "(Breitkreutz et al., 2008) involving at least one extracellular biomolecule of mammalian",
-      "origin. We added 283 interactions from manual literature curation and 65 interactions",
-      "from protein and GAG array experiments.",
-      "\n Interaction data stored in MatrixDB are (i) experimentally determined in the",
-      "laboratory using surface plasmon resonance (SPR) binding assays, including protein and",
-      "glycosaminoglycan arrays probed by SPR imaging, (ii) extracted from the literature by manual",
-      "curation and (iii) imported from other interaction databases belonging to the IMEx",
-      "consortium [IntAct, DIP, MINT, BioGRID], as well as from the Human Protein Reference",
-      "Database. Imported data are restricted to interactions involving at least one",
-      "extracellular protein.",
-      "\n The content of MatrixDB has been updated with new interaction data manually",
-      "curated by the MatrixDB team, and by importing interaction data from four interaction",
-      "databases of the IMEx consortium via The Proteomics Standard Initiative Common QUery",
-      "InterfaCe (PSICQUIC), a community standard for computational access to",
-      "molecular-interaction data resources.  In the current release MatrixDB contains 904 interactions",
-      "supported by 1244 experiments, which have been manually curated from 237 publications,",
-      "compared to 490 interactions supported by 847 experiments in the previous version of",
-      "the database. This is the MatrixDB ‘core’ data set."
-    ],
-    "notes": [
-      "The interactions imported from IMEX databases or any other database, are",
-      "collected separately, in the PSICQUIC-extended dataset. The MatrixDB-core dataset is",
-      "curated manually by the MatrixDB team."
-    ],
-    "type": "literature curated",
-    "subtype": "interaction",
-    "data_integration": "static",
-    "omnipath": true,
-    "emails": [
-      "matrixdb@ibcp.fr",
-      "MatrixDB Team",
-      "sylvie.ricard-blum@ibcp.fr",
-      "Sylvie Ricard-Blum"
-    ],
-    "license": "CC BY 4.0",
-    "pypath": {
-      "format": [
-        "pypath.data_formats.interaction[\"matrixdb\"]",
-        "pypath.data_formats.omnipath[\"matrixdb\"]"
-      ],
-      "data": ["pypath.data/matrixdb_core.csv"]
-    },
-    "pathguide": 298,
-    "dateUpdated":"Nov 2016"
-  },
-  "PathwayCommons": {
-    "synonyms": ["KEGG-PC"],
-    "yearUsedRelease": 2016,
-    "releases": [
-      2010,
-      2011,
-      2012,
-      2013,
-      2014,
-      2015,
-      2016
-    ],
-    "urls": {
-      "webpages": [
-        "http://www.pathwaycommons.org/pc2/",
-        "http://www.pathwaycommons.org/about/"
-      ],
-      "articles": ["http://nar.oxfordjournals.org/content/39/suppl_1/D685.long"],
-      "omictools": ["http://omictools.com/pathway-commons-tool"]
-    },
-    "label": "PathwayCommons",
-    "authors": [
-      "Bader Lab",
-      "MSKCC cBio"
-    ],
-    "notes": [
-      "Pathway Commons is a collection of publicly available pathway information from",
-      "multiple organisms. It provides researchers with convenient access to a comprehensive",
-      "collection of biological pathways from multiple sources represented in a common language",
-      "for gene and metabolic pathway analysis.",
-      "\n Pathway Commons integrates a number of pathway and molecular interaction",
-      "databases supporting BioPAX and PSI-MI formats into one large BioPAX model, which can be",
-      "queried using our web API (documented below). This API can be used by computational",
-      "biologists to download custom subsets of Pathway Commons for analysis, or can be used to",
-      "incorporate powerful biological pathway and network information retrieval and query",
-      "functionality into websites, scripts and software. For computational biologists looking for",
-      "comprehensive biological pathway data for analysis, we also make available batch downloads",
-      "of the data in several formats.",
-      "\n Warehouse data (canonical molecules, ontologies) are converted to BioPAX",
-      "utility classes, such as EntityReference, ControlledVocabulary, EntityFeature",
-      "sub-classes, and saved as the initial BioPAX model, which forms the foundation for",
-      "integrating pathway data and for id-mapping.",
-      "\n Pathway and binary interaction data (interactions, participants) are",
-      "normalized next and merged into the database. Original reference molecules are replaced",
-      "with the corresponding BioPAX warehouse objects."
-    ],
-    "data_import": [
-      "Reactome",
-      "NCI-PID",
-      "CancerCellMap",
-      "BioCarta",
-      "HPRD",
-      "PhosphoSite",
-      "PANTHER",
-      "DIP",
-      "IntAct",
-      "BioGRID",
-      "BIND",
-      "CORUM"
-    ],
-    "license": "PathwayCommons",
-    "type": "combined",
-    "subtype": "interaction",
-    "pubmeds": [21071392],
-    "omnipath": false,
-    "emails": [
-    "gary.bader@utoronto.ca",
-    "Gary Bader"
-    ],
-    "pathguide": 293,
-    "dateUpdated":"Nov 2016"
-  },
-  "Laudanna": {
-    "yearUsedRelease": 2014,
-    "releases": [2014],
-    "urls": {
-      "webpages": ["http://dp.univr.it/~laudanna/LCTST/downloads/"]
-    },
-    "full_name": "Compiled Datasets for Network Analysis from Laudanna Lab",
-    "authors": ["Laudanna Lab"],
-    "type": "combined",
-    "subtype": "mixed",
-    "notes": [
-      "Data sets are compiled from public data-bases and from literature and manually",
-      "curated for accuracy. They are intended for network reconstruction, topological and",
-      "multidimensional analysis in cell biology."
-    ],
-    "omnipath": false,
-    "data_import": [
-      "BioGRID",
-      "ConsensusPathDB",
-      "dbPTM",
-      "DIP",
-      "HumanSignalingNetwork",
-      "IntAct",
-      "MINT",
-      "MPPI",
-      "PathwayCommons",
-      "phospho.ELM",
-      "PhosphoPoint",
-      "PhosphoSite",
-      "SignaLink"
-    ],
-    "emails": [
-      "giovanni.scardoni@gmail.com",
-      "Giovanni Scardoni"
-    ],
-    "license": "CC BY 4.0",
-    "pypath": {
-      "data": [
-        "pypath.urls.urls[\"sigflow\"]",
-        "pypath.urls.urls[\"sigdir\"]"
-      ],
-      "input": [
-        "pypath.dataio.get_laudanna_directions()",
-        "pypath.dataio.get_laudanna_effects()"
-      ],
-      "misc": [
-        "pypath.pypath.PyPath().laudanna_directions()",
-        "pypath.pypath.PyPath().laudanna_effects()"
-      ]
-    },
-    "dateUpdated":"Nov 2016"
-  },
-  "ORegAnno": {
-    "yearUsedRelease": 2016,
-    "urls": {
-      "articles": [
-        "https://academic.oup.com/nar/article/44/D1/D126/2502683"
-      ],
-      "webpages": [
-        "http://www.oreganno.org/"
-      ]
-    },
-    "emails": [
-      "ogriffit@genome.wustl.edu",
-      "Obi L. Griffith"
-    ],
-    "type": "literature curated & high throughput",
-    "subtype": "transcription regulation",
-    "full_name": "Open Regulatory Annotation",
-    "omnipath": false,
-    "dorothea": true,
-    "pubmeds": [26578589],
-    "license": "LGPLv3",
-    "notes": [
-      "One of the largest TF-target databases. Covers at least 18 organisms and",
-      "contains data from literature curation and many screening technologies and in silico",
-      "prediction."
-    ],
-    "pypath": {
-      "data": [
-        "pypath.urls.urls[\"oreganno\"]"
-      ],
-      "input": [
-        "pypath.dataio.get_oreganno()"
-      ]
-    },
-    "omictools": ["https://omictools.com/oreganno-tool"],
-    "dateUpdated":"Nov 2016"
-  },
-  "PAZAR": {
-    "yearUsedRelease": 2009,
-    "releases": [2007],
-    "urls": {
-      "articles": [
-      "https://genomebiology.biomedcentral.com/",
-      "articles/10.1186/gb-2007-8-10-r207",
-      "https://academic.oup.com/nar/article/37/suppl_1/D54/1010368"
-      ],
-      "webpages": [
-        "http://www.pazar.info/"
-      ]
-    },
-    "emails": [
-      "wyeth@cmmt.ubc.ca",
-      "Wyeth Wasserman"
-    ],
-    "authors": ["Wasserman Lab"],
-    "type": "literature curated & high throughput",
-    "subtype": "transcription regulation",
-    "full_name": "A Public Database of Transcription Factor and Regulatory Sequence Annotation",
-    "omnipath": false,
-    "dorothea": true,
-    "pubmeds": [
-      18971253,
-      17916232
-    ],
-    "license": "LGPLv3",
-    "notes": [
-      "One of the oldest and largest TF-target databases. From the Wasserman Lab, who",
-      "also developed JASPAR and many other tools. Unfortunately the website is down at",
-      "the moment (April 2019). Which was, by the way, in that time (2007) a super nice",
-      "and innovative design for a molecular database webpage."
-    ],
-    "pypath": {
-      "data": [
-        "pypath.urls.urls[\"pazar\"]"
-      ],
-      "input": [
-        "pypath.dataio.get_pazar()"
-      ]
-    },
-    "omictools": ["http://omictools.com/pazar-tool"],
-    "dateUpdated":"Nov 2016"
-  },
-  "TRRUST": {
-    "license": "CC BY-SA 4.0"
-  },
-  "HTRIdb": {
-    "synonyms": ["HTRI"],
-    "full_name": "Human Transcriptional Reference Interactome",
-    "license": "LGPLv3"
-  },
-  "NFIRegulomeDB": {
-    "urls": {
-      "webpages": ["http://nfiregulome.ccr.buffalo.edu/basicquery1.0.php"]
-    },
-    "license": "LGPLv3"
-  },
-  "TFe": {
-    "full_name": "Transcription Factor Encyclopedia",
-    "urls": {
-      "webpages": ["https://github.com/wassermanlab/TFe"]
-    },
-    "license": "CC BY-SA 3.0"
-  },
-  "TRRD": {
-    "urls": {
-      "webpages": ["http://wwwmgs.bionet.nsc.ru/mgs/gnw/trrd/"]
-    },
-    "license": "CC BY 4.0"
-  },
-  "TRED": {
-    "urls": {
-      "webpages": ["http://rulai.cshl.edu/cgi-bin/TRED/tred.cgi?process=home"]
-    },
-    "license": "NAR Open Access"
-  },
-  "Fantom4": {
-    "synonyms": ["FANTOM4", "FANTOM5", "Fantom5", "Fantom", "FANTOM"],
-    "urls": {
-      "webpages": ["https://fantom.gsc.riken.jp/4/"]
-    },
-    "license": "CC BY 4.0"
-  },
-  "RegNetwork": {
-    "urls": {
-      "webpages": ["http://regnetworkweb.org/"]
-    },
-    "license": "LGPLv3"
-  },
-  "TfactS": {
-    "synonyms": ["Tfact", "TFactS"],
-    "urls": {
-      "webpages": ["http://www.tfacts.org/"]
-    },
-    "license": "CC BY 4.0"
-  },
-  "GO": {
-    "full_name": "Gene Ontology",
-    "synonyms": ["GO-lig-rec"],
-    "urls": {
-      "webpages": ["http://geneontology.org/"]
-    },
-    "license": "CC BY 4.0"
-  },
-  "Membranome": {
-    "urls": {
-      "webpages": ["https://membranome.org/"]
-    },
-    "license": "Apache 2.0"
-  },
-  "Exocarta": {
-    "urls": {
-      "webpages": ["http://www.exocarta.org/"]
-    },
-    "license": "CC BY 4.0"
-  },
-  "Vesiclepedia": {
-    "urls": {
-      "webpages": ["http://microvesicles.org"]
-    },
-    "license": "CC BY 4.0"
-  },
-  "Matrisome": {
-    "urls": {
-      "webpages": ["http://matrisomeproject.mit.edu/"]
-    },
-    "license": "CC BY-NC 4.0"
-  },
-  "CSPA": {
-    "full_name": "Cell Surface Protein Atlas",
-    "urls": {
-      "webpages": ["http://wlab.ethz.ch/cspa/"]
-    },
-    "license": "CC BY 4.0"
-  },
-  "HPMR": {
-    "full_name": "Human Plasma Membrane Receptome",
-    "pubmeds": [12815191],
-    "urls": {
-      "webpages": ["http://www.receptome.org/"]
-    },
-    "license": "CC BY-NC 4.0",
-    "type": ["literature curated"],
-    "subtype": ["activity flow", "complexes", "annotations", "intercell"],
-    "descriptions": [
-      "This review provides a global categorization of most known signal ",
-      "transduction-associated receptors as enzymes, recruiters, and latent ",
-      "transcription factors. [...] The human receptor families involved ",
-      "in signaling (with the exception of channels) are presented in ",
-      "the Human Plasma Membrane Receptome database."
-    ]
-  },
-  "LOCATE": {
-    "urls": {
-      "webpages": ["http://web.archive.org/web/20190504002456/http://locate.imb.uq.edu.au/"]
-    },
-    "license": "NAR Open Access"
-  },
-  "CellPhoneDB": {
-    "urls": {
-      "webpages": ["https://www.cellphonedb.org/"],
-      "articles": ["https://www.nature.com/articles/s41586-018-0698-6"]
-    },
-    "omnipath": true,
-    "license": "MIT",
-    "type": ["literature curated"],
-    "subtype": ["complexes", "annotations", "network", "intercell"],
-    "descriptions": [
-      "Heteromeric receptors and ligands (that is, proteins that are ",
-      "complexes of multiple gene products) were annotated by reviewing the ",
-      "literature and Uniprot descriptions."
-    ]
-  },
-  "ComPPI": {
-    "urls": {
-      "webpages": ["http://comppi.linkgroup.hu/"]
-    },
-    "license": "CC BY-SA 4.0"
-  },
-  "Kirouac2010": {
-    "label": "Kirouac 2010",
-    "urls": {
-      "webpages": ["https://www.embopress.org/doi/full/10.1038/msb.2010.71"]
-    },
-    "license": "CC BY-NC-ND 3.0"
-  },
-  "Ramilowski2015": {
-      "synonyms": ["Ramilowski"],
-    "label": "Ramilowski 2015",
-    "urls": {
-      "webpages": ["https://doi.org/10.1038/ncomms8866"]
-    },
-    "license": "CC BY 4.0"
-  },
-  "Adhesome": {
-    "urls": {
-      "webpages": ["http://www.adhesome.org/index.html"]
-    },
-    "license": "CC BY 4.0"
-  },
-  "Integrins": {
-    "urls": {
-      "webpages": ["https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1929136/"]
-    },
-    "license": "CC BY 4.0"
-  },
-  "Zhong2015": {
-    "label": "Zhong 2015",
-    "urls": {
-      "webpages": ["https://doi.org/10.1111/nyas.12776"]
-    },
-    "license": "CC BY 4.0"
-  },
-  "HGNC": {
-    "full_name": "Human Gene Nomenclature Committee",
-    "urls": {
-      "webpages": ["https://www.genenames.org/"]
-    },
-    "license": "HGNC"
-  },
-  "TopDB": {
-    "full_name": "Topology Data Bank of Transmembrane Proteins",
-    "urls": {
-      "webpages": ["http://topdb.enzim.hu/"]
-    },
-    "license": "CC BY-NC 4.0"
-  },
-  "OPM": {
-    "full_name": "Orientations of Proteins in Membranes",
-    "urls": {
-      "webpages": ["https://opm.phar.umich.edu/"]
-    },
-    "license": "Apache 2.0"
-  },
-  "Havugimana2012": {
-    "label": "Havugimana 2012",
-    "full_name": "Census of Human Soluble Protein Complexes",
-    "urls": {
-      "webpages": ["https://www.sciencedirect.com/science/article/pii/S0092867412010069"]
-    },
-    "license": "CC BY 4.0",
-    "type": ["original experiment", "prediction"],
-    "subtype": ["complexes"],
-    "descriptions": [
-      "To isolate human protein complexes in a sensitive and unbiased ",
-      "manner, we subjected cytoplasmic and nuclear soluble protein ",
-      "extracts isolated from human HeLa S3 and HEK293 cells grown as ",
-      "suspension and adherent cultures, respectively, to extensive ",
-      "complementary biochemical fractionation procedures. [...]  Because ",
-      "physically interacting cocomplexed proteins often perform related ",
-      "biological functions and are often evolutionarily coconserved , we ",
-      "devised a machine learning procedure to score and select ",
-      "higher-confidence physical interactions based on both the ",
-      "experimentally measured coelution profiles and the existence of ",
-      "additional supporting functional association evidence inferred from ",
-      "correlated evolutionary rates and functional genomics data sets ",
-      "compiled for H. sapiens, S. cerevisiae, D. melanogaster, and ",
-      "C. elegans."
-    ]
-  },
-  "Compleat": {
-    "synonyms": ["COMPLEAT"],
-    "full_name": "COMPLEAT protein COMPLex Enrichment Analysis Tool",
-    "urls": {
-      "webpages": ["https://www.flyrnai.org/compleat/"],
-      "articles": ["https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3756668/"]
-    },
-    "type": ["literature curated", "prediction"],
-    "subtype": ["complexes"],
-    "license": "CC BY-SA 4.0",
-    "descriptions": [
-      "Literature-based complex information was retrieved from databases ",
-      "such as CORUM, PINdb, CYC2008, GO, KEGG, and Drosophila AP-MS ",
-      "pulldown complexes (table S1). With the exception of protein ",
-      "complexes that are annotated by GO, all the other complexes were ",
-      "mapped across human, Drosophila, and yeast. [...] We applied CFinder ",
-      "to identify protein complexes from human, Drosophila, and yeast PPI ",
-      "networks. We filtered the PPI networks using co-expression values or ",
-      "colocalization information to remove low-confidence PPIs"
-    ]
-  },
-  "ComplexPortal": {
-    "urls": {
-      "webpages": ["https://www.ebi.ac.uk/complexportal"],
-      "articles": ["https://academic.oup.com/nar/article/47/D1/D550/5144138"]
-    },
-    "type": ["literature curated"],
-    "subtype": ["complexes"],
-    "license": "CC BY 4.0",
-    "descriptions": [
-      "The Complex Portal is a manually curated, encyclopaedic database ",
-      "that collates and summarizes information on stable, macromolecular ",
-      "complexes of known function."
-    ]
-  },
-  "HPA": {
-    "full_name": "Human Protein Atlas",
-    "urls": {
-      "webpages": ["https://www.proteinatlas.org/"]
-    },
-    "license": "CC BY-SA 3.0"
-  },
-  "PDB": {
-    "full_name": "Protein Data Bank",
-    "urls": {
-      "webpages": ["https://www.wwpdb.org/"],
-      "articles": ["https://www.nature.com/articles/nsb1203-980"]
-    },
-    "license": "PDB",
-    "type": ["original experiment", "literature curated"],
-    "subtype": ["complexes"],
-    "descriptions": [
-      "The Research Collaboratory for Structural Bioinformatics (RCSB), ",
-      "the Macromolecular Structure Database (MSD) at the European ",
-      "Bioinformatics Institute (EBI) and the Protein Data Bank Japan ",
-      "(PDBj) at the Institute for Protein Research in Osaka University ",
-      "will serve as custodians of the wwPDB, with the goal of maintaining ",
-      "a single archive of macromolecular structural data that is freely ",
-      "and publicly available to the global community."
-    ]
-  },
-  "hu.MAP": {
-    "full_name": "Human Protein Complex Map",
-    "urls": {
-      "webpages": ["http://hu.proteincomplexes.org/"],
-      "articles": ["https://www.embopress.org/doi/full/10.15252/msb.20167490"]
-    },
-    "license": "CC BY 4.0",
-    "type": ["literature curated", "original experiment"],
-    "subtype": ["complexes"],
-    "descriptions": [
-      "Here, through the synthesis of over 9,000 published mass ",
-      "spectrometry experiments, we present hu.MAP, the most comprehensive ",
-      "and accurate human protein complex map to date, containing > 4,600 ",
-      "total complexes, > 7,700 proteins, and > 56,000 unique interactions, ",
-      "including thousands of confident protein interactions not identified ",
-      "by the original publications. [...] Second, we developed a machine ",
-      "learning framework that can easily incorporate new data types to ",
-      "build more comprehensive protein complex maps by integrating ",
-      "evidence across many experiments."
-    ]
-  },
-  "hu.MAP2": {
-    "full_name": "hu.MAP 2.0",
-    "urls": {
-      "webpages": ["http://humap2.proteincomplexes.org/"],
-      "articles": [
-        "https://www.biorxiv.org/content/10.1101/2020.09.15.298216v1"
-      ]
-    },
-    "license": "CC BY 4.0",
-    "type": ["literature curated", "original experiment"],
-    "subtype": ["complexes"]
-  },
-  "PhosphoNetworks": {
-    "urls": {
-      "webpages": ["https://phosphonetworks.org/"]
-    },
-    "license": "PhosphoNetworks",
-    "inputs": {
-      "enzyme_substrate": {
-        "id_type_enzyme": "genesymbol",
-        "id_type_substrate": "genesymbol",
-        "input_method": "phosphonetworks.phosphonetworks_enzyme_substrate",
-        "organisms": [
-          9606
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright
+#  2014-2022
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Sebastian Lobentanzer
+#           Erva Ulusoy
+#           Olga Ivanova
+#           Ahmet Rifaioglu
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
+
+import os
+
+import pypath.share.common as common
+import pypath.share.settings as settings
+
+urls = {
+    'uniprot_pdb': {
+        'label': 'Getting PDB IDs of 3D structures for UniProtIDs',
+        'url': 'https://ftp.uniprot.org/pub/databases/uniprot/'
+            'current_release/knowledgebase/complete/docs/pdbtosp.txt'
+    },
+    'uniprot_basic': {
+        'label': 'URL for UniProt queries',
+        'url': 'https://legacy.uniprot.org/uniprot/',
+        'lists': 'https://legacy.uniprot.org/uploadlists/',
+        'datasheet': 'https://legacy.uniprot.org/uniprot/%s.txt',
+        'history': 'https://legacy.uniprot.org/uniprot/%s.tab?version=*',
+        'deleted_sp': 'ftp://ftp.expasy.org/databases/uniprot/'
+            'current_release/knowledgebase/complete/docs/delac_sp.txt',
+        'deleted_tr': 'ftp://ftp.expasy.org/databases/uniprot/'
+            'current_release/knowledgebase/complete/docs/delac_tr.txt.gz',
+        'speindex_old': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'
+            'knowledgebase/docs/speindex.txt',
+        'speindex': 'ftp://ftp.expasy.org/databases/uniprot/current_release/'
+            'knowledgebase/complete/docs/speindex.txt',
+        'taxids': 'https://www.uniprot.org/taxonomy/?query='
+            '*&format=tab&force=true&columns=id&compress=yes',
+        'speclist': 'https://ftp.uniprot.org/pub/databases/uniprot/'
+            'current_release/knowledgebase/complete/docs/speclist.txt',
+    },
+    'corum': {
+        'label':
+        'CORUM is a database of protein complexes, downloadable in csv format',
+        'url_old':
+        'http://mips.helmholtz-muenchen.de/genre/proj/corum/allComplexes.csv',
+        'url': 'http://mips.helmholtz-muenchen.de/corum/download/'
+            'allComplexes.txt.zip',
+    },
+    'pfam_pdb': {
+        'label': 'PDB-Pfam mapping and names of Pfam domains',
+        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/Pfam/mappings/'
+            'pdb_pfam_mapping.txt',
+    },
+    'pfam_up': {
+        'label': 'Mapping Pfam regions to UniProt',
+        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/'
+            'Pfam-A.regions.tsv.gz',
+    },
+    '3dcomplex_contact': {
+        'label': 'This file contains the topology '
+            'definition of the complexes',
+        'url_old': 'http://shmoo.weizmann.ac.il/elevy/3dcomplexV4/dataV4/'
+            'contactDefinition.txt',
+        'url': 'http://shmoo.weizmann.ac.il/elevy/3dcomplexV6/dataV6/'
+            'contactDefinition.txt',
+    },
+    '3dcomplex_correspondancy': {
+        'label': 'This is the dictionary of chain names',
+        'url_old': 'http://shmoo.weizmann.ac.il/elevy/3dcomplexV4/dataV4/'
+            'pdb_chain_corresV2.txt',
+        'url': 'http://shmoo.weizmann.ac.il/elevy/3dcomplexV6/dataV6/'
+            'chainDefinition.txt',
+    },
+    'pdb_chains': {
+        'label': 'Corresponding UniProt IDs and residue numbers '
+            'for each chain in PDB structures',
+        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/'
+            'tsv/pdb_chain_uniprot.tsv.gz',
+    },
+    'complex_portal': {
+        'label': 'Complexes curated by IntAct',
+        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/intact/complex/'
+            'current/psi25/',
+    },
+    'pisa_interfaces': {
+        'label': 'Base URL for download interface data from PDBe PISA',
+        'url': 'http://www.ebi.ac.uk/pdbe/pisa/cgi-bin/interfaces.pisa?'
+    },
+    'catalytic_sites': {
+        'label': 'Catalytic Site Atlas',
+        'url': 'http://www.ebi.ac.uk/thornton-'
+            'srv/databases/CSA/downloads/CSA_2_0_121113.txt',
+    },
+    '3did_ddi': {
+        'label': 'Domain-domain interactions derived from 3D structures',
+        'url': 'http://3did.irbbarcelona.org/download/current/3did_flat.gz'
+    },
+    '3did_dmi': {
+        'label': 'Domain-motif interactions from 3DID',
+        'url': 'http://3did.irbbarcelona.org/download/current/'
+            '3did_dmi_flat.gz',
+    },
+    'swissprot_full': {
+        'label': 'Full UniProt/Swissprot database',
+        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/Pfam/'
+            'current_release/uniprot_sprot.dat.gz',
+    },
+    'instruct_human': {
+        'label':
+        'Protein interactome networks annotated to 3D structural resolution',
+        'url': 'http://instruct.yulab.org/download/sapiens.sin',
+    },
+    'i3d_human': {
+        'label': 'Interactome3D representative dataset for human proteins',
+        'url': 'http://interactome3d.irbbarcelona.org/user_data/human/'
+            'download/representative/interactions.dat',
+    },
+    'instruct_offsets': {
+        'label': 'Offsets between PDB chains and UniProt sequences',
+        'url': 'http://instruct.yulab.org/download/indexing_uniprot2pdb.txt'
+    },
+    'compleat': {
+        'label': 'Curated and inferred complexes from multiple databases',
+        'old_url': 'http://www.flyrnai.org/compleat/ComplexDownload'
+        '?requestType=complexDownload&org=Human',
+        'rescued': 'https://rescued.omnipathdb.org/compleat.tsv',
+    },
+    'switches.elm': {
+        'label': 'Curated data on molecular switches in cellular regulation',
+        'url': 'http://switches.elm.eu.org/downloads/switches.ELM-v1.txt'
+    },
+    'ols': {
+        'label': 'WSDL interface for the Ontology Lookup Service',
+        'url_wsdl': 'http://www.ebi.ac.uk/ontology-lookup/OntologyQuery.wsdl',
+        'url': 'https://www.ebi.ac.uk/ols/api/ontologies',
+    },
+    'comppi': {
+        'label': 'Compartmentalized PPI database',
+        'url': 'http://comppi.linkgroup.hu/downloads'
+    },
+    'elm_int': {
+        'label': 'Interactions between ELM instances and globular domains',
+        'url': 'http://elm.eu.org/interactions/as_tsv'
+    },
+    'elm_depr': {
+        'label': 'Deprecated ELM class names',
+        'url': 'http://elm.eu.org/infos/browse_renamed.tsv'
+    },
+    'pdbsws': {
+        'label': 'PDB-UniProt residue level mapping',
+        'url': 'http://www.bioinf.org.uk/cgi-bin/pdbsws/query.pl'
+    },
+    'pdb_align': {
+        'label': 'PDB-UniProt residue level mapping',
+        'url_old': 'http://pdb.org/pdb/rest/das/pdb_uniprot_mapping/'
+            'alignment?query=',
+        'url': 'https://www.ebi.ac.uk/pdbe/api/mappings/uniprot/',
+    },
+    'pepcyber': {
+        'label': 'MySQL injection to PEPCyber website :)',
+        'url': 'http://www.pepcyber.org/PPEP/search_result.php'
+            '?domain=Any&ppbd_symbol=Any&search_field=symbol&'
+            'query_value=%27+OR+1&binding_sequence=&go_id=Any&'
+            'Submit=Search',
+        'rescued': 'https://rescued.omnipathdb.org/'
+            'pepcyber_search_result.html',
+        'details': 'http://www.pepcyber.org/PPEP/idetail.php?iid=%u',
+        'details_rescued': 'https://rescued.omnipathdb.org/pepcyber_details/'
+            'pepcyber_%u.html',
+    },
+    'pdzbase': {
+        'label': 'Manually curated interactions of PDZ domain proteins',
+        'url_rescued': 'http://rescued.omnipathdb.org/PDZBase.html',
+        'url': 'http://abc.med.cornell.edu/pdzbase/allinteractions',
+    },
+    'pdz_details': {
+        'label': 'Details of interactions in PDZbase',
+        'url': 'http://abc.med.cornell.edu/pdzbase/interaction_detail/%u'
+    },
+    'psite_reg': {
+        'label': 'PhosphoSite annotated regulatory sites',
+        'url_old': 'http://www.phosphosite.org/downloads/Regulatory_sites.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Regulatory_sites.gz',
+    },
+    'psite_bp': {
+        'label': 'PhosphoSite kinase substrates in BioPAX format',
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Kinase_substrates.owl.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Kinase_substrates.owl.gz',
+    },
+    'psite_ac': {
+        'label': 'PhosphoSite acetylation sites',
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Acetylation_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Acetylation_site_dataset.gz',
+    },
+    'psite_kin': {
+        'label': 'PhosphoSite kinase-substrate interactions',
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Kinase_Substrate_Dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Kinase_Substrate_Dataset.gz',
+    },
+    'psite_me': {
+        'label': 'PhosphoSite methylation sites',
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Methylation_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'
+            'Methylation_site_dataset.gz',
+    },
+    'psite_ga': {
+        'label': 'PhosphoSite O-GalNAc sites',
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'O-GalNAc_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'
+            'O-GalNAc_site_dataset.gz',
+    },
+    'psite_gl': {
+        'label': 'PhosphoSite O-GlcNAc sites',
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'O-GlcNAc_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'O-GlcNAc_site_dataset.gz',
+    },
+    'psite_p': {
+        'label': 'PhosphoSite phosphorylation sites',
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Phosphorylation_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Phosphorylation_site_dataset.gz',
+    },
+    'psite_sm': {
+        'label': 'Sumoylation sites',
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Sumoylation_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Sumoylation_site_dataset.gz',
+    },
+    'psite_ub': {
+        'label': 'Ubiquitination sites',
+        'url_old': 'http://www.phosphosite.org/downloads/'\
+            'Ubiquitination_site_dataset.gz',
+        'url': 'https://rescued.omnipathdb.org/phosphosite/'\
+            'Ubiquitination_site_dataset.gz',
+    },
+    'proteomic_ielm': {
+        'label': 'Proteomic iELM',
+        'url': 'http://i.elm.eu.org/test_submit/'
+    },
+    'ielm_domains': {
+        'label': 'List of domains form iELM',
+        'url': 'http://i.elm.eu.org/domains/'
+    },
+    'domino': {
+        'label': 'Domino PPI and domain-motif database in MI-TAB format',
+        'url': 'ftp://mint.bio.uniroma2.it/pub/domino/release/mitab/'
+        '2009-10-22/2009-10-22-domino-full-binary.mitab26',
+        'rescued': 'http://rescued.omnipathdb.org/'\
+            'domino_2009-10-22-full-binary.mitab26.gz',
+    },
+    'hprd_all': {
+        'label': 'HPRD all data in flat files',
+        'url': 'http://www.hprd.org/RELEASE9/HPRD_FLAT_FILES_041310.tar.gz',
+        'url_rescued': 'https://rescued.omnipathdb.org/'
+            'HPRD_FLAT_FILES_041310.tar.gz',
+        'ptm_file': 'FLAT_FILES_072010/POST_TRANSLATIONAL_MODIFICATIONS.txt',
+        'int_file': 'FLAT_FILES_072010/BINARY_PROTEIN_PROTEIN_INTERACTIONS.txt'
+    },
+    'p_elm': {
+        'label': 'phosphoELM',
+        'url':
+        'http://phospho.elm.eu.org/dumps/phosphoELM_vertebrate_latest.dump.tgz',
+        'psites': 'phosphoELM_vertebrate_'
+    },
+    'p_elm_kin': {
+        'label': 'List of kinases from phosphoELM',
+        'url': 'http://phospho.elm.eu.org/kinases.html'
+    },
+    'elm_inst': {
+        'label': 'List of ELM instances',
+        'url_old': 'http://elm.eu.org/elms/browse_instances.tsv?q=*',
+        'url': 'http://elm.eu.org/instances.tsv?q=*',
+    },
+    'elm_class': {
+        'label': 'List of ELM classes',
+        'url_old': 'http://elm.eu.org/elms/browse_elms.tsv',
+        'url': 'http://elm.eu.org/elms/elms_index.tsv',
+    },
+    'dbptm_benchmark': {
+        'label': 'dbPTM is a PTM database compiled from multiple other dbs',
+        'urls': [
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/N-linked_Glycosylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/N6-succinyllysine.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/O-linked_Glycosylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Phosphorylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Phosphorylation_CDK1.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Phosphorylation_CK2.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Phosphorylation_MAPK1.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Phosphorylation_PKA.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Phosphorylation_PKC.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/S-nitrosylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Amidation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Hydroxylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Acetylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Methylation.tgz'
+        ]
+    },
+    'dbptm': {
+        'label': 'dbPTM is a PTM database compiled from multiple other dbs',
+        'urls': [
+            'http://dbptm.mbc.nctu.edu.tw/download/N-linked.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/O-linked.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/C-linked.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Phosphorylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Acetylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Methylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Myristoylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Palmitoylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Prenylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Carboxylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Sulfation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Ubiquitylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Sumoylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Nitrosylation.tgz',
         ],
-        "organisms_supported": false,
-        "extra_attrs": {
-          "phosphonetworks_score": "score"
-        }
-      }
-    }
-  },
-  "MIMP": {
-    "full_name": "Mutations IMpact on Phosphorylation",
-    "urls": {
-      "webpages": ["http://mimp.baderlab.org/"]
-    },
-    "license": "LGPLv3",
-    "inputs": {
-      "enzyme_substrate": {
-        "id_type_enzyme": "genesymbol",
-        "id_type_substrate": [
-          ["genesymbol", "substrate"],
-          ["refseqn", "substrate_refseq"]
+        'url': 'http://dbptm.mbc.nctu.edu.tw/download/experiment/%s.txt.gz',
+        'datasets': [
+            'Phosphorylation',
+            'Acetylation',
+            'Ubiquitination',
+            'Succinylation',
+            'Methylation',
+            'Malonylation',
+            'N-linkedGlycosylation',
+            'O-linkedGlycosylation',
+            'Sumoylation',
+            'S-nitrosylation',
+            'Glutathionylation',
+            'Amidation',
+            'Hydroxylation',
+            'PyrrolidoneCarboxylicAcid',
+            'Glutarylation',
+            'Palmitoylation',
+            'Gamma-carboxyglutamicAcid',
+            'Crotonylation',
+            'Oxidation',
+            'Myristoylation',
+            'C-linkedGlycosylation',
+            'Sulfation',
+            'Formylation',
+            'Citrullination',
+            'GPI-anchor',
+            'Nitration',
+            'S-diacylglycerol',
+            'Carboxylation',
+            'Lipoylation',
+            'Carbamidation',
+            'Neddylation',
+            'Pyruvate',
+            'S-linkedGlycosylation',
         ],
-        "input_method": "mimp.mimp_enzyme_substrate",
-        "organisms": [
-          9606
+        'old_table': 'http://rescued.omnipathdb.org/old_dbptm.tab',
+    },
+    'phosnw': {
+        'label': 'Human kinase-substrate relationships and phosphosites',
+        'url': 'http://phosphonetworks.org/download/highResolutionNetwork.csv'
+    },
+    'kegg_pws': {
+        'label': 'KEGG Pathways and KEGG MEDICUS',
+        'list_url': 'http://www.genome.jp/kegg/pathway.html',
+        'kgml_url':
+        'http://www.kegg.jp/kegg-bin/download?entry=%s&format=kgml',
+        'biopax_l3': 'http://www.pathwaycommons.org/archives/PC2/'
+            'v8/PathwayCommons.8.kegg.BIOPAX.owl.gz',
+        'kgml_url_2': 'http://rest.kegg.jp/get/%s/kgml',
+        'medicus': 'ftp://ftp.genome.jp/pub/kegg/medicus/network/network',
+        'dbget': 'https://www.kegg.jp/dbget-bin/www_bget?%s',
+        'pw_annot': 'https://www.pathwaycommons.org/archives/PC2/v12/'
+            'PathwayCommons12.kegg.uniprot.gmt.gz',
+    },
+    'kegg_api': {
+        'label': 'KEGG API',
+        'url': 'https://rest.kegg.jp/%s'
+    },
+    'pathbank': {
+        'label': 'A functional annotation and process description network '
+            'database.',
+        'pw_annot': 'https://pathbank.org/downloads/'
+            'pathbank_all_proteins.csv.zip',
+    },
+    'depod': {
+        'label': 'Dephosphorylation substrates and sites',
+        'urls': [
+            'http://depod.bioss.uni-freiburg.de/download/DEPOD_201408'
+            '_human_phosphatase-substrate.txt',
+            'http://depod.bioss.uni-freiburg.de/download/DEPOD_201405'
+            '_human_phosphatase-substrate.mitab'
+        ]
+    },
+    'mimp': {
+        'label': 'Kinase-substrate relationships',
+        'url': 'http://mimp.baderlab.org/fetch_data/phosphorylation_data'
+        '.tab/phosphorylation_data.tab'
+    },
+    'unip_iso': {
+        'label': 'Isoform sequences from UniProt',
+        'url_old': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'
+            'current_release/knowledgebase/complete/'
+            'uniprot_sprot_varsplic.fasta.gz',
+        'url': 'ftp://ftp.expasy.org/databases/uniprot/current_release/'
+            'knowledgebase/complete/uniprot_sprot_varsplic.fasta.gz',
+    },
+    'kinclass': {
+        'label': 'Kinase families and groups',
+        'url': 'http://kinase.com/static/colt/data/human/kinome/'
+            'tables/Table%20S2.txt',
+        'rescued': 'https://rescued.omnipathdb.org/kinase.com__Table_S2.txt',
+    },
+    'protdb_exp': {
+        'label': 'Expression data from ProteomicsDB',
+        'url': 'https://www.proteomicsdb.org/proteomicsdb/logic/api/'
+        'proteinexpression.xsodata/InputParams(PROTEINFILTER='
+        '%%27%s%%27,MS_LEVEL=%u,TISSUE_ID_SELECTION=%%27%%27,'
+        'TISSUE_CATEGORY_SELECTION=%%27tissue;fluid%%27,SCOPE_SELECTION=%u,'
+        'GROUP_BY_TISSUE=1,CALCULATION_METHOD=0,EXP_ID=-1)/Results?'
+        '$select=UNIQUE_IDENTIFIER,TISSUE_ID,TISSUE_NAME,TISSUE_SAP_SYNONYM,'
+        'SAMPLE_ID,SAMPLE_NAME,AFFINITY_PURIFICATION,EXPERIMENT_ID,'
+        'EXPERIMENT_NAME,EXPERIMENT_SCOPE,EXPERIMENT_SCOPE_NAME,PROJECT_ID,'
+        'PROJECT_NAME,PROJECT_STATUS,UNNORMALIZED_INTENSITY,'
+        'NORMALIZED_INTENSITY,MIN_NORMALIZED_INTENSITY,'
+        'MAX_NORMALIZED_INTENSITY,SAMPLES&$format=json',
+        'subs': ['uniprot', 'ms_level', 'scope']
+    },
+    'protdb_tis': {
+        'label': 'Get all tissues where a given protein is expressed',
+        'url': 'https://www.proteomicsdb.org/proteomicsdb/logic/api/'
+        'proteinspertissue.xsodata/InputParams(TISSUE_ID='
+        '%%27%s%%27,CALCULATION_METHOD=0,SWISSPROT_ONLY=%u,'
+        'NO_ISOFORM=%u)/Results?$select=ENTRY_NAME,UNIQUE_IDENTIFIER,DATABASE,'
+        'PROTEIN_DESCRIPTION,PEPTIDES,SAMPLE_NAME,SAMPLE_DESCRIPTION,'
+        'UNNORMALIZED_EXPRESSION,NORMALIZED_EXPRESSION&$format=xml',
+        'subs': ['bto', 'swissprot_only', 'isoform']
+    },
+    'abs': {
+        'label': '',
+        'url': 'http://genome.crg.es/datasets/abs2005/data/abs.gff'
+    },
+    'uniprot_sec': {
+        'label': 'Secondary UniProt ACs',
+        'url_old': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'
+            'current_release/knowledgebase/complete/docs/sec_ac.txt',
+        'url': 'ftp://ftp.expasy.org/databases/uniprot/current_release/'
+            'knowledgebase/complete/docs/sec_ac.txt',
+    },
+    'uniprot_idmap_ftp': {
+        'label': 'Human ID mapping from UniProt',
+        'url': 'ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/'
+        'knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz'
+    },
+    'uniprot_idmap': {
+        'label': 'ID mapping from UniProt',
+        'url': 'http://uniprot.org/mapping/'
+    },
+    'pazar': {
+        'label': 'TF-target gene lists from PAZAR',
+        'url': 'http://www.pazar.info/tftargets/tftargets.zip',
+        'url_rescued': 'http://rescued.omnipathdb.org/pazar_tftargets.zip',
+    },
+    'htri': {
+        'label': 'TF-target gene lists from HTRI',
+        'url': 'https://rescued.omnipathdb.org/HTRIdb.csv',
+        'url_old1': 'http://www.lbbc.ibb.unesp.br/htri/datasHTRIdb?down=3',
+        'url_old2': 'http://www.lbbc.ibb.unesp.br/htri/consulta?'\
+            'type=1&all=true&down=3&iconss1.x=57&iconss1.y=48',
+        'init_url': 'http://www.lbbc.ibb.unesp.br/htri/consulta?'\
+            'type=1&all=true&down=3',
+    },
+    'oreganno_old': {
+        'label': 'TF-target gene lists from ORegAnno, previous version',
+        'url': 'http://www.oreganno.org/oregano/htdocs'
+        '/data/oreganno_UCSC_08Nov10.txt.gz'
+    },
+    'oreganno': {
+        'label': 'TF-target gene lists from ORegAnno',
+        'url_old': 'http://py-gi1.stanford.edu:8080/oregano/htdocs/'
+        'downloads/ORegAnno_Combined_2015.09.16.tsv',
+        'url': 'http://www.oreganno.org/dump/'\
+            'ORegAnno_Combined_2016.01.19.tsv',
+    },
+    'cpdb': {
+        'label': 'All human interactions from ConsensusPathDB',
+        'url':
+        'http://cpdb.molgen.mpg.de/download/ConsensusPathDB_human_PPI.gz'
+    },
+    'goa': {
+        'label': 'UniProt GO annotations from GOA',
+        'go_url': 'http://geneontology.org/gene-associations/goa_%s.gaf.gz',
+        'ebi_url': 'ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/%s/goa_%s.gaf.gz'
+    },
+    'quickgo_old': {
+        'label': 'UniProt GO annotations from QuickGO',
+        'url': 'http://www.ebi.ac.uk/QuickGO/GAnnotation?format=tsv&'
+        'limit=-1%s&termUse=%s&tax=%u&col=proteinID,goID,goName,aspect'
+    },
+    'quickgo': {
+        'label': 'UniProt GO annotations from QuickGO',
+        'url': 'https://www.ebi.ac.uk/QuickGO/services/annotation/'\
+        'downloadSearch?includeFields=goName,name&taxonId=%u'
+        '&aspect=%s%s'
+    },
+    'quickgo_rest': {
+        'label': 'REST API of the QuickGO Gene Ontology server',
+        'graph': 'https://www.ebi.ac.uk/QuickGO/services/ontology/'\
+            'go/terms/graph?startIds=%s,relations=%s',
+        'terms': 'https://www.ebi.ac.uk/QuickGO/services/ontology/'\
+            'go/terms?page=%u',
+        'annot': 'https://www.ebi.ac.uk/QuickGO/services/annotation/'\
+            'downloadSearch?'\
+            'includeFields=goName&'\
+            'includeFields=taxonName&'\
+            'includeFields=name&'\
+            'aspect=%s&'\
+            'goUsageRelationships=%s&'\
+            'taxonId=%u&'\
+            'limit=100&'\
+            'page=%u',
+        'desc': 'https://www.ebi.ac.uk/QuickGO/services/ontology/'\
+            'go/terms/%s/descendants%s',
+    },
+    'quickgo_desc': {
+        'label': 'UniProt GO annotations from QuickGO',
+        'url': 'https://www.ebi.ac.uk/QuickGO/services/annotation/'\
+        'downloadSearch?includeFields=goName,name&taxonId=%u'\
+        '&goUsage=descendants&goId=%s'
+    },
+    'goose': {
+        'label': 'Legacy MySQL query interface of AmiGO',
+        'url': 'http://amigo.geneontology.org/goose?query=%s'\
+            '&mirror=bbop&limit=0&format=text',
+    },
+    'golr': {
+        'label': 'AmiGO Solr service URL',
+        'url': 'http://golr.berkeleybop.org/select%s'
+    },
+    'goslim_gen': {
+        'label': 'Generic GOSlim from GO Consortium',
+        'url':
+        'http://www.geneontology.org/ontology/subsets/goslim_generic.obo'
+    },
+    'go': {
+        'label': 'The whole Gene Ontology',
+        'url': 'http://purl.obolibrary.org/obo/go.obo'
+    },
+    'netpath_names': {
+        'label': 'NetPath numeric pathway IDs can be translated to '
+        'pathway names only by extracting them from HTML....',
+        'url': 'http://www.netpath.org/browse'
+    },
+    'netpath_pw': {
+        'label': 'NetPath pathway page',
+        'mainpage': 'http://mirror.netpath.org/index.html',
+        'url': 'http://mirror.netpath.org/pathways?path_id=NetPath_%u'
+    },
+    'netpath_psimi': {
+        'label': 'Batch download of NetPath pathways in PSI-MI format',
+        'url': 'http://rescued.omnipathdb.org/NetPath_PSI-MI.zip'
+    },
+    'netpath_bp': {
+        'label': 'Netpath pathways one by one in BioPAX level 3 format',
+        'biopax_l3': 'http://www.netpath.org/data/biopax/NetPath_%u.owl'
+    },
+    'proteomemap': {
+        'label':
+        'Human Proteome Map: Mass-spec expression data in '\
+            'healthy human tissues',
+        'url':
+        'http://www.humanproteomemap.org/Download_HPM/HPM_protein_level_'
+            'expression_matrix_Kim_et_al_052914.csv'
+    },
+    'proteinatlas': {
+        'label': 'Human Protein Atlas: Immuncytochemistry expression data in '
+            'healthy human cells or cancer cells or cell lines',
+        'normal': 'http://www.proteinatlas.org/download/'\
+            'normal_tissue.tsv.zip',
+        'pathology': 'http://www.proteinatlas.org/download/pathology.tsv.zip',
+        'subcell': 'https://www.proteinatlas.org/download/'\
+            'subcellular_location.tsv.zip',
+        'secretome_old': 'https://stke.sciencemag.org/highwire/filestream/'\
+            '216463/field_highwire_adjunct_files/1/aaz0274_Data_file_S2.xlsx',
+        'secretome': 'https://www.science.org/action/downloadSupplement?'\
+            'doi=10.1126%2Fscisignal.aaz0274&'\
+            'file=aaz0274_data_file_s2.xlsx',
+        'ig_genes': 'https://stke.sciencemag.org/highwire/filestream/'\
+            '216463/field_highwire_adjunct_files/0/aaz0274_Data_file_S1.xlsx',
+
+    },
+    'lincs-compounds': {
+        'label':
+        'List of small molecules in LINCS with synonyms and PubChem IDs',
+        'url': 'http://lincs.hms.harvard.edu/db/datasets/20000/smallmolecules'
+            '?search=&output_type=.csv'
+    },
+    'pubmed-eutils': {
+        'label': 'Retrieving summary of PubMed records',
+        'url': 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi',
+        'conv': (
+            'https://www.ncbi.nlm.nih.gov/pmc/utils/idconv/'
+            'v1.0/?ids=%s&format=json'
+        )
+    },
+    'pubmed': {
+        'label': 'PubMed baseurl',
+        'url': 'http://www.ncbi.nlm.nih.gov/pubmed/%s'
+    },
+    'hpmr': {
+        'label': 'Human Plasma Membrane Receptome',
+        'url':
+            'http://www.receptome.org/SearchDB/findGenes.asp?textName='
+    },
+    'tfcensus': {
+        'label': 'A census of human transcription factors (Vaquerizas 2009)',
+        'url': (
+            r'https://static-content.springer.com/esm/'
+            r'art%3A10.1038%2Fnrg2538/MediaObjects/'
+            r'41576_2009_BFnrg2538_MOESM6_ESM.txt'
+        )
+    },
+    'tfcheckp': {
+        'label': 'A comprehensive list of transcription factors',
+        'url':
+        'http://www.tfcheckpoint.org/data/TFCheckpoint_download_180515.txt'
+    },
+    'gtp': {
+        'label': 'Guide to Pharmacology: ligand-receptor interactions',
+        'url': 'http://www.guidetopharmacology.org/DATA/interactions.csv',
+    },
+    'giant': {
+        'label': 'JSON network from GIANT by gene based query',
+        'init_url': 'http://giant.princeton.edu/',
+        'url':
+        'http://giant.princeton.edu/contexts/integration/'\
+            'query/%u/?%s&prior=0.1'
+    },
+    'msigdb': {
+        'label': 'Molecular Signatures Database',
+        'login1': 'https://www.gsea-msigdb.org/gsea/login',
+        'login2': 'https://www.gsea-msigdb.org/gsea/j_spring_security_check',
+        'url': 'https://www.gsea-msigdb.org/gsea/msigdb/'
+            'download_file.jsp?filePath=/msigdb/release/'
+            '%s.%s/%s.v%s.%s.%s.gmt',
+        'coll': 'https://www.gsea-msigdb.org/gsea/msigdb/collections.jsp',
+        'url_stem': 'https://www.gsea-msigdb.org/gsea/%s',
+        'one_set': 'hhttps://www.gsea-msigdb.org/gsea/msigdb/'
+            'download_geneset.jsp?geneSetName=%s&fileType=txt',
+        'url_all': 'https://www.gsea-msigdb.org/gsea/msigdb/'\
+            'download_file.jsp?filePath=/msigdb/release/7.5.1/'\
+            'msigdb_v7.5.1_files_to_download_locally.zip',
+    },
+    'msigdb_old': {
+        'label': 'Molecular Signatures Database',
+        'login1': 'http://software.broadinstitute.org/gsea/login.jsp',
+        'login2':
+        'http://software.broadinstitute.org/gsea/j_spring_security_check',
+        'url': 'http://software.broadinstitute.org/gsea/msigdb/'
+        'download_file.jsp?filePath=/resources/msigdb/7.0/%s.v7.0.%s.gmt',
+        'coll': 'http://www.broadinstitute.org/gsea/msigdb/collections.jsp',
+        'url_stem': 'http://www.broadinstitute.org/gsea/%s',
+        'one_set':
+        'http://www.broadinstitute.org/gsea/msigdb/download_geneset.jsp?'
+        'geneSetName=%s&fileType=txt',
+        'url_all': 'http://software.broadinstitute.org/gsea/msigdb/'\
+            'download_file.jsp?filePath=/resources/msigdb/7.0/'\
+            'msigdb_v7.0_files_to_download_locally.zip',
+    },
+    'disgenet': {
+        'api_url': 'https://www.disgenet.org/api',
+        'disease_id_mappings': 'https://www.disgenet.org/static/disgenet_ap1/files/downloads/disease_mappings.tsv.gz',
+        'variant_gene_mappings': 'https://www.disgenet.org/static/disgenet_ap1/files/downloads/variant_to_gene_mappings.tsv.gz',
+        'annotation_label': 'Disease-gene associations',
+        'annotations': 'http://www.disgenet.org/static/disgenet_ap1/files/'\
+            'downloads/%s_gene_disease_associations.tsv.gz',
+        'annotation_datasets': ['curated', 'literature', 'befree', 'all'],
+    },
+    'hsn': {
+        'label': 'The Wang Human Signaling Network',
+        'rescued': (
+            'http://rescued.omnipathdb.org/WangLab_HumanSignalingNet_v6.csv'
+        ),
+        'researchgate': 'https://www.researchgate.net/profile/Edwin-Wang-6/'
+            'publication/264488606_Human_Signaling_Network_Version_6/data/'
+            '53e102ed0cf2235f35271ea3/'
+            'HuamnSignalingNet-v6.csv?origin=publication_detail',
+    },
+    'li2012': {
+        'label': 'Human Phosphotyrosine Signaling Network',
+        'url': 'http://genome.cshlp.org/content/suppl/2011/12/27/'
+        'gr.128819.111.DC1/Supplementary_files_S1-S5.xls'
+    },
+    'trip': {
+        'label': 'The TRP channel database',
+        'base': 'http://www.trpchannel.org/',
+        'base_rescued': 'https://rescued.omnipathdb.org/trip/main.html',
+        'show': 'http://www.trpchannel.org/proteins/show?id=%s',
+        'show_rescued': 'https://rescued.omnipathdb.org/trip/show-%s.html',
+        'intr': 'http://www.trpchannel.org/interactions/show?trp=%s&'
+        'interactor=%s',
+        'url': 'http://www.trpchannel.org/20141116.csv',
+        'json': 'http://www.trpchannel.org/proteins/getjson'
+    },
+    'signor': {
+        'label': 'SIGNOR pathways',
+        'list_url': 'https://signor.uniroma2.it/downloads.php',
+        'base_url': 'https://signor.uniroma2.it/%s',
+        'all_url': 'https://signor.uniroma2.it/DownloadServlet?action=all',
+        'all_url_new': 'https://signor.uniroma2.it/download_entity.php',
+        'complexes': 'https://signor.uniroma2.it/download_complexes.php',
+    },
+    'hiii14': {
+        'label': 'Rolland et al 2014, Human Interactome II',
+        'url':
+        'http://www.cell.com/cms/attachment/2021150198/2041343422/mmc3.xlsx',
+        'article_url': 'https://www.cell.com/cell/fulltext/'
+            'S0092-8674(14)01422-6',
+    },
+    'kinome': {
+        'label': 'List of human kinases',
+        'url': 'http://kinase.com/static/colt/data/human/kinome/tables/'
+            'Kincat_Hsap.08.02.xls',
+        'rescued': 'https://rescued.omnipathdb.org/Kincat_Hsap.08.02.xls',
+    },
+    'phosphatome': {
+        'label': 'List of human and other phosphatases',
+        'webpage': 'http://phosphatome.net/3.0',
+        'url_from_page': 'https://www.science.org/doi/suppl/10.1126/'\
+            'scisignal.aag1796/suppl_file/aag1796_tables_s1_to_s23.zip',
+        'url': 'https://www.science.org/action/downloadSupplement?'
+            'doi=10.1126%2Fscisignal.aag1796&'
+            'file=aag1796_tables_s1_to_s23.zip',
+    },
+    'dgidb': {
+        'label': 'Druggable genes compiled from multiple resources',
+        'main_url': 'http://dgidb.genome.wustl.edu/search_categories',
+        'url': 'http://dgidb.genome.wustl.edu/druggable_gene_categories/%s?'
+            'sources=BaderLabGenes,CarisMolecularIntelligence,'
+            'FoundationOneGenes,GO,GuideToPharmacologyGenes,HopkinsGroom,'
+            'MskImpact,RussLampel,dGene',
+        'categories': 'https://www.dgidb.org/data/monthly_tsvs/'
+            '2021-Jan/categories.tsv',
+        'interactions': 'https://www.dgidb.org/data/monthly_tsvs/'
+            '2022-Feb/interactions.tsv',
+    },
+    'reactome': {
+        'label': 'The Reactome reaction network database',
+        'sbml':
+        'https://reactome.org/download/current/homo_sapiens.3.1.sbml.tgz',
+        'biopax_l3': 'https://reactome.org/download/current/biopax.zip',
+        'biopax_l2': 'https://reactome.org/download/current/biopax2.zip',
+    },
+    'acsn': {
+        'label': 'Atlas of Cancer Signaling Networks',
+        'biopax_l3': 'https://acsn.curie.fr/files/acsn_v1.1.owl',
+        'sif': 'https://acsn.curie.fr/files/acsn_ppi.sif',
+        'ppi': 'http://rescued.omnipathdb.org/acsn_ppi.txt',
+        'names': 'http://rescued.omnipathdb.org/acsn_names.gmt',
+    },
+    'nci-pid': {
+        'label': 'National Cancer Institute -- Pathway Interaction Database',
+        'biopax_l3':
+        'ftp://ftp1.nci.nih.gov/pub/PID/BioPAX_Level_3/'\
+            'NCI-Nature_Curated.bp3.owl.gz'
+    },
+    'panther': {
+        'label': 'PANTHER pathways',
+        'biopax_l3':
+        'ftp://ftp.pantherdb.org//pathway/current_release/BioPAX.tar.gz'
+    },
+    'laudanna': {
+        'label':
+        'Directionality and effect information inferred from multiple'\
+            ' sources by Laudanna Lab',
+        'sigflow':
+        'http://dp.univr.it/~laudanna/LCTST/downloads/files/SignalingFlow.EA',
+        'sigdir':
+        'http://dp.univr.it/~laudanna/LCTST/downloads/files/'\
+            'SignalingDirection.EA',
+        'sigdir_rescued': 'https://rescued.omnipathdb.org/'\
+            'Laudanna_SignalingDirection.EA',
+        'sigflow_rescued': 'https://rescued.omnipathdb.org/'\
+            'Laudanna_SignalingFlow.EA',
+    },
+    'biogrid': {
+        'label': 'BioGRID version 2 tab format',
+        'mv': 'http://thebiogrid.org/downloads/archives/Latest%20Release/'\
+            'BIOGRID-MV-Physical-LATEST.tab2.zip',
+        'all': 'http://thebiogrid.org/downloads/archives/Latest%20Release/'\
+            'BIOGRID-ALL-LATEST.tab2.zip'
+    },
+    'wang': {
+        'label':
+        'Human Signaling Network compiled by Wang Group, version 6 (2014)',
+        'old_url': 'http://www.bri.nrc.ca/wang/cancerMap/'
+            'HumanSignalingNetwork_v6.csv',
+        'rescued': 'https://rescued.omnipathdb.org/'
+            'WangLab_HumanSignalingNetwork_v6-format2.csv',
+        'cui': 'https://www.embopress.org/action/downloadSupplement?'
+            'doi=10.1038%2Fmsb4100200&file=msb4100200-sup-0010.xls',
+        'cui_init': 'https://www.embopress.org/doi/full/10.1038/msb4100200',
+    },
+    'graphviz': {
+        'label': 'List of Graphviz attributes',
+        'url': 'http://www.graphviz.org/doc/info/attrs.html'
+    },
+    'hid': {
+        'label': 'CCSB Human Interactome Project',
+        'lit-bm-13': 'http://interactome.dfci.harvard.edu/H_sapiens/'
+            'download/Lit-BM-13.tsv',
+        'hi-ii-14':
+        'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-II-14.psi',
+        'hi-i-05':
+        'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-I-05.psi',
+        'lit-bm-17': 'https://rescued.omnipathdb.org/LitBM-17.psi',
+        'lit-bm': 'http://www.interactome-atlas.org/data/Lit-BM.tsv',
+        'huri': 'http://www.interactome-atlas.org/data/HuRI.psi',
+        'hi-union': 'http://www.interactome-atlas.org/data/HI-union.psi',
+        'yang-2016': 'http://www.interactome-atlas.org/data/Yang-16.psi',
+        'hi-i-05-pmi': 'http://www.interactome-atlas.org/data/H-I-05.psi',
+        'hi-ii-14-pmi': 'http://www.interactome-atlas.org/data/HI-II-14.psi',
+        'yu-2011': 'http://www.interactome-atlas.org/data/Yu-11.psi',
+    },
+    'ca1': {
+        'label': 'Supplementary Online Materials for Ma\'ayan 2005',
+        'url_old': 'http://science.sciencemag.org/highwire/filestream/586741/'
+            'field_highwire_adjunct_files/1/Maayan_SOM_External_Files.zip',
+        'url': 'https://www.science.org/action/downloadSupplement?'
+            'doi=10.1126%2Fscience.1108876&'
+            'file=maayan_som_external_files.zip',
+    },
+    'ccmap': {
+        'label': 'Cancer Cell Map from PathwayCommons 2011 snapshot',
+        'edges':
+        'http://www.pathwaycommons.org/archives/PC1/last_release-2011/'\
+            'tab_delim_network/by_source/cell-map-edge-attributes.txt.zip',
+        'nodes':
+        'http://www.pathwaycommons.org/archives/PC1/last_release-2011/'\
+            'tab_delim_network/by_source/cell-map-node-attributes.txt.zip'
+    },
+    'pathguide': {
+        'label':
+        'Collection of metabolic and signaling pathway and molecular '\
+            'interaction resources',
+        'url':
+        'http://pathguide.org/fullrecord.php?organisms=all&'\
+            'availability=all&standards=all&order=alphabetic&DBID=%u'
+    },
+    'cgc': {
+        'label': 'Cancer Gene Census: list of cancer related (driver) genes',
+        'host': 'sftp-cancer.sanger.ac.uk',
+        'file': '/files/grch38/cosmic/v76/cancer_gene_census.csv',
+        'url_new': 'https://cancer.sanger.ac.uk/cosmic/file_download/'
+            'GRCh38/cosmic/v94/cancer_gene_census.csv',
+    },
+    'havugimana': {
+        'label': 'Census of human soluble protein complexes',
+        'url': 'https://www.cell.com/cms/10.1016/j.cell.2012.08.011/'
+            'attachment/852fdb4f-ef77-4001-b513-a6687e6e070f/mmc3.xls',
+        'article': 'https://www.cell.com/fulltext/S0092-8674(12)01006-9',
+    },
+    'matrixdb': {
+        'label': 'MatrixDB in house curated interactions, PSI-MI tab format',
+        'old_url': 'http://matrixdb.ibcp.fr/download/matrixdb_CORE.tab.gz',
+        'url': 'http://matrixdb.univ-lyon1.fr/download/matrixdb_CORE.tab.gz',
+        'ecm_proteins': 'http://matrixdb.univ-lyon1.fr/'\
+            'download//proteins_ECM.csv',
+        'secreted_proteins': 'http://matrixdb.univ-lyon1.fr/'
+            'download//proteins_Secreted.csv',
+        'membrane_proteins': 'http://matrixdb.univ-lyon1.fr/'
+            'download//proteins_Membrane.csv',
+    },
+    'innatedb': {
+        'label': 'InnateDB PSI-MI tab',
+        'url':
+        'http://innatedb.com/download/interactions/innatedb_ppi.mitab.gz'
+    },
+    'dip': {
+        'label': 'DIP PSI-MI tab',
+        'login': 'http://dip.doe-mbi.ucla.edu/dip/Login.cgi',
+        'url_old': 'http://dip.mbi.ucla.edu/dip/file?'
+            'ds=current&fn=Hsapi20170205%s&ff=txt',
+        'ik': 'http://dip.doe-mbi.ucla.edu/dip/DIPview.cgi?IK=%u',
+        'url': 'https://dip.doe-mbi.ucla.edu/dip/File.cgi?FN=2017/tab25/'
+            'Hsapi20170205.txt.gz',
+        'url_rescued': 'https://rescued.omnipathdb.org/dip/'
+            'Hsapi20170205%s.txt.gz',
+    },
+    'vaquerizas2009': {
+        'label': 'A census of human transcription factors: function, '
+        'expression and evolution; Supplementary Table S3',
+        'url': (
+            r'https://static-content.springer.com/esm/'
+            r'art%3A10.1038%2Fnrg2538/MediaObjects/'
+            r'41576_2009_BFnrg2538_MOESM6_ESM.txt'
+        ),
+    },
+    'spike': {
+        'label': 'SPIKE database XML',
+        'url': 'http://www.cs.tau.ac.il/~spike/download/LatestSpikeDB.xml.zip'
+    },
+    'mppi': {
+        'label': 'MIPS PPI full download',
+        'url': 'http://mips.helmholtz-muenchen.de/proj/ppi/data/mppi.gz'
+    },
+    'negatome': {
+        'label': 'Negatome manually curated non-interacting protein pairs',
+        'manual':
+        'http://mips.helmholtz-muenchen.de/proj/ppi/negatome/manual.txt'
+    },
+    'macrophage': {
+        'label': 'Macrophage Pathways; Raza 2010, Supplementary Materials 1',
+        'url': r'https://static-content.springer.com/esm/art%3A10.1186%2F1752-'
+        r'0509-4-63/MediaObjects/12918_2010_452_MOESM2_ESM.XLS'
+    },
+    'intact': {
+        'label': 'IntAct entire database PSI-MI tab',
+        'mitab': 'ftp://ftp.ebi.ac.uk/pub/databases/intact/'
+        'current/psimitab/intact.zip'
+    },
+    'death': {
+        'label': 'DeathDomain webpage',
+        'url_dead': 'http://www.deathdomain.org/proteins/show?family=%s',
+        'url_alive': 'http://rescued.omnipathdb.org/deathdomain.tsv',
+    },
+    'string': {
+        'label': 'STRING',
+        'actions': 'https://stringdb-static.org/download/'
+            'protein.actions.v11.0/%u.protein.actions.v11.0.txt.gz',
+        'links': 'https://stringdb-static.org/download/protein.links.detailed.v11.5/%u'
+            '.protein.links.detailed.v11.5.txt.gz',
+        'physical_links': 'https://stringdb-static.org/download/protein.physical.links.detailed.v11.5/%u'
+            '.protein.physical.links.detailed.v11.5.txt.gz',
+        'species': 'https://stringdb-static.org/download/species.v11.5.txt'
+    },
+    'wikipw': {
+        'label': 'WikiPathways human biopax',
+        'biopax_l3_old': 'http://wikipathways.org//wpi/cache/wikipathways_'
+            'Homo_sapiens_Curation-AnalysisCollection__owl.zip',
+        'biopax_l3': 'http://data.wikipathways.org/20191010/gpml/'
+            'wikipathways-20191010-gpml-Homo_sapiens.zip',
+    },
+    'pwcommons': {
+        'label': 'PathwayCommons binary SIF files',
+        'url': 'https://www.pathwaycommons.org/archives/PC2/v%u/'
+            'PathwayCommons%u.%s.hgnc.sif.gz',
+    },
+    'homologene': {
+        'label': 'NCBI HomoloGene data, recent release',
+        'url': 'https://ftp.ncbi.nih.gov/pub/HomoloGene/'
+            'current/homologene.data',
+    },
+    'mirbase' : {
+        'label': 'miRBase: miRNA main reference database',
+        'aliases_old': 'ftp://mirbase.org/pub/mirbase/CURRENT/aliases.txt.gz',
+        'aliases': 'https://mirbase.org/ftp/CURRENT/aliases.txt.gz',
+    },
+    'mir2dis': {
+        'label': 'miR2Disease experimentally validated'\
+            'miRNA-target interactions',
+        'url': 'http://watson.compbio.iupui.edu:8080'\
+            '/miR2Disease/download/miRtar.txt',
+        'url_rescued': 'http://rescued.omnipathdb.org/miR2Disease_miRtar.txt',
+    },
+    'mirdeathdb': {
+        'label': 'miRDeathDB experimentally verified'\
+            'miRNA-target interactions',
+        'url': 'http://www.rna-world.org/mirdeathdb/data'\
+            '/miRDeathDB_all_data.txt',
+        'url_rescued': 'http://rescued.omnipathdb.org/miRDeathDB_all_data.txt'
+    },
+    'ncrdeathdb': {
+        'label': 'Successor of miRDeathDB. Apoptosis related non-coding RNA'\
+            ' literature curated regulatory interactions',
+        'url': 'http://www.rna-society.org/ncrdeathdb/data/'\
+            'allNcRNACelldeathData.txt',
+        'url_rescued': 'https://rescued.omnipathdb.org/'
+            'ncRDeathDB_allNcRNACelldeathData.txt',
+    },
+    'mirecords': {
+        'label': 'miRecords experimentally validated'\
+            'miRNA-target interactions',
+        'url': 'http://c1.accurascience.com/miRecords/download_data.php?v=4'
+    },
+    'mirtarbase': {
+        'label': 'miRTarBase experimentally validated'\
+            'miRNA-target interactions',
+        'strong_old': 'http://mirtarbase.mbc.nctu.edu.tw/cache/download/'\
+            '6.1/miRTarBase_SE_WR.xls',
+        'strong': 'https://mirtarbase.cuhk.edu.cn/~miRTarBase/'\
+            'miRTarBase_2019/cache/download/8.0/miRTarBase_SE_WR.xls',
+        'all_old': 'http://mirtarbase.mbc.nctu.edu.tw/cache/download/'\
+            '6.1/miRTarBase_MTI.xlsx',
+        'all': 'https://mirtarbase.cuhk.edu.cn/~miRTarBase/miRTarBase_2019/'\
+            'cache/download/8.0/miRTarBase_MTI.xlsx',
+        'curated': 'https://mirtarbase.cuhk.edu.cn/~miRTarBase/'\
+            'miRTarBase_2019/cache/download/8.0/MicroRNA_Target_Sites.xlsx',
+    },
+    'lncdisease': {
+        'label': 'lncRNA and disease database: experimentally '\
+            'verified lncRNA interactions',
+        'url': 'http://210.73.221.6/files/images/ldd/data2.txt',
+        'url_rescued': 'http://rescued.omnipathdb.org/LncRNADisease_data2.txt'
+    },
+    'lncrnadb': {
+        'label': 'Literature curated lncRNA interactions',
+        'url': 'http://lncrna.com/rest/all/nomenclature/species/association',
+        'url_rescued': 'http://rescued.omnipathdb.org/'\
+            'lncrnadb_association.xml',
+    },
+    'transmir': {
+        'label': 'Literature curated TF-miRNA interactions',
+        'url_old': 'http://www.cuilab.cn/files/images/transmir/'\
+            'transmir_v1.2.txt',
+        'url': 'http://www.cuilab.cn/files/images/transmir2/'
+            'download/literature/hsa.tsv.gz',
+    },
+    'encode': {
+        'label': 'Interaction data from the Nature ENCODE project',
+        'tf-mirna': 'http://encodenets.gersteinlab.org/enets10.TF-miRNA.txt'
+    },
+    'imweb': {
+        'label': 'Imweb interaction score/prediction',
+        'url': 'https://www.intomics.com/inbio/map/api/'\
+            'get_data?file=InBio_Map_core_2016_09_12.tar.gz',
+        'login': 'https://www.intomics.com/inbio/api/login_guest?ref=&_=%u',
+        'refresh': 'https://www.intomics.com/inbio/api/refresh?_=%u'
+    },
+    'rami': {
+        'label': 'Ligand-receptor interactions from Ramilowski 2015',
+        'url_old': 'https://media.nature.com/original/nature-assets/ncomms/'\
+            '2015/150722/ncomms8866/extref/ncomms8866-s3.xlsx',
+        'fantom_url': 'http://fantom.gsc.riken.jp/5/suppl/'\
+            'Ramilowski_et_al_2015/data/PairsLigRec.txt',
+        'loc': 'http://fantom.gsc.riken.jp/5/suppl/Ramilowski_et_al_2015/'\
+            'data/SubcelLoc.Ages.Proteins.txt',
+        'url': r'https://static-content.springer.com/esm/'
+            r'art%3A10.1038%2Fncomms8866/MediaObjects/'
+            r'41467_2015_BFncomms8866_MOESM611_ESM.xlsx',
+    },
+    'kirouac2010': {
+        'label': 'Intercellular (cytokine-receptor) interactions from'\
+            'Kirouac et al 2010',
+        'url_old': 'http://msb.embopress.org/content/msb/6/1/417/DC3/embed/'\
+            'inline-supplementary-material-3.xls?download=true',
+        'init_url': 'https://www.embopress.org/doi/10.1038/msb.2010.71',
+        'url': r'https://www.embopress.org/action/downloadSupplement?doi='\
+            r'10.1038%2Fmsb.2010.71&file=msb201071-sup-0003.xls'
+    },
+    'dorothea': {
+        'label': 'A comprehensive resource of TF-target interactions',
+        'url': 'http://saezlab.org/tfregulons/tfregulons_database_v01_'\
+            '20180216__%s.tsv'
+    },
+    'dorothea_git': {
+        'label': 'DoRothEA TF-taget database from its git repo',
+        'url': 'https://github.com/saezlab/DoRothEA/raw/master/data/'
+            'TFregulons/consensus/table/database_normal_20180915.csv.zip',
+        'rda': 'https://github.com/saezlab/dorothea/raw/master/data/%s.rda',
+    },
+    'hpmri': {
+        'label': 'Human Plasma Membrane Receptome "browse" view',
+        'browse': 'http://www.receptome.org/Families/FamNav/'\
+            'famnav.asp?undefined',
+        'browse_rescued': 'https://rescued.omnipathdb.org/hpmr/famnav.html',
+        'genes_rescued': 'https://rescued.omnipathdb.org/hpmr/genes.tar.gz',
+    },
+    'cellphonedb': {
+        'label': 'Intercellular communication database from Teichmann lab',
+        'interactions': 'https://www.cellphonedb.org/downloads/'\
+            'interactions_cellphonedb.csv',
+        'heterodimers': 'https://www.cellphonedb.org/downloads/'\
+            'heterodimers.csv',
+        'proteins': 'https://www.cellphonedb.org/downloads/'\
+            'protein_complex_cellphonedb.csv',
+    },
+    'cellphonedb_git': {
+        'label': 'Intercellular communication database from Teichmann lab',
+        'proteins': 'https://raw.githubusercontent.com/ventolab/'\
+            'cellphonedb-data/master/data/protein_input.csv',
+        'complexes': 'https://raw.githubusercontent.com/ventolab/'\
+            'cellphonedb-data/master/data/complex_input.csv',
+        'interactions': 'https://raw.githubusercontent.com/ventolab/'\
+            'cellphonedb-data/master/data/interaction_input.csv',
+        'curated': 'https://raw.githubusercontent.com/ventolab/'\
+            'cellphonedb-data/master/data/sources/interaction_curated.csv',
+        'negative': 'https://raw.githubusercontent.com/ventolab/'\
+            'cellphonedb-data/master/data/sources/excluded_interaction.csv',
+    },
+    'stitch': {
+        'label': 'The STITCH small molecule-protein interaction database',
+        'actions': 'http://stitch.embl.de/download/actions.v5.0/'\
+            '9606.actions.v5.0.tsv.gz',
+        'links': 'http://stitch.embl.de/download/protein_chemical.links.detailed.v5.0/%u'\
+            '.protein_chemical.links.detailed.v5.0.tsv.gz'
+    },
+    'cspa': {
+        'label': 'Cell Surface Protein Atlas',
+        'url_s2': 'http://wlab.ethz.ch/cspa/data/S2_File.xlsx',
+        'url_s1': 'http://wlab.ethz.ch/cspa/data/S1_File.xlsx',
+    },
+    'surfaceome': {
+        'label': 'In silico human surfaceome',
+        'url': 'http://wlab.ethz.ch/surfaceome/table_S3_surfaceome.xlsx',
+    },
+    'matrisome': {
+        'label': 'MatrisomeDB 2.0: ECM proteins',
+        'url_dl': 'http://matrisomeproject.mit.edu/matrisomeDB/search/?'\
+            'keywords=&genesymbol=&category=1&category=2&category=5&'\
+            'category=4&category=3&category=6&human=on&mouse=on&tissue=3&'\
+            'tissue=4&tissue=6&tissue=5&tissue=11&tissue=12&tissue=13&'\
+            'tissue=14&tissue=7&tissue=8&tissue=9&tissue=1&tissue=10&'\
+            'tissue=2&download=Download',
+        'url_xls': 'http://matrisomeproject.mit.edu/static/media/uploads/'\
+            'Files/%s%%20in%%20silico%%20matrisome/'\
+            'matrisome_%s_masterlist.xls',
+    },
+    'membranome': {
+        'label': 'Database of single helix transmembrane proteins: '\
+            'Membranome',
+        'baseurl': 'http://lomize-group-membranome.herokuapp.com/%s%s',
+    },
+    'exocarta': {
+        'label': 'Exosome protein, RNA and lipid database',
+        'url_protein': 'http://exocarta.org/Archive/'\
+            'EXOCARTA_PROTEIN_MRNA_DETAILS_5.txt',
+        'url_study': 'http://exocarta.org/Archive/'
+            'EXOCARTA_EXPERIMENT_DETAILS_5.txt',
+    },
+    'vesiclepedia': {
+        'label': 'Extracellular vesicle database',
+        'url_protein': 'http://microvesicles.org/Archive/'\
+            'VESICLEPEDIA_PROTEIN_MRNA_DETAILS_4.1.txt',
+        'url_study': 'http://microvesicles.org/Archive/'\
+            'VESICLEPEDIA_EXPERIMENT_DETAILS_4.1.txt',
+    },
+    'locate': {
+        'label': 'Locate protein localization database',
+        'url': 'http://locate.imb.uq.edu.au/info_files/'\
+            'LOCATE_%s_v6_20081121.xml.zip',
+        'url_rescued': 'https://rescued.omnipathdb.org/'\
+            'LOCATE_%s_v6_20081121.xml.zip',
+    },
+    'humap': {
+        'label': 'Map of human protein complexes from '\
+            'integration of 9,000 MS experiments',
+        'humap_url': 'http://proteincomplexes.org/static/'\
+            'downloads/clusters.txt',
+        'humap2_url': 'http://humap2.proteincomplexes.org/static/'\
+            'downloads/humap2/humap2_complexes_20200809.txt',
+    },
+    'adhesome': {
+        'label': 'Literature curated database about adhesion related '\
+            'proteins and their interactions',
+        'components': 'http://www.adhesome.org/components.csv',
+        'interactions': 'http://www.adhesome.org/interactions.csv',
+    },
+    'integrins': {
+        'label': 'List of integrins from Takada et al 2007',
+        'url': 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1929136/'\
+            'table/T1/?report=objectonly',
+    },
+    'opm': {
+        'label': 'Orientations of proteins in membranes database',
+        'proteins': 'https://lomize-group-opm.herokuapp.com/'\
+            'primary_structures?fileFormat=csv',
+        'families': 'https://lomize-group-opm.herokuapp.com/'\
+            'families?fileFormat=csv',
+        'classes': 'https://lomize-group-opm.herokuapp.com/'\
+            'classes?fileFormat=csv',
+        'types': 'https://lomize-group-opm.herokuapp.com/'\
+            'types?fileFormat=csv',
+    },
+    'topdb': {
+        'label': 'Membrane protein topology database',
+        'url': 'http://topdb.enzim.hu/?m=download&file=topdb_all.xml',
+    },
+    'hgnc': {
+        'label': 'Web download interface of HGNC (genenames.org).',
+        'groups': (
+            'https://www.genenames.org/cgi-bin/download/custom?'
+            'col=gd_app_sym&col=gd_pub_acc_ids&col=md_prot_id&'
+            'col=family.name&status=Approved&hgnc_dbtag=on&'
+            'order_by=gd_app_sym_sort&format=text&submit=submit'
+        ),
+    },
+    'hippie': {
+        'label': (
+            'HIPPIE: human integrated protein-protein interaction resource'
+        ),
+        'url': (
+            'http://cbdm-01.zdv.uni-mainz.de/~mschaefer/'
+            'hippie/hippie_current.txt'
+        ),
+    },
+    'cpad': {
+        'label': 'Literature curated regulator-pathway-cancer relationships',
+        'url': 'http://bio-bigdata.hrbmu.edu.cn/CPAD/download/CPAD-data.txt',
+    },
+    'compartments': {
+        'label': 'Compartments subcellular localization database',
+        'url': 'http://download.jensenlab.org/%s_compartment_%s_full.tsv',
+    },
+    'intogen': {
+        'label': 'IntOGen is a database of cancer related '\
+            'genes and mutations',
+        'db2014_2': 'https://www.intogen.org/download?'\
+            'file=intogen_cancer_drivers-2014.12.zip',
+        'db2020': 'https://www.intogen.org/download?file='\
+            'IntOGen-Drivers-20200201.zip',
+    },
+    'cancersea': {
+        'label': 'Cancer Single Cell State Atlas',
+        'url': 'http://biocc.hrbmu.edu.cn/CancerSEA/goDownload',
+        'data_url': 'http://biocc.hrbmu.edu.cn/CancerSEA/%s',
+        'rescued': 'https://rescued.omnipathdb.org/CancerSEA.html',
+        'rescued_data': 'https://rescued.omnipathdb.org/cancersea/%s',
+    },
+    'signalink': {
+        'label': 'Literature curated activity flow signaling network',
+        'nodes': 'http://rescued.omnipathdb.org/SLK3_nodes_2020_03_23.csv',
+        'edges': 'http://rescued.omnipathdb.org/SLK3_layer0_2020_03_23.csv',
+    },
+    'zhong2015': {
+        'url': 'http://rescued.omnipathdb.org/zhong2015_S1.tsv',
+    },
+    'phosphopoint': {
+        'url': 'http://rescued.omnipathdb.org/phosphopoint.csv',
+    },
+    'lmpid': {
+        'url': 'http://rescued.omnipathdb.org/LMPID_DATA_pubmed_ref.xml',
+    },
+    'nrf2ome': {
+        'url': 'http://rescued.omnipathdb.org/nrf2ome.csv',
+    },
+    'arn': {
+        'url': 'http://rescued.omnipathdb.org/arn_curated.csv',
+    },
+    'alzpathway': {
+        'url': 'http://rescued.omnipathdb.org/alzpw-ppi.csv',
+    },
+    'protmapper': {
+        'label': 'Integration of kinase-substrate data across many '\
+            'resources and text mining',
+        'url': 'https://www.biorxiv.org/content/biorxiv/early/2019/11/06/'\
+            '822668.1/DC1/embed/media-1.zip?download=true',
+        'files': [
+            'export.csv',
+            'evidences.csv',
         ],
-        "organisms_supported": false,
-        "extra_attrs": {
-          "npmid": "npmid"
-        }
-      }
-    }
-  },
-  "Li2012": {
-    "label": "Li 2012",
-    "full_name": "Human Phosphotyrosine Signaling Network",
-    "license": "CC BY-NC 3.0",
-    "inputs": {
-      "enzyme_substrate": {
-        "id_type_enzyme": "genesymbol",
-        "id_type_substrate": "genesymbol",
-        "input_method": "li2012.li2012_enzyme_substrate",
-        "organisms": [
-          9606
-        ],
-        "organisms_supported": false,
-        "extra_attrs": {}
-      }
-    }
-  },
-  "UniProt": {
-    "urls": {
-      "webpages": ["https://uniprot.org/"]
     },
-    "license": "CC BY 4.0",
-    "emails": ["help@uniprot.org", "Uniprot Consortium"]
-  },
-  "miRBase": {
-    "urls": {
-      "webpages": ["http://mirbase.org/"]
+    'lrdb': {
+        'label': 'Curated ligand-receptor interactions',
+        'url': 'https://raw.githubusercontent.com/SCA-IRCM/LRdb/'\
+            'master/LRdb_122019.txt',
     },
-    "license": "CC0 1.0",
-    "emails": ["mirbase@manchester.ac.uk", "miRBase Team"]
-  },
-  "miR2Disease": {
-    "urls": {
-      "webpages": ["http://web.archive.org/web/20171006225859/http://www.mir2disease.org/"]
+    'baccin2019': {
+        'label': 'Ligand receptor pairs in Supplementary Table 3 from'\
+            'Baccin 2019',
+        'url': r'https://static-content.springer.com/esm/'\
+            r'art%3A10.1038%2Fs41556-019-0439-6/MediaObjects/'\
+            r'41556_2019_439_MOESM3_ESM.xlsx',
     },
-    "license": "CC BY-NC 2.0"
-  },
-  "miRDeathDB": {
-    "urls": {
-      "webpages": ["http://web.archive.org/web/20160425074155/http://rna-world.org/mirdeathdb/"]
+    'kea': {
+        'label': (
+            'Kinase enrichment analysis, contains many kinase related '
+            'datasets compiled from various databases and the literature'
+        ),
+        'kinase_substrate': 'https://www.maayanlab.net/KEA2/gsl/'
+            'kinase_substrate_phospho-site_level_pmid_resource_database.txt',
     },
-    "license": "CC BY-NC 4.0"
-  },
-  "TransmiR": {
-    "urls": {
-      "webpages": ["http://www.cuilab.cn/transmir"]
+    'iptmnet': {
+        'label': 'A database of PTMs and enzyme-substrate interactions '
+            'integrated from other resources and text mining',
+        'ptms': 'https://research.bioinformatics.udel.edu/iptmnet_data/'
+            'files/current/ptm.txt',
+        'scores': 'https://research.bioinformatics.udel.edu/iptmnet_data/'
+            'files/current/score.txt',
+        'proteins': 'https://research.bioinformatics.udel.edu/iptmnet_data/'
+            'files/current/protein.txt',
     },
-    "license": "CC BY-NC 4.0"
-  },
-  "ENCODE": {
-    "full_name": "Encyclopedia of DNA Elements",
-    "urls": {
-      "webpages": ["https://www.encodeproject.org/"]
+    'icellnet': {
+        'label': 'A literature curated collection of '
+            'ligand-receptor interactions.',
+        'url_old': 'https://www.biorxiv.org/content/biorxiv/early/2020/03/05/'
+            '2020.03.05.976878/DC2/embed/media-2.xlsx?download=true',
+        'url': 'https://raw.githubusercontent.com/soumelis-lab/ICELLNET/'
+            'master/data/ICELLNETdb.csv',
     },
-    "license": "CC BY 4.0",
-    "synonyms": ["ENCODE-distal", "ENCODE-proximal"]
-  },
-  "lncRNADisease": {
-    "synonyms": ["LncRNADisease"],
-    "urls": {
-      "webpages": ["http://www.cuilab.cn/lncrnadisease"]
+    'phobius': {
+        'label': (
+            'Plasma membrane protein orientation prediction for the '
+            'human proteome'
+        ),
+        'url': 'http://rescued.omnipathdb.org/phobius_human_proteome.tsv',
     },
-    "license": "CC BY-NC 4.0"
-  },
-  "lncrnadb": {
-    "urls": {
-      "webpages": ["http://web.archive.org/web/20190505115633/http://lncrnadb.org/"]
+    'pro': {
+        'label': 'The Protein Ontology',
+        'url': 'https://proconsortium.org/download/current/pro_reasoned.obo',
+        'mapping': 'https://proconsortium.org/download/current/'
+            'promapping.txt',
     },
-    "license": "NAR Open Access"
-  },
-  "miRecords": {
-    "urls": {
-      "webpages": ["http://c1.accurascience.com/miRecords/"]
+    'genecards': {
+        'label': (
+            'GeneCards provides a comprehensive summary about the function, '
+            'lovalization, expression, variants and other properties of '
+            'genes and their products',
+        ),
+        'url': 'https://www.genecards.org/cgi-bin/carddisp.pl?gene=%s',
     },
-    "license": "miRecords"
-  },
-  "miRTarBase": {
-    "urls": {
-      "webpages": ["http://mirtarbase.cuhk.edu.cn/php/index.php"]
+    'almen2009': {
+        'label': 'Classification of membrane proteins 10.1186/1741-7007-7-50',
+        'url': (
+            r'https://static-content.springer.com/esm/'
+            r'art%3A10.1186%2F1741-7007-7-50/MediaObjects/'
+            r'12915_2009_258_MOESM1_ESM.xls'
+        ),
     },
-    "license": "miRTarBase"
-  },
-  "HIPPIE": {
-    "full_name": "Human Integrated Protein-Protein Interaction rEference",
-    "urls": {
-      "webpages": ["http://cbdm-01.zdv.uni-mainz.de/~mschaefer/hippie/"]
+    'ipi': {
+        'label': (
+            'International Protein Index, a protein reference database '
+            'which has been shut down by 2012'
+        ),
+        'url': (
+            'ftp://ftp.ebi.ac.uk/pub/databases/IPI/last_release/'
+            'current/ipi.HUMAN.xrefs.gz'
+        ),
     },
-    "license": "CC BY 4.0"
-  },
-  "CPAD": {
-    "urls": {
-      "webpages": ["http://bio-bigdata.hrbmu.edu.cn/CPAD/download.jsp"]
+    'cellcellinteractions': {
+        'label': 'Cell-cell Interaction Database from Bader lab',
+        'url': (
+            'https://baderlab.org/CellCellInteractions?'
+            'action=AttachFile&do=get&target=protein_types.txt'
+        ),
     },
-    "license": "No license",
-    "emails": ["lixia@hrbmu.edu.cn", "Li Xia"]
-  },
-  "IntOGen": {
-    "urls": {
-      "webpages": ["https://www.intogen.org/search"]
+    'italk': {
+        'label': 'Intercellular communication database from iTalk',
+        'url': (
+            'https://github.com/Coolgenome/iTALK/blob/master/'
+            'data/LR_database.rda?raw=true'
+        ),
     },
-    "license": "CC0 1.0"
-  },
-  "COSMIC": {
-    "synonyms": ["CancerGeneCensus"],
-    "urls": {
-      "webpages": ["https://cancer.sanger.ac.uk/cosmic/"]
+    'embrace': {
+        'label': 'Ligand-receptor interactions from embryonic brain '
+            'cell extraction by FACS (EMBRACE)',
+        'article': 'https://www.cell.com/iscience/fulltext/'
+            'S2589-0042(19)30405-5',
+        'url': 'https://www.cell.com/cms/10.1016/j.isci.2019.10.026/'
+            'attachment/a1f66cee-15cb-4690-b95d-2480fa576b86/mmc2.xlsx',
     },
-    "license": "COSMIC"
-  },
-  "DGIdb": {
-    "urls": {
-      "webpages": ["http://www.dgidb.org/"]
+    'tcdb': {
+        'label': 'Transporter classification database',
+        'url_tcdb': 'http://www.tcdb.org/cgi-bin/projectv/public/tcdb.dr',
+        'url_families': 'http://www.tcdb.org/cgi-bin/'
+            'projectv/public/families.py',
+        'url_acc2tc': 'http://www.tcdb.org/cgi-bin/'
+            'projectv/public/acc2tcid.py',
     },
-    "license": "MIT"
-  },
-  "DisGeNet": {
-    "urls": {
-      "webpages": ["https://www.disgenet.org/"]
+    'mcam': {
+        'label': 'Mammalian Cell Adhesion Molecule Database',
+        'url': 'https://app1.unmc.edu/mcam/exel.cfm?seq=HumanUniprot',
     },
-    "license": "CC BY-NC-SA 4.0"
-  },
-  "kinase.com": {
-    "urls": {
-      "webpages": ["http://kinase.com/web/current/"]
+    'gpcrdb': {
+        'label': 'A comprehensive database about GPCRs',
+        'families': 'https://raw.githubusercontent.com/protwis/gpcrdb_data/'
+            'master/protein_data/proteins_and_families.txt',
     },
-    "license": "Kinase.com"
-  },
-  "Phosphatome": {
-    "urls": {
-      "webpages": ["http://phosphatome.net/3.0"]
+    'immunoglobe': {
+        'label': 'A literature curated resource about immune interactions',
+        'url': 'http://network.immunoglobe.org/networks.json',
     },
-    "license": "CC BY 4.0"
-  },
-  "TFcensus": {
-    "full_name": "Census of Human Transcription Factors",
-    "urls": {
-      "webpages": ["https://doi.org/10.1038/nrg2538"]
+    'ensembl': {
+        'label': 'Genome and transcript reference database',
+        'biomart_url': 'http://www.ensembl.org/biomart/martservice?query=%s',
+        'species': 'https://www.ensembl.org/info/about/species.html',
+        'arraytypes': 'https://rest.ensembl.org/regulatory/species/'
+            '%s/microarray?content-type=application/json',
     },
-    "license": "CC BY 4.0"
-  },
-  "ProtMapper": {
-    "urls": {
-      "webpages": ["https://www.biorxiv.org/content/10.1101/822668v3"]
+    'wojtowicz2020': {
+        'label': 'Ligand-receptor interactions from a screen of human'
+            'IgSF cell surface interactome.',
+        'article': 'https://www.cell.com/cell/fulltext/S0092-8674(20)30933-8',
+        'url': 'https://www.cell.com/cms/10.1016/j.cell.2020.07.025/'
+            'attachment/656c4057-8b3b-4aa2-99ce-73278e21d93d/mmc4.xlsx',
     },
-    "license": "CC BY 4.0",
-    "inputs": {
-      "enzyme_substrate": {
-        "id_type_enzyme": "uniprot",
-        "id_type_substrate": "uniprot",
-        "input_method": "protmapper.protmapper_enzyme_substrate",
-        "organisms": [
-          9606
-        ],
-        "organisms_supported": false,
-        "extra_attrs": {}
-      }
-    }
-  },
-  "LRdb": {
-    "urls": {
-      "webpages": ["https://github.com/SCA-IRCM/LRdb"]
+    'celltalkdb': {
+        'label': 'Manually curated ligand-receptor interactions',
+        'url': 'http://tcm.zju.edu.cn/celltalkdb/handler/download.php',
+        'ref_url': 'http://tcm.zju.edu.cn/celltalkdb/',
+        'init_url': 'http://tcm.zju.edu.cn/celltalkdb/download.php',
     },
-    "license": "GPLv3",
-    "emails": ["jacques.colinge@inserm.fr", "Jacques Colinge"]
-  },
-  "MSigDB": {
-    "full_name": "Molecular Signatures Database",
-    "urls": {
-      "webpages": ["https://www.gsea-msigdb.org/gsea/msigdb/index.jsp"]
+    'cellchatdb': {
+        'label': 'Manually curated ligand-receptor interactions',
+        'url': 'https://raw.githubusercontent.com/sqjin/CellChat/'
+            'master/data/%s.rda',
     },
-    "license": "CC BY 4.0",
-    "emails": ["gsea-team@broadinstitute.org", "GSEA Team"]
-  },
-  "Baccin2019": {
-    "label": "Baccin 2019",
-    "urls": {
-      "webpages": ["https://doi.org/10.1038/s41556-019-0439-6"]
+    'connectomedb2020': {
+        'label': 'Ligand-receptor interactions from original curation '
+            'and from other databases',
+        'url': 'https://raw.githubusercontent.com/asrhou/NATMI/'
+            'gh-pages/_data/lsps.csv',
     },
-    "license": "CC BY-NC 4.0",
-    "emails": [
-        "lars.velten@embl.de", "Lars Velten",
-        "a.trumpp@dkfz-heidelberg.de", "Andreas Trumpp",
-        "s.haas@dkfz-heidelberg.de", "Simon Haas"
-    ]
-  },
-  "ABS": {
-    "full_name": "Annotated Regulatory Binding Sites",
-    "urls": {
-      "webpages": ["http://genome.crg.es/datasets/abs2005/index.html"]
+    'talklr': {
+        'label': 'Ligand-receptor interactions from other databases with '
+            '187 literature references',
+        'url': 'https://github.com/yuliangwang/talklr/raw/master/'
+            'data/receptor_ligand.rda',
     },
-    "license": "GPLv2",
-    "emails": ["eblanco@imim.es", "Enrique Blanco"]
-  },
-  "CancerSEA": {
-    "urls": {
-      "webpages": ["http://biocc.hrbmu.edu.cn/CancerSEA/"]
+    'humancellmap': {
+        'label': 'A BioID screen for proximity based localization of '
+            'proteins in HEK cells',
+        'preys_url': 'https://humancellmap.org/resources/downloads/'
+            'preys-latest.txt',
     },
-    "license": "CC BY-NC 4.0",
-    "emails": ["xiaoyun@ems.hrbmu.edu.cn", "Yun Xiao"]
-  },
-  "Surfaceome": {
-    "urls": {
-      "webpages": ["http://wlab.ethz.ch/surfaceome/"]
+    'cellcall': {
+        'label': 'Database of ligand-receptor-TF pathways',
+        'url': 'https://raw.githubusercontent.com/ShellyCoder/cellcall/'
+            'master/inst/extdata/new_ligand_receptor_TFs%s.txt',
     },
-    "license": "CC BY 4.0",
-    "emails": ["wbernd@ethz.ch", "Bernd Wollscheid"]
-  },
-  "KEA": {
-    "full_name": "Kinase Enrichment Analysis",
-    "urls": {
-      "webpages": ["https://www.maayanlab.net/KEA2/"]
+    'cancerdrugs_db': {
+        'label': 'Cancer Drug Database of licensed drugs by the Anticancer Fund',
+        'url': 'https://acfdata.coworks.be/cancerdrugsdb.txt',
     },
-    "license": "Unspecified NC-SA",
-    "inputs": {
-      "enzyme_substrate": {
-        "id_type_enzyme": "uniprot",
-        "id_type_substrate": "uniprot",
-        "input_method": "kea.kea_enzyme_substrate",
-        "organisms": [
-          9606
-        ],
-        "organisms_supported": false,
-        "extra_attrs": {}
-      }
-    }
-  },
-  "iTALK": {
-    "urls": {
-      "webpages": ["https://github.com/Coolgenome/iTALK"],
-      "articles": ["https://www.biorxiv.org/content/10.1101/507871v1"]
+    'biomodels': {
+        'label': 'RESTful API base URL of EMBL-EBI BioModels (https://www.ebi.ac.uk/biomodels/)',
+        'url': 'https://www.ebi.ac.uk/biomodels/',
     },
-    "license": "CC BY-NC-SA 3.0",
-    "emails": ["ywang65@mdanderson.org", "Yuanxin Wang"]
-  },
-  "ICELLNET": {
-    "urls": {
-      "webpages": [
-        "https://www.biorxiv.org/content/biorxiv/early/2020/03/05/2020.03.05.976878",
-        "https://github.com/soumelis-lab/ICELLNET"
-      ]
+    'biogps': {
+        'label': 'A collection of human and mouse tissue and cell line '
+            'gene expression profiles',
+        'url': 'http://plugins.biogps.org/download/%s',
+        'datasets': {
+            'human_gene_atlas_ave': 'gnf1h-gcrma.zip',
+            'human_gene_atlas': 'gnf1h-gcrma-unaveraged.zip',
+            'human_nci60': 'NCI60_U133A_20070815.raw.csv.zip',
+            'mouse_gene_atlas_1': 'GNF1M_geneatlas_20120817.zip',
+            'mouse_gene_atlas_2_ave':
+                'geneatlas_MOE430_20090327.raw.avg.csv.zip',
+            'mouse_gene_atlas_2': 'geneatlas_MOE430_20090327.raw.csv.zip',
+            'rat_gene_atlas': 'Ratlas-gcRMA.zip',
+            'human_primary_tumors':
+                'primary_tumor_classification_data.txt.zip',
+            'mouse_adipose_eqtl': 'adipose_MOE430_20071005.raw.csv.gz',
+        },
     },
-    "license": "GPLv3",
-    "emails": [
-        "vassili.soumelis@aphp.fr", "Vassili Soumelis",
-        "lucile.massenet@espci.org", "Lucile Massenet-Regad",
-        "floriane.noel@inserm.fr", "Floriane Noël"
-    ],
-    "type": "literature curated",
-    "subtype": ["activity flow", "annotations", "intercell", "complexes"],
-    "descriptions": [
-      "ICELLNET, a transcriptomic-based framework integrating: 1) an ",
-      "original expert-curated database of ligand-receptor interactions ",
-      "accounting for multiple subunits expression, 2) quantification of ",
-      "communication scores, 3) the possibility to connect a cell ",
-      "population of interest with 31 reference human cell types (BioGPS), ",
-      "and 4) three visualization modes to facilitate biological ",
-      "interpretation."
-    ]
-  },
-  "CellCellInteractions": {
-    "urls": {
-      "webpages": ["https://baderlab.org/CellCellInteractions"]
+    'unichem': {
+        'label': 'Mapping between drug compound IDs',
+        'sources': 'https://www.ebi.ac.uk/unichem/legacy/ucquery/listSources',
+        'mapping': 'ftp://ftp.ebi.ac.uk/pub/databases/chembl/UniChem/data/'
+            'wholeSourceMapping/src_id%s/src%ssrc%s.txt.gz',
     },
-    "license": "CellCellInteractions",
-    "authors": ["Bader Lab"],
-    "emails": ["gary.bader@utoronto.ca", "Gary Bader"]
-  },
-  "EMBRACE": {
-    "urls": {
-      "webpages": ["https://www.cell.com/iscience/fulltext/S2589-0042(19)30405-5"]
+    'redhuman': {
+        'label': 'A modern and reduced complexity human metabolic network',
+        'url': 'https://github.com/saezlab/ocean/raw/master/data/'
+            'recon2_redhuman.RData',
     },
-    "license": "CC BY 4.0",
-    "emails": [
-      "sheikh@ie-freiburg.mpg.de", "Bilal N. Sheikh",
-      "akhtar@ie-freiburg.mpg.de", "Asifa Akhtar"
-    ],
-    "descriptions": [
-      "Inter-cellular ligand-receptor interaction networks were calculated ",
-      "based on the publically available database collated by Ramilowski ",
-      "and co-workers (Ramilowski et al., 2015)."
-    ]
-  },
-  "Almen2009": {
-    "urls": {
-      "webpages": ["https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-7-50"]
+    'cellinker': {
+        'label': 'Human and mouse ligand-receptor interactions',
+        'lr': 'http://www.rna-society.org/cellinker/download/%s.txt',
+        'complex': 'http://www.rna-society.org/cellinker/'
+            'download/%s-complex.csv',
+        'smol': 'http://www.rna-society.org/cellinker/download/%s-sMOL.txt',
     },
-    "license": "CC BY 4.0",
-    "emails": [
-      "markus.sallman-almen@neuro.uu.se", "Markus Sällman Almén",
-      "Helgi.Schioth@neuro.uu.se", "Helgi Schiöth"
-    ]
-  },
-  "TCDB": {
-    "full_name": "Transporter Classification Database",
-    "urls": {
-      "webpages": ["http://www.tcdb.org/"]
+    'cellinker_rescued': {
+        'label': 'Human and mouse ligand-receptor interactions',
+        'lr': 'https://rescued.omnipathdb.org/cellinker/%s.txt',
+        'complex': 'https://rescued.omnipathdb.org/cellinker/%s-complex.csv',
+        'smol': 'https://rescued.omnipathdb.org/cellinker/%s-sMOL.txt',
     },
-    "license": "CC BY-SA 3.0",
-    "authors": ["Saier Lab"],
-    "emails": [
-      "msaier@ucsd.edu", "Prof. Milton H. Saier, Jr"
-    ]
-  },
-  "iPTMnet": {
-    "urls": {
-      "webpages": ["https://research.bioinformatics.udel.edu/iptmnet/"]
+    'pubchem': {
+        'label': 'NCBI database of bioactive compounds, substances and '
+            'assays',
+        'ftp': 'https://ftp.ncbi.nlm.nih.gov/pubchem/%s/Extras/%s-%s.gz',
     },
-    "license": "CC BY-NC-SA 4.0",
-    "emails": ["huang@dbi.udel.edu", "Hongzhan Huang"]
-  },
-  "MCAM": {
-    "full_name": "Mammalian Cell Adhesion Molecule Database",
-    "urls": {
-      "webpages": ["https://app1.unmc.edu/mcam/"]
+    'scconnect': {
+        'label': 'Database of ligand-receptor interactions',
+        'annot': 'https://raw.githubusercontent.com/JonETJakobsson/'
+            'scConnect/master/scConnect/data/Gene_annotation/2020-5/'
+            '%s/%ss.csv',
+        'intera': 'https://github.com/JonETJakobsson/scConnect/raw/master/'
+            'scConnect/data/GTP_tables_clean/2020-5/interactions.csv',
     },
-    "license": "Unspecified NC-SA"
-  },
-  "DoRothEA": {
-    "urls": {
-      "webpages": ["https://saezlab.github.io/dorothea/"]
+    'progeny': {
+        'label': 'Pathway responsive genes with weights',
+        'url': 'https://github.com/saezlab/progeny/raw/master/'
+            'data/model_%s_full.rda',
     },
-    "synonyms": [
-      "DoRothEA_A",
-      "DoRothEA_B",
-      "DoRothEA_C",
-      "DoRothEA_D",
-      "DoRothEA_E"
-    ],
-    "license": "Composite",
-    "components": [
-      "ARACNe-GTEx",
-      "FANTOM4",
-      "HOCOMOCO-v11",
-      "HTRIdb",
-      "IntAct",
-      "JASPAR-v2018",
-      "KEGG",
-      "NFIRegulomeDB",
-      "ORegAnno",
-      "PAZAR",
-      "ReMap",
-      "RegNetwork",
-      "TFactS",
-      "TFe",
-      "TRED",
-      "TRRD",
-      "TRRUST"
-    ]
-  },
-  "ARACNe-GTEx": {
-    "license": "CC BY 4.0"
-  },
-  "JASPAR": {
-    "synonyms": ["JASPAR-v2018"],
-    "license": "CC BY 4.0"
-  },
-  "HOCOMOCO": {
-    "synonyms": ["HOCOMOCO-v11"],
-    "license": "CC BY 4.0"
-  },
-  "ReMap": {
-    "license": "CC BY 4.0"
-  },
-  "DoRothEA-reviews": {
-    "license": "CC BY 4.0"
-  },
-  "BEL-Large-Corpus": {
-    "license": "NAR Open Access"
-  },
-  "Dinarello2013": {
-    "label": "Dinarello 2013",
-    "license": "CC BY 4.0"
-  },
-  "REACH": {
-    "license": "CC BY 4.0"
-  },
-  "RLIMS-P": {
-    "license": "CC BY 4.0"
-  },
-  "cellsignal.com": {
-    "license": "No license"
-  },
-  "Kinexus": {
-    "license": "CC BY 4.0"
-  },
-  "NetworKIN": {
-    "license": "CC BY 4.0"
-  },
-  "iMEX": {
-    "license": "CC BY 4.0"
-  },
-  "Sparser": {
-    "license": "CC BY 4.0"
-  },
-  "CFinder": {
-    "license": "CC BY 4.0"
-  },
-  "NetworkBlast": {
-    "license": "CC BY 4.0"
-  },
-  "I2D": {
-    "full_name": "Interologous Interaction Database",
-    "license": "I2D"
-  },
-  "OmniPath": {
-    "license": "CC BY 4.0"
-  },
-  "Phobius": {
-    "license": "CC BY 4.0"
-  },
-  "GPCRdb": {
-    "license": "CC BY 4.0"
-  },
-  "ncRDeathDB": {
-    "license": "CC BY-NC 4.0"
-  },
-  "IMEx": {
-    "full_name": " International Molecular Interaction Exchange Consortium",
-    "urls": {
-      "webpages": ["http://www.imexconsortium.org/"]
+    'celltypist': {
+        'label': 'Immune cell type marker genes',
+        'url': 'https://raw.githubusercontent.com/Teichlab/celltypist_wiki/'
+            'main/atlases/Pan_Immune_CellTypist/encyclopedia/'
+            'encyclopedia_table.xlsx',
     },
-    "license": "CC BY 2.5"
-  },
-  "Wojtowicz2020": {
-    "urls": {
-      "webpages": ["https://www.cell.com/cell/fulltext/S0092-8674(20)30933-8"]
+    'panglaodb': {
+        'label': 'Cell type marker genes',
+        'url': 'https://panglaodb.se/markers/'
+            'PanglaoDB_markers_27_Mar_2020.tsv.gz',
     },
-    "license": "CC BY 4.0",
-    "emails": [
-      "kcgarcia@stanford.edu", "K Christopher Garcia",
-      "woj@stanford.edu", "Woj M Wojtowicz"
-    ]
-  },
-  "CellTalkDB": {
-    "urls": {
-      "webpages": ["http://tcm.zju.edu.cn/celltalkdb/index.php"]
+    'cytosig': {
+        'label': 'Cytokine perturbation footprints',
+        'url': 'https://raw.githubusercontent.com/data2intelligence/'
+            'CytoSig/master/CytoSig/signature.centroid',
     },
-    "license": "GPLv3",
-    "emails": [
-      "fanxh@zju.edu.cn", "Xiaohui Fan"
-    ]
-  },
-  "CellChatDB": {
-    "synonyms": ["CellChatDB-cofactors"],
-    "urls": {
-      "webpages": [
-        "https://github.com/sqjin/CellChat",
-        "http://www.cellchat.org/"
-      ]
+    'proteins': {
+        'label': 'Key biological data from UniProt and data from Large Scale '
+            'Studies (LSS) mapped to UniProt.',
+        'url': 'https://www.ebi.ac.uk/proteins/api/%s',
     },
-    "license": "GPLv3",
-    "emails": [
-      "plikus@uci.edu", "Maksim V. Plikus",
-      "qnie@uci.edu", "Qing Nie"
-    ]
-  },
-  "3DComplex": {
-    "urls": {
-      "webpages": ["https://shmoo.weizmann.ac.il/elevy/3dcomplexV6/Home.cgi"],
-      "articles": ["https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.0020155"]
+    'lambert2018': {
+        'label': 'A new compendium of human transcription factors',
+        's1': 'https://www.cell.com/cms/10.1016/j.cell.2018.01.029/'
+            'attachment/ede37821-fd6f-41b7-9a0e-9d5410855ae6/mmc2.xlsx',
+        'article': 'https://www.cell.com/cell/fulltext/S0092-8674(18)30106-5',
     },
-    "type": "literature curated",
-    "subtype": "complexes",
-    "descriptions": [
-      "We retrieved all Biological Units from the PDB (October 2005), ",
-      "which are the protein complexes in their physiological state, ",
-      "according to the PDB curators. [...] After applying these filters, ",
-      "we obtained 21,037 structures, which we use throughout this study."
-    ]
-  },
-  "connectomeDB2020": {
-    "urls": {
-      "webpages": [
-        "https://github.com/asrhou/NATMI"
-      ],
-      "articles": [
-        "https://www.nature.com/articles/s41467-020-18873-z"
-      ]
+    'interpro': {
+        'label': 'Protein families, domains and functional sites',
+        'entries': 'https://ftp.ebi.ac.uk/pub/databases/'
+            'interpro/current_release/interpro.xml.gz',
+        'annotations': 'https://www.ebi.ac.uk/interpro/api/entry/InterPro/'
+            'protein/%s/taxonomy/uniprot/%s?page_size=%u',
+        'interpro2go': 'http://www.geneontology.org/external2go/interpro2go',
     },
-    "license": "MIT",
-    "emails": [
-      "rui.hou@research.uwa.edu.au", "Rui Hou",
-      "alistair.forrest@gmail.com", "Alistair R. R. Forrest"
-    ]
-  },
-  "talklr": {
-    "urls": {
-      "webpages": [
-        "https://github.com/yuliangwang/talklr"
-      ],
-      "articles": [
-        "https://www.biorxiv.org/content/10.1101/2020.02.01.930602v2"
-      ]
+    'drugcentral': {
+        'label': 'Drug-target interactions',
+        'interactions': 'https://unmtid-shinyapps.net/download/DrugCentral'
+            '/2021_09_01/drug.target.interaction.tsv.gz',
+        'SMILES_InChI' : 'https://unmtid-shinyapps.net/download/DrugCentral'
+            '/2021_09_01/structures.smiles.tsv',
     },
-    "license": "GPLv3",
-    "emails": [
-      "yuliangwang86@gmail.com", "Yuliang Wang"
-    ]
-  },
-  "DLRP": {
-    "license": "Unspecified NC-SA"
-  },
-  "HumanCellMap": {
-    "full_name": "Human Cell Map",
-    "license": "CC BY 4.0",
-    "urls": {
-      "webpages": ["https://humancellmap.org/"],
-      "articles": ["https://www.biorxiv.org/content/10.1101/796391v2"]
+    'drugbank': {
+        'label': 'DrugBank database',
+        'all_structures': 'https://go.drugbank.com/releases/5-1-9/'
+            'downloads/all-structure-links',
+        'all_drugs': 'https://go.drugbank.com/releases/5-1-9/downloads/'
+            'all-drug-links',
+        'drug_target_identifiers' : 'https://go.drugbank.com/releases/'
+            '5-1-9/downloads/target-all-polypeptide-ids',
+        'drug_enzyme_identifiers' : 'https://go.drugbank.com/releases/5-1-9/'
+            'downloads/enzyme-all-polypeptide-ids',
+        'drug_carrier_identifiers' : 'https://go.drugbank.com/releases/5-1-9/'
+            'downloads/carrier-all-polypeptide-ids',
+        'drug_transporter_identifiers' : 'https://go.drugbank.com/releases/'
+            '5-1-9/downloads/transporter-all-polypeptide-ids',
+        'full_database': 'https://go.drugbank.com/releases/5-1-9'
+            '/downloads/all-full-database',
+    }, 
+    'chembl': {
+        'label': 'ChEMBL database',
+        'url': 'https://www.ebi.ac.uk',
+        'target': '/chembl/api/data/target.json?limit=1000',
+        'assay' : '/chembl/api/data/assay.json?limit=1000',
+        'activity' : '/chembl/api/data/activity.json?limit=1000',
+        'molecule' : '/chembl/api/data/molecule.json?limit=1000',
     },
-    "emails": [
-      "contact@cell-map.org", "Human Cell Map"
-    ]
-  },
-  "scConnect": {
-    "full_name": "scConnect",
-    "license": "MIT",
-    "urls": {
-      "webpages": ["https://github.com/JonETJakobsson/scConnect"],
-      "articles": [
-        "https://academic.oup.com/bioinformatics/article/37/20/3501/6273571"
-      ]
+    'hpo': {
+        'label': 'HPO database',
+        'ontology': 'https://raw.githubusercontent.com/obophenotype/'
+            'human-phenotype-ontology/master/hp.obo',
+        'disease' : 'http://purl.obolibrary.org/obo/hp/hpoa/phenotype.hpoa',
+        'gene' : 'http://purl.obolibrary.org/obo/hp/hpoa/'
+            'genes_to_phenotype.txt',
     },
-    "emails": [
-      "malin.lagerstrom@neuro.uu.se", "Malin C Lagerström"
-    ]
-  },
-  "CellCall": {
-    "full_name": "CellCall",
-    "license": "Artistic-2.0",
-    "urls": {
-      "webpages": ["https://github.com/ShellyCoder/cellcall"],
-      "articles": [
-        "https://academic.oup.com/nar/article/49/15/8520/6332819"
-      ]
+    'oma': {
+        'label': 'A database for the inference of orthologs among '
+            'complete genomes',
+        'url': 'https://omabrowser.org/api/pairs/',
     },
-    "emails": [
-      "biocoder1024@hotmail.com", "Tianyuan Liu"
-    ]
-  },
-  "Cellinker": {
-    "full_name": "Cellinker",
-    "license": "CC BY-NC 4.0",
-    "urls": {
-      "webpages": ["https://www.rna-society.org/cellinker"],
-      "articles": [
-        "https://academic.oup.com/bioinformatics/article-abstract/37/14/2025/6104823"
-      ]
+    'pathophenodb': {
+        'label': 'A database of pathogens and their phenotypes '
+            'for diagnostic support in infections.',
+        'url': 'http://patho.phenomebrowser.net/sparql/',
     },
-    "emails": [
-      "wubingyi@aliyun.com", "Bingyi Wu"
-    ]
-  },
-  "PROGENy": {
-    "full_name": "PROGENy",
-    "license": "Apache 2.0",
-    "urls": {
-      "webpages": ["https://github.com/saezlab/PROGENy"]
-    }
-  },
-  "CancerDrugsDB": {
-    "full_name": "Cancer Drugs Database",
-    "license": "Unspecified NC-SA",
-    "urls": {
-      "webpages": ["https://www.anticancerfund.org/en/cancerdrugs-db"],
-      "articles": ["https://www.frontiersin.org/articles/10.3389/fphar.2021.627574/full"]
-    }
-  },
-  "CellTypist": {
-    "license": "CC BY 3.0",
-    "urls": {
-      "webpages": [
-        "https://www.celltypist.org/encyclopedia",
-        "https://github.com/Teichlab/celltypist_wiki"
-      ],
-      "articles": [
-        "https://www.biorxiv.org/content/10.1101/2021.04.28.441762v2"
-      ]
+    'clinvar': {
+        'label': 'A database archiving submissions that interpret '
+            'the effect of a single variant or set of variants on phenotype.',
+        'url': 'https://ftp.ncbi.nlm.nih.gov/pub/clinvar/'
+            'tab_delimited/variant_summary.txt.gz',
     },
-    "emails": ["celltypist@sanger.ac.uk", "CellTypist Team"]
-  },
-  "PanglaoDB": {
-    "license": "Informal",
-    "urls": {
-      "webpages": ["https://panglaodb.se/"],
-      "articles": ["https://doi.org/10.1093/database/baz046"]
+    'pharos_api': {
+        'label': 'Pharos GraphQL API Endpoint',
+        'url': 'https://pharos-api.ncats.io/graphql',
     },
-    "emails": ["contact@panglaodb.se", "PanglaoDB Team"]
-  },
-  "CytoSig": {
-    "full_name": "Cytokine Signaling Analyzer",
-    "license": "CytoSig",
-    "urls": {
-      "webpages": [
-        "https://cytosig.ccr.cancer.gov/",
-        "https://github.com/data2intelligence/CytoSig"
-      ],
-      "articles": ["https://www.nature.com/articles/s41592-021-01274-5"]
+}
+
+
+files = {
+    'phosphosite': {
+        'curated': os.path.join(
+            settings.get('cachedir'),
+            'phosphosite_curated.pickle',
+        ),
+        'noref': os.path.join(
+            settings.get('cachedir'),
+            'phosphosite_noref.pickle',
+        )
     },
-    "emails": [
-      "peng.jiang@nih.gov", "Peng Jiang",
-      "kai_wucherpfennig@dfci.harvard.edu", "Kai W. Wucherpfennig"
-    ]
-  },
-  "InterPro": {
-    "license": "CC0 1.0",
-    "urls": {
-      "webpages":["https://www.ebi.ac.uk/interpro/"],
-      "articles": ["https://doi.org/10.1093/nar/gkaa977"]
-    }
-  },
-  "DrugCentral": {
-    "full_name": "Drug Central",
-    "license": "CC BY-SA 4.0",
-    "urls": {
-      "webpages": ["https://drugcentral.org/"],
-      "articles": [
-        "https://academic.oup.com/nar/article/45/D1/D932/2333938",
-        "https://academic.oup.com/nar/article/49/D1/D1160/5957163?login=false"
-      ]
-    }
-  },
-  "DrugBank": {
-    "license": "CC BY-NC 4.0",
-    "urls": {
-      "webpages": ["https://go.drugbank.com/"],
-      "articles": [
-        "https://pubmed.ncbi.nlm.nih.gov/29126136/",
-        "https://pubmed.ncbi.nlm.nih.gov/24203711/",
-        "https://pubmed.ncbi.nlm.nih.gov/21059682/",
-        "https://pubmed.ncbi.nlm.nih.gov/18048412/",
-        "https://pubmed.ncbi.nlm.nih.gov/16381955/"
-      ]
-    }
-  },
-  "ChEMBL": {
-    "license": "CC BY-SA 3.0",
-    "urls": {
-      "webpages": ["https://www.ebi.ac.uk/chembl/"],
-      "articles": [
-        "http://europepmc.org/article/PMC/5210557",
-        "http://europepmc.org/article/PMC/4489243",
-        "http://europepmc.org/article/MED/24413672"
-      ]
-    }
-  },
-  "HPO": {
-    "full_name": "The Human Phenotype Ontology",
-    "license": "HPO",
-    "urls": {
-      "webpages": ["https://hpo.jax.org/app/"],
-      "articles": [
-        "https://pubmed.ncbi.nlm.nih.gov/33264411/"
-      ]
-    }
-  },
-  "Pharos": {
-    "license": "No license",
-    "urls": {
-      "webpages": ["https://pharos.nih.gov/"],
-      "articles": [
-        "https://academic.oup.com/nar/article/49/D1/D1334/5958490"
-      ]
-    }
-  }
 }
