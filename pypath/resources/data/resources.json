@@ -4672,5 +4672,14 @@
       "webpages": ["https://www.ncbi.nlm.nih.gov/clinvar/"],
       "articles": ["https://pubmed.ncbi.nlm.nih.gov/29165669/"]
     }
+  },
+  "Pharos": {
+    "license": "No license",
+    "urls": {
+      "webpages": ["https://pharos.nih.gov/"],
+      "articles": [
+        "https://academic.oup.com/nar/article/49/D1/D1334/5958490"
+      ]
+    }
   }
 }
