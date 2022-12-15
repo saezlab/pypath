@@ -1,3 +1,34 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+#  This file is part of the `pypath` python module
+#  Helps to translate from the mouse data to human data
+#
+#  Copyright
+#  2014-2022
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Sebastian Lobentanzer
+#           Erva Ulusoy
+#           Olga Ivanova
+#           Ahmet Rifaioglu
+#           Melih Darcan
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.org/
+#
+
+"""
+Retrieve data from the NIH Pharos database.
+"""
+
+from __future__ import annotations
 
 import json
 
@@ -5,36 +36,144 @@ from pypath.share.curl import Curl
 from pypath.resources.urls import urls
 
 
-def pharos_general(query, variables=None):
+QUERY_TYPES = (
+    'expression',
+    'gtex',
+    'orthologs',
+    'ligands',
+    'xrefs',
+    'diseases',
+)
+
+
+PHAROS_QUERY = """
+    query targetDetails(
+        $chunk_size: Int!,
+        $step: Int!,
+        $getExpressions: Boolean!,
+        $getGtex: Boolean!,
+        $getOrthologs: Boolean!,
+        $getLigands: Boolean!,
+        $getXrefs: Boolean!,
+        $getDiseases: Boolean!,
+    ) {
+
+        targets {
+
+            targets(top: $chunk_size skip: $step) {
+
+                name
+                sym
+                uniprot
+
+                expressions(top: 10000) @include(if: $getExpressions) {
+
+                    expid
+                    type
+                    tissue
+                    value
+
+                    uberon {
+                        name
+                        uid
+                    }
+
+                    pub {
+                        pmid
+                    }
+                }
+
+                gtex @include(if: $getGtex) {
+
+                    tissue
+                    tpm
+                    log2foldchange
+
+                    uberon {
+                        name
+                        uid
+                    }
+                }
+
+                orthologs(top: 10000) @include(if: $getOrthologs) {
+                    name
+                    species
+                    orid
+                    dbid
+                    geneid
+                    source
+                }
+
+                ligands(top: 10000 isdrug: true) @include(if: $getLigands) {
+
+                    ligid
+                    name
+
+                    activities(all: true) {
+                        actid
+                        type
+                        moa
+                        value
+                    }
+                }
+
+                xrefs(source: "Ensembl") @include(if: $getXrefs) {
+                    name
+                }
+
+                diseases(top:10000) @include(if: $getDiseases) {
+
+                    name
+                    mondoID
+
+                    dids {
+                        id
+                        dataSources
+                        doName
+                    }
+                }
+            }
+        }
+    }
+    """
+
+
+def pharos_general(
+        query: str,
+        variables: dict[str, bool] | None = None,
+    ) -> dict:
+    """
+    Query the NIH Pharos database by GraphQL.
+
+    Read about Pharos here: https://pharos.nih.gov/about
+
+    Args:
+        query:
+            A GraphQL query.
+        variables:
+            Variables to retrieve. A dict of variable names and boolean values.
+
+    Return:
+        The JSON response parsed into a dict.
+    """
 
     url = urls['pharos_api']['url']
 
     req_headers = {
-        "Accept-Encoding": "gzip, deflate, br",
-        "Content-Type": "application/json",
-        "Connection": "keep-alive",
-        "DNT": "1",
-        "Origin": "https://pharos-api.ncats.io",
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Content-Type': 'application/json',
+        'Connection': 'keep-alive',
+        'DNT': '1',
+        'Origin': 'https://pharos-api.ncats.io',
     }
+
+    query_param = {'query': query}
 
     if variables:
 
-        binary_data = json.dumps(
-            {
-                'query': query,
-                'variables': variables
-            }
-        )
+        query_param['variables'] = variables
 
-    else:
-
-        binary_data = json.dumps(
-            {
-                'query': query,
-            }
-        )
-
-    binary_data = binary_data.encode('utf-8')
+    binary_data = json.dumps(query_param).encode('utf-8')
 
     c = Curl(
         url=url,
@@ -48,148 +187,76 @@ def pharos_general(query, variables=None):
     return result
 
 
-def get_targets(
-    # It better stay 100 because higher numbers likely to cause timeout errors
-    chunk_size=100,
-    getExpressions=False,
-    getGtex=False,
-    getOrthologs=False,
-    getLigands=False,
-    getXrefs=False,
-    getDiseases=False,
-):
+def pharos_targets(
+        chunk_size: int = 100,
+        expression: bool = False,
+        gtex: bool = False,
+        orthologs: bool = False,
+        ligands: bool = False,
+        xrefs: bool = False,
+        diseases: bool = False,
+    ) -> list:
+    """
+    Args:
+        chunk_size:
+            Records in one batch. Better stay 100 because higher numbers
+            likely to cause timeout errors.
+    """
 
-    step = 0
-    result = list()
     variables = {
-        "chunk_size": chunk_size,
-        "step": step,
-        "getExpressions": getExpressions,
-        "getGtex": getGtex,
-        "getOrthologs": getOrthologs,
-        "getLigands": getLigands,
-        "getXrefs": getXrefs,
-        "getDiseases": getDiseases,
+        'chunk_size': chunk_size,
+        'step': step,
+        'getExpressions': expression,
+        'getGtex': gtex,
+        'getOrthologs': orthologs,
+        'getLigands': ligands,
+        'getXrefs': xrefs,
+        'getDiseases': diseases,
     }
 
-    query = """
-        query targetDetails(
-            $chunk_size: Int!,
-            $step: Int!,
-            $getExpressions: Boolean!,
-            $getGtex: Boolean!,
-            $getOrthologs: Boolean!,
-            $getLigands: Boolean!,
-            $getXrefs: Boolean!,
-            $getDiseases: Boolean!,
-        ) {
-
-            targets {
-
-                targets(top: $chunk_size skip: $step) {
-
-                    name
-                    sym
-                    uniprot
-
-                    expressions(top: 10000) @include(if: $getExpressions) {
-
-                        expid
-                        type
-                        tissue
-                        value
-
-                        uberon {
-                            name
-                            uid
-                        }
-
-                        pub {
-                            pmid
-                        }
-                    }
-
-                    gtex @include(if: $getGtex) {
-
-                        tissue
-                        tpm
-                        log2foldchange
-
-                        uberon {
-                            name
-                            uid
-                        }
-                    }
-
-                    orthologs(top: 10000) @include(if: $getOrthologs) {
-                        name
-                        species
-                        orid
-                        dbid
-                        geneid
-                        source
-                    }
-
-                    ligands(top: 10000 isdrug: true) @include(if: $getLigands) {
-
-                        ligid
-                        name
-
-                        activities(all: true) {
-                            actid
-                            type
-                            moa
-                            value
-                        }
-                    }
-
-                    xrefs(source: "Ensembl") @include(if: $getXrefs) {
-                        name
-                    }
-
-                    diseases(top:10000) @include(if: $getDiseases) {
-
-                        name
-                        mondoID
-                        
-                        dids {
-                            id
-                            dataSources
-                            doName
-                        }
-                    }
-                }
-            }
-        }
-    """
+    step = 0
+    result = []
 
     while True:
 
-        response = pharos_general(query, variables)["targets"]["targets"]
+        response = pharos_general(PHAROS_QUERY, variables)
+        response = response['targets']['targets']
 
         if not response:
+
             break
 
         result.extend(response)
-        variables["step"] += chunk_size
+        variables['step'] += chunk_size
 
     return result
 
 
-def getExpressions(chunk_size=100):
-    return get_targets(chunk_size, getExpressions=True)
+def _create_query_functions():
 
-def getGtex(chunk_size=100):
-    return get_targets(chunk_size, getGtex=True)
+    for qtype in QUERY_TYPES:
 
-def getOrthologs(chunk_size=100):
-    return get_targets(chunk_size, getOrthologs=True)
+        args = {qtype: True}
+        name = f'pharos_{qtype}'
 
-def getLigands(chunk_size=100):
-    return get_targets(chunk_size, getLigands=True)
+        doc = f"""
+            Retrieve `{qtype}` records from Pharos.
 
-def getXrefs(chunk_size=100):
-    return get_targets(chunk_size, getXrefs=True)
+            Args:
+                chunk_size:
+                    Records in one batch. Better stay 100 because higher
+                    numbers likely to cause timeout errors.
+            """
 
-def getDiseases(chunk_size=100):
-    return get_targets(chunk_size, getDiseases=True)
+        def query_func(chunk_size: int = 100) -> list:
+
+            return pharos_targets(chunk_size = chunk_size, **args)
+
+
+        query_func.__name__ = name
+        query_func.__doc__ = doc
+
+        globals()[name] = query_func
+
+
+_create_query_functions()
