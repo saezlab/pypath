@@ -4664,7 +4664,11 @@
     "urls": {
       "webpages": ["http://patho.phenomebrowser.net"],
       "articles": ["https://doi.org/10.1038/s41597-019-0090-x"]
-    }
+    },
+    "descriptions": [
+      "A database of pathogens and their phenotypes for diagnostic ",
+      "support in infections."
+    ]
   },
   "Clinvar": {
     "license": "EMBL-EBI",
@@ -4674,12 +4678,19 @@
     }
   },
   "Pharos": {
-    "license": "No license",
+    "license": "Unspecified NC-SA",
     "urls": {
       "webpages": ["https://pharos.nih.gov/"],
       "articles": [
         "https://academic.oup.com/nar/article/49/D1/D1334/5958490"
       ]
-    }
+    },
+    "descriptions": [
+      "Being a composite database of about 80 original resources, Pharos ",
+      "points to the licenses of the constituting databases, just like ",
+      "OmniPath does it: https://pharos.nih.gov/about. That means, at ",
+      "least redistribution with attribution and non-commercial use ",
+      "should be fine with all these resources."
+    ]
   }
 }
