@@ -34,6 +34,10 @@ import json
 
 from pypath.share.curl import Curl
 from pypath.resources.urls import urls
+import pypath.share.session as session
+
+_logger = session.Logger(name = 'pharos_input')
+_log = _logger._log
 
 
 QUERY_TYPES = (
@@ -171,6 +175,10 @@ def pharos_general(
 
     if variables:
 
+        _log(
+            'Querying Pharos, variables: '
+             f'{", ".join(k for k, v in variables.items() if v)}'
+        )
         query_param['variables'] = variables
 
     binary_data = json.dumps(query_param).encode('utf-8')
@@ -182,7 +190,9 @@ def pharos_general(
         compressed=True,
         compr='gz',
     )
-    result = json.loads(c.result)['data']
+    result = json.loads(c.result)
+
+    result = result['data']
 
     return result
 
@@ -205,7 +215,7 @@ def pharos_targets(
 
     variables = {
         'chunk_size': chunk_size,
-        'step': step,
+        'step': 0,
         'getExpressions': expression,
         'getGtex': gtex,
         'getOrthologs': orthologs,
@@ -213,12 +223,11 @@ def pharos_targets(
         'getXrefs': xrefs,
         'getDiseases': diseases,
     }
-
-    step = 0
     result = []
 
     while True:
 
+        _log(f'Pharos query, chunk #{variables["step"]}')
         response = pharos_general(PHAROS_QUERY, variables)
         response = response['targets']['targets']
 
@@ -242,10 +251,15 @@ def _create_query_functions():
         doc = f"""
             Retrieve `{qtype}` records from Pharos.
 
+            Note: data retrieval might take about half an hour.
+
             Args:
                 chunk_size:
                     Records in one batch. Better stay 100 because higher
                     numbers likely to cause timeout errors.
+
+            Return:
+                Records as a list of dicts.
             """
 
         def query_func(chunk_size: int = 100) -> list:
