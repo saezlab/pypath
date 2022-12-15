@@ -692,8 +692,8 @@ class FileOpener(session_mod.Logger):
             self.result = self.gzfile.read()
             self.gzfile.close()
             self._log(
-                'Data has been read from gzip file `%s`.'
-                'File has been closed' % self.fileobj.name
+                'Data has been read from gzip file `%s`. '
+                'The file has been closed' % self.fileobj.name
             )
 
 
