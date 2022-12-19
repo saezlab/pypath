@@ -113,11 +113,21 @@ PHAROS_QUERY = """
                     ligid
                     name
 
+                    synonyms {
+                        name
+                        value
+                    }
+
                     activities(all: true) {
                         actid
                         type
                         moa
                         value
+
+                        pubs {
+                            pmid
+                            __typename
+                            }
                     }
                 }
 
