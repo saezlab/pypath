@@ -4692,5 +4692,15 @@
       "least redistribution with attribution and non-commercial use ",
       "should be fine with all these resources."
     ]
+  },
+  "CTD": {
+    "full_name": "The Comparative Toxicogenomics Database",
+    "license": "CTD",
+    "urls": {
+      "webpages": ["http://ctdbase.org/"],
+      "articles": [
+        "https://pubmed.ncbi.nlm.nih.gov/36169237/"
+      ]
+    }
   }
 }
