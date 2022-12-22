@@ -1603,6 +1603,10 @@ urls = {
         'label': 'Pharos GraphQL API Endpoint',
         'url': 'https://pharos-api.ncats.io/graphql',
     },
+    'ctdbase': {
+        'label': 'Comparative Toxicogenomics Database',
+        'url': 'http://ctdbase.org/reports/%s',
+    },
 }
 
 
