@@ -1,8 +1,59 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright
+#  2014-2022
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  Authors: Dénes Türei (turei.denes@gmail.com)
+#           Nicolàs Palacio
+#           Sebastian Lobentanzer
+#           Erva Ulusoy
+#           Olga Ivanova
+#           Ahmet Rifaioglu
+#           Melih Darcan
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.organism/licenses/gpl-3.0.html
+#
+#  Website: http://pypath.omnipathdb.organism/
+#
+
+from __future__ import annotations
+
+import collections
+
 from pypath.share import curl
 from pypath.resources.urls import urls
 
 
-def ctdbase_general(url):
+CTD_URLS = {
+    'chemical-gene': 'CTD_chem_gene_ixns.tsv.gz',
+    'chemical-disease': 'CTD_chemicals_diseases.tsv.gz',
+    'disease-pathway': 'CTD_diseases_pathways.tsv.gz',
+    'chemical-phenotype': 'CTD_pheno_term_ixns.tsv.gz',
+    'gene-disease': 'CTD_genes_diseases.tsv.gz',
+    'chemical-vocabulary': 'CTD_chemicals.tsv.gz',
+    'gene-vocabulary': 'CTD_genes.tsv.gz',
+    'disease-vocabulary': 'CTD_diseases.tsv.gz',
+    'pathway-vocabulary': 'CTD_pathways.tsv.gz',
+    'anatomy_vocabulary': 'CTD_anatomy.tsv.gz',
+    'phenotype-vocabulary': 'CTD_phenotypes.tsv.gz',
+}
+
+
+def _ctdbase_download(_type: str) -> list[tuple]:
+    """
+    Retrieves a CTDbase file and returns entries as a list of tuples.
+    """
+
+    if '-' not in _type:
+        _type = f'{_type}-vocabulary'
+    url = urls['ctdbase']['url'] % CTD_URLS[_type]
 
     c = curl.Curl(
         url,
@@ -14,26 +65,25 @@ def ctdbase_general(url):
         compr="gz",
     )
 
-    relations = list()
+    entries = list()
     fieldnames = None
 
     for line in c.result:
 
         if line.startswith("#"):
 
-            line = line.strip(" #\n")
-            line = line.split("\t")
+            line = line.strip(" #\n").split("\t")
 
             if len(line) > 1:
-                fieldnames = line
-                fieldnames = [fieldname for fieldname in fieldnames if fieldname != '']
+                fieldnames = [fieldname for fieldname in line if fieldname != '']
+                record = collections.namedtuple('CTDEntry', fieldnames)
 
             continue
 
         data = line.split("\t")
 
-        if data[-1] == "\n":
-            del data[-1]
+        # if data[-1] == "\n":
+        #     del data[-1]
 
         for i, v in enumerate(data):
 
@@ -51,224 +101,88 @@ def ctdbase_general(url):
 
             data[i] = v
 
-        data = {
-            fieldname: element if element != "" else None
-            for (fieldname, element) in zip(fieldnames, data)
-        }
+        entry = {}
+        for (fieldname, element) in zip(fieldnames, data):
+            if element != "":
+                if type(element) == str:
+                    element = element.strip()
+                elif type(element) == list:
+                    element = [elem.strip() for elem in element if type(elem) == str]
+            else:
+                element = None
+            entry[fieldname] = element
 
-        relations.append(data)
+        if _type == 'chemical-phenotype':
 
-    return relations
-
-
-def chemical_gene():
-    """
-    Fields:
-
-    ChemicalName
-    ChemicalID (MeSH identifier)
-    CasRN (CAS Registry Number, if available)
-    GeneSymbol
-    GeneID (NCBI Gene identifier)
-    GeneForms (list)
-    Organism (scientific name)
-    OrganismID (NCBI Taxonomy identifier)
-    Interaction
-    InteractionActions (list)
-    PubMedIDs (list)
-    """
-
-    url = urls['ctdbase']['url'] % "CTD_chem_gene_ixns.tsv.gz"
-    return ctdbase_general(url)
-
-
-def chemical_disease():
-    """
-    Fields:
-
-    ChemicalName
-    ChemicalID (MeSH identifier)
-    CasRN (CAS Registry Number, if available)
-    DiseaseName
-    DiseaseID (MeSH or OMIM identifier)
-    DirectEvidence (list)
-    InferenceGeneSymbol
-    InferenceScore
-    OmimIDs (list)
-    PubMedIDs (list)
-    """
-
-    url = urls['ctdbase']['url'] % "CTD_chemicals_diseases.tsv.gz"
-    return ctdbase_general(url)
-
-
-def disease_pathway():
-    """
-    Fields:
-
-    DiseaseName
-    DiseaseID (MeSH or OMIM identifier)
-    PathwayName
-    PathwayID (KEGG or REACTOME identifier)
-    InferenceGeneSymbol (a gene via which the association is inferred)
-    """
-
-    url = urls['ctdbase']['url'] % "CTD_diseases_pathways.tsv.gz"
-    return ctdbase_general(url)
-
-
-def chemical_phenotype():
-    """
-    Fields:
-
-    ChemicalName
-    ChemicalID (MeSH identifier)
-    CASRN (CAS Registry Number, if available)
-    PhenotypeName
-    PhenotypeID (GO identifier)
-    CoMentionedTerms (list ) entries formatted as {Name, Id, Source}
-    Organism (scientific name)
-    OrganismID (NCBI Taxonomy identifier)
-    Interaction
-    InteractionActions (list) {Interaction, Action}
-    AnatomyTerms (MeSH term; list) entries formatted as {SequenceOrder, Name, Id}
-    InferenceGeneSymbols (list) entries formatted as {Name, Id}
-    PubMedIDs (list)
-    """
-
-    url = urls['ctdbase']['url'] % "CTD_pheno_term_ixns.tsv.gz"
-    result = ctdbase_general(url)
-
-    result = modify_dict(result,
-        ('comentionedterms',        ['name', 'id', 'source']),
-        ('anatomyterms',            ['sequenceorder', 'name', 'id']),
-        ('inferencegenesymbols',    ['name', 'id']),
-        ('interactionactions',       ['interaction', 'action']),
-    )
-
-    return result
-
-
-def gene_disease():
-    """
-    Fields:
-
-    GeneSymbol
-    GeneID (NCBI Gene identifier)
-    DiseaseName
-    DiseaseID (MeSH or OMIM identifier)
-    DirectEvidence (list)
-    InferenceChemicalName
-    InferenceScore
-    OmimIDs (list)
-    PubMedIDs (list)
-    """
-
-    url = urls['ctdbase']['url'] % "CTD_genes_diseases.tsv.gz"
-    return ctdbase_general(url)
-
-
-def chemical_vocabulary():
-    """
-    Fields:
-
-    ChemicalName
-    ChemicalID (MeSH identifier)
-    CasRN (CAS Registry Number, if available)
-    Definition
-    ParentIDs (identifiers of the parent terms; list)
-    TreeNumbers (identifiers of the chemical's nodes; list)
-    ParentTreeNumbers (identifiers of the parent nodes; list)
-    Synonyms (list)
-    """
-
-    url = urls['ctdbase']['url'] % "CTD_chemicals.tsv.gz"
-    return ctdbase_general(url)
-
-
-def gene_vocabulary():
-    """
-    Fields:
-
-    GeneSymbol
-    GeneName
-    GeneID (NCBI Gene identifier)
-    AltGeneIDs (alternative NCBI Gene identifiers; list)
-    Synonyms (list)
-    BioGRIDIDs (list)
-    PharmGKBIDs (list)
-    UniprotIDs (list)
-    """
-
-    url = urls['ctdbase']['url'] % "CTD_genes.tsv.gz"
-    return ctdbase_general(url)
-
-
-def disease_vocabulary():
-    """
-    Fields (non-OBO):
-
-    DiseaseName
-    DiseaseID (MeSH or OMIM identifier)
-    Definition
-    AltDiseaseIDs (alternative identifiers; list)
-    ParentIDs (identifiers of the parent terms; list)
-    TreeNumbers (identifiers of the disease's nodes; list)
-    ParentTreeNumbers (identifiers of the parent nodes; list)
-    Synonyms (list)
-    SlimMappings (MEDIC-Slim mappings; list)
-    """
-
-    url = urls['ctdbase']['url'] % "CTD_diseases.tsv.gz"
-    return ctdbase_general(url)
-
-
-def pathway_vocabulary():
-    """
-    Fields:
-
-    PathwayName
-    PathwayID (KEGG or REACTOME identifier)
-    """
-
-    url = urls['ctdbase']['url'] % "CTD_pathways.tsv.gz"
-    return ctdbase_general(url)
-
-
-def anatomy_vocabulary():
-    """
-    Fields:
-
-    AnatomyName
-    AnatomyID (MeSH identifier)
-    Definition
-    AltAnatomyIDs (alternative identifiers; list)
-    ParentIDs (identifiers of the parent terms; list)
-    TreeNumbers (identifiers of the anatomical term's nodes; list)
-    ParentTreeNumbers (identifiers of the parent nodes; list)
-    Synonyms (list)
-    ExternalSynonyms (list)
-    """
-
-    url = urls['ctdbase']['url'] % "CTD_anatomy.tsv.gz"
-    return ctdbase_general(url)
-
-def modify_dict(dict_list, *entry_pairs):
-
-    for i, element in enumerate(dict_list):
-
-        for key, new_keys in entry_pairs:
-
-            element[key] = map_keys(
-                new_keys,
-                element[key]
+            entry_pairs = (
+                ('comentionedterms', ['name', 'id', 'source']),
+                ('anatomyterms',['sequenceorder', 'name', 'id']),
+                ('inferencegenesymbols',['name', 'id']),
+                ('interactionactions',['interaction', 'action']),
             )
 
-        dict_list[i] = element
-    
-    return dict_list
+            relation = _modify_dict(entry, entry_pairs)
+        try:
+            entries.append(record(**entry))
+        except TypeError:
+            print(entry)
+            raise
+        
+    return entries
 
-def map_keys(keys, entry):
+
+def ctdbase_relations(relation_type: str) -> list[tuple]:
+    """
+    Retrieves a CTDbase relation file.
+
+    Args:
+        relation_type: One of the following:
+            'chemical-gene',
+            'chemical-disease',
+            'disease-pathway',
+            'chemical-phenotype',
+            'gene-disease',
+
+    Returns:
+        Relations as a list of tuples.
+    """
+
+    return _ctdbase_download(relation_type)
+
+
+def ctdbase_vocabulary(vocabulary_type: str) -> list[tuple]:
+    """
+    Retrieves a CTDbase vocabulary file.
+
+    Args:
+        vocabulary_type: One of the following:
+            'chemical',
+            'gene',
+            'disease',
+            'pathway',
+            'anatomy',
+            'phenotype',
+
+    Returns:
+        Vocabulary as a list of tuples.
+    """
+
+    return _ctdbase_download(vocabulary_type)
+
+
+def _modify_dict(_dict, *entry_pairs):
+
+    for key, new_keys in entry_pairs:
+
+        _dict[key] = _map_keys(
+            new_keys,
+            _dict[key]
+        )
+    
+    return _dict
+
+
+def _map_keys(keys, entry):
 
     if entry == None:
         return None
