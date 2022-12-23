@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.inputs.ctdbase.chemical_phenotype &#8212; pypath 0.14.34 documentation</title>
+    <title>pypath.inputs.ctdbase.ctdbase_vocabulary &#8212; pypath 0.14.34 documentation</title>
   
   
   
@@ -43,12 +43,12 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.ctdbase.chemical_phenotype';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.ctdbase.ctdbase_vocabulary';</script>
     <link rel="shortcut icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.inputs.ctdbase.chemical_vocabulary" href="pypath.inputs.ctdbase.chemical_vocabulary.html" />
-    <link rel="prev" title="pypath.inputs.ctdbase.chemical_gene" href="pypath.inputs.ctdbase.chemical_gene.html" />
+    <link rel="next" title="pypath.inputs.cytosig" href="pypath.inputs.cytosig.html" />
+    <link rel="prev" title="pypath.inputs.ctdbase.ctdbase_relations" href="pypath.inputs.ctdbase.ctdbase_relations.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -425,25 +425,26 @@
             
             <article class="bd-article" role="main">
               
-  <section id="pypath-inputs-ctdbase-chemical-phenotype">
-<h1>pypath.inputs.ctdbase.chemical_phenotype<a class="headerlink" href="#pypath-inputs-ctdbase-chemical-phenotype" title="Permalink to this heading">§</a></h1>
+  <section id="pypath-inputs-ctdbase-ctdbase-vocabulary">
+<h1>pypath.inputs.ctdbase.ctdbase_vocabulary<a class="headerlink" href="#pypath-inputs-ctdbase-ctdbase-vocabulary" title="Permalink to this heading">§</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="pypath.inputs.ctdbase.chemical_phenotype">
-<span class="sig-prename descclassname"><span class="pre">pypath.inputs.ctdbase.</span></span><span class="sig-name descname"><span class="pre">chemical_phenotype</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/inputs/ctdbase.html#chemical_phenotype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.ctdbase.chemical_phenotype" title="Permalink to this definition">§</a></dt>
-<dd><p>Fields:</p>
-<p>ChemicalName
-ChemicalID (MeSH identifier)
-CASRN (CAS Registry Number, if available)
-PhenotypeName
-PhenotypeID (GO identifier)
-CoMentionedTerms (list ) entries formatted as {Name, Id, Source}
-Organism (scientific name)
-OrganismID (NCBI Taxonomy identifier)
-Interaction
-InteractionActions (list) {Interaction, Action}
-AnatomyTerms (MeSH term; list) entries formatted as {SequenceOrder, Name, Id}
-InferenceGeneSymbols (list) entries formatted as {Name, Id}
-PubMedIDs (list)</p>
+<dt class="sig sig-object py" id="pypath.inputs.ctdbase.ctdbase_vocabulary">
+<span class="sig-prename descclassname"><span class="pre">pypath.inputs.ctdbase.</span></span><span class="sig-name descname"><span class="pre">ctdbase_vocabulary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vocabulary_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pypath/inputs/ctdbase.html#ctdbase_vocabulary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.ctdbase.ctdbase_vocabulary" title="Permalink to this definition">§</a></dt>
+<dd><p>Retrieves a CTDbase vocabulary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vocabulary_type</strong> – One of the following:
+‘chemical’,
+‘gene’,
+‘disease’,
+‘pathway’,
+‘anatomy’,
+‘phenotype’,</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Vocabulary as a list of tuples.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -456,17 +457,17 @@ PubMedIDs (list)</p>
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="pypath.inputs.ctdbase.chemical_gene.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="pypath.inputs.ctdbase.ctdbase_relations.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">pypath.inputs.ctdbase.chemical_gene</p>
+          <p class="prev-next-title">pypath.inputs.ctdbase.ctdbase_relations</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="pypath.inputs.ctdbase.chemical_vocabulary.html" title="next page">
+  <a class='right-next' id="next-link" href="pypath.inputs.cytosig.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">pypath.inputs.ctdbase.chemical_vocabulary</p>
+      <p class="prev-next-title">pypath.inputs.cytosig</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>

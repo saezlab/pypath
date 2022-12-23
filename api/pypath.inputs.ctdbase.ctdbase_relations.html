@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.inputs.ctdbase.pathway_vocabulary &#8212; pypath 0.14.34 documentation</title>
+    <title>pypath.inputs.ctdbase.ctdbase_relations &#8212; pypath 0.14.34 documentation</title>
   
   
   
@@ -43,12 +43,12 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.ctdbase.pathway_vocabulary';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.ctdbase.ctdbase_relations';</script>
     <link rel="shortcut icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.inputs.cytosig" href="pypath.inputs.cytosig.html" />
-    <link rel="prev" title="pypath.inputs.ctdbase.modify_dict" href="pypath.inputs.ctdbase.modify_dict.html" />
+    <link rel="next" title="pypath.inputs.ctdbase.ctdbase_vocabulary" href="pypath.inputs.ctdbase.ctdbase_vocabulary.html" />
+    <link rel="prev" title="pypath.inputs.ctdbase" href="pypath.inputs.ctdbase.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -425,14 +425,25 @@
             
             <article class="bd-article" role="main">
               
-  <section id="pypath-inputs-ctdbase-pathway-vocabulary">
-<h1>pypath.inputs.ctdbase.pathway_vocabulary<a class="headerlink" href="#pypath-inputs-ctdbase-pathway-vocabulary" title="Permalink to this heading">§</a></h1>
+  <section id="pypath-inputs-ctdbase-ctdbase-relations">
+<h1>pypath.inputs.ctdbase.ctdbase_relations<a class="headerlink" href="#pypath-inputs-ctdbase-ctdbase-relations" title="Permalink to this heading">§</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="pypath.inputs.ctdbase.pathway_vocabulary">
-<span class="sig-prename descclassname"><span class="pre">pypath.inputs.ctdbase.</span></span><span class="sig-name descname"><span class="pre">pathway_vocabulary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/inputs/ctdbase.html#pathway_vocabulary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.ctdbase.pathway_vocabulary" title="Permalink to this definition">§</a></dt>
-<dd><p>Fields:</p>
-<p>PathwayName
-PathwayID (KEGG or REACTOME identifier)</p>
+<dt class="sig sig-object py" id="pypath.inputs.ctdbase.ctdbase_relations">
+<span class="sig-prename descclassname"><span class="pre">pypath.inputs.ctdbase.</span></span><span class="sig-name descname"><span class="pre">ctdbase_relations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relation_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pypath/inputs/ctdbase.html#ctdbase_relations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.ctdbase.ctdbase_relations" title="Permalink to this definition">§</a></dt>
+<dd><p>Retrieves a CTDbase relation file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>relation_type</strong> – One of the following:
+‘chemical-gene’,
+‘chemical-disease’,
+‘disease-pathway’,
+‘chemical-phenotype’,
+‘gene-disease’,</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Relations as a list of tuples.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -445,17 +456,17 @@ PathwayID (KEGG or REACTOME identifier)</p>
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="pypath.inputs.ctdbase.modify_dict.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="pypath.inputs.ctdbase.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">pypath.inputs.ctdbase.modify_dict</p>
+          <p class="prev-next-title">pypath.inputs.ctdbase</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="pypath.inputs.cytosig.html" title="next page">
+  <a class='right-next' id="next-link" href="pypath.inputs.ctdbase.ctdbase_vocabulary.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">pypath.inputs.cytosig</p>
+      <p class="prev-next-title">pypath.inputs.ctdbase.ctdbase_vocabulary</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>
