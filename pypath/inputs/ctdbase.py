@@ -103,13 +103,13 @@ def _ctdbase_download(_type: str) -> list[tuple]:
 
         entry = {}
         for (fieldname, element) in zip(fieldnames, data):
-            if element != "":
+            if element == "":
+                element = None
+            else:
                 if type(element) == str:
                     element = element.strip()
                 elif type(element) == list:
-                    element = [elem.strip() for elem in element if type(elem) == str]
-            else:
-                element = None
+                    element = [e.strip() if type(e) == str else e for e in element]
             entry[fieldname] = element
 
         if _type == 'chemical_phenotype':
