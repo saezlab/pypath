@@ -32,17 +32,17 @@ from pypath.resources.urls import urls
 
 
 CTD_URLS = {
-    'chemical-gene': 'CTD_chem_gene_ixns.tsv.gz',
-    'chemical-disease': 'CTD_chemicals_diseases.tsv.gz',
-    'disease-pathway': 'CTD_diseases_pathways.tsv.gz',
-    'chemical-phenotype': 'CTD_pheno_term_ixns.tsv.gz',
-    'gene-disease': 'CTD_genes_diseases.tsv.gz',
-    'chemical-vocabulary': 'CTD_chemicals.tsv.gz',
-    'gene-vocabulary': 'CTD_genes.tsv.gz',
-    'disease-vocabulary': 'CTD_diseases.tsv.gz',
-    'pathway-vocabulary': 'CTD_pathways.tsv.gz',
+    'chemical_gene': 'CTD_chem_gene_ixns.tsv.gz',
+    'chemical_disease': 'CTD_chemicals_diseases.tsv.gz',
+    'disease_pathway': 'CTD_diseases_pathways.tsv.gz',
+    'chemical_phenotype': 'CTD_pheno_term_ixns.tsv.gz',
+    'gene_disease': 'CTD_genes_diseases.tsv.gz',
+    'chemical_vocabulary': 'CTD_chemicals.tsv.gz',
+    'gene_vocabulary': 'CTD_genes.tsv.gz',
+    'disease_vocabulary': 'CTD_diseases.tsv.gz',
+    'pathway_vocabulary': 'CTD_pathways.tsv.gz',
     'anatomy_vocabulary': 'CTD_anatomy.tsv.gz',
-    'phenotype-vocabulary': 'CTD_phenotypes.tsv.gz',
+    'phenotype_vocabulary': 'CTD_phenotypes.tsv.gz',
 }
 
 
@@ -51,8 +51,8 @@ def _ctdbase_download(_type: str) -> list[tuple]:
     Retrieves a CTDbase file and returns entries as a list of tuples.
     """
 
-    if '-' not in _type:
-        _type = f'{_type}-vocabulary'
+    if '_' not in _type:
+        _type = f'{_type}_vocabulary'
     url = urls['ctdbase']['url'] % CTD_URLS[_type]
 
     c = curl.Curl(
@@ -112,22 +112,17 @@ def _ctdbase_download(_type: str) -> list[tuple]:
                 element = None
             entry[fieldname] = element
 
-        if _type == 'chemical-phenotype':
+        if _type == 'chemical_phenotype':
 
-            entry_pairs = (
+            entry = _modify_dict(entry, 
                 ('comentionedterms', ['name', 'id', 'source']),
                 ('anatomyterms',['sequenceorder', 'name', 'id']),
                 ('inferencegenesymbols',['name', 'id']),
                 ('interactionactions',['interaction', 'action']),
             )
-
-            relation = _modify_dict(entry, entry_pairs)
-        try:
-            entries.append(record(**entry))
-        except TypeError:
-            print(entry)
-            raise
         
+        entries.append(record(**entry))
+
     return entries
 
 
@@ -137,11 +132,11 @@ def ctdbase_relations(relation_type: str) -> list[tuple]:
 
     Args:
         relation_type: One of the following:
-            'chemical-gene',
-            'chemical-disease',
-            'disease-pathway',
-            'chemical-phenotype',
-            'gene-disease',
+            'chemical_gene',
+            'chemical_disease',
+            'disease_pathway',
+            'chemical_phenotype',
+            'gene_disease',
 
     Returns:
         Relations as a list of tuples.
