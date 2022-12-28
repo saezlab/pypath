@@ -457,17 +457,17 @@
 
 
 <span class="n">CTD_URLS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;chemical-gene&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_chem_gene_ixns.tsv.gz&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;chemical-disease&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_chemicals_diseases.tsv.gz&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;disease-pathway&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_diseases_pathways.tsv.gz&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;chemical-phenotype&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_pheno_term_ixns.tsv.gz&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;gene-disease&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_genes_diseases.tsv.gz&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;chemical-vocabulary&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_chemicals.tsv.gz&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;gene-vocabulary&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_genes.tsv.gz&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;disease-vocabulary&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_diseases.tsv.gz&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;pathway-vocabulary&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_pathways.tsv.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;chemical_gene&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_chem_gene_ixns.tsv.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;chemical_disease&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_chemicals_diseases.tsv.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;disease_pathway&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_diseases_pathways.tsv.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;chemical_phenotype&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_pheno_term_ixns.tsv.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;gene_disease&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_genes_diseases.tsv.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;chemical_vocabulary&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_chemicals.tsv.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;gene_vocabulary&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_genes.tsv.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;disease_vocabulary&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_diseases.tsv.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;pathway_vocabulary&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_pathways.tsv.gz&#39;</span><span class="p">,</span>
     <span class="s1">&#39;anatomy_vocabulary&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_anatomy.tsv.gz&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;phenotype-vocabulary&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_phenotypes.tsv.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;phenotype_vocabulary&#39;</span><span class="p">:</span> <span class="s1">&#39;CTD_phenotypes.tsv.gz&#39;</span><span class="p">,</span>
 <span class="p">}</span>
 
 
@@ -476,8 +476,8 @@
 <span class="sd">    Retrieves a CTDbase file and returns entries as a list of tuples.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="s1">&#39;-&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_type</span><span class="p">:</span>
-        <span class="n">_type</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">_type</span><span class="si">}</span><span class="s1">-vocabulary&#39;</span>
+    <span class="k">if</span> <span class="s1">&#39;_&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_type</span><span class="p">:</span>
+        <span class="n">_type</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">_type</span><span class="si">}</span><span class="s1">_vocabulary&#39;</span>
     <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="p">[</span><span class="s1">&#39;ctdbase&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="o">%</span> <span class="n">CTD_URLS</span><span class="p">[</span><span class="n">_type</span><span class="p">]</span>
 
     <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
@@ -537,22 +537,17 @@
                 <span class="n">element</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">entry</span><span class="p">[</span><span class="n">fieldname</span><span class="p">]</span> <span class="o">=</span> <span class="n">element</span>
 
-        <span class="k">if</span> <span class="n">_type</span> <span class="o">==</span> <span class="s1">&#39;chemical-phenotype&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_type</span> <span class="o">==</span> <span class="s1">&#39;chemical_phenotype&#39;</span><span class="p">:</span>
 
-            <span class="n">entry_pairs</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">entry</span> <span class="o">=</span> <span class="n">_modify_dict</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> 
                 <span class="p">(</span><span class="s1">&#39;comentionedterms&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;source&#39;</span><span class="p">]),</span>
                 <span class="p">(</span><span class="s1">&#39;anatomyterms&#39;</span><span class="p">,[</span><span class="s1">&#39;sequenceorder&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">]),</span>
                 <span class="p">(</span><span class="s1">&#39;inferencegenesymbols&#39;</span><span class="p">,[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">]),</span>
                 <span class="p">(</span><span class="s1">&#39;interactionactions&#39;</span><span class="p">,[</span><span class="s1">&#39;interaction&#39;</span><span class="p">,</span> <span class="s1">&#39;action&#39;</span><span class="p">]),</span>
             <span class="p">)</span>
-
-            <span class="n">relation</span> <span class="o">=</span> <span class="n">_modify_dict</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">entry_pairs</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">(</span><span class="o">**</span><span class="n">entry</span><span class="p">))</span>
-        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
-            <span class="k">raise</span>
         
+        <span class="n">entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">(</span><span class="o">**</span><span class="n">entry</span><span class="p">))</span>
+
     <span class="k">return</span> <span class="n">entries</span>
 
 
@@ -562,11 +557,11 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        relation_type: One of the following:</span>
-<span class="sd">            &#39;chemical-gene&#39;,</span>
-<span class="sd">            &#39;chemical-disease&#39;,</span>
-<span class="sd">            &#39;disease-pathway&#39;,</span>
-<span class="sd">            &#39;chemical-phenotype&#39;,</span>
-<span class="sd">            &#39;gene-disease&#39;,</span>
+<span class="sd">            &#39;chemical_gene&#39;,</span>
+<span class="sd">            &#39;chemical_disease&#39;,</span>
+<span class="sd">            &#39;disease_pathway&#39;,</span>
+<span class="sd">            &#39;chemical_phenotype&#39;,</span>
+<span class="sd">            &#39;gene_disease&#39;,</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Relations as a list of tuples.</span>
