@@ -99,3 +99,49 @@ def clinvar_raw() -> list[tuple]:
         result.add(variant)
 
     return list(result)
+
+
+def clinvar_citations() -> list[tuple]:
+    """
+    Retrieves citation information of variants
+
+    Returns:
+        Citations as a list of named tuples.
+    """
+
+    Citation = collections.namedtuple(
+        'Citation',
+        [
+            'allele',
+            'variation_id',
+            'nsv',
+            'citation_source',
+            'citation_id'
+        ],
+        defaults=None
+    )
+
+    url = urls.urls['clinvar']['url_citations']
+
+    c = curl.Curl(url, large = True, silent = False)
+
+    response = csv.DictReader(
+        c.result,
+        delimiter = '\t',
+    )
+
+    result = set()
+
+    for row in response:
+        
+        citation = Citation(
+            allele = row['#AlleleID'],
+            variation_id = row['VariationID'],
+            nsv = row['nsv'],
+            citation_source = row['citation_source'],
+            citation_id = row['citation_id']
+        )
+
+        result.add(citation)
+
+    return list(result)

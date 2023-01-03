@@ -1598,6 +1598,7 @@ urls = {
             'the effect of a single variant or set of variants on phenotype.',
         'url': 'https://ftp.ncbi.nlm.nih.gov/pub/clinvar/'
             'tab_delimited/variant_summary.txt.gz',
+        'url_citations': 'https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/var_citations.txt',
     },
     'pharos_api': {
         'label': 'Pharos GraphQL API Endpoint',
