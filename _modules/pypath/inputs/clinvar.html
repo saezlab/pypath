@@ -524,6 +524,52 @@
         <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">variant</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="clinvar_citations"><a class="viewcode-back" href="../../../api/pypath.inputs.clinvar.clinvar_citations.html#pypath.inputs.clinvar.clinvar_citations">[docs]</a><span class="k">def</span> <span class="nf">clinvar_citations</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves citation information of variants</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Citations as a list of named tuples.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Citation</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;Citation&#39;</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;allele&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;variation_id&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;nsv&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;citation_source&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;citation_id&#39;</span>
+        <span class="p">],</span>
+        <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;clinvar&#39;</span><span class="p">][</span><span class="s1">&#39;url_citations&#39;</span><span class="p">]</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">,</span>
+        <span class="n">delimiter</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+        
+        <span class="n">citation</span> <span class="o">=</span> <span class="n">Citation</span><span class="p">(</span>
+            <span class="n">allele</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;#AlleleID&#39;</span><span class="p">],</span>
+            <span class="n">variation_id</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;VariationID&#39;</span><span class="p">],</span>
+            <span class="n">nsv</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;nsv&#39;</span><span class="p">],</span>
+            <span class="n">citation_source</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;citation_source&#39;</span><span class="p">],</span>
+            <span class="n">citation_id</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;citation_id&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">citation</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 </pre></div>
 
             </article>
@@ -618,7 +664,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2022, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.<br>
+    &copy; Copyright 2023, Denes Turei &lt;turei.denes@gmail.com&gt;, Nicolàs Palacio, Sebastian Lobentanzer, Olga Ivanova, Melih Darcan, Erva Ulusoy, Tennur Kilic, Omer Kaan Vural, Ahmet Rifaioglu, Charles Tapley Hoyt.<br>
 
 </p>
 
