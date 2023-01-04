@@ -4672,5 +4672,16 @@
       "webpages": ["https://www.ncbi.nlm.nih.gov/clinvar/"],
       "articles": ["https://pubmed.ncbi.nlm.nih.gov/29165669/"]
     }
+  },
+  "Sider": {
+    "license": "CC AN-SA 4.0",
+    "urls": {
+      "webpages": ["http://sideeffects.embl.de/"],
+      "articles": ["https://pubmed.ncbi.nlm.nih.gov/18621671/"]
+    }
+  },
+  "Humsavar": {
+    "license": "CC BY 4.0",
+    "urls": {}
   }
 }
