@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pypath.inputs.dip.dip_login &#8212; pypath 0.14.34 documentation</title>
+    <title>pypath.legacy.main.NetworkEntityCollection &#8212; pypath 0.14.34 documentation</title>
   
   
   
@@ -43,12 +43,12 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.inputs.dip.dip_login';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/pypath.legacy.main.NetworkEntityCollection';</script>
     <link rel="shortcut icon" href="../_static/omnipath-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pypath.inputs.disgenet" href="pypath.inputs.disgenet.html" />
-    <link rel="prev" title="pypath.inputs.dip.dip_interactions" href="pypath.inputs.dip.dip_interactions.html" />
+    <link rel="next" title="pypath.legacy.main.NetworkStatsRecord" href="pypath.legacy.main.NetworkStatsRecord.html" />
+    <link rel="prev" title="pypath.legacy.main.Direction" href="pypath.legacy.main.Direction.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -425,14 +425,166 @@
             
             <article class="bd-article" role="main">
               
-  <section id="pypath-inputs-dip-dip-login">
-<h1>pypath.inputs.dip.dip_login<a class="headerlink" href="#pypath-inputs-dip-dip-login" title="Permalink to this heading">§</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="pypath.inputs.dip.dip_login">
-<span class="sig-prename descclassname"><span class="pre">pypath.inputs.dip.</span></span><span class="sig-name descname"><span class="pre">dip_login</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">passwd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypath/inputs/dip.html#dip_login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.dip.dip_login" title="Permalink to this definition">§</a></dt>
-<dd><p>This does not work for unknown reasons.</p>
-<p>In addition, the binary_data parameter of Curl().__init__() has been
-changed, below updates are necessary.</p>
+  <section id="pypath-legacy-main-networkentitycollection">
+<h1>pypath.legacy.main.NetworkEntityCollection<a class="headerlink" href="#pypath-legacy-main-networkentitycollection" title="Permalink to this heading">§</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pypath.legacy.main.NetworkEntityCollection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pypath.legacy.main.</span></span><span class="sig-name descname"><span class="pre">NetworkEntityCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_resource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shared</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shared_res_cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique_res_cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shared_cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique_cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource_cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cat_resource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.legacy.main.NetworkEntityCollection" title="Permalink to this definition">§</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.legacy.main.NetworkEntityCollection.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pypath.legacy.main.NetworkEntityCollection.__init__" title="Permalink to this definition">§</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.legacy.main.NetworkEntityCollection.__init__" title="pypath.legacy.main.NetworkEntityCollection.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.legacy.main.NetworkEntityCollection.count" title="pypath.legacy.main.NetworkEntityCollection.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a>(value, /)</p></td>
+<td><p>Return number of occurrences of value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.legacy.main.NetworkEntityCollection.index" title="pypath.legacy.main.NetworkEntityCollection.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(value[, start, stop])</p></td>
+<td><p>Return first index of value.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.legacy.main.NetworkEntityCollection.by_category" title="pypath.legacy.main.NetworkEntityCollection.by_category"><code class="xref py py-obj docutils literal notranslate"><span class="pre">by_category</span></code></a></p></td>
+<td><p>Alias for field number 2</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.legacy.main.NetworkEntityCollection.by_resource" title="pypath.legacy.main.NetworkEntityCollection.by_resource"><code class="xref py py-obj docutils literal notranslate"><span class="pre">by_resource</span></code></a></p></td>
+<td><p>Alias for field number 1</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.legacy.main.NetworkEntityCollection.cat_resource" title="pypath.legacy.main.NetworkEntityCollection.cat_resource"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cat_resource</span></code></a></p></td>
+<td><p>Alias for field number 10</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.legacy.main.NetworkEntityCollection.label" title="pypath.legacy.main.NetworkEntityCollection.label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">label</span></code></a></p></td>
+<td><p>Alias for field number 12</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.legacy.main.NetworkEntityCollection.method" title="pypath.legacy.main.NetworkEntityCollection.method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">method</span></code></a></p></td>
+<td><p>Alias for field number 11</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.legacy.main.NetworkEntityCollection.resource_cat" title="pypath.legacy.main.NetworkEntityCollection.resource_cat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resource_cat</span></code></a></p></td>
+<td><p>Alias for field number 9</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.legacy.main.NetworkEntityCollection.shared" title="pypath.legacy.main.NetworkEntityCollection.shared"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared</span></code></a></p></td>
+<td><p>Alias for field number 3</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.legacy.main.NetworkEntityCollection.shared_cat" title="pypath.legacy.main.NetworkEntityCollection.shared_cat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_cat</span></code></a></p></td>
+<td><p>Alias for field number 7</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.legacy.main.NetworkEntityCollection.shared_res_cat" title="pypath.legacy.main.NetworkEntityCollection.shared_res_cat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_res_cat</span></code></a></p></td>
+<td><p>Alias for field number 5</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.legacy.main.NetworkEntityCollection.total" title="pypath.legacy.main.NetworkEntityCollection.total"><code class="xref py py-obj docutils literal notranslate"><span class="pre">total</span></code></a></p></td>
+<td><p>Alias for field number 0</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.legacy.main.NetworkEntityCollection.unique" title="pypath.legacy.main.NetworkEntityCollection.unique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique</span></code></a></p></td>
+<td><p>Alias for field number 4</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.legacy.main.NetworkEntityCollection.unique_cat" title="pypath.legacy.main.NetworkEntityCollection.unique_cat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_cat</span></code></a></p></td>
+<td><p>Alias for field number 8</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.legacy.main.NetworkEntityCollection.unique_res_cat" title="pypath.legacy.main.NetworkEntityCollection.unique_res_cat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_res_cat</span></code></a></p></td>
+<td><p>Alias for field number 6</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.legacy.main.NetworkEntityCollection.by_category">
+<span class="sig-name descname"><span class="pre">by_category</span></span><a class="headerlink" href="#pypath.legacy.main.NetworkEntityCollection.by_category" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.legacy.main.NetworkEntityCollection.by_resource">
+<span class="sig-name descname"><span class="pre">by_resource</span></span><a class="headerlink" href="#pypath.legacy.main.NetworkEntityCollection.by_resource" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.legacy.main.NetworkEntityCollection.cat_resource">
+<span class="sig-name descname"><span class="pre">cat_resource</span></span><a class="headerlink" href="#pypath.legacy.main.NetworkEntityCollection.cat_resource" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 10</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.legacy.main.NetworkEntityCollection.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.legacy.main.NetworkEntityCollection.count" title="Permalink to this definition">§</a></dt>
+<dd><p>Return number of occurrences of value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.legacy.main.NetworkEntityCollection.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9223372036854775807</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.legacy.main.NetworkEntityCollection.index" title="Permalink to this definition">§</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.legacy.main.NetworkEntityCollection.label">
+<span class="sig-name descname"><span class="pre">label</span></span><a class="headerlink" href="#pypath.legacy.main.NetworkEntityCollection.label" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 12</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.legacy.main.NetworkEntityCollection.method">
+<span class="sig-name descname"><span class="pre">method</span></span><a class="headerlink" href="#pypath.legacy.main.NetworkEntityCollection.method" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 11</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.legacy.main.NetworkEntityCollection.resource_cat">
+<span class="sig-name descname"><span class="pre">resource_cat</span></span><a class="headerlink" href="#pypath.legacy.main.NetworkEntityCollection.resource_cat" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 9</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.legacy.main.NetworkEntityCollection.shared">
+<span class="sig-name descname"><span class="pre">shared</span></span><a class="headerlink" href="#pypath.legacy.main.NetworkEntityCollection.shared" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.legacy.main.NetworkEntityCollection.shared_cat">
+<span class="sig-name descname"><span class="pre">shared_cat</span></span><a class="headerlink" href="#pypath.legacy.main.NetworkEntityCollection.shared_cat" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 7</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.legacy.main.NetworkEntityCollection.shared_res_cat">
+<span class="sig-name descname"><span class="pre">shared_res_cat</span></span><a class="headerlink" href="#pypath.legacy.main.NetworkEntityCollection.shared_res_cat" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.legacy.main.NetworkEntityCollection.total">
+<span class="sig-name descname"><span class="pre">total</span></span><a class="headerlink" href="#pypath.legacy.main.NetworkEntityCollection.total" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.legacy.main.NetworkEntityCollection.unique">
+<span class="sig-name descname"><span class="pre">unique</span></span><a class="headerlink" href="#pypath.legacy.main.NetworkEntityCollection.unique" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.legacy.main.NetworkEntityCollection.unique_cat">
+<span class="sig-name descname"><span class="pre">unique_cat</span></span><a class="headerlink" href="#pypath.legacy.main.NetworkEntityCollection.unique_cat" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 8</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pypath.legacy.main.NetworkEntityCollection.unique_res_cat">
+<span class="sig-name descname"><span class="pre">unique_res_cat</span></span><a class="headerlink" href="#pypath.legacy.main.NetworkEntityCollection.unique_res_cat" title="Permalink to this definition">§</a></dt>
+<dd><p>Alias for field number 6</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -445,17 +597,17 @@ changed, below updates are necessary.</p>
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="pypath.inputs.dip.dip_interactions.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="pypath.legacy.main.Direction.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">pypath.inputs.dip.dip_interactions</p>
+          <p class="prev-next-title">pypath.legacy.main.Direction</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="pypath.inputs.disgenet.html" title="next page">
+  <a class='right-next' id="next-link" href="pypath.legacy.main.NetworkStatsRecord.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">pypath.inputs.disgenet</p>
+      <p class="prev-next-title">pypath.legacy.main.NetworkStatsRecord</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>
