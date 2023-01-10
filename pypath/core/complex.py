@@ -110,6 +110,7 @@ class AbstractComplexResource(resource.AbstractResource):
             input_args = input_args,
             dump = dump,
             data_attr_name = 'complexes',
+            data_type = 'complexes',
         )
 
         self.load()
@@ -127,13 +128,6 @@ class AbstractComplexResource(resource.AbstractResource):
                 len(self.complexes),
             )
         )
-
-
-    def _process_method(self):
-
-        self.complexes = self.data
-
-        delattr(self, 'data')
 
 
     def __iter__(self):

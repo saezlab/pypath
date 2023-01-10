@@ -22,7 +22,10 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from __future_ import annotations
+
 from future.utils import iteritems
+from typing import Any
 
 import os
 import collections
@@ -52,6 +55,9 @@ class AbstractResource(session_mod.Logger):
             input_args: dict | None = None,
             dump: str | None = None,
             data_attr_name: str | None = None,
+            data_type: str | None = None,
+            evidence_types: set[str] | None = None,
+            key: callable | tuple[str] | None = None,
             **kwargs
         ):
         """
@@ -61,7 +67,8 @@ class AbstractResource(session_mod.Logger):
             name:
                 Custom name for the resource.
             input_method:
-                Method providing the input data.
+                Method providing the input data. If not provided, a standard
+                name derived from the resource name will be used.
             dump:
                 Path: load data from this pickle dump if exists, and
                 save data to here in case of build from scratch.
@@ -74,9 +81,12 @@ class AbstractResource(session_mod.Logger):
         self.dump = dump
         self.name = name
         self._data_attr_name = data_attr_name or 'data'
+        self._data_type = data_type
         self._input_method = input_method
         self.input_args = input_args or {}
         self.ncbi_tax_id = ncbi_tax_id
+        self.evidence_types = evidence_types or set()
+        self._key = key
 
 
     def load(self):
@@ -104,7 +114,12 @@ class AbstractResource(session_mod.Logger):
 
             self.input_method = self._input_method
 
-        elif self._input_method:
+        else:
+
+            self._input_method = (
+                self._input_method or
+                f'{self.name}.{self.name}_{self._data_type}'.lower()
+            )
 
             self.input_method = inputs.get_method(self._input_method)
 
@@ -181,6 +196,124 @@ class AbstractResource(session_mod.Logger):
                     obj = getattr(self, self._data_attr_name),
                     file = fp,
                 )
+
+
+    def __eq__(self, other: Any) -> bool:
+
+        return (
+            self.name == other.name and self.data_type == other.data_type
+                if isinstance(other, self.__class__) else
+            self.name == other
+        )
+
+
+    @property
+    def data_type(self) -> str:
+
+        return self._data_type.replace('_', '').capitalize()
+
+
+    def __len__(self) -> int:
+
+        return len(getattr(self, self._data_attr_name, ()))
+
+
+    def __str__(self) -> str:
+
+        return self.name
+
+
+    def __repr__(self) -> str:
+
+        return f'<{self.data_type}Resource: {self.name} ({len(self)} records)>'
+
+
+    @property
+    def key_class_name(self) -> str:
+        """
+        Name of the class that creates unique keys to identify a resource.
+        """
+
+        return (
+            self._key.__name__
+                if isinstance(self._key, callable) else
+            self._key
+                if isinstance(self._key, common.basestring) else
+            f'{self.data_type}ResourceKey'
+        )
+
+
+    @property
+    def key_class(self) -> callable:
+        """
+        The class that creates unique keys to identify a resource.
+        """
+
+        if isinstance(self._key, callable):
+
+            return self._key
+
+        name = self.key_class_name
+
+        the_class = globals().get(name) or self._create_key_class()
+
+        return the_class
+
+
+    def _create_key_class(self) -> callable:
+
+        fields = (
+            self._key
+                if isinstance(self._key, (tuple, list)) else
+            ('name', 'data_type', 'via')
+        )
+
+
+        class the_class(collections.namedtuple(f'{name}Base', fields)):
+
+
+            def __new__(cls, *args, **kwargs):
+
+                return super(the_class, cls).__new__(cls, *args, **kwargs)
+
+
+            @property
+            def label(self) -> str:
+                """
+                Returns:
+                    A label containing the resource name, and if it's a
+                    secondary resource, the name of the primary resource
+                    separated by an underscore.
+                """
+
+                return f'{self.name}_{self.via}' if self.via else self.name
+
+
+            @property
+            def last(self) -> str:
+                """
+                Returns:
+                    The name of the resource where the data directly came
+                    from ignoring the primary resource.
+                """
+
+                return self.via or self.name
+
+
+        the_class.__name__ = name
+        globals()[name] = the_class
+
+        return the_class
+
+
+    @property
+    def key(self) -> callable:
+
+        cls = self.key_class
+
+        args = {k: getattr(self, k) for k in cls._fields}
+
+        return cls(**args)
 
 
 class ResourceAttributes(object):

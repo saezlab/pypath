@@ -723,6 +723,9 @@
         ],
         "organisms_supported": true,
         "extra_attrs": {}
+      },
+      "complex": {
+        "input_method": "signor.signor_complexes"
       }
     }
   },
