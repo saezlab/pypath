@@ -74,21 +74,28 @@ class AbstractComplexResource(resource.AbstractResource):
 
     def __init__(
             self,
-            name,
-            ncbi_tax_id = 9606,
-            input_method = None,
-            input_args = None,
-            dump = None,
+            name: str,
+            ncbi_tax_id: int = 9606,
+            input_method: callable | None = None,
+            input_args: dict | None = None,
+            dump: bool | None = None,
             **kwargs
         ):
         """
-        name : str
-            Custom name for the resource.
-        input_method : callable
-            Method providing the input data.
-        process_method : callable
-            Method processing the data and yielding ``intera.Complex``
-            instances.
+
+        Args:
+            name:
+                Custom name for the resource.
+            input_method:
+                Method providing the input data.
+            input_args:
+                Arguments for ``input_method``.
+            process_method:
+                Method processing the data and yielding ``intera.Complex``
+                instances.
+            dump:
+                Path: load data from this pickle dump if exists, and
+                save data to here in case of build from scratch.
         """
 
         session_mod.Logger.__init__(self, name = 'complex')

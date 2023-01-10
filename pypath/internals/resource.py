@@ -40,26 +40,31 @@ import pypath.share.session as session_mod
 
 class AbstractResource(session_mod.Logger):
     """
-    Generic class for downloading, processing and serving
-    data from a resource.
+    Generic class for downloading, processing and serving data from a resource.
     """
 
 
     def __init__(
             self,
-            name,
-            ncbi_tax_id = 9606,
-            input_method = None,
-            input_args = None,
-            dump = None,
-            data_attr_name = None,
+            name: str,
+            ncbi_tax_id: int = 9606,
+            input_method: callable | None = None,
+            input_args: dict | None = None,
+            dump: str | None = None,
+            data_attr_name: str | None = None,
             **kwargs
         ):
         """
-        name : str
-            Custom name for the resource.
-        input_method : callable
-            Method providing the input data.
+        Generic data resource.
+
+        Args:
+            name:
+                Custom name for the resource.
+            input_method:
+                Method providing the input data.
+            dump:
+                Path: load data from this pickle dump if exists, and
+                save data to here in case of build from scratch.
         """
 
         if not hasattr(self, '_log_name'):
