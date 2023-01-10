@@ -3907,12 +3907,6 @@ class Embrace(AnnotationBase):
         )
 
 
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
-
-
 class Baccin2019(AnnotationBase):
 
     _eq_fields = ('mainclass', 'subclass', 'location')
@@ -3927,12 +3921,6 @@ class Baccin2019(AnnotationBase):
             input_method = 'baccin2019.baccin2019_annotations',
             **kwargs
         )
-
-
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
 
 
 class Almen2009(AnnotationBase):
@@ -3951,12 +3939,6 @@ class Almen2009(AnnotationBase):
         )
 
 
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
-
-
 class Italk(AnnotationBase):
 
     _eq_fields = ('mainclass', 'subclass')
@@ -3971,12 +3953,6 @@ class Italk(AnnotationBase):
             input_method = 'italk.italk_annotations',
             **kwargs
         )
-
-
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
 
 
 class Cellcellinteractions(AnnotationBase):
@@ -3998,12 +3974,6 @@ class Cellcellinteractions(AnnotationBase):
         )
 
 
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
-
-
 class Matrisome(AnnotationBase):
 
     _eq_fields = ('mainclass', 'subclass')
@@ -4022,12 +3992,6 @@ class Matrisome(AnnotationBase):
             input_method = 'matrisome.matrisome_annotations',
             **kwargs,
         )
-
-
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
 
 
 class Surfaceome(AnnotationBase):
@@ -4083,12 +4047,6 @@ class Adhesome(AnnotationBase):
         )
 
 
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
-
-
 class Cancersea(AnnotationBase):
 
     _eq_fields = ('state',)
@@ -4102,12 +4060,6 @@ class Cancersea(AnnotationBase):
             input_method = 'cancersea.cancersea_annotations',
             **kwargs
         )
-
-
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
 
 
 class Hgnc(AnnotationBase):
@@ -4125,12 +4077,6 @@ class Hgnc(AnnotationBase):
         )
 
 
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
-
-
 
 class Zhong2015(AnnotationBase):
 
@@ -4145,12 +4091,6 @@ class Zhong2015(AnnotationBase):
             input_method = 'zhong2015.zhong2015_annotations',
             **kwargs
         )
-
-
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
 
 
 class Opm(AnnotationBase):
@@ -4170,12 +4110,6 @@ class Opm(AnnotationBase):
             input_method = 'opm.opm_annotations',
             **kwargs
         )
-
-
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
 
 
 class Phobius(AnnotationBase):
@@ -4198,12 +4132,6 @@ class Phobius(AnnotationBase):
         )
 
 
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
-
-
 class Topdb(AnnotationBase):
 
     _eq_fields = ('membrane',)
@@ -4221,12 +4149,6 @@ class Topdb(AnnotationBase):
             ncbi_tax_id = ncbi_tax_id,
             **kwargs
         )
-
-
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
 
 
 class Cpad(AnnotationBase):
@@ -4250,12 +4172,6 @@ class Cpad(AnnotationBase):
         )
 
 
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
-
-
 class Disgenet(AnnotationBase):
 
     _eq_fields = (
@@ -4273,12 +4189,6 @@ class Disgenet(AnnotationBase):
             ncbi_tax_id = ncbi_tax_id,
             **kwargs
         )
-
-
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
 
 
 class Msigdb(AnnotationBase):
@@ -4299,12 +4209,6 @@ class Msigdb(AnnotationBase):
             input_args = {'exclude': ()},
             **kwargs
         )
-
-
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
 
 
 class Integrins(AnnotationBase):
@@ -4338,12 +4242,6 @@ class Lrdb(AnnotationBase):
         )
 
 
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
-
-
 class HumanProteinAtlas(AnnotationBase):
 
     _eq_fields = ('organ', 'tissue', 'status', 'level', 'pathology')
@@ -4357,12 +4255,6 @@ class HumanProteinAtlas(AnnotationBase):
             input_method = 'proteinatlas.proteinatlas_annotations',
             **kwargs
         )
-
-
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
 
 
 class HumanProteinAtlasSubcellular(AnnotationBase):
@@ -4382,12 +4274,6 @@ class HumanProteinAtlasSubcellular(AnnotationBase):
         )
 
 
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
-
-
 class HumanProteinAtlasSecretome(AnnotationBase):
 
     _eq_fields = ('mainclass',)
@@ -4401,12 +4287,6 @@ class HumanProteinAtlasSecretome(AnnotationBase):
             input_method = 'proteinatlas.proteinatlas_secretome_annotations',
             **kwargs
         )
-
-
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
 
 
 
@@ -4425,12 +4305,6 @@ class CancerGeneCensus(AnnotationBase):
         )
 
 
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
-
-
 class Intogen(AnnotationBase):
 
     _eq_fields = ('type', 'role')
@@ -4444,12 +4318,6 @@ class Intogen(AnnotationBase):
             input_method = 'intogen.intogen_annotations',
             **kwargs
         )
-
-
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
 
 
 class Comppi(AnnotationBase):
@@ -4467,12 +4335,6 @@ class Comppi(AnnotationBase):
         )
 
 
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
-
-
 class Ramilowski2015Location(AnnotationBase):
 
     _eq_fields = ('location',)
@@ -4486,12 +4348,6 @@ class Ramilowski2015Location(AnnotationBase):
             input_method = 'ramilowski2015.ramilowski_locations',
             **kwargs
         )
-
-
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
 
 
 class CellSurfaceProteinAtlas(AnnotationBase):
@@ -4522,12 +4378,6 @@ class CellSurfaceProteinAtlas(AnnotationBase):
         )
 
 
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
-
-
 class CellSurfaceProteinAtlasCellType(AnnotationBase):
 
 
@@ -4554,12 +4404,6 @@ class CellSurfaceProteinAtlasCellType(AnnotationBase):
             input_method = 'cspa.cspa_cell_type_annotations',
             **kwargs
         )
-
-
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
 
 
 
@@ -6148,12 +5992,6 @@ class InterPro(AnnotationBase):
             input_method = 'interpro.interpro_annotations',
             **kwargs
         )
-
-
-    def _process_method(self):
-
-        self.annot = self.data
-        delattr(self, 'data')
 
 
 class AnnotationTable(session_mod.Logger):
