@@ -120,7 +120,7 @@ class AbstractResource(session_mod.Logger):
 
         if hasattr(self, 'input_method'):
 
-            self.data = self.input_method(**self.input_args)
+            setattr(self, 'data', self.input_method(**self.input_args))
 
 
     def process(self):
@@ -134,7 +134,7 @@ class AbstractResource(session_mod.Logger):
 
     def _process_method(self):
 
-        pass
+        setattr(self, self._data_attr_name, self.data)
 
 
     def from_dump(self):
@@ -167,17 +167,20 @@ class AbstractResource(session_mod.Logger):
 
             setattr(self, self._data_attr_name, self._from_dump)
             delattr(self, '_from_dump')
-            delattr(self, 'dump')
 
 
-    def save_to_pickle(self, pickle_file):
+    def save_to_pickle(self, pickle_file: str | None = None):
 
-        with open(pickle_file, 'wb') as fp:
+        pickle_file = pickle_file or self.dump
 
-            pickle.dump(
-                obj = getattr(self, self._data_attr_name),
-                file = fp,
-            )
+        if isinstance(self.dump, common.basestring):
+
+            with open(pickle_file, 'wb') as fp:
+
+                pickle.dump(
+                    obj = getattr(self, self._data_attr_name),
+                    file = fp,
+                )
 
 
 class ResourceAttributes(object):
