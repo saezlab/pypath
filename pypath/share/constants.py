@@ -30,3 +30,4 @@ NOT_ORGANISM_SPECIFIC = -1
 BOOLEAN_TRUE = frozenset(('1', 'yes', 'true'))
 BOOLEAN_FALSE = frozenset(('0', 'no','false'))
 BOOLEAN_VALUES = BOOLEAN_TRUE.union(BOOLEAN_FALSE)
+DATA_TYPES = ('annotation', 'complex', 'enzyme_substrate', 'network')

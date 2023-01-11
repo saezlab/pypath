@@ -22,10 +22,10 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from __future_ import annotations
+from __future__ import annotations
 
 from future.utils import iteritems
-from typing import Any
+from typing import Any, Iterable
 
 import os
 import collections
@@ -38,7 +38,133 @@ except:
 
 import pypath.inputs as inputs
 import pypath.share.common as common
+import pypath.share.constants as constants
 import pypath.share.session as session_mod
+import pypath.utils.taxonomy as taxonomy
+
+
+class ResourceBase(session_mod.Logger):
+    """
+    One resource with all metainformation and data access methods.
+    """
+
+
+    def __init__(self, name: str, **metadata):
+        """
+        Create a resource description.
+
+        This object holds all information about one resource as described
+        in `resources.json`. It is able to create and operate the loader
+        classes, hence provide data of the desired type and the desired
+        level of processing (raw or processed).
+
+        Args:
+            name:
+                Name of the resource.
+            metadata:
+                Arbitrary metadata. Includes the data type specific
+                input definitions, license information, etc.
+        """
+
+        self.name = name
+
+        for k, v in metadata.items():
+
+            setattr(self, k, v)
+
+
+    def __str__(self) -> str:
+
+        return self.name
+
+
+    def __repr__(self) -> str:
+
+        return f'<Resource: {self.name}>'
+
+
+    def data_types(self) -> tuple[str]:
+        """
+        Data types available from this resource.
+        """
+
+        return tuple(sorted(getattr(self, 'inputs', ())))
+
+
+    @staticmethod
+    def _data_type_pascal_case(data_type: str) -> str:
+
+        return ''.join(i.capitalize() for i in data_type.split('_'))
+
+
+    def loader(
+            self,
+            data_type: str,
+            organism: str | int | None = None,
+            **kwargs
+        ) -> callable:
+        """
+        Loader for a certain data type.
+        """
+
+        class_name = f'{self._data_type_pascal_case(data_type)}Resource'
+        cls = globals().get(class_name)
+        ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism)
+
+        if cls:
+
+            return cls(
+                name = self.name,
+                ncbi_tax_id = ncbi_tax_id,
+                **kwargs
+            )
+
+
+    def raw(
+            self,
+            data_type: str,
+            organism: str | int | None = None,
+            **kwargs
+        ) -> dict | list | Iterable:
+        """
+        Data after resource specific preprocessing.
+
+        As provided by the ``pypath.inputs`` module: the relevant fields
+        extracted, certain identifiers translated, some wrong or undesired
+        records removed and organised into straightforward, simple data
+        structure.
+        """
+
+        return self._loader_op('raw', locals())
+
+
+    def records(
+            self,
+            data_type: str,
+            organism: str | int | None = None,
+            **kwargs
+        ) -> Any:
+        """
+        Data after full preprocessing.
+
+        Records as stored in the database obejcts in ``pypath.core``.
+        """
+
+        return self._loader_op('records', locals())
+
+
+    def _loader_op(self, op: str, loc: dict) -> dict | list | Iterable:
+        """
+        Execute an operation on a loader for a certain data type.
+        """
+
+        loader = self.loader(
+            data_type = loc['data_type'],
+            organism = loc['organism'],
+            **loc['kwargs']
+        )
+
+        return getattr(loader, op)()
 
 
 class AbstractResource(session_mod.Logger):
@@ -50,7 +176,7 @@ class AbstractResource(session_mod.Logger):
     def __init__(
             self,
             name: str,
-            ncbi_tax_id: int = 9606,
+            organism: str | int = 9606,
             input_method: callable | None = None,
             input_args: dict | None = None,
             dump: str | None = None,
@@ -84,7 +210,7 @@ class AbstractResource(session_mod.Logger):
         self._data_type = data_type
         self._input_method = input_method
         self.input_args = input_args or {}
-        self.ncbi_tax_id = ncbi_tax_id
+        self.ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism)
         self.evidence_types = evidence_types or set()
         self._key = key
 
@@ -210,7 +336,7 @@ class AbstractResource(session_mod.Logger):
     @property
     def data_type(self) -> str:
 
-        return self._data_type.replace('_', '').capitalize()
+        return ''.join(i.capitalize() for i in self._data_type.split('_'))
 
 
     def __len__(self) -> int:
@@ -261,6 +387,8 @@ class AbstractResource(session_mod.Logger):
 
 
     def _create_key_class(self) -> callable:
+
+        name = self.key_class_name
 
         fields = (
             self._key
