@@ -531,48 +531,6 @@ class AbstractResource(session_mod.Logger):
         )
 
 
-class NetworkResourceKey(
-        collections.namedtuple(
-            'NetworkResourceKeyBase',
-            [
-                'name',
-                'data_type',
-                'interaction_type',
-                'data_model',
-                'via',
-            ]
-        )
-    ):
-
-
-    def __new__(cls, *args, **kwargs):
-
-        return super(NetworkResourceKey, cls).__new__(cls, *args, **kwargs)
-
-
-    @property
-    def label(self):
-        """
-        Returns
-            (str): A label containing the resource name, and if it's a
-                secondary resource, the name of the primary resource
-                separated by an underscore.
-        """
-
-        return '%s_%s' % (self.name, self.via) if self.via else self.name
-
-
-    @property
-    def last(self):
-        """
-        Returns
-            (str): The name of the resource where the data directly came from
-                ignoring the primary resource.
-        """
-
-        return self.via or self.name
-
-
 class NetworkResource(ResourceAttributes):
 
 
