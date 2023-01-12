@@ -25,10 +25,11 @@
 from __future__ import annotations
 
 from future.utils import iteritems
-from typing import Any, Iterable
+from typing import Any, Iterable, Generator
 
 import os
 import collections
+import hashlib
 
 try:
     import cPickle as pickle
@@ -39,6 +40,7 @@ except:
 import pypath.inputs as inputs
 import pypath.share.common as common
 import pypath.share.constants as constants
+import pypath.share.cache as cache
 import pypath.share.session as session_mod
 import pypath.utils.taxonomy as taxonomy
 
@@ -179,11 +181,13 @@ class AbstractResource(session_mod.Logger):
             organism: str | int = 9606,
             input_method: callable | None = None,
             input_args: dict | None = None,
-            dump: str | None = None,
             data_attr_name: str | None = None,
             data_type: str | None = None,
             evidence_types: set[str] | None = None,
             key: callable | tuple[str] | None = None,
+            raw_pickle: str | None = None,
+            records_pickle: str | None = None,
+            database_pickle: str | None = None,
             **kwargs
         ):
         """
@@ -192,17 +196,34 @@ class AbstractResource(session_mod.Logger):
         Args:
             name:
                 Custom name for the resource.
+            organism:
+                Name or NCBI Taxonomy ID of an organism supported by the
+                resource.
             input_method:
                 Method providing the input data. If not provided, a standard
                 name derived from the resource name will be used.
-            dump:
-                Path: load data from this pickle dump if exists, and
-                save data to here in case of build from scratch.
+            input_args:
+                Arguments for the input function.
+            data_attr_name:
+                A synonym for the attribute that strores the processed records.
+            data_type:
+                The database domain this resource belongs to: network,
+                complexes, enz_sub, annotations.
+            key:
+                A function or class suitable to identify this resource.
+            raw_pickle:
+                Path to a pickle file with raw, minimally preprocessed data.
+            records_pickle:
+                Path to a pickle file with processed records.
+            database_pickle:
+                Path to a pickle file with database object.
+            kwargs:
+                Ignored.
         """
 
         if not hasattr(self, '_log_name'):
 
-            session_mod.Logger.__init__(self, name = 'resource')
+            session_mod.Logger.__init__(self, name = 'resource_{name}')
 
         self.dump = dump
         self.name = name
@@ -211,23 +232,47 @@ class AbstractResource(session_mod.Logger):
         self._input_method = input_method
         self.input_args = input_args or {}
         self.ncbi_tax_id = taxonomy.ensure_ncbi_tax_id(organism)
+        self._raw_pickle = raw_pickle
+        self._records_pickle = records_pickle
+        self._database_pickle = database_pickle
         self.evidence_types = evidence_types or set()
         self._key = key
+        self._data = {}
 
 
-    def load(self):
+    def raw(self) -> Any:
+        """
+        Load the data with resource specific preprocessing.
+        """
 
-        self.set_method()
-        from_dump = self.from_dump()
+        return self._get_data('raw')
 
-        if not from_dump:
 
-            self.load_data()
-            self.process()
+    def records(self):
+        """
+        Load and process data
+        """
 
-        if hasattr(self, 'data'):
+        return self._get_data('records')
 
-            delattr(self, 'data')
+
+    def database(self):
+        """
+        Load and process data
+        """
+
+        return self._get_data('database')
+
+
+    def _get_data(self, stage: str) -> Any:
+
+        for method in (self.load, self.build):
+
+            if stage not in self._data:
+
+                method(stage)
+
+        return self._data.get(stage)
 
 
     def set_method(self):
@@ -250,78 +295,86 @@ class AbstractResource(session_mod.Logger):
             self.input_method = inputs.get_method(self._input_method)
 
 
-    def load_data(self):
+    def build(self, stage: str) -> Any:
         """
-        Loads the data by calling ``input_method``.
+        Builds resource data at a certain stage of processing.
         """
 
-        self._log('Loading data from `%s`.' % self.name)
+        self._log(f'Building `{stage}` stage data from `{self.name}`.')
+
+        getattr(self, f'_build_{stage}')()
+
+        if not getattr(self, f'_{stage}_pickle'):
+
+            self.save(stage, self._data[stage])
+
+
+    def _build_raw(self):
 
         self.set_method()
 
         if hasattr(self, 'input_method'):
 
-            setattr(self, 'data', self.input_method(**self.input_args))
+            self._data['raw'] = self.input_method(**self.input_args))
 
 
-    def process(self):
+    def _build_records(self):
         """
         Calls the ``_process_method``.
         """
 
         self._log('Processing data from `%s`.' % self.name)
-        self._process_method()
+        return self._process_method()
 
 
     def _process_method(self):
 
-        setattr(self, self._data_attr_name, self.data)
+        self._data['records'] = self._data['raw']
 
 
-    def from_dump(self):
+    def _build_database(self):
 
-        if self.dump is not None:
-
-            if (
-                isinstance(self.dump, common.basestring) and
-                os.path.exists(self.dump)
-            ):
-
-                with open(self.dump, 'rb') as fp:
-
-                    self._from_dump = pickle.load(fp)
-
-            else:
-
-                self._from_dump = self.dump
-
-            self._from_dump_callback()
-
-            return True
-
-        return False
+        self._data['database'] = None
 
 
-    def _from_dump_callback(self):
+    def load(self, stage: str) -> Any:
+        """
+        Load data from a pickle dump.
+        """
 
-        if hasattr(self, '_from_dump'):
+        path = self.pickle_path(stage)
 
-            setattr(self, self._data_attr_name, self._from_dump)
-            delattr(self, '_from_dump')
+        if isinstance(path, common.basestring) and os.path.exists(path):
+
+            with open(self.dump, 'rb') as fp:
+
+                self._data[stage] = pickle.load(fp)
 
 
-    def save_to_pickle(self, pickle_file: str | None = None):
+    def save(self, stage: str, data: Any | None = None):
+        """
+        Save data into a pickle dump.
+        """
 
-        pickle_file = pickle_file or self.dump
+        path = self.pickle_path(stage)
+        data = data or getattr(self, stage)()
 
-        if isinstance(self.dump, common.basestring):
+        if isinstance(data, Generator):
 
-            with open(pickle_file, 'wb') as fp:
+            data = list(data)
 
-                pickle.dump(
-                    obj = getattr(self, self._data_attr_name),
-                    file = fp,
-                )
+        with open(path, 'wb') as fp:
+
+            self._log(f'Saving stage `{stage}` data to `{path}`.')
+            pickle.dump(obj = data, file = fp)
+
+
+    def pickle_path(self, stage: str) -> str:
+        """
+        Path to a pickle dump of data from this resource at a certain stage.
+        """
+
+        return getattr(self, f'_{stage}_pickle') or self.cache_path(stage)
 
 
     def __eq__(self, other: Any) -> bool:
@@ -436,12 +489,46 @@ class AbstractResource(session_mod.Logger):
 
     @property
     def key(self) -> callable:
+        """
+        Key for identifying this resource.
+        """
 
         cls = self.key_class
 
         args = {k: getattr(self, k) for k in cls._fields}
 
         return cls(**args)
+
+
+    def cache_key(self) -> str:
+        """
+        Unique identifier of the resource with a set of parameters.
+        """
+
+        return (
+            hashlib.md5(
+                (
+                    common.dict_str(self.key.asdict(), sep = ',') +
+                    f',{self.ncbi_tax_id},' +
+                    common.dict_str(self.input_args, sep = ',')
+                ).
+                encode('utf8')
+            ).
+            hexdigest()
+        )
+
+
+    def cache_path(self, stage: str) -> str:
+        """
+        Path to the cached pickle dump of resource data at a certain stage.
+        """
+
+        return (
+            os.path.join(
+                cache.get_cachedir(),
+                f'{self.cache_key()}-{stage}.pickle'
+            )
+        )
 
 
 class ResourceAttributes(object):
