@@ -1608,6 +1608,10 @@ urls = {
         'label': 'Comparative Toxicogenomics Database',
         'url': 'http://ctdbase.org/reports/%s',
     },
+    'diseases': {
+        'label': 'Disease-gene associations mined from literature',
+        'url': 'https://download.jensenlab.org/human_disease_%s_%s.tsv'
+    }
 }
 
 

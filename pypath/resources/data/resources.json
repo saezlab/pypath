@@ -4702,5 +4702,12 @@
         "https://pubmed.ncbi.nlm.nih.gov/36169237/"
       ]
     }
+  },
+  "DISEASES": {
+    "full_name": "",
+    "license": "CC BY",
+    "urls": {
+      "webpages": ["https://diseases.jensenlab.org/"]
+    }
   }
 }
