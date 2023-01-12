@@ -289,7 +289,9 @@ def chembl_activities(
         'pchembl',
         'standard_relation',
         'standard_value',
+        'standard_type',
         'target_chembl',
+        'document'
     )
 
     ChemblActivity = collections.namedtuple(
@@ -337,7 +339,9 @@ def chembl_activities(
                 pchembl = act['pchembl_value'],
                 standard_relation = act['standard_relation'],
                 standard_value = act['standard_value'],
+                standard_type = act['standard_type'],
                 target_chembl = act['target_chembl_id'],
+                document = act['document_chembl_id'],
             )
             for act in page_dct['activities']
             if act['data_validity_comment'] is None
