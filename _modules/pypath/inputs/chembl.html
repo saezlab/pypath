@@ -714,7 +714,9 @@
         <span class="s1">&#39;pchembl&#39;</span><span class="p">,</span>
         <span class="s1">&#39;standard_relation&#39;</span><span class="p">,</span>
         <span class="s1">&#39;standard_value&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;standard_type&#39;</span><span class="p">,</span>
         <span class="s1">&#39;target_chembl&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;document&#39;</span>
     <span class="p">)</span>
 
     <span class="n">ChemblActivity</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
@@ -762,13 +764,126 @@
                 <span class="n">pchembl</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;pchembl_value&#39;</span><span class="p">],</span>
                 <span class="n">standard_relation</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;standard_relation&#39;</span><span class="p">],</span>
                 <span class="n">standard_value</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;standard_value&#39;</span><span class="p">],</span>
+                <span class="n">standard_type</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;standard_type&#39;</span><span class="p">],</span>
                 <span class="n">target_chembl</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;target_chembl_id&#39;</span><span class="p">],</span>
+                <span class="n">document</span> <span class="o">=</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;document_chembl_id&#39;</span><span class="p">],</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">act</span> <span class="ow">in</span> <span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;activities&#39;</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">act</span><span class="p">[</span><span class="s1">&#39;data_validity_comment&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">activity_lst</span></div>
+
+
+<div class="viewcode-block" id="chembl_documents"><a class="viewcode-back" href="../../../api/pypath.inputs.chembl.chembl_documents.html#pypath.inputs.chembl.chembl_documents">[docs]</a><span class="k">def</span> <span class="nf">chembl_documents</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves ChEMBL document ID to PubMed ID conversion.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        Dictionary of ChEMBL document IDs as keys and PubMed IDs as values.   </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">page_dct</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">document_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">page_dct</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;document&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;page_meta&#39;</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">]:</span>
+
+            <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;page_meta&#39;</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+                
+            <span class="k">break</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">page_dct</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">fileobj</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;documents&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;pubmed_id&#39;</span><span class="p">]:</span>
+                <span class="n">document_dict</span><span class="p">[</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;chembl_id&#39;</span><span class="p">]]</span><span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;pubmed_id&#39;</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="n">document_dict</span></div>
+
+
+<div class="viewcode-block" id="chembl_drug_indications"><a class="viewcode-back" href="../../../api/pypath.inputs.chembl.chembl_drug_indications.html#pypath.inputs.chembl.chembl_drug_indications">[docs]</a><span class="k">def</span> <span class="nf">chembl_drug_indications</span><span class="p">(</span>
+    <span class="n">max_phase_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves drug indications data from ChEMBL.</span>
+
+<span class="sd">    Args</span>
+<span class="sd">        max_phase_threshold:</span>
+<span class="sd">            The threshold for maximum phase of the drug </span>
+<span class="sd">            for which the indication is valid.</span>
+<span class="sd">    Returns</span>
+<span class="sd">        List of drug indications as namedtuples.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fields_indication</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;efo_id&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;efo_term&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;max_phase&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;mesh_heading&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;mesh_id&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;molecule_chembl&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">ChemblIndication</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;ChemblIndication&#39;</span><span class="p">,</span>
+        <span class="n">fields_indication</span><span class="p">,</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields_indication</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">indication_lst</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">page_dct</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">page_dct</span><span class="p">:</span>
+
+            <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;drug_indication&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;page_meta&#39;</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">]:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;page_meta&#39;</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">break</span>
+        
+        <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">large</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">fileobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">fileobj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">page_dct</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">fileobj</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="n">indication_lst</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="n">ChemblIndication</span><span class="p">(</span>
+                <span class="n">efo_id</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="s1">&#39;efo_id&#39;</span><span class="p">],</span>
+                <span class="n">efo_term</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="s1">&#39;efo_term&#39;</span><span class="p">],</span>
+                <span class="n">max_phase</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ind</span><span class="p">[</span><span class="s1">&#39;max_phase_for_ind&#39;</span><span class="p">]),</span>
+                <span class="n">mesh_heading</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="s1">&#39;mesh_heading&#39;</span><span class="p">],</span>
+                <span class="n">mesh_id</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="s1">&#39;mesh_id&#39;</span><span class="p">],</span>
+                <span class="n">molecule_chembl</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="s1">&#39;molecule_chembl_id&#39;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">page_dct</span><span class="p">[</span><span class="s1">&#39;drug_indications&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">ind</span><span class="p">[</span><span class="s1">&#39;max_phase_for_ind&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">max_phase_threshold</span> <span class="ow">and</span> <span class="n">max_phase_threshold</span> <span class="o">!=</span> <span class="mi">0</span> \
+                <span class="ow">or</span> <span class="n">max_phase_threshold</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">indication_lst</span></div>
 </pre></div>
 
             </article>
