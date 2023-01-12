@@ -2024,15 +2024,15 @@ def eq(one, other):
         return one == other
 
 
-def dict_str(dct):
+def dict_str(dct: dict, sep: str = ', ') -> str:
 
     if not isinstance(dct, dict):
 
         return str(dct)
 
-    return ', '.join(
-        '%s=%s' % (str(key), str(val))
-        for key, val in iteritems(dct)
+    return sep.join(
+        f'{key}={val}'
+        for key, val in sorted(iteritems(dct), key = lambda it: it[0])
     )
 
 
