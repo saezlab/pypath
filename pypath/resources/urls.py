@@ -1608,6 +1608,17 @@ urls = {
         'label': 'Comparative Toxicogenomics Database',
         'url': 'http://ctdbase.org/reports/%s',
     },
+    'sider': {
+        'label': 'A Database contains information on marketed medicines and their recorded adverse drug reactions.',
+        'url_drug_names': 'http://sideeffects.embl.de/media/download/drug_names.tsv',
+        'url_drug_atc': 'http://sideeffects.embl.de/media/download/drug_atc.tsv',
+        'url_meddra_all': 'http://sideeffects.embl.de/media/download/meddra_all_se.tsv.gz',
+        'url_meddra_freq': 'http://sideeffects.embl.de/media/download/meddra_freq.tsv.gz'
+    },
+    'humsavar': {
+        'label': 'A Database contains all missense variants annotated in UniProtKB/Swiss-Prot human entries',
+        'url': 'https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/docs/humsavar.txt'
+    }
 }
 
 
