@@ -531,40 +531,6 @@ class AbstractResource(session_mod.Logger):
         )
 
 
-class ResourceAttributes(object):
-
-
-    def __init__(
-            self,
-            name,
-            data_type,
-            evidence_types = None,
-            **kwargs
-        ):
-
-        self.name = name
-        self.data_type = data_type
-        self.evidence_types = evidence_types or set()
-
-        for attr, value in iteritems(kwargs):
-
-            setattr(self, attr, value)
-
-
-    def __eq__(self, other):
-
-        return (
-            self.name == other.name and self.data_type == other.data_type
-                if isinstance(other, self.__class__) else
-            self.name == other
-        )
-
-
-    def __str__(self):
-
-        return self.name
-
-
 class NetworkResourceKey(
         collections.namedtuple(
             'NetworkResourceKeyBase',
