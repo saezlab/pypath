@@ -232,16 +232,16 @@ Impressum
 =========
 
 ``pypath`` is developed in the `Saez Lab`_ by `Dénes Türei`_, Sebastian
-Lobentanzer and Ahmet Rifaioglu, and Melih Darcan, Erva Ulusoy, Tennur Kılıç
-and Ömer Kaan Vural in `Volkan Atalay's group`_.
-Olga Ivanova and Nicolàs Palacio also contributed in the past.
+Lobentanzer and Ahmet Rifaioglu, and in `HU Biological Data Science Lab (PI: Tunca Doğan)`_
+by Melih Darcan, Erva Ulusoy, Ömer Kaan Vural, Tennur Kılıç, Elif Çevrim, Bünyamin Şen and
+Atabey Ünlü. Olga Ivanova and Nicolàs Palacio also contributed in the past.
 The `R package`_ and the `Cytoscape app`_ are developed and maintained by
 Francesco Ceccarelli, Attila Gábor, Alberto Valdeolivas, Dénes Türei and
 Nicolàs Palacio. The `Python client`_ for the OmniPath web service has been
 developed and is maintained by Michael Klein in the group of `Fabian Theis`_.
 
 .. _`Saez Lab`: https://saezlab.org/
-.. _`Volkan Atalay's group`: https://blog.metu.edu.tr/vatalay/
+.. _`HU Biological Data Science Lab (PI: Tunca Doğan)`: https://yunus.hacettepe.edu.tr/~tuncadogan/
 .. _`Dénes Türei`: https://denes.omnipathdb.org/
 .. _`R package`: https://r.omnipathdb.org
 .. _`Cytoscape app`: https://apps.cytoscape.org/apps/omnipath
