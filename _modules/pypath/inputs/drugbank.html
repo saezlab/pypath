@@ -939,9 +939,7 @@
             <span class="s1">&#39;monoisotopic_mass&#39;</span><span class="p">,</span> <span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;synthesis_reference&#39;</span><span class="p">,</span> <span class="s1">&#39;indication&#39;</span><span class="p">,</span> <span class="s1">&#39;pharmacodynamics&#39;</span><span class="p">,</span> 
             <span class="s1">&#39;mechanism_of_action&#39;</span><span class="p">,</span> <span class="s1">&#39;toxicity&#39;</span><span class="p">,</span> <span class="s1">&#39;metabolism&#39;</span><span class="p">,</span> <span class="s1">&#39;absorption&#39;</span><span class="p">,</span> <span class="s1">&#39;half_life&#39;</span><span class="p">,</span>
             <span class="s1">&#39;protein_binding&#39;</span><span class="p">,</span> <span class="s1">&#39;route_of_elimination&#39;</span><span class="p">,</span> <span class="s1">&#39;volume_of_distribution&#39;</span><span class="p">,</span> <span class="s1">&#39;clearance&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;synthesis_reference&#39;</span><span class="p">,</span> <span class="s1">&#39;indication&#39;</span><span class="p">,</span> <span class="s1">&#39;pharmacodynamics&#39;</span><span class="p">,</span> <span class="s1">&#39;mechanism_of_action&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;toxicity&#39;</span><span class="p">,</span> <span class="s1">&#39;metabolism&#39;</span><span class="p">,</span> <span class="s1">&#39;absorption&#39;</span><span class="p">,</span> <span class="s1">&#39;half_life&#39;</span><span class="p">,</span> <span class="s1">&#39;protein_binding&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;route_of_elimination&#39;</span><span class="p">,</span> <span class="s1">&#39;volume_of_distribution&#39;</span><span class="p">,</span> <span class="s1">&#39;clearance&#39;</span><span class="p">,</span> <span class="s1">&#39;fda_label&#39;</span><span class="p">,</span> <span class="s1">&#39;msds&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;fda_label&#39;</span><span class="p">,</span> <span class="s1">&#39;msds&#39;</span><span class="p">,</span>
         <span class="p">]</span>
 
         <span class="n">fields_w_subfields</span> <span class="o">=</span> <span class="p">{</span>
@@ -1091,6 +1089,30 @@
 
                 <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">(</span><span class="o">**</span><span class="n">target_dict</span><span class="p">))</span>
  
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="DrugbankFull.drugbank_external_ids_full"><a class="viewcode-back" href="../../../api/pypath.inputs.drugbank.DrugbankFull.html#pypath.inputs.drugbank.DrugbankFull.drugbank_external_ids_full">[docs]</a>    <span class="k">def</span> <span class="nf">drugbank_external_ids_full</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Returns a dictionary containing all external identifiers of drugs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">drug</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">drugs</span><span class="p">:</span>
+
+            <span class="n">db_id</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">drug</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;db:drugbank-id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;primary&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+
+            <span class="k">for</span> <span class="n">ext_id</span> <span class="ow">in</span> <span class="n">drug</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;db:external-identifiers/db:external-identifier&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">):</span>
+                <span class="n">source</span> <span class="o">=</span> <span class="n">ext_id</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;db:resource&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+                <span class="n">identifier</span> <span class="o">=</span> <span class="n">ext_id</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;db:identifier&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+
+                <span class="k">if</span> <span class="n">db_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                    <span class="n">result</span><span class="p">[</span><span class="n">db_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+                <span class="n">result</span><span class="p">[</span><span class="n">db_id</span><span class="p">][</span><span class="n">source</span><span class="p">]</span> <span class="o">=</span> <span class="n">identifier</span>
+
         <span class="k">return</span> <span class="n">result</span></div></div>
 </pre></div>
 

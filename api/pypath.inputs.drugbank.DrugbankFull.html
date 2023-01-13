@@ -459,7 +459,10 @@ The second method returns a list of namedtuples, each of which represents a drug
 <tr class="row-even"><td><p><a class="reference internal" href="#pypath.inputs.drugbank.DrugbankFull.drugbank_drugs_full" title="pypath.inputs.drugbank.DrugbankFull.drugbank_drugs_full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drugbank_drugs_full</span></code></a>([fields])</p></td>
 <td><p>Returns a list of namedtuples containing detailed information about drugs.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.inputs.drugbank.DrugbankFull.drugbank_targets_full" title="pypath.inputs.drugbank.DrugbankFull.drugbank_targets_full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drugbank_targets_full</span></code></a>([fields])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pypath.inputs.drugbank.DrugbankFull.drugbank_external_ids_full" title="pypath.inputs.drugbank.DrugbankFull.drugbank_external_ids_full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drugbank_external_ids_full</span></code></a>()</p></td>
+<td><p>Returns a dictionary containing all external identifiers of drugs.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pypath.inputs.drugbank.DrugbankFull.drugbank_targets_full" title="pypath.inputs.drugbank.DrugbankFull.drugbank_targets_full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drugbank_targets_full</span></code></a>([fields])</p></td>
 <td><p>Returns a list of namedtuples containing detailed information about drug-target interactions.</p></td>
 </tr>
 </tbody>
@@ -478,6 +481,12 @@ Default: None</p>
 <dt>Returns</dt><dd><p>A list of namedtuples containing information about drugs.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pypath.inputs.drugbank.DrugbankFull.drugbank_external_ids_full">
+<span class="sig-name descname"><span class="pre">drugbank_external_ids_full</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pypath/inputs/drugbank.html#DrugbankFull.drugbank_external_ids_full"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pypath.inputs.drugbank.DrugbankFull.drugbank_external_ids_full" title="Permalink to this definition">§</a></dt>
+<dd><p>Returns a dictionary containing all external identifiers of drugs.</p>
 </dd></dl>
 
 <dl class="py method">
