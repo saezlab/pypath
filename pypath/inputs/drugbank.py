@@ -514,9 +514,7 @@ class DrugbankFull:
             'monoisotopic_mass', 'state', 'synthesis_reference', 'indication', 'pharmacodynamics', 
             'mechanism_of_action', 'toxicity', 'metabolism', 'absorption', 'half_life',
             'protein_binding', 'route_of_elimination', 'volume_of_distribution', 'clearance',
-            'synthesis_reference', 'indication', 'pharmacodynamics', 'mechanism_of_action',
-            'toxicity', 'metabolism', 'absorption', 'half_life', 'protein_binding',
-            'route_of_elimination', 'volume_of_distribution', 'clearance', 'fda_label', 'msds',
+            'fda_label', 'msds',
         ]
 
         fields_w_subfields = {
@@ -666,4 +664,28 @@ class DrugbankFull:
 
                 result.append(record(**target_dict))
  
+        return result
+
+    def drugbank_external_ids_full(
+            self,
+        ) -> dict[str, dict]:
+        """
+            Returns a dictionary containing all external identifiers of drugs.
+        """
+
+        result = {}
+
+        for drug in self.drugs:
+
+            db_id = [i for i in drug.xpath('db:drugbank-id', namespaces=self.ns) if i.attrib.get('primary') == 'true'][0].text
+
+            for ext_id in drug.xpath('db:external-identifiers/db:external-identifier', namespaces=self.ns):
+                source = ext_id.xpath('db:resource', namespaces=self.ns)[0].text
+                identifier = ext_id.xpath('db:identifier', namespaces=self.ns)[0].text
+
+                if db_id not in result:
+                    result[db_id] = {}
+
+                result[db_id][source] = identifier
+
         return result
