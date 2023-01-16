@@ -2449,15 +2449,15 @@
         <span class="k">return</span> <span class="n">one</span> <span class="o">==</span> <span class="n">other</span></div>
 
 
-<div class="viewcode-block" id="dict_str"><a class="viewcode-back" href="../../../api/pypath.share.common.dict_str.html#pypath.share.common.dict_str">[docs]</a><span class="k">def</span> <span class="nf">dict_str</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
+<div class="viewcode-block" id="dict_str"><a class="viewcode-back" href="../../../api/pypath.share.common.dict_str.html#pypath.share.common.dict_str">[docs]</a><span class="k">def</span> <span class="nf">dict_str</span><span class="p">(</span><span class="n">dct</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">sep</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">dct</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-        <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">dct</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">iteritems</span><span class="p">(</span><span class="n">dct</span><span class="p">),</span> <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">it</span><span class="p">:</span> <span class="n">it</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="p">)</span></div>
 
 
