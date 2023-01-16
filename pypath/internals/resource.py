@@ -210,7 +210,8 @@ class AbstractResource(session_mod.Logger):
                 The database domain this resource belongs to: network,
                 complexes, enz_sub, annotations.
             key:
-                A function or class suitable to identify this resource.
+                A function or class suitable to identify this resource, or
+                a tuple of attribute names that form such a key.
             raw_pickle:
                 Path to a pickle file with raw, minimally preprocessed data.
             records_pickle:
@@ -324,12 +325,14 @@ class AbstractResource(session_mod.Logger):
         """
 
         self._log('Processing data from `%s`.' % self.name)
-        return self._process_method()
+        records = self._process_method()
+        self._data['records'] = records
+        setattr(self, self._data_attr_name, records)
 
 
     def _process_method(self):
 
-        self._data['records'] = self._data['raw']
+        return self._data['raw']
 
 
     def _build_database(self):
@@ -380,10 +383,15 @@ class AbstractResource(session_mod.Logger):
     def __eq__(self, other: Any) -> bool:
 
         return (
-            self.name == other.name and self.data_type == other.data_type
-                if isinstance(other, self.__class__) else
+            self.cache_key() == other.cache_key()
+                if hasattr(other, 'cache_key') else
             self.name == other
         )
+
+
+    def __hash__(self):
+
+        return hash(self.cache_key())
 
 
     @property
@@ -531,10 +539,7 @@ class AbstractResource(session_mod.Logger):
         )
 
 
-class NetworkResource(ResourceAttributes):
-
-
-    _key = NetworkResourceKey
+class NetworkResource(AbstractResource):
 
 
     def __init__(
@@ -547,7 +552,7 @@ class NetworkResource(ResourceAttributes):
             **kwargs
         ):
 
-        ResourceAttributes.__init__(
+        AbstractResource.__init__(
             self,
             name = name,
             data_type = 'network',
@@ -555,33 +560,13 @@ class NetworkResource(ResourceAttributes):
             evidence_types = evidence_types,
             data_model = data_model,
             via = via,
+            key = (
+                'name',
+                'data_type',
+                'interaction_type',
+                'data_model',
+            )
             **kwargs
-        )
-
-
-    def __hash__(self):
-
-        return hash(self.key)
-
-
-    @property
-    def key(self):
-
-        return self._key(
-            name = self.name,
-            data_type = self.data_type,
-            interaction_type = self.interaction_type,
-            data_model = self.data_model,
-            via = self.via,
-        )
-
-
-    def __eq__(self, other):
-
-        return (
-            self.name == other
-                if isinstance(other, common.basestring) else
-            self.__hash__() == other.__hash__()
         )
 
 
@@ -619,7 +604,7 @@ EnzymeSubstrateResourceKey = collections.namedtuple(
 )
 
 
-class EnzymeSubstrateResource(ResourceAttributes):
+class EnzymeSubstrateResource(AbstractResource):
 
 
     _key = EnzymeSubstrateResourceKey
